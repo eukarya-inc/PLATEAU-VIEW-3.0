@@ -1,22 +1,22 @@
-name: ci-web
+name: ci-plugin
 on:
   push:
     branches:
       - main
     paths:
-      - web/**
-      - .github/workflows/web.yml
+      - plugin/**
+      - .github/workflows/plugin.yml
   pull_request:
     paths:
-      - web/**
-      - .github/workflows/web.yml
+      - plugin/**
+      - .github/workflows/plugin.yml
 jobs:
   ci:
     name: ci
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: web
+        working-directory: plugin
     steps:
       - uses: actions/setup-node@v2
         with:
