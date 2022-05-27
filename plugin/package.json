@@ -55,6 +55,6 @@
     "vitest": "^0.12.9"
   },
   "msw": {
-    "workerDirectory": "web"
+    "workerDirectory": "web/mock"
   }
 }
