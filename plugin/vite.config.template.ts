@@ -2,7 +2,7 @@
 /// <reference types="vite/client" />
 
 import react from "@vitejs/plugin-react";
-import type { UserConfigExport } from "vite";
+import type { UserConfigExport, Plugin } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 export const plugin = (name: string): UserConfigExport => ({
@@ -19,16 +19,28 @@ export const plugin = (name: string): UserConfigExport => ({
   },
 });
 
-export const web = (name: string): UserConfigExport => ({
-  plugins: [react(), viteSingleFile()],
-  publicDir: false,
-  root: `./web/${name}`,
-  build: {
-    outDir: `../../dist/web/${name}`,
-  },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: "./web/test/setup.ts",
+export const web =
+  (name: string): UserConfigExport =>
+  () => ({
+    plugins: [react(), viteSingleFile(), serverHeaders()],
+    publicDir: false,
+    root: `./web/${name}`,
+    build: {
+      outDir: `../../dist/web/${name}`,
+    },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      setupFiles: "./web/test/setup.ts",
+    },
+  });
+
+const serverHeaders = (): Plugin => ({
+  name: "server-headers",
+  configureServer(server) {
+    server.middlewares.use((_req, res, next) => {
+      res.setHeader("Service-Worker-Allowed", "/");
+      next();
+    });
   },
 });

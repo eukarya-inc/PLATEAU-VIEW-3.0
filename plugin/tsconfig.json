@@ -18,6 +18,6 @@
     "baseUrl": ".",
     "types": ["vite/client"]
   },
-  "include": ["src", "dist/web/web"],
+  "include": ["src", "web"],
   "references": [{ "path": "./tsconfig.node.json" }],
 }

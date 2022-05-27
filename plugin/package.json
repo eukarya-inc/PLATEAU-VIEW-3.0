@@ -53,5 +53,8 @@
     "vite": "^2.9.9",
     "vite-plugin-singlefile": "^0.9.0",
     "vitest": "^0.12.9"
+  },
+  "msw": {
+    "workerDirectory": "web"
   }
 }
