@@ -1,0 +1,8 @@
+name: hoge
+version: 1.0.0
+id: hoge
+extensions:
+  - id: datacatalog
+    type: widget
+  - id: sidebar
+    type: widget
