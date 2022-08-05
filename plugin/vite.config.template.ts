@@ -24,18 +24,20 @@ export const plugin = (name: string): UserConfigExport => ({
 
 export const web =
   (name: string): UserConfigExport =>
-  () => ({
+  ({ mode }) => ({
     plugins: [
       react(),
       serverHeaders(),
       viteSingleFile(),
-      (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
-        modules: [autoComplete("react"), autoComplete("react-dom")],
-      }),
-      viteExternalsPlugin({
-        react: "React",
-        "react-dom": "ReactDOM",
-      }),
+      mode === "production" &&
+        (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
+          modules: [autoComplete("react"), autoComplete("react-dom")],
+        }),
+      mode === "production" &&
+        viteExternalsPlugin({
+          react: "React",
+          "react-dom": "ReactDOM",
+        }),
     ],
     publicDir: false,
     root: `./web/${name}`,
