@@ -2,7 +2,10 @@
 /// <reference types="vite/client" />
 
 import react from "@vitejs/plugin-react";
+// import { visualizer } from "rollup-plugin-visualizer";
 import type { UserConfigExport, Plugin } from "vite";
+import importToCDN, { autoComplete } from "vite-plugin-cdn-import";
+import { viteExternalsPlugin } from "vite-plugin-externals";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 export const plugin = (name: string): UserConfigExport => ({
@@ -22,7 +25,20 @@ export const plugin = (name: string): UserConfigExport => ({
 export const web =
   (name: string): UserConfigExport =>
   () => ({
-    plugins: [react(), viteSingleFile(), serverHeaders()],
+    plugins: [
+      react(),
+      serverHeaders(),
+      viteSingleFile(),
+      (
+        importToCDN /* workaround */ as any as { default: typeof importToCDN }
+      ).default({
+        modules: [autoComplete("react"), autoComplete("react-dom")],
+      }),
+      viteExternalsPlugin({
+        react: "React",
+        "react-dom": "ReactDOM",
+      }),
+    ],
     publicDir: false,
     root: `./web/${name}`,
     build: {
@@ -35,12 +51,14 @@ export const web =
     },
   });
 
-const serverHeaders = (): Plugin => ({
-  name: "server-headers",
-  configureServer(server) {
-    server.middlewares.use((_req, res, next) => {
-      res.setHeader("Service-Worker-Allowed", "/");
-      next();
-    });
-  },
-});
+function serverHeaders(): Plugin {
+  return {
+    name: "server-headers",
+    configureServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        res.setHeader("Service-Worker-Allowed", "/");
+        next();
+      });
+    },
+  };
+}
