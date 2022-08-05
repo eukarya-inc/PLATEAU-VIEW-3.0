@@ -13,8 +13,6 @@ export default async function () {
     });
   } else {
     // disable msw
-    (await navigator.serviceWorker.getRegistrations()).forEach((r) =>
-      r.unregister()
-    );
+    (await navigator.serviceWorker.getRegistrations()).forEach(r => r.unregister());
   }
 }

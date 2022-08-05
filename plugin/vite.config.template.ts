@@ -29,9 +29,7 @@ export const web =
       react(),
       serverHeaders(),
       viteSingleFile(),
-      (
-        importToCDN /* workaround */ as any as { default: typeof importToCDN }
-      ).default({
+      (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
         modules: [autoComplete("react"), autoComplete("react-dom")],
       }),
       viteExternalsPlugin({

@@ -6,7 +6,7 @@ export const worker = setupWorker(
       ctx.json({
         firstName: "John",
         lastName: "Maverick",
-      })
+      }),
     );
-  })
+  }),
 );

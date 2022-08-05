@@ -9,9 +9,7 @@ startMock().then(async () => {
     root.render(<h1>hello</h1>);
   }
 
-  console.log(
-    await fetch("https://example.com/user/aaa").then((r) => r.json())
-  );
+  console.log(await fetch("https://example.com/user/aaa").then(r => r.json()));
 });
 
 export {};
