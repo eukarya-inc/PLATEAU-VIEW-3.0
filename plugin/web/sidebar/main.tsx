@@ -1,15 +1,28 @@
 import ReactDOM from "react-dom/client";
 
-import startMock from "../mock";
+import Sidebar from "../components/sidebar";
+// import startMock from "../mock";
 
-startMock().then(async () => {
+(async () => {
   const element = document.getElementById("root");
   if (element) {
     const root = ReactDOM.createRoot(element);
-    root.render(<h1>hello</h1>);
+    root.render(<Sidebar />);
   }
+})();
 
-  console.log(await fetch("https://example.com/user/aaa").then(r => r.json()));
-});
+// startMock().then(async () => {
+//   const element = document.getElementById("root");
+//   if (element) {
+//     const root = ReactDOM.createRoot(element);
+//     root.render(
+//       <Wrapper>
+//         <Button type="primary">Primary Button</Button>
+//       </Wrapper>,
+//     );
+//   }
+
+//   console.log(await fetch("https://example.com/user/aaa").then(r => r.json()));
+// });
 
 export {};

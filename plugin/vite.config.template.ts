@@ -5,7 +5,6 @@ import react from "@vitejs/plugin-react";
 // import { visualizer } from "rollup-plugin-visualizer";
 import type { UserConfigExport, Plugin } from "vite";
 import importToCDN, { autoComplete } from "vite-plugin-cdn-import";
-import { viteExternalsPlugin } from "vite-plugin-externals";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 export const plugin = (name: string): UserConfigExport => ({
@@ -24,20 +23,33 @@ export const plugin = (name: string): UserConfigExport => ({
 
 export const web =
   (name: string): UserConfigExport =>
-  ({ mode }) => ({
+  () => ({
     plugins: [
       react(),
       serverHeaders(),
       viteSingleFile(),
-      mode === "production" &&
-        (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
-          modules: [autoComplete("react"), autoComplete("react-dom")],
-        }),
-      mode === "production" &&
-        viteExternalsPlugin({
-          react: "React",
-          "react-dom": "ReactDOM",
-        }),
+      (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
+        modules: [
+          autoComplete("react"),
+          autoComplete("react-dom"),
+          {
+            name: "react-is",
+            var: "react-is",
+            path: "https://unpkg.com/react-is@18.2.0/umd/react-is.production.min.js",
+          },
+          {
+            name: "antd",
+            var: "antd",
+            path: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.js",
+            css: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.css",
+          },
+          {
+            name: "styled-components",
+            var: "styled-components",
+            path: "https://unpkg.com/styled-components/dist/styled-components.min.js",
+          },
+        ],
+      }),
     ],
     publicDir: false,
     root: `./web/${name}`,
