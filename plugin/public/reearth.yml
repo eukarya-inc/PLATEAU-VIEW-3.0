@@ -3,6 +3,8 @@ version: 1.0.0
 id: hoge
 extensions:
   - id: datacatalog
+    name: datacatalog
     type: widget
   - id: sidebar
+    name: sidebar
     type: widget

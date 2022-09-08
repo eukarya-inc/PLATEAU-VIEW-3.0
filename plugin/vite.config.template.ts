@@ -6,6 +6,7 @@ import react from "@vitejs/plugin-react";
 import type { UserConfigExport, Plugin } from "vite";
 import importToCDN, { autoComplete } from "vite-plugin-cdn-import";
 import { viteSingleFile } from "vite-plugin-singlefile";
+import svgr from "vite-plugin-svgr";
 
 export const plugin = (name: string): UserConfigExport => ({
   build: {
@@ -28,6 +29,7 @@ export const web =
       react(),
       serverHeaders(),
       viteSingleFile(),
+      svgr(),
       (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
         modules: [
           autoComplete("react"),
@@ -52,9 +54,20 @@ export const web =
       }),
     ],
     publicDir: false,
+    emptyOutDir: false,
     root: `./web/${name}`,
     build: {
       outDir: `../../dist/web/${name}`,
+    },
+    css: {
+      preprocessorOptions: {
+        less: {
+          javascriptEnabled: true,
+          modifyVars: {
+            "@primary-color": "#00BEBE",
+          },
+        },
+      },
     },
     test: {
       globals: true,
