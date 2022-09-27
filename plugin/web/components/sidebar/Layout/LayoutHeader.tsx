@@ -1,11 +1,10 @@
 import { CloseOutlined } from "@ant-design/icons";
+import Icon from "@web/components/common/Icon";
+import { styled } from "@web/theme";
 import { Button, Menu, MenuProps, Row } from "antd";
 import { Header } from "antd/lib/layout/layout";
 import { MenuInfo } from "rc-menu/lib/interface";
 import React, { memo } from "react";
-
-import { styled } from "../../../theme";
-import { PlateauLogo } from "../../common/Icon/icons";
 
 type Props = {
   className?: string;
@@ -21,7 +20,7 @@ const LayoutHeader: React.FC<Props> = ({ className, items, current, onClick }) =
         <CloseWidgetBtn type="primary" icon={<CloseOutlined />} />
       </TopHeader>
       <BottomHeader>
-        <PlateauLogo height={114.25} width={100} />
+        <Icon icon="plateauLogo" size={100} />
         <NavHeader
           selectable={true}
           onClick={onClick}
@@ -38,7 +37,7 @@ export default memo(LayoutHeader);
 const HeaderWrapper = styled(Header)`
   background-color: #ffff;
   width: 100%;
-  height: 184px;
+  height: 170px;
   padding-left: 0px;
   padding-right: 0px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -57,33 +56,17 @@ const BottomHeader = styled(Row)`
   justify-content: center;
   align-items: center;
   padding: 0px 0px 10px 10px;
-  height: 50px;
+  height: 40px;
 `;
 
 const NavHeader = styled(Menu)`
   height: 40px;
   width: 100%;
-  .ant-menu-item-icon {
-    margin-left: 10px;
-  }
-  .ant-menu-overflow {
-    justify-content: center;
-  }
-  .ant-menu-item-icon {
-    margin-left: 10px;
-  }
-  .ant-menu-overflow {
-    justify-content: center;
-  }
-
-  .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item,
-  .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-submenu {
-    padding: 0px 15px;
-  }
 `;
 
 const CloseWidgetBtn = styled(Button)`
   border-radius: 0%;
   height: 32px;
   width: 32px;
+  margin-right: 0px;
 `;

@@ -1,15 +1,14 @@
+import Icon from "@web/components/common/Icon";
+import { styled } from "@web/theme";
 import { Button, Typography } from "antd";
 import { Footer } from "antd/lib/layout/layout";
 import React, { memo } from "react";
-
-import { styled } from "../../../theme";
-import { Trash } from "../../common/Icon/icons";
 
 const LayoutFooter: React.FC = () => {
   const { Text } = Typography;
   return (
     <FooterBan>
-      <RemoveBtn type="default" icon={<Trash />} color={"#4A4A4A"}>
+      <RemoveBtn type="default" icon={<Icon icon="trash" size={24} />} color={"#4A4A4A"}>
         Remove All
       </RemoveBtn>
       <Text>DataSet x 0</Text>

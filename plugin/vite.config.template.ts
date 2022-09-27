@@ -1,8 +1,9 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 
+import { resolve } from "path";
+
 import react from "@vitejs/plugin-react";
-// import { visualizer } from "rollup-plugin-visualizer";
 import type { UserConfigExport, Plugin } from "vite";
 import importToCDN, { autoComplete } from "vite-plugin-cdn-import";
 import { viteSingleFile } from "vite-plugin-singlefile";
@@ -64,7 +65,10 @@ export const web =
         less: {
           javascriptEnabled: true,
           modifyVars: {
-            "@primary-color": "#00BEBE",
+            "primary-color": "#00BEBE",
+            "font-family": "Noto Sans",
+            "typography-title-font-weight": "500",
+            "typography-title-font-height": "21.79px",
           },
         },
       },
@@ -73,6 +77,9 @@ export const web =
       globals: true,
       environment: "jsdom",
       setupFiles: "./web/test/setup.ts",
+    },
+    resolve: {
+      alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
     },
   });
 
