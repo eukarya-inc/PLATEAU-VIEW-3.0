@@ -19,7 +19,7 @@ export default {
   logo: Logo,
   trash: Trash,
   plateauLogo: PlateauLogo,
-  plateauLogoPrt: PlateauLogoPart,
+  plateauLogoPart: PlateauLogoPart,
   info: Info,
   share: Share,
   sliders: Sliders,
