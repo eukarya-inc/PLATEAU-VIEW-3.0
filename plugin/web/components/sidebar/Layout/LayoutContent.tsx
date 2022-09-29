@@ -4,6 +4,8 @@ import { styled } from "@web/theme";
 import { Content } from "antd/lib/layout/layout";
 import React, { memo, ReactNode } from "react";
 
+import MapSettingTab from "../tabs/MapSettingTab";
+
 type Props = {
   className?: string;
   children?: ReactNode;
@@ -17,6 +19,7 @@ const LayoutContent: React.FC<Props> = ({ className, children, current }) => {
         {
           shareNprint: <ShareTab />,
           about: <InfoTab />,
+          mapSetting: <MapSettingTab />,
         }[current]
       }
       {children}
