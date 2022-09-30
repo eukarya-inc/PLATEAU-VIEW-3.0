@@ -2,7 +2,6 @@
      margin:24px 0px 0px 0px;
  }
  
-  // below are to remove the default border by the design library
  .ant-radio-button-wrapper:not(:first-child)::before{
     border-radius: 4px;
   }

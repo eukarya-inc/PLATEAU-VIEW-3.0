@@ -2,7 +2,7 @@ import InfoTab from "@web/components/sidebar/tabs/InfoTab";
 import ShareTab from "@web/components/sidebar/tabs/ShareTab";
 import { styled } from "@web/theme";
 import { Content } from "antd/lib/layout/layout";
-import React, { memo, ReactNode } from "react";
+import { memo, ReactNode } from "react";
 
 import MapSettingTab from "../tabs/MapSettingTab";
 
@@ -29,10 +29,10 @@ const LayoutContent: React.FC<Props> = ({ className, children, current }) => {
 export default memo(LayoutContent);
 
 const ContentWrapper = styled(Content)`
-  width: 100%;
-  height: 861px;
   background: #dcdcdc;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  flex: 0 0 861;
+  flex: 1;
   padding: 20px 42px 20px 12px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: scroll;
 `;

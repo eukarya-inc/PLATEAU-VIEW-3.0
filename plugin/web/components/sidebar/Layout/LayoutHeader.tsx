@@ -1,72 +1,102 @@
 import { CloseOutlined } from "@ant-design/icons";
 import Icon from "@web/components/common/Icon";
 import { styled } from "@web/theme";
-import { Button, Menu, MenuProps, Row } from "antd";
-import { Header } from "antd/lib/layout/layout";
-import { MenuInfo } from "rc-menu/lib/interface";
-import React, { memo } from "react";
+import { Button, Col } from "antd";
+import { memo, ReactNode } from "react";
+
+export type Pages = "mapData" | "mapSetting" | "shareNprint" | "about" | "template";
+
+export type TabProps = {
+  key: Pages;
+  icon: ReactNode;
+};
 
 type Props = {
   className?: string;
-  items: MenuProps["items"];
-  onClick: (e: MenuInfo) => void;
+  items: TabProps[];
   current: string;
+  onMinimize: () => void;
+  onClick: (p: Pages) => void;
 };
 
-const LayoutHeader: React.FC<Props> = ({ className, items, current, onClick }) => {
+const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
+
+const LayoutHeader: React.FC<Props> = ({ className, items, current, onMinimize, onClick }) => {
   return (
     <HeaderWrapper className={className}>
-      <TopHeader>
-        <CloseWidgetBtn type="primary" icon={<CloseOutlined />} />
-      </TopHeader>
-      <BottomHeader>
-        <Icon icon="plateauLogo" size={100} />
-        <NavHeader
-          selectable={true}
-          onClick={onClick}
-          selectedKeys={[current]}
-          mode="horizontal"
-          items={items}
+      <TopSection>
+        <MinimizeButton icon={<CloseOutlined onClick={onMinimize} />} />
+        <PlateauIcon
+          icon="plateauLogo"
+          size={100}
+          wide
+          onClick={() => window.open(plateauWebsiteUrl, "_blank", "noopener")}
         />
-      </BottomHeader>
+      </TopSection>
+      <Nav>
+        {items?.map((i, idx) => (
+          <IconWrapper key={idx} current={current === i.key} onClick={() => onClick(i.key)}>
+            {i.icon}
+          </IconWrapper>
+        ))}
+      </Nav>
     </HeaderWrapper>
   );
 };
+
 export default memo(LayoutHeader);
 
-const HeaderWrapper = styled(Header)`
-  background-color: #ffff;
-  width: 100%;
-  height: 170px;
-  padding-left: 0px;
-  padding-right: 0px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-`;
-
-const TopHeader = styled(Row)`
-  direction: rtl;
-  align-items: flex-start;
-  height: 32px;
-  width: 100%;
-`;
-
-const BottomHeader = styled(Row)`
+const HeaderWrapper = styled(Col)`
+  height: 164px;
+  width: 347px;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  padding: 0px 0px 10px 10px;
-  height: 40px;
+  background-color: #ffff;
 `;
 
-const NavHeader = styled(Menu)`
-  height: 40px;
+const Nav = styled.div`
+  display: flex;
+  justify-content: space-around;
   width: 100%;
+  padding: 0 53px;
 `;
 
-const CloseWidgetBtn = styled(Button)`
-  border-radius: 0%;
+const TopSection = styled.div``;
+
+const MinimizeButton = styled(Button)`
+  position: absolute;
+  right: 0;
+  border: none;
+  border-radius: 0;
   height: 32px;
   width: 32px;
-  margin-right: 0px;
+  background: #00bebe;
+  color: white;
+
+  :hover {
+    background: #c7c5c5;
+    color: white;
+  }
+`;
+
+const PlateauIcon = styled(Icon)`
+  cursor: pointer;
+  margin-top: 40px;
+`;
+
+const IconWrapper = styled.div<{ current?: boolean }>`
+  cursor: pointer;
+  padding: 6px;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: ${({ current }) => (current ? "#00bebe" : "transparent")};
+  color: ${({ current }) => (current ? "#00bebe" : "#C7C5C5")};
+  transition: border-bottom-color 0.5s, color 0.5s;
+
+  :hover {
+    border-bottom-color: #00bebe;
+    color: #00bebe;
+  }
 `;

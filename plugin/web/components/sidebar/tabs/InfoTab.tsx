@@ -62,16 +62,14 @@ const PlateauButton = styled(Button)`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 8px 12px;
   gap: 8px;
-  width: 326px;
+  width: 100%;
   height: 48px;
   border: 1px solid #c7c5c5;
   border-radius: 4px;
 `;
 
 const FormSection = styled(Form)`
-  width: 326px;
   height: 342px;
   gap: 8px;
 `;
@@ -82,8 +80,5 @@ const FormItem = styled(Form.Item)`
   align-items: flex-start;
   padding: 8px 0px;
   gap: 12px;
-  width: 326px;
   height: 48px;
-  offset: 8;
-  span: 16;
 `;

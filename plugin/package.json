@@ -50,6 +50,7 @@
     "rollup-plugin-visualizer": "^5.7.1",
     "styled-components": "^5.3.5",
     "typescript": "^4.7.4",
+    "typescript-styled-plugin": "^0.18.2",
     "vite": "^3.0.4",
     "vite-plugin-cdn-import": "^0.3.5",
     "vite-plugin-dts": "^1.4.1",

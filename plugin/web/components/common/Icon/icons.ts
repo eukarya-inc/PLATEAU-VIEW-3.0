@@ -10,6 +10,7 @@ import { ReactComponent as Share } from "./Icons/share.svg";
 import { ReactComponent as Sliders } from "./Icons/sliders.svg";
 import { ReactComponent as DataBase } from "./Icons/dataBase.svg";
 import { ReactComponent as Template } from "./Icons/template.svg";
+import { ReactComponent as Menu } from "./Icons/hamburgerMenu.svg";
 
 export default {
   logo: Logo,
@@ -21,4 +22,5 @@ export default {
   sliders: Sliders,
   dataBase: DataBase,
   template: Template,
+  menu: Menu,
 };

@@ -4,32 +4,32 @@ import { memo } from "react";
 import icons from "./icons";
 
 type Props = {
+  className?: string;
   icon: string;
   size?: string | number;
+  color?: string;
+  wide?: boolean;
+  onClick?: () => void;
 };
 
 type Icons = keyof typeof icons;
 
-const Icon: React.FC<Props> = ({ icon, size = 24 }) => {
+const Icon: React.FC<Props> = ({ className, icon, size = 24, color, wide, onClick }) => {
   const sizeStr = typeof size === "number" ? `${size}px` : size;
   const IconComponent = icons[icon as Icons];
 
   return (
-    <Wrapper size={sizeStr}>
+    <Wrapper className={className} size={sizeStr} color={color} wide={wide} onClick={onClick}>
       <IconComponent />
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div<{ size: string }>`
-  font-size: 0;
-  display: inline-block;
-  width: ${({ size }: any) => size};
-  height: ${({ size }: any) => size};
-
+const Wrapper = styled.div<{ size: string; color?: string; wide?: boolean }>`
   svg {
-    width: 100%;
-    height: 100%;
+    width: ${({ size }) => size};
+    ${({ wide, size }) => !wide && `height: ${size};`}
+    color: ${({ color }) => color};
   }
 `;
 

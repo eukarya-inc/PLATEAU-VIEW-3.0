@@ -1,37 +1,12 @@
-// import " antd/dist/antd.less";
 import { styled } from "@web/theme";
-import { Layout, MenuProps } from "antd";
-import { MenuInfo } from "rc-menu/lib/interface";
-import { memo, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import Icon from "../../common/Icon";
 
 import LayoutContent from "./LayoutContent";
 import LayoutFooter from "./LayoutFooter";
-import LayoutHeader from "./LayoutHeader";
-
-const items: MenuProps["items"] = [
-  {
-    key: "mapData",
-    icon: <Icon icon="dataBase" />,
-  },
-  {
-    key: "mapSetting",
-    icon: <Icon icon="sliders" />,
-  },
-  {
-    key: "shareNprint",
-    icon: <Icon icon="share" />,
-  },
-  {
-    key: "about",
-    icon: <Icon icon="info" />,
-  },
-  {
-    key: "template",
-    icon: <Icon icon="template" />,
-  },
-];
+import LayoutHeader, { TabProps, Pages } from "./LayoutHeader";
+import MinimizedSidebar from "./MinimizedSidebar";
 
 export type Props = {
   className?: string;
@@ -39,33 +14,76 @@ export type Props = {
 };
 
 const MainLayout: React.FC<Props> = ({ className, isInsideEditor }) => {
-  const [current, setCurrent] = useState("");
+  const [minimized, setMinimized] = useState(false);
+  const [current, setCurrent] = useState<Pages>("mapData");
+
+  const handleClick = useCallback((p: Pages) => {
+    setCurrent(p);
+  }, []);
+
+  const handleResize = useCallback(() => {
+    const html = document.querySelector("html");
+    const body = document.querySelector("body");
+    if (!minimized) {
+      html?.classList.add("minimized");
+      body?.classList.add("minimized");
+    } else {
+      html?.classList.remove("minimized");
+      body?.classList.remove("minimized");
+    }
+    setMinimized(!minimized);
+  }, [minimized]);
 
   const headerItems = useMemo(() => {
+    const items: TabProps[] = [
+      {
+        key: "mapData",
+        icon: <StyledIcon icon="dataBase" size="24px" />,
+      },
+      {
+        key: "mapSetting",
+        icon: <StyledIcon icon="sliders" />,
+      },
+      {
+        key: "shareNprint",
+        icon: <StyledIcon icon="share" />,
+      },
+      {
+        key: "about",
+        icon: <StyledIcon icon="info" />,
+      },
+      {
+        key: "template",
+        icon: <StyledIcon icon="template" />,
+      },
+    ];
+
     return !isInsideEditor ? [...items.slice(0, -1)] : [...items];
   }, [isInsideEditor]);
 
-  const handleClick: MenuProps["onClick"] = e => {
-    setCurrent(e.key);
-  };
-
-  return (
-    <LayoutWrapper className={className}>
+  return minimized ? (
+    <MinimizedSidebar onExpand={handleResize} />
+  ) : (
+    <SidebarWrapper className={className}>
       <LayoutHeader
         current={current}
         items={headerItems}
-        onClick={(e: MenuInfo) => handleClick(e)}
+        onClick={handleClick}
+        onMinimize={handleResize}
       />
       <LayoutContent current={current} />
       <LayoutFooter />
-    </LayoutWrapper>
+    </SidebarWrapper>
   );
 };
 export default memo(MainLayout);
 
-const LayoutWrapper = styled(Layout)`
+const SidebarWrapper = styled.div`
+  height: 100%;
+  display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #f4f4f4;
+`;
+
+const StyledIcon = styled(Icon)`
+  width: 100%;
 `;
