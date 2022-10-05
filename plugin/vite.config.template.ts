@@ -56,9 +56,9 @@ export const web =
     ],
     publicDir: false,
     emptyOutDir: false,
-    root: `./web/${name}`,
+    root: `./web/extensions/${name}`,
     build: {
-      outDir: `../../dist/web/${name}`,
+      outDir: `../../../dist/web/${name}`,
     },
     css: {
       preprocessorOptions: {
