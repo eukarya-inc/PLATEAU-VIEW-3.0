@@ -42,11 +42,12 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   //       });
   //     }
   //   }
-  console.log("-------------MESSAGE-------------");
   if (action === "updateOverrides") {
-    console.log("action: ", action);
-    console.log("payload: ", payload);
     reearth.visualizer.overrideProperty(payload);
+  } else if (action === "screenshot" || action === "screenshot-save") {
+    reearth.ui.postMessage({
+      type: action,
+      payload: reearth.scene.captureScreen(),
+    });
   }
-  console.log("-------------MESSAGE END-------------");
 });

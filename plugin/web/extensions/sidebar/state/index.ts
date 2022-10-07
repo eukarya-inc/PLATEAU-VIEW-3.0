@@ -20,6 +20,9 @@ export const defaultSettings: ReearthApi = {
 const currentOverrides = atom<ReearthApi>(defaultSettings);
 export const useCurrentOverrides = () => useAtom(currentOverrides);
 
+const publishUrl = atom<string | undefined>(undefined);
+export const usePublishUrl = () => useAtom(publishUrl);
+
 // Is this needed? How should it be comformed? Can we just use currentOverrides?
 const currentProject = atom<{}>({});
 export const useCurrentProject = () => useAtom(currentProject);

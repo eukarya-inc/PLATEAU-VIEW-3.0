@@ -1,11 +1,6 @@
-// Plugin state VS Published project state (going to backend for saving)
+type actionType = "updateOverrides" | "screenshot" | "screenshot-save";
 
-// Or should we have state management, like Jotai, keeping track of everything separately,
-// with everything coming together only on publish/share
-
-// Main api state tree
-
-export type PostMessageProps = { action: string; payload?: any };
+export type PostMessageProps = { action: actionType; payload?: any };
 
 export type ReearthApi = {
   default?: {

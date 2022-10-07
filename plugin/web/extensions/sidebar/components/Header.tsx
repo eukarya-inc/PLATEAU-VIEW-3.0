@@ -56,8 +56,8 @@ const Header: React.FC<Props> = ({
   }, [isInsideEditor]);
 
   return (
-    <HeaderWrapper className={className}>
-      <TopSection minimized={minimized}>
+    <HeaderWrapper className={className} minimized={minimized}>
+      <TopSection>
         <PlateauIcon
           icon="plateauLogo"
           size={114}
@@ -83,7 +83,7 @@ const Header: React.FC<Props> = ({
 
 export default memo(Header);
 
-const HeaderWrapper = styled(Col)`
+const HeaderWrapper = styled(Col)<{ minimized?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -91,7 +91,7 @@ const HeaderWrapper = styled(Col)`
   height: 164px;
   width: 100%;
   background-color: #ffff;
-  border-radius: 0 8px 8px 0;
+  border-radius: ${({ minimized }) => (minimized ? "0 8px 8px 0" : 0)};
   transition: height 0.5s, width 0.5s, border-radius 0.5s;
 `;
 
@@ -102,7 +102,7 @@ const Nav = styled.div`
   padding: 0 53px;
 `;
 
-const TopSection = styled.div<{ minimized?: boolean }>`
+const TopSection = styled.div`
   display: flex;
   position: relative;
   width: 100%;
@@ -128,7 +128,6 @@ const MinimizeButton = styled.button<{ minimized?: boolean }>`
 const PlateauIcon = styled(Icon)<{ minimized?: boolean }>`
   width: 100%;
   margin: auto;
-  cursor: pointer;
 
   ${({ minimized }) => minimized && "text-align: left;"}
 `;

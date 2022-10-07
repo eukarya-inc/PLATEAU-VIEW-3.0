@@ -3,6 +3,8 @@ import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
 import { styled } from "@web/theme";
 import { memo } from "react";
 
+const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
+
 const Info: React.FC = () => {
   const { Text } = Typography;
   const [form] = Form.useForm();
@@ -25,8 +27,7 @@ const Info: React.FC = () => {
           3D都市モデルを整備し、
           そのユースケースを創出。さらにこれをオープンデータとして公開することで、誰もが自由に都市のデータを引き出し、活用できるようになる。
         </Paragraph>
-        <PlateauButton
-          onClick={() => window.open("hqt-mlit-plateau@mlit.go.jp", "_blank", "noopener")}>
+        <PlateauButton onClick={() => window.open(plateauWebsiteUrl, "_blank", "noopener")}>
           <Icon icon="plateauLogoPart" />
           PLATEAU Project Website
         </PlateauButton>
@@ -35,24 +36,26 @@ const Info: React.FC = () => {
         <Subtitle>ご意見・ご要望</Subtitle>
         <Text>ご意見をお聞かせください。</Text>
         <Form form={form} name="feedback" onFinish={handleSend} layout="vertical">
-          <Form.Item name="name" label="お名前（任意）">
+          <FormItems name="name" label="お名前（任意）">
             <Input />
-          </Form.Item>
-          <Form.Item name="email" label="メールアドレス（任意）">
+          </FormItems>
+          <FormItems
+            name="email"
+            label="メールアドレス（任意）"
+            help={<Text type="secondary">メールアドレスがない場合は返信できません</Text>}>
             <Input />
-            <Text type="secondary">メールアドレスがない場合は返信できません</Text>
-          </Form.Item>
-          <Form.Item name="comment" label="コメントまたは質問">
+          </FormItems>
+          <FormItems name="comment" label="コメントまたは質問">
             <Input.TextArea />
-          </Form.Item>
-          <FormItem>
+          </FormItems>
+          <FormButtons>
             <Button htmlType="button" onClick={handleCancel}>
-              キャンセル
+              クリア
             </Button>
             <SendButton type="primary" htmlType="submit">
               送信
             </SendButton>
-          </FormItem>
+          </FormButtons>
         </Form>
       </>
     </CommonPage>
@@ -92,7 +95,9 @@ const PlateauButton = styled.button`
   }
 `;
 
-const FormItem = styled(Form.Item)`
+const FormItems = styled(Form.Item)``;
+
+const FormButtons = styled(Form.Item)`
   display: flex;
   justify-content: flex-end;
 `;

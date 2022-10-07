@@ -1,0 +1,149 @@
+import { Row, Icon } from "@web/extensions/sharedComponents";
+import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
+import { styled } from "@web/theme";
+import { memo } from "react";
+
+import useHooks from "./hooks";
+
+const Share: React.FC = () => {
+  const { publishUrl, handleProjectShare, handleScreenshotShow, handleScreenshotSave } = useHooks();
+
+  const handleCopyToClipboard = (value?: string) => {
+    if (!value) return;
+    navigator.clipboard.writeText(value);
+  };
+
+  const iframeCode = `<iframe src="${publishUrl}" />`;
+
+  return (
+    <CommonPage title="共有・印刷">
+      <>
+        <ShareButton onClick={handleProjectShare} disabled={!!publishUrl}>
+          共有
+        </ShareButton>
+        {publishUrl && (
+          <>
+            <Subtitle>URLで共有</Subtitle>
+            <FlexWrapper>
+              <ShareTextWrapper>
+                <ShareText>{publishUrl}</ShareText>
+              </ShareTextWrapper>
+              <StyledButton onClick={() => handleCopyToClipboard(publishUrl)}>
+                <Icon icon="copy" />
+              </StyledButton>
+            </FlexWrapper>
+            <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
+            <Subtitle>HTMLページへの埋め込みは下記のコードをお使いください：</Subtitle>
+            <FlexWrapper>
+              <ShareTextWrapper>
+                <ShareText>{iframeCode}</ShareText>
+              </ShareTextWrapper>
+              <StyledButton onClick={() => handleCopyToClipboard(iframeCode)}>
+                <Icon icon="copy" />
+              </StyledButton>
+            </FlexWrapper>
+            <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
+          </>
+        )}
+      </>
+      <>
+        <Subtitle>印刷</Subtitle>
+        <SectionWrapper>
+          <ButtonWrapper>
+            <Button onClick={handleScreenshotSave}>Download map (png)</Button>
+            <Button onClick={handleScreenshotShow}>Show Print View</Button>
+          </ButtonWrapper>
+          <SubText>このマップを印刷できる状態で表示</SubText>
+        </SectionWrapper>
+      </>
+    </CommonPage>
+  );
+};
+
+export default memo(Share);
+
+const Text = styled.p`
+  font-size: 14px;
+  margin: 0;
+`;
+
+const Subtitle = styled(Text)`
+  margin-bottom: 15px;
+`;
+
+const SubText = styled.p`
+  font-size: 12px;
+  color: #b1b1b1;
+  margin: 8px 0 16px;
+`;
+
+const SectionWrapper = styled(Row)`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const Button = styled.button`
+  height: 37px;
+  width: 160px;
+  border: none;
+  border-radius: 3px;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 21px;
+  cursor: pointer;
+`;
+
+const ShareButton = styled(Button)<{ disabled?: boolean }>`
+  background: ${({ disabled }) => (disabled ? "#D1D1D1" : "#00bebe")};
+  width: 100%;
+  color: white;
+  border-radius: 2px;
+  margin-bottom: 15px;
+`;
+
+const FlexWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+`;
+
+const ButtonWrapper = styled(FlexWrapper)`
+  gap: 8px;
+`;
+
+const StyledButton = styled.button`
+  background: #00bebe;
+  border: none;
+  border-radius: 2px;
+  width: 40px;
+  height: 100%;
+  cursor: pointer;
+
+  :hover {
+    background: #00bebe;
+    border-color: #00bebe;
+    color: white;
+  }
+`;
+
+const ShareTextWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 0 12px;
+  white-space: nowrap;
+  overflow: scroll;
+  -ms-overflow-style: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+`;
+
+const ShareText = styled.p`
+  margin: 0;
+  color: rgba(0, 0, 0, 0.45);
+`;
