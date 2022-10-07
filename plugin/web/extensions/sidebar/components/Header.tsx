@@ -2,7 +2,7 @@ import { Icon, Col } from "@web/extensions/sharedComponents";
 import { styled } from "@web/theme";
 import { memo, ReactNode, useMemo } from "react";
 
-export type Pages = "mapData" | "mapSetting" | "shareNprint" | "about" | "template";
+export type Pages = "data" | "map" | "share" | "about" | "template";
 
 export type TabProps = {
   key: Pages;
@@ -31,15 +31,15 @@ const Header: React.FC<Props> = ({
   const headerItems = useMemo(() => {
     const items: TabProps[] = [
       {
-        key: "mapData",
+        key: "data",
         icon: <StyledIcon icon="dataBase" />,
       },
       {
-        key: "mapSetting",
+        key: "map",
         icon: <StyledIcon icon="sliders" />,
       },
       {
-        key: "shareNprint",
+        key: "share",
         icon: <StyledIcon icon="share" />,
       },
       {

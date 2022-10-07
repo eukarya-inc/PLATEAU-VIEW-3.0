@@ -1,41 +1,75 @@
-import { Input, Radio, Row, Icon } from "@web/extensions/sharedComponents";
+import { Input, Row, Icon } from "@web/extensions/sharedComponents";
 import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
 import { styled } from "@web/theme";
-import { memo } from "react";
-
-const PrintMapData = ["Download map (png)", "Show Print View"];
+import { memo, useCallback, useEffect, useState } from "react";
 
 const Share: React.FC = () => {
+  const [publicUrl, setPublicUrl] = useState<string>();
+
+  // TO DO: handle url generation. BELOW IS TEMPORARY... PROBABLY
+  function makeUrlSuffix() {
+    let result = "";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const charactersLength = characters.length;
+    for (let i = 0; i < 15; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    console.log(result, "result");
+    return result;
+  }
+
+  const handleUrlGeneration = useCallback(() => {
+    console.log("hey");
+    const suffix = makeUrlSuffix();
+    setPublicUrl(`https://plateauview.mlit.go.jp/${suffix}`);
+  }, []);
+
+  useEffect(() => {
+    handleUrlGeneration();
+  }, [handleUrlGeneration]);
+  // TO DO: handle url generation. ABOVE IS TEMPORARY... PROBABLY
+
+  // TO DO: handle screenshot (download/show print view) functionality
+  // NEEDS API
+
   return (
-    <CommonPage title="Share/Print">
+    <CommonPage title="共有・印刷">
       <>
-        <Subtitle>Share URL</Subtitle>
+        <Subtitle>URLで共有</Subtitle>
         <InputGroup>
-          <div style={{ display: "flex", width: "100%" }}>
-            <Input defaultValue="Anyone with this URL will be able to access this map." />
+          <FlexWrapper>
+            <Input value={publicUrl} />
             <StyledButton>
               <Icon icon="copy" />
             </StyledButton>
-          </div>
-          <SubText>Anyone with this URL will be able to access this map.</SubText>
+          </FlexWrapper>
+          <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
+        </InputGroup>
+        <Subtitle>HTMLページへの埋め込みは下記のコードをお使いください：</Subtitle>
+        <InputGroup>
+          <FlexWrapper>
+            <Input value={`<iframe src=${publicUrl} />`} />
+            <StyledButton>
+              <Icon icon="copy" />
+            </StyledButton>
+          </FlexWrapper>
+          <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
         </InputGroup>
       </>
       <>
-        <Subtitle>Print Map</Subtitle>
+        <Subtitle>印刷</Subtitle>
         <SectionWrapper>
-          <RadioGroup defaultValue="3D Terrain" buttonStyle="solid">
-            {PrintMapData.map(item => (
-              <RadioButton key={item} value={item}>
-                <Text>{item}</Text>
-              </RadioButton>
-            ))}
-          </RadioGroup>
-          <SubText>Open a printable version of this map.</SubText>
+          <ButtonWrapper>
+            <Button onClick={() => {}}>Download map (png)</Button>
+            <Button onClick={() => {}}>Show Print View</Button>
+          </ButtonWrapper>
+          <SubText>このマップを印刷できる状態で表示</SubText>
         </SectionWrapper>
       </>
     </CommonPage>
   );
 };
+
 export default memo(Share);
 
 const Text = styled.p`
@@ -44,20 +78,19 @@ const Text = styled.p`
 `;
 
 const Subtitle = styled(Text)`
-  margin-bottom: 24px;
+  margin-bottom: 15px;
 `;
 
 const SubText = styled.p`
-  font-size: 10px;
+  font-size: 12px;
   color: #b1b1b1;
-  margin-top: 8px;
+  margin: 8px 0 16px;
 `;
 
 const SectionWrapper = styled(Row)`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
 `;
 
 const InputGroup = styled(Input.Group)`
@@ -65,23 +98,27 @@ const InputGroup = styled(Input.Group)`
   flex-direction: row;
   align-items: flex-start;
   flex-wrap: wrap;
-  padding: 0px;
+  width: 100%;
 `;
 
-const RadioGroup = styled(Radio.Group)`
+const FlexWrapper = styled.div`
   display: flex;
+  width: 100%;
+`;
+
+const ButtonWrapper = styled(FlexWrapper)`
   gap: 8px;
 `;
 
-const RadioButton = styled(Radio.Button)`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 8px 12px;
+const Button = styled.button`
+  height: 37px;
+  width: 160px;
+  border: none;
+  border-radius: 3px;
   background: #ffffff;
-  border: 1px solid #e6e6e6;
-  border-radius: 4px;
+  font-size: 14px;
+  line-height: 21px;
+  cursor: pointer;
 `;
 
 const StyledButton = styled.button`

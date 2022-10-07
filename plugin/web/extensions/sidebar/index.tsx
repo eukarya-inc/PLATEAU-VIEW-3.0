@@ -1,5 +1,11 @@
+import { Content } from "@web/extensions/sharedComponents";
+import Info from "@web/extensions/sidebar/components/content/Info";
+import MapSettings from "@web/extensions/sidebar/components/content/MapSettings";
+import Selection from "@web/extensions/sidebar/components/content/Selection";
+import Share from "@web/extensions/sidebar/components/content/Share";
 import Header, { Pages } from "@web/extensions/sidebar/components/Header";
-import SidebarWrapper from "@web/extensions/sidebar/components/Wrapper";
+import useGlobalHooks from "@web/extensions/sidebar/globalHooks";
+import { styled, commonStyles } from "@web/theme";
 import { memo, useCallback, useState } from "react";
 
 export type Props = {
@@ -8,14 +14,18 @@ export type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
+  const { overrides, handleOverridesUpdate } = useGlobalHooks();
+
   const [minimized, setMinimized] = useState(false);
-  const [current, setCurrent] = useState<Pages>("mapData");
+  const [current, setCurrent] = useState<Pages>("data");
 
   const handleClick = useCallback((p: Pages) => {
     setCurrent(p);
   }, []);
 
-  const handleResize = useCallback(() => {
+  // handleResize <- extending in WAS
+
+  const handleMinimize = useCallback(() => {
     const html = document.querySelector("html");
     const body = document.querySelector("body");
     const root = document.getElementById("root");
@@ -32,21 +42,44 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
   }, [minimized]);
 
   return (
-    <SidebarWrapper
-      className={className}
-      header={
-        <Header
-          current={current}
-          isInsideEditor={isInsideEditor}
-          minimized={minimized}
-          onMinimize={handleResize}
-          onClick={handleClick}
-        />
-      }
-      current={current}
-      minimized={minimized}
-    />
+    <Wrapper className={className} minimized={minimized}>
+      <Header
+        current={current}
+        isInsideEditor={isInsideEditor}
+        minimized={minimized}
+        onMinimize={handleMinimize}
+        onClick={handleClick}
+      />
+      {!minimized && (
+        <ContentWrapper className={className}>
+          {
+            {
+              data: <Selection />,
+              map: <MapSettings overrides={overrides} onOverridesUpdate={handleOverridesUpdate} />,
+              share: <Share />,
+              about: <Info />,
+              template: <div>Templates</div>, // To Do
+            }[current]
+          }
+        </ContentWrapper>
+      )}
+    </Wrapper>
   );
 };
 
 export default memo(Sidebar);
+
+const Wrapper = styled.div<{ minimized?: boolean }>`
+  display: flex;
+  flex-direction: column;
+  ${commonStyles.mainWrapper}
+  transition: height 0.5s, width 0.5s, border-radius 0.5s;
+  ${({ minimized }) => minimized && commonStyles.minimizedWrapper}
+`;
+
+const ContentWrapper = styled(Content)`
+  flex: 1;
+  background: #dcdcdc;
+  box-sizing: border-box;
+  overflow: scroll;
+`;

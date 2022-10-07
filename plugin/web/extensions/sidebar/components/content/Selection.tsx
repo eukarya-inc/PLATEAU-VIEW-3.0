@@ -9,7 +9,7 @@ const Selection: React.FC = () => {
         <StyledButton
           onClick={() => alert("This is an awesome datacatalog modal!! Use me...if you can!")}>
           <StyledIcon icon="plusCircle" size={20} />
-          <ButtonText>Explore map data</ButtonText>
+          <ButtonText>カタログから検索する</ButtonText>
         </StyledButton>
       </InnerWrapper>
       <Footer />

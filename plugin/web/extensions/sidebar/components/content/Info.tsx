@@ -17,7 +17,7 @@ const Info: React.FC = () => {
   };
 
   return (
-    <CommonPage title="About/Feedback">
+    <CommonPage title="会社内容">
       <>
         <Paragraph>
           PLATEAU は、国土交通省が進める 3D都市モデル整備・活用・オープンデータ化
@@ -32,25 +32,25 @@ const Info: React.FC = () => {
         </PlateauButton>
       </>
       <>
-        <Subtitle>Feedback</Subtitle>
-        <Text>We would love to hear from you!</Text>
+        <Subtitle>ご意見・ご要望</Subtitle>
+        <Text>ご意見をお聞かせください。</Text>
         <Form form={form} name="feedback" onFinish={handleSend} layout="vertical">
-          <Form.Item name="name" label="Your name (optional):">
-            <Input placeholder="example" />
+          <Form.Item name="name" label="お名前（任意）">
+            <Input />
           </Form.Item>
-          <Form.Item name="email" label="Email address (optional):">
-            <Input placeholder="example" />
-            <Text type="secondary">We will not follow up without it!</Text>
+          <Form.Item name="email" label="メールアドレス（任意）">
+            <Input />
+            <Text type="secondary">メールアドレスがない場合は返信できません</Text>
           </Form.Item>
-          <Form.Item name="comment" label="Comment or question:">
-            <Input.TextArea placeholder="Autosize height based on content lines" />
+          <Form.Item name="comment" label="コメントまたは質問">
+            <Input.TextArea />
           </Form.Item>
           <FormItem>
             <Button htmlType="button" onClick={handleCancel}>
-              Cancel
+              キャンセル
             </Button>
             <SendButton type="primary" htmlType="submit">
-              Send
+              送信
             </SendButton>
           </FormItem>
         </Form>

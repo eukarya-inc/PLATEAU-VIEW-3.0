@@ -1,4 +1,4 @@
-import { Icon, Footer as FooterComponent, Typography } from "@web/extensions/sharedComponents";
+import { Icon } from "@web/extensions/sharedComponents";
 import { styled } from "@web/theme";
 import { memo } from "react";
 
@@ -7,29 +7,32 @@ export type Props = {
 };
 
 const Footer: React.FC<Props> = ({ datasets }) => {
-  const { Text } = Typography;
   return (
     <FooterBan>
       <RemoveBtn onClick={() => alert("Are you sure you want to remove all?")}>
         <Icon icon="trash" />
-        Remove All
+        全てを削除
       </RemoveBtn>
-      <Text>Dataset x {datasets ?? 0}</Text>
+      <Text>データセット x {datasets ?? 0}</Text>
     </FooterBan>
   );
 };
+
 export default memo(Footer);
 
-const FooterBan = styled(FooterComponent)`
+const FooterBan = styled.div`
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 8 16;
-  width: 100%;
-  height: 40px;
-  border-top: 1px solid #cfcfcf;
+  padding: 8px 16px;
+  height: 48px;
+  border-top: 1px solid #c7c5c5;
   background-color: #f4f4f4;
+  color: #4a4a4a;
+`;
+
+const Text = styled.p`
+  margin: 0;
 `;
 
 const RemoveBtn = styled.button`
