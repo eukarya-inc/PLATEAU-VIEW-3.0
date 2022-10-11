@@ -14,6 +14,7 @@ import { ReactComponent as Menu } from "./Icons/hamburgerMenu.svg";
 import { ReactComponent as Close } from "./Icons/close.svg";
 import { ReactComponent as Copy } from "./Icons/copy.svg";
 import { ReactComponent as PlusCircle } from "./Icons/plusCircle.svg";
+import { ReactComponent as Check } from "./Icons/check.svg";
 
 export default {
   logo: Logo,
@@ -29,4 +30,5 @@ export default {
   close: Close,
   copy: Copy,
   plusCircle: PlusCircle,
+  check: Check,
 };

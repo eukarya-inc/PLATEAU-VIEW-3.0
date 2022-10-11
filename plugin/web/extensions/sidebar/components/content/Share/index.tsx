@@ -1,16 +1,27 @@
 import { Row, Icon } from "@web/extensions/sharedComponents";
 import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
 import { styled } from "@web/theme";
-import { memo } from "react";
+import { memo, useState } from "react";
 
 import useHooks from "./hooks";
 
 const Share: React.FC = () => {
   const { publishUrl, handleProjectShare, handleScreenshotShow, handleScreenshotSave } = useHooks();
+  const [copiedUrl, setCopiedUrl] = useState(false);
+  const [copiedIframe, setCopiedIframe] = useState(false);
 
-  const handleCopyToClipboard = (value?: string) => {
+  const handleCopyToClipboard = (type: "url" | "iframe", value?: string) => {
     if (!value) return;
     navigator.clipboard.writeText(value);
+    if (type === "url") {
+      setCopiedUrl(true);
+    } else if (type === "iframe") {
+      setCopiedIframe(true);
+    }
+    setTimeout(() => {
+      setCopiedUrl(false);
+      setCopiedIframe(false);
+    }, 2000);
   };
 
   const iframeCode = `<iframe src="${publishUrl}" />`;
@@ -28,8 +39,8 @@ const Share: React.FC = () => {
               <ShareTextWrapper>
                 <ShareText>{publishUrl}</ShareText>
               </ShareTextWrapper>
-              <StyledButton onClick={() => handleCopyToClipboard(publishUrl)}>
-                <Icon icon="copy" />
+              <StyledButton onClick={() => handleCopyToClipboard("url", publishUrl)}>
+                <Icon icon={copiedUrl ? "check" : "copy"} />
               </StyledButton>
             </FlexWrapper>
             <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
@@ -38,8 +49,8 @@ const Share: React.FC = () => {
               <ShareTextWrapper>
                 <ShareText>{iframeCode}</ShareText>
               </ShareTextWrapper>
-              <StyledButton onClick={() => handleCopyToClipboard(iframeCode)}>
-                <Icon icon="copy" />
+              <StyledButton onClick={() => handleCopyToClipboard("iframe", iframeCode)}>
+                <Icon icon={copiedIframe ? "check" : "copy"} />
               </StyledButton>
             </FlexWrapper>
             <SubText>このURLを使えば誰でもこのマップにアクセスできます。</SubText>
@@ -94,12 +105,15 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-const ShareButton = styled(Button)<{ disabled?: boolean }>`
-  background: ${({ disabled }) => (disabled ? "#D1D1D1" : "#00bebe")};
+const ShareButton = styled.button<{ disabled?: boolean }>`
+  height: 32px;
   width: 100%;
+  background: ${({ disabled }) => (disabled ? "#D1D1D1" : "#00bebe")};
   color: white;
+  border: none;
   border-radius: 2px;
   margin-bottom: 15px;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 `;
 
 const FlexWrapper = styled.div`
@@ -120,11 +134,11 @@ const StyledButton = styled.button`
   width: 40px;
   height: 100%;
   cursor: pointer;
+  color: white;
 
   :hover {
     background: #00bebe;
     border-color: #00bebe;
-    color: white;
   }
 `;
 
