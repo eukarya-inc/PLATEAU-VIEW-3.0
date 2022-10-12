@@ -54,6 +54,7 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
       terrain: currentTerrain,
       sceneMode: currentSceneMode,
       depthTestAgainstTerrain: currentHideUnderground,
+      allowEnterGround: currentAllowEnterGround,
     } = {},
     tiles: currentTiles,
   } = overrides;
@@ -104,14 +105,20 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
     onOverridesUpdate({ default: { depthTestAgainstTerrain: !currentHideUnderground } });
   }, [currentHideUnderground, onOverridesUpdate]);
 
+  const handleAllowEnterGround = useCallback(() => {
+    onOverridesUpdate({ default: { allowEnterGround: !currentAllowEnterGround } });
+  }, [currentHideUnderground, onOverridesUpdate]);
+
   return {
     mapViewData,
     baseMapData,
     currentView,
     currentTiles,
     currentHideUnderground,
+    currentAllowEnterGround,
     handleViewChange,
     handleTileChange,
     handleHideUnderGround,
+    handleAllowEnterGround,
   };
 };

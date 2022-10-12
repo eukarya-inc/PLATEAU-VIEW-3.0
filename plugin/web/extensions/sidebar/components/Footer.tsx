@@ -3,18 +3,18 @@ import { styled } from "@web/theme";
 import { memo } from "react";
 
 export type Props = {
-  datasets?: number;
+  datasetQuantity?: number;
   onRemoveAll?: () => void;
 };
 
-const Footer: React.FC<Props> = ({ datasets, onRemoveAll }) => {
+const Footer: React.FC<Props> = ({ datasetQuantity, onRemoveAll }) => {
   return (
     <FooterBan>
       <RemoveBtn onClick={onRemoveAll}>
         <Icon icon="trash" />
         全てを削除
       </RemoveBtn>
-      <Text>データセット x {datasets ?? 0}</Text>
+      <Text>データセット x {datasetQuantity ?? 0}</Text>
     </FooterBan>
   );
 };

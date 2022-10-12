@@ -18,9 +18,11 @@ const MapSettings: React.FC<Props> = ({ overrides, onOverridesUpdate }) => {
     currentView,
     currentTiles,
     currentHideUnderground,
+    currentAllowEnterGround,
     handleViewChange,
     handleTileChange,
     handleHideUnderGround,
+    handleAllowEnterGround,
   } = useHooks({ overrides, onOverridesUpdate });
 
   return (
@@ -41,6 +43,9 @@ const MapSettings: React.FC<Props> = ({ overrides, onOverridesUpdate }) => {
           </ViewWrapper>
           <Checkbox checked={!!currentHideUnderground} onClick={handleHideUnderGround}>
             <Text>地下を隠す</Text>
+          </Checkbox>
+          <Checkbox checked={!!currentAllowEnterGround} onClick={handleAllowEnterGround}>
+            <Text>地下に入る</Text>
           </Checkbox>
         </Section>
       </>

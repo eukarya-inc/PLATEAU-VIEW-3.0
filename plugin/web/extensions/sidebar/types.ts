@@ -8,6 +8,7 @@ export type ReearthApi = {
     terrain?: boolean;
     sceneMode?: SceneMode;
     depthTestAgainstTerrain?: boolean;
+    allowEnterGround?: boolean;
   };
   tiles?: Tile[];
 };

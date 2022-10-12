@@ -48,7 +48,7 @@ const Selection: React.FC = () => {
           <DatasetWrapper key={d.id} dataset={d} onRemove={handleDatasetRemove} />
         ))}
       </InnerWrapper>
-      <Footer onRemoveAll={handleDatasetRemoveAll} />
+      <Footer datasetQuantity={selectedDatasets.length} onRemoveAll={handleDatasetRemoveAll} />
     </Wrapper>
   );
 };
@@ -65,7 +65,7 @@ const Wrapper = styled.div`
 const InnerWrapper = styled.div`
   padding: 16px;
   flex: 1;
-  overflow: scroll;
+  overflow: auto;
 `;
 
 const StyledButton = styled.button`

@@ -81,5 +81,5 @@ const ContentWrapper = styled(Content)`
   flex: 1;
   background: #dcdcdc;
   box-sizing: border-box;
-  overflow: scroll;
+  overflow: auto;
 `;

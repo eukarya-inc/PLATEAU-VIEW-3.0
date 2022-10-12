@@ -150,7 +150,7 @@ const ShareTextWrapper = styled.div`
   border-radius: 2px;
   padding: 0 12px;
   white-space: nowrap;
-  overflow: scroll;
+  overflow: auto;
   -ms-overflow-style: none;
   ::-webkit-scrollbar {
     display: none;
