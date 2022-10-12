@@ -15,6 +15,10 @@ import { ReactComponent as Close } from "./Icons/close.svg";
 import { ReactComponent as Copy } from "./Icons/copy.svg";
 import { ReactComponent as PlusCircle } from "./Icons/plusCircle.svg";
 import { ReactComponent as Check } from "./Icons/check.svg";
+import { ReactComponent as ArrowDown } from "./Icons/arrowDown.svg";
+import { ReactComponent as Visible } from "./Icons/visible.svg";
+import { ReactComponent as About } from "./Icons/about.svg";
+import { ReactComponent as MapPin } from "./Icons/mapPin.svg";
 
 export default {
   logo: Logo,
@@ -31,4 +35,8 @@ export default {
   copy: Copy,
   plusCircle: PlusCircle,
   check: Check,
+  arrowDown: ArrowDown,
+  visible: Visible,
+  about: About,
+  mapPin: MapPin,
 };

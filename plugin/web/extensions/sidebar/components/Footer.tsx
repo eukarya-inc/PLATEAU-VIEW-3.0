@@ -4,12 +4,13 @@ import { memo } from "react";
 
 export type Props = {
   datasets?: number;
+  onRemoveAll?: () => void;
 };
 
-const Footer: React.FC<Props> = ({ datasets }) => {
+const Footer: React.FC<Props> = ({ datasets, onRemoveAll }) => {
   return (
     <FooterBan>
-      <RemoveBtn onClick={() => alert("Are you sure you want to remove all?")}>
+      <RemoveBtn onClick={onRemoveAll}>
         <Icon icon="trash" />
         全てを削除
       </RemoveBtn>
