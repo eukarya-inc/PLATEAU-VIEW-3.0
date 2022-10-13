@@ -91,7 +91,7 @@ const HeaderWrapper = styled(Col)<{ minimized?: boolean }>`
   height: 164px;
   width: 100%;
   background-color: #ffff;
-  border-radius: ${({ minimized }) => (minimized ? "0 8px 8px 0" : 0)};
+  border-radius: ${({ minimized }) => (minimized ? "0 0 8px 0" : 0)};
   transition: height 0.5s, width 0.5s, border-radius 0.5s;
 `;
 
@@ -108,7 +108,7 @@ const TopSection = styled.div`
   width: 100%;
   height: 100%;
   padding: 24px;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 0 8px 0;
 `;
 
 const MinimizeButton = styled.button<{ minimized?: boolean }>`

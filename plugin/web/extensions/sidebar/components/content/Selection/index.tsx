@@ -11,11 +11,11 @@ const Selection: React.FC = () => {
   // This will become open datacatalog and the fieldAdd will move in to its scope
   const handleDatasetAdd = useCallback(() => {
     updateDatasets(oldDatasets => {
-      const id = Math.floor(Math.random() * 100);
+      const id = `dataset-${Math.floor(Math.random() * 100)}`;
       return [
         ...oldDatasets,
         {
-          id: `dataset-${id}`,
+          id,
           name: `建物の${id}`,
           hidden: false,
           idealZoom: { lat: 20, lon: 30, height: 100 },
@@ -44,9 +44,9 @@ const Selection: React.FC = () => {
           <StyledIcon icon="plusCircle" size={20} />
           <ButtonText>カタログから検索する</ButtonText>
         </StyledButton>
-        {selectedDatasets.map(d => (
-          <DatasetWrapper key={d.id} dataset={d} onRemove={handleDatasetRemove} />
-        ))}
+        {selectedDatasets
+          .map(d => <DatasetWrapper key={d.id} dataset={d} onRemove={handleDatasetRemove} />)
+          .reverse()}
       </InnerWrapper>
       <Footer datasetQuantity={selectedDatasets.length} onRemoveAll={handleDatasetRemoveAll} />
     </Wrapper>

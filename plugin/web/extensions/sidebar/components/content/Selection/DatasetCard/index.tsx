@@ -45,7 +45,7 @@ const DatasetCard: React.FC<Props> = ({ dataset: { id, name, fields }, onRemove 
           <Icon icon="visible" size={20} />
           <Title>{name}</Title>
         </LeftMain>
-        <Icon icon="arrowDown" size={16} />
+        <StyledIcon icon="arrowDown" size={16} expanded={expanded} />
       </Main>
       <ContentWrapper className={collapseClass} data-collapsed>
         <Content>
@@ -124,4 +124,9 @@ const ContentWrapper = styled.div`
   padding-bottom: 0;
   padding-left: 12px;
   padding-right: 12px;
+`;
+
+const StyledIcon = styled(Icon)<{ expanded: boolean }>`
+  transition: transform 0.15s ease;
+  transform: ${({ expanded }) => !expanded && "rotate(90deg)"};
 `;

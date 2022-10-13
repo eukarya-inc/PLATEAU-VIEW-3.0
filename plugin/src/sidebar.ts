@@ -6,42 +6,7 @@ const reearth = (globalThis as any).reearth;
 
 reearth.ui.show(html);
 
-// Sending messages to sidebar
-
-// reearth.ui.postMessage({ message: "A secret message from Re:Earth." }, "*");
-
 reearth.on("message", ({ action, payload }: PostMessageProps) => {
-  //   if (msg.act === "getTiles") {
-  //     const tiles = reearth.visualizer.property.tiles;
-  //     reearth.ui.postMessage(tiles, "*");
-  //   } else if (msg.act === "setTile") {
-  //     reearth.visualizer.overrideProperty({
-  //       tiles: [{ id: msg.payload, tile_type: "url", tile_url: msg.payload }],
-  //     });
-  //   } else if (msg.act === "setView") {
-  //     if (msg.payload === "3d-terrain") {
-  //       reearth.visualizer.overrideProperty({
-  //         default: {
-  //           sceneMode: "3d",
-  //           terrain: true,
-  //         },
-  //       });
-  //     } else if (msg.payload === "3d-smooth") {
-  //       reearth.visualizer.overrideProperty({
-  //         default: {
-  //           sceneMode: "3d",
-  //           terrain: false,
-  //         },
-  //       });
-  //     } else if (msg.payload === "2d") {
-  //       reearth.visualizer.overrideProperty({
-  //         default: {
-  //           sceneMode: "2d",
-  //           terrain: false,
-  //         },
-  //       });
-  //     }
-  //   }
   if (action === "updateOverrides") {
     reearth.visualizer.overrideProperty(payload);
   } else if (action === "screenshot" || action === "screenshot-save") {
@@ -50,4 +15,11 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload: reearth.scene.captureScreen(),
     });
   }
+});
+
+reearth.on("update", () => {
+  reearth.ui.postMessage({
+    type: "extended",
+    payload: reearth.widget.extended,
+  });
 });
