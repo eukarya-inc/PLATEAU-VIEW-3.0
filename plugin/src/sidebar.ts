@@ -1,7 +1,7 @@
-import { PostMessageProps } from "@web/extensions/sidebar/types";
+import { PostMessageProps } from "@web/extensions/sidebar/core/types";
 
-import html from "../dist/web/sidebar/index.html?raw";
-import modalHtml from "../dist/web/sidebar/index.html?raw";
+import html from "../dist/web/sidebar/core/index.html?raw";
+import dataCatalogHtml from "../dist/web/sidebar/modals/datacatalog/index.html?raw";
 
 const reearth = (globalThis as any).reearth;
 
@@ -15,8 +15,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       type: action,
       payload: reearth.scene.captureScreen(),
     });
-  } else if (action === "modal") {
-    reearth.modal.show(modalHtml);
+  } else if (action === "modal-open") {
+    reearth.modal.show(dataCatalogHtml);
+  } else if (action === "modal-close") {
+    reearth.modal.close();
   }
 });
 

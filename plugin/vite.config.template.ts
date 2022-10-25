@@ -24,10 +24,24 @@ export const plugin = (name: string): UserConfigExport => ({
 });
 
 export const web =
-  (name: string, type?: "modal" | "popup"): UserConfigExport =>
+  ({
+    name,
+    parent,
+    type = "core",
+  }: {
+    name: string;
+    parent?: string;
+    type?: "modal" | "plugin" | "core";
+  }): UserConfigExport =>
   () => {
-    const root = type ? `./web/${type}/${name}` : `./web/extensions/${name}`;
-    const outDir = type ? `../../../dist/web/${type}/${name}` : `../../../dist/web/${name}`;
+    const root =
+      parent && type !== "core"
+        ? `./web/extensions/${parent}/${type}s/${name}`
+        : `./web/extensions/${name}/${type}`;
+    const outDir =
+      parent && type !== "core"
+        ? `../../../../../dist/web/${parent}/${type}s/${name}`
+        : `../../../../dist/web/${name}/${type}`;
 
     return {
       plugins: [

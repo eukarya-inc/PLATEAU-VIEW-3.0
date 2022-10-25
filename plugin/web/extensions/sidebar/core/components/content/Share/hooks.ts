@@ -1,5 +1,5 @@
-import { usePublishUrl } from "@web/extensions/sidebar/state";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { usePublishUrl } from "@web/extensions/sidebar/core/state";
+import { postMsg } from "@web/extensions/sidebar/core/utils";
 import { useCallback } from "react";
 
 export default () => {

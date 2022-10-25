@@ -1,11 +1,15 @@
-import Footer from "@web/extensions/sidebar/components/Footer";
+import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
 import DatasetWrapper, { Dataset } from "./DatasetCard";
 
-const Selection: React.FC = () => {
+export type Props = {
+  onModalChange?: () => void;
+};
+
+const Selection: React.FC<Props> = ({ onModalChange }) => {
   const [selectedDatasets, updateDatasets] = useState<Dataset[]>([]);
 
   // This will become open datacatalog and the fieldAdd will move in to its scope
@@ -40,6 +44,11 @@ const Selection: React.FC = () => {
   return (
     <Wrapper>
       <InnerWrapper>
+        <StyledButton onClick={onModalChange}>
+          <StyledIcon icon="plusCircle" size={20} />
+          <ButtonText>Open modal</ButtonText>
+        </StyledButton>
+        <br />
         <StyledButton onClick={handleDatasetAdd}>
           <StyledIcon icon="plusCircle" size={20} />
           <ButtonText>カタログから検索する</ButtonText>

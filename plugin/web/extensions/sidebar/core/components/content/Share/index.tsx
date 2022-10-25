@@ -1,4 +1,4 @@
-import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
+import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
 import { Row, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo, useState } from "react";

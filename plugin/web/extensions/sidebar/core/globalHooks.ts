@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useCurrentOverrides } from "./state";
 import { ReearthApi } from "./types";
@@ -6,6 +6,7 @@ import { mergeProperty, postMsg } from "./utils";
 
 export default () => {
   const [overrides, updateOverrides] = useCurrentOverrides();
+  const [showModal, setModal] = useState(false);
 
   const handleOverridesUpdate = useCallback(
     (updatedProperties: Partial<ReearthApi>) => {
@@ -14,6 +15,11 @@ export default () => {
     [overrides],
   );
 
+  const handleModalChange = useCallback(() => {
+    setModal(!showModal);
+    postMsg({ action: !showModal ? "modal-open" : "modal-close" });
+  }, [showModal]);
+
   useEffect(() => {
     postMsg({ action: "updateOverrides", payload: overrides });
   }, [overrides]);
@@ -21,6 +27,7 @@ export default () => {
   return {
     overrides,
     handleOverridesUpdate,
+    handleModalChange,
   };
 };
 

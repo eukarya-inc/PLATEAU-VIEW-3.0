@@ -1,4 +1,4 @@
-import Sidebar from "@web/extensions/sidebar";
+import Sidebar from "@web/extensions/sidebar/core";
 import ReactDOM from "react-dom/client";
 
 (async () => {

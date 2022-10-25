@@ -1,9 +1,9 @@
-import Info from "@web/extensions/sidebar/components/content/Info";
-import MapSettings from "@web/extensions/sidebar/components/content/MapSettings";
-import Selection from "@web/extensions/sidebar/components/content/Selection";
-import Share from "@web/extensions/sidebar/components/content/Share";
-import Header, { Pages } from "@web/extensions/sidebar/components/Header";
-import useGlobalHooks from "@web/extensions/sidebar/globalHooks";
+import Info from "@web/extensions/sidebar/core/components/content/Info";
+import MapSettings from "@web/extensions/sidebar/core/components/content/MapSettings";
+import Selection from "@web/extensions/sidebar/core/components/content/Selection";
+import Share from "@web/extensions/sidebar/core/components/content/Share";
+import Header, { Pages } from "@web/extensions/sidebar/core/components/Header";
+import useGlobalHooks from "@web/extensions/sidebar/core/globalHooks";
 import { Content } from "@web/sharedComponents";
 import { styled, commonStyles } from "@web/theme";
 import { memo, useCallback, useState } from "react";
@@ -14,7 +14,7 @@ export type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
-  const { overrides, handleOverridesUpdate } = useGlobalHooks();
+  const { overrides, handleModalChange, handleOverridesUpdate } = useGlobalHooks();
 
   const [minimized, setMinimized] = useState(false);
   const [current, setCurrent] = useState<Pages>("data");
@@ -54,7 +54,7 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
         <ContentWrapper className={className}>
           {
             {
-              data: <Selection />,
+              data: <Selection onModalChange={handleModalChange} />,
               map: <MapSettings overrides={overrides} onOverridesUpdate={handleOverridesUpdate} />,
               share: <Share />,
               about: <Info />,
