@@ -1,10 +1,10 @@
-import { Content } from "@web/extensions/sharedComponents";
-import Info from "@web/extensions/sidebar/components/Content/Info";
-import MapSettings from "@web/extensions/sidebar/components/Content/MapSettings";
-import Selection from "@web/extensions/sidebar/components/Content/Selection";
-import Share from "@web/extensions/sidebar/components/Content/Share";
+import Info from "@web/extensions/sidebar/components/content/Info";
+import MapSettings from "@web/extensions/sidebar/components/content/MapSettings";
+import Selection from "@web/extensions/sidebar/components/content/Selection";
+import Share from "@web/extensions/sidebar/components/content/Share";
 import Header, { Pages } from "@web/extensions/sidebar/components/Header";
 import useGlobalHooks from "@web/extensions/sidebar/globalHooks";
+import { Content } from "@web/sharedComponents";
 import { styled, commonStyles } from "@web/theme";
 import { memo, useCallback, useState } from "react";
 

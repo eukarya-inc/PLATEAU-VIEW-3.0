@@ -1,4 +1,4 @@
-import { Icon, Col } from "@web/extensions/sharedComponents";
+import { Icon, Col } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo, ReactNode, useMemo } from "react";
 

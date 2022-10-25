@@ -1,4 +1,4 @@
-import { Divider } from "@web/extensions/sharedComponents";
+import { Divider } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { Children, Fragment, ReactNode } from "react";
 

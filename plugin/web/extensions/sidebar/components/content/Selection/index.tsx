@@ -1,5 +1,5 @@
-import { Icon } from "@web/extensions/sharedComponents";
 import Footer from "@web/extensions/sidebar/components/Footer";
+import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 

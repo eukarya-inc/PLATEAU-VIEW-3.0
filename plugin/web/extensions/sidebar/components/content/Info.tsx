@@ -1,5 +1,5 @@
-import { Button, Form, Icon, Input, Typography } from "@web/extensions/sharedComponents";
-import CommonPage from "@web/extensions/sidebar/components/Content/CommonPage";
+import CommonPage from "@web/extensions/sidebar/components/content/CommonPage";
+import { Button, Form, Icon, Input, Typography } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo } from "react";
 

@@ -1,4 +1,4 @@
-name: hoge
+name: PLATEAU Plugin
 version: 1.0.0
 id: hoge
 extensions:
@@ -8,3 +8,18 @@ extensions:
   - id: sidebar
     name: sidebar
     type: widget
+    widgetLayout:
+      extendable:
+        vertically: true
+      defaultLocation:
+        zone: outer
+        section: left
+        area: middle
+  - id: storytelling
+    name: PLATEAU Storytelling
+    type: widget
+    widgetLayout:
+      defaultLocation:
+        zone: outer
+        section: right
+        area: bottom

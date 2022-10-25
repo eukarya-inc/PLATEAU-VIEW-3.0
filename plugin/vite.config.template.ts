@@ -24,64 +24,69 @@ export const plugin = (name: string): UserConfigExport => ({
 });
 
 export const web =
-  (name: string): UserConfigExport =>
-  () => ({
-    plugins: [
-      react(),
-      serverHeaders(),
-      viteSingleFile(),
-      svgr(),
-      (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
-        modules: [
-          autoComplete("react"),
-          autoComplete("react-dom"),
-          {
-            name: "react-is",
-            var: "react-is",
-            path: "https://unpkg.com/react-is@18.2.0/umd/react-is.production.min.js",
-          },
-          {
-            name: "antd",
-            var: "antd",
-            path: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.js",
-            css: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.css",
-          },
-          {
-            name: "styled-components",
-            var: "styled-components",
-            path: "https://unpkg.com/styled-components/dist/styled-components.min.js",
-          },
-        ],
-      }),
-    ],
-    publicDir: false,
-    emptyOutDir: false,
-    root: `./web/extensions/${name}`,
-    build: {
-      outDir: `../../../dist/web/${name}`,
-    },
-    css: {
-      preprocessorOptions: {
-        less: {
-          javascriptEnabled: true,
-          modifyVars: {
-            "primary-color": "#00BEBE",
-            "font-family": "Noto Sans",
-            "typography-title-font-weight": "500",
-            "typography-title-font-height": "21.79px",
+  (name: string, type?: "modal" | "popup"): UserConfigExport =>
+  () => {
+    const root = type ? `./web/${type}/${name}` : `./web/extensions/${name}`;
+    const outDir = type ? `../../../dist/web/${type}/${name}` : `../../../dist/web/${name}`;
+
+    return {
+      plugins: [
+        react(),
+        serverHeaders(),
+        viteSingleFile(),
+        svgr(),
+        (importToCDN /* workaround */ as any as { default: typeof importToCDN }).default({
+          modules: [
+            autoComplete("react"),
+            autoComplete("react-dom"),
+            {
+              name: "react-is",
+              var: "react-is",
+              path: "https://unpkg.com/react-is@18.2.0/umd/react-is.production.min.js",
+            },
+            {
+              name: "antd",
+              var: "antd",
+              path: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.js",
+              css: "https://cdnjs.cloudflare.com/ajax/libs/antd/4.22.8/antd.min.css",
+            },
+            {
+              name: "styled-components",
+              var: "styled-components",
+              path: "https://unpkg.com/styled-components/dist/styled-components.min.js",
+            },
+          ],
+        }),
+      ],
+      publicDir: false,
+      emptyOutDir: false,
+      root,
+      build: {
+        outDir,
+      },
+      css: {
+        preprocessorOptions: {
+          less: {
+            javascriptEnabled: true,
+            modifyVars: {
+              "primary-color": "#00BEBE",
+              "font-family": "Noto Sans",
+              "typography-title-font-weight": "500",
+              "typography-title-font-height": "21.79px",
+            },
           },
         },
       },
-    },
-    test: {
-      globals: true,
-      environment: "jsdom",
-      setupFiles: "./web/test/setup.ts",
-    },
-    resolve: {
-      alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
-    },
-  });
+      test: {
+        globals: true,
+        environment: "jsdom",
+        setupFiles: "./web/test/setup.ts",
+      },
+      resolve: {
+        alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
+      },
+    };
+  };
 
 function serverHeaders(): Plugin {
   return {
