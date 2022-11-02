@@ -9,8 +9,6 @@ extensions:
     name: sidebar
     type: widget
     widgetLayout:
-      extendable:
-        vertically: true
       defaultLocation:
         zone: outer
         section: left

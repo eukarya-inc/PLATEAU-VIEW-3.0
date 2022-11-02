@@ -7,6 +7,13 @@ import { mergeProperty, postMsg } from "./utils";
 export default () => {
   const [overrides, updateOverrides] = useCurrentOverrides();
   const [showModal, setModal] = useState(false);
+  const [minimized, setMinimize] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      postMsg({ action: "minimize", payload: minimized });
+    }, 250);
+  }, [minimized]);
 
   const handleOverridesUpdate = useCallback(
     (updatedProperties: Partial<ReearthApi>) => {
@@ -26,6 +33,8 @@ export default () => {
 
   return {
     overrides,
+    minimized,
+    setMinimize,
     handleOverridesUpdate,
     handleModalChange,
   };

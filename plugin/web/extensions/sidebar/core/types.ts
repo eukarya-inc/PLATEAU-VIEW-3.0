@@ -1,11 +1,12 @@
-type actionType =
+type ActionType =
   | "updateOverrides"
   | "screenshot"
   | "screenshot-save"
   | "modal-open"
-  | "modal-close";
+  | "modal-close"
+  | "minimize";
 
-export type PostMessageProps = { action: actionType; payload?: any };
+export type PostMessageProps = { action: ActionType; payload?: any };
 
 export type ReearthApi = {
   default?: {

@@ -14,9 +14,9 @@ export type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
-  const { overrides, handleModalChange, handleOverridesUpdate } = useGlobalHooks();
+  const { overrides, minimized, setMinimize, handleOverridesUpdate, handleModalChange } =
+    useGlobalHooks();
 
-  const [minimized, setMinimized] = useState(false);
   const [current, setCurrent] = useState<Pages>("data");
 
   const handleClick = useCallback((p: Pages) => {
@@ -38,8 +38,8 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
       body?.classList.remove("minimized");
       root?.classList.remove("minimized");
     }
-    setMinimized(!minimized);
-  }, [minimized]);
+    setMinimize(!minimized);
+  }, [minimized, setMinimize]);
 
   return (
     <Wrapper className={className} minimized={minimized}>
