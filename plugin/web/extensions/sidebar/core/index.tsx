@@ -14,8 +14,16 @@ export type Props = {
 };
 
 const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
-  const { overrides, minimized, setMinimize, handleOverridesUpdate, handleModalChange } =
-    useGlobalHooks();
+  const {
+    selectedDatasets,
+    overrides,
+    minimized,
+    setMinimize,
+    handleDatasetRemove,
+    handleDatasetRemoveAll,
+    handleOverridesUpdate,
+    handleModalOpen,
+  } = useGlobalHooks();
 
   const [current, setCurrent] = useState<Pages>("data");
 
@@ -54,7 +62,14 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
         <ContentWrapper className={className}>
           {
             {
-              data: <Selection onModalChange={handleModalChange} />,
+              data: (
+                <Selection
+                  selectedDatasets={selectedDatasets}
+                  onDatasetRemove={handleDatasetRemove}
+                  onDatasetRemoveAll={handleDatasetRemoveAll}
+                  onModalOpen={handleModalOpen}
+                />
+              ),
               map: <MapSettings overrides={overrides} onOverridesUpdate={handleOverridesUpdate} />,
               share: <Share />,
               about: <Info />,

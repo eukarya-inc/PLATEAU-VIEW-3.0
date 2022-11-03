@@ -1,0 +1,131 @@
+import { Dataset as DatasetType } from "@web/extensions/sidebar/core/components/content/Selection/DatasetCard/types";
+import { Icon } from "@web/sharedComponents";
+import { styled } from "@web/theme";
+// import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { ComponentType, useCallback } from "react";
+// import { useMemo, useRef } from "react";
+// import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer } from "react-leaflet";
+
+// import iconSvg from "./icon.svg?raw";
+
+export type Dataset = DatasetType;
+
+export type Props = {
+  dataset?: Dataset;
+  contentSection?: ComponentType;
+  onDatasetAdd: (dataset: Dataset) => void;
+};
+
+const initialLocation = { lat: 35.70249, lng: 139.7622 };
+
+const DatasetDetails: React.FC<Props> = ({
+  dataset,
+  contentSection: ContentSection,
+  onDatasetAdd,
+}) => {
+  // const markerRef = useRef<L.Marker<any>>(null);
+
+  // const handleChange = useCallback(
+  //   ({ lat, lng }: { lat: number; lng: number }) => {
+  //     if (isBuilt || !isEditable) return;
+  //     onChange?.("default", "location", { lat, lng }, "latlng");
+  //   },
+  //   [isBuilt, isEditable, onChange],
+  // );
+
+  // const eventHandlers = useMemo(
+  //   () => ({
+  //     dragend() {
+  //       const marker = markerRef.current;
+  //       if (marker) {
+  //         handleChange(marker.getLatLng());
+  //       }
+  //     },
+  //   }),
+  //   [handleChange],
+  // );
+
+  const handleDatasetAdd = useCallback(() => {
+    if (!dataset) return;
+    onDatasetAdd(dataset);
+  }, [dataset, onDatasetAdd]);
+
+  return dataset ? (
+    <Wrapper>
+      <MapContainer
+        style={{ height: "220px" }}
+        center={initialLocation}
+        zoom={8}
+        scrollWheelZoom={false}
+        zoomControl={false}
+        dragging={false}
+        attributionControl={false}>
+        <TileLayer url="https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" />
+        {/* {location && (
+            <Marker
+              icon={icon}
+              position={initialLocation}
+              draggable={false}
+              // eventHandlers={eventHandlers}
+              ref={markerRef}
+            />
+          )} */}
+      </MapContainer>
+      <ButtonWrapper>
+        <Button>
+          <Icon icon="share" />
+          Share this Data
+        </Button>
+        <Button onClick={handleDatasetAdd}>
+          <Icon icon="plusCircle" />
+          Add to Scene
+        </Button>
+      </ButtonWrapper>
+      <Title>{dataset.name}</Title>
+      {ContentSection && <ContentSection />}
+    </Wrapper>
+  ) : null;
+};
+
+export default DatasetDetails;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+`;
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 12px 0 16px 0;
+`;
+
+const Button = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  height: 40px;
+  color: #00bebe;
+  font-weight: 500;
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+
+const Title = styled.p`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+`;
+
+// const icon = L.divIcon({
+//   className: "custom-icon",
+//   html: iconSvg,
+// });

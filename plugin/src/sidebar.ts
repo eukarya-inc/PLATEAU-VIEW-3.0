@@ -15,8 +15,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       type: action,
       payload: reearth.scene.captureScreen(),
     });
+  } else if (action === "msgFromModal") {
+    reearth.ui.postMessage({ type: action, payload });
   } else if (action === "modal-open") {
-    reearth.modal.show(dataCatalogHtml);
+    reearth.modal.show(dataCatalogHtml, { background: "transparent" });
   } else if (action === "modal-close") {
     reearth.modal.close();
   } else if (action === "minimize") {

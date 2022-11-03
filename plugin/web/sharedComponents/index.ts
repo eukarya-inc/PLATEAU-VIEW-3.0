@@ -7,7 +7,9 @@ import Icon from "@web/sharedComponents/Icon";
 import Input from "@web/sharedComponents/Input";
 import { Content, Footer } from "@web/sharedComponents/Layout";
 import Row from "@web/sharedComponents/Row";
+import Select from "@web/sharedComponents/Select";
 import Space from "@web/sharedComponents/Space";
+import Tabs from "@web/sharedComponents/Tabs";
 import Typography from "@web/sharedComponents/Typography";
 
 export {
@@ -23,4 +25,6 @@ export {
   Col,
   Space,
   Typography,
+  Select,
+  Tabs,
 };

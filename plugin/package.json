@@ -9,10 +9,10 @@
     "node": ">=16"
   },
   "scripts": {
-    "start:datacatalog": "vite -c vite.config.datacatalog-web.ts",
-    "start:sidebar": "vite -c vite.config.sidebar-web.ts",
+    "start:datacatalog": "vite -c vite-configs/sidebar/modals/datacatalog/web.ts",
+    "start:sidebar": "vite -c vite-configs/sidebar/web.ts",
     "build": "run-s typecheck clean build:plugin",
-    "build:plugin": "run-s build:sidebar build:datacatalog",
+    "build:plugin": "run-s build:sidebar",
     "build:sidebar": "run-s build:datacatalog-web; vite build -c vite-configs/sidebar/web.ts; vite build -c vite-configs/sidebar",
     "build:datacatalog-web": "vite build -c vite-configs/sidebar/modals/datacatalog/web.ts",
     "clean": "del dist",
@@ -57,10 +57,13 @@
     "vitest": "^0.20.3"
   },
   "dependencies": {
+    "@types/react-leaflet": "^2.8.2",
     "jotai": "^1.8.4",
+    "leaflet": "^1.9.2",
     "lodash": "^4.17.21",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-leaflet": "^4.1.0"
   },
   "msw": {
     "workerDirectory": "web/mock"

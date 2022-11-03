@@ -1,42 +1,22 @@
 import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
 
 import DatasetWrapper, { Dataset } from "./DatasetCard";
 
 export type Props = {
-  onModalChange?: () => void;
+  selectedDatasets: Dataset[];
+  onDatasetRemove: (id: string) => void;
+  onDatasetRemoveAll: () => void;
+  onModalOpen?: () => void;
 };
 
-const Selection: React.FC<Props> = ({ onModalChange }) => {
-  const [selectedDatasets, updateDatasets] = useState<Dataset[]>([]);
-
-  // This will become open datacatalog and the fieldAdd will move in to its scope
-  const handleDatasetAdd = useCallback(() => {
-    updateDatasets(oldDatasets => {
-      const id = `dataset-${Math.floor(Math.random() * 100)}`;
-      return [
-        ...oldDatasets,
-        {
-          id,
-          name: `建物の${id}`,
-          hidden: false,
-          idealZoom: { lat: 20, lon: 30, height: 100 },
-          dataUrl: "www.example.com",
-          fields: [],
-        },
-      ];
-    });
-  }, []);
-
-  const handleDatasetRemove = useCallback(
-    (id: string) => updateDatasets(oldDatasets => oldDatasets.filter(d => d.id !== id)),
-    [],
-  );
-
-  const handleDatasetRemoveAll = useCallback(() => updateDatasets([]), []);
-
+const Selection: React.FC<Props> = ({
+  selectedDatasets,
+  onDatasetRemove,
+  onDatasetRemoveAll,
+  onModalOpen,
+}) => {
   // const handleFieldRemove = useCallback((id: string) => {
   //   updateDatasets(oldDatasets => oldDatasets.filter(d => d.id !== id));
   // }, []);
@@ -44,20 +24,15 @@ const Selection: React.FC<Props> = ({ onModalChange }) => {
   return (
     <Wrapper>
       <InnerWrapper>
-        <StyledButton onClick={onModalChange}>
-          <StyledIcon icon="plusCircle" size={20} />
-          <ButtonText>Open modal</ButtonText>
-        </StyledButton>
-        <br />
-        <StyledButton onClick={handleDatasetAdd}>
+        <StyledButton onClick={onModalOpen}>
           <StyledIcon icon="plusCircle" size={20} />
           <ButtonText>カタログから検索する</ButtonText>
         </StyledButton>
         {selectedDatasets
-          .map(d => <DatasetWrapper key={d.id} dataset={d} onRemove={handleDatasetRemove} />)
+          .map(d => <DatasetWrapper key={d.id} dataset={d} onRemove={onDatasetRemove} />)
           .reverse()}
       </InnerWrapper>
-      <Footer datasetQuantity={selectedDatasets.length} onRemoveAll={handleDatasetRemoveAll} />
+      <Footer datasetQuantity={selectedDatasets.length} onRemoveAll={onDatasetRemoveAll} />
     </Wrapper>
   );
 };

@@ -2,6 +2,7 @@ type ActionType =
   | "updateOverrides"
   | "screenshot"
   | "screenshot-save"
+  | "msgFromModal"
   | "modal-open"
   | "modal-close"
   | "minimize";

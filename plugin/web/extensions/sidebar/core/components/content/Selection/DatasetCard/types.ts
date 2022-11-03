@@ -1,9 +1,12 @@
 export type Dataset = {
   id: string;
+  filename?: string;
   name: string;
+  description?: string;
   hidden: boolean;
   idealZoom: Location;
   dataUrl: string;
+  tags?: { type: "location" | "data-type"; name: string }[];
   fields: Field[];
 };
 
