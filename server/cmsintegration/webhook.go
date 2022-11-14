@@ -81,6 +81,8 @@ func WebhookHandler(f fme.Interface, cms cms.Interface, modelID, cityGMLFieldID,
 			return nil
 		}
 
+		log.Infof("webhook: done")
+
 		return nil
 	}
 }

@@ -9,7 +9,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
+func NotifyHandler(cmsi cms.Interface, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var b fmeResult
 		if err := c.Bind(&b); err != nil {
@@ -35,7 +35,7 @@ func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 		}
 
 		cc := commentContent(b.Status, b.Type, b.LogURL)
-		if err := cms.Comment(c.Request().Context(), id.AssetID, cc); err != nil {
+		if err := cmsi.Comment(c.Request().Context(), id.AssetID, cc); err != nil {
 			log.Errorf("notify: failed to comment: %w", err)
 			return nil
 		}
@@ -52,26 +52,26 @@ func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 			return nil
 		}
 
-		assetID, err := cms.UploadAsset(c.Request().Context(), id.ProjectID, bldg)
+		assetID, err := cmsi.UploadAsset(c.Request().Context(), id.ProjectID, bldg)
 		if err != nil {
 			log.Errorf("notify: failed to upload asset: %w", err)
 			return nil
 		}
 
-		fields := map[string]any{
-			"fields": []map[string]any{
-				{
-					"id":    id.BldgFieldID,
-					"type":  "asset",
-					"value": assetID,
-				},
-			},
-		}
+		log.Infof("notify: asset uploaded: %s", assetID)
 
-		if err := cms.UpdateItem(c.Request().Context(), id.ItemID, fields); err != nil {
+		if err := cmsi.UpdateItem(c.Request().Context(), id.ItemID, []cms.Field{
+			{
+				ID:    id.BldgFieldID,
+				Type:  "asset",
+				Value: assetID,
+			},
+		}); err != nil {
 			log.Errorf("notify: failed to update item: %w", err)
 			return nil
 		}
+
+		log.Infof("notify: done")
 
 		return nil
 	}

@@ -10,14 +10,19 @@ import (
 	"net/url"
 
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
 )
 
 type Interface interface {
 	Asset(ctx context.Context, id string) (*Asset, error)
 	UploadAsset(ctx context.Context, projectID, url string) (string, error)
-	UpdateItem(ctx context.Context, itemID string, fields map[string]any) error
+	UpdateItem(ctx context.Context, itemID string, fields []Field) error
 	Comment(ctx context.Context, assetID, content string) error
+}
+
+type Field struct {
+	ID    string `json:"id"`
+	Type  string `json:"type"`
+	Value any    `json:"value"`
 }
 
 type CMS struct {
@@ -82,19 +87,9 @@ func (c *CMS) Asset(ctx context.Context, assetID string) (*Asset, error) {
 	return a, nil
 }
 
-func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields map[string]any) error {
-	type F struct {
-		ID    string `json:"id"`
-		Value any    `json:"value"`
-	}
-
+func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields []Field) error {
 	rb := map[string]any{
-		"fields": lo.MapToSlice(fields, func(k string, v any) F {
-			return F{
-				ID:    k,
-				Value: v,
-			}
-		}),
+		"fields": fields,
 	}
 
 	b, err := c.send(ctx, http.MethodPatch, []string{"api", "items", itemID}, rb)
