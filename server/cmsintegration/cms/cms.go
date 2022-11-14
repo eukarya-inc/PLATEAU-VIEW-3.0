@@ -55,16 +55,16 @@ func (c *CMS) UploadAsset(ctx context.Context, projectID, url string) (string, e
 		return "", fmt.Errorf("failed to read body: %w", err)
 	}
 
-	var res map[string]string
-	if err := json.Unmarshal(body, &res); err != nil {
+	type res struct {
+		ID string `json:"id"`
+	}
+
+	r := &res{}
+	if err := json.Unmarshal(body, &r); err != nil {
 		return "", fmt.Errorf("failed to parse body: %w", err)
 	}
 
-	if id, ok := res["id"]; !ok || id == "" {
-		return "", fmt.Errorf("invalid body: %s", string(body))
-	}
-
-	return res["id"], nil
+	return r.ID, nil
 }
 
 func (c *CMS) Asset(ctx context.Context, assetID string) (*Asset, error) {
