@@ -32,7 +32,7 @@ func TestCMS(t *testing.T) {
 	assert.Equal(t, &Asset{ID: "a", URL: "url"}, a)
 	assert.Equal(t, 1, call("POST /api/assets"))
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
-	assert.Equal(t, 1, call("POST /api/threads/c/comments"))
+	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 	assert.Equal(t, 1, call("GET /api/assets/a"))
 
 	// invalid token
@@ -48,7 +48,7 @@ func TestCMS(t *testing.T) {
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, 1, call("POST /api/assets"))
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
-	assert.Equal(t, 1, call("POST /api/threads/c/comments"))
+	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 	assert.Equal(t, 1, call("GET /api/assets/a"))
 }
 
@@ -72,7 +72,7 @@ func mockCMS(host, token string) func(string) int {
 
 	httpmock.RegisterResponder("PATCH", host+"/api/items/a", responder)
 	httpmock.RegisterResponder("POST", host+"/api/assets", responder)
-	httpmock.RegisterResponder("POST", host+"/api/threads/c/comments", responder)
+	httpmock.RegisterResponder("POST", host+"/api/assets/c/comments", responder)
 	httpmock.RegisterResponder("GET", host+"/api/assets/a", responder)
 
 	return func(p string) int {

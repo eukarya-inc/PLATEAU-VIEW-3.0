@@ -111,7 +111,7 @@ func (c *CMS) Comment(ctx context.Context, assetID, content string) error {
 		"content": content,
 	}
 
-	b, err := c.send(ctx, http.MethodPost, []string{"api", "threads", assetID, "comments"}, rb)
+	b, err := c.send(ctx, http.MethodPost, []string{"api", "assets", assetID, "comments"}, rb)
 	if err != nil {
 		return fmt.Errorf("failed to comment: %w", err)
 	}
