@@ -86,7 +86,7 @@ func commentContent(s string, t string, logURL string) string {
 	var tt string
 	if t == "qualityCheck" {
 		tt = "品質検査"
-	} else if t == "convert" {
+	} else if t == "conversion" {
 		tt = "3D Tiles への変換"
 	}
 
