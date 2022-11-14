@@ -162,6 +162,7 @@ func (c *CMS) request(ctx context.Context, m string, p []string, body any) (*htt
 		return nil, fmt.Errorf("failed to init request: %w", err)
 	}
 
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	return req, nil
 }

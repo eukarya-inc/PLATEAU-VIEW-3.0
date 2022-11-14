@@ -55,7 +55,11 @@ func TestCMS(t *testing.T) {
 func mockCMS(host, token string) func(string) int {
 	responder := func(req *http.Request) (*http.Response, error) {
 		if t := parseToken(req); t != token {
-			return httpmock.NewJsonResponse(http.StatusUnauthorized, map[string]any{})
+			return httpmock.NewJsonResponse(http.StatusUnauthorized, "unauthorized")
+		}
+
+		if req.Header.Get("Content-Type") != "application/json" {
+			return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
 		}
 
 		res := map[string]string{}
