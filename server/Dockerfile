@@ -1,15 +1,14 @@
-FROM golang:1.18-alpine AS build
+FROM golang:1.19-alpine AS build
 ARG TAG=release
 ARG VERSION
 
 RUN apk add --update --no-cache git ca-certificates build-base
 
-COPY go.mod go.sum main.go /app/
 WORKDIR /app
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY pkg/ /app/pkg/
-COPY internal/ /app/internal/
+COPY . /app/
 
 RUN CGO_ENABLED=0 go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath
 

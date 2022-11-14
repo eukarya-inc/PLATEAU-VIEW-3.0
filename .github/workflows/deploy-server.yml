@@ -1,0 +1,49 @@
+name: deploy
+on:
+  workflow_run:
+    workflows: [build-server]
+    types: [completed]
+    branches: [main]
+env:
+  IMAGE: ghcr.io/eukarya-inc/reearth-plateauview
+  IMAGE_GCP: asia.gcr.io/reearth-development/reearth-plateauview
+  GCP_REGION: us-central1
+jobs:
+  deploy_server:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion != 'failure' && github.event.repository.full_name == 'eukarya-inc/reearth-plateauview' && github.event.workflow_run.head_branch == 'main'
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_REEARTH_DEV }} # TODO
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Configure docker
+        run: gcloud auth configure-docker --quiet
+      - name: Download server arfiacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: build-server.yml
+          workflow_conclusion: success
+          branch: main
+          name: reearth-plateauview
+          check_artifacts: true
+      - name: Unpack docker image
+        run: docker load < reearth-plateauview.tar.gz
+      - name: docker push
+        run: |
+          docker tag $IMAGE $IMAGE_GCP
+          docker push $IMAGE_GCP
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy reearth-plateauview \
+            --image $IMAGE_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
