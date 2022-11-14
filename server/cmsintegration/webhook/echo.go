@@ -19,9 +19,6 @@ func EchoMiddleware(secret []byte) echo.MiddlewareFunc {
 			}
 
 			sig := c.Request().Header.Get(header)
-			if sig == "" {
-				sig = c.Request().Header.Get("Rearth-Signature") // TEMP
-			}
 			log.Infof("webhook: received: sig=%s", sig)
 			if !validateSignature(sig, body, secret) {
 				return c.JSON(http.StatusUnauthorized, "unauthorized")

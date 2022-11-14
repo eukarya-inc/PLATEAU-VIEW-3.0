@@ -40,8 +40,10 @@ func WebhookHandler(f fme.Interface, cms cms.Interface, modelID, cityGMLFieldID,
 
 		bldgField := w.Data.Item.Field(bldgFieldID)
 		if bldgField != nil && bldgField.Value != nil {
-			log.Infof("webhook: 3dtiles already converted: field=%+v", bldgField)
-			return nil
+			if s, ok := bldgField.Value.(string); ok && s != "" {
+				log.Infof("webhook: 3dtiles already converted: field=%+v", bldgField)
+				return nil
+			}
 		}
 
 		assetID, ok := assetField.Value.(string)
