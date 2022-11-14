@@ -10,7 +10,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-const configPrefix = "REEARTH_PLATEAUVIEW_"
+const configPrefix = "REEARTH_PLATEAUVIEW"
 
 type Config struct {
 	Port               uint   `default:"8080" envconfig:"PORT"`
