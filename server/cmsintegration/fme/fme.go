@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/reearth/reearthx/log"
 )
 
 type Interface interface {
@@ -15,23 +17,25 @@ type Interface interface {
 }
 
 type FME struct {
-	base      *url.URL
-	token     string
-	resultURL string
-	client    *http.Client
+	base             *url.URL
+	token            string
+	resultURL        string
+	skipQualityCheck bool
+	client           *http.Client
 }
 
-func New(baseUrl, token, resultURL string) (*FME, error) {
+func New(baseUrl, token, resultURL string, skipQualityCheck bool) (*FME, error) {
 	b, err := url.Parse(baseUrl)
 	if err != nil {
 		return nil, fmt.Errorf("invalid base url: %w", err)
 	}
 
 	return &FME{
-		base:      b,
-		token:     token,
-		resultURL: resultURL,
-		client:    http.DefaultClient,
+		base:             b,
+		token:            token,
+		resultURL:        resultURL,
+		skipQualityCheck: skipQualityCheck,
+		client:           http.DefaultClient,
 	}, nil
 }
 
@@ -51,6 +55,9 @@ func (s *FME) ConvertAll(ctx context.Context, r Request) error {
 }
 
 func (s *FME) CheckQualityAndConvertAll(ctx context.Context, r Request) error {
+	if s.skipQualityCheck {
+		return s.ConvertAll(ctx, r)
+	}
 	return s.request(ctx, "plateau2022-cms/quality-check-and-convert-all", r)
 }
 
@@ -63,6 +70,8 @@ func (s *FME) request(ctx context.Context, w string, r Request) error {
 	if s.token != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("fmetoken token=%s", s.token))
 	}
+
+	log.Infof("fme: request: %s %s", req.Method, req.URL.String())
 
 	res, err := s.client.Do(req)
 	if err != nil {

@@ -27,7 +27,7 @@ func TestFME(t *testing.T) {
 
 	// valid
 	calls := mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
-	f := lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com"))
+	f := lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com", false))
 	req := wantReq
 	assert.NoError(t, f.CheckQuality(ctx, req))
 	assert.NoError(t, f.ConvertAll(ctx, req))
@@ -39,7 +39,7 @@ func TestFME(t *testing.T) {
 	// invalid token
 	httpmock.Reset()
 	calls = mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
-	f = lo.Must(New("http://fme.example.com", "TOKEN2", "https://example.com"))
+	f = lo.Must(New("http://fme.example.com", "TOKEN2", "https://example.com", false))
 	req = wantReq
 	assert.ErrorContains(t, f.CheckQuality(ctx, req), "failed to request: code=401")
 	assert.ErrorContains(t, f.ConvertAll(ctx, req), "failed to request: code=401")
@@ -51,7 +51,7 @@ func TestFME(t *testing.T) {
 	// invalid queries
 	httpmock.Reset()
 	calls = mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
-	f = lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com"))
+	f = lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com", false))
 	req = Request{
 		ID:     wantReq.ID,
 		Target: "target!",

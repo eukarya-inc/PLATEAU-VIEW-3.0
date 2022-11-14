@@ -33,8 +33,12 @@ func WebhookHandler(f fme.Interface, cms cms.Interface, modelID, cityGMLFieldID,
 		}
 
 		assetField := w.Data.Item.Field(cityGMLFieldID)
-		if assetField == nil {
-			log.Infof("webhook: field not found: fieldId=%s", cityGMLFieldID)
+		if assetField == nil || assetField.Value == nil {
+			log.Infof("webhook: asset field not found: fieldId=%s", cityGMLFieldID)
+			return nil
+		}
+		if v, ok := assetField.Value.(string); !ok || v == "" {
+			log.Infof("webhook: asset field empty: fieldId=%s", cityGMLFieldID)
 			return nil
 		}
 
