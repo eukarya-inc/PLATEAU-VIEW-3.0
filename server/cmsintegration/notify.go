@@ -12,7 +12,8 @@ import (
 func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var b fmeResult
-		if err := c.Bind(b); err != nil {
+		if err := c.Bind(&b); err != nil {
+			log.Info("notify: invalid payload: %w", err)
 			return c.JSON(http.StatusBadRequest, "invalid payload")
 		}
 
