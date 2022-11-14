@@ -52,7 +52,7 @@ func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 			return nil
 		}
 
-		assetID, err := cms.UploadAsset(c.Request().Context(), bldg)
+		assetID, err := cms.UploadAsset(c.Request().Context(), id.ProjectID, bldg)
 		if err != nil {
 			log.Errorf("notify: failed to upload asset: %w", err)
 			return nil
@@ -61,7 +61,7 @@ func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 		fields := map[string]any{
 			"fields": []map[string]any{
 				{
-					"id":    id.TilesFieldID,
+					"id":    id.BldgFieldID,
 					"type":  "asset",
 					"value": assetID,
 				},

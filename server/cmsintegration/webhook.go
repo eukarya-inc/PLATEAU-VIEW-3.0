@@ -60,9 +60,10 @@ func WebhookHandler(f fme.Interface, cms cms.Interface, modelID, cityGMLFieldID,
 
 		req := fme.Request{
 			ID: ID{
-				ItemID:       w.Data.Item.ID,
-				AssetID:      asset.ID,
-				TilesFieldID: bldgFieldID,
+				ItemID:      w.Data.Item.ID,
+				AssetID:     asset.ID,
+				ProjectID:   w.Data.Schema.ProjectID,
+				BldgFieldID: bldgFieldID,
 			}.String(secret),
 			Target: asset.URL,
 			PRCS:   "6669", // TODO2: accept prcs code from webhook

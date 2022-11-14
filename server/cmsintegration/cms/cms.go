@@ -15,7 +15,7 @@ import (
 
 type Interface interface {
 	Asset(ctx context.Context, id string) (*Asset, error)
-	UploadAsset(ctx context.Context, url string) (string, error)
+	UploadAsset(ctx context.Context, projectID, url string) (string, error)
 	UpdateItem(ctx context.Context, itemID string, fields map[string]any) error
 	Comment(ctx context.Context, assetID, content string) error
 }
@@ -39,12 +39,12 @@ func New(base, token string) (*CMS, error) {
 	}, nil
 }
 
-func (c *CMS) UploadAsset(ctx context.Context, url string) (string, error) {
+func (c *CMS) UploadAsset(ctx context.Context, projectID, url string) (string, error) {
 	rb := map[string]string{
 		"url": url,
 	}
 
-	b, err := c.send(ctx, http.MethodPost, []string{"api", "assets"}, rb)
+	b, err := c.send(ctx, http.MethodPost, []string{"api", "projects", projectID, "assets"}, rb)
 	if err != nil {
 		return "", fmt.Errorf("failed to upload an asset: %w", err)
 	}

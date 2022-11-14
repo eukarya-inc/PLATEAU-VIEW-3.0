@@ -25,8 +25,9 @@ type Field struct {
 }
 
 type Schema struct {
-	ID     string        `json:"id"`
-	Fields []SchemaField `json:"fields"`
+	ID        string        `json:"id"`
+	Fields    []SchemaField `json:"fields"`
+	ProjectID string        `json:"projectId"`
 }
 
 type SchemaField struct {
