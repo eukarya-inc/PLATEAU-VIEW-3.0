@@ -19,16 +19,16 @@ func NotifyHandler(cms cms.Interface, secret string) echo.HandlerFunc {
 
 		log.Infof("notify: received: %+v", b)
 
-		if b.Type != "ok" && b.Type != "error" {
-			return c.JSON(http.StatusBadRequest, fmt.Sprintf("invalid type: %s", b.Type))
-		}
-
 		id, err := ParseID(b.ID, secret)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "unauthorized")
 		}
 
 		log.Errorf("notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
+
+		if b.Status != "ok" && b.Status != "error" {
+			return c.JSON(http.StatusBadRequest, fmt.Sprintf("invalid type: %s", b.Type))
+		}
 
 		if err := c.JSON(http.StatusOK, "ok"); err != nil {
 			return err
