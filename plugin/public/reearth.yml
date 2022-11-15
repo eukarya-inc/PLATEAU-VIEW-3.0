@@ -21,3 +21,6 @@ extensions:
         zone: outer
         section: right
         area: bottom
+  - id: location
+    name: Location Footer
+    type: widget
