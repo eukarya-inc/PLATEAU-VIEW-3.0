@@ -15,7 +15,7 @@ export type Props = {
   onRemove?: (id: string) => void;
 };
 
-const DatasetCard: React.FC<Props> = ({ dataset: { id, name, fields }, onRemove }) => {
+const DatasetCard: React.FC<Props> = ({ dataset: { id, name }, onRemove }) => {
   const [expanded, setExpand] = useState(false);
   const collapseClass = useMemo(() => `collapsible-${id}`, [id]);
 
@@ -49,7 +49,7 @@ const DatasetCard: React.FC<Props> = ({ dataset: { id, name, fields }, onRemove 
       </Main>
       <ContentWrapper className={collapseClass} data-collapsed>
         <Content>
-          {baseFields?.map((field, idx) => (
+          {baseFields.map((field, idx) => (
             <Field key={idx}>
               {field.icon && (
                 <Icon
@@ -61,12 +61,12 @@ const DatasetCard: React.FC<Props> = ({ dataset: { id, name, fields }, onRemove 
               {field.title}
             </Field>
           ))}
-          {fields?.map((field, idx) => (
+          {/* {fields?.map((field, idx) => (
             <Field key={idx}>
               {field.icon && <Icon icon={field.icon} size={20} />}
               {field.title}
             </Field>
-          ))}
+          ))} */}
         </Content>
       </ContentWrapper>
     </Wrapper>

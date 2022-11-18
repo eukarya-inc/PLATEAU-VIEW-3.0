@@ -17,10 +17,6 @@ const Selection: React.FC<Props> = ({
   onDatasetRemoveAll,
   onModalOpen,
 }) => {
-  // const handleFieldRemove = useCallback((id: string) => {
-  //   updateDatasets(oldDatasets => oldDatasets.filter(d => d.id !== id));
-  // }, []);
-
   return (
     <Wrapper>
       <InnerWrapper>

@@ -20,11 +20,11 @@ export default PageLayout;
 
 const Body = styled.div`
   display: flex;
-  height: 705px;
+  height: 541px;
 `;
 
 const LeftPane = styled.div`
-  width: 402px;
+  width: 322px;
 `;
 
 const RightPane = styled.div`

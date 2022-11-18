@@ -1,8 +1,7 @@
 import { postMsg } from "@web/extensions/sidebar/core/utils";
-import DatasetsPage, {
-  Dataset,
-} from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage";
+import DatasetsPage from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage";
 import YourDataPage from "@web/extensions/sidebar/modals/datacatalog/components/content/YourDataPage";
+import { Data } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
@@ -12,18 +11,24 @@ export type Tab = "dataset" | "your-data";
 const DataCatalog: React.FC = () => {
   const [currentTab, changeTabs] = useState<Tab>("dataset");
 
-  const handleDatasetAdd = useCallback((dataset: Dataset) => {
-    postMsg({
-      action: "msgFromModal",
-      payload: {
-        dataset,
-      },
-    });
-  }, []);
+  const addedDatasets = undefined; // Need to pass from Sidebar when Datacatalog is opened
 
   const handleClose = useCallback(() => {
     postMsg({ action: "modal-close" });
   }, []);
+
+  const handleDatasetAdd = useCallback(
+    (dataset: Data) => {
+      postMsg({
+        action: "msgFromModal",
+        payload: {
+          dataset,
+        },
+      });
+      handleClose();
+    },
+    [handleClose],
+  );
 
   return (
     <Wrapper>
@@ -39,14 +44,14 @@ const DataCatalog: React.FC = () => {
             <TabName>Your Data</TabName>
           </Tab>
         </TabsWrapper>
-        <MinimizeButton>
+        <CloseButton>
           <Icon size={32} icon="close" onClick={handleClose} />
-        </MinimizeButton>
+        </CloseButton>
       </Header>
       {currentTab === "your-data" ? (
         <YourDataPage onDatasetAdd={handleDatasetAdd} />
       ) : (
-        <DatasetsPage onDatasetAdd={handleDatasetAdd} />
+        <DatasetsPage addedDatasets={addedDatasets} onDatasetAdd={handleDatasetAdd} />
       )}
     </Wrapper>
   );
@@ -57,9 +62,11 @@ export default DataCatalog;
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 1155px;
-  height: 753px;
+  width: 905px;
+  height: 590px;
   background: #f4f4f4;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px rgba(0, 0, 0, 0.08),
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
 `;
 
 const Header = styled.div`
@@ -105,13 +112,12 @@ const TabName = styled.p`
   user-select: none;
 `;
 
-const MinimizeButton = styled.button`
+const CloseButton = styled.button`
   position: absolute;
   right: 0;
-  border: none;
   height: 48px;
   width: 48px;
+  border: none;
   background: #00bebe;
   cursor: pointer;
-  transition: background 0.3s;
 `;

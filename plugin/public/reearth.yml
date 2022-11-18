@@ -2,11 +2,8 @@ name: PLATEAU Plugin
 version: 1.0.0
 id: hoge
 extensions:
-  - id: datacatalog
-    name: datacatalog
-    type: widget
   - id: sidebar
-    name: sidebar
+    name: Sidebar
     type: widget
     widgetLayout:
       defaultLocation:
@@ -14,7 +11,7 @@ extensions:
         section: left
         area: middle
   - id: storytelling
-    name: PLATEAU Storytelling
+    name: Storytelling (PLATEAU)
     type: widget
     widgetLayout:
       defaultLocation:
@@ -24,3 +21,8 @@ extensions:
   - id: location
     name: Location Footer
     type: widget
+    widgetLayout:
+      defaultLocation:
+        zone: outer
+        section: left
+        area: bottom

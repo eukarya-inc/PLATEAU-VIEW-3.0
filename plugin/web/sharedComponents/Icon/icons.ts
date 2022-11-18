@@ -22,6 +22,11 @@ import { ReactComponent as MapPin } from "./Icons/mapPin.svg";
 import { ReactComponent as User } from "./Icons/user.svg";
 import { ReactComponent as Search } from "./Icons/search.svg";
 import { ReactComponent as Inbox } from "./Icons/inbox.svg";
+import { ReactComponent as Folder } from "./Icons/folder.svg";
+import { ReactComponent as FolderOpen } from "./Icons/folderOpen.svg";
+import { ReactComponent as File } from "./Icons/file.svg";
+import { ReactComponent as Empty } from "./Icons/empty.svg";
+import { ReactComponent as NewPage } from "./Icons/newPage.svg";
 
 export default {
   logo: Logo,
@@ -45,4 +50,9 @@ export default {
   user: User,
   search: Search,
   inbox: Inbox,
+  folder: Folder,
+  folderOpen: FolderOpen,
+  file: File,
+  empty: Empty,
+  newPage: NewPage,
 };
