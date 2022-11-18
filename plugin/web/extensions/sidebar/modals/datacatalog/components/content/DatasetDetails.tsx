@@ -12,6 +12,7 @@ import { Data } from "../../types";
 
 export type Props = {
   dataset: Data;
+  addDisabled: boolean;
   contentSection?: ComponentType;
   onDatasetAdd: (dataset: Data) => void;
 };
@@ -20,6 +21,7 @@ const initialLocation = { lat: 35.70249, lng: 139.7622 };
 
 const DatasetDetails: React.FC<Props> = ({
   dataset,
+  addDisabled,
   contentSection: ContentSection,
   onDatasetAdd,
 }) => {
@@ -76,9 +78,9 @@ const DatasetDetails: React.FC<Props> = ({
           <Icon icon="share" />
           Share this Data
         </Button>
-        <Button onClick={handleDatasetAdd}>
-          <Icon icon="plusCircle" />
-          Add to Scene
+        <Button disabled={addDisabled} onClick={handleDatasetAdd}>
+          {!addDisabled && <Icon icon="plusCircle" />}
+          {addDisabled ? "Already in Scene" : "Add to Scene"}
         </Button>
       </ButtonWrapper>
       <Title>{dataset.name}</Title>
@@ -102,19 +104,19 @@ const ButtonWrapper = styled.div`
   margin: 12px 0 16px 0;
 `;
 
-const Button = styled.button`
+const Button = styled.button<{ disabled?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
   flex: 1;
   height: 40px;
-  color: #00bebe;
+  color: ${({ disabled }) => (disabled ? "grey" : "#00bebe")};
   font-weight: 500;
-  background: #ffffff;
+  background: ${({ disabled }) => (disabled ? "#dcdcdc" : "#ffffff")};
   border: 1px solid #e6e6e6;
   border-radius: 4px;
-  cursor: pointer;
+  ${({ disabled }) => !disabled && "cursor: pointer;"}
 `;
 
 const Title = styled.p`

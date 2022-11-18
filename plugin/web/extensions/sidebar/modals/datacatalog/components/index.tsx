@@ -1,45 +1,24 @@
-import { postMsg } from "@web/extensions/sidebar/core/utils";
 import DatasetsPage from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage";
 import YourDataPage from "@web/extensions/sidebar/modals/datacatalog/components/content/YourDataPage";
-import { Data } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
 
-export type Tab = "dataset" | "your-data";
+import useHooks from "./hooks";
 
 const DataCatalog: React.FC = () => {
-  const [currentTab, changeTabs] = useState<Tab>("dataset");
-
-  const addedDatasets = undefined; // Need to pass from Sidebar when Datacatalog is opened
-
-  const handleClose = useCallback(() => {
-    postMsg({ action: "modal-close" });
-  }, []);
-
-  const handleDatasetAdd = useCallback(
-    (dataset: Data) => {
-      postMsg({
-        action: "msgFromModal",
-        payload: {
-          dataset,
-        },
-      });
-      handleClose();
-    },
-    [handleClose],
-  );
+  const { currentTab, addedDatasetIds, handleClose, handleTabChange, handleDatasetAdd } =
+    useHooks();
 
   return (
     <Wrapper>
       <Header>
         <Title>Data Catalogue</Title>
         <TabsWrapper>
-          <Tab selected={currentTab === "dataset"} onClick={() => changeTabs("dataset")}>
+          <Tab selected={currentTab === "dataset"} onClick={() => handleTabChange("dataset")}>
             <Logo icon="plateauLogoPart" selected={currentTab === "dataset"} />
             <TabName>PLATEAU Dataset</TabName>
           </Tab>
-          <Tab selected={currentTab === "your-data"} onClick={() => changeTabs("your-data")}>
+          <Tab selected={currentTab === "your-data"} onClick={() => handleTabChange("your-data")}>
             <Icon icon="user" />
             <TabName>Your Data</TabName>
           </Tab>
@@ -51,7 +30,7 @@ const DataCatalog: React.FC = () => {
       {currentTab === "your-data" ? (
         <YourDataPage onDatasetAdd={handleDatasetAdd} />
       ) : (
-        <DatasetsPage addedDatasets={addedDatasets} onDatasetAdd={handleDatasetAdd} />
+        <DatasetsPage addedDatasetIds={addedDatasetIds} onDatasetAdd={handleDatasetAdd} />
       )}
     </Wrapper>
   );

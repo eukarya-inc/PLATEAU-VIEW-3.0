@@ -10,42 +10,21 @@ export type Tag = TagType;
 
 export type Props = {
   dataset?: Data;
+  addDisabled: boolean;
   onTagSelect: (tag: Tag) => void;
   onDatasetAdd: (dataset: Data) => void;
 };
 
-const DatasetDetails: React.FC<Props> = ({ dataset, onTagSelect, onDatasetAdd }) => {
-  // const markerRef = useRef<L.Marker<any>>(null);
-
-  // const handleChange = useCallback(
-  //   ({ lat, lng }: { lat: number; lng: number }) => {
-  //     if (isBuilt || !isEditable) return;
-  //     onChange?.("default", "location", { lat, lng }, "latlng");
-  //   },
-  //   [isBuilt, isEditable, onChange],
-  // );
-
-  // const eventHandlers = useMemo(
-  //   () => ({
-  //     dragend() {
-  //       const marker = markerRef.current;
-  //       if (marker) {
-  //         handleChange(marker.getLatLng());
-  //       }
-  //     },
-  //   }),
-  //   [handleChange],
-  // );
-
+const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, onDatasetAdd }) => {
   const datasetTags = useMemo(
     () => (dataset?.type !== "group" ? dataset?.tags?.map(tag => tag) : undefined),
     [dataset],
   );
 
   const handleDatasetAdd = useCallback(() => {
-    if (!dataset) return;
+    if (!dataset || addDisabled) return;
     onDatasetAdd(dataset);
-  }, [dataset, onDatasetAdd]);
+  }, [dataset, addDisabled, onDatasetAdd]);
 
   const ContentComponent: React.FC = () => (
     <>
@@ -63,6 +42,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, onTagSelect, onDatasetAdd })
   return dataset ? (
     <DetailsComponent
       dataset={dataset}
+      addDisabled={addDisabled}
       onDatasetAdd={handleDatasetAdd}
       contentSection={ContentComponent}
     />

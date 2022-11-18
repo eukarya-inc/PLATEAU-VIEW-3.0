@@ -39,6 +39,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, onDatasetAdd }) => {
   return dataset ? (
     <DetailsComponent
       dataset={dataset}
+      addDisabled={false}
       onDatasetAdd={handleDatasetAdd}
       contentSection={ContentComponent}
     />

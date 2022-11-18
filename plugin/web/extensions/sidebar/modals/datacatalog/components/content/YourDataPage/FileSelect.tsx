@@ -63,9 +63,7 @@ const FileSelectPane: React.FC = () => {
       <Subtitle>Upload file</Subtitle>
       <UploadWrapper>
         <Dragger {...props}>
-          <p className="ant-upload-drag-icon">
-            <Icon icon="inbox" />
-          </p>
+          <StyledIcon className="ant-upload-drag-icon" icon="inbox" />
           <p className="ant-upload-text">Click or drag file to this area to upload</p>
           <p className="ant-upload-hint">
             Support for a single or bulk upload. Strictly prohibit from uploading company data or
@@ -81,6 +79,10 @@ export default FileSelectPane;
 
 const Wrapper = styled.div`
   padding: 24px 12px;
+`;
+
+const StyledIcon = styled(Icon)`
+  margin-bottom: 8px;
 `;
 
 const Subtitle = styled.p`

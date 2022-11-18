@@ -15,9 +15,19 @@ export type Props = {
   onRemove?: (id: string) => void;
 };
 
+function makeid(length: number) {
+  let result = "";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 const DatasetCard: React.FC<Props> = ({ dataset: { id, name }, onRemove }) => {
   const [expanded, setExpand] = useState(false);
-  const collapseClass = useMemo(() => `collapsible-${id}`, [id]);
+  const collapseClass = useMemo(() => `collapsible-${makeid(id.length)}`, [id]);
 
   const baseFields: Field[] = [
     { id: "zoom", title: "Ideal Zoom", icon: "mapPin", value: 1 },
@@ -45,20 +55,14 @@ const DatasetCard: React.FC<Props> = ({ dataset: { id, name }, onRemove }) => {
           <Icon icon="visible" size={20} />
           <Title>{name}</Title>
         </LeftMain>
-        <StyledIcon icon="arrowDown" size={16} expanded={expanded} />
+        <ArrowIcon icon="arrowDown" size={16} expanded={expanded} />
       </Main>
       <ContentWrapper className={collapseClass} data-collapsed>
         <Content>
           {baseFields.map((field, idx) => (
-            <Field key={idx}>
-              {field.icon && (
-                <Icon
-                  icon={field.icon}
-                  size={20}
-                  onClick={() => field.id === "remove" && onRemove?.(id)}
-                />
-              )}
-              {field.title}
+            <Field key={idx} onClick={() => field.id === "remove" && onRemove?.(id)}>
+              {field.icon && <Icon icon={field.icon} size={20} />}
+              {field.title && <FieldName>{field.title}</FieldName>}
             </Field>
           ))}
           {/* {fields?.map((field, idx) => (
@@ -77,8 +81,9 @@ export default DatasetCard;
 
 const Wrapper = styled.div`
   width: 100%;
-  border-radius: 4px;
   margin: 8px 0;
+  border-radius: 4px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
 `;
 
 const LeftMain = styled.div`
@@ -90,6 +95,7 @@ const LeftMain = styled.div`
 
 const Title = styled.p`
   margin: 0;
+  font-size: 16px;
 `;
 
 const SharedAccordionStyles = styled.div`
@@ -103,6 +109,7 @@ const Main = styled(SharedAccordionStyles)<{ expanded?: boolean }>`
   height: 46px;
   background: #ffffff;
   border-radius: ${({ expanded }) => (!expanded ? "4px" : "4px 4px 0px 0px")};
+  border-bottom: 1px solid #e6e6e6;
   cursor: pointer;
 `;
 
@@ -126,7 +133,11 @@ const ContentWrapper = styled.div`
   padding-right: 12px;
 `;
 
-const StyledIcon = styled(Icon)<{ expanded: boolean }>`
+const ArrowIcon = styled(Icon)<{ expanded: boolean }>`
   transition: transform 0.15s ease;
   transform: ${({ expanded }) => !expanded && "rotate(90deg)"};
+`;
+
+const FieldName = styled.p`
+  margin: 0;
 `;

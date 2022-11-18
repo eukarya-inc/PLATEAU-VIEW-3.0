@@ -39,6 +39,7 @@ export default () => {
 
   const handleDatasetAdd = useCallback((dataset: Dataset) => {
     updateDatasets(oldDatasets => [...oldDatasets, dataset]);
+    postMsg({ action: "addDatasetToScene", payload: dataset });
   }, []);
 
   const handleDatasetRemove = useCallback(
@@ -65,8 +66,9 @@ export default () => {
   // ****************************************
 
   const handleModalOpen = useCallback(() => {
-    postMsg({ action: "modal-open" });
-  }, []);
+    const selectedIds = selectedDatasets.map(d => d.id);
+    postMsg({ action: "modal-open", payload: selectedIds });
+  }, [selectedDatasets]);
 
   return {
     selectedDatasets,
