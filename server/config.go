@@ -17,6 +17,7 @@ const configPrefix = "REEARTH_PLATEAUVIEW"
 type Config struct {
 	Port                 uint   `default:"8080" envconfig:"PORT"`
 	Host                 string `default:"http://localhost:8080"`
+	Origin               []string
 	CMS_Webhook_Secret   string
 	CMS_ModelID          string
 	CMS_CityGMLFieldID   string

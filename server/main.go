@@ -32,6 +32,9 @@ func main() {
 	e.Use(
 		middleware.Recover(),
 		logger.AccessLogger(),
+		middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: conf.Origin,
+		}),
 	)
 
 	e.GET("/ping", func(c echo.Context) error {
