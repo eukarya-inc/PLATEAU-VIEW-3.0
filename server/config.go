@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -28,6 +29,9 @@ type Config struct {
 	FME_Mock             bool
 	FME_Token            string
 	FME_SkipQualityCheck bool
+	SendGrid_APIKey      string
+	Opinion_Email        string
+	Opinion_ToName       string
 	Secret               string
 }
 
@@ -72,5 +76,13 @@ func (c *Config) Share() share.Config {
 		CMSToken:       c.CMS_Token,
 		CMSModelID:     c.CMS_ShareModelID,
 		CMSDataFieldID: c.CMS_ShareDataFieldID,
+	}
+}
+
+func (c *Config) Opinion() opinion.Config {
+	return opinion.Config{
+		SendGridAPIKey: c.SendGrid_APIKey,
+		Email:          c.Opinion_Email,
+		ToName:         c.Opinion_ToName,
 	}
 }

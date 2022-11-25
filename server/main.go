@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/reearth/reearthx/log"
@@ -26,6 +28,7 @@ func main() {
 	e.HideBanner = true
 	e.Logger = logger
 	e.HTTPErrorHandler = errorHandler(e.DefaultHTTPErrorHandler)
+	e.Validator = &customValidator{validator: validator.New()}
 	e.Use(
 		middleware.Recover(),
 		logger.AccessLogger(),
@@ -37,6 +40,7 @@ func main() {
 
 	lo.Must0(cmsintegration.Echo(e.Group(""), conf.CMSIntegration()))
 	lo.Must0(share.Echo(e.Group("/share"), conf.Share()))
+	opinion.Echo(e.Group("/opinion"), conf.Opinion())
 
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
 	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
@@ -86,4 +90,15 @@ func errorMessage(err error, log func(string, ...interface{})) (int, string) {
 	}
 
 	return code, msg
+}
+
+type customValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *customValidator) Validate(i any) error {
+	if err := cv.validator.Struct(i); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return nil
 }
