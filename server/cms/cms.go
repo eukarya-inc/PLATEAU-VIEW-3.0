@@ -10,6 +10,7 @@ import (
 	"net/url"
 
 	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
 
 type Interface interface {
@@ -211,4 +212,12 @@ type Asset struct {
 type Item struct {
 	ID     string  `json:"id"`
 	Fields []Field `json:"fields"`
+}
+
+func (i Item) Field(id string) *Field {
+	f, ok := lo.Find(i.Fields, func(f Field) bool { return f.ID == id })
+	if ok {
+		return &f
+	}
+	return nil
 }

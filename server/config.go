@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/reearth/reearthx/log"
@@ -21,6 +22,8 @@ type Config struct {
 	CMS_BldgFieldID      string
 	CMS_BaseURL          string
 	CMS_Token            string
+	CMS_ShareModelID     string
+	CMS_ShareDataFieldID string
 	FME_BaseURL          string
 	FME_Mock             bool
 	FME_Token            string
@@ -60,5 +63,14 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		CMSToken:            c.CMS_Token,
 		CMSWebhookSecret:    c.CMS_Webhook_Secret,
 		Secret:              c.Secret,
+	}
+}
+
+func (c *Config) Share() share.Config {
+	return share.Config{
+		CMSBase:        c.CMS_BaseURL,
+		CMSToken:       c.CMS_Token,
+		CMSModelID:     c.CMS_ShareModelID,
+		CMSDataFieldID: c.CMS_ShareDataFieldID,
 	}
 }

@@ -6,17 +6,19 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
+	"github.com/samber/lo"
 	"golang.org/x/net/http2"
 )
 
 func main() {
 	log.Infof("reearth-plateauview\n")
 
-	conf := must(NewConfig())
+	conf := lo.Must(NewConfig())
 	log.Infof("config: %s", conf.Print())
 
 	logger := log.NewEcho()
@@ -33,23 +35,11 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-	must0(cmsintegration.Echo(e.Group(""), conf.CMSIntegration()))
+	lo.Must0(cmsintegration.Echo(e.Group(""), conf.CMSIntegration()))
+	lo.Must0(share.Echo(e.Group("/share"), conf.Share()))
 
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
 	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
-}
-
-func must[T any](t T, err error) T {
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return t
-}
-
-func must0(err error) {
-	if err != nil {
-		log.Fatalln(err)
-	}
 }
 
 func errorHandler(next func(error, echo.Context)) func(error, echo.Context) {
