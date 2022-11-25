@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 )
@@ -60,7 +60,7 @@ func NotifyHandler(cmsi cms.Interface, secret string) echo.HandlerFunc {
 
 		log.Infof("notify: asset uploaded: %s", assetID)
 
-		if err := cmsi.UpdateItem(c.Request().Context(), id.ItemID, []cms.Field{
+		if _, err := cmsi.UpdateItem(c.Request().Context(), id.ItemID, []cms.Field{
 			{
 				ID:    id.BldgFieldID,
 				Type:  "asset",

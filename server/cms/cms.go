@@ -13,9 +13,11 @@ import (
 )
 
 type Interface interface {
+	GetItem(ctx context.Context, itemID string) (*Item, error)
+	CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error)
+	UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error)
 	Asset(ctx context.Context, id string) (*Asset, error)
 	UploadAsset(ctx context.Context, projectID, url string) (string, error)
-	UpdateItem(ctx context.Context, itemID string, fields []Field) error
 	Comment(ctx context.Context, assetID, content string) error
 }
 
@@ -42,6 +44,59 @@ func New(base, token string) (*CMS, error) {
 		token:  token,
 		client: http.DefaultClient,
 	}, nil
+}
+
+func (c *CMS) GetItem(ctx context.Context, itemID string) (*Item, error) {
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "items", itemID}, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get an item: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	item := &Item{}
+	if err := json.NewDecoder(b).Decode(&item); err != nil {
+		return nil, fmt.Errorf("failed to parse an item: %w", err)
+	}
+
+	return item, nil
+}
+
+func (c *CMS) CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error) {
+	rb := map[string]any{
+		"fields": fields,
+	}
+
+	b, err := c.send(ctx, http.MethodPost, []string{"api", "models", modelID}, rb)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create an item: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	item := &Item{}
+	if err := json.NewDecoder(b).Decode(&item); err != nil {
+		return nil, fmt.Errorf("failed to parse an item: %w", err)
+	}
+
+	return item, nil
+}
+
+func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error) {
+	rb := map[string]any{
+		"fields": fields,
+	}
+
+	b, err := c.send(ctx, http.MethodPatch, []string{"api", "items", itemID}, rb)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update an item: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	item := &Item{}
+	if err := json.NewDecoder(b).Decode(&item); err != nil {
+		return nil, fmt.Errorf("failed to parse an item: %w", err)
+	}
+
+	return item, nil
 }
 
 func (c *CMS) UploadAsset(ctx context.Context, projectID, url string) (string, error) {
@@ -85,20 +140,6 @@ func (c *CMS) Asset(ctx context.Context, assetID string) (*Asset, error) {
 	}
 
 	return a, nil
-}
-
-func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields []Field) error {
-	rb := map[string]any{
-		"fields": fields,
-	}
-
-	b, err := c.send(ctx, http.MethodPatch, []string{"api", "items", itemID}, rb)
-	if err != nil {
-		return fmt.Errorf("failed to update an item: %w", err)
-	}
-	defer func() { _ = b.Close() }()
-
-	return nil
 }
 
 func (c *CMS) Comment(ctx context.Context, assetID, content string) error {
@@ -165,4 +206,9 @@ func (c *CMS) request(ctx context.Context, m string, p []string, body any) (*htt
 type Asset struct {
 	ID  string `json:"id"`
 	URL string `json:"url"`
+}
+
+type Item struct {
+	ID     string  `json:"id"`
+	Fields []Field `json:"fields"`
 }

@@ -22,14 +22,38 @@ func TestCMS(t *testing.T) {
 	// valid
 	call := mockCMS("http://fme.example.com", "TOKEN")
 	f := lo.Must(New("http://fme.example.com", "TOKEN"))
-	assetID, err := f.UploadAsset(ctx, "ppp", "aaa")
+
+	item, err := f.GetItem(ctx, "a")
 	assert.NoError(t, err)
-	assert.Equal(t, "idid", assetID)
-	assert.NoError(t, f.UpdateItem(ctx, "a", nil))
-	assert.NoError(t, f.Comment(ctx, "c", "comment"))
+	assert.Equal(t, &Item{
+		ID:     "a",
+		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+	}, item)
+
+	item, err = f.CreateItem(ctx, "a", nil)
+	assert.NoError(t, err)
+	assert.Equal(t, &Item{
+		ID:     "a",
+		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+	}, item)
+
+	item, err = f.UpdateItem(ctx, "a", nil)
+	assert.NoError(t, err)
+	assert.Equal(t, &Item{
+		ID:     "a",
+		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+	}, item)
+
 	a, err := f.Asset(ctx, "a")
 	assert.NoError(t, err)
 	assert.Equal(t, &Asset{ID: "a", URL: "url"}, a)
+
+	assetID, err := f.UploadAsset(ctx, "ppp", "aaa")
+	assert.NoError(t, err)
+	assert.Equal(t, "idid", assetID)
+
+	assert.NoError(t, f.Comment(ctx, "c", "comment"))
+
 	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
@@ -39,13 +63,28 @@ func TestCMS(t *testing.T) {
 	httpmock.Reset()
 	call = mockCMS("http://fme.example.com", "TOKEN")
 	f = lo.Must(New("http://fme.example.com", "TOKEN2"))
+
+	item, err = f.GetItem(ctx, "a")
+	assert.Nil(t, item)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	item, err = f.CreateItem(ctx, "a", nil)
+	assert.Nil(t, item)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	item, err = f.UpdateItem(ctx, "a", nil)
+	assert.Nil(t, item)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
 	assetID, err = f.UploadAsset(ctx, "ppp", "aaa")
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, "", assetID)
-	assert.ErrorContains(t, f.UpdateItem(ctx, "a", nil), "failed to request: code=401")
+
 	assert.ErrorContains(t, f.Comment(ctx, "c", "comment"), "failed to request: code=401")
+
 	_, err = f.Asset(ctx, "a")
 	assert.ErrorContains(t, err, "failed to request: code=401")
+
 	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
@@ -62,19 +101,24 @@ func mockCMS(host, token string) func(string) int {
 			return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
 		}
 
-		res := map[string]string{}
+		res := map[string]any{}
 		p := req.URL.Path
 		if req.Method == "POST" && p == "/api/projects/ppp/assets" {
 			res["id"] = "idid"
 		} else if req.Method == "GET" && p == "/api/assets/a" {
 			res["id"] = "a"
 			res["url"] = "url"
+		} else if req.Method == "POST" && p == "/api/models/a" || p == "/api/items/a" {
+			res["id"] = "a"
+			res["fields"] = []map[string]string{{"id": "f", "type": "text", "value": "t"}}
 		}
 
 		return httpmock.NewJsonResponse(http.StatusOK, res)
 	}
 
+	httpmock.RegisterResponder("GET", host+"/api/items/a", responder)
 	httpmock.RegisterResponder("PATCH", host+"/api/items/a", responder)
+	httpmock.RegisterResponder("POST", host+"/api/models/a", responder)
 	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", responder)
 	httpmock.RegisterResponder("POST", host+"/api/assets/c/comments", responder)
 	httpmock.RegisterResponder("GET", host+"/api/assets/a", responder)

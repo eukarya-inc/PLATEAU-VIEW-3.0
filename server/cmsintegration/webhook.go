@@ -3,7 +3,7 @@ package cmsintegration
 import (
 	"net/http"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/fme"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/webhook"
 	"github.com/labstack/echo/v4"
