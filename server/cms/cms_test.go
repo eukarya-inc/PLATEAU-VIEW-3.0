@@ -108,7 +108,7 @@ func mockCMS(host, token string) func(string) int {
 		} else if req.Method == "GET" && p == "/api/assets/a" {
 			res["id"] = "a"
 			res["url"] = "url"
-		} else if req.Method == "POST" && p == "/api/models/a" || p == "/api/items/a" {
+		} else if req.Method == "POST" && p == "/api/models/a/items" || p == "/api/items/a" {
 			res["id"] = "a"
 			res["fields"] = []map[string]string{{"id": "f", "type": "text", "value": "t"}}
 		}
@@ -118,7 +118,7 @@ func mockCMS(host, token string) func(string) int {
 
 	httpmock.RegisterResponder("GET", host+"/api/items/a", responder)
 	httpmock.RegisterResponder("PATCH", host+"/api/items/a", responder)
-	httpmock.RegisterResponder("POST", host+"/api/models/a", responder)
+	httpmock.RegisterResponder("POST", host+"/api/models/a/items", responder)
 	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", responder)
 	httpmock.RegisterResponder("POST", host+"/api/assets/c/comments", responder)
 	httpmock.RegisterResponder("GET", host+"/api/assets/a", responder)

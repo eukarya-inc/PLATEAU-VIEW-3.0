@@ -67,7 +67,7 @@ func (c *CMS) CreateItem(ctx context.Context, modelID string, fields []Field) (*
 		"fields": fields,
 	}
 
-	b, err := c.send(ctx, http.MethodPost, []string{"api", "models", modelID}, rb)
+	b, err := c.send(ctx, http.MethodPost, []string{"api", "models", modelID, "items"}, rb)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create an item: %w", err)
 	}
