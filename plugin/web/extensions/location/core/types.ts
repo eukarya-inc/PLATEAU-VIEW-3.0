@@ -1,6 +1,10 @@
-export type MouseEventData = {
+export type MouseEvent = {
   lat?: number;
   lng?: number;
+};
+export type DistanceLegend = {
+  label?: string;
+  uniteLine?: number;
 };
 type actionType = "modal-google-open" | "modal-terrain-open" | "modal-close";
 

@@ -1,31 +1,30 @@
-import { Divider, Button, Icon } from "@web/sharedComponents";
+import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { ReactNode } from "react";
 
 export type Props = {
   title?: string;
   children?: ReactNode;
-  onModalChange: () => void;
+  onModalClose: () => void;
 };
 
-const CommonModalWrapper: React.FC<Props> = ({ title, children, onModalChange }) => {
+const CommonModalWrapper: React.FC<Props> = ({ title, children, onModalClose }) => {
   return (
     <Wrapper>
       {title && (
-        <>
-          <HeaderWrapper>
-            <Title>{title}</Title>
-            <CloseButton>
-              <Icon icon="close" onClick={onModalChange} size={16} />
-            </CloseButton>
-          </HeaderWrapper>
-          <Divider />
-        </>
+        <HeaderWrapper>
+          <Title>{title}</Title>
+          <CloseButton type="default">
+            <Icon size={32} icon="close" color="#00000073" onClick={onModalClose} />
+          </CloseButton>
+        </HeaderWrapper>
       )}
+
       <ContentWrapper>{children}</ContentWrapper>
+
       <FooterWrapper>
-        <OkButton>
-          <Icon icon="close" onClick={onModalChange} />
+        <OkButton type="primary" onClick={onModalClose}>
+          <Text>OK</Text>
         </OkButton>
       </FooterWrapper>
     </Wrapper>
@@ -35,17 +34,29 @@ const CommonModalWrapper: React.FC<Props> = ({ title, children, onModalChange })
 export default CommonModalWrapper;
 
 const Wrapper = styled.div`
-  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  background: #ffffff;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px rgba(0, 0, 0, 0.08),
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+  height: 100%;
 `;
-
 const Title = styled.p`
   font-size: 16px;
+  margin-bottom: 0;
 `;
 
 const CloseButton = styled(Button)`
-  margin-right: 0px;
-  width: 16px;
-  height: 16px;
+  margin-right: -24px;
+  border: none;
+  height: 48px;
+  width: 48px;
+  cursor: pointer;
+  shadow: none;
+  transition: background 0.3s;
 `;
 
 const HeaderWrapper = styled.div`
@@ -55,7 +66,6 @@ const HeaderWrapper = styled.div`
   align-items: center;
   padding: 16px 24px;
   gap: 36px;
-  width: 572px;
   height: 56px;
   background: #ffffff;
   box-shadow: inset 0px -1px 0px #f0f0f0;
@@ -69,14 +79,8 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 24px;
-  gap: 10px;
-  width: 572px;
-  height: 562px;
-  flex: none;
-  order: 1;
-  align-self: stretch;
-  flex-grow: 0;
+  padding: 24px 24px;
+  height: 100%;
 `;
 
 const FooterWrapper = styled.div`
@@ -85,8 +89,6 @@ const FooterWrapper = styled.div`
   justify-content: flex-end;
   align-items: center;
   padding: 10px 16px;
-  gap: 8px;
-  width: 572px;
   height: 52px;
   background: #ffffff;
   box-shadow: inset 0px 1px 0px #f0f0f0;
@@ -97,15 +99,15 @@ const FooterWrapper = styled.div`
 `;
 
 const OkButton = styled(Button)`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0px;
-  gap: 8px;
+  padding: 5px 16px;
   width: 51px;
   height: 32px;
-  background: #ffffff;
-  flex: none;
-  order: 0;
-  flex-grow: 0;
+  background: #1890ff;
+  box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.043);
+  border-radius: 2px;
+  text-align: center;
+`;
+
+const Text = styled.p`
+  font-size: 14px;
 `;

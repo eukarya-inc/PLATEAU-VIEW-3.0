@@ -2,10 +2,10 @@ import { Typography } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
-import { postMsg } from "../../utils";
+import { postMsg } from "../../core/utils";
 import CommonModalWrapper from "../commonModalWrapper";
 
-const GoogleAnalyticstModal: React.FC = () => {
+const GoogleAnalytics: React.FC = () => {
   const { Link } = Typography;
 
   const handleClose = useCallback(() => {
@@ -13,7 +13,7 @@ const GoogleAnalyticstModal: React.FC = () => {
   }, []);
 
   return (
-    <CommonModalWrapper title="Google Analytics の利用について" onModalChange={handleClose}>
+    <CommonModalWrapper title="Google Analytics の利用について" onModalClose={handleClose}>
       <Paragraph>
         当サイトでは、サービス向上やウェブサイトの改善のためにGoogle
         Inc.の提供するアクセス分析のツールであるGoogle Analyticsを利用した計測を行っております。
@@ -48,7 +48,7 @@ const GoogleAnalyticstModal: React.FC = () => {
     </CommonModalWrapper>
   );
 };
-export default GoogleAnalyticstModal;
+export default GoogleAnalytics;
 
 const Paragraph = styled.p`
   font-size: 12px;
