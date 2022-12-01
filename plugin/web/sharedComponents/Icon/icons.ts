@@ -9,13 +9,15 @@ import { ReactComponent as Info } from "./Icons/info.svg";
 import { ReactComponent as Share } from "./Icons/share.svg";
 import { ReactComponent as Sliders } from "./Icons/sliders.svg";
 import { ReactComponent as DataBase } from "./Icons/dataBase.svg";
-import { ReactComponent as Template } from "./Icons/template.svg";
+import { ReactComponent as Templates } from "./Icons/templates.svg";
 import { ReactComponent as Menu } from "./Icons/hamburgerMenu.svg";
 import { ReactComponent as Close } from "./Icons/close.svg";
 import { ReactComponent as Copy } from "./Icons/copy.svg";
+import { ReactComponent as Plus } from "./Icons/plus.svg";
 import { ReactComponent as PlusCircle } from "./Icons/plusCircle.svg";
 import { ReactComponent as Check } from "./Icons/check.svg";
 import { ReactComponent as ArrowDown } from "./Icons/arrowDown.svg";
+import { ReactComponent as ArrowLeft } from "./Icons/arrowLeft.svg";
 import { ReactComponent as Visible } from "./Icons/visible.svg";
 import { ReactComponent as About } from "./Icons/about.svg";
 import { ReactComponent as MapPin } from "./Icons/mapPin.svg";
@@ -27,6 +29,7 @@ import { ReactComponent as FolderOpen } from "./Icons/folderOpen.svg";
 import { ReactComponent as File } from "./Icons/file.svg";
 import { ReactComponent as Empty } from "./Icons/empty.svg";
 import { ReactComponent as NewPage } from "./Icons/newPage.svg";
+import { ReactComponent as Edit } from "./Icons/edit.svg";
 
 export default {
   logo: Logo,
@@ -37,13 +40,15 @@ export default {
   share: Share,
   sliders: Sliders,
   dataBase: DataBase,
-  template: Template,
+  templates: Templates,
   menu: Menu,
   close: Close,
   copy: Copy,
+  plus: Plus,
   plusCircle: PlusCircle,
   check: Check,
   arrowDown: ArrowDown,
+  arrowLeft: ArrowLeft,
   visible: Visible,
   about: About,
   mapPin: MapPin,
@@ -55,4 +60,5 @@ export default {
   file: File,
   empty: Empty,
   newPage: NewPage,
+  edit: Edit,
 };

@@ -2,7 +2,7 @@ import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import DatasetWrapper, { Dataset } from "./DatasetCard";
+import DatasetWrapper, { Dataset } from "../common/DatasetCard";
 
 export type Props = {
   selectedDatasets: Dataset[];

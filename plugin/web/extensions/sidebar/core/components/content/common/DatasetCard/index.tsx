@@ -2,9 +2,10 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo, useState } from "react";
 
+import { Dataset as DatasetType, Field as FieldType } from "../types";
+
 import { expandSection, collapseSection } from "./accordion";
 import Field from "./Field";
-import { Dataset as DatasetType, Field as FieldType } from "./types";
 
 export type Dataset = DatasetType;
 

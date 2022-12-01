@@ -9,7 +9,7 @@ type Props = {
   size?: string | number;
   color?: string;
   wide?: boolean;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 };
 
 type Icons = keyof typeof icons;
@@ -26,9 +26,8 @@ const Icon: React.FC<Props> = ({ className, icon, size = 24, color, wide, onClic
 };
 
 const Wrapper = styled.div<{ size: string; color?: string; wide?: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-content: center;
+  width: ${({ size }) => size};
+  ${({ wide, size }) => !wide && `height: ${size};`}
 
   svg {
     width: ${({ size }) => size};

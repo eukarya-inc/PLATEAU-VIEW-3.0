@@ -27,3 +27,9 @@ export type Location = {
   height: number;
   // check reearth for full params
 };
+
+export type Template = {
+  id: string;
+  name: string;
+  fields?: Field[];
+};

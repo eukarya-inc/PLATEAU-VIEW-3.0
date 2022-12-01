@@ -11,7 +11,9 @@ reearth.ui.show(html, { extended: true });
 
 reearth.on("message", ({ action, payload }: PostMessageProps) => {
   // Sidebar
-  if (action === "updateOverrides") {
+  if (action === "init") {
+    reearth.ui.postMessage({ type: "init", payload: { inEditor: reearth.scene.inEditor } });
+  } else if (action === "updateOverrides") {
     reearth.visualizer.overrideProperty(payload);
   } else if (action === "addDatasetToScene") {
     // NEED TO HANDLE ADDING TO SCENE WHEN ABLE
@@ -34,7 +36,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     // Datacatalog modal
   } else if (action === "modal-close") {
     reearth.modal.close();
-  } else if (action === "fetchData") {
+  } else if (action === "initDatasetCatalog") {
     reearth.modal.postMessage({ type: "msgFromSidebar", payload: addedDatasets });
   }
 });

@@ -98,5 +98,6 @@ const CloseButton = styled.button`
   width: 48px;
   border: none;
   background: #00bebe;
+  color: white;
   cursor: pointer;
 `;

@@ -48,7 +48,7 @@ const Header: React.FC<Props> = ({
       },
       {
         key: "template",
-        icon: <StyledIcon icon="template" />,
+        icon: <StyledIcon icon="templates" />,
       },
     ];
 
@@ -111,7 +111,10 @@ const TopSection = styled.div`
   border-radius: 0 0 8px 0;
 `;
 
-const MinimizeButton = styled.button<{ minimized?: boolean }>`
+const MinimizeButton = styled.div<{ minimized?: boolean }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   right: 0;
   top: 0;
@@ -121,6 +124,7 @@ const MinimizeButton = styled.button<{ minimized?: boolean }>`
   background: #00bebe;
   cursor: pointer;
   transition: background 0.3s;
+  color: white;
 
   ${({ minimized }) => minimized && "position: static;"}
 `;

@@ -79,6 +79,7 @@ const NoData = styled.div`
 const NoDataMain = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   flex: 1;
   flex-direction: column;
 `;

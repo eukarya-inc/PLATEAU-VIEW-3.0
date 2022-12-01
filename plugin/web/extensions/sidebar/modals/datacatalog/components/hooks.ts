@@ -26,7 +26,7 @@ export default () => {
   );
 
   useEffect(() => {
-    postMsg({ action: "fetchData" }); // Needed to trigger sending selected dataset ids from Sidebar
+    postMsg({ action: "initDatasetCatalog" }); // Needed to trigger sending selected dataset ids from Sidebar
   }, []);
 
   useEffect(() => {

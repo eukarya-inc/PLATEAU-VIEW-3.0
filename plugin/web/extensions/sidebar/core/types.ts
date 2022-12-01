@@ -1,8 +1,9 @@
 type ActionType =
+  | "init"
   | "updateOverrides"
   | "screenshot"
   | "screenshot-save"
-  | "fetchData"
+  | "initDatasetCatalog"
   | "addDatasetToScene"
   | "msgFromSidebar"
   | "msgFromModal"

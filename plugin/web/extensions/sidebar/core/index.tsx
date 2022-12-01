@@ -2,6 +2,7 @@ import Info from "@web/extensions/sidebar/core/components/content/Info";
 import MapSettings from "@web/extensions/sidebar/core/components/content/MapSettings";
 import Selection from "@web/extensions/sidebar/core/components/content/Selection";
 import Share from "@web/extensions/sidebar/core/components/content/Share";
+import Templates from "@web/extensions/sidebar/core/components/content/Templates";
 import Header, { Pages } from "@web/extensions/sidebar/core/components/Header";
 import useGlobalHooks from "@web/extensions/sidebar/core/globalHooks";
 import { Content } from "@web/sharedComponents";
@@ -10,14 +11,14 @@ import { memo, useCallback, useState } from "react";
 
 export type Props = {
   className?: string;
-  isInsideEditor: boolean;
 };
 
-const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
+const Sidebar: React.FC<Props> = ({ className }) => {
   const {
     selectedDatasets,
     overrides,
     minimized,
+    inEditor,
     setMinimize,
     handleDatasetRemove,
     handleDatasetRemoveAll,
@@ -53,7 +54,7 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
     <Wrapper className={className} minimized={minimized}>
       <Header
         current={current}
-        isInsideEditor={isInsideEditor}
+        isInsideEditor={inEditor}
         minimized={minimized}
         onMinimize={handleMinimize}
         onClick={handleClick}
@@ -73,7 +74,7 @@ const Sidebar: React.FC<Props> = ({ className, isInsideEditor }) => {
               map: <MapSettings overrides={overrides} onOverridesUpdate={handleOverridesUpdate} />,
               share: <Share />,
               about: <Info />,
-              template: <div>Templates</div>, // To Do
+              template: <Templates />,
             }[current]
           }
         </ContentWrapper>
