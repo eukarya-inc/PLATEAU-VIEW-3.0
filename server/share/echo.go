@@ -48,7 +48,7 @@ func Echo(g *echo.Group, conf Config) error {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
 
-		return c.JSONBlob(http.StatusOK, []byte(v))
+		return c.Blob(http.StatusOK, "application/json", []byte(v))
 	})
 
 	g.POST("", func(c echo.Context) error {

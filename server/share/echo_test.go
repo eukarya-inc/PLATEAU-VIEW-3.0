@@ -67,7 +67,7 @@ func mockCMS(t *testing.T) {
 		return httpmock.NewJsonResponse(http.StatusNotFound, "not found")
 	})
 
-	httpmock.RegisterResponder("POST", "https://cms.example.com/api/models/modelmodel", func(r *http.Request) (*http.Response, error) {
+	httpmock.RegisterResponder("POST", "https://cms.example.com/api/models/modelmodel/items", func(r *http.Request) (*http.Response, error) {
 		if r.Header.Get("Authorization") != "Bearer token" {
 			return httpmock.NewBytesResponse(http.StatusUnauthorized, nil), nil
 		}
