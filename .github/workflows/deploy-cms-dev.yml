@@ -39,7 +39,7 @@ jobs:
           check_artifacts: true
           search_artifacts: true
       - name: Extract
-        run: mv reearth-cms-web.tar.gz . && tar -xvf reearth-cms-web.tar.gz
+        run: mv reearth-cms-web.tar.gz && tar -xvf reearth-cms-web.tar.gz
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-cms-web/ ${{ env.GCS_DEST }}
       - name: Save as artifact
