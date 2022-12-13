@@ -26,3 +26,11 @@ extensions:
         zone: outer
         section: left
         area: bottom
+  - id: geolocation
+    name: My Location
+    type: widget
+    widgetLayout:
+      defaultLocation:
+        zone: inner
+        section: right
+        area: middle

@@ -31,6 +31,7 @@ import { ReactComponent as File } from "./Icons/file.svg";
 import { ReactComponent as Empty } from "./Icons/empty.svg";
 import { ReactComponent as NewPage } from "./Icons/newPage.svg";
 import { ReactComponent as Edit } from "./Icons/edit.svg";
+import { ReactComponent as Bullseye } from "./Icons/bullseye.svg";
 
 export default {
   logo: Logo,
@@ -63,4 +64,5 @@ export default {
   empty: Empty,
   newPage: NewPage,
   edit: Edit,
+  bullseye: Bullseye,
 };
