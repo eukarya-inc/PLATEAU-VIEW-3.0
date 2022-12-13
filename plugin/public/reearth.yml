@@ -1,6 +1,6 @@
 name: PLATEAU Plugin
 version: 1.0.0
-id: hoge
+id: plateau-plugin
 extensions:
   - id: sidebar
     name: Sidebar

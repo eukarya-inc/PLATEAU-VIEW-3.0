@@ -1,26 +1,27 @@
 import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
-import { Button, Form, Icon, Input, Typography } from "@web/sharedComponents";
+import { Button, Form, Icon, Input, Checkbox, message } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo } from "react";
 
+import useHooks from "./hooks";
+
 const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
 
-const Info: React.FC = () => {
-  const { Text } = Typography;
+const Feedback: React.FC = () => {
   const [form] = Form.useForm();
+  const addScreenshot: boolean = Form.useWatch("screenshot", form);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const handleCancel = () => {
-    form.resetFields();
-  };
-
-  const handleSend = (values: any) => {
-    console.log(values);
-    form.resetFields();
-  };
+  const { validateMessages, handleSend, handleCancel } = useHooks({
+    form,
+    addScreenshot,
+    messageApi,
+  });
 
   return (
-    <CommonPage title="会社内容">
+    <CommonPage>
       <>
+        {contextHolder}
         <Paragraph>
           PLATEAU は、国土交通省が進める 3D都市モデル整備・活用・オープンデータ化
           のリーディングプロジェクトである。都市活動のプラットフォームデータとして
@@ -29,24 +30,33 @@ const Info: React.FC = () => {
         </Paragraph>
         <PlateauButton onClick={() => window.open(plateauWebsiteUrl, "_blank", "noopener")}>
           <Icon icon="plateauLogoPart" />
-          PLATEAU Project Website
+          PLATEAUプロジェクトサイト
         </PlateauButton>
       </>
       <>
-        <Subtitle>ご意見・ご要望</Subtitle>
-        <Text>ご意見をお聞かせください。</Text>
-        <Form form={form} name="feedback" onFinish={handleSend} layout="vertical">
+        <Subtitle>ご意見をお聞かせください。</Subtitle>
+        <Form
+          form={form}
+          name="feedback"
+          onFinish={handleSend}
+          layout="vertical"
+          validateMessages={validateMessages}>
           <FormItems name="name" label="お名前（任意）">
             <Input />
           </FormItems>
           <FormItems
             name="email"
-            label="メールアドレス（任意）"
-            help={<Text type="secondary">メールアドレスがない場合は返信できません</Text>}>
+            rules={[{ type: "email", required: true, validateTrigger: "onSubmit" }]}
+            label="メールアドレス">
             <Input />
           </FormItems>
-          <FormItems name="comment" label="コメントまたは質問">
+          <FormItems name="comment" label="コメントまたは質問" rules={[{ required: true }]}>
             <Input.TextArea />
+          </FormItems>
+          <FormItems name="screenshot" valuePropName="checked">
+            <Checkbox>
+              <Text>マッププレビューを添付する</Text>
+            </Checkbox>
           </FormItems>
           <FormButtons>
             <Button htmlType="button" onClick={handleCancel}>
@@ -61,19 +71,21 @@ const Info: React.FC = () => {
     </CommonPage>
   );
 };
-export default memo(Info);
+export default memo(Feedback);
 
-const Text = styled.p`
-  font-size: 14px;
+const Subtitle = styled.p`
   margin: 0;
+  font-size: 16px;
+  color: inherit;
 `;
 
-const Subtitle = styled(Text)`
-  margin-bottom: 24px;
+const Text = styled.p`
+  margin: 0;
 `;
 
 const Paragraph = styled.p`
   font-size: 12px;
+  line-height: 18px;
 `;
 
 const PlateauButton = styled.button`
@@ -86,6 +98,7 @@ const PlateauButton = styled.button`
   width: 100%;
   background: transparent;
   border: 1px solid #c7c5c5;
+  margin: 24px 0;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.3s;
@@ -95,7 +108,10 @@ const PlateauButton = styled.button`
   }
 `;
 
-const FormItems = styled(Form.Item)``;
+const FormItems = styled(Form.Item)`
+  margin-bottom: 8px;
+  color: red;
+`;
 
 const FormButtons = styled(Form.Item)`
   display: flex;

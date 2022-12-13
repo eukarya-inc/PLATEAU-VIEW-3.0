@@ -76,11 +76,11 @@ const DatasetDetails: React.FC<Props> = ({
       <ButtonWrapper>
         <Button>
           <Icon icon="share" />
-          Share this Data
+          シェア
         </Button>
         <Button disabled={addDisabled} onClick={handleDatasetAdd}>
           {!addDisabled && <Icon icon="plusCircle" />}
-          {addDisabled ? "Already in Scene" : "Add to Scene"}
+          {addDisabled ? "シーンに追加済み" : "シーンに追加"}
         </Button>
       </ButtonWrapper>
       <Title>{dataset.name}</Title>

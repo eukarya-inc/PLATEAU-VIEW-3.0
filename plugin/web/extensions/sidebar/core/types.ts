@@ -2,13 +2,15 @@ type ActionType =
   | "init"
   | "updateOverrides"
   | "screenshot"
+  | "screenshot-preview"
   | "screenshot-save"
   | "initDatasetCatalog"
   | "addDatasetToScene"
   | "msgFromSidebar"
   | "msgFromModal"
-  | "modal-open"
   | "modal-close"
+  | "datacatalog-modal-open"
+  | "welcome-modal-open"
   | "minimize";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
@@ -16,10 +18,19 @@ export type PostMessageProps = { action: ActionType; payload?: any };
 export type ReearthApi = {
   default?: {
     camera?: Camera;
-    terrain?: boolean;
     sceneMode?: SceneMode;
     depthTestAgainstTerrain?: boolean;
     allowEnterGround?: boolean;
+  };
+  terrain?: {
+    terrain?: boolean;
+    terrainType?: "cesiumion";
+    terrainCesiumIonAsset?: string;
+    terrainCesiumIonAccessToken?: string;
+    terrainCesiumIonUrl?: string;
+    terrainExaggeration?: number;
+    terrainExaggerationRelativeHeight?: number;
+    depthTestAgainstTerrain?: boolean;
   };
   tiles?: Tile[];
 };
@@ -28,7 +39,7 @@ export type SceneMode = "3d" | "2d";
 
 type Tile = {
   id: string;
-  tile_url: string;
+  tile_url?: string;
   tile_type: string;
 };
 

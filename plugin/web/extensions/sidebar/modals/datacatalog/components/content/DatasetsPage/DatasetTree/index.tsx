@@ -30,10 +30,10 @@ const DatasetTree: React.FC<Props> = ({ catalog, selectedTags, onTagSelect, onOp
     <Wrapper>
       {!selectedTags?.length && (
         <StyledInput
-          placeholder="input search text"
+          placeholder="検索"
           value={searchTerm}
           onChange={handleSearch}
-          addonAfter={<Icon icon="search" size={15} />}
+          addonAfter={<StyledIcon icon="search" size={15} />}
         />
       )}
       {selectedTags && selectedTags.length > 0 && (
@@ -43,13 +43,17 @@ const DatasetTree: React.FC<Props> = ({ catalog, selectedTags, onTagSelect, onOp
       <StyledTabs
         defaultActiveKey="prefecture"
         tabBarStyle={
-          searchTerm.length > 0 || selectedTags?.length ? { display: "none" } : undefined
+          searchTerm.length > 0 || selectedTags?.length
+            ? { display: "none" }
+            : {
+                userSelect: "none",
+              }
         }
         onChange={active => handleFilter(active as FilterType)}>
-        <Tabs.TabPane key="prefecture" tab="Prefecture">
+        <Tabs.TabPane key="prefecture" tab="都道府県">
           <FileTree filter={filterType} catalog={catalog} onOpenDetails={onOpenDetails} />
         </Tabs.TabPane>
-        <Tabs.TabPane key="type" tab="Type">
+        <Tabs.TabPane key="type" tab="種類">
           <FileTree filter={filterType} catalog={catalog} onOpenDetails={onOpenDetails} />
         </Tabs.TabPane>
       </StyledTabs>
@@ -76,6 +80,9 @@ const StyledInput = styled(Input)`
   .ant-input-group-addon {
     width: 32px;
     padding: 0;
+    :hover {
+      cursor: pointer;
+    }
   }
 `;
 
@@ -93,4 +100,8 @@ const StyledTabs = styled(Tabs)`
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: #00bebe;
   }
+`;
+
+const StyledIcon = styled(Icon)`
+  margin: 0 auto;
 `;

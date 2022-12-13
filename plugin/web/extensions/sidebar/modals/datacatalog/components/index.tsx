@@ -12,15 +12,15 @@ const DataCatalog: React.FC = () => {
   return (
     <Wrapper>
       <Header>
-        <Title>Data Catalogue</Title>
+        <Title>データカタログ</Title>
         <TabsWrapper>
           <Tab selected={currentTab === "dataset"} onClick={() => handleTabChange("dataset")}>
             <Logo icon="plateauLogoPart" selected={currentTab === "dataset"} />
-            <TabName>PLATEAU Dataset</TabName>
+            <TabName>PLATEAUデータセット</TabName>
           </Tab>
           <Tab selected={currentTab === "your-data"} onClick={() => handleTabChange("your-data")}>
             <Icon icon="user" />
-            <TabName>Your Data</TabName>
+            <TabName>自己データ</TabName>
           </Tab>
         </TabsWrapper>
         <CloseButton>
@@ -61,6 +61,7 @@ const Title = styled.p`
   font-weight: 700;
   margin: 0 12px;
   color: #4a4a4a;
+  user-select: none;
 `;
 
 const TabsWrapper = styled.div`
@@ -92,6 +93,9 @@ const TabName = styled.p`
 `;
 
 const CloseButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   right: 0;
   height: 48px;

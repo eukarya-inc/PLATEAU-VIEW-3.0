@@ -61,7 +61,7 @@ export default () => {
 
   const handleModalOpen = useCallback(() => {
     const selectedIds = selectedDatasets.map(d => d.id);
-    postMsg({ action: "modal-open", payload: selectedIds });
+    postMsg({ action: "datacatalog-modal-open", payload: selectedIds });
   }, [selectedDatasets]);
 
   useEffect(() => {

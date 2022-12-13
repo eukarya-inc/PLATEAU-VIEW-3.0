@@ -4,14 +4,18 @@ import { ReearthApi } from "../types";
 
 export const defaultSettings: ReearthApi = {
   default: {
-    terrain: true,
     sceneMode: "3d",
     depthTestAgainstTerrain: false,
+  },
+  terrain: {
+    terrain: true,
+    terrainType: "cesiumion",
+    terrainCesiumIonAsset: "1",
   },
   tiles: [
     {
       id: "tokyo",
-      tile_url: "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+      tile_url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
       tile_type: "url",
     },
   ],
@@ -20,8 +24,8 @@ export const defaultSettings: ReearthApi = {
 const currentOverrides = atom<ReearthApi>(defaultSettings);
 export const useCurrentOverrides = () => useAtom(currentOverrides);
 
-const publishUrl = atom<string | undefined>(undefined);
-export const usePublishUrl = () => useAtom(publishUrl);
+const publishedUrl = atom<string | undefined>(undefined);
+export const usePublishedUrl = () => useAtom(publishedUrl);
 
 // Is this needed? How should it be comformed? Can we just use currentOverrides?
 const currentProject = atom<{}>({});

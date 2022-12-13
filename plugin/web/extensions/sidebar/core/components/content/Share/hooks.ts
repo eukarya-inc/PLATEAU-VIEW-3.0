@@ -1,29 +1,44 @@
-import { usePublishUrl } from "@web/extensions/sidebar/core/state";
+import { usePublishedUrl } from "@web/extensions/sidebar/core/state";
+import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/core/utils";
 import { useCallback } from "react";
 
-export default () => {
-  const [publishUrl, setPublishUrl] = usePublishUrl();
+export type ReearthApi = ReearthApiType;
+
+export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi: any }) => {
+  const [publishedUrl, setPublishedUrl] = usePublishedUrl();
 
   const handleScreenshotShow = useCallback(() => {
-    postMsg({ action: "screenshot" });
+    postMsg({ action: "screenshot-preview" });
   }, []);
 
   const handleScreenshotSave = useCallback(() => {
     postMsg({ action: "screenshot-save" });
   }, []);
 
-  const handleProjectShare = useCallback(() => {
-    const suffix = makeUrlSuffix();
-    if (!publishUrl) {
-      // To do: hit PLATEAU backend endpoint and create project, returning
-      // publish URl or error.
-      setPublishUrl(`https://plateauview.mlit.go.jp/${suffix}`);
+  const handleProjectShare = useCallback(async () => {
+    if (!publishedUrl && overrides) {
+      const resp = await fetch("https://plateauview.dev.reearth.io/share", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(overrides),
+      });
+      if (resp.status !== 200) {
+        messageApi.open({
+          type: "error",
+          content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
+        });
+      } else {
+        const project = await resp.json();
+        setPublishedUrl(`https://plateauview.dev.reearth.io/share/${project}`);
+      }
     }
   }, []);
 
   return {
-    publishUrl,
+    publishedUrl,
     handleProjectShare,
     handleScreenshotShow,
     handleScreenshotSave,
@@ -33,7 +48,7 @@ export default () => {
 addEventListener("message", e => {
   if (e.source !== parent) return;
   if (e.data.type) {
-    if (e.data.type === "screenshot") {
+    if (e.data.type === "screenshot-preview") {
       generatePrintView(e.data.payload);
     } else if (e.data.type === "screenshot-save") {
       const link = document.createElement("a");
@@ -44,16 +59,6 @@ addEventListener("message", e => {
     }
   }
 });
-
-function makeUrlSuffix() {
-  let result = "";
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const charactersLength = characters.length;
-  for (let i = 0; i < 15; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
 
 function generatePrintView(payload?: string) {
   const doc = window.open()?.document;
@@ -77,21 +82,47 @@ function generatePrintView(payload?: string) {
   const iframeDoc = iframe.contentWindow?.document;
   if (!iframeDoc) return;
 
+  const currentDate = new Date();
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+  const localizedDate = currentDate.toLocaleDateString("ja", options);
+
   iframeDoc.open();
 
   const iframeHTML = `
-  <div style="display: flex; flex-direction: column; max-width: 1200px; height: 100%; margin: 0 auto; padding: 20px;">
-    <div style="display: flex; justify-content: right; align-items: center; gap: 8px; height: 60px;">
-      <button style="padding: 8px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">Download map</button>
-      <button style="padding: 9px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">Print</button>
-    </div>
-    <div style="display: flex; justify-content: center; width: 100%;">
-      <img src="${payload}" style="max-width: 100%; object-fit: contain;" />
-    </div>
-    <div>
-      <p>This map was created using https://plateauview.mlit.go.jp on ${new Date()}</p>
-    </div>
-  </div>
+  <html>
+    <body>
+      <div style="display: flex; flex-direction: column; max-width: 1200px; height: 100%; margin: 0 auto; padding: 20px;">
+        <div style="display: flex; justify-content: right; align-items: center; gap: 8px; height: 60px;">
+          <button onclick="downloadScreenshot()" style="padding: 8px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">ダウンロード</button>
+          <button onclick="printScreenshot()" style="padding: 9px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">プリント</button>
+        </div>
+        <div style="display: flex; justify-content: center; width: 100%;">
+          <img src="${payload}" style="max-width: 100%; object-fit: contain;" />
+        </div>
+        <div>
+          <p>この地図は${localizedDate}にhttps://plateauview.mlit.go.jpで作られました。</p>
+        </div>
+      </div>
+    </body>
+    <script>
+      const downloadScreenshot = () => {
+        const link = document.createElement("a");
+        link.download = "screenshot.png";
+        link.href = "${payload}";
+        link.click();
+        link.remove();
+      }
+      const printScreenshot = () => {
+        window.print()
+      }
+    </script>
+  </html>
+
 `;
   iframe.contentWindow?.document.write(iframeHTML);
 

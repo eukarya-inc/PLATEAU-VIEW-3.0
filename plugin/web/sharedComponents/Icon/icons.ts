@@ -5,10 +5,11 @@ import { ReactComponent as Logo } from "./Icons/reearthLogo.svg";
 import { ReactComponent as Trash } from "./Icons/trash.svg";
 import { ReactComponent as PlateauLogo } from "./Icons/plateauLogo.svg";
 import { ReactComponent as PlateauLogoPart } from "./Icons/plateauLogoPrt.svg";
-import { ReactComponent as Info } from "./Icons/info.svg";
+import { ReactComponent as Help } from "./Icons/help.svg";
 import { ReactComponent as Share } from "./Icons/share.svg";
+import { ReactComponent as Feedback } from "./Icons/feedback.svg";
 import { ReactComponent as Sliders } from "./Icons/sliders.svg";
-import { ReactComponent as DataBase } from "./Icons/dataBase.svg";
+import { ReactComponent as Database } from "./Icons/database.svg";
 import { ReactComponent as Templates } from "./Icons/templates.svg";
 import { ReactComponent as Menu } from "./Icons/hamburgerMenu.svg";
 import { ReactComponent as Close } from "./Icons/close.svg";
@@ -36,10 +37,11 @@ export default {
   trash: Trash,
   plateauLogo: PlateauLogo,
   plateauLogoPart: PlateauLogoPart,
-  info: Info,
+  help: Help,
   share: Share,
+  feedback: Feedback,
   sliders: Sliders,
-  dataBase: DataBase,
+  database: Database,
   templates: Templates,
   menu: Menu,
   close: Close,

@@ -1,4 +1,5 @@
-import Info from "@web/extensions/sidebar/core/components/content/Info";
+import Feedback from "@web/extensions/sidebar/core/components/content/Feedback";
+import Help from "@web/extensions/sidebar/core/components/content/Help";
 import MapSettings from "@web/extensions/sidebar/core/components/content/MapSettings";
 import Selection from "@web/extensions/sidebar/core/components/content/Selection";
 import Share from "@web/extensions/sidebar/core/components/content/Share";
@@ -31,8 +32,6 @@ const Sidebar: React.FC<Props> = ({ className }) => {
   const handleClick = useCallback((p: Pages) => {
     setCurrent(p);
   }, []);
-
-  // handleResize <- extending in WAS
 
   const handleMinimize = useCallback(() => {
     const html = document.querySelector("html");
@@ -72,8 +71,9 @@ const Sidebar: React.FC<Props> = ({ className }) => {
                 />
               ),
               map: <MapSettings overrides={overrides} onOverridesUpdate={handleOverridesUpdate} />,
-              share: <Share />,
-              about: <Info />,
+              share: <Share overrides={overrides} />,
+              help: <Help />,
+              feedback: <Feedback />,
               template: <Templates />,
             }[current]
           }
@@ -95,7 +95,7 @@ const Wrapper = styled.div<{ minimized?: boolean }>`
 
 const ContentWrapper = styled(Content)`
   flex: 1;
-  background: #dcdcdc;
+  background: #e7e7e7;
   box-sizing: border-box;
   overflow: auto;
 `;

@@ -14,9 +14,7 @@ const CommonModalWrapper: React.FC<Props> = ({ title, children, onModalClose }) 
       {title && (
         <HeaderWrapper>
           <Title>{title}</Title>
-          <CloseButton type="default">
-            <Icon size={32} icon="close" color="#00000073" onClick={onModalClose} />
-          </CloseButton>
+          <CloseButton size={16} icon="close" color="#00000073" onClick={onModalClose} />
         </HeaderWrapper>
       )}
 
@@ -44,19 +42,14 @@ const Wrapper = styled.div`
   border-radius: 2px;
   height: 100%;
 `;
+
 const Title = styled.p`
   font-size: 16px;
   margin-bottom: 0;
 `;
 
-const CloseButton = styled(Button)`
-  margin-right: -24px;
-  border: none;
-  height: 48px;
-  width: 48px;
+const CloseButton = styled(Icon)`
   cursor: pointer;
-  shadow: none;
-  transition: background 0.3s;
 `;
 
 const HeaderWrapper = styled.div`

@@ -50,7 +50,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, on
     <NoData>
       <NoDataMain>
         <Icon icon="empty" size={64} />
-        <StyledP>No Data</StyledP>
+        <StyledP>データがない</StyledP>
         <br />
         <StyledP>データセットを選択してください(プレビューが表示されます)</StyledP>
       </NoDataMain>

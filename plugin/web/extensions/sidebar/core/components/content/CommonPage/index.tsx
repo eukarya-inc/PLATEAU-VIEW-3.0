@@ -32,6 +32,7 @@ export default CommonPageWrapper;
 
 const Wrapper = styled.div`
   padding: 32px 16px;
+  color: #4a4a4a;
 `;
 
 const Title = styled.p`

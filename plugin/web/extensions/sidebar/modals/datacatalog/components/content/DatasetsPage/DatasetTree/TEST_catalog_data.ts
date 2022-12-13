@@ -14,7 +14,7 @@ export const TEST_CATALOG_DATA: Catalog = [
         members: [
           {
             id: "//PLATEAU データセット/全球データ",
-            name: "A name",
+            name: "全球データ",
             type: "3d-tiles",
             url: "www.google.ca",
             tags: [{ name: "全球", type: "location" }], // TAG FIELD IS NEW. NOT A PART OF PLATEAU V1's JSON FILE LIKE THE OTHER VALUES.

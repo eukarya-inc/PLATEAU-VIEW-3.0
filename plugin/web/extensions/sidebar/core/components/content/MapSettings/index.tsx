@@ -53,18 +53,23 @@ const MapSettings: React.FC<Props> = ({ overrides, onOverridesUpdate }) => {
         <Title>ベースマップ</Title>
         <Section>
           <MapWrapper>
-            {baseMapData.map(item => (
-              <ImageButton
-                key={item.key}
-                selected={item.key === currentTiles?.[0].id}
-                onClick={() => handleTileChange(item)}
-                style={{
-                  backgroundImage: "url(" + item.icon + ")",
-                  backgroundSize: "cover",
-                  backgroundRepeat: "no-repeat",
-                }}
-              />
-            ))}
+            <MapTitle>
+              {baseMapData.find(item => item.key === currentTiles?.[0].id)?.title}
+            </MapTitle>
+            <Maps>
+              {baseMapData.map(item => (
+                <ImageButton
+                  key={item.key}
+                  selected={item.key === currentTiles?.[0].id}
+                  onClick={() => handleTileChange(item)}
+                  style={{
+                    backgroundImage: "url(" + item.icon + ")",
+                    backgroundSize: "cover",
+                    backgroundRepeat: "no-repeat",
+                  }}
+                />
+              ))}
+            </Maps>
           </MapWrapper>
         </Section>
       </>
@@ -109,7 +114,19 @@ const MapViewButton = styled.button<{ selected?: boolean }>`
   }
 `;
 
+const MapTitle = styled.p`
+  margin: 0;
+  font-size: 10px;
+  line-height: 14px;
+`;
+
 const MapWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Maps = styled.div`
   display: flex;
   justify-content: start;
   gap: 8px;
@@ -119,9 +136,15 @@ const MapWrapper = styled.div`
 const ImageButton = styled.div<{ selected?: boolean }>`
   height: 64px;
   width: 64px;
-  background: #d1d1d1;
-  border: 2px solid ${({ selected }) => (selected ? "#00bebe" : "#d1d1d1")};
+  border-width: 2px;
+  border-style: solid;
+  border-color: ${({ selected }) => (selected ? "#00bebe" : "transparent")};
   border-radius: 2px;
   padding: 4px 8px;
   cursor: pointer;
+  transition: border-color 0.2s;
+
+  :hover {
+    border-color: #00bebe;
+  }
 `;

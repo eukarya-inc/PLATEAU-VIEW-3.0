@@ -1,14 +1,26 @@
 import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
-import { Row, Icon } from "@web/sharedComponents";
+import { Row, Icon, message } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo, useState } from "react";
 
-import useHooks from "./hooks";
+import useHooks, { ReearthApi } from "./hooks";
 
-const Share: React.FC = () => {
-  const { publishUrl, handleProjectShare, handleScreenshotShow, handleScreenshotSave } = useHooks();
+export type Props = {
+  overrides: ReearthApi;
+};
+
+const Share: React.FC<Props> = ({ overrides }) => {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedIframe, setCopiedIframe] = useState(false);
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const { publishedUrl, handleProjectShare, handleScreenshotShow, handleScreenshotSave } = useHooks(
+    {
+      overrides,
+      messageApi,
+    },
+  );
 
   const handleCopyToClipboard = (type: "url" | "iframe", value?: string) => {
     if (!value) return;
@@ -24,22 +36,23 @@ const Share: React.FC = () => {
     }, 2000);
   };
 
-  const iframeCode = `<iframe src="${publishUrl}" />`;
+  const iframeCode = `<iframe src="${publishedUrl}" />`;
 
   return (
     <CommonPage title="共有・印刷">
       <>
-        <ShareButton onClick={handleProjectShare} disabled={!!publishUrl}>
+        {contextHolder}
+        <ShareButton onClick={handleProjectShare} disabled={!!publishedUrl}>
           共有
         </ShareButton>
-        {publishUrl && (
+        {publishedUrl && (
           <>
             <Subtitle>URLで共有</Subtitle>
             <FlexWrapper>
               <ShareTextWrapper>
-                <ShareText>{publishUrl}</ShareText>
+                <ShareText>{publishedUrl}</ShareText>
               </ShareTextWrapper>
-              <StyledButton onClick={() => handleCopyToClipboard("url", publishUrl)}>
+              <StyledButton onClick={() => handleCopyToClipboard("url", publishedUrl)}>
                 <Icon icon={copiedUrl ? "check" : "copy"} />
               </StyledButton>
             </FlexWrapper>
@@ -61,8 +74,8 @@ const Share: React.FC = () => {
         <Subtitle>印刷</Subtitle>
         <SectionWrapper>
           <ButtonWrapper>
-            <Button onClick={handleScreenshotSave}>Download map (png)</Button>
-            <Button onClick={handleScreenshotShow}>Show Print View</Button>
+            <Button onClick={handleScreenshotSave}>ダウンロード</Button>
+            <Button onClick={handleScreenshotShow}>プリントビュー</Button>
           </ButtonWrapper>
           <SubText>このマップを印刷できる状態で表示</SubText>
         </SectionWrapper>

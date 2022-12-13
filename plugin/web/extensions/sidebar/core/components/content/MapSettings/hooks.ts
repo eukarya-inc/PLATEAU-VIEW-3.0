@@ -19,27 +19,27 @@ const mapViewData: MapViewData[] = [
 const baseMapData: BaseMapData[] = [
   {
     key: "tokyo",
-    title: "National latest photo (seamless)",
+    title: "全国最新写真 (シームレス)",
     icon: bgmap_tokyo,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+    url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
   },
   {
     key: "bing",
-    title: "Aerial photography (Bing)",
+    title: "空中写真 (Bing)",
     icon: mapBing,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",
+    tile_type: "default_label",
   },
   {
     key: "gsi",
-    title: "GSI Maps (light color)",
+    title: "地理院地図 (淡色)",
     icon: bgmap_gsi,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/english/{z}/{x}/{y}.png",
+    url: "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
   },
   {
     key: "dark-matter",
     title: "Dark Matter",
     icon: bgmap_darkmatter,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/lcm25k_2012/{z}/{x}/{y}.png",
+    url: "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.jpg",
   },
 ];
 
@@ -51,11 +51,11 @@ export type Props = {
 export default ({ overrides, onOverridesUpdate }: Props) => {
   const {
     default: {
-      terrain: currentTerrain,
       sceneMode: currentSceneMode,
       depthTestAgainstTerrain: currentHideUnderground,
       allowEnterGround: currentAllowEnterGround,
     } = {},
+    terrain: { terrain: currentTerrain } = {},
     tiles: currentTiles,
   } = overrides;
 
@@ -71,13 +71,19 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
         newView = {
           default: {
             sceneMode: "3d",
+          },
+          terrain: {
             terrain: true,
+            terrainType: "cesiumion",
+            terrainCesiumIonAsset: "1",
           },
         };
       } else if (view === "3d-smooth") {
         newView = {
           default: {
             sceneMode: "3d",
+          },
+          terrain: {
             terrain: false,
           },
         };
@@ -85,6 +91,8 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
         newView = {
           default: {
             sceneMode: "2d",
+          },
+          terrain: {
             terrain: false,
           },
         };
@@ -96,7 +104,11 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
 
   const handleTileChange = useCallback(
     (tile: BaseMapData) => {
-      onOverridesUpdate({ tiles: [{ id: tile.key, tile_url: tile.url, tile_type: "url" }] });
+      if (tile.url) {
+        onOverridesUpdate({ tiles: [{ id: tile.key, tile_url: tile.url, tile_type: "url" }] });
+      } else if (tile.tile_type) {
+        onOverridesUpdate({ tiles: [{ id: tile.key, tile_type: tile.tile_type }] });
+      }
     },
     [onOverridesUpdate],
   );
