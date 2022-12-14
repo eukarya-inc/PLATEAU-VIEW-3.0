@@ -24,6 +24,34 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           pointOutlineColor: "#FFFFFF",
         },
       },
+      infobox: {
+        blocks: [
+          {
+            extensionId: "dlblock",
+            pluginId: "reearth",
+            property: {
+              items: [
+                {
+                  item_title: "Lat",
+                  item_datatype: "number",
+                  item_datanum: payload.currentLocation.latitude,
+                },
+                {
+                  item_title: "Lng",
+                  item_datatype: "number",
+                  item_datanum: payload.currentLocation.longitude,
+                },
+              ],
+            },
+          },
+        ],
+        property: {
+          default: {
+            title: "My Location",
+            infoboxPaddingLeft: 24,
+          },
+        },
+      },
     });
 
     reearth.camera.flyTo(
