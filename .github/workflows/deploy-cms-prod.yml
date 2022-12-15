@@ -1,0 +1,80 @@
+name: ⭐︎ Deploy CMS production
+on:
+  workflow_dispatch:
+env:
+  GCS_DEST: gs://cms-plateau-prod
+  CMS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth-cms:latest
+  CMS_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms:latest
+  WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth-cms-worker:latest
+  WORKER_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms-worker:latest
+  GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
+  GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
+  GCP_REGION: asia-northeast1
+concurrency:
+  group: ${{ github.workflow }}
+jobs:
+  deploy_web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY_PLATEAU_PROD }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GPT }}
+          workflow: deploy-cms-dev.yml
+          branch: main
+          name: reearth-cms-web
+          check_artifacts: true
+          search_artifacts: true
+      - name: Extract
+        run: tar -xvf reearth-cms-web.tar.gz
+      - name: Deploy
+        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-cms-web/ ${{ env.GCS_DEST }}
+      # - name: Disable cache
+      #   run: gsutil setmeta -h "Cache-Control:no-store" ${{ env.GCS_DEST }}/index.html
+      # TODO: purge CDN cache
+  deploy_server:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    steps:
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Configure docker
+        run: gcloud auth configure-docker --quiet
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull docker image
+        run: docker pull $CMS_IMAGE_NAME_GHCR && docker pull $WORKER_IMAGE_NAME_GHCR
+      - name: Push docker image
+        run: |
+          docker tag $CMS_IMAGE_NAME_GHCR $CMS_IMAGE_NAME_GCP \
+          && docker push $CMS_IMAGE_NAME_GCP \
+          && docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_GCP \
+          && docker push $WORKER_IMAGE_NAME_GCP
+      - name: Deploy
+        run: |
+          gcloud run deploy reearth-cms-api \
+            --image $CMS_IMAGE_NAME_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
+          gcloud run deploy reearth-cms-worker \
+            --image $WORKER_IMAGE_NAME_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
