@@ -15,6 +15,7 @@ concurrency:
 jobs:
   deploy_web:
     runs-on: ubuntu-latest
+    if: github.event.repository.full_name == 'eukarya-inc/reearth-plateauview' && github.event.workflow_run.head_branch == 'main'
     steps:
       - uses: google-github-actions/auth@v0
         with:
@@ -43,6 +44,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
+    if: github.event.repository.full_name == 'eukarya-inc/reearth-plateauview' && github.event.workflow_run.head_branch == 'main'
     steps:
       - uses: google-github-actions/auth@v0
         with:

@@ -12,7 +12,7 @@ jobs:
     name: Build and push Docker image
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ghcr.io/eukarya-inc/reearth-plateauview
+      IMAGE_NAME: ghcr.io/eukarya-inc/plateauview-api
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -31,10 +31,10 @@ jobs:
           cache-to: type=gha,mode=max
           push: false
       - name: Save docker image
-        run: docker save ${{ env.IMAGE_NAME }} | gzip > reearth-plateauview.tar.gz
+        run: docker save ${{ env.IMAGE_NAME }} | gzip > plateauview-api.tar.gz
       - name: Save imaged to artifact
         uses: actions/upload-artifact@v2
         with:
-          name: reearth-plateauview
-          path: reearth-plateauview.tar.gz
+          name: plateauview-api
+          path: plateauview-api.tar.gz
           if-no-files-found: error
