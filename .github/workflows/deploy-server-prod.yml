@@ -2,7 +2,7 @@ name: ⭐️ Deploy PLATEAU Server production
 on:
   workflow_dispatch:
 env:
-  IMAGE: ghcr.io/eukarya-inc/plateauview-api:latest
+  IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-api:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau/plateauview-api:latest
   GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
