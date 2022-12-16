@@ -1,4 +1,4 @@
-package webhook
+package cmswebhook
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,8 @@ const (
 )
 
 var ctxKey = struct{}{}
+
+type Handler func(*http.Request, *Payload) error
 
 func AttacPayload(ctx context.Context, p *Payload) context.Context {
 	return context.WithValue(ctx, ctxKey, p)

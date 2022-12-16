@@ -1,4 +1,4 @@
-package webhook
+package cmswebhook
 
 import "github.com/samber/lo"
 

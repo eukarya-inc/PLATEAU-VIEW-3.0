@@ -1,4 +1,4 @@
-package webhook
+package cmswebhook
 
 import (
 	"bytes"

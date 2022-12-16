@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/joho/godotenv"
@@ -66,7 +67,6 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		CMSBldgFieldID:      c.CMS_BldgFieldID,
 		CMSBaseURL:          c.CMS_BaseURL,
 		CMSToken:            c.CMS_Token,
-		CMSWebhookSecret:    c.CMS_Webhook_Secret,
 		Secret:              c.Secret,
 	}
 }
@@ -85,5 +85,16 @@ func (c *Config) Opinion() opinion.Config {
 		SendGridAPIKey: c.SendGrid_APIKey,
 		Email:          c.Opinion_Email,
 		ToName:         c.Opinion_ToName,
+	}
+}
+
+func (c *Config) Geospatialjp() geospatialjp.Config {
+	return geospatialjp.Config{
+		// CkanBase: ,
+		// CkanOrg: ,
+		CMSToken:   c.CMS_Token,
+		CMSBase:    c.CMS_BaseURL,
+		CMSModelID: c.CMS_ModelID,
+		// CMSCatalogFieldID: ,
 	}
 }

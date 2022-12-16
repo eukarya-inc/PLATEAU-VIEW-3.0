@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/go-playground/validator/v10"
@@ -40,6 +42,13 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "pong")
 	})
+
+	cmswebhook.Echo(
+		e.Group("/webhook"),
+		[]byte(conf.CMS_Webhook_Secret),
+		lo.Must(cmsintegration.WebhookHandler(conf.CMSIntegration())),
+		lo.Must(geospatialjp.WebhookHandler(conf.Geospatialjp())),
+	)
 
 	lo.Must0(cmsintegration.Echo(e.Group(""), conf.CMSIntegration()))
 	lo.Must0(share.Echo(e.Group("/share"), conf.Share()))

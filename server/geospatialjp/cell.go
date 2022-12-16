@@ -12,7 +12,7 @@ import (
 )
 
 type CellPos struct {
-	x string
+	x int
 	y int
 }
 
@@ -29,11 +29,11 @@ func ParseCellPos(p string) (CellPos, error) {
 	if err != nil {
 		return CellPos{}, errors.New("invalid cell pos")
 	}
-	return CellPos{x: strings.ToUpper(m[1]), y: y}, nil
+	return CellPos{x: xCode(strings.ToUpper(m[1])), y: y}, nil
 }
 
 func (c CellPos) ShiftX(shift int) CellPos {
-	return CellPos{x: fromXCode(xCode(c.x) + shift), y: c.y}
+	return CellPos{x: c.x + shift, y: c.y}
 }
 
 func (c CellPos) ShiftY(n int) CellPos {
@@ -41,7 +41,7 @@ func (c CellPos) ShiftY(n int) CellPos {
 }
 
 func (c CellPos) String() string {
-	return fmt.Sprintf("%s%d", c.x, c.y)
+	return fmt.Sprintf("%s%d", fromXCode(c.x), c.y)
 }
 
 func xCode(x string) (code int) {

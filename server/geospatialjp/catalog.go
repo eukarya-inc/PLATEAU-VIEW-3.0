@@ -5,74 +5,75 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 	"github.com/xuri/excelize/v2"
 )
 
-type Catalogue struct {
+type Catalog struct {
 	// タイトル
-	Title string `json:"title"`
+	Title string `json:"title,omitempty"`
 	// URL
-	URL string `json:"url"`
+	URL string `json:"url,omitempty"`
 	// 説明
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 	// タグ
-	Tags []string `json:"tags"`
+	Tags []string `json:"tags,omitempty"`
 	// ライセンス
-	License string `json:"license"`
+	License string `json:"license,omitempty"`
 	// 組織
-	Organization string `json:"organization"`
+	Organization string `json:"organization,omitempty"`
 	// 公開・非公開
-	Public string `json:"public"`
+	Public string `json:"public,omitempty"`
 	// ソース
-	Source string `json:"source"`
+	Source string `json:"source,omitempty"`
 	// バージョン
-	Version string `json:"version"`
+	Version string `json:"version,omitempty"`
 	// 作成者
-	Author string `json:"author"`
+	Author string `json:"author,omitempty"`
 	// 作成者のメールアドレス
-	AuthorEmail string `json:"authorEmail"`
+	AuthorEmail string `json:"authorEmail,omitempty"`
 	// メンテナー（保守者）
-	Maintainer string `json:"maintainer"`
+	Maintainer string `json:"maintainer,omitempty"`
 	// メンテナー（保守者）のメールアドレス
-	MaintainerEmail string `json:"maintainerEmail"`
+	MaintainerEmail string `json:"maintainerEmail,omitempty"`
 	// spatial*
-	Spatial string `json:"spatial"`
+	Spatial string `json:"spatial,omitempty"`
 	// データ品質
-	DataQuality string `json:"dataQuality"`
+	DataQuality string `json:"dataQuality,omitempty"`
 	// 制約
-	Constraints string `json:"constraints"`
+	Constraints string `json:"constraints,omitempty"`
 	// データ登録日
-	RegisteredAt string `json:"registeredAt"`
+	RegisteredAt string `json:"registeredAt,omitempty"`
 	// 有償無償区分*
-	FreeOrProvidedClassification string `json:"freeOrProvidedClassification"`
+	FreeOrProvidedClassification string `json:"freeOrProvidedClassification,omitempty"`
 	// 災害時区分*
-	DisasterClassification string `json:"disasterClassification"`
+	DisasterClassification string `json:"disasterClassification,omitempty"`
 	// 地理的範囲
-	GeoArea string `json:"geoArea"`
+	GeoArea string `json:"geoArea,omitempty"`
 	// サムネイル画像
 	Thumbnail []byte `json:"-"`
 	// サムネイル画像のファイル名
 	ThumbnailFileName string `json:"-"`
 	// 価格情報
-	Price string `json:"price"`
+	Price string `json:"price,omitempty"`
 	// 使用許諾
-	LicenseAgreement string `json:"licenseAgreement"`
+	LicenseAgreement string `json:"licenseAgreement,omitempty"`
 	// カスタムフィールド
-	CustomFields map[string]any `json:"customFields"`
+	CustomFields map[string]any `json:"customFields,omitempty"`
 }
 
-type CatalogueFile struct {
+type CatalogFile struct {
 	file *excelize.File
 }
 
-func NewCatalogueFile(file *excelize.File) *CatalogueFile {
-	return &CatalogueFile{
+func NewCatalogFile(file *excelize.File) *CatalogFile {
+	return &CatalogFile{
 		file: file,
 	}
 }
 
-func (c *CatalogueFile) Parse() (res Catalogue, err error) {
+func (c *CatalogFile) Parse() (res Catalog, err error) {
 	sheet, err := c.getSheet()
 	if err != nil {
 		return res, err
@@ -106,12 +107,25 @@ func (c *CatalogueFile) Parse() (res Catalogue, err error) {
 	// TODO: メタデータ is not implemented yet
 
 	if len(errs) > 0 {
-		return res, fmt.Errorf("目録のパースに失敗しました。%w", errorsJoin(errs))
+		return res, fmt.Errorf("目録の読み込みに失敗しました。%w", errorsJoin(errs))
 	}
 	return res, nil
 }
 
-func (c *CatalogueFile) getSheet() (string, error) {
+func (c *CatalogFile) DeleteSheet() error {
+	sheet, err := c.getSheet()
+	if err != nil {
+		return err
+	}
+	c.file.DeleteSheet(sheet)
+	return nil
+}
+
+func (c *CatalogFile) File() *excelize.File {
+	return c.file
+}
+
+func (c *CatalogFile) getSheet() (string, error) {
 	if i := c.file.GetSheetIndex("G空間登録用メタデータ "); i < 0 {
 		if i = c.file.GetSheetIndex("G空間登録用メタデータ"); i < 0 {
 			return "", errors.New("シート「G空間登録用メタデータ」が見つかりませんでした。")
@@ -121,7 +135,7 @@ func (c *CatalogueFile) getSheet() (string, error) {
 	return "G空間登録用メタデータ ", nil
 }
 
-func (c *CatalogueFile) getCellValue(sheet, name, _axis string, errs []error) (string, []error) {
+func (c *CatalogFile) getCellValue(sheet, name, _axis string, errs []error) (string, []error) {
 	pos, errs := c.findCell(sheet, name, errs)
 	if pos != "" {
 		cp, err := ParseCellPos(pos)
@@ -135,10 +149,10 @@ func (c *CatalogueFile) getCellValue(sheet, name, _axis string, errs []error) (s
 	if err != nil {
 		return "", append(errs, fmt.Errorf("「%s」が見つかりませんでした。", name))
 	}
-	return cell, nil
+	return strings.ReplaceAll(cell, "\u2028", "\n"), nil
 }
 
-func (c *CatalogueFile) getCellValueAsTags(sheet, name, axis string, errs []error) ([]string, []error) {
+func (c *CatalogFile) getCellValueAsTags(sheet, name, axis string, errs []error) ([]string, []error) {
 	cell, errs := c.getCellValue(sheet, name, axis, errs)
 	tags := lo.Map(
 		lo.FlatMap(
@@ -153,7 +167,7 @@ func (c *CatalogueFile) getCellValueAsTags(sheet, name, axis string, errs []erro
 	return tags, errs
 }
 
-func (c *CatalogueFile) getPicture(sheet, name, axis string, errs []error) (string, []byte, []error) {
+func (c *CatalogFile) getPicture(sheet, name, axis string, errs []error) (string, []byte, []error) {
 	file, raw, err := c.file.GetPicture(sheet, axis)
 	if err != nil {
 		return "", nil, append(errs, fmt.Errorf("「%s」が見つかりませんでした。", name))
@@ -161,14 +175,26 @@ func (c *CatalogueFile) getPicture(sheet, name, axis string, errs []error) (stri
 	return file, raw, errs
 }
 
-func (c *CatalogueFile) findCell(sheet, name string, errs []error) (string, []error) {
+func (c *CatalogFile) findCell(sheet, name string, errs []error) (string, []error) {
 	pos, err := c.file.SearchSheet(sheet, name)
 	if err != nil || len(pos) == 0 {
 		return "", append(errs, fmt.Errorf("「%s」が見つかりませんでした。", name))
 	}
-	return pos[0], nil
+	return minXPos(pos), errs
 }
 
 func errorsJoin(errs []error) error {
 	return errors.New(strings.Join(lo.Map(errs, func(e error, _ int) string { return e.Error() }), ""))
+}
+
+func minXPos(pos []string) string {
+	pos2, err := util.TryMap(pos, ParseCellPos)
+	if err != nil {
+		return ""
+	}
+
+	minPos := lo.MinBy(pos2, func(a, b CellPos) bool {
+		return a.x < b.x
+	})
+	return minPos.String()
 }

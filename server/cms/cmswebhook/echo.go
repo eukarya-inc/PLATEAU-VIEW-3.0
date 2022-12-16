@@ -1,4 +1,4 @@
-package webhook
+package cmswebhook
 
 import (
 	"encoding/json"
@@ -36,4 +36,26 @@ func EchoMiddleware(secret []byte) echo.MiddlewareFunc {
 			return next(c)
 		}
 	}
+}
+
+func Echo(g *echo.Group, secret []byte, handlers ...Handler) {
+	g.POST("", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		w := GetPayload(ctx)
+		if w == nil {
+			return c.JSON(http.StatusUnauthorized, "unauthorized")
+		}
+
+		if err := c.JSON(http.StatusOK, "ok"); err != nil {
+			return err
+		}
+
+		for _, h := range handlers {
+			if err := h(c.Request(), w); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	}, EchoMiddleware(secret))
 }

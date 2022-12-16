@@ -7,20 +7,13 @@ import (
 )
 
 func TestCellPos(t *testing.T) {
-	c, err := ParseCellPos("XZ112")
+	c, err := ParseCellPos("Z112")
 	assert.NoError(t, err)
-	assert.Equal(t, CellPos{x: "XZ", y: 112}, c)
-	assert.Equal(t, "XZ112", c.String())
+	assert.Equal(t, CellPos{x: 25, y: 112}, c)
+	assert.Equal(t, "Z112", c.String())
 
+	assert.Equal(t, CellPos{x: 0}, CellPos{x: 1}.ShiftX(-1))
 	assert.Equal(t, CellPos{y: 2}, CellPos{y: 1}.ShiftY(1))
-	assert.Equal(t, CellPos{x: "B"}, CellPos{x: "A"}.ShiftX(1))
-	assert.Equal(t, CellPos{x: "AA"}, CellPos{x: "Z"}.ShiftX(1))  // 25 -> 26
-	assert.Equal(t, CellPos{x: "BA"}, CellPos{x: "AZ"}.ShiftX(1)) // 51 -> 52
-	assert.Equal(t, CellPos{x: "AAA"}, CellPos{x: "ZZ"}.ShiftX(1))
-	assert.Equal(t, CellPos{x: "Z"}, CellPos{x: "AB"}.ShiftX(-2))
-	assert.Equal(t, CellPos{x: "ZZ"}, CellPos{x: "AAB"}.ShiftX(-2))
-	assert.Equal(t, CellPos{x: "A"}, CellPos{x: "A"}.ShiftX(-1))
-	assert.Equal(t, CellPos{x: "A"}, CellPos{x: "A"}.ShiftX(-30))
 }
 
 func TestXCode(t *testing.T) {

@@ -18,7 +18,6 @@ type Config struct {
 	CMSBldgFieldID      string
 	CMSBaseURL          string
 	CMSToken            string
-	CMSWebhookSecret    string
 	Secret              string
 }
 
