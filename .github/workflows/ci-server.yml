@@ -7,13 +7,15 @@ on:
       - server/**
       - .github/workflows/ci-server.yml
       - .github/workflows/build-server.yml
-      - .github/workflows/deploy-server.yml
+      - .github/workflows/deploy-server-dev.yml
+      - .github/workflows/deploy-server-prod.yml
   pull_request:
     paths:
       - server/**
       - .github/workflows/ci-server.yml
       - .github/workflows/build-server.yml
-      - .github/workflows/deploy-server.yml
+      - .github/workflows/deploy-server-dev.yml
+      - .github/workflows/deploy-server-prod.yml
 jobs:
   ci:
     name: ci
