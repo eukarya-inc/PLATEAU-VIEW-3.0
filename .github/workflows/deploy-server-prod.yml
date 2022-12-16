@@ -10,7 +10,7 @@ env:
 jobs:
   deploy_server:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/reearth-plateauview' && github.event.workflow_dispatch.head_branch == 'main'
+    if: github.event.repository.full_name == 'eukarya-inc/reearth-plateauview'
     permissions:
       contents: read
       id-token: write
