@@ -1,13 +1,14 @@
 import { usePublishedUrl } from "@web/extensions/sidebar/core/state";
 import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/core/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type ReearthApi = ReearthApiType;
 
 export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi: any }) => {
   const [publishedUrl, setPublishedUrl] = usePublishedUrl();
   const [shareDisabled, setShareDisable] = useState(false);
+  const timer = useRef<NodeJS.Timeout | null>(null);
 
   const handleScreenshotShow = useCallback(() => {
     postMsg({ action: "screenshot-preview" });
@@ -18,7 +19,8 @@ export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi:
   }, []);
 
   const handleProjectShare = useCallback(async () => {
-    if (!publishedUrl && overrides) {
+    setShareDisable(true);
+    if (overrides) {
       const resp = await fetch("https://plateauview.dev.reearth.io/share", {
         headers: {
           "Content-Type": "application/json",
@@ -31,15 +33,25 @@ export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi:
           type: "error",
           content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
         });
+        if (timer.current) {
+          clearTimeout(timer.current);
+        }
       } else {
         const project = await resp.json();
         setPublishedUrl(`https://plateauview.dev.reearth.io/share/${project}`);
-        setShareDisable(true);
-        setTimeout(() => {
-          setShareDisable(false);
-        }, 3000);
       }
     }
+    timer.current = setTimeout(() => {
+      setShareDisable(false);
+    }, 3000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (timer.current) {
+        clearTimeout(timer.current);
+      }
+    };
   }, []);
 
   return {
