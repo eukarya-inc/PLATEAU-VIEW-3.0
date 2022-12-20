@@ -1,12 +1,13 @@
 import { usePublishedUrl } from "@web/extensions/sidebar/core/state";
 import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/core/utils";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 
 export type ReearthApi = ReearthApiType;
 
 export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi: any }) => {
   const [publishedUrl, setPublishedUrl] = usePublishedUrl();
+  const [shareDisabled, setShareDisable] = useState(false);
 
   const handleScreenshotShow = useCallback(() => {
     postMsg({ action: "screenshot-preview" });
@@ -33,11 +34,16 @@ export default ({ overrides, messageApi }: { overrides?: ReearthApi; messageApi:
       } else {
         const project = await resp.json();
         setPublishedUrl(`https://plateauview.dev.reearth.io/share/${project}`);
+        setShareDisable(true);
+        setTimeout(() => {
+          setShareDisable(false);
+        }, 3000);
       }
     }
   }, []);
 
   return {
+    shareDisabled,
     publishedUrl,
     handleProjectShare,
     handleScreenshotShow,

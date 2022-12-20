@@ -15,12 +15,16 @@ const Share: React.FC<Props> = ({ overrides }) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const { publishedUrl, handleProjectShare, handleScreenshotShow, handleScreenshotSave } = useHooks(
-    {
-      overrides,
-      messageApi,
-    },
-  );
+  const {
+    shareDisabled,
+    publishedUrl,
+    handleProjectShare,
+    handleScreenshotShow,
+    handleScreenshotSave,
+  } = useHooks({
+    overrides,
+    messageApi,
+  });
 
   const handleCopyToClipboard = (type: "url" | "iframe", value?: string) => {
     if (!value) return;
@@ -42,7 +46,7 @@ const Share: React.FC<Props> = ({ overrides }) => {
     <CommonPage title="共有・印刷">
       <>
         {contextHolder}
-        <ShareButton onClick={handleProjectShare} disabled={!!publishedUrl}>
+        <ShareButton onClick={handleProjectShare} disabled={shareDisabled}>
           共有
         </ShareButton>
         {publishedUrl && (
