@@ -12,7 +12,7 @@ export type TabProps = {
 type Props = {
   className?: string;
   current: string;
-  isInsideEditor?: boolean;
+  inEditor?: boolean;
   minimized: boolean;
   onMinimize: () => void;
   onClick: (p: Pages) => void;
@@ -23,7 +23,7 @@ const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
 const Header: React.FC<Props> = ({
   className,
   current,
-  isInsideEditor,
+  inEditor,
   minimized,
   onMinimize,
   onClick,
@@ -56,8 +56,8 @@ const Header: React.FC<Props> = ({
       },
     ];
 
-    return !isInsideEditor ? [...items.slice(0, -1)] : [...items];
-  }, [isInsideEditor]);
+    return !inEditor ? [...items.slice(0, -1)] : [...items];
+  }, [inEditor]);
 
   return (
     <HeaderWrapper className={className} minimized={minimized}>

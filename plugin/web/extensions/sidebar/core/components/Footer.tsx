@@ -28,7 +28,7 @@ const FooterBan = styled.div`
   padding: 8px 16px;
   height: 48px;
   border-top: 1px solid #c7c5c5;
-  background-color: #f4f4f4;
+  background: #f4f4f4;
   color: #4a4a4a;
 `;
 
@@ -45,7 +45,7 @@ const RemoveBtn = styled.button`
   height: 32px;
   border: 1px solid #c7c5c5;
   border-radius: 4px;
-  background-color: inherit;
+  background: inherit;
   padding: 4px 10px;
   cursor: pointer;
 `;

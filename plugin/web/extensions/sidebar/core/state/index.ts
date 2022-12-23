@@ -10,7 +10,9 @@ export const defaultSettings: ReearthApi = {
   terrain: {
     terrain: true,
     terrainType: "cesiumion",
-    terrainCesiumIonAsset: "1",
+    terrainCesiumIonAccessToken:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NGI5ZDM0Mi1jZDIzLTRmMzEtOTkwYi0zZTk4Yzk3ODZlNzQiLCJpZCI6NDA2NDYsImlhdCI6MTYwODk4MzAwOH0.3rco62ErML11TMSEflsMqeUTCDbIH6o4n4l5sssuedE",
+    terrainCesiumIonAsset: "286503",
   },
   tiles: [
     {

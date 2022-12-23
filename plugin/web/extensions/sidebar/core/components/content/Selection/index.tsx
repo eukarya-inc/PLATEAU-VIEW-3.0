@@ -2,17 +2,21 @@ import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import DatasetWrapper, { Dataset } from "../common/DatasetCard";
+import DatasetCard, { Dataset } from "../common/DatasetCard";
 
 export type Props = {
+  inEditor?: boolean;
   selectedDatasets: Dataset[];
+  // onDatasetUpdate?: (dataset: Dataset) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
 };
 
 const Selection: React.FC<Props> = ({
+  inEditor,
   selectedDatasets,
+  // onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
   onModalOpen,
@@ -25,7 +29,9 @@ const Selection: React.FC<Props> = ({
           <ButtonText>カタログから検索する</ButtonText>
         </StyledButton>
         {selectedDatasets
-          .map(d => <DatasetWrapper key={d.id} dataset={d} onRemove={onDatasetRemove} />)
+          .map(d => (
+            <DatasetCard key={d.id} dataset={d} inEditor={inEditor} onRemove={onDatasetRemove} />
+          ))
           .reverse()}
       </InnerWrapper>
       <Footer datasetQuantity={selectedDatasets.length} onRemoveAll={onDatasetRemoveAll} />

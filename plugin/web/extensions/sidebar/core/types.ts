@@ -43,7 +43,7 @@ type Tile = {
   tile_type: string;
 };
 
-type Camera = {
+export type Camera = {
   lat: number;
   lng: number;
   altitude: number;

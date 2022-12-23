@@ -24,9 +24,11 @@ export type Item = {
   type: "3d-tiles" | "wms-no-description"; // Many types... like "wms-no-description". So might need to make multiple possible individual Item types
   url?: string;
   description?: string;
+  visible?: boolean; // Not sure is on original data, but needed for v2
   tags?: Tag[];
   customProperties?: {
     initialCamera?: Camera;
+    camera?: Camera;
   };
 };
 

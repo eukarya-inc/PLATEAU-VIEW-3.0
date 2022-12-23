@@ -53,7 +53,7 @@ const Sidebar: React.FC<Props> = ({ className }) => {
     <Wrapper className={className} minimized={minimized}>
       <Header
         current={current}
-        isInsideEditor={inEditor}
+        inEditor={inEditor}
         minimized={minimized}
         onMinimize={handleMinimize}
         onClick={handleClick}
@@ -64,6 +64,7 @@ const Sidebar: React.FC<Props> = ({ className }) => {
             {
               data: (
                 <Selection
+                  inEditor={inEditor}
                   selectedDatasets={selectedDatasets}
                   onDatasetRemove={handleDatasetRemove}
                   onDatasetRemoveAll={handleDatasetRemoveAll}

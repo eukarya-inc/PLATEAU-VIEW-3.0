@@ -3,6 +3,7 @@
 // Misc
 import { ReactComponent as Logo } from "./Icons/reearthLogo.svg";
 import { ReactComponent as Trash } from "./Icons/trash.svg";
+import { ReactComponent as Group } from "./Icons/group.svg";
 import { ReactComponent as PlateauLogo } from "./Icons/plateauLogo.svg";
 import { ReactComponent as PlateauLogoPart } from "./Icons/plateauLogoPrt.svg";
 import { ReactComponent as Help } from "./Icons/help.svg";
@@ -17,9 +18,13 @@ import { ReactComponent as Copy } from "./Icons/copy.svg";
 import { ReactComponent as Plus } from "./Icons/plus.svg";
 import { ReactComponent as PlusCircle } from "./Icons/plusCircle.svg";
 import { ReactComponent as Check } from "./Icons/check.svg";
+import { ReactComponent as ArrowDownThin } from "./Icons/arrowDownThin.svg";
+import { ReactComponent as ArrowUpThin } from "./Icons/arrowUpThin.svg";
+import { ReactComponent as ArrowDownSimple } from "./Icons/arrowDownSimple.svg";
 import { ReactComponent as ArrowDown } from "./Icons/arrowDown.svg";
 import { ReactComponent as ArrowLeft } from "./Icons/arrowLeft.svg";
 import { ReactComponent as Visible } from "./Icons/visible.svg";
+import { ReactComponent as Hidden } from "./Icons/hidden.svg";
 import { ReactComponent as About } from "./Icons/about.svg";
 import { ReactComponent as MapPin } from "./Icons/mapPin.svg";
 import { ReactComponent as User } from "./Icons/user.svg";
@@ -35,6 +40,7 @@ import { ReactComponent as Bullseye } from "./Icons/bullseye.svg";
 
 export default {
   logo: Logo,
+  group: Group,
   trash: Trash,
   plateauLogo: PlateauLogo,
   plateauLogoPart: PlateauLogoPart,
@@ -50,9 +56,13 @@ export default {
   plus: Plus,
   plusCircle: PlusCircle,
   check: Check,
+  arrowDownThin: ArrowDownThin,
+  arrowUpThin: ArrowUpThin,
+  arrowDownSimple: ArrowDownSimple,
   arrowDown: ArrowDown,
   arrowLeft: ArrowLeft,
   visible: Visible,
+  hidden: Hidden,
   about: About,
   mapPin: MapPin,
   user: User,
