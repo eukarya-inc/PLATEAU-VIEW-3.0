@@ -56,7 +56,7 @@ func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
 			}
 		}
 
-		if f.Type == "error" {
+		if f.Status == "error" {
 			if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
 				ConversionStatus:  StatusError,
 				ConversionEnabled: ConversionDisabled,
