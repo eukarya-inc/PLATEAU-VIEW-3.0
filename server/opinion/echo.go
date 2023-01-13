@@ -91,5 +91,5 @@ func Echo(g *echo.Group, conf Config) {
 		}
 
 		return c.JSON(http.StatusOK, "ok")
-	}, middleware.BodyLimit("1M"))
+	}, middleware.BodyLimit("10M"))
 }

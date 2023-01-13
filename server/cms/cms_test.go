@@ -2,6 +2,7 @@ package cms
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -20,7 +21,7 @@ func TestCMS(t *testing.T) {
 	ctx := context.Background()
 
 	// valid
-	call := mockCMS("http://fme.example.com", "TOKEN")
+	call := mockCMS(t, "http://fme.example.com", "TOKEN")
 	f := lo.Must(New("http://fme.example.com", "TOKEN"))
 
 	item, err := f.GetItem(ctx, "a")
@@ -87,12 +88,17 @@ func TestCMS(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "idid", assetID)
 
+	assetID, err = f.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
+	assert.Equal(t, 2, call("POST /api/projects/ppp/assets"))
+	assert.NoError(t, err)
+	assert.Equal(t, "idid", assetID)
+
 	assert.NoError(t, f.CommentToAsset(ctx, "c", "comment"))
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 
 	// invalid token
 	httpmock.Reset()
-	call = mockCMS("http://fme.example.com", "TOKEN")
+	call = mockCMS(t, "http://fme.example.com", "TOKEN")
 	f = lo.Must(New("http://fme.example.com", "TOKEN2"))
 
 	item, err = f.GetItem(ctx, "a")
@@ -125,6 +131,11 @@ func TestCMS(t *testing.T) {
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, "", assetID)
 
+	assetID, err = f.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
+	assert.Equal(t, 2, call("POST /api/projects/ppp/assets"))
+	assert.ErrorContains(t, err, "failed to request: code=401")
+	assert.Equal(t, "", assetID)
+
 	assert.ErrorContains(t, f.CommentToAsset(ctx, "c", "comment"), "failed to request: code=401")
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 
@@ -133,15 +144,19 @@ func TestCMS(t *testing.T) {
 	assert.ErrorContains(t, err, "failed to request: code=401")
 }
 
-func mockCMS(host, token string) func(string) int {
+func mockCMS(t *testing.T, host, token string) func(string) int {
+	t.Helper()
+
 	checkHeader := func(next func(req *http.Request) (any, error)) func(req *http.Request) (*http.Response, error) {
 		return func(req *http.Request) (*http.Response, error) {
 			if t := parseToken(req); t != token {
 				return httpmock.NewJsonResponse(http.StatusUnauthorized, "unauthorized")
 			}
 
-			if req.Header.Get("Content-Type") != "application/json" {
-				return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
+			if req.Method != "GET" {
+				if c := req.Header.Get("Content-Type"); c != "application/json" && !strings.HasPrefix(c, "multipart/form-data") {
+					return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
+				}
 			}
 
 			res, err := next(req)
@@ -202,6 +217,19 @@ func mockCMS(host, token string) func(string) int {
 	}))
 
 	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", checkHeader(func(r *http.Request) (any, error) {
+		if c := r.Header.Get("Content-Type"); strings.HasPrefix(c, "multipart/form-data") {
+			f, fh, err := r.FormFile("file")
+			if err != nil {
+				return nil, err
+			}
+			defer func() {
+				_ = f.Close()
+			}()
+			d, _ := io.ReadAll(f)
+			assert.Equal(t, "datadata", string(d))
+			assert.Equal(t, "file.txt", fh.Filename)
+		}
+
 		return map[string]any{
 			"id": "idid",
 		}, nil
