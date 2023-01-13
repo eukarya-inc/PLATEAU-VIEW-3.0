@@ -36,7 +36,7 @@ var item = Item{
 	CatalogStatus:       "完了",
 	MaxLOD:              "maxlod_assetid",
 	MaxLODStatus:        "未実行",
-	SearchIndex:         "searchindex_assetid",
+	SearchIndex:         []string{"searchindex_assetid"},
 	SeatchIndexStatus:   "エラー",
 }
 
@@ -70,7 +70,7 @@ var cmsitem = cms.Item{
 		{Key: "catalog_status", Type: "select", Value: "完了"},
 		{Key: "max_lod", Type: "asset", Value: "maxlod_assetid"},
 		{Key: "max_lod_status", Type: "select", Value: "未実行"},
-		{Key: "search_index", Type: "asset", Value: "searchindex_assetid"},
+		{Key: "search_index", Type: "asset", Value: []string{"searchindex_assetid"}},
 		{Key: "search_index_status", Type: "select", Value: "エラー"},
 	},
 }

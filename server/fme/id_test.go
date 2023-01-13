@@ -1,4 +1,4 @@
-package cmsintegration
+package fme
 
 import (
 	"testing"

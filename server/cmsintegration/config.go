@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/fme"
+	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 )
 
 type Config struct {
@@ -26,7 +26,7 @@ type Services struct {
 
 func NewServices(c Config) (s Services, _ error) {
 	if !c.FMEMock {
-		fme, err := fme.New(c.FMEBaseURL, c.FMEToken, c.FMEResultURL+"/notify", c.FMESkipQualityCheck)
+		fme, err := fme.New(c.FMEBaseURL, c.FMEToken, c.FMEResultURL)
 		if err != nil {
 			return Services{}, fmt.Errorf("failed to init fme: %w", err)
 		}

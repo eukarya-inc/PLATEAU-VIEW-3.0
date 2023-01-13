@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,6 +21,7 @@ type Interface interface {
 	UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error)
 	Asset(ctx context.Context, id string) (*Asset, error)
 	UploadAsset(ctx context.Context, projectID, url string) (string, error)
+	UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error)
 	CommentToItem(ctx context.Context, assetID, content string) error
 	CommentToAsset(ctx context.Context, assetID, content string) error
 }
@@ -154,6 +156,11 @@ func (c *CMS) UploadAsset(ctx context.Context, projectID, url string) (string, e
 	}
 
 	return r.ID, nil
+}
+
+func (c *CMS) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error) {
+	// TODO
+	return "", errors.New("not implemented yet")
 }
 
 func (c *CMS) Asset(ctx context.Context, assetID string) (*Asset, error) {

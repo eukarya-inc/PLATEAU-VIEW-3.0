@@ -3,7 +3,7 @@ package indexer
 import (
 	"errors"
 	"fmt"
-	"io/fs"
+	"io"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -25,14 +25,20 @@ func NewIndexer() *Indexer {
 }
 
 type Fs interface {
-	Open(string) (fs.File, error)
+	Open(string) (io.ReadCloser, error)
 }
 
 type ResultData []map[string]string
 
-func (indexer *Indexer) GenerateIndexes(config *Config, tilesetPath string, fsys Fs) (indexBuilders []IndexBuilder, resultData ResultData, errMsg error) {
+func (indexer *Indexer) GenerateIndexes(config *Config, tilesetPath string, fsys Fs) (resultData ResultData, errMsg error) {
+	var indexBuilders []IndexBuilder
 	basePath := strings.Split(tilesetPath, "tileset.json")[0]
 	ts, err := fsys.Open(tilesetPath)
+
+	defer func() {
+		_ = ts.Close()
+	}()
+
 	if err != nil {
 		errMsg = fmt.Errorf("failed to open the tileset: %w", err)
 		return
@@ -79,6 +85,7 @@ func (indexer *Indexer) GenerateIndexes(config *Config, tilesetPath string, fsys
 			}
 		}
 	}
+
 	return
 }
 
@@ -92,12 +99,12 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, basePath string, fsy
 	tilesetQueue := []*tiles.Tileset{ts}
 
 	for _, tileset := range tilesetQueue {
-
 		tilesetIterFn := func(tile *tiles.Tile, computedTransform *mat.Dense) error {
 			tileUri, err := tile.Uri()
 			if err != nil {
 				return fmt.Errorf("failed to fetch uri of tile: %v", err)
 			}
+
 			contentPath := filepath.Join(basePath, tileUri)
 			log.Debugln(tileUri)
 			if strings.HasSuffix(tileUri, ".json") {
@@ -110,6 +117,11 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, basePath string, fsy
 			if err != nil {
 				return fmt.Errorf("failed to open b3dm file: %v", err)
 			}
+
+			defer func() {
+				_ = b3dmFile.Close()
+			}()
+
 			reader := b3dms.NewB3dmReader(b3dmFile)
 			b3dm := new(b3dms.B3dm)
 			if err := reader.Decode(b3dm); err != nil {
@@ -158,8 +170,8 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, basePath string, fsy
 
 			return nil
 		}
-		err := ForEachTile(tileset, tilesetIterFn)
-		if err != nil {
+
+		if err := ForEachTile(tileset, tilesetIterFn); err != nil {
 			return nil, fmt.Errorf("something went wrong at iterTile: %v", err)
 		}
 	}

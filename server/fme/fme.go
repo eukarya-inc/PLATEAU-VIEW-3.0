@@ -20,25 +20,23 @@ type Request interface {
 }
 
 type FME struct {
-	base             *url.URL
-	token            string
-	resultURL        string
-	skipQualityCheck bool
-	client           *http.Client
+	base      *url.URL
+	token     string
+	resultURL string
+	client    *http.Client
 }
 
-func New(baseUrl, token, resultURL string, skipQualityCheck bool) (*FME, error) {
+func New(baseUrl, token, resultURL string) (*FME, error) {
 	b, err := url.Parse(baseUrl)
 	if err != nil {
 		return nil, fmt.Errorf("invalid base url: %w", err)
 	}
 
 	return &FME{
-		base:             b,
-		token:            token,
-		resultURL:        resultURL,
-		skipQualityCheck: skipQualityCheck,
-		client:           http.DefaultClient,
+		base:      b,
+		token:     token,
+		resultURL: resultURL,
+		client:    http.DefaultClient,
 	}, nil
 }
 

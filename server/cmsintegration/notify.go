@@ -7,11 +7,17 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 )
 
-func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFunc {
+func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
+	s, err := NewServices(conf)
+	if err != nil {
+		return nil, err
+	}
+
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 
@@ -23,7 +29,7 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 
 		log.Infof("cmsintegration notify: received: %+v", f)
 
-		id, err := ParseID(f.ID, secret)
+		id, err := fme.ParseID(f.ID, conf.Secret)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "unauthorized")
 		}
@@ -39,26 +45,26 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 		}
 
 		cc := commentContent(f)
-		if err := cmsi.CommentToItem(ctx, id.ItemID, cc); err != nil {
+		if err := s.CMS.CommentToItem(ctx, id.ItemID, cc); err != nil {
 			log.Errorf("cmsintegration notify: failed to comment: %w", err)
 			return nil
 		}
 
-		if debug {
-			if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("%+v", f.Results)); err != nil {
+		if conf.Debug {
+			if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("%+v", f.Results)); err != nil {
 				log.Errorf("cmsintegration notify: failed to comment: %w", err)
 			}
 		}
 
 		if f.Type == "error" {
-			if _, err := cmsi.UpdateItem(ctx, id.ItemID, Item{
+			if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
 				ConversionStatus:  StatusError,
 				ConversionEnabled: ConversionDisabled,
 			}.Fields()); err != nil {
 				log.Errorf("cmsintegration notify: failed to update item: %w", err)
 
-				if debug {
-					if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 1: %s", err)); err != nil {
+				if conf.Debug {
+					if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 1: %s", err)); err != nil {
 						log.Errorf("cmsintegration notify: failed to comment: %w", err)
 					}
 				}
@@ -68,13 +74,13 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 			return nil
 		}
 
-		if _, err := cmsi.UpdateItem(ctx, id.ItemID, Item{
+		if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
 			ConversionStatus: StatusOK,
 		}.Fields()); err != nil {
 			log.Errorf("cmsintegration notify: failed to update item: %w", err)
 
-			if debug {
-				if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 2: %s", err)); err != nil {
+			if conf.Debug {
+				if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 2: %s", err)); err != nil {
 					log.Errorf("cmsintegration notify: failed to comment: %w", err)
 				}
 			}
@@ -82,7 +88,7 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 			return nil
 		}
 
-		r, unknown, err := uploadAssets(ctx, cmsi, id.ProjectID, f)
+		r, unknown, err := uploadAssets(ctx, s.CMS, id.ProjectID, f)
 		if err != nil {
 			log.Errorf("cmsintegration notify: failed to update assets: %w", err)
 			// err is reported as a comment later
@@ -92,19 +98,19 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 			u := strings.Join(unknown, ",")
 			log.Warnf("cmsintegration notify: unprocessed: %s", u)
 
-			if debug {
-				if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: unprocessed keys: %s", err)); err != nil {
+			if conf.Debug {
+				if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: unprocessed keys: %s", err)); err != nil {
 					log.Errorf("cmsintegration notify: failed to comment: %w", err)
 				}
 			}
 		}
 
 		if f := r.Fields(); len(f) > 0 {
-			if _, err := cmsi.UpdateItem(ctx, id.ItemID, f); err != nil {
+			if _, err := s.CMS.UpdateItem(ctx, id.ItemID, f); err != nil {
 				log.Errorf("cmsintegration notify: failed to update item: %w", err)
 
-				if debug {
-					if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to upload item 3: %s", err)); err != nil {
+				if conf.Debug {
+					if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to upload item 3: %s", err)); err != nil {
 						log.Errorf("cmsintegration notify: failed to comment: %w", err)
 					}
 				}
@@ -121,12 +127,12 @@ func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFu
 		} else {
 			comment = "変換結果アセットのアップロードと設定が完了しました。"
 		}
-		if err := cmsi.CommentToItem(ctx, id.ItemID, comment); err != nil {
+		if err := s.CMS.CommentToItem(ctx, id.ItemID, comment); err != nil {
 			log.Errorf("cmsintegration notify: failed to comment: %w", err)
 		}
 
 		return nil
-	}
+	}, nil
 }
 
 func commentContent(f FMEResult) string {

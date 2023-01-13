@@ -4,14 +4,12 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/fme"
+	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/reearth/reearthx/log"
 )
 
 const (
-	modelKey        = "plateau"
-	cityGMLFieldKey = "citygml"
-	bldgFieldKey    = "bldg"
+	modelKey = "plateau"
 )
 
 func WebhookHandler(c Config) (cmswebhook.Handler, error) {
@@ -25,8 +23,6 @@ func WebhookHandler(c Config) (cmswebhook.Handler, error) {
 			log.Infof("cmsintegration webhook: invalid event operator: %+v", w.Operator)
 			return nil
 		}
-
-		ctx := req.Context()
 
 		if w.Type != "item.update" && w.Type != "item.create" {
 			log.Infof("cmsintegration webhook: invalid event type: %s", w.Type)
@@ -43,6 +39,7 @@ func WebhookHandler(c Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
+		ctx := req.Context()
 		item := ItemFrom(*w.Data.Item)
 
 		if !item.ConversionEnabled.Enabled() {
@@ -72,7 +69,7 @@ func WebhookHandler(c Config) (cmswebhook.Handler, error) {
 		}
 
 		fmeReq := fme.ConversionRequest{
-			ID: ID{
+			ID: fme.ID{
 				ItemID:    w.Data.Item.ID,
 				AssetID:   asset.ID,
 				ProjectID: w.Data.Schema.ProjectID,
