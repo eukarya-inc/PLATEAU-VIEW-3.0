@@ -24,18 +24,18 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
-		if w.Type != "item.update" {
-			log.Infof("searchindex webhook: invalid event type: %s", w.Type)
+		if w.Type != "item.create" && w.Type != "item.update" {
+			log.Debugf("searchindex webhook: invalid event type: %s", w.Type)
 			return nil
 		}
 
 		if w.Data.Item == nil || w.Data.Model == nil {
-			log.Infof("searchindex webhook: invalid event data: %+v", w.Data)
+			log.Debugf("searchindex webhook: invalid event data: %+v", w.Data)
 			return nil
 		}
 
 		if w.Data.Model.Key != modelKey {
-			log.Infof("searchindex webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
+			log.Debugf("searchindex webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
 			return nil
 		}
 

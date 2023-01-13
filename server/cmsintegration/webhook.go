@@ -20,22 +20,22 @@ func WebhookHandler(c Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		if !w.Operator.IsUser() {
-			log.Infof("cmsintegration webhook: invalid event operator: %+v", w.Operator)
+			log.Debugf("cmsintegration webhook: invalid event operator: %+v", w.Operator)
 			return nil
 		}
 
-		if w.Type != "item.update" && w.Type != "item.create" {
-			log.Infof("cmsintegration webhook: invalid event type: %s", w.Type)
+		if w.Type != "item.create" && w.Type != "item.update" {
+			log.Debugf("cmsintegration webhook: invalid event type: %s", w.Type)
 			return nil
 		}
 
 		if w.Data.Item == nil || w.Data.Model == nil {
-			log.Infof("cmsintegration webhook: invalid event data: %+v", w.Data)
+			log.Debugf("cmsintegration webhook: invalid event data: %+v", w.Data)
 			return nil
 		}
 
 		if w.Data.Model.Key != modelKey {
-			log.Infof("cmsintegration webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
+			log.Debugf("cmsintegration webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
 			return nil
 		}
 

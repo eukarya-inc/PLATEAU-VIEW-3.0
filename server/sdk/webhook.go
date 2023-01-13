@@ -20,22 +20,22 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		if !w.Operator.IsUser() {
-			log.Infof("sdk webhook: invalid event operator: %+v", w.Operator)
+			log.Debugf("sdk webhook: invalid event operator: %+v", w.Operator)
 			return nil
 		}
 
-		if w.Type != "item.update" {
-			log.Infof("sdk webhook: invalid event type: %s", w.Type)
+		if w.Type != "item.create" && w.Type != "item.update" {
+			log.Debugf("sdk webhook: invalid event type: %s", w.Type)
 			return nil
 		}
 
 		if w.Data.Item == nil || w.Data.Model == nil {
-			log.Infof("sdk webhook: invalid event data: %+v", w.Data)
+			log.Debugf("sdk webhook: invalid event data: %+v", w.Data)
 			return nil
 		}
 
 		if w.Data.Model.Key != modelKey {
-			log.Infof("sdk webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
+			log.Debugf("sdk webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
 			return nil
 		}
 
