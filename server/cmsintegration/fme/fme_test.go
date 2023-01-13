@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -19,53 +20,57 @@ func TestFME(t *testing.T) {
 	defer httpmock.Deactivate()
 
 	ctx := context.Background()
-	wantReq := Request{
-		ID:     "xxx",
-		Target: "target",
-		PRCS:   "000",
+	wantReq := ConversionRequest{
+		ID:                 "xxx",
+		Target:             "target",
+		PRCS:               "6669",
+		DevideODC:          true,
+		QualityCheckParams: "params",
+		QualityCheck:       true,
 	}
 
 	// valid
-	calls := mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
+	calls := mockFMEServer(t, "http://fme.example.com", "TOKEN", wantReq, "https://example.com")
 	f := lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com", false))
 	req := wantReq
-	assert.NoError(t, f.CheckQuality(ctx, req))
-	assert.NoError(t, f.ConvertAll(ctx, req))
-	assert.NoError(t, f.CheckQualityAndConvertAll(ctx, req))
-	assert.Equal(t, 1, calls("quality-check"))
+	req.QualityCheck = false
+	assert.NoError(t, f.Request(ctx, req))
 	assert.Equal(t, 1, calls("convert-all"))
+	req.QualityCheck = true
+	assert.NoError(t, f.Request(ctx, req))
 	assert.Equal(t, 1, calls("quality-check-and-convert-all"))
 
 	// invalid token
 	httpmock.Reset()
-	calls = mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
+	calls = mockFMEServer(t, "http://fme.example.com", "TOKEN", wantReq, "https://example.com")
 	f = lo.Must(New("http://fme.example.com", "TOKEN2", "https://example.com", false))
 	req = wantReq
-	assert.ErrorContains(t, f.CheckQuality(ctx, req), "failed to request: code=401")
-	assert.ErrorContains(t, f.ConvertAll(ctx, req), "failed to request: code=401")
-	assert.ErrorContains(t, f.CheckQualityAndConvertAll(ctx, req), "failed to request: code=401")
-	assert.Equal(t, 1, calls("quality-check"))
+	req.QualityCheck = false
+	assert.ErrorContains(t, f.Request(ctx, req), "failed to request: code=401")
 	assert.Equal(t, 1, calls("convert-all"))
+	req.QualityCheck = true
+	assert.ErrorContains(t, f.Request(ctx, req), "failed to request: code=401")
 	assert.Equal(t, 1, calls("quality-check-and-convert-all"))
 
 	// invalid queries
 	httpmock.Reset()
-	calls = mockFMEServer("http://fme.example.com", "TOKEN", wantReq, "https://example.com")
+	calls = mockFMEServer(t, "http://fme.example.com", "TOKEN", wantReq, "https://example.com")
 	f = lo.Must(New("http://fme.example.com", "TOKEN", "https://example.com", false))
-	req = Request{
+	req = ConversionRequest{
 		ID:     wantReq.ID,
 		Target: "target!",
 		PRCS:   wantReq.PRCS,
 	}
-	assert.ErrorContains(t, f.CheckQuality(ctx, req), "failed to request: code=400")
-	assert.ErrorContains(t, f.ConvertAll(ctx, req), "failed to request: code=400")
-	assert.ErrorContains(t, f.CheckQualityAndConvertAll(ctx, req), "failed to request: code=400")
-	assert.Equal(t, 1, calls("quality-check"))
+	req.QualityCheck = false
+	assert.ErrorContains(t, f.Request(ctx, req), "failed to request: code=400")
 	assert.Equal(t, 1, calls("convert-all"))
+	req.QualityCheck = true
+	assert.ErrorContains(t, f.Request(ctx, req), "failed to request: code=400")
 	assert.Equal(t, 1, calls("quality-check-and-convert-all"))
 }
 
-func mockFMEServer(host, token string, r Request, resultURL string) func(string) int {
+func mockFMEServer(t *testing.T, host, token string, r ConversionRequest, resultURL string) func(string) int {
+	t.Helper()
 	u := host + "/fmejobsubmitter/plateau2022-cms/"
 
 	responder := func(req *http.Request) (*http.Response, error) {
@@ -79,11 +84,20 @@ func mockFMEServer(host, token string, r Request, resultURL string) func(string)
 		}
 
 		q := req.URL.Query()
+		invalid := false
+
 		if q.Get("opt_servicemode") != "async" ||
-			r.ID != q.Get("id") ||
-			r.PRCS != q.Get("prcs") ||
-			resultURL != q.Get("resultUrl") ||
-			r.Target != q.Get("target") {
+			resultURL != q.Get("resultUrl") {
+			invalid = true
+		}
+
+		q.Del("opt_servicemode")
+		q.Del("resultUrl")
+		if !reflect.DeepEqual(r.Query(), q) {
+			invalid = true
+		}
+
+		if invalid {
 			return httpmock.NewJsonResponse(http.StatusBadRequest, map[string]any{
 				"statusInfo": map[string]any{
 					"message": "failure",
@@ -100,7 +114,6 @@ func mockFMEServer(host, token string, r Request, resultURL string) func(string)
 		})
 	}
 
-	httpmock.RegisterResponder("POST", u+"quality-check.fmw", responder)
 	httpmock.RegisterResponder("POST", u+"convert-all.fmw", responder)
 	httpmock.RegisterResponder("POST", u+"quality-check-and-convert-all.fmw", responder)
 

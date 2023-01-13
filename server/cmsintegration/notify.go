@@ -1,98 +1,249 @@
 package cmsintegration
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 )
 
-func NotifyHandler(cmsi cms.Interface, secret string) echo.HandlerFunc {
+func NotifyHandler(cmsi cms.Interface, secret string, debug bool) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var b fmeResult
-		if err := c.Bind(&b); err != nil {
-			log.Info("notify: invalid payload: %w", err)
+		ctx := c.Request().Context()
+
+		var f FMEResult
+		if err := c.Bind(&f); err != nil {
+			log.Info("cmsintegration notify: invalid payload: %w", err)
 			return c.JSON(http.StatusBadRequest, "invalid payload")
 		}
 
-		log.Infof("notify: received: %+v", b)
+		log.Infof("cmsintegration notify: received: %+v", f)
 
-		id, err := ParseID(b.ID, secret)
+		id, err := ParseID(f.ID, secret)
 		if err != nil {
 			return c.JSON(http.StatusUnauthorized, "unauthorized")
 		}
 
-		log.Errorf("notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
+		log.Errorf("cmsintegration notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
 
-		if b.Status != "ok" && b.Status != "error" {
-			return c.JSON(http.StatusBadRequest, fmt.Sprintf("invalid type: %s", b.Type))
+		if f.Status != "ok" && f.Status != "error" {
+			return c.JSON(http.StatusBadRequest, fmt.Sprintf("invalid type: %s", f.Type))
 		}
 
 		if err := c.JSON(http.StatusOK, "ok"); err != nil {
 			return err
 		}
 
-		cc := commentContent(b.Status, b.Type, b.LogURL)
-		if err := cmsi.Comment(c.Request().Context(), id.AssetID, cc); err != nil {
-			log.Errorf("notify: failed to comment: %w", err)
+		cc := commentContent(f)
+		if err := cmsi.CommentToItem(ctx, id.ItemID, cc); err != nil {
+			log.Errorf("cmsintegration notify: failed to comment: %w", err)
 			return nil
 		}
 
-		if b.Type == "error" {
+		if debug {
+			if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("%+v", f.Results)); err != nil {
+				log.Errorf("cmsintegration notify: failed to comment: %w", err)
+			}
+		}
+
+		if f.Type == "error" {
+			if _, err := cmsi.UpdateItem(ctx, id.ItemID, Item{
+				ConversionStatus:  StatusError,
+				ConversionEnabled: ConversionDisabled,
+			}.Fields()); err != nil {
+				log.Errorf("cmsintegration notify: failed to update item: %w", err)
+
+				if debug {
+					if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 1: %s", err)); err != nil {
+						log.Errorf("cmsintegration notify: failed to comment: %w", err)
+					}
+				}
+
+				return nil
+			}
 			return nil
 		}
 
-		// TODO2: support multiple files
-		// TODO2: add retry
-		bldg := b.GetResultFromAllLOD("bldg")
-		if bldg == "" {
-			log.Errorf("notify: not uploaded due to missing result bldg")
+		if _, err := cmsi.UpdateItem(ctx, id.ItemID, Item{
+			ConversionStatus: StatusOK,
+		}.Fields()); err != nil {
+			log.Errorf("cmsintegration notify: failed to update item: %w", err)
+
+			if debug {
+				if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 2: %s", err)); err != nil {
+					log.Errorf("cmsintegration notify: failed to comment: %w", err)
+				}
+			}
+
 			return nil
 		}
 
-		assetID, err := cmsi.UploadAsset(c.Request().Context(), id.ProjectID, bldg)
+		r, unknown, err := uploadAssets(ctx, cmsi, id.ProjectID, f)
 		if err != nil {
-			log.Errorf("notify: failed to upload asset: %w", err)
-			return nil
+			log.Errorf("cmsintegration notify: failed to update assets: %w", err)
+			// err is reported as a comment later
 		}
 
-		log.Infof("notify: asset uploaded: %s", assetID)
+		if len(unknown) > 0 {
+			u := strings.Join(unknown, ",")
+			log.Warnf("cmsintegration notify: unprocessed: %s", u)
 
-		if _, err := cmsi.UpdateItem(c.Request().Context(), id.ItemID, []cms.Field{
-			{
-				ID:    id.BldgFieldID,
-				Type:  "asset",
-				Value: assetID,
-			},
-		}); err != nil {
-			log.Errorf("notify: failed to update item: %w", err)
-			return nil
+			if debug {
+				if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: unprocessed keys: %s", err)); err != nil {
+					log.Errorf("cmsintegration notify: failed to comment: %w", err)
+				}
+			}
 		}
 
-		log.Infof("notify: done")
+		if f := r.Fields(); len(f) > 0 {
+			if _, err := cmsi.UpdateItem(ctx, id.ItemID, f); err != nil {
+				log.Errorf("cmsintegration notify: failed to update item: %w", err)
+
+				if debug {
+					if err := cmsi.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to upload item 3: %s", err)); err != nil {
+						log.Errorf("cmsintegration notify: failed to comment: %w", err)
+					}
+				}
+
+				return nil
+			}
+		}
+
+		log.Infof("cmsintegration notify: done")
+
+		comment := ""
+		if err != nil {
+			comment = fmt.Sprintf("変換結果アセットのアップロードと設定を行いましたが、一部でエラーが発生しました。 %s", err)
+		} else {
+			comment = "変換結果アセットのアップロードと設定が完了しました。"
+		}
+		if err := cmsi.CommentToItem(ctx, id.ItemID, comment); err != nil {
+			log.Errorf("cmsintegration notify: failed to comment: %w", err)
+		}
 
 		return nil
 	}
 }
 
-func commentContent(s string, t string, logURL string) string {
+func commentContent(f FMEResult) string {
 	var log string
-	if logURL != "" {
-		log = fmt.Sprintf(" ログ: %s", logURL)
+	if f.LogURL != "" {
+		log = fmt.Sprintf(" ログ: %s", f.LogURL)
 	}
 
 	var tt string
-	if t == "qualityCheck" {
+	if f.Type == "qualityCheck" {
 		tt = "品質検査"
-	} else if t == "conversion" {
+	} else if f.Type == "conversion" {
 		tt = "3D Tiles への変換"
 	}
 
-	if s == "ok" {
-		return fmt.Sprintf("%sに成功しました。%s", tt, log)
+	if f.Status == "ok" {
+		return fmt.Sprintf("%sに成功しました。変換結果のアセットのアップロードを開始します。%s", tt, log)
 	}
 
 	return fmt.Sprintf("%sでエラーが発生しました。%s", tt, log)
+}
+
+const maxRetry = 3
+
+func uploadAssets(ctx context.Context, c cms.Interface, pid string, f FMEResult) (Item, []string, error) {
+	result := map[string][]string{}
+	var errors []string
+	res, unknown := f.GetResult()
+	queue := queueFromResult(res)
+
+	for {
+		if len(queue) == 0 {
+			break
+		}
+		e := queue[0]
+		queue = queue[1:]
+		if e.Retry > maxRetry {
+			errors = append(errors, e.Value)
+			continue
+		}
+
+		log.Infof("cmsintegration notify: uploading %s (%d/3): %s", e.Key, e.Retry, e.Value)
+
+		assetID, err := c.UploadAsset(ctx, pid, e.Value)
+		if err != nil {
+			log.Errorf("cmsintegration notify: failed to upload asset %s (%d/3): %w", e.Key, e.Retry, err)
+			e.Retry++
+			e.Error = err
+			queue = append(queue, e)
+			continue
+		}
+
+		log.Infof("cmsintegration notify: asset uploaded %s: %s", e.Key, assetID)
+		if _, ok := result[e.Key]; !ok {
+			result[e.Key] = []string{}
+		}
+		result[e.Key] = append(result[e.Key], assetID)
+	}
+
+	var err error
+	if len(errors) > 0 {
+		err = fmt.Errorf("cms integration notify: failed to upload: %v", errors)
+	}
+
+	return itemFromUploadResult(result), unknown, err
+}
+
+type queue struct {
+	Key   string
+	Value string
+	Retry int
+	Error error
+}
+
+func queueFromResult(res FMEResultAssets) (q []queue) {
+	for _, e := range res.Entries() {
+		for _, v2 := range e.Value {
+			q = append(q, queue{Key: e.Key, Value: v2})
+		}
+	}
+	return
+}
+
+func itemFromUploadResult(r map[string][]string) (i Item) {
+	for k, v := range r {
+		switch k {
+		case "bldg":
+			i.Bldg = v
+		case "tran":
+			i.Tran = v
+		case "fld":
+			i.Fld = v
+		case "tnm":
+			i.Tnm = v
+		case "htd":
+			i.Htd = v
+		case "ifld":
+			i.Ifld = v
+		case "urf":
+			i.Urf = v
+		case "frn":
+			i.Frn = v
+		case "veg":
+			i.Veg = v
+		case "lsld":
+			i.Lsld = v
+		case "luse":
+			i.Luse = v
+		case "all":
+			if len(v) > 0 {
+				i.All = v[0]
+			}
+		case "dictionary":
+			if len(v) > 0 {
+				i.Dictionary = v[0]
+			}
+		}
+	}
+	return
 }

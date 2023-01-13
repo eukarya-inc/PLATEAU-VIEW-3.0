@@ -10,6 +10,6 @@ func Echo(g *echo.Group, c Config) error {
 		return err
 	}
 
-	g.POST("/notify", NotifyHandler(s.CMS, c.Secret))
+	g.POST("/notify", NotifyHandler(s.CMS, c.Secret, c.Debug))
 	return nil
 }

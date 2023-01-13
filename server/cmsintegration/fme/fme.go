@@ -11,9 +11,12 @@ import (
 )
 
 type Interface interface {
-	CheckQuality(ctx context.Context, r Request) error
-	ConvertAll(ctx context.Context, r Request) error
-	CheckQualityAndConvertAll(ctx context.Context, r Request) error
+	Request(ctx context.Context, r Request) error
+}
+
+type Request interface {
+	Query() url.Values
+	Name() string
 }
 
 type FME struct {
@@ -39,30 +42,8 @@ func New(baseUrl, token, resultURL string, skipQualityCheck bool) (*FME, error) 
 	}, nil
 }
 
-type Request struct {
-	ID     string
-	Target string
-	// JGD2011平面直角座標第1～19系のEPSGコード（6669〜6687）
-	PRCS string
-}
-
-func (s *FME) CheckQuality(ctx context.Context, r Request) error {
-	return s.request(ctx, "plateau2022-cms/quality-check", r)
-}
-
-func (s *FME) ConvertAll(ctx context.Context, r Request) error {
-	return s.request(ctx, "plateau2022-cms/convert-all", r)
-}
-
-func (s *FME) CheckQualityAndConvertAll(ctx context.Context, r Request) error {
-	if s.skipQualityCheck {
-		return s.ConvertAll(ctx, r)
-	}
-	return s.request(ctx, "plateau2022-cms/quality-check-and-convert-all", r)
-}
-
-func (s *FME) request(ctx context.Context, w string, r Request) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.url(w, r), nil)
+func (s *FME) Request(ctx context.Context, r Request) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.url(r), nil)
 	if err != nil {
 		return fmt.Errorf("failed to init request: %w", err)
 	}
@@ -93,16 +74,11 @@ func (s *FME) request(ctx context.Context, w string, r Request) error {
 	return nil
 }
 
-func (s *FME) url(w string, r Request) string {
-	u := s.base.JoinPath("fmejobsubmitter", w+".fmw")
-	q := u.Query()
+func (s *FME) url(r Request) string {
+	u := s.base.JoinPath("fmejobsubmitter", r.Name()+".fmw")
+	q := r.Query()
 	q.Set("opt_servicemode", "async")
-	q.Set("id", r.ID)
-	q.Set("target", r.Target)
 	q.Set("resultUrl", s.resultURL)
-	if r.PRCS != "" {
-		q.Set("prcs", r.PRCS)
-	}
 	u.RawQuery = q.Encode()
 	return u.String()
 }

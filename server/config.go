@@ -21,8 +21,6 @@ type Config struct {
 	Origin               []string
 	CMS_Webhook_Secret   string
 	CMS_ModelID          string
-	CMS_CityGMLFieldID   string
-	CMS_BldgFieldID      string
 	CMS_BaseURL          string
 	CMS_Token            string
 	CMS_ShareModelID     string
@@ -35,6 +33,7 @@ type Config struct {
 	Opinion_Email        string
 	Opinion_ToName       string
 	Secret               string
+	Debug                bool
 }
 
 func NewConfig() (*Config, error) {
@@ -62,12 +61,10 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		FMEToken:            c.FME_Token,
 		FMEResultURL:        c.Host,
 		FMESkipQualityCheck: c.FME_SkipQualityCheck,
-		CMSModelID:          c.CMS_ModelID,
-		CMSCityGMLFieldID:   c.CMS_CityGMLFieldID,
-		CMSBldgFieldID:      c.CMS_BldgFieldID,
 		CMSBaseURL:          c.CMS_BaseURL,
 		CMSToken:            c.CMS_Token,
 		Secret:              c.Secret,
+		Debug:               c.Debug,
 	}
 }
 

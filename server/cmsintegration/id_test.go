@@ -8,7 +8,7 @@ import (
 )
 
 func TestID(t *testing.T) {
-	i := ID{ItemID: "item", AssetID: "asset", BldgFieldID: "tile", ProjectID: "project"}
+	i := ID{ItemID: "item", AssetID: "asset", ProjectID: "project"}
 	assert.Equal(t, i, lo.Must(ParseID(i.String("aaa"), "aaa")))
 	_, err := ParseID(i.String("aaa"), "aaa2")
 	assert.Same(t, ErrInvalidID, err)

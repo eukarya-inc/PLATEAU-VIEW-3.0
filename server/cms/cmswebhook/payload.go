@@ -1,57 +1,43 @@
 package cmswebhook
 
-import "github.com/samber/lo"
+import "github.com/eukarya-inc/reearth-plateauview/server/cms"
 
 type Payload struct {
-	Type string `json:"type"`
-	Data Data   `json:"data"`
+	Type     string   `json:"type"`
+	Data     Data     `json:"data"`
+	Operator Operator `json:"operator"`
 }
+
+type Operator struct {
+	User        *User        `json:"user,omitempty"`
+	Integration *Integration `json:"integration,omitempty"`
+	Machine     *Machine     `json:"machine,omitempty"`
+}
+
+func (o Operator) IsUser() bool {
+	return o.User != nil
+}
+
+func (o Operator) IsIntegration() bool {
+	return o.Integration != nil
+}
+
+type User struct {
+	ID string `json:"id"`
+}
+
+type Integration struct {
+	ID string `json:"id"`
+}
+
+type Machine struct{}
 
 type Data struct {
-	Item   *Item   `json:"item"`
-	Schema *Schema `json:"schema"`
+	Item   *cms.Item   `json:"item"`
+	Model  *cms.Model  `json:"model"`
+	Schema *cms.Schema `json:"schema"`
 }
 
-type Item struct {
-	ID      string  `json:"id"`
-	ModelID string  `json:"modelId"`
-	Fields  []Field `json:"fields"`
-}
-
-type Field struct {
-	ID    string `json:"id"`
-	Type  string `json:"type"`
-	Value any    `json:"value"`
-}
-
-type Schema struct {
-	ID        string        `json:"id"`
-	Fields    []SchemaField `json:"fields"`
-	ProjectID string        `json:"projectId"`
-}
-
-type SchemaField struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-	Key  string `json:"key"`
-}
-
-func (d Item) Field(fid string) *Field {
-	f, ok := lo.Find(d.Fields, func(f Field) bool {
-		return f.ID == fid
-	})
-	if !ok {
-		return nil
-	}
-	return &f
-}
-
-func (d Schema) FieldIDByKey(k string) string {
-	f, ok := lo.Find(d.Fields, func(f SchemaField) bool {
-		return f.Key == k
-	})
-	if !ok {
-		return ""
-	}
-	return f.ID
+func (d Data) FieldByKey(key string) *cms.Field {
+	return d.Item.FieldByKey2(key, d.Schema)
 }

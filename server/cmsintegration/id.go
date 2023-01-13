@@ -10,10 +10,9 @@ import (
 )
 
 type ID struct {
-	ItemID      string
-	AssetID     string
-	ProjectID   string
-	BldgFieldID string
+	ItemID    string
+	AssetID   string
+	ProjectID string
 }
 
 var ErrInvalidID = errors.New("invalid id")
@@ -25,7 +24,7 @@ func ParseID(id, secret string) (ID, error) {
 	}
 
 	s := strings.SplitN(payload, ";", 4)
-	if len(s) != 4 {
+	if len(s) != 3 {
 		return ID{}, ErrInvalidID
 	}
 
@@ -34,15 +33,14 @@ func ParseID(id, secret string) (ID, error) {
 	}
 
 	return ID{
-		ItemID:      s[0],
-		AssetID:     s[1],
-		ProjectID:   s[2],
-		BldgFieldID: s[3],
+		ItemID:    s[0],
+		AssetID:   s[1],
+		ProjectID: s[2],
 	}, nil
 }
 
 func (i ID) String(secret string) string {
-	payload := fmt.Sprintf("%s;%s;%s;%s", i.ItemID, i.AssetID, i.ProjectID, i.BldgFieldID)
+	payload := fmt.Sprintf("%s;%s;%s", i.ItemID, i.AssetID, i.ProjectID)
 	sig := sign(payload, secret)
 	return fmt.Sprintf("%s:%s", sig, payload)
 }

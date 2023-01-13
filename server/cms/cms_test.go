@@ -24,13 +24,45 @@ func TestCMS(t *testing.T) {
 	f := lo.Must(New("http://fme.example.com", "TOKEN"))
 
 	item, err := f.GetItem(ctx, "a")
+	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
 		ID:     "a",
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
+	items, err := f.GetItems(ctx, "mmm")
+	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items: []Item{
+			{
+				ID:     "a",
+				Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+			},
+		},
+		Page:       1,
+		PerPage:    50,
+		TotalCount: 1,
+	}, items)
+
+	items, err = f.GetItemsByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items: []Item{
+			{
+				ID:     "a",
+				Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+			},
+		},
+		Page:       1,
+		PerPage:    50,
+		TotalCount: 1,
+	}, items)
+
 	item, err = f.CreateItem(ctx, "a", nil)
+	assert.Equal(t, 1, call("POST /api/models/a/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
 		ID:     "a",
@@ -38,6 +70,7 @@ func TestCMS(t *testing.T) {
 	}, item)
 
 	item, err = f.UpdateItem(ctx, "a", nil)
+	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
 		ID:     "a",
@@ -45,19 +78,17 @@ func TestCMS(t *testing.T) {
 	}, item)
 
 	a, err := f.Asset(ctx, "a")
+	assert.Equal(t, 1, call("GET /api/assets/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Asset{ID: "a", URL: "url"}, a)
 
 	assetID, err := f.UploadAsset(ctx, "ppp", "aaa")
+	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.NoError(t, err)
 	assert.Equal(t, "idid", assetID)
 
-	assert.NoError(t, f.Comment(ctx, "c", "comment"))
-
-	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
-	assert.Equal(t, 1, call("PATCH /api/items/a"))
+	assert.NoError(t, f.CommentToAsset(ctx, "c", "comment"))
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
-	assert.Equal(t, 1, call("GET /api/assets/a"))
 
 	// invalid token
 	httpmock.Reset()
@@ -65,63 +96,131 @@ func TestCMS(t *testing.T) {
 	f = lo.Must(New("http://fme.example.com", "TOKEN2"))
 
 	item, err = f.GetItem(ctx, "a")
+	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
+	items, err = f.GetItems(ctx, "mmm")
+	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
+	assert.Nil(t, items)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	items, err = f.GetItemsByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.Nil(t, items)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
 	item, err = f.CreateItem(ctx, "a", nil)
+	assert.Equal(t, 1, call("POST /api/models/a/items"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
 	item, err = f.UpdateItem(ctx, "a", nil)
+	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
 	assetID, err = f.UploadAsset(ctx, "ppp", "aaa")
+	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, "", assetID)
 
-	assert.ErrorContains(t, f.Comment(ctx, "c", "comment"), "failed to request: code=401")
+	assert.ErrorContains(t, f.CommentToAsset(ctx, "c", "comment"), "failed to request: code=401")
+	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 
 	_, err = f.Asset(ctx, "a")
-	assert.ErrorContains(t, err, "failed to request: code=401")
-
-	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
-	assert.Equal(t, 1, call("PATCH /api/items/a"))
-	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 	assert.Equal(t, 1, call("GET /api/assets/a"))
+	assert.ErrorContains(t, err, "failed to request: code=401")
 }
 
 func mockCMS(host, token string) func(string) int {
-	responder := func(req *http.Request) (*http.Response, error) {
-		if t := parseToken(req); t != token {
-			return httpmock.NewJsonResponse(http.StatusUnauthorized, "unauthorized")
-		}
+	checkHeader := func(next func(req *http.Request) (any, error)) func(req *http.Request) (*http.Response, error) {
+		return func(req *http.Request) (*http.Response, error) {
+			if t := parseToken(req); t != token {
+				return httpmock.NewJsonResponse(http.StatusUnauthorized, "unauthorized")
+			}
 
-		if req.Header.Get("Content-Type") != "application/json" {
-			return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
-		}
+			if req.Header.Get("Content-Type") != "application/json" {
+				return httpmock.NewJsonResponse(http.StatusUnsupportedMediaType, "unsupported media type")
+			}
 
-		res := map[string]any{}
-		p := req.URL.Path
-		if req.Method == "POST" && p == "/api/projects/ppp/assets" {
-			res["id"] = "idid"
-		} else if req.Method == "GET" && p == "/api/assets/a" {
-			res["id"] = "a"
-			res["url"] = "url"
-		} else if req.Method == "POST" && p == "/api/models/a/items" || p == "/api/items/a" {
-			res["id"] = "a"
-			res["fields"] = []map[string]string{{"id": "f", "type": "text", "value": "t"}}
+			res, err := next(req)
+			if err != nil {
+				return nil, err
+			}
+			return httpmock.NewJsonResponse(http.StatusOK, res)
 		}
-
-		return httpmock.NewJsonResponse(http.StatusOK, res)
 	}
 
-	httpmock.RegisterResponder("GET", host+"/api/items/a", responder)
-	httpmock.RegisterResponder("PATCH", host+"/api/items/a", responder)
-	httpmock.RegisterResponder("POST", host+"/api/models/a/items", responder)
-	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", responder)
-	httpmock.RegisterResponder("POST", host+"/api/assets/c/comments", responder)
-	httpmock.RegisterResponder("GET", host+"/api/assets/a", responder)
+	httpmock.RegisterResponder("GET", host+"/api/items/a", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":     "a",
+			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("GET", host+"/api/projects/ppp/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"items": []map[string]any{
+				{
+					"id":     "a",
+					"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+				},
+			},
+			"page":       1,
+			"perPage":    50,
+			"totalCount": 1,
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("GET", host+"/api/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"items": []map[string]any{
+				{
+					"id":     "a",
+					"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+				},
+			},
+			"page":       1,
+			"perPage":    50,
+			"totalCount": 1,
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("PATCH", host+"/api/items/a", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":     "a",
+			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("POST", host+"/api/models/a/items", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":     "a",
+			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id": "idid",
+		}, nil
+	}))
+
+	httpmock.RegisterResponder("POST", host+"/api/items/itit/comments", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{}, nil
+	}))
+
+	httpmock.RegisterResponder("POST", host+"/api/assets/c/comments", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{}, nil
+	}))
+
+	httpmock.RegisterResponder("GET", host+"/api/assets/a", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":  "a",
+			"url": "url",
+		}, nil
+	}))
 
 	return func(p string) int {
 		b, a, _ := strings.Cut(p, " ")
