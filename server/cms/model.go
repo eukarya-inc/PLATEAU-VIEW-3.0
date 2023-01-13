@@ -56,7 +56,7 @@ func (d Item) FieldByKey2(key string, s *Schema) *Field {
 }
 
 type Field struct {
-	ID    string `json:"id"`
+	ID    string `json:"id,omitempty"`
 	Type  string `json:"type"`
 	Value any    `json:"value"`
 	Key   string `json:"key,omitempty"`
