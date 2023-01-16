@@ -281,7 +281,7 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, 
 
 		pkg2, err := s.Ckan.CreatePackage(ctx, *newpkg)
 		if err != nil {
-			return nil, fmt.Errorf("G空間情報センターにデータセット %s を作成することができませんでした: %w", pkgName, err)
+			return nil, fmt.Errorf("G空間情報センターにデータセット %s を作成できませんでした: %w", pkgName, err)
 		}
 		return &pkg2, nil
 	}
@@ -290,7 +290,7 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, 
 	newpkg.ID = pkg.ID
 	pkg2, err := s.Ckan.PatchPackage(ctx, *newpkg)
 	if err != nil {
-		return nil, fmt.Errorf("G空間情報センターのデータセット %s を更新することができませんでした: %w", pkgName, err)
+		return nil, fmt.Errorf("G空間情報センターのデータセット %s を更新できませんでした: %w", pkgName, err)
 	}
 
 	return &pkg2, nil

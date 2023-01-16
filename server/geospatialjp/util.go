@@ -16,9 +16,11 @@ const (
 	ResourceNameCityGML = "CityGML（v2）"
 	ResourceNameAll     = "3D Tiles, MVT（v2）"
 	ResourceNameCatalog = "データ目録（v2）"
-	licenseID           = "plateau"
-	licenseTitle        = "PLATEAU Site Policy 「３．著作権について」に拠る"
-	licenseURL          = "https://www.mlit.go.jp/plateau/site-policy/"
+	licenseDefaultID    = "plateau"
+	licenseDefaultTitle = "PLATEAU Site Policy 「３．著作権について」に拠る"
+	licenseDefaultURL   = "https://www.mlit.go.jp/plateau/site-policy/"
+	LicenseOL           = "独自利用規約"
+	licenseOLID         = "ol"
 )
 
 var reFileName = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
@@ -64,6 +66,16 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 		thumbnailURL = dataurl.New(c.Thumbnail, http.DetectContentType(c.Thumbnail)).String()
 	}
 
+	var licenseID, licenseURL, licenseTitle string
+	if c.License != LicenseOL {
+		licenseID = licenseOLID
+		licenseTitle = LicenseOL
+	} else {
+		licenseID = licenseDefaultID
+		licenseURL = licenseDefaultURL
+		licenseTitle = licenseDefaultTitle
+	}
+
 	return ckan.Package{
 		Name:            pkgName,
 		Title:           c.Title,
@@ -84,17 +96,14 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 		LicenseAgreement: c.LicenseAgreement,
 		LicenseTitle:     licenseTitle,
 		LicenseURL:       licenseURL,
+		LicenseID:        licenseID,
 		Fee:              c.Fee,
 		Area:             c.Area,
 		Quality:          c.Quality,
 		Emergency:        c.Emergency,
 		URL:              c.Source,
 		Spatial:          c.Spatial,
-		LicenseID:        licenseID,
 		ThumbnailURL:     thumbnailURL,
-		// unused:
-		// URL: c.URL (empty)
-		// ライセンス: c.License (unknown value: 独自利用規約)
-		// 組織: c.Organization (no field)
+		// unused: URL: c.URL (empty), 組織: c.Organization (no field)
 	}
 }
