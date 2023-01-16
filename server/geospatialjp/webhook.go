@@ -65,6 +65,11 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 				s.commentToItem(ctx, item.ID, "G空間情報センターへの登録が完了しました")
 			}
 		} else {
+			if item.CatalogStatus != "" && item.CatalogStatus != StatusReady {
+				log.Infof("geospatialjp webhook: skipped: status is %s", item.CatalogStatus)
+				return nil
+			}
+
 			// create or update event: check the catalog file
 			act = "check catalog"
 			err = s.CheckCatalog(ctx, w.Data.Schema.ProjectID, item)
@@ -80,7 +85,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 					log.Errorf("failed to update item %s: %s", item.ID, err2)
 				}
 			} else {
-				s.commentToItem(ctx, item.ID, "目録ファイルの検査とG空間情報センター用目録ファイルの登録が完了しました。")
+				s.commentToItem(ctx, item.ID, "目録ファイルの検査が完了しました。エラーはありません。")
 			}
 		}
 
@@ -94,10 +99,6 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 }
 
 func (s *Services) CheckCatalog(ctx context.Context, projectID string, i Item) error {
-	if i.CatalogStatus != "" && i.CatalogStatus != StatusReady {
-		return nil
-	}
-
 	// update item
 	if _, err := s.CMS.UpdateItem(ctx, i.ID, Item{
 		CatalogStatus: StatusProcessing,
@@ -296,6 +297,19 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, 
 }
 
 func (s *Services) findPackage(ctx context.Context, cityCode, cityName string) (_ *ckan.Package, n string, err error) {
+	if s.CkanPrivate && cityName != tokyo23ku {
+		// search API is not useful for private packages
+		initialYear := 2020
+		currentYear := util.Now().Year()
+		for y := initialYear; y <= currentYear; y++ {
+			p, _ := s.Ckan.ShowPackage(ctx, fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, y))
+			if p.Name != "" {
+				return &p, p.Name, nil
+			}
+		}
+		return nil, fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, currentYear), nil
+	}
+
 	var q string
 	if cityName == tokyo23ku {
 		q = "plateau-tokyo23ku"
