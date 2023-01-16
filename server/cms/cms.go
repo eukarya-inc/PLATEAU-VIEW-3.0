@@ -164,16 +164,18 @@ func (c *CMS) UploadAssetDirectly(ctx context.Context, projectID, name string, d
 	mw := multipart.NewWriter(pw)
 
 	go func() {
+		var err error
 		defer func() {
 			_ = mw.Close()
-			_ = pw.Close()
+			_ = pw.CloseWithError(err)
 		}()
 
-		fw, err := mw.CreateFormFile("file", name)
-		if err != nil {
+		fw, err2 := mw.CreateFormFile("file", name)
+		if err2 != nil {
+			err = err2
 			return
 		}
-		_, _ = io.Copy(fw, data)
+		_, err = io.Copy(fw, data)
 	}()
 
 	b, err2 := c.send(ctx, http.MethodPost, []string{"api", "projects", projectID, "assets"}, mw.FormDataContentType(), pr)

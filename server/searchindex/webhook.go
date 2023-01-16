@@ -24,7 +24,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
-		if w.Type != "item.create" && w.Type != "item.update" {
+		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate {
 			log.Debugf("searchindex webhook: invalid event type: %s", w.Type)
 			return nil
 		}

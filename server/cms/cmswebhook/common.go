@@ -15,9 +15,12 @@ import (
 )
 
 const (
-	version = "v1"
-	expires = time.Hour
-	header  = "Reearth-Signature"
+	version          = "v1"
+	expires          = time.Hour
+	header           = "Reearth-Signature"
+	EventItemCreate  = "item.create"
+	EventItemUpdate  = "item.update"
+	EventItemPublish = "item.publish"
 )
 
 var ctxKey = struct{}{}

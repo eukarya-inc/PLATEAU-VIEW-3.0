@@ -16,7 +16,7 @@ type Catalog struct {
 	// URL
 	URL string `json:"url,omitempty"`
 	// 説明
-	Description string `json:"description,omitempty"`
+	Notes string `json:"notes,omitempty"`
 	// タグ
 	Tags []string `json:"tags,omitempty"`
 	// ライセンス
@@ -40,27 +40,51 @@ type Catalog struct {
 	// spatial*
 	Spatial string `json:"spatial,omitempty"`
 	// データ品質
-	DataQuality string `json:"dataQuality,omitempty"`
+	Quality string `json:"quality,omitempty"`
 	// 制約
-	Constraints string `json:"constraints,omitempty"`
+	Restriction string `json:"restriction,omitempty"`
 	// データ登録日
-	RegisteredAt string `json:"registeredAt,omitempty"`
+	RegisteredDate string `json:"registeredDate,omitempty"`
 	// 有償無償区分*
-	FreeOrProvidedClassification string `json:"freeOrProvidedClassification,omitempty"`
+	Charge string `json:"charge,omitempty"`
 	// 災害時区分*
-	DisasterClassification string `json:"disasterClassification,omitempty"`
+	Emergency string `json:"emergency,omitempty"`
 	// 地理的範囲
-	GeoArea string `json:"geoArea,omitempty"`
+	Area string `json:"area,omitempty"`
 	// サムネイル画像
 	Thumbnail []byte `json:"-"`
 	// サムネイル画像のファイル名
 	ThumbnailFileName string `json:"-"`
 	// 価格情報
-	Price string `json:"price,omitempty"`
+	Fee string `json:"fee,omitempty"`
 	// 使用許諾
 	LicenseAgreement string `json:"licenseAgreement,omitempty"`
 	// カスタムフィールド
 	CustomFields map[string]any `json:"customFields,omitempty"`
+}
+
+func (c Catalog) Validate() error {
+	var errs []string
+	var missingkeys []string
+
+	if c.Title == "" {
+		missingkeys = append(missingkeys, "タイトル")
+	}
+	if c.Notes == "" {
+		missingkeys = append(missingkeys, "説明")
+	}
+	if c.Thumbnail == nil {
+		missingkeys = append(missingkeys, "サムネイル画像")
+	}
+
+	if len(missingkeys) > 0 {
+		errs = append(errs, fmt.Sprintf("%sは必須です。", strings.Join(missingkeys, "・")))
+	}
+
+	if len(errs) > 0 {
+		return errors.New(strings.Join(errs, ""))
+	}
+	return nil
 }
 
 type CatalogFile struct {
@@ -83,7 +107,7 @@ func (c *CatalogFile) Parse() (res Catalog, err error) {
 
 	res.Title, errs = c.getCellValue(sheet, "タイトル", "D2", errs)
 	res.URL, errs = c.getCellValue(sheet, "URL", "D3", errs)
-	res.Description, errs = c.getCellValue(sheet, "説明", "D4", errs)
+	res.Notes, errs = c.getCellValue(sheet, "説明", "D4", errs)
 	res.Tags, errs = c.getCellValueAsTags(sheet, "タグ", "D5", errs)
 	res.License, errs = c.getCellValue(sheet, "ライセンス", "D6", errs)
 	res.Organization, errs = c.getCellValue(sheet, "組織", "D7", errs)
@@ -95,16 +119,17 @@ func (c *CatalogFile) Parse() (res Catalog, err error) {
 	res.Maintainer, errs = c.getCellValue(sheet, "メンテナー（保守者）", "D13", errs)
 	res.MaintainerEmail, errs = c.getCellValue(sheet, "メンテナー（保守者）のメールアドレス", "D14", errs)
 	res.Spatial, errs = c.getCellValue(sheet, "spatial*", "D15", errs)
-	res.DataQuality, errs = c.getCellValue(sheet, "データ品質", "D16", errs)
-	res.Constraints, errs = c.getCellValue(sheet, "制約", "D17", errs)
-	res.RegisteredAt, errs = c.getCellValue(sheet, "データ登録日", "D18", errs)
-	res.FreeOrProvidedClassification, errs = c.getCellValue(sheet, "有償無償区分*", "D19", errs)
-	res.DisasterClassification, errs = c.getCellValue(sheet, "災害時区分*", "D20", errs)
-	res.GeoArea, errs = c.getCellValue(sheet, "地理的範囲", "D21", errs)
+	res.Quality, errs = c.getCellValue(sheet, "データ品質", "D16", errs)
+	res.Restriction, errs = c.getCellValue(sheet, "制約", "D17", errs)
+	res.RegisteredDate, errs = c.getCellValue(sheet, "データ登録日", "D18", errs)
+	res.Charge, errs = c.getCellValue(sheet, "有償無償区分*", "D19", errs)
+	res.Emergency, errs = c.getCellValue(sheet, "災害時区分*", "D20", errs)
+	res.Area, errs = c.getCellValue(sheet, "地理的範囲", "D21", errs)
 	res.ThumbnailFileName, res.Thumbnail, errs = c.getPicture(sheet, "サムネイル画像", "D22", errs)
-	res.Price, errs = c.getCellValue(sheet, "価格情報", "D23", errs)
+	res.Fee, errs = c.getCellValue(sheet, "価格情報", "D23", errs)
 	res.LicenseAgreement, errs = c.getCellValue(sheet, "使用許諾", "D24", errs)
-	// TODO: メタデータ is not implemented yet
+
+	// メタデータ is not implemented yet
 
 	if len(errs) > 0 {
 		return res, fmt.Errorf("目録の読み込みに失敗しました。%w", errorsJoin(errs))

@@ -13,6 +13,7 @@ require (
 	github.com/samber/lo v1.33.0
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
 	github.com/stretchr/testify v1.8.1
+	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/net v0.2.0
 	gonum.org/v1/gonum v0.12.0
 )

@@ -24,7 +24,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		if w.Type != "item.create" && w.Type != "item.update" {
+		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate {
 			log.Debugf("sdk webhook: invalid event type: %s", w.Type)
 			return nil
 		}

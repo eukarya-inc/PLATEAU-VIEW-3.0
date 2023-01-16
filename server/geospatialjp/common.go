@@ -8,15 +8,19 @@ import (
 )
 
 type Config struct {
-	CkanBase string
-	CkanOrg  string
-	CMSBase  string
-	CMSToken string
+	CkanBase    string
+	CkanOrg     string
+	CkanToken   string
+	CkanPrivate bool
+	CMSBase     string
+	CMSToken    string
 }
 
 type Services struct {
-	CMS  *cms.CMS
-	Ckan *ckan.Ckan
+	CMS         *cms.CMS
+	Ckan        *ckan.Ckan
+	CkanOrg     string
+	CkanPrivate bool
 }
 
 func NewServices(conf Config) (*Services, error) {
@@ -25,13 +29,15 @@ func NewServices(conf Config) (*Services, error) {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 
-	ckan, err := ckan.New(conf.CkanBase, conf.CkanOrg)
+	ckan, err := ckan.New(conf.CkanBase, conf.CkanToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init ckan: %w", err)
 	}
 
 	return &Services{
-		CMS:  cms,
-		Ckan: ckan,
+		CMS:         cms,
+		Ckan:        ckan,
+		CkanOrg:     conf.CkanOrg,
+		CkanPrivate: conf.CkanPrivate,
 	}, nil
 }

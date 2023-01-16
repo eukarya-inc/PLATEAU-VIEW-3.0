@@ -31,6 +31,10 @@ type Config struct {
 	FME_Mock             bool
 	FME_Token            string
 	FME_SkipQualityCheck bool
+	Ckan_BaseURL         string
+	Ckan_Org             string
+	Ckan_Token           string
+	Ckan_Private         bool
 	SendGrid_APIKey      string
 	Opinion_Email        string
 	Opinion_ToName       string
@@ -100,9 +104,11 @@ func (c *Config) Opinion() opinion.Config {
 
 func (c *Config) Geospatialjp() geospatialjp.Config {
 	return geospatialjp.Config{
-		// CkanBase: ,
-		// CkanOrg: ,
-		CMSToken: c.CMS_Token,
-		CMSBase:  c.CMS_BaseURL,
+		CkanBase:    c.Ckan_BaseURL,
+		CkanOrg:     c.Ckan_Org,
+		CkanToken:   c.Ckan_Token,
+		CkanPrivate: c.Ckan_Private,
+		CMSToken:    c.CMS_Token,
+		CMSBase:     c.CMS_BaseURL,
 	}
 }
