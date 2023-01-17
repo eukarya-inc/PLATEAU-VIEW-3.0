@@ -12,6 +12,8 @@ RUN go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=
 
 FROM debian:bullseye
 
+RUN apt-get update && apt-get install -y ca-certificates && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/server /app/reearth-plateauview
 
 WORKDIR /app
