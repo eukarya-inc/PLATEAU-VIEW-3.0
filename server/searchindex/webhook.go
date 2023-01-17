@@ -107,7 +107,7 @@ func do(ctx context.Context, c cms.Interface, item Item, pid string) (string, er
 		}
 
 		u2, _ := url.Parse(a.URL)
-		if strings.Contains(path.Base(u.Path), "_lod1") {
+		if strings.Contains(path.Base(u2.Path), "_lod1") {
 			u = u2
 			break
 		}
