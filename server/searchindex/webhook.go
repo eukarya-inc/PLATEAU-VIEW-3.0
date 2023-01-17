@@ -127,8 +127,8 @@ func do(ctx context.Context, c cms.Interface, item Item, pid string) (string, er
 	// build index
 	base := getAssetBase(u)
 	cc := cityCodeAndName(name)
-	log.Info("searchindex webhook: build index with base %s, name %s", base, cc)
-	indexer := NewIndexer(c, base, pid)
+	log.Infof("searchindex webhook: build index with base %s, name %s", base, cc)
+	indexer := NewIndexer(c, pid, base)
 	return indexer.BuildIndex(ctx, cc)
 }
 
