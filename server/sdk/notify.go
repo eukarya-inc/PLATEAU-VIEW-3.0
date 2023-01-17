@@ -35,7 +35,7 @@ func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
 			return c.JSON(http.StatusUnauthorized, "unauthorized")
 		}
 
-		log.Errorf("sdk notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
+		log.Infof("sdk notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
 
 		aid, err := s.CMS.UploadAsset(ctx, id.ProjectID, f.ResultURL)
 		if err != nil {
