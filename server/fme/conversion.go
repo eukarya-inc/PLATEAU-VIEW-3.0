@@ -24,8 +24,8 @@ func (r ConversionRequest) Query() url.Values {
 	if r.PRCS != "" {
 		q.Set("prcs", r.PRCS)
 	}
-	if r.DevideODC {
-		q.Set("divide_odc", "true")
+	if !r.DevideODC {
+		q.Set("divide_odc", "false")
 	}
 	if r.QualityCheckParams != "" {
 		q.Set("config", r.QualityCheckParams)

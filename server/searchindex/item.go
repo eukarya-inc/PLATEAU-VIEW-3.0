@@ -16,7 +16,7 @@ type Item struct {
 	// asset: bldg
 	Bldg []string `json:"bldg,omitempty"`
 	// asset: search_index
-	SearchIndex []string `json:"search_index,omitempty"`
+	SearchIndex string `json:"search_index,omitempty"`
 	// select: search_index_status: 未実行, 実行中, 完了, エラー
 	SeatchIndexStatus Status `json:"search_index_status,omitempty"`
 }
@@ -30,7 +30,7 @@ func (i Item) Fields() (fields []cms.Field) {
 		})
 	}
 
-	if i.SearchIndex != nil {
+	if i.SearchIndex != "" {
 		fields = append(fields, cms.Field{
 			Key:   "search_index",
 			Type:  "asset",
@@ -56,8 +56,8 @@ func ItemFrom(item cms.Item) (i Item) {
 		i.Bldg = v
 	}
 
-	if v := item.FieldByKey("search_index").ValueStrings(); v != nil {
-		i.SearchIndex = v
+	if v := item.FieldByKey("search_index").ValueString(); v != nil {
+		i.SearchIndex = *v
 	}
 
 	if v := item.FieldByKey("search_index_status").ValueString(); v != nil {

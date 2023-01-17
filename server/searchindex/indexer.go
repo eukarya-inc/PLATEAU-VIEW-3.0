@@ -1,86 +1,81 @@
 package searchindex
 
 import (
-	"errors"
+	"archive/zip"
+	"context"
 	"fmt"
 	"io"
-	"net/http"
-	"net/url"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/indexer"
+	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/searchindex/indexer"
 )
 
+var builtinConfig = &indexer.Config{
+	IdProperty: "gml_id",
+	Indexes: map[string]indexer.Index{
+		"名称":           {Kind: "enum"},
+		"用途":           {Kind: "enum"},
+		"住所":           {Kind: "enum"},
+		"建物利用現況（大分類）":  {Kind: "enum"},
+		"建物利用現況（中分類）":  {Kind: "enum"},
+		"建物利用現況（小分類）":  {Kind: "enum"},
+		"建物利用現況（詳細分類）": {Kind: "enum"},
+		"構造種別":         {Kind: "enum"},
+		"構造種別（独自）":     {Kind: "enum"},
+		"耐火構造種別":       {Kind: "enum"},
+	},
+}
+
 type Indexer struct {
-	i    *indexer.Indexer
-	base string
+	i      *indexer.Indexer
+	config *indexer.Config
+	cms    cms.Interface
+	pid    string
 }
 
-func NewIndexer(base string) *Indexer {
+func NewIndexer(cms cms.Interface, pid, base string) *Indexer {
 	return &Indexer{
-		i:    indexer.NewIndexer(),
-		base: base,
+		i:      indexer.NewIndexer(builtinConfig, indexer.NewHTTPFS(nil, base), nil),
+		config: builtinConfig,
+		cms:    cms,
+		pid:    pid,
 	}
 }
 
-type Result struct {
-	Name string
-	Data []byte
-}
-
-func (i *Indexer) BuildIndex() ([]Result, error) {
-	// fs := NewIndexerFS(i.base)
-
-	// r, err := i.i.GenerateIndexes(&indexer.Config{}, "", fs)
-	// if err != nil {
-	// 	return Result{}, err
-	// }
-
-	return nil, errors.New("not implemented")
-}
-
-type IndexerFS struct {
-	c    *http.Client
-	base string
-}
-
-type IndexerFile struct {
-	p string
-	r *http.Response
-}
-
-func NewIndexerFS(base string) *IndexerFS {
-	return &IndexerFS{
-		c:    http.DefaultClient,
-		base: base,
-	}
-}
-
-func (f *IndexerFS) Open(p string) (io.ReadCloser, error) {
-	u, err := url.JoinPath(f.base, p)
+func (i *Indexer) BuildIndex(ctx context.Context, name string) (string, error) {
+	res, err := i.i.Build()
 	if err != nil {
-		return nil, fmt.Errorf("invalid url: %w", err)
+		return "", fmt.Errorf("インデックスを作成できませんでした。 %w", err)
 	}
 
-	r, err := f.c.Get(u)
+	pr, pw := io.Pipe()
+
+	aids := make(chan string)
+	errs := make(chan error)
+	go func() {
+		aid, err := i.cms.UploadAssetDirectly(ctx, i.pid, fmt.Sprintf("%s_index.zip", name), pr)
+		aids <- aid
+		errs <- err
+	}()
+
+	zw := zip.NewWriter(pw)
+	zfs := indexer.NewZipOutputFS(zw, "")
+	if err := indexer.NewWriter(i.config, zfs).Write(res); err != nil {
+		return "", fmt.Errorf("failed to save files to zip: %w", err)
+	}
+
+	if err := zw.Close(); err != nil {
+		return "", fmt.Errorf("failed to close zip: %w", err)
+	}
+
+	if err := pw.Close(); err != nil {
+		return "", fmt.Errorf("結果のアップロードに失敗しました。(2) %w", err)
+	}
+
+	aid := <-aids
+	err = <-errs
 	if err != nil {
-		return nil, fmt.Errorf("failed to open url: %w", err)
+		return "", fmt.Errorf("結果のアップロードに失敗しました。(3) %w", err)
 	}
-
-	if r.StatusCode != 200 {
-		_ = r.Body.Close()
-		return nil, fmt.Errorf("failed to open url: invalid status code: %d", r.StatusCode)
-	}
-
-	return &IndexerFile{
-		p: p,
-		r: r,
-	}, nil
-}
-
-func (f *IndexerFile) Read(b []byte) (int, error) {
-	return f.r.Body.Read(b)
-}
-
-func (f *IndexerFile) Close() error {
-	return f.r.Body.Close()
+	return aid, nil
 }

@@ -1,16 +1,18 @@
 package searchindex
 
 import (
-	"bytes"
+	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
 )
 
 var (
@@ -39,6 +41,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
+		pid := w.Data.Schema.ProjectID
 		item := ItemFrom(*w.Data.Item)
 		log.Infof("searchindex webhook: item: %+v", item)
 
@@ -54,90 +57,93 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		ctx := req.Context()
 
-		// get all assets
-		var assets []*cms.Asset
-		for _, aid := range item.Bldg {
-			a, err := c.Asset(ctx, aid)
-			if err != nil {
-				log.Errorf("searchindex webhook: failed to get an asset (%s): %s", aid, err)
-
-				if _, err := c.UpdateItem(ctx, w.Data.Item.ID, Item{
-					SeatchIndexStatus: StatusError,
-				}.Fields()); err != nil {
-					log.Errorf("searchindex webhook: failed to update item: %s", err)
-				}
-
-				return nil
-			}
-
-			assets = append(assets, a)
+		if _, err := c.UpdateItem(ctx, w.Data.Item.ID, Item{
+			SeatchIndexStatus: StatusProcessing,
+		}.Fields()); err != nil {
+			log.Errorf("searchindex webhook: failed to update item: %w", err)
 		}
 
-		// extract assets
-		target := extractAssets(assets)
+		log.Errorf("searchindex webhook: start processing")
 
-		// build index
-		var indexAssetIDs []string
-		var indexerr error
-		for _, t := range target {
-			indexer := NewIndexer(getAssetBase(t))
-			result, err := indexer.BuildIndex()
-			if err != nil {
-				if _, err := c.UpdateItem(ctx, w.Data.Item.ID, Item{
-					SeatchIndexStatus: StatusError,
-				}.Fields()); err != nil {
-					log.Errorf("searchindex webhook: failed to update item: %s", err)
-				}
-				return nil
-			}
+		aid, err := do(ctx, c, item, pid)
+		if err != nil {
+			log.Errorf("searchindex webhook: %v", err)
 
-			// upload indexes
-			for _, r := range result {
-				if a, err := c.UploadAssetDirectly(ctx, w.Data.Schema.ProjectID, r.Name, bytes.NewReader(r.Data)); err != nil {
-					indexerr = err
-					break
-				} else {
-					indexAssetIDs = append(indexAssetIDs, a)
-				}
-			}
-
-			if indexerr != nil {
-				break
-			}
-		}
-
-		if indexerr != nil {
-			log.Errorf("searchindex webhook: failed to build and upload indexes: %s", indexerr)
 			if _, err := c.UpdateItem(ctx, w.Data.Item.ID, Item{
 				SeatchIndexStatus: StatusError,
 			}.Fields()); err != nil {
 				log.Errorf("searchindex webhook: failed to update item: %s", err)
 			}
+
+			if err := c.CommentToItem(ctx, w.Data.Item.ID, fmt.Sprintf("検索インデックスの構築に失敗しました。%v", err)); err != nil {
+				log.Errorf("searchindex webhook: failed to comment: %s", err)
+			}
 			return nil
 		}
 
-		// update item
 		if _, err := c.UpdateItem(ctx, w.Data.Item.ID, Item{
 			SeatchIndexStatus: StatusOK,
-			SearchIndex:       indexAssetIDs,
+			SearchIndex:       aid,
 		}.Fields()); err != nil {
 			log.Errorf("searchindex webhook: failed to update item: %s", err)
 		}
 
+		if err := c.CommentToItem(ctx, w.Data.Item.ID, "検索インデックスの構築が完了しました。"); err != nil {
+			log.Errorf("searchindex webhook: failed to comment: %s", err)
+		}
+
+		log.Infof("searchindex webhook: done")
 		return nil
 	}, nil
 }
 
-func extractAssets(assets []*cms.Asset) []*cms.Asset {
-	return lo.Filter(assets, func(a *cms.Asset, _ int) bool {
-		// TODO
-		return true
-	})
+func do(ctx context.Context, c cms.Interface, item Item, pid string) (string, error) {
+	// find asset
+	var u *url.URL
+	for _, aid := range item.Bldg {
+		a, err := c.Asset(ctx, aid)
+		if err != nil {
+			return "", fmt.Errorf("failed to get an asset (%s): %s", aid, err)
+		}
+
+		u2, _ := url.Parse(a.URL)
+		if strings.Contains(path.Base(u.Path), "_lod1") {
+			u = u2
+			break
+		}
+	}
+
+	if u == nil {
+		return "", errors.New("LOD1の3D Tilesの建築物モデルが登録されていません。")
+	}
+
+	name := pathFileName(u.Path)
+	if name == "" {
+		return "", fmt.Errorf("URLのパスが不正です。%s", u.Path)
+	}
+
+	// build index
+	indexer := NewIndexer(c, getAssetBase(u), pid)
+	return indexer.BuildIndex(ctx, cityCodeAndName(name))
 }
 
-func getAssetBase(a *cms.Asset) string {
-	u, _ := url.Parse(a.URL)
-	b := path.Join(path.Dir(u.Path), strings.TrimSuffix(path.Base(u.Path), path.Ext(u.Path)))
-	u.Path = b
-	return u.String()
+func pathFileName(p string) string {
+	return strings.TrimSuffix(path.Base(p), path.Ext(p))
+}
+
+func getAssetBase(u *url.URL) string {
+	u2 := *u
+	b := path.Join(path.Dir(u.Path), pathFileName(u.Path))
+	u2.Path = b
+	return u2.String()
+}
+
+var re = regexp.MustCompile("^([0-9]+?_.+?)_")
+
+func cityCodeAndName(p string) string {
+	m := re.FindStringSubmatch(p)
+	if len(m) < 1 {
+		return p
+	}
+	return m[1]
 }
