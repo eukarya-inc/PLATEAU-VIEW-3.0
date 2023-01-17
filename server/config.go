@@ -9,7 +9,6 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
-	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -86,12 +85,12 @@ func (c *Config) SDK() sdk.Config {
 	}
 }
 
-func (c *Config) SearchIndex() searchindex.Config {
-	return searchindex.Config{
-		CMSBase:  c.CMS_BaseURL,
-		CMSToken: c.CMS_Token,
-	}
-}
+// func (c *Config) SearchIndex() searchindex.Config {
+// 	return searchindex.Config{
+// 		CMSBase:  c.CMS_BaseURL,
+// 		CMSToken: c.CMS_Token,
+// 	}
+// }
 
 func (c *Config) Share() share.Config {
 	return share.Config{
