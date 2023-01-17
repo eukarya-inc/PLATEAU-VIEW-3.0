@@ -10,7 +10,6 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
-	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -51,7 +50,7 @@ func main() {
 		lo.Must(cmsintegration.WebhookHandler(conf.CMSIntegration())),
 		lo.Must(geospatialjp.WebhookHandler(conf.Geospatialjp())),
 		lo.Must(sdk.WebhookHandler(conf.SDK())),
-		lo.Must(searchindex.WebhookHandler(conf.SearchIndex())),
+		// lo.Must(searchindex.WebhookHandler(conf.SearchIndex())),
 	)
 
 	e.POST("/notify_fme", lo.Must(cmsintegration.NotifyHandler(conf.CMSIntegration())))
