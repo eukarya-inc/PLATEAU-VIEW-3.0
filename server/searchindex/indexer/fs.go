@@ -111,12 +111,12 @@ func NewHTTPFS(c *http.Client, base string) *HTTPFS {
 func (f *HTTPFS) Open(name string) (io.ReadCloser, error) {
 	u, err := url.JoinPath(f.base, name)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get url from %s and %s: %w", f.base, name, err)
 	}
 
 	res, err := f.c.Get(u)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get from %s: %w", u, err)
 	}
 
 	if res.StatusCode >= 300 {

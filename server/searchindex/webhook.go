@@ -107,13 +107,15 @@ func do(ctx context.Context, c cms.Interface, item Item, pid string) (string, er
 		}
 
 		u2, _ := url.Parse(a.URL)
-		if strings.Contains(path.Base(u2.Path), "_lod1") {
-			u = u2
-			break
+		if u2 == nil || !strings.Contains(path.Base(u2.Path), "_lod1") {
+			continue
 		}
+
+		u = u2
+		break
 	}
 
-	if u == nil {
+	if u == nil || u.String() == "" {
 		return "", errors.New("LOD1の3D Tilesの建築物モデルが登録されていません。")
 	}
 
@@ -123,8 +125,11 @@ func do(ctx context.Context, c cms.Interface, item Item, pid string) (string, er
 	}
 
 	// build index
-	indexer := NewIndexer(c, getAssetBase(u), pid)
-	return indexer.BuildIndex(ctx, cityCodeAndName(name))
+	base := getAssetBase(u)
+	cc := cityCodeAndName(name)
+	log.Info("searchindex webhook: build index with base %s, name %s", base, cc)
+	indexer := NewIndexer(c, base, pid)
+	return indexer.BuildIndex(ctx, cc)
 }
 
 func pathFileName(p string) string {
@@ -133,8 +138,8 @@ func pathFileName(p string) string {
 
 func getAssetBase(u *url.URL) string {
 	u2 := *u
-	b := path.Join(path.Dir(u.Path), pathFileName(u.Path))
-	u2.Path = b
+	p := path.Join(path.Dir(u.Path), pathFileName(u.Path))
+	u2.Path = p
 	return u2.String()
 }
 
