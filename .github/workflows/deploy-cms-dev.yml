@@ -53,6 +53,10 @@ jobs:
           echo $SOURCE > $APP_PATH
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-cms-web/ ${{ env.GCS_DEST }}
+      - name: Pack web
+        run: |
+          rm reearth-cms-web.tar.gz
+          tar -zcvf reearth-cms-web.tar.gz reearth-cms-web
       - name: Save as artifact
         uses: actions/upload-artifact@v2
         with:
