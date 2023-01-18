@@ -1,10 +1,22 @@
 package cms
 
-import "github.com/samber/lo"
+import (
+	"reflect"
+	"strings"
+
+	"github.com/samber/lo"
+)
+
+const (
+	AssetArchiveExtractionStatusDone = "done"
+	tag                              = "cms"
+)
 
 type Asset struct {
-	ID  string `json:"id"`
-	URL string `json:"url"`
+	ID                      string `json:"id"`
+	ProjectID               string `json:"projectId"`
+	URL                     string `json:"url"`
+	ArchiveExtractionStatus string `json:"archiveExtractionStatus"`
 }
 
 type Model struct {
@@ -41,18 +53,126 @@ func (i Item) FieldByKey(key string) *Field {
 	return nil
 }
 
-func (d Item) FieldByKey2(key string, s *Schema) *Field {
-	var sfid string
-	if s != nil {
-		sfid = s.FieldIDByKey(key)
+func (d Item) Unmarshal(i any) {
+	if i == nil {
+		return
 	}
-	f, ok := lo.Find(d.Fields, func(f Field) bool {
-		return f.Key == key || sfid != "" && f.ID == sfid
-	})
-	if !ok {
-		return nil
+
+	v := reflect.ValueOf(i)
+	if v.IsNil() {
+		return
 	}
-	return &f
+
+	v = v.Elem()
+	t := v.Type()
+
+	if t.Kind() != reflect.Struct {
+		return
+	}
+
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		tag := f.Tag.Get(tag)
+		key, _, _ := strings.Cut(tag, ",")
+		if key == "" || key == "-" {
+			continue
+		}
+
+		vf := v.FieldByName(f.Name)
+		if !vf.CanSet() {
+			continue
+		}
+
+		if key == "id" {
+			if f.Type.Kind() == reflect.String {
+				vf.SetString(d.ID)
+			}
+			continue
+		}
+
+		if itf := d.FieldByKey(key); itf != nil {
+			if f.Type.Kind() == reflect.String {
+				if itfv := itf.ValueString(); itfv != nil {
+					vf.SetString(*itfv)
+				}
+			} else if f.Type.Kind() == reflect.Slice && f.Type.Elem().Kind() == reflect.String {
+				if te := f.Type.Elem(); te.Name() == "string" {
+					if itfv := itf.ValueStrings(); itfv != nil {
+						vf.Set(reflect.ValueOf(itfv))
+					}
+				} else if itfv := itf.ValueStrings(); itfv != nil {
+					s := reflect.MakeSlice(f.Type, 0, len(itfv))
+					for _, v := range itfv {
+						rv := reflect.ValueOf(v).Convert(te)
+						s = reflect.Append(s, rv)
+					}
+					vf.Set(s)
+				}
+			}
+		}
+	}
+}
+
+func Marshal(i any, item *Item) {
+	if item == nil || i == nil {
+		return
+	}
+
+	t := reflect.TypeOf(i)
+	v := reflect.ValueOf(i)
+	if t.Kind() == reflect.Pointer {
+		if v.IsNil() {
+			return
+		}
+		t = t.Elem()
+		v = v.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return
+	}
+
+	ni := Item{}
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		tag := f.Tag.Get(tag)
+		key, ty, _ := strings.Cut(tag, ",")
+		if key == "" || key == "-" {
+			continue
+		}
+
+		vf := v.FieldByName(f.Name)
+		if key == "id" {
+			ni.ID, _ = vf.Interface().(string)
+			continue
+		}
+
+		vft := vf.Type()
+		var i any
+		if vft.Kind() == reflect.String {
+			v := vf.Convert(reflect.TypeOf("")).Interface()
+			if v != "" {
+				i = v
+			}
+		} else if vft.Kind() == reflect.Slice && vft.Elem().Kind() == reflect.String && vf.Len() > 0 {
+			st := reflect.TypeOf("")
+			v := make([]string, 0, vf.Len())
+			for i := 0; i < cap(v); i++ {
+				vfs := vf.Index(i).Convert(st)
+				v = append(v, vfs.String())
+			}
+			i = v
+		}
+
+		if i != nil {
+			ni.Fields = append(ni.Fields, Field{
+				Key:   key,
+				Type:  ty,
+				Value: i,
+			})
+		}
+	}
+
+	*item = ni
 }
 
 type Field struct {

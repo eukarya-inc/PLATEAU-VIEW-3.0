@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	CkanBase    string
-	CkanOrg     string
-	CkanToken   string
-	CkanPrivate bool
-	CMSBase     string
-	CMSToken    string
+	CkanBase       string
+	CkanOrg        string
+	CkanToken      string
+	CkanPrivate    bool
+	CMSBase        string
+	CMSToken       string
+	CMSIntegration string
 }
 
 type Services struct {

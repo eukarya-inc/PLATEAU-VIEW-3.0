@@ -6,12 +6,13 @@ import (
 )
 
 type Config struct {
-	CMSBase      string
-	CMSToken     string
-	FMEBaseURL   string
-	FMEToken     string
-	FMEResultURL string
-	Secret       string
+	CMSBase        string
+	CMSToken       string
+	CMSIntegration string
+	FMEBaseURL     string
+	FMEToken       string
+	FMEResultURL   string
+	Secret         string
 }
 
 type Services struct {

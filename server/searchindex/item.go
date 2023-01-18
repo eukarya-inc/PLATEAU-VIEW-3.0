@@ -12,57 +12,22 @@ const (
 )
 
 type Item struct {
-	ID string `json:"id,omitempty"`
+	ID string `json:"id,omitempty" cms:"id"`
 	// asset: bldg
-	Bldg []string `json:"bldg,omitempty"`
+	Bldg []string `json:"bldg,omitempty" cms:"bldg,asset"`
 	// asset: search_index
-	SearchIndex string `json:"search_index,omitempty"`
+	SearchIndex []string `json:"search_index,omitempty" cms:"search_index,asset"`
 	// select: search_index_status: 未実行, 実行中, 完了, エラー
-	SeatchIndexStatus Status `json:"search_index_status,omitempty"`
+	SearchIndexStatus Status `json:"search_index_status,omitempty" cms:"search_index_status,select"`
 }
 
 func (i Item) Fields() (fields []cms.Field) {
-	if i.Bldg != nil {
-		fields = append(fields, cms.Field{
-			Key:   "bldg",
-			Type:  "asset",
-			Value: i.Bldg,
-		})
-	}
-
-	if i.SearchIndex != "" {
-		fields = append(fields, cms.Field{
-			Key:   "search_index",
-			Type:  "asset",
-			Value: i.SearchIndex,
-		})
-	}
-
-	if i.SeatchIndexStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "search_index_status",
-			Type:  "select",
-			Value: string(i.SeatchIndexStatus),
-		})
-	}
-
-	return
+	item := &cms.Item{}
+	cms.Marshal(i, item)
+	return item.Fields
 }
 
 func ItemFrom(item cms.Item) (i Item) {
-	i.ID = item.ID
-
-	if v := item.FieldByKey("bldg").ValueStrings(); v != nil {
-		i.Bldg = v
-	}
-
-	if v := item.FieldByKey("search_index").ValueString(); v != nil {
-		i.SearchIndex = *v
-	}
-
-	if v := item.FieldByKey("search_index_status").ValueString(); v != nil {
-		i.SeatchIndexStatus = Status(*v)
-	}
-
+	item.Unmarshal(&i)
 	return
 }

@@ -19,7 +19,9 @@ type Interface interface {
 	GetItems(ctx context.Context, modelID string) (*Items, error)
 	GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string) (*Items, error)
 	CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error)
+	CreateItemByKey(ctx context.Context, projectID, modelID string, fields []Field) (*Item, error)
 	UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error)
+	DeleteItem(ctx context.Context, itemID string) error
 	Asset(ctx context.Context, id string) (*Asset, error)
 	UploadAsset(ctx context.Context, projectID, url string) (string, error)
 	UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error)
@@ -110,6 +112,25 @@ func (c *CMS) CreateItem(ctx context.Context, modelID string, fields []Field) (*
 	return item, nil
 }
 
+func (c *CMS) CreateItemByKey(ctx context.Context, projectID, modelID string, fields []Field) (*Item, error) {
+	rb := map[string]any{
+		"fields": fields,
+	}
+
+	b, err := c.send(ctx, http.MethodPost, []string{"api", "projects", projectID, "models", modelID, "items"}, "", rb)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create an item: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	item := &Item{}
+	if err := json.NewDecoder(b).Decode(&item); err != nil {
+		return nil, fmt.Errorf("failed to parse an item: %w", err)
+	}
+
+	return item, nil
+}
+
 func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error) {
 	rb := map[string]any{
 		"fields": fields,
@@ -127,6 +148,15 @@ func (c *CMS) UpdateItem(ctx context.Context, itemID string, fields []Field) (*I
 	}
 
 	return item, nil
+}
+
+func (c *CMS) DeleteItem(ctx context.Context, itemID string) error {
+	b, err := c.send(ctx, http.MethodDelete, []string{"api", "items", itemID}, "", nil)
+	if err != nil {
+		return fmt.Errorf("failed to delete an item: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+	return nil
 }
 
 func (c *CMS) UploadAsset(ctx context.Context, projectID, url string) (string, error) {
@@ -259,7 +289,7 @@ func (c *CMS) send(ctx context.Context, m string, p []string, ct string, body an
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
 
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode >= 300 {
 		defer func() {
 			_ = res.Body.Close()
 		}()

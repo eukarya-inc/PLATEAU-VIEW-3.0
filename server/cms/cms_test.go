@@ -70,6 +70,14 @@ func TestCMS(t *testing.T) {
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
+	item, err = f.CreateItemByKey(ctx, "ppp", "mmm", nil)
+	assert.Equal(t, 1, call("POST /api/projects/ppp/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Item{
+		ID:     "a",
+		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+	}, item)
+
 	item, err = f.UpdateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.NoError(t, err)
@@ -77,6 +85,10 @@ func TestCMS(t *testing.T) {
 		ID:     "a",
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
+
+	err = f.DeleteItem(ctx, "a")
+	assert.Equal(t, 1, call("DELETE /api/items/a"))
+	assert.NoError(t, err)
 
 	a, err := f.Asset(ctx, "a")
 	assert.Equal(t, 1, call("GET /api/assets/a"))
@@ -116,6 +128,11 @@ func TestCMS(t *testing.T) {
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
+	item, err = f.CreateItemByKey(ctx, "ppp", "mmm", nil)
+	assert.Equal(t, 1, call("POST /api/projects/ppp/models/mmm/items"))
+	assert.Nil(t, item)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
 	item, err = f.CreateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("POST /api/models/a/items"))
 	assert.Nil(t, item)
@@ -123,6 +140,11 @@ func TestCMS(t *testing.T) {
 
 	item, err = f.UpdateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
+	assert.Nil(t, item)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	err = f.DeleteItem(ctx, "a")
+	assert.Equal(t, 1, call("DELETE /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
@@ -188,6 +210,13 @@ func mockCMS(t *testing.T, host, token string) func(string) int {
 		}, nil
 	}))
 
+	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":     "a",
+			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
+		}, nil
+	}))
+
 	httpmock.RegisterResponder("GET", host+"/api/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
 		return map[string]any{
 			"items": []map[string]any{
@@ -214,6 +243,10 @@ func mockCMS(t *testing.T, host, token string) func(string) int {
 			"id":     "a",
 			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
 		}, nil
+	}))
+
+	httpmock.RegisterResponder("DELETE", host+"/api/items/a", checkHeader(func(r *http.Request) (any, error) {
+		return nil, nil
 	}))
 
 	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/assets", checkHeader(func(r *http.Request) (any, error) {

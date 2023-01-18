@@ -7,6 +7,81 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestItem_Unmarshal(t *testing.T) {
+	type str string
+
+	type S struct {
+		ID  string   `cms:"id"`
+		AAA str      `cms:"aaa,"`
+		BBB []string `cms:"bbb"`
+		CCC []str    `cms:"ccc"`
+	}
+	s := S{}
+
+	Item{
+		ID: "xxx",
+		Fields: []Field{
+			{Key: "aaa", Value: "bbb"},
+			{Key: "bbb", Value: []string{"ccc", "bbb"}},
+			{Key: "ccc", Value: []string{"a", "b"}},
+		},
+	}.Unmarshal(&s)
+	assert.Equal(t, S{
+		ID:  "xxx",
+		AAA: "bbb",
+		BBB: []string{"ccc", "bbb"},
+		CCC: []str{"a", "b"},
+	}, s)
+
+	// no panic
+	Item{}.Unmarshal(nil)
+	Item{}.Unmarshal((*S)(nil))
+}
+
+func TestMarshal(t *testing.T) {
+	type str string
+
+	type S struct {
+		ID  string   `cms:"id"`
+		AAA string   `cms:"aaa,text"`
+		BBB []string `cms:"bbb,select"`
+		CCC str      `cms:"ccc"`
+		DDD []str    `cms:"ddd"`
+		EEE string   `cms:"eee,text"`
+	}
+	s := S{
+		ID:  "xxx",
+		AAA: "bbb",
+		BBB: []string{"ccc", "bbb"},
+		CCC: str("x"),
+		DDD: []str{"1", "2"},
+	}
+	i := &Item{
+		ID: "xxx",
+		Fields: []Field{
+			{Key: "aaa", Type: "text", Value: "bbb"},
+			{Key: "bbb", Type: "select", Value: []string{"ccc", "bbb"}},
+			{Key: "ccc", Type: "", Value: "x"},
+			{Key: "ddd", Type: "", Value: []string{"1", "2"}},
+			// no field for eee
+		},
+	}
+
+	item := &Item{}
+	Marshal(s, item)
+	assert.Equal(t, i, item)
+
+	item2 := &Item{}
+	Marshal(&s, item2)
+	assert.Equal(t, i, item2)
+
+	// no panic
+	Marshal(nil, nil)
+	Marshal(nil, item2)
+	Marshal((*S)(nil), item2)
+	Marshal(s, nil)
+}
+
 func TestItem_Field(t *testing.T) {
 	assert.Equal(t, &Field{
 		ID: "bbb", Value: "ccc", Type: "string",

@@ -19,7 +19,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
-		if !w.Operator.IsUser() {
+		if !w.Operator.IsUser() && w.Operator.IsIntegrationBy(conf.CMSIntegration) {
 			log.Debugf("sdk webhook: invalid event operator: %+v", w.Operator)
 			return nil
 		}
@@ -29,17 +29,17 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		if w.Data.Item == nil || w.Data.Model == nil {
+		if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Model == nil {
 			log.Debugf("sdk webhook: invalid event data: %+v", w.Data)
 			return nil
 		}
 
-		if w.Data.Model.Key != modelKey {
-			log.Debugf("sdk webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
+		if w.ItemData.Model.Key != modelKey {
+			log.Debugf("sdk webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
 			return nil
 		}
 
-		item := ItemFrom(*w.Data.Item)
+		item := ItemFrom(*w.ItemData.Item)
 		log.Infof("sdk webhook: item: %+v", item)
 
 		if item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
@@ -63,7 +63,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			ID: fme.ID{
 				ItemID:    item.ID,
 				AssetID:   citygml.ID,
-				ProjectID: w.Data.Schema.ProjectID,
+				ProjectID: w.ItemData.Schema.ProjectID,
 			}.String(conf.Secret),
 			Target: citygml.URL,
 		}); err != nil {

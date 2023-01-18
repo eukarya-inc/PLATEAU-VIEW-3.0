@@ -14,127 +14,32 @@ const (
 )
 
 type Item struct {
-	ID string `json:"id,omitempty"`
+	ID string `json:"id,omitempty" cms:"id"`
 	// select: prefecture
-	Prefecture string `json:"prefecture,omitempty"`
+	Prefecture string `json:"prefecture,omitempty" cms:"prefecture,select"`
 	// text: city_name
-	CityName string `json:"city_name,omitempty"`
+	CityName string `json:"city_name,omitempty" cms:"city_name,text"`
 	// asset: citygml
-	CityGML string `json:"citygml,omitempty"`
+	CityGML string `json:"citygml,omitempty" cms:"citygml,asset"`
 	// asset: citygml_geospatialjp
-	CityGMLGeoSpatialJP string `json:"citygml_geospatialjp,omitempty"`
+	CityGMLGeoSpatialJP string `json:"citygml_geospatialjp,omitempty" cms:"citygml_geospatialjp,asset"`
 	// asset: catalog
-	Catalog string `json:"catalog,omitempty"`
+	Catalog string `json:"catalog,omitempty" cms:"catalog,asset"`
 	// asset: all
-	All string `json:"all,omitempty"`
+	All string `json:"all,omitempty" cms:"all,asset"`
 	// select: conversion_status: 未実行, 実行中, 完了, エラー
-	ConversionStatus Status `json:"conversion_status,omitempty"`
+	ConversionStatus Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
 	// select: catalog_status: 未実行, 実行中, 完了, エラー
-	CatalogStatus Status `json:"catalog_status,omitempty"`
+	CatalogStatus Status `json:"catalog_status,omitempty" cms:"catalog_status,select"`
 }
 
 func (i Item) Fields() (fields []cms.Field) {
-	if i.Prefecture != "" {
-		fields = append(fields, cms.Field{
-			Key:   "prefecture",
-			Type:  "select",
-			Value: i.Prefecture,
-		})
-	}
-
-	if i.CityName != "" {
-		fields = append(fields, cms.Field{
-			Key:   "city_name",
-			Type:  "text",
-			Value: i.CityName,
-		})
-	}
-
-	if i.CityGML != "" {
-		fields = append(fields, cms.Field{
-			Key:   "citygml",
-			Type:  "asset",
-			Value: i.CityGML,
-		})
-	}
-
-	if i.CityGMLGeoSpatialJP != "" {
-		fields = append(fields, cms.Field{
-			Key:   "citygml_geospatialjp",
-			Type:  "asset",
-			Value: i.CityGMLGeoSpatialJP,
-		})
-	}
-
-	if i.Catalog != "" {
-		fields = append(fields, cms.Field{
-			Key:   "catalog",
-			Type:  "asset",
-			Value: i.Catalog,
-		})
-	}
-
-	if i.All != "" {
-		fields = append(fields, cms.Field{
-			Key:   "all",
-			Type:  "asset",
-			Value: i.All,
-		})
-	}
-
-	if i.ConversionStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "conversion_status",
-			Type:  "select",
-			Value: string(i.ConversionStatus),
-		})
-	}
-
-	if i.CatalogStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "catalog_status",
-			Type:  "select",
-			Value: string(i.CatalogStatus),
-		})
-	}
-
-	return
+	item := &cms.Item{}
+	cms.Marshal(i, item)
+	return item.Fields
 }
 
 func ItemFrom(item cms.Item) (i Item) {
-	i.ID = item.ID
-
-	if v := item.FieldByKey("prefecture").ValueString(); v != nil {
-		i.Prefecture = *v
-	}
-
-	if v := item.FieldByKey("city_name").ValueString(); v != nil {
-		i.CityName = *v
-	}
-
-	if v := item.FieldByKey("citygml").ValueString(); v != nil {
-		i.CityGML = *v
-	}
-
-	if v := item.FieldByKey("citygml_geospatialjp").ValueString(); v != nil {
-		i.CityGMLGeoSpatialJP = *v
-	}
-
-	if v := item.FieldByKey("catalog").ValueString(); v != nil {
-		i.Catalog = *v
-	}
-
-	if v := item.FieldByKey("all").ValueString(); v != nil {
-		i.All = *v
-	}
-
-	if v := item.FieldByKey("conversion_status").ValueString(); v != nil {
-		i.ConversionStatus = Status(*v)
-	}
-
-	if v := item.FieldByKey("catalog_status").ValueString(); v != nil {
-		i.CatalogStatus = Status(*v)
-	}
-
+	item.Unmarshal(&i)
 	return
 }

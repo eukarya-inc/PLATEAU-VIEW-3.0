@@ -15,6 +15,7 @@ type Config struct {
 	FMESkipQualityCheck bool
 	CMSBaseURL          string
 	CMSToken            string
+	CMSIntegration      string
 	Secret              string
 	Debug               bool
 }

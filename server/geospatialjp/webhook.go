@@ -28,7 +28,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
-		if !w.Operator.IsUser() {
+		if !w.Operator.IsUser() && w.Operator.IsIntegrationBy(conf.CMSIntegration) {
 			log.Debugf("geospatialjp webhook: invalid event operator: %+v", w.Operator)
 			return nil
 		}
@@ -38,18 +38,18 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		if w.Data.Item == nil || w.Data.Model == nil {
+		if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Model == nil {
 			log.Debugf("geospatialjp webhook: invalid event data: %+v", w.Data)
 			return nil
 		}
 
-		if w.Data.Model.Key != modelKey {
-			log.Debugf("geospatialjp webhook: invalid model id: %s, key: %s", w.Data.Item.ModelID, w.Data.Model.Key)
+		if w.ItemData.Model.Key != modelKey {
+			log.Debugf("geospatialjp webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
 			return nil
 		}
 
 		ctx := req.Context()
-		item := ItemFrom(*w.Data.Item)
+		item := ItemFrom(*w.ItemData.Item)
 
 		var err error
 		var act string
@@ -72,7 +72,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 			// create or update event: check the catalog file
 			act = "check catalog"
-			err = s.CheckCatalog(ctx, w.Data.Schema.ProjectID, item)
+			err = s.CheckCatalog(ctx, w.ItemData.Schema.ProjectID, item)
 
 			if err != nil {
 				comment := fmt.Sprintf("目録ファイルの検査でエラーが発生しました。%s", err)

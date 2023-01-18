@@ -10,15 +10,15 @@ import (
 var item = Item{
 	ID:                "xxx",
 	Bldg:              []string{"bldg_assetid", "bldg_assetid2"},
-	SearchIndex:       "searchindex_assetid",
-	SeatchIndexStatus: "エラー",
+	SearchIndex:       []string{"searchindex_assetid"},
+	SearchIndexStatus: "エラー",
 }
 
 var cmsitem = cms.Item{
 	ID: "xxx",
 	Fields: []cms.Field{
 		{Key: "bldg", Type: "asset", Value: []string{"bldg_assetid", "bldg_assetid2"}},
-		{Key: "search_index", Type: "asset", Value: "searchindex_assetid"},
+		{Key: "search_index", Type: "asset", Value: []string{"searchindex_assetid"}},
 		{Key: "search_index_status", Type: "select", Value: "エラー"},
 	},
 }

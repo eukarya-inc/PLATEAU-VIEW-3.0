@@ -53,421 +53,56 @@ func (s PRCS) ESPGCode() string {
 }
 
 type Item struct {
-	ID string `json:"id,omitempty"`
-	// select: prefecture
-	Prefecture string `json:"prefecture,omitempty"`
-	// text: city_name
-	CityName string `json:"city_name,omitempty"`
+	ID string `json:"id,omitempty" cms:"id"`
 	// select: specification
-	Specification string `json:"specification,omitempty"`
+	Specification string `json:"specification,omitempty" cms:"specification,select"`
 	// asset: citygml
-	CityGML string `json:"citygml,omitempty"`
-	// asset: citygml_geospatialjp
-	CityGMLGeoSpatialJP string `json:"citygml_geospatialjp,omitempty"`
-	// asset: catalog
-	Catalog string `json:"catalog,omitempty"`
+	CityGML string `json:"citygml,omitempty" cms:"citygml,asset"`
 	// select: conversion_enabled: 変換する, 変換しない
-	ConversionEnabled Conversion `json:"conversion_enabled,omitempty"`
+	ConversionEnabled Conversion `json:"conversion_enabled,omitempty" cms:"conversion_enabled,select"`
 	// select: prcs: 第1系~第19系
-	PRCS PRCS `json:"prcs"`
+	PRCS PRCS `json:"prcs" cms:"prcs,select"`
 	// asset: quality_check_params
-	QualityCheckParams string `json:"quality_check_params,omitempty"`
+	QualityCheckParams string `json:"quality_check_params,omitempty" cms:"quality_check_params,asset"`
 	// select: devide_odc: 分割する, 分割しない
-	DevideODC Separation `json:"devide_odc,omitempty"`
+	DevideODC Separation `json:"devide_odc,omitempty" cms:"devide_odc,select"`
 	// asset[]: bldg
-	Bldg []string `json:"bldg,omitempty"`
+	Bldg []string `json:"bldg,omitempty" cms:"bldg,asset"`
 	// asset: tran
-	Tran []string `json:"tran,omitempty"`
+	Tran []string `json:"tran,omitempty" cms:"tran,asset"`
 	// asset: frn
-	Frn []string `json:"frn,omitempty"`
+	Frn []string `json:"frn,omitempty" cms:"frn,asset"`
 	// asset: veg
-	Veg []string `json:"veg,omitempty"`
+	Veg []string `json:"veg,omitempty" cms:"veg,asset"`
 	// asset: luse
-	Luse []string `json:"luse,omitempty"`
+	Luse []string `json:"luse,omitempty" cms:"luse,asset"`
 	// asset: lsld
-	Lsld []string `json:"lsld,omitempty"`
+	Lsld []string `json:"lsld,omitempty" cms:"lsld,asset"`
 	// asset: urf
-	Urf []string `json:"urf,omitempty"`
+	Urf []string `json:"urf,omitempty" cms:"urf,asset"`
 	// asset[]: fld
-	Fld []string `json:"fld,omitempty"`
+	Fld []string `json:"fld,omitempty" cms:"fld,asset"`
 	// asset[]: tnm
-	Tnm []string `json:"tnm,omitempty"`
+	Tnm []string `json:"tnm,omitempty" cms:"tnm,asset"`
 	// asset[]: htd
-	Htd []string `json:"htd,omitempty"`
+	Htd []string `json:"htd,omitempty" cms:"htd,asset"`
 	// asset[]: ifld
-	Ifld []string `json:"ifld,omitempty"`
+	Ifld []string `json:"ifld,omitempty" cms:"ifld,asset"`
 	// asset: all
-	All string `json:"all,omitempty"`
+	All string `json:"all,omitempty" cms:"all,asset"`
 	// asset: dictionary
-	Dictionary string `json:"dictionary,omitempty"`
+	Dictionary string `json:"dictionary,omitempty" cms:"dictionary,asset"`
 	// select: conversion_status: 未実行, 実行中, 完了, エラー
-	ConversionStatus Status `json:"conversion_status,omitempty"`
-	// select: catalog_status: 未実行, 実行中, 完了, エラー
-	CatalogStatus Status `json:"catalog_status,omitempty"`
-	// asset: max_lod
-	MaxLOD string `json:"max_lod,omitempty"`
-	// select: max_lod_status: 未実行, 実行中, 完了, エラー
-	MaxLODStatus Status `json:"max_lod_status,omitempty"`
-	// asset: search_index
-	SearchIndex string `json:"search_index,omitempty"`
-	// select: search_index_status: 未実行, 実行中, 完了, エラー
-	SeatchIndexStatus Status `json:"search_index_status,omitempty"`
+	ConversionStatus Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
 }
 
 func (i Item) Fields() (fields []cms.Field) {
-	if i.Prefecture != "" {
-		fields = append(fields, cms.Field{
-			Key:   "prefecture",
-			Type:  "select",
-			Value: i.Prefecture,
-		})
-	}
-
-	if i.CityName != "" {
-		fields = append(fields, cms.Field{
-			Key:   "city_name",
-			Type:  "text",
-			Value: i.CityName,
-		})
-	}
-
-	if i.Specification != "" {
-		fields = append(fields, cms.Field{
-			Key:   "specification",
-			Type:  "text",
-			Value: i.Specification,
-		})
-	}
-
-	if i.CityGML != "" {
-		fields = append(fields, cms.Field{
-			Key:   "citygml",
-			Type:  "asset",
-			Value: i.CityGML,
-		})
-	}
-
-	if i.CityGMLGeoSpatialJP != "" {
-		fields = append(fields, cms.Field{
-			Key:   "citygml_geospatialjp",
-			Type:  "asset",
-			Value: i.CityGMLGeoSpatialJP,
-		})
-	}
-
-	if i.Catalog != "" {
-		fields = append(fields, cms.Field{
-			Key:   "catalog",
-			Type:  "asset",
-			Value: i.Catalog,
-		})
-	}
-
-	if i.ConversionEnabled != "" {
-		fields = append(fields, cms.Field{
-			Key:   "conversion_enabled",
-			Type:  "select",
-			Value: string(i.ConversionEnabled),
-		})
-	}
-
-	if i.PRCS != "" {
-		fields = append(fields, cms.Field{
-			Key:   "prcs",
-			Type:  "select",
-			Value: string(i.PRCS),
-		})
-	}
-
-	if i.QualityCheckParams != "" {
-		fields = append(fields, cms.Field{
-			Key:   "quality_check_params",
-			Type:  "asset",
-			Value: i.QualityCheckParams,
-		})
-	}
-
-	if i.DevideODC != "" {
-		fields = append(fields, cms.Field{
-			Key:   "devide_odc",
-			Type:  "select",
-			Value: string(i.DevideODC),
-		})
-	}
-
-	if i.Bldg != nil {
-		fields = append(fields, cms.Field{
-			Key:   "bldg",
-			Type:  "asset",
-			Value: i.Bldg,
-		})
-	}
-
-	if i.Tran != nil {
-		fields = append(fields, cms.Field{
-			Key:   "tran",
-			Type:  "asset",
-			Value: i.Tran,
-		})
-	}
-
-	if i.Frn != nil {
-		fields = append(fields, cms.Field{
-			Key:   "frn",
-			Type:  "asset",
-			Value: i.Frn,
-		})
-	}
-
-	if i.Veg != nil {
-		fields = append(fields, cms.Field{
-			Key:   "veg",
-			Type:  "asset",
-			Value: i.Veg,
-		})
-	}
-
-	if i.Luse != nil {
-		fields = append(fields, cms.Field{
-			Key:   "luse",
-			Type:  "asset",
-			Value: i.Luse,
-		})
-	}
-
-	if i.Lsld != nil {
-		fields = append(fields, cms.Field{
-			Key:   "lsld",
-			Type:  "asset",
-			Value: i.Lsld,
-		})
-	}
-
-	if i.Urf != nil {
-		fields = append(fields, cms.Field{
-			Key:   "urf",
-			Type:  "asset",
-			Value: i.Urf,
-		})
-	}
-
-	if i.Fld != nil {
-		fields = append(fields, cms.Field{
-			Key:   "fld",
-			Type:  "asset",
-			Value: i.Fld,
-		})
-	}
-
-	if i.Tnm != nil {
-		fields = append(fields, cms.Field{
-			Key:   "tnm",
-			Type:  "asset",
-			Value: i.Tnm,
-		})
-	}
-
-	if i.Htd != nil {
-		fields = append(fields, cms.Field{
-			Key:   "htd",
-			Type:  "asset",
-			Value: i.Htd,
-		})
-	}
-
-	if i.Ifld != nil {
-		fields = append(fields, cms.Field{
-			Key:   "ifld",
-			Type:  "asset",
-			Value: i.Ifld,
-		})
-	}
-
-	if i.All != "" {
-		fields = append(fields, cms.Field{
-			Key:   "all",
-			Type:  "asset",
-			Value: i.All,
-		})
-	}
-
-	if i.Dictionary != "" {
-		fields = append(fields, cms.Field{
-			Key:   "dictionary",
-			Type:  "asset",
-			Value: i.Dictionary,
-		})
-	}
-
-	if i.ConversionStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "conversion_status",
-			Type:  "select",
-			Value: string(i.ConversionStatus),
-		})
-	}
-
-	if i.CatalogStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "catalog_status",
-			Type:  "select",
-			Value: string(i.CatalogStatus),
-		})
-	}
-
-	if i.MaxLOD != "" {
-		fields = append(fields, cms.Field{
-			Key:   "max_lod",
-			Type:  "asset",
-			Value: i.MaxLOD,
-		})
-	}
-
-	if i.MaxLODStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "max_lod_status",
-			Type:  "select",
-			Value: string(i.MaxLODStatus),
-		})
-	}
-
-	if i.SearchIndex != "" {
-		fields = append(fields, cms.Field{
-			Key:   "search_index",
-			Type:  "asset",
-			Value: i.SearchIndex,
-		})
-	}
-
-	if i.SeatchIndexStatus != "" {
-		fields = append(fields, cms.Field{
-			Key:   "search_index_status",
-			Type:  "select",
-			Value: string(i.SeatchIndexStatus),
-		})
-	}
-
-	return
+	item := &cms.Item{}
+	cms.Marshal(i, item)
+	return item.Fields
 }
 
 func ItemFrom(item cms.Item) (i Item) {
-	i.ID = item.ID
-
-	if v := item.FieldByKey("prefecture").ValueString(); v != nil {
-		i.Prefecture = *v
-	}
-
-	if v := item.FieldByKey("city_name").ValueString(); v != nil {
-		i.CityName = *v
-	}
-
-	if v := item.FieldByKey("specification").ValueString(); v != nil {
-		i.Specification = *v
-	}
-
-	if v := item.FieldByKey("citygml").ValueString(); v != nil {
-		i.CityGML = *v
-	}
-
-	if v := item.FieldByKey("citygml_geospatialjp").ValueString(); v != nil {
-		i.CityGMLGeoSpatialJP = *v
-	}
-
-	if v := item.FieldByKey("catalog").ValueString(); v != nil {
-		i.Catalog = *v
-	}
-
-	if v := item.FieldByKey("conversion_enabled").ValueString(); v != nil {
-		i.ConversionEnabled = Conversion(*v)
-	}
-
-	if v := item.FieldByKey("prcs").ValueString(); v != nil {
-		i.PRCS = PRCS(*v)
-	}
-
-	if v := item.FieldByKey("quality_check_params").ValueString(); v != nil {
-		i.QualityCheckParams = *v
-	}
-
-	if v := item.FieldByKey("devide_odc").ValueString(); v != nil {
-		i.DevideODC = Separation(*v)
-	}
-
-	if v := item.FieldByKey("bldg").ValueStrings(); v != nil {
-		i.Bldg = v
-	}
-
-	if v := item.FieldByKey("tran").ValueStrings(); v != nil {
-		i.Tran = v
-	}
-
-	if v := item.FieldByKey("frn").ValueStrings(); v != nil {
-		i.Frn = v
-	}
-
-	if v := item.FieldByKey("veg").ValueStrings(); v != nil {
-		i.Veg = v
-	}
-
-	if v := item.FieldByKey("luse").ValueStrings(); v != nil {
-		i.Luse = v
-	}
-
-	if v := item.FieldByKey("lsld").ValueStrings(); v != nil {
-		i.Lsld = v
-	}
-
-	if v := item.FieldByKey("urf").ValueStrings(); v != nil {
-		i.Urf = v
-	}
-
-	if v := item.FieldByKey("fld").ValueStrings(); v != nil {
-		i.Fld = v
-	}
-
-	if v := item.FieldByKey("tnm").ValueStrings(); v != nil {
-		i.Tnm = v
-	}
-
-	if v := item.FieldByKey("htd").ValueStrings(); v != nil {
-		i.Htd = v
-	}
-
-	if v := item.FieldByKey("ifld").ValueStrings(); v != nil {
-		i.Ifld = v
-	}
-
-	if v := item.FieldByKey("all").ValueString(); v != nil {
-		i.All = *v
-	}
-
-	if v := item.FieldByKey("dictionary").ValueString(); v != nil {
-		i.Dictionary = *v
-	}
-
-	if v := item.FieldByKey("conversion_status").ValueString(); v != nil {
-		i.ConversionStatus = Status(*v)
-	}
-
-	if v := item.FieldByKey("catalog_status").ValueString(); v != nil {
-		i.CatalogStatus = Status(*v)
-	}
-
-	if v := item.FieldByKey("max_lod").ValueString(); v != nil {
-		i.MaxLOD = *v
-	}
-
-	if v := item.FieldByKey("max_lod_status").ValueString(); v != nil {
-		i.MaxLODStatus = Status(*v)
-	}
-
-	if v := item.FieldByKey("search_index").ValueString(); v != nil {
-		i.SearchIndex = *v
-	}
-
-	if v := item.FieldByKey("search_index_status").ValueString(); v != nil {
-		i.SeatchIndexStatus = Status(*v)
-	}
-
+	item.Unmarshal(&i)
 	return
 }
