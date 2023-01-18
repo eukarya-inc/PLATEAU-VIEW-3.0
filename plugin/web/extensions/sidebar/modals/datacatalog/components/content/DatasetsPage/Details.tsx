@@ -1,5 +1,5 @@
+import { CatalogItem, Tag as TagType } from "@web/extensions/sidebar/core/processCatalog";
 import DetailsComponent from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetDetails";
-import { Data, Tag as TagType } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo } from "react";
@@ -9,10 +9,10 @@ import Tags from "./Tags";
 export type Tag = TagType;
 
 export type Props = {
-  dataset?: Data;
+  dataset?: CatalogItem;
   addDisabled: boolean;
   onTagSelect: (tag: Tag) => void;
-  onDatasetAdd: (dataset: Data) => void;
+  onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
 const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, onDatasetAdd }) => {
@@ -29,13 +29,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, on
   const ContentComponent: React.FC = () => (
     <>
       <Tags tags={datasetTags} onTagSelect={onTagSelect} />
-      {dataset && dataset?.type !== "group" && (
-        <Content
-          dangerouslySetInnerHTML={{
-            __html: dataset.description as string,
-          }}
-        />
-      )}
+      {dataset && dataset?.type !== "group" && <Content>{dataset.description}</Content>}
     </>
   );
 
@@ -100,4 +94,5 @@ const StyledP = styled.p`
 
 const Content = styled.div`
   margin-top: 16px;
+  white-space: pre-wrap;
 `;

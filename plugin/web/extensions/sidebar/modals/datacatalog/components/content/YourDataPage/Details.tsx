@@ -1,13 +1,11 @@
+import { CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import DetailsComponent from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetDetails";
-import { Data as DataType } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
-export type Data = DataType;
-
 export type Props = {
-  dataset?: Data;
-  onDatasetAdd: (dataset: Data) => void;
+  dataset?: CatalogItem;
+  onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
 const DatasetDetails: React.FC<Props> = ({ dataset, onDatasetAdd }) => {

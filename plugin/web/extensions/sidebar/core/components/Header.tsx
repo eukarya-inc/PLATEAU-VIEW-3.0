@@ -18,8 +18,6 @@ type Props = {
   onClick: (p: Pages) => void;
 };
 
-const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
-
 const Header: React.FC<Props> = ({
   className,
   current,
@@ -62,12 +60,7 @@ const Header: React.FC<Props> = ({
   return (
     <HeaderWrapper className={className} minimized={minimized}>
       <TopSection>
-        <PlateauIcon
-          icon="plateauLogo"
-          size={114}
-          wide
-          onClick={() => window.open(plateauWebsiteUrl, "_blank", "noopener")}
-        />
+        <PlateauIcon icon="plateauLogo" size={114} wide />
         <MinimizeButton minimized={minimized}>
           <Icon icon={minimized ? "menu" : "close"} onClick={onMinimize} />
         </MinimizeButton>
@@ -135,7 +128,6 @@ const MinimizeButton = styled.div<{ minimized?: boolean }>`
 
 const PlateauIcon = styled(Icon)<{ minimized?: boolean }>`
   margin: auto;
-  cursor: pointer;
 
   ${({ minimized }) => minimized && "text-align: left;"}
 `;

@@ -11,16 +11,19 @@ const validateMessages = {
 export default ({
   form,
   addScreenshot,
+  backendURL,
   messageApi,
 }: {
   form: any;
   addScreenshot: boolean;
+  backendURL?: string;
   messageApi: any;
 }) => {
   const [screenshot, setScreenshot] = useState<any>();
 
   const handleSend = useCallback(
     async (values: { name: string; email: string; comment: string }) => {
+      if (!backendURL) return;
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("email", values.email);
@@ -29,14 +32,14 @@ export default ({
         formData.append("file", screenshot);
       }
 
-      const resp = await fetch("https://plateauview.dev.reearth.io/opinion", {
+      const resp = await fetch(`${backendURL}/opinion`, {
         method: "POST",
         body: formData,
       });
       if (resp.status !== 200) {
         messageApi.open({
           type: "error",
-          content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
+          content: "サバーの問題です。しばらくお待ちしてもう一回して下さい。",
         });
       } else {
         messageApi.open({
@@ -46,12 +49,12 @@ export default ({
         form.resetFields();
       }
     },
-    [],
+    [form, backendURL, messageApi, screenshot],
   );
 
   const handleCancel = useCallback(() => {
     form.resetFields();
-  }, []);
+  }, [form]);
 
   useEffect(() => {
     if (addScreenshot) {

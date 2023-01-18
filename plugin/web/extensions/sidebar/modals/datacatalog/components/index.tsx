@@ -6,8 +6,14 @@ import { styled } from "@web/theme";
 import useHooks from "./hooks";
 
 const DataCatalog: React.FC = () => {
-  const { currentTab, addedDatasetIds, handleClose, handleTabChange, handleDatasetAdd } =
-    useHooks();
+  const {
+    currentTab,
+    rawCatalog,
+    addedDatasetIds,
+    handleClose,
+    handleTabChange,
+    handleDatasetAdd,
+  } = useHooks();
 
   return (
     <Wrapper>
@@ -30,7 +36,11 @@ const DataCatalog: React.FC = () => {
       {currentTab === "your-data" ? (
         <YourDataPage onDatasetAdd={handleDatasetAdd} />
       ) : (
-        <DatasetsPage addedDatasetIds={addedDatasetIds} onDatasetAdd={handleDatasetAdd} />
+        <DatasetsPage
+          rawCatalog={rawCatalog}
+          addedDatasetIds={addedDatasetIds}
+          onDatasetAdd={handleDatasetAdd}
+        />
       )}
     </Wrapper>
   );

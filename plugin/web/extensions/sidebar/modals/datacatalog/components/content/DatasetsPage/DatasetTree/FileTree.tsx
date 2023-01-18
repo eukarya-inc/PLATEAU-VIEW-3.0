@@ -1,64 +1,68 @@
-import { Catalog, Data, Group, FilterType } from "@web/extensions/sidebar/modals/datacatalog/types";
+import {
+  CatalogItem,
+  DataCatalog as DataCatalogType,
+} from "@web/extensions/sidebar/core/processCatalog";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo, useState } from "react";
 
+export type DataCatalog = DataCatalogType;
+
 export type Props = {
-  filter?: FilterType;
-  catalog?: Catalog;
-  onOpenDetails?: (data?: Data) => void;
+  catalog: DataCatalog;
+  onOpenDetails?: (data?: CatalogItem) => void;
 };
 
 const TreeBuilder: React.FC<{
-  data: Data;
+  item: CatalogItem;
   selectedId?: string;
   nestLevel: number;
-  onOpenDetails?: (data?: Data) => void;
+  onOpenDetails?: (item?: CatalogItem) => void;
   onSelect?: (id: string) => void;
-}> = ({ data, selectedId, nestLevel, onOpenDetails, onSelect }) => {
-  const [isOpen, open] = useState(data.type === "group" ? data.isOpen : undefined);
-  const selected = useMemo(() => selectedId === data.id, [selectedId, data.id]);
+}> = ({ item, selectedId, nestLevel, onOpenDetails, onSelect }) => {
+  const [isOpen, open] = useState(false);
+
+  const selected = useMemo(
+    () => (item.type !== "group" ? selectedId === item.id : false),
+    [selectedId, item],
+  );
 
   const handleOpenDetails = useCallback(() => {
-    if (data.type === "group") return;
-    onOpenDetails?.(data);
+    if (item.type === "group") return;
+    onOpenDetails?.(item);
+    onSelect?.(item.id);
+  }, [item, onOpenDetails, onSelect]);
 
-    onSelect?.(data.id);
-  }, [data, onOpenDetails, onSelect]);
-
-  return data.type === "group" ? (
-    <Folder key={data.id} isOpen={isOpen}>
+  return item.type === "group" ? (
+    <Folder key={item.name} isOpen={isOpen}>
       <FolderItem nestLevel={nestLevel} onClick={() => open(!isOpen)}>
         <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
-        <Name>{data.name}</Name>
+        <Name>{item.name}</Name>
       </FolderItem>
-      {data.members?.map(m =>
-        TreeBuilder({ data: m, selectedId, nestLevel: nestLevel + 1, onOpenDetails, onSelect }),
+      {item.children.map(m =>
+        TreeBuilder({ item: m, selectedId, nestLevel: nestLevel + 1, onOpenDetails, onSelect }),
       )}
     </Folder>
   ) : (
-    <FolderItem key={data.id} nestLevel={nestLevel} selected={selected} onClick={handleOpenDetails}>
+    <FolderItem key={item.id} nestLevel={nestLevel} selected={selected} onClick={handleOpenDetails}>
       <Icon icon={"file"} size={20} />
-      <Name>{data.name}</Name>
+      <Name>{item.cityName ?? item.name}</Name>
     </FolderItem>
   );
 };
 
-const FileTree: React.FC<Props> = ({ filter, catalog, onOpenDetails }) => {
+const FileTree: React.FC<Props> = ({ catalog, onOpenDetails }) => {
   const [selectedId, select] = useState<string>();
-  const plateauDatasets = (catalog?.[0] as Group).members;
 
   const handleSelect = useCallback((id?: string) => {
     select(id);
   }, []);
 
-  console.log(filter, "filter"); // DELETE ONCE FILTER IS IMPLEMENTED
-
   return (
     <Tree>
-      {plateauDatasets?.map(dataset =>
+      {catalog.map(item =>
         TreeBuilder({
-          data: dataset,
+          item,
           selectedId,
           nestLevel: 1,
           onOpenDetails,

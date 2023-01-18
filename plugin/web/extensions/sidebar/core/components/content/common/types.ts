@@ -1,7 +1,3 @@
-import { Data } from "@web/extensions/sidebar/modals/datacatalog/types";
-
-export type Dataset = Data;
-
 // export type Dataset = {
 //   id: string;
 //   filename?: string;
@@ -33,7 +29,8 @@ export type Location = {
 };
 
 export type Template = {
-  id: string;
-  name: string;
+  id?: string;
+  modelId?: string;
+  name?: string;
   fields?: Field[];
 };

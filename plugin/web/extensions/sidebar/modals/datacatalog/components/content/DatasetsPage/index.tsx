@@ -1,22 +1,21 @@
+import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
 import PageLayout from "@web/extensions/sidebar/modals/datacatalog/components/content/PageLayout";
-import { Data } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { useCallback, useState } from "react";
 
 import DatasetTree from "./DatasetTree";
-import { TEST_CATALOG_DATA } from "./DatasetTree/TEST_catalog_data";
 import DatasetDetails, { Tag } from "./Details";
 
 export type Props = {
+  rawCatalog?: CatalogRawItem[];
   addedDatasetIds?: string[];
-  onDatasetAdd: (dataset: Data) => void;
+  onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
-const DatasetsPage: React.FC<Props> = ({ addedDatasetIds, onDatasetAdd }) => {
-  const catalog = TEST_CATALOG_DATA;
-  const [selectedDataset, setDataset] = useState<Data>();
+const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetAdd }) => {
+  const [selectedDataset, setDataset] = useState<CatalogItem>();
   const [selectedTags, selectTags] = useState<Tag[]>([]);
 
-  const handleOpenDetails = useCallback((data?: Data) => {
+  const handleOpenDetails = useCallback((data?: CatalogItem) => {
     setDataset(data);
   }, []);
 
@@ -30,7 +29,7 @@ const DatasetsPage: React.FC<Props> = ({ addedDatasetIds, onDatasetAdd }) => {
     <PageLayout
       left={
         <DatasetTree
-          catalog={catalog}
+          rawCatalog={rawCatalog}
           selectedTags={selectedTags}
           onTagSelect={handleTagSelect}
           onOpenDetails={handleOpenDetails}
@@ -39,7 +38,11 @@ const DatasetsPage: React.FC<Props> = ({ addedDatasetIds, onDatasetAdd }) => {
       right={
         <DatasetDetails
           dataset={selectedDataset}
-          addDisabled={!!addedDatasetIds?.find(id => id === selectedDataset?.id)}
+          addDisabled={
+            !!addedDatasetIds?.find(
+              id => selectedDataset?.type === "item" && id === selectedDataset.id,
+            )
+          }
           onTagSelect={handleTagSelect}
           onDatasetAdd={onDatasetAdd}
         />

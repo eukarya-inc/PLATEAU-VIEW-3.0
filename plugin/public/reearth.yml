@@ -5,6 +5,22 @@ extensions:
   - id: sidebar
     name: Sidebar
     type: widget
+    schema:
+      groups:
+        - id: default
+          fields:
+            - id: plateauAccessToken
+              type: string
+              title: PLATEAU Backend Access Token
+            - id: plateauURL
+              type: string
+              title: PLATEAU Backend Base URL
+            - id: cmsURL
+              type: string
+              title: PLATEAU CMS Base URL
+            - id: reearthURL
+              type: string
+              title: Re:Earth Base URL
     widgetLayout:
       defaultLocation:
         zone: outer

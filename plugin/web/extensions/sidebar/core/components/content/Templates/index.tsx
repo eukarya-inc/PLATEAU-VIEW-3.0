@@ -3,7 +3,7 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import type { Template } from "../common/types";
+import { Template } from "../../../newTypes";
 
 /*
 [
@@ -12,26 +12,25 @@ import type { Template } from "../common/types";
   ] 
   */
 
-const Templates: React.FC = () => {
-  const [templates, changeTemplates] = useState<Template[]>([]);
+export type Props = {
+  templates: Template[];
+  onTemplateAdd: (newTemplate?: Template) => Promise<Template | undefined>;
+  onTemplateUpdate: (template: Template) => Promise<void>;
+  onTemplateRemove: (template: Template) => Promise<void>;
+};
 
+const Templates: React.FC<Props> = ({
+  templates,
+  onTemplateAdd,
+  // onTemplateUpdate,
+  onTemplateRemove,
+}) => {
   const [selected, changeSelected] = useState<Template>();
 
-  const handleTemplateAdd = useCallback(() => {
-    const newTemplate = { id: crypto.randomUUID(), name: "New Template" };
-    // NEED TO HANDLE ACTUAL SAVING TO BACKENDDDDDDDD
-    // NEED TO HANDLE ACTUAL SAVING TO BACKENDDDDDDDD
-    changeTemplates([...templates, newTemplate]);
+  const handleTemplateAdd = useCallback(async () => {
+    const newTemplate = await onTemplateAdd();
     changeSelected(newTemplate);
-  }, [templates]);
-
-  const handleTemplateRemove = useCallback(
-    (template: Template) => {
-      if (!templates.includes(template)) return;
-      changeTemplates(templates.filter(t => t !== template));
-    },
-    [templates],
-  );
+  }, [onTemplateAdd]);
 
   const handleTemplateSelect = useCallback((template?: Template) => {
     changeSelected(template);
@@ -68,7 +67,7 @@ const Templates: React.FC = () => {
                     size={16}
                     onClick={e => {
                       e?.stopPropagation();
-                      handleTemplateRemove(t);
+                      onTemplateRemove(t);
                     }}
                   />
                 </TemplateComponent>

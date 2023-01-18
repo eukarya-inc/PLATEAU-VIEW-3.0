@@ -1,3 +1,4 @@
+import { Data } from "@web/extensions/sidebar/core/newTypes";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -11,17 +12,22 @@ import {
 } from "react-accessible-accordion";
 
 import AddButton from "../AddButton";
-import { Dataset as DatasetType, BaseField as BaseFieldType } from "../types";
 
 import Field, { Field as FieldType } from "./Field";
 
-export type Dataset = DatasetType;
 export type Field = FieldType;
 
 type Tabs = "default" | "edit";
 
+type BaseFieldType = Partial<Data> & {
+  title?: string;
+  icon?: string;
+  value?: string | number;
+  onClick?: () => void;
+};
+
 export type Props = {
-  dataset: Dataset;
+  dataset: Data;
   inEditor?: boolean;
   onRemove?: (id: string) => void;
 };
@@ -42,7 +48,7 @@ const DatasetCard: React.FC<Props> = ({ dataset, inEditor, onRemove }) => {
       { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
       { id: "remove", icon: "trash", onClick: () => onRemove?.(dataset.id) },
     ],
-    [dataset.id, onRemove],
+    [dataset, onRemove],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {

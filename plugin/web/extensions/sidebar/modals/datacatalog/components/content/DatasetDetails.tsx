@@ -1,23 +1,14 @@
+import { CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import "leaflet/dist/leaflet.css";
 import { ComponentType, useCallback } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
-// import L from "leaflet";
-// import { MapContainer, TileLayer, Marker } from "react-leaflet";
-
-import { Data } from "../../types";
-
-// import iconSvg from "./icon.svg?raw";
 
 export type Props = {
-  dataset: Data;
+  dataset: CatalogItem;
   addDisabled: boolean;
   contentSection?: ComponentType;
-  onDatasetAdd: (dataset: Data) => void;
+  onDatasetAdd: (dataset: CatalogItem) => void;
 };
-
-const initialLocation = { lat: 35.70249, lng: 139.7622 };
 
 const DatasetDetails: React.FC<Props> = ({
   dataset,
@@ -25,28 +16,6 @@ const DatasetDetails: React.FC<Props> = ({
   contentSection: ContentSection,
   onDatasetAdd,
 }) => {
-  // const markerRef = useRef<L.Marker<any>>(null);
-
-  // const handleChange = useCallback(
-  //   ({ lat, lng }: { lat: number; lng: number }) => {
-  //     if (isBuilt || !isEditable) return;
-  //     onChange?.("default", "location", { lat, lng }, "latlng");
-  //   },
-  //   [isBuilt, isEditable, onChange],
-  // );
-
-  // const eventHandlers = useMemo(
-  //   () => ({
-  //     dragend() {
-  //       const marker = markerRef.current;
-  //       if (marker) {
-  //         handleChange(marker.getLatLng());
-  //       }
-  //     },
-  //   }),
-  //   [handleChange],
-  // );
-
   const handleDatasetAdd = useCallback(() => {
     if (!dataset) return;
     onDatasetAdd(dataset);
@@ -54,36 +23,17 @@ const DatasetDetails: React.FC<Props> = ({
 
   return (
     <Wrapper>
-      <MapContainer
-        style={{ height: "164px" }}
-        center={initialLocation}
-        zoom={8}
-        scrollWheelZoom={false}
-        zoomControl={false}
-        dragging={false}
-        attributionControl={false}>
-        <TileLayer url="https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg" />
-        {/* {location && (
-            <Marker
-              icon={icon}
-              position={initialLocation}
-              draggable={false}
-              // eventHandlers={eventHandlers}
-              ref={markerRef}
-            />
-          )} */}
-      </MapContainer>
+      <Title>{dataset.type === "item" && (dataset.cityName ?? dataset.name)}</Title>
       <ButtonWrapper>
-        <Button>
-          <Icon icon="share" />
-          シェア
-        </Button>
         <Button disabled={addDisabled} onClick={handleDatasetAdd}>
           {!addDisabled && <Icon icon="plusCircle" />}
           {addDisabled ? "シーンに追加済み" : "シーンに追加"}
         </Button>
+        <Button>
+          <Icon icon="share" />
+          シェア
+        </Button>
       </ButtonWrapper>
-      <Title>{dataset.name}</Title>
       {ContentSection && <ContentSection />}
     </Wrapper>
   );
@@ -124,8 +74,3 @@ const Title = styled.p`
   font-weight: 700;
   line-height: 22px;
 `;
-
-// const icon = L.divIcon({
-//   className: "custom-icon",
-//   html: iconSvg,
-// });

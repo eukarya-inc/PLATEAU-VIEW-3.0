@@ -121,7 +121,7 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
 
   const handleAllowEnterGround = useCallback(() => {
     onOverridesUpdate({ default: { allowEnterGround: !currentAllowEnterGround } });
-  }, [currentHideUnderground, onOverridesUpdate]);
+  }, [currentAllowEnterGround, onOverridesUpdate]);
 
   return {
     mapViewData,
