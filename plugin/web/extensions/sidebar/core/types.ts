@@ -11,7 +11,13 @@ type ActionType =
   | "modal-close"
   | "datacatalog-modal-open"
   | "welcome-modal-open"
-  | "minimize";
+  | "minimize"
+  | "show-popup"
+  | "popup-message"
+  | "close-popup"
+  | "show-map-modal"
+  | "show-clip-modal"
+  | "popup-message-init";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 
