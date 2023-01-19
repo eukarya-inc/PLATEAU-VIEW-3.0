@@ -6,11 +6,6 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
-	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
-	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
-	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
-	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -44,21 +39,27 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	})
 
-	cmswebhook.Echo(
-		e.Group("/webhook"),
-		[]byte(conf.CMS_Webhook_Secret),
-		lo.Must(cmsintegration.WebhookHandler(conf.CMSIntegration())),
-		lo.Must(geospatialjp.WebhookHandler(conf.Geospatialjp())),
-		lo.Must(sdk.WebhookHandler(conf.SDK())),
-		// lo.Must(searchindex.WebhookHandler(conf.SearchIndex())),
-	)
+	services := lo.Must(Services(conf))
+	serviceNames := lo.Map(services, func(s *Service, _ int) string { return s.Name })
+	webhookHandlers := []cmswebhook.Handler{}
+	for _, s := range services {
+		if s.Echo != nil {
+			lo.Must0(s.Echo(e.Group("")))
+		}
+		if s.Webhook != nil {
+			webhookHandlers = append(webhookHandlers, s.Webhook)
+		}
+	}
 
-	e.POST("/notify_fme", lo.Must(cmsintegration.NotifyHandler(conf.CMSIntegration())))
-	e.POST("/notify_sdk", lo.Must(sdk.NotifyHandler(conf.SDK())))
+	if len(webhookHandlers) > 0 {
+		cmswebhook.Echo(
+			e.Group("/webhook"),
+			[]byte(conf.CMS_Webhook_Secret),
+			webhookHandlers...,
+		)
+	}
 
-	lo.Must0(share.Echo(e.Group("/share"), conf.Share()))
-	opinion.Echo(e.Group("/opinion"), conf.Opinion())
-
+	log.Infof("enabled services: %v", serviceNames)
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
 	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
 }
