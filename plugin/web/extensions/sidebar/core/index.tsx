@@ -5,7 +5,7 @@ import Selection from "@web/extensions/sidebar/core/components/content/Selection
 import Share from "@web/extensions/sidebar/core/components/content/Share";
 import Templates from "@web/extensions/sidebar/core/components/content/Templates";
 import Header, { Pages } from "@web/extensions/sidebar/core/components/Header";
-import useGlobalHooks from "@web/extensions/sidebar/core/globalHooks";
+import useHooks from "@web/extensions/sidebar/core/hooks";
 import { Content } from "@web/sharedComponents";
 import { styled, commonStyles } from "@web/theme";
 import { memo, useCallback, useState } from "react";
@@ -31,7 +31,7 @@ const Sidebar: React.FC<Props> = ({ className }) => {
     handleDatasetRemoveAll,
     handleOverridesUpdate,
     handleModalOpen,
-  } = useGlobalHooks();
+  } = useHooks();
 
   const [current, setCurrent] = useState<Pages>("data");
 

@@ -4,7 +4,27 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Root, Data, Template } from "./newTypes";
 import processCatalog, { CatalogRawItem } from "./processCatalog";
-import { useCurrentOverrides } from "./state";
+
+const defaultOverrides: ReearthApi = {
+  default: {
+    sceneMode: "3d",
+    depthTestAgainstTerrain: false,
+  },
+  terrain: {
+    terrain: true,
+    terrainType: "cesiumion",
+    terrainCesiumIonAccessToken:
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3NGI5ZDM0Mi1jZDIzLTRmMzEtOTkwYi0zZTk4Yzk3ODZlNzQiLCJpZCI6NDA2NDYsImlhdCI6MTYwODk4MzAwOH0.3rco62ErML11TMSEflsMqeUTCDbIH6o4n4l5sssuedE",
+    terrainCesiumIonAsset: "286503",
+  },
+  tiles: [
+    {
+      id: "tokyo",
+      tile_url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+      tile_type: "url",
+    },
+  ],
+};
 
 export default () => {
   const [projectID, setProjectID] = useState<string>();
@@ -17,13 +37,13 @@ export default () => {
   // ****************************************
   // Init
   useEffect(() => {
-    postMsg({ action: "initSidebar" }); // Needed to trigger sending initialization data to sidebar
+    postMsg({ action: "initSidebar", payload: defaultOverrides }); // Needed to trigger sending initialization data to sidebar
   }, []);
   // ****************************************
 
   // ****************************************
   // Override
-  const [overrides, updateOverrides] = useCurrentOverrides();
+  const [overrides, updateOverrides] = useState<ReearthApi>(defaultOverrides);
 
   const handleOverridesUpdate = useCallback(
     (updatedProperties: Partial<ReearthApi>) => {

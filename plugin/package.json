@@ -81,7 +81,6 @@
     "yml": "1.0.0"
   },
   "dependencies": {
-    "jotai": "1.12.1",
     "lodash": "4.17.21",
     "react": "18.2.0",
     "react-accessible-accordion": "5.0.0",
