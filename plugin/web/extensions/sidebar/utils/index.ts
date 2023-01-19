@@ -1,6 +1,5 @@
+import { PostMessageProps } from "@web/extensions/sidebar/types";
 import { cloneDeep, mergeWith } from "lodash";
-
-import { PostMessageProps } from "../types";
 
 export function postMsg({ action, payload }: PostMessageProps) {
   parent.postMessage(

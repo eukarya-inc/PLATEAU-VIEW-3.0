@@ -1,5 +1,5 @@
 import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
-import { ReearthApi } from "@web/extensions/sidebar/core/types";
+import { ReearthApi } from "@web/extensions/sidebar/types";
 import { Checkbox, Row } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo } from "react";

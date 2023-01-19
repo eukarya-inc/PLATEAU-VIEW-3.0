@@ -1,9 +1,8 @@
 import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useEffect } from "react";
-
-import { postMsg } from "../../../utils";
 
 import useHooks from "./hooks";
 
@@ -11,9 +10,9 @@ const Help: React.FC = () => {
   const { items, selectedTab, handleItemClicked } = useHooks();
 
   useEffect(() => {
-    postMsg({ action: "show-popup" });
+    postMsg({ action: "popupOpen" });
     return () => {
-      postMsg({ action: "close-popup" });
+      postMsg({ action: "popupClose" });
     };
   }, []);
 

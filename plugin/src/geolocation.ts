@@ -1,4 +1,4 @@
-import { PostMessageProps } from "@web/extensions/geolocation/core/types";
+import { PostMessageProps } from "@web/extensions/geolocation/types";
 
 import html from "../dist/web/geolocation/core/index.html?raw";
 

@@ -1,5 +1,5 @@
 import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
-import { postMsg } from "@web/extensions/sidebar/core/utils";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 export type Tab = "dataset" | "your-data";
@@ -10,7 +10,7 @@ export default () => {
   const [rawCatalog, setRawCatalog] = useState<CatalogRawItem[]>([]);
 
   const handleClose = useCallback(() => {
-    postMsg({ action: "modal-close" });
+    postMsg({ action: "modalClose" });
   }, []);
 
   const handleDatasetAdd = useCallback(
@@ -28,13 +28,13 @@ export default () => {
 
   useEffect(() => {
     // Needed to trigger sending selected dataset ids from Sidebar
-    postMsg({ action: "initDatasetCatalog" });
+    postMsg({ action: "initDataCatalog" });
   }, []);
 
   useEffect(() => {
     const eventListenerCallback = (e: MessageEvent<any>) => {
       if (e.source !== parent) return;
-      if (e.data.type === "msgFromSidebar") {
+      if (e.data.type === "initDataCatalog") {
         setAddedDatasetIds(e.data.payload.addedDatasets);
         setRawCatalog(e.data.payload.rawCatalog);
       }

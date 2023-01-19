@@ -1,11 +1,14 @@
 import clip from "@web/extensions/sidebar/core/assets/clip.png";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
+import { useCallback } from "react";
 
-import useGlobalHooks from "../globalHooks";
 import { NumberingWrapper, ParagraphItem } from "../sharedComponent";
 
 const ClipFunction: React.FC = () => {
-  const { handleShowClipModal } = useGlobalHooks();
+  const handleShowClipModal = useCallback(() => {
+    postMsg({ action: "clipModalOpen" });
+  }, []);
 
   return (
     <Wrapper>

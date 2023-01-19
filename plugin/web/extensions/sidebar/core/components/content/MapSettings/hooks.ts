@@ -2,7 +2,7 @@ import mapBing from "@web/extensions/sidebar/core/assets/bgmap_bing.png";
 import bgmap_darkmatter from "@web/extensions/sidebar/core/assets/bgmap_darkmatter.png";
 import bgmap_gsi from "@web/extensions/sidebar/core/assets/bgmap_gsi.png";
 import bgmap_tokyo from "@web/extensions/sidebar/core/assets/bgmap_tokyo.png";
-import { ReearthApi } from "@web/extensions/sidebar/core/types";
+import { ReearthApi } from "@web/extensions/sidebar/types";
 import { useCallback, useMemo } from "react";
 
 import { MapViewData, BaseMapData, ViewSelection } from "./types";

@@ -1,15 +1,15 @@
+import { postMsg } from "@web/extensions/location/utils";
 import { Typography } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
-import { postMsg } from "../../core/utils";
 import CommonModalWrapper from "../commonModalWrapper";
 
 const GoogleAnalytics: React.FC = () => {
   const { Link } = Typography;
 
   const handleClose = useCallback(() => {
-    postMsg({ action: "modal-close" });
+    postMsg({ action: "modalClose" });
   }, []);
 
   return (

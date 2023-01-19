@@ -1,6 +1,6 @@
 import { usePublishedUrl } from "@web/extensions/sidebar/core/state";
-import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/core/types";
-import { postMsg } from "@web/extensions/sidebar/core/utils";
+import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/types";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type ReearthApi = ReearthApiType;
@@ -21,11 +21,11 @@ export default ({
   const timer = useRef<NodeJS.Timeout | null>(null);
 
   const handleScreenshotShow = useCallback(() => {
-    postMsg({ action: "screenshot-preview" });
+    postMsg({ action: "screenshotPreview" });
   }, []);
 
   const handleScreenshotSave = useCallback(() => {
-    postMsg({ action: "screenshot-save" });
+    postMsg({ action: "screenshotSave" });
   }, []);
 
   const handleProjectShare = useCallback(async () => {
@@ -79,9 +79,9 @@ export default ({
 addEventListener("message", e => {
   if (e.source !== parent) return;
   if (e.data.type) {
-    if (e.data.type === "screenshot-preview") {
+    if (e.data.type === "screenshotPreview") {
       generatePrintView(e.data.payload);
-    } else if (e.data.type === "screenshot-save") {
+    } else if (e.data.type === "screenshotSave") {
       const link = document.createElement("a");
       link.download = "screenshot.png";
       link.href = e.data.payload;

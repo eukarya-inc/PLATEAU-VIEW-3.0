@@ -1,10 +1,10 @@
+import { ReearthApi } from "@web/extensions/sidebar/types";
+import { mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Root, Data, Template } from "./newTypes";
 import processCatalog, { CatalogRawItem } from "./processCatalog";
 import { useCurrentOverrides } from "./state";
-import { ReearthApi } from "./types";
-import { mergeProperty, postMsg } from "./utils";
 
 export default () => {
   const [projectID, setProjectID] = useState<string>();
@@ -17,7 +17,7 @@ export default () => {
   // ****************************************
   // Init
   useEffect(() => {
-    postMsg({ action: "init" }); // Needed to trigger sending initialization data to sidebar
+    postMsg({ action: "initSidebar" }); // Needed to trigger sending initialization data to sidebar
   }, []);
   // ****************************************
 
@@ -93,7 +93,7 @@ export default () => {
   const handleModalOpen = useCallback(() => {
     const selectedIds = selectedDatasets.map(d => d.id);
     postMsg({
-      action: "datacatalog-modal-open",
+      action: "catalogModalOpen",
       payload: { addedDatasets: selectedIds, rawCatalog },
     });
   }, [rawCatalog, selectedDatasets]);
@@ -215,7 +215,7 @@ export default () => {
         if (e.data.payload.dataset) {
           handleDatasetAdd(e.data.payload.dataset);
         }
-      } else if (e.data.type === "init") {
+      } else if (e.data.type === "initSidebar") {
         setProjectID(e.data.payload.projectID);
         setInEditor(e.data.payload.inEditor);
         setBackendAccessToken(e.data.payload.backendAccessToken);

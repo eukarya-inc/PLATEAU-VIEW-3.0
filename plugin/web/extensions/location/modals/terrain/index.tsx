@@ -1,12 +1,12 @@
+import { postMsg } from "@web/extensions/location/utils";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
-import { postMsg } from "../../core/utils";
 import CommonModalWrapper from "../commonModalWrapper";
 
 const Terrain: React.FC = () => {
   const handleClose = useCallback(() => {
-    postMsg({ action: "modal-close" });
+    postMsg({ action: "modalClose" });
   }, []);
 
   return (

@@ -1,6 +1,5 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
-
-import { postMsg } from "../../../utils";
 
 export type Tab = "basic" | "map" | "shadow" | "clip";
 
@@ -20,15 +19,15 @@ export default () => {
   const [selectedTab, changeTab] = useState<Tab>("basic");
 
   useEffect(() => {
-    postMsg({ action: "popup-message", payload: selectedTab });
-  }, []);
+    postMsg({ action: "msgToPopup", payload: selectedTab });
+  }, [selectedTab]);
 
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return null;
       if (e.data.type) {
-        if (e.data.type === "popup-message-init") {
-          postMsg({ action: "popup-message", payload: selectedTab });
+        if (e.data.type === "initPopup") {
+          postMsg({ action: "msgToPopup", payload: selectedTab });
         }
       }
     };
@@ -40,8 +39,8 @@ export default () => {
 
   const handleItemClicked = useCallback((key: Tab) => {
     changeTab(key);
-    postMsg({ action: "popup-message", payload: key });
-    postMsg({ action: "show-popup" });
+    postMsg({ action: "msgFromPopup", payload: key });
+    postMsg({ action: "popupOpen" });
   }, []);
 
   return {

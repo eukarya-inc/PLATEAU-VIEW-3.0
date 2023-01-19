@@ -9,11 +9,11 @@ const LocationWrapper: React.FC = () => {
   return (
     <ContentWrapper>
       <LocationsWrapper>
-        <Text>Lat {currentPoint?.lat?.toFixed(5)} ° N</Text>
-        <Text>Lon {currentPoint?.lng?.toFixed(5)} ° E</Text>
+        <Text>Lat {currentPoint?.lat && `${currentPoint.lat.toFixed(5)} ° N`}</Text>
+        <Text>Lon {currentPoint?.lng && `${currentPoint.lng.toFixed(5)} ° E`}</Text>
         <DistanceLegend>
-          <DistanceLegendLabel>{currentDistance.label}</DistanceLegendLabel>
-          <Line uniteLine={currentDistance.uniteLine} />
+          <DistanceLegendLabel>{currentDistance?.label}</DistanceLegendLabel>
+          <Line unitLine={currentDistance?.unitLine} />
         </DistanceLegend>
       </LocationsWrapper>
       <ModalsWrapper>
@@ -78,11 +78,11 @@ const DistanceLegendLabel = styled.p`
   color: #262626;
 `;
 
-const Line = styled.div<{ uniteLine?: number }>`
+const Line = styled.div<{ unitLine?: number }>`
   height: 0.5px;
   background: #000;
   color: #262626;
-  width: ${({ uniteLine }) => uniteLine + "px"};
+  width: ${({ unitLine }) => unitLine + "px"};
 `;
 
 const GoogleAnalyticsLink = styled.a`

@@ -1,23 +1,23 @@
 type ActionType =
-  | "init"
+  | "initSidebar"
+  | "initDataCatalog"
+  | "initPopup"
   | "updateOverrides"
   | "screenshot"
-  | "screenshot-preview"
-  | "screenshot-save"
-  | "initDatasetCatalog"
+  | "screenshotPreview"
+  | "screenshotSave"
   | "addDatasetToScene"
-  | "msgFromSidebar"
+  | "catalogModalOpen"
+  | "welcomeModalOpen"
+  | "mapModalOpen"
+  | "clipModalOpen"
+  | "modalClose"
   | "msgFromModal"
-  | "modal-close"
-  | "datacatalog-modal-open"
-  | "welcome-modal-open"
-  | "minimize"
-  | "show-popup"
-  | "popup-message"
-  | "close-popup"
-  | "show-map-modal"
-  | "show-clip-modal"
-  | "popup-message-init";
+  | "popupOpen"
+  | "popupClose"
+  | "msgToPopup"
+  | "msgFromPopup"
+  | "minimize";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 
@@ -41,7 +41,7 @@ export type ReearthApi = {
   tiles?: Tile[];
 };
 
-export type SceneMode = "3d" | "2d";
+type SceneMode = "3d" | "2d";
 
 type Tile = {
   id: string;

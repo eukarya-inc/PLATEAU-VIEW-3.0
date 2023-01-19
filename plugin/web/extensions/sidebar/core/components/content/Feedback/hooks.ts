@@ -1,4 +1,4 @@
-import { postMsg } from "@web/extensions/sidebar/core/utils";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 const validateMessages = {

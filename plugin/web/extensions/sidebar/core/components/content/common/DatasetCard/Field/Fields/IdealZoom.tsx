@@ -1,4 +1,4 @@
-import { Camera } from "@web/extensions/sidebar/core/types";
+import { Camera } from "@web/extensions/sidebar/types";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 

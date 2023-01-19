@@ -1,11 +1,14 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import Video from "@web/sharedComponents/Video";
 import { styled } from "@web/theme";
-
-import useHooks from "./hooks";
+import { useCallback } from "react";
 
 const ClipVideo: React.FC = () => {
-  const { handleClose } = useHooks();
+  const handleClose = useCallback(() => {
+    postMsg({ action: "modalClose" });
+  }, []);
+
   return (
     <div>
       <CloseButton>

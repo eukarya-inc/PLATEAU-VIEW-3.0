@@ -1,11 +1,14 @@
 import mapVideo from "@web/extensions/sidebar/core/assets/mapVideo.png";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
+import { useCallback } from "react";
 
-import useGlobalHooks from "../globalHooks";
 import { NumberingWrapper, ParagraphItem } from "../sharedComponent";
 
 const TryMapInfo: React.FC = () => {
-  const { handleShowMapModal } = useGlobalHooks();
+  const handleShowMapModal = useCallback(() => {
+    postMsg({ action: "mapModalOpen" });
+  }, []);
 
   return (
     <Wrapper>

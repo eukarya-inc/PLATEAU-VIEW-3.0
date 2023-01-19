@@ -1,6 +1,5 @@
+import { ReearthApi } from "@web/extensions/sidebar/types";
 import { atom, useAtom } from "jotai";
-
-import { ReearthApi } from "../types";
 
 export const defaultSettings: ReearthApi = {
   default: {
