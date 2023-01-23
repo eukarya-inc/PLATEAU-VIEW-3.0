@@ -11,6 +11,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
+	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/labstack/echo/v4"
 )
@@ -25,6 +26,7 @@ var services = [](func(*Config) (*Service, error)){
 	CMSIntegration,
 	Geospatialjp,
 	SDK,
+	SDKAPI,
 	SearchIndex,
 	Share,
 	Opinion,
@@ -128,6 +130,21 @@ func SDK(conf *Config) (*Service, error) {
 			return nil
 		},
 		Webhook: w,
+	}, nil
+}
+
+func SDKAPI(conf *Config) (*Service, error) {
+	c := conf.SDKAPI()
+	if c.CMSBaseURL == "" || c.Project == "" {
+		return nil, nil
+	}
+
+	return &Service{
+		Name: "sdkapi",
+		Echo: func(g *echo.Group) error {
+			sdkapi.Handler(c, g)
+			return nil
+		},
 	}, nil
 }
 

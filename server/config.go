@@ -9,6 +9,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
+	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -30,6 +31,8 @@ type Config struct {
 	CMS_ShareDataFieldID string
 	CMS_IndexerSysPrj    string
 	CMS_IndexerSysModel  string
+	CMS_SDKProject       string
+	CMS_SDKModel         string
 	FME_BaseURL          string
 	FME_Mock             bool
 	FME_Token            string
@@ -37,6 +40,7 @@ type Config struct {
 	Ckan_BaseURL         string
 	Ckan_Org             string
 	Ckan_Token           string
+	SDK_Token            string
 	Ckan_Private         bool
 	SendGrid_APIKey      string
 	Opinion_Email        string
@@ -78,6 +82,15 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 	}
 }
 
+// func (c *Config) SearchIndex() searchindex.Config {
+// 	return searchindex.Config{
+// 		CMSBase:             c.CMS_BaseURL,
+// 		CMSToken:            c.CMS_Token,
+// 		CMSStorageProjectID: c.CMS_IndexerSysPrj,
+// 		CMSStorageModelID:   c.CMS_IndexerSysModel,
+// 	}
+// }
+
 func (c *Config) SDK() sdk.Config {
 	return sdk.Config{
 		FMEBaseURL:     c.FME_BaseURL,
@@ -90,14 +103,14 @@ func (c *Config) SDK() sdk.Config {
 	}
 }
 
-// func (c *Config) SearchIndex() searchindex.Config {
-// 	return searchindex.Config{
-// 		CMSBase:             c.CMS_BaseURL,
-// 		CMSToken:            c.CMS_Token,
-// 		CMSStorageProjectID: c.CMS_IndexerSysPrj,
-// 		CMSStorageModelID:   c.CMS_IndexerSysModel,
-// 	}
-// }
+func (c *Config) SDKAPI() sdkapi.Config {
+	return sdkapi.Config{
+		CMSBaseURL: c.CMS_BaseURL,
+		Project:    c.CMS_SDKProject,
+		Model:      c.CMS_SDKModel,
+		Token:      c.SDK_Token,
+	}
+}
 
 func (c *Config) Share() share.Config {
 	return share.Config{
