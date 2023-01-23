@@ -14,10 +14,8 @@ let addedDatasets: string | undefined = undefined;
 
 let rawCatalog: CatalogRawItem[] = [];
 
-const doNotShowWelcome = true; // Make it `let doNotShowWelcome: boolean = false`, and then modify based on storage value when Storage API available
-
 // let isMobile: boolean;
-
+let welcomePageIsOpen = false;
 reearth.ui.show(html, { extended: true });
 
 reearth.on("message", ({ action, payload }: PostMessageProps) => {
@@ -28,16 +26,22 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload: {
         projectID: reearth.viewport.query.projectID,
         inEditor: reearth.scene.inEditor,
-        backendAccessToken: reearth.widget.property.default.plateauAccessToken ?? "",
-        backendURL: reearth.widget.property.default.plateauURL ?? "",
-        cmsURL: reearth.widget.property.default.cmsURL ?? "",
-        reearthURL: reearth.widget.property.default.reearthURL ?? "",
+        backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
+        backendURL: reearth.widget.property.default?.plateauURL ?? "",
+        cmsURL: reearth.widget.property.default?.cmsURL ?? "",
+        reearthURL: reearth.widget.property.default?.reearthURL ?? "",
       },
     });
     reearth.clientStorage.setAsync("overrides", payload);
-    if (!doNotShowWelcome) {
-      reearth.modal.show(welcomeScreenHtml, { background: "#000000bf" });
-    }
+    reearth.clientStorage.getAsync("doNotShowWelcome").then((value: any) => {
+      if (!value && !reearth.scene.inEditor) {
+        reearth.modal.show(welcomeScreenHtml, {
+          width: reearth.viewport.width,
+          height: reearth.viewport.height,
+        });
+        welcomePageIsOpen = true;
+      }
+    });
   } else if (action === "storageSave") {
     reearth.clientStorage.setAsync(payload.key, payload.value);
   } else if (action === "storageFetch") {
@@ -85,6 +89,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     // Datacatalog modal
   } else if (action === "modalClose") {
     reearth.modal.close();
+    welcomePageIsOpen = false;
   } else if (action === "initDataCatalog") {
     reearth.modal.postMessage({
       type: action,
@@ -114,9 +119,15 @@ reearth.on("update", () => {
   });
 });
 
-// reearth.on("resize", (e: any) => {
-//   if (e.isMobile !== isMobile) {
-//     reearth.ui.postMessage({type: ""});
-//     isMobile = e.isMobile;
-//   }
-// });
+reearth.on("resize", () => {
+  // if (e.isMobile !== isMobile) {
+  //   reearth.ui.postMessage({type: ""});
+  //   isMobile = e.isMobile;
+  // }
+
+  if (welcomePageIsOpen)
+    reearth.modal.update({
+      width: reearth.viewport.width,
+      height: reearth.viewport.height,
+    });
+});

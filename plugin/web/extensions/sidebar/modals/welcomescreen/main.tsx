@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom/client";
 
-import WelcomeScreen from "./components";
+import WelcomeScreen from "./index";
 
 (async () => {
   const element = document.getElementById("root");
