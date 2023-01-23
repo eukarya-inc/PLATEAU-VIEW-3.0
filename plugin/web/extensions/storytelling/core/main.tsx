@@ -1,4 +1,4 @@
-import Storytelling from "@web/extensions/storytelling";
+import Storytelling from "@web/extensions/storytelling/core";
 import ReactDOM from "react-dom/client";
 
 (async () => {

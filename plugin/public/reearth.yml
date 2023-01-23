@@ -31,8 +31,8 @@ extensions:
     type: widget
     widgetLayout:
       defaultLocation:
-        zone: outer
-        section: right
+        zone: inner
+        section: center
         area: bottom
   - id: location
     name: Location Footer
