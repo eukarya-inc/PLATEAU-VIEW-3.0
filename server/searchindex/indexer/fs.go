@@ -126,5 +126,14 @@ func (f *HTTPFS) Open(name string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("status code is %d", res.StatusCode)
 	}
 
+	// It's storage but some HTTP requests for b3dm data fails without this line
+	res2, err2 := f.c.Get(u)
+	if err2 != nil {
+		return nil, fmt.Errorf("failed to get from %s: %w", u, err2)
+	}
+	defer func() {
+		_ = res2.Body.Close()
+	}()
+
 	return res.Body, nil
 }
