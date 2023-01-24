@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/qmuntal/draco-go/gltf/draco"
 	"github.com/qmuntal/gltf"
@@ -19,6 +20,8 @@ import (
 const (
 	tilesetJSONName = "tileset.json"
 )
+
+const semaphoreLimit = 2
 
 type Indexer struct {
 	config *Config
@@ -116,6 +119,7 @@ type TilesetFeature struct {
 func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, fsys FS) (map[string]TilesetFeature, error) {
 	uniqueFeatures := make(map[string]TilesetFeature)
 	tilesetQueue := []*tiles.Tileset{ts}
+	rMutex := sync.RWMutex{}
 
 	for _, tileset := range tilesetQueue {
 		tilesetIterFn := func(tile *tiles.Tile, computedTransform *mat.Dense) error {
@@ -180,15 +184,16 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, fsys FS) (map[string
 				}
 				position := computedFeaturePositions[batchId]
 				idValue := batchProperties[config.IdProperty].(string)
+				rMutex.Lock()
 				uniqueFeatures[idValue] = TilesetFeature{
 					Position:   position,
 					Properties: batchProperties,
 				}
+				rMutex.Unlock()
 			}
 
 			return nil
 		}
-
 		if err := ForEachTile(tileset, tilesetIterFn); err != nil {
 			return nil, fmt.Errorf("something went wrong at iterTile: %v", err)
 		}
@@ -323,7 +328,7 @@ func computeFeaturePositionsFromGltfVertices(doc *gltf.Document, tileTransform, 
 
 type TileIterFn func(*tiles.Tile, *mat.Dense) error
 
-func ForEachTile(ts *tiles.Tileset, iterFn func(tile *tiles.Tile, computedTransform *mat.Dense) error) error {
+func ForEachTile(ts *tiles.Tileset, iterFn TileIterFn) error {
 	root := &ts.Root
 
 	var iterTile TileIterFn
@@ -333,18 +338,38 @@ func ForEachTile(ts *tiles.Tileset, iterFn func(tile *tiles.Tile, computedTransf
 			test := tile.Transform[:]
 			computedTransform.Mul(parentTransform, mat.NewDense(4, 4, test))
 		}
-		err := iterFn(tile, computedTransform)
-		if err != nil {
-			return fmt.Errorf("something wrong at iterFn: %v", err)
+		retriableIterfn := func() error {
+			return iterFn(tile, computedTransform)
 		}
+		err := Retry(retriableIterfn)
 		if (tile.Children != nil) && len(*tile.Children) != 0 {
+			var wg sync.WaitGroup
+			semaphore := make(chan struct{}, semaphoreLimit)
+			errors := make(chan error, semaphoreLimit)
 			for _, child := range *tile.Children {
-				err = iterTile(&child, computedTransform)
-				if err != nil {
-					return fmt.Errorf("something went wrong at iterTile: %v", err)
+				semaphore <- struct{}{}
+				wg.Add(1)
+				go func(child tiles.Tile) {
+					defer wg.Done()
+					defer func() { <-semaphore }()
+					err = iterTile(&child, computedTransform)
+					if err != nil {
+						errors <- fmt.Errorf("something went wrong at iterTile: %v", err)
+					}
+				}(child)
+			}
+			wg.Wait()
+			close(errors)
+
+			if len(errors) > 0 {
+				errMsgs := make([]string, 0, len(errors))
+				for err := range errors {
+					errMsgs = append(errMsgs, err.Error())
 				}
+				return fmt.Errorf("errors occured: %v", strings.Join(errMsgs, ", "))
 			}
 		}
+
 		return nil
 	}
 

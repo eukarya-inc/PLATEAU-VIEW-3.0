@@ -126,5 +126,10 @@ func (f *HTTPFS) Open(name string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("status code is %d", res.StatusCode)
 	}
 
+	if _, err := http.Get(u); err != nil {
+		fmt.Printf("client: error making http request: %s\n", err)
+		os.Exit(1)
+	}
+
 	return res.Body, nil
 }

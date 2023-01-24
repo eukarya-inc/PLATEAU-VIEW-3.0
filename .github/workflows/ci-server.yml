@@ -43,22 +43,42 @@ jobs:
           working-directory: server
       - name: test
         run: go test ./... -v -race
-      - name: is sample data available
+
+      # indexer test
+      - name: 'indexer test: is testdata available'
         id: testdata
         run: echo $TESTDATA >> $GITHUB_OUTPUT
         env:
           TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
-      - name: download sample 3D Tiles data
+      - name: 'indexer test: download test 3D Tiles data'
         if: steps.testdata.outputs.testdata
         run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
         env:
           TESTDATA: ${{ secrets.TESTDATA }}
-      - name: run indexer test
+      - name: 'indexer test: run indexer test'
         if: steps.testdata.outputs.testdata
         run: go test ./searchindex/indexer -v
-      - name: list result files
+      - name: 'indexer test: list result files'
         if: steps.testdata.outputs.testdata
         run: ls searchindex/indexer/testdata/result
-      - name: cat resultsData.csv
+      - name: 'indexer test: cat resultsData.csv'
         if: steps.testdata.outputs.testdata
+        run: cat searchindex/indexer/testdata/result/resultsData.csv
+
+      # indexer HTTP test
+      - name: 'indexer HTTP test: is testdata available'
+        id: testdata2
+        run: echo $TESTDATA >> $GITHUB_OUTPUT
+        env:
+          TESTDATA: ${{ secrets.TESTURL && 'testdata=1' || 'testdata=' }}
+      - name: 'indexer HTTP test: run indexer test'
+        if: steps.testdata2.outputs.testdata
+        run: go test ./searchindex/indexer -v
+        env:
+          REEARTH_PLATEAUVIEW_TESTURL: ${{ secrets.TESTURL }}
+      - name: 'indexer HTTP test: list result files'
+        if: steps.testdata2.outputs.testdata
+        run: ls searchindex/indexer/testdata/result
+      - name: 'indexer HTTP test: cat resultsData.csv'
+        if: steps.testdata2.outputs.testdata
         run: cat searchindex/indexer/testdata/result/resultsData.csv

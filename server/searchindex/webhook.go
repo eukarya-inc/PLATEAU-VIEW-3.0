@@ -97,7 +97,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			log.Errorf("searchindex webhook: failed to update item: %w", err)
 		}
 
-		log.Errorf("searchindex webhook: start processing")
+		log.Infof("searchindex webhook: start processing")
 
 		result, err := do(ctx, c, pid, assetURLs)
 		if err != nil {

@@ -31,6 +31,7 @@ func TestIndexer(t *testing.T) {
 	dir, err := os.Stat("testdata")
 	if err != nil || !dir.IsDir() {
 		t.Skip()
+		return
 	}
 
 	b := bytes.NewBuffer(nil)
@@ -41,6 +42,33 @@ func TestIndexer(t *testing.T) {
 	indexer := NewIndexer(config, input, output)
 
 	err = indexer.BuildAndWrite()
+	assert.NoError(t, err)
+	err = zw.Close()
+	assert.NoError(t, err)
+
+	br := bytes.NewReader(b.Bytes())
+	zr, err := zip.NewReader(br, int64(b.Len()))
+	assert.NoError(t, err)
+	err = extractZip(zr, filepath.Join("testdata", "result"))
+	assert.NoError(t, err)
+}
+
+func TestIndexerWithHTTPFS(t *testing.T) {
+	u, _ := os.LookupEnv("REEARTH_PLATEAUVIEW_TESTURL")
+	if u == "" {
+		t.Skip()
+		return
+	}
+
+	t.Log(u)
+	b := bytes.NewBuffer(nil)
+	zw := zip.NewWriter(b)
+
+	input := NewHTTPFS(nil, u)
+	output := NewZipOutputFS(zw, "")
+	indexer := NewIndexer(config, input, output)
+
+	err := indexer.BuildAndWrite()
 	assert.NoError(t, err)
 	err = zw.Close()
 	assert.NoError(t, err)
