@@ -12,6 +12,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/labstack/echo/v4"
 )
@@ -90,21 +91,20 @@ func Geospatialjp(conf *Config) (*Service, error) {
 }
 
 func SearchIndex(conf *Config) (*Service, error) {
-	// c := conf.SearchIndex()
-	// if c.CMSBase == "" {
-	// 	return nil, nil
-	// }
+	c := conf.SearchIndex()
+	if c.CMSBase == "" {
+		return nil, nil
+	}
 
-	// w, err := searchindex.WebhookHandler(c)
-	// if err != nil {
-	// 	return nil, err
-	// }
+	w, err := searchindex.WebhookHandler(c)
+	if err != nil {
+		return nil, err
+	}
 
-	// return &Service{
-	// 	Name:    "searchindex",
-	// 	Webhook: w,
-	// }, nil
-	return nil, nil
+	return &Service{
+		Name:    "searchindex",
+		Webhook: w,
+	}, nil
 }
 
 func SDK(conf *Config) (*Service, error) {

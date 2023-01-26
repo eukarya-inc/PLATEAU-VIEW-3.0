@@ -13,14 +13,21 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+const dataFieldKey = "data"
+
 type Config struct {
-	CMSBase        string
-	CMSToken       string
-	CMSModelID     string
-	CMSDataFieldID string
+	CMSBase         string
+	CMSToken        string
+	CMSProject      string
+	CMSModel        string
+	CMSDataFieldKey string
 }
 
 func Echo(g *echo.Group, conf Config) error {
+	if conf.CMSDataFieldKey == "" {
+		conf.CMSDataFieldKey = dataFieldKey
+	}
+
 	cmsapi, err := cms.New(conf.CMSBase, conf.CMSToken)
 	if err != nil {
 		return fmt.Errorf("share: failed to init cms: %w", err)
@@ -36,15 +43,15 @@ func Echo(g *echo.Group, conf Config) error {
 			return c.JSON(http.StatusInternalServerError, "internal server error")
 		}
 
-		f := res.Field(conf.CMSDataFieldID)
+		f := res.FieldByKey(conf.CMSDataFieldKey)
 		if f == nil {
-			log.Errorf("share: item got, but field %s does not contain: %+v", conf.CMSDataFieldID, res)
+			log.Errorf("share: item got, but field %s does not contain: %+v", conf.CMSDataFieldKey, res)
 			return c.JSON(http.StatusNotFound, "not found")
 		}
 
 		v, ok := f.Value.(string)
 		if !ok {
-			log.Errorf("share: item got, but field %s's value is not a string: %+v", conf.CMSDataFieldID, res)
+			log.Errorf("share: item got, but field %s's value is not a string: %+v", conf.CMSDataFieldKey, res)
 			return c.JSON(http.StatusNotFound, "not found")
 		}
 
@@ -61,8 +68,8 @@ func Echo(g *echo.Group, conf Config) error {
 			return c.JSON(http.StatusBadRequest, "invalid json")
 		}
 
-		res, err := cmsapi.CreateItem(c.Request().Context(), conf.CMSModelID, []cms.Field{
-			{ID: conf.CMSDataFieldID, Type: "text", Value: string(body)},
+		res, err := cmsapi.CreateItemByKey(c.Request().Context(), conf.CMSProject, conf.CMSModel, []cms.Field{
+			{Key: conf.CMSDataFieldKey, Type: "textarea", Value: string(body)},
 		})
 		if err != nil {
 			log.Errorf("share: failed to create an item: %s", err)
@@ -70,7 +77,7 @@ func Echo(g *echo.Group, conf Config) error {
 		}
 
 		return c.JSON(http.StatusOK, res.ID)
-	}, middleware.BodyLimit("1M"))
+	}, middleware.BodyLimit("10M"))
 
 	return nil
 }

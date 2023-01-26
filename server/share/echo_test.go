@@ -19,10 +19,10 @@ func TestEcho(t *testing.T) {
 	e := echo.New()
 	g := e.Group("/share")
 	assert.NoError(t, Echo(g, Config{
-		CMSBase:        "https://cms.example.com",
-		CMSToken:       "token",
-		CMSModelID:     "modelmodel",
-		CMSDataFieldID: "datadata",
+		CMSBase:    "https://cms.example.com",
+		CMSToken:   "token",
+		CMSProject: "prj",
+		CMSModel:   "modelmodel",
 	}))
 
 	r := httptest.NewRequest("GET", "/share/aaa", nil)
@@ -57,7 +57,7 @@ func mockCMS(t *testing.T) {
 		if r.Header.Get("Authorization") != "Bearer token" {
 			return httpmock.NewBytesResponse(http.StatusUnauthorized, nil), nil
 		}
-		return httpmock.NewJsonResponse(http.StatusOK, map[string]any{"id": "aaa", "fields": []map[string]string{{"id": "datadata", "value": `{"a":"b"}`}}})
+		return httpmock.NewJsonResponse(http.StatusOK, map[string]any{"id": "aaa", "fields": []map[string]string{{"key": "data", "value": `{"a":"b"}`}}})
 	})
 
 	httpmock.RegisterResponder("GET", "https://cms.example.com/api/items/aaaa", func(r *http.Request) (*http.Response, error) {
@@ -67,7 +67,7 @@ func mockCMS(t *testing.T) {
 		return httpmock.NewJsonResponse(http.StatusNotFound, "not found")
 	})
 
-	httpmock.RegisterResponder("POST", "https://cms.example.com/api/models/modelmodel/items", func(r *http.Request) (*http.Response, error) {
+	httpmock.RegisterResponder("POST", "https://cms.example.com/api/projects/prj/models/modelmodel/items", func(r *http.Request) (*http.Response, error) {
 		if r.Header.Get("Authorization") != "Bearer token" {
 			return httpmock.NewBytesResponse(http.StatusUnauthorized, nil), nil
 		}

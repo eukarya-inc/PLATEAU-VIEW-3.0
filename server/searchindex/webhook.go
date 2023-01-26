@@ -39,11 +39,11 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		ctx := req.Context()
 
-		stprj := conf.CMSStorageProjectID
+		stprj := conf.CMSStorageProject
 		if stprj == "" {
 			stprj = pid
 		}
-		st := NewStorage(c, stprj, conf.CMSStorageModelID)
+		st := NewStorage(c, stprj, conf.CMSStorageModel)
 
 		item, err := getItem(ctx, c, st, w)
 		if err != nil || item.ID == "" {
