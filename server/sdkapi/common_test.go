@@ -41,44 +41,44 @@ func TestItems_DatasetResponse(t *testing.T) {
 
 func TestMaxLODColumns_Map(t *testing.T) {
 	assert.Equal(t, MaxLODMap{
-		"bldg": map[string]string{
-			"1": "1",
-			"2": "1",
+		"bldg": map[string]float64{
+			"1": 1,
+			"2": 1,
 		},
-		"veg": map[string]string{
-			"1": "2",
+		"veg": map[string]float64{
+			"1": 2,
 		},
-		"frn": map[string]string{
-			"2": "2",
+		"frn": map[string]float64{
+			"2": 2,
 		},
 	}, MaxLODColumns{
-		{Code: "1", Type: "bldg", MaxLOD: "1"},
-		{Code: "2", Type: "bldg", MaxLOD: "1"},
-		{Code: "1", Type: "veg", MaxLOD: "2"},
-		{Code: "2", Type: "frn", MaxLOD: "2"},
+		{Code: "1", Type: "bldg", MaxLOD: 1},
+		{Code: "2", Type: "bldg", MaxLOD: 1},
+		{Code: "1", Type: "veg", MaxLOD: 2},
+		{Code: "2", Type: "frn", MaxLOD: 2},
 	}.Map())
 }
 
 func TestMaxLODMap_Files(t *testing.T) {
 	assert.Equal(t, FilesResponse{
 		"bldg": []File{
-			{Code: "1", URL: "https://example.com/1_bldg_xxx.gml", MaxLOD: "1"},
-			{Code: "2", URL: "https://example.com/2_bldg_yyy.gml", MaxLOD: "1"},
+			{Code: "1", URL: "https://example.com/1_bldg_xxx.gml", MaxLOD: 1},
+			{Code: "2", URL: "https://example.com/2_bldg_yyy.gml", MaxLOD: 1},
 		},
 		"veg": []File{
-			{Code: "1", URL: "https://example.com/1_veg_zzz.gml", MaxLOD: "2"},
+			{Code: "1", URL: "https://example.com/1_veg_zzz.gml", MaxLOD: 2},
 		},
 		"frn": nil,
 	}, MaxLODMap{
-		"bldg": map[string]string{
-			"2": "1",
-			"1": "1",
+		"bldg": map[string]float64{
+			"2": 1,
+			"1": 1,
 		},
-		"veg": map[string]string{
-			"1": "2",
+		"veg": map[string]float64{
+			"1": 2,
 		},
-		"frn": map[string]string{
-			"2": "2",
+		"frn": map[string]float64{
+			"2": 2,
 		},
 	}.Files([]*url.URL{
 		lo.Must(url.Parse("https://example.com/1_bldg_xxx.gml")),

@@ -46,9 +46,9 @@ type DatasetCity struct {
 type FilesResponse map[string][]File
 
 type File struct {
-	Code   string `json:"code"`
-	URL    string `json:"url"`
-	MaxLOD string `json:"max_lod"`
+	Code   string  `json:"code"`
+	URL    string  `json:"url"`
+	MaxLOD float64 `json:"max_lod"`
 }
 
 type Items []Item
@@ -113,23 +113,19 @@ func (i Item) FeatureTypes() (t []string) {
 type MaxLODColumns []MaxLODColumn
 
 type MaxLODColumn struct {
-	Code   string `json:"code"`
-	Type   string `json:"type"`
-	MaxLOD string `json:"max_lod"`
+	Code   string  `json:"code"`
+	Type   string  `json:"type"`
+	MaxLOD float64 `json:"max_lod"`
 }
 
-type MaxLODMap map[string]map[string]string
+type MaxLODMap map[string]map[string]float64
 
 func (mc MaxLODColumns) Map() MaxLODMap {
 	m := MaxLODMap{}
 
 	for _, c := range mc {
-		if c.MaxLOD == "" {
-			continue
-		}
-
 		if _, ok := m[c.Type]; !ok {
-			m[c.Type] = map[string]string{}
+			m[c.Type] = map[string]float64{}
 		}
 		t := m[c.Type]
 		t[c.Code] = c.MaxLOD

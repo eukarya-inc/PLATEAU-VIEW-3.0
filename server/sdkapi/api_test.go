@@ -27,12 +27,12 @@ func TestGetMaxLOD(t *testing.T) {
 	res, err := getMaxLOD(ctx, "https://example.com")
 	assert.NoError(t, err)
 	assert.Equal(t, MaxLODColumns{
-		{Code: "53394452", Type: "bldg", MaxLOD: "1"},
-		{Code: "53394452", Type: "tran", MaxLOD: "1"},
-		{Code: "53394453", Type: "bldg", MaxLOD: "1"},
-		{Code: "53394453", Type: "tran", MaxLOD: "1"},
-		{Code: "53394461", Type: "bldg", MaxLOD: "1"},
-		{Code: "53394461", Type: "tran", MaxLOD: "1"},
-		{Code: "53394462", Type: "bldg", MaxLOD: "1"},
+		{Code: "53394452", Type: "bldg", MaxLOD: 1},
+		{Code: "53394452", Type: "tran", MaxLOD: 1},
+		{Code: "53394453", Type: "bldg", MaxLOD: 1},
+		{Code: "53394453", Type: "tran", MaxLOD: 1},
+		{Code: "53394461", Type: "bldg", MaxLOD: 1},
+		{Code: "53394461", Type: "tran", MaxLOD: 1},
+		{Code: "53394462", Type: "bldg", MaxLOD: 1},
 	}, res)
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -125,10 +126,15 @@ func getMaxLOD(ctx context.Context, u string) (MaxLODColumns, error) {
 			continue
 		}
 
+		m, err := strconv.ParseFloat(c[2], 64)
+		if err != nil {
+			continue
+		}
+
 		results = append(results, MaxLODColumn{
 			Code:   c[0],
 			Type:   c[1],
-			MaxLOD: c[2],
+			MaxLOD: m,
 		})
 	}
 
