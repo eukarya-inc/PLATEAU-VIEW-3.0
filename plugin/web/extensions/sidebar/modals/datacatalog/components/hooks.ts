@@ -1,4 +1,5 @@
 import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
+import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,7 +15,7 @@ export default () => {
   }, []);
 
   const handleDatasetAdd = useCallback(
-    (dataset: CatalogItem) => {
+    (dataset: CatalogItem | UserDataItem) => {
       postMsg({
         action: "msgFromModal",
         payload: {

@@ -1,76 +1,40 @@
-import { Tabs, Select, Icon } from "@web/sharedComponents";
-import Upload, { message, UploadProps } from "@web/sharedComponents/Upload";
+import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
+import { Tabs } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+import { useState } from "react";
 
-const FileSelectPane: React.FC = () => {
-  const { Dragger } = Upload;
+import LocalDataTab from "./LocalDataTab";
+import WebDataTab from "./WebDataTab";
 
-  const props: UploadProps = {
-    name: "file",
-    multiple: true,
-    action: "https://www.mocky.io/v2/5cc8019d300000980a055e76",
-    listType: "picture",
-    onChange(info) {
-      const { status } = info.file;
-      if (status !== "uploading") {
-        console.log(info.file, info.fileList);
-      }
-      if (status === "done") {
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === "error") {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log("Dropped files", e.dataTransfer.files);
-    },
+export type Props = {
+  onOpenDetails?: (data?: UserDataItem) => void;
+};
+
+const FileSelectPane: React.FC<Props> = ({ onOpenDetails }) => {
+  const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
+  const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
+
+  const handleTabChange = (activeKey: string) => {
+    switch (activeKey) {
+      case "local":
+        if (onOpenDetails) onOpenDetails(selectedLocalItem);
+        break;
+      case "web":
+        if (onOpenDetails) onOpenDetails(selectedWebItem);
+        break;
+    }
   };
 
   return (
     <Wrapper>
-      <Tabs defaultActiveKey="local" style={{ marginBottom: "12px" }}>
+      <StyledTabs defaultActiveKey="local" onChange={handleTabChange}>
         <Tabs.TabPane tab="Add Local Data" key="local">
-          <Subtitle>Select file type</Subtitle>
-          <Select
-            defaultValue="auto"
-            style={{ width: "100%" }}
-            // onChange={handleChange}
-            options={[
-              {
-                value: "auto",
-                label: "Auto-detect (Recommended)",
-              },
-              {
-                value: "lucy",
-                label: "Lucy",
-              },
-              {
-                value: "disabled",
-                disabled: true,
-                label: "Disabled",
-              },
-              {
-                value: "Yiminghe",
-                label: "yiminghe",
-              },
-            ]}
-          />
+          <LocalDataTab onOpenDetails={onOpenDetails} setSelectedLocalItem={setSelectedLocalItem} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Add Web Data" key="web">
-          Add Web Data
+          <WebDataTab onOpenDetails={onOpenDetails} setSelectedWebItem={setSelectedWebItem} />
         </Tabs.TabPane>
-      </Tabs>
-      <Subtitle>Upload file</Subtitle>
-      <UploadWrapper>
-        <Dragger {...props}>
-          <StyledIcon className="ant-upload-drag-icon" icon="inbox" />
-          <p className="ant-upload-text">Click or drag file to this area to upload</p>
-          <p className="ant-upload-hint">
-            Support for a single or bulk upload. Strictly prohibit from uploading company data or
-            other band files
-          </p>
-        </Dragger>
-      </UploadWrapper>
+      </StyledTabs>
     </Wrapper>
   );
 };
@@ -81,18 +45,6 @@ const Wrapper = styled.div`
   padding: 24px 12px;
 `;
 
-const StyledIcon = styled(Icon)`
-  margin-bottom: 8px;
-`;
-
-const Subtitle = styled.p`
-  margin: 0;
-`;
-
-const UploadWrapper = styled.div`
-  height: 172px;
-
-  .ant-upload-list-item {
-    height: 50px;
-  }
+const StyledTabs = styled(Tabs)`
+  margin-bottom: 12px;
 `;
