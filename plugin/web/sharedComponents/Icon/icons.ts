@@ -46,6 +46,7 @@ import { ReactComponent as PaperPlane } from "./Icons/paperPlane.svg";
 import { ReactComponent as DotsThreeVertical } from "./Icons/dotsThreeVertical.svg";
 import { ReactComponent as CaretLeft } from "./Icons/caretLeft.svg";
 import { ReactComponent as Eraser } from "./Icons/eraser.svg";
+import { ReactComponent as DotsSixVertical } from "./Icons/dotsSixVertical.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -96,4 +97,5 @@ export default {
   dotsThreeVertical: DotsThreeVertical,
   caretLeft: CaretLeft,
   eraser: Eraser,
+  dotsSixVertical: DotsSixVertical,
 };

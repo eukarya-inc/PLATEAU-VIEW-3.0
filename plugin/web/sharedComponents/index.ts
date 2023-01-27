@@ -2,6 +2,7 @@ import Button from "@web/sharedComponents/Button";
 import Carousel from "@web/sharedComponents/Carousel";
 import Checkbox from "@web/sharedComponents/Checkbox";
 import Col from "@web/sharedComponents/Col";
+import Collapse from "@web/sharedComponents/Collapse";
 import Divider from "@web/sharedComponents/Divider";
 import Dropdown, { Menu } from "@web/sharedComponents/Dropdown";
 import Form from "@web/sharedComponents/Form";
@@ -38,4 +39,5 @@ export {
   Tabs,
   Typography,
   Pagination,
+  Collapse,
 };
