@@ -12,7 +12,7 @@ export type Props = {
 const MobileSidebar: React.FC<Props> = ({ className }) => {
   const [selected, setSelected] = useState<Tab | undefined>();
 
-  const handleClick = useCallback(
+  const handleTabSelect = useCallback(
     (tab: Tab) => {
       if (selected === tab) {
         setSelected(undefined);
@@ -31,8 +31,11 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return;
-      if (e.data.type && e.data.type === "initPopup") {
+      if (e.data.action === "initPopup") {
         postMsg({ action: "msgToPopup", payload: selected });
+      } else if (e.data.action === "triggerCatalogOpen") {
+        postMsg({ action: "modalClose" });
+        handleTabSelect("catalog");
       }
     };
     (globalThis as any).addEventListener("message", (e: any) => eventListenerCallback(e));
@@ -63,17 +66,17 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
         <StyledIcon
           icon="database"
           selected={selected === "catalog"}
-          onClick={() => handleClick("catalog")}
+          onClick={() => handleTabSelect("catalog")}
         />
         <StyledIcon
           icon="visible"
           selected={selected === "selection"}
-          onClick={() => handleClick("selection")}
+          onClick={() => handleTabSelect("selection")}
         />
         <StyledIcon
           icon="menu"
           selected={selected === "menu"}
-          onClick={() => handleClick("menu")}
+          onClick={() => handleTabSelect("menu")}
         />
       </IconGroup>
     </Wrapper>

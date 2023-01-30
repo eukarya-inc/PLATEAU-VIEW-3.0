@@ -5,6 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Root, Data, Template } from "../newTypes";
 import processCatalog, { CatalogRawItem } from "../processCatalog";
 
+import { Pages } from "./Header";
+
 export const defaultProject: Project = {
   sceneOverrides: {
     default: {
@@ -274,6 +276,10 @@ export default () => {
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }
+      } else if (e.data.action === "triggerCatalogOpen") {
+        handleModalOpen();
+      } else if (e.data.action === "triggerHelpOpen") {
+        handlePageChange("help");
       }
     };
     addEventListener("message", e => eventListenerCallback(e));
@@ -305,6 +311,28 @@ export default () => {
     }
   }, [projectID, backendURL]);
 
+  const [currentPage, setCurrentPage] = useState<Pages>("data");
+
+  const handlePageChange = useCallback((p: Pages) => {
+    setCurrentPage(p);
+  }, []);
+
+  const handleMinimize = useCallback(() => {
+    const html = document.querySelector("html");
+    const body = document.querySelector("body");
+    const root = document.getElementById("root");
+    if (!minimized) {
+      html?.classList.add("minimized");
+      body?.classList.add("minimized");
+      root?.classList.add("minimized");
+    } else {
+      html?.classList.remove("minimized");
+      body?.classList.remove("minimized");
+      root?.classList.remove("minimized");
+    }
+    setMinimize(!minimized);
+  }, [minimized, setMinimize]);
+
   return {
     processedSelectedDatasets,
     project,
@@ -313,6 +341,9 @@ export default () => {
     reearthURL,
     backendURL,
     templates,
+    currentPage,
+    handlePageChange,
+    handleMinimize,
     handleTemplateAdd,
     handleTemplateUpdate,
     handleTemplateRemove,

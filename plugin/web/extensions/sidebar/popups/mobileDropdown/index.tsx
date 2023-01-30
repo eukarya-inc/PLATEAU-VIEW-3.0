@@ -30,9 +30,9 @@ const MobileDropdown: React.FC = () => {
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return null;
-      if (e.data.type) {
-        if (e.data.type === "msgToPopup" && e.data.message) {
-          setCurrentTab(e.data.message);
+      if (e.data.action) {
+        if (e.data.action === "msgToPopup" && e.data.payload) {
+          setCurrentTab(e.data.payload);
         }
       }
     };

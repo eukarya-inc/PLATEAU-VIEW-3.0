@@ -1,6 +1,7 @@
 import { CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
-import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
-import { Tag } from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Tags";
+import DatasetTree, {
+  Tag,
+} from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
@@ -29,7 +30,7 @@ const Catalog: React.FC<Props> = ({ rawCatalog }) => {
   );
 
   return (
-    <Wrapper id="menu">
+    <Wrapper>
       <PopupItem>
         <Title>データカタログ</Title>
       </PopupItem>

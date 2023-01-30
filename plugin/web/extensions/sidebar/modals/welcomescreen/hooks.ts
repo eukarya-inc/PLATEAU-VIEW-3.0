@@ -46,6 +46,15 @@ export default () => {
     postMsg({ action: "modalClose" });
   }, [dontShowAgain]);
 
+  const handleOpenHelp = useCallback(() => {
+    postMsg({ action: "modalClose" });
+    postMsg({ action: "triggerHelpOpen" });
+  }, []);
+
+  const handleOpenCatalog = useCallback(() => {
+    postMsg({ action: "triggerCatalogOpen" });
+  }, []);
+
   return {
     isMobile,
     showVideo,
@@ -54,5 +63,7 @@ export default () => {
     handleShowVideo,
     handleCloseVideo,
     handleClose,
+    handleOpenHelp,
+    handleOpenCatalog,
   };
 };

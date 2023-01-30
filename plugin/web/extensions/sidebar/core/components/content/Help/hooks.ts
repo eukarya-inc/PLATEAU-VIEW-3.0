@@ -25,8 +25,8 @@ export default () => {
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return null;
-      if (e.data.type) {
-        if (e.data.type === "initPopup") {
+      if (e.data.action) {
+        if (e.data.action === "initPopup") {
           postMsg({ action: "msgToPopup", payload: selectedTab });
         }
       }

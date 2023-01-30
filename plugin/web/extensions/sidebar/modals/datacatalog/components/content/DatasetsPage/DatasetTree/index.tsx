@@ -4,11 +4,13 @@ import { Icon, Input, Tabs } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
 
-import Tags, { Tag } from "../Tags";
+import Tags, { Tag as TagType } from "../Tags";
 
 import FileTree, { DataCatalog } from "./FileTree";
 
 type FilterType = "prefecture" | "fileType" | "tag";
+
+export type Tag = TagType;
 
 export type Props = {
   rawCatalog?: CatalogRawItem[];

@@ -18,7 +18,7 @@ const Selection: React.FC<Props> = ({ selectedDatasets, onDatasetRemove, onDatas
   }, []);
 
   return (
-    <Wrapper id="detail">
+    <Wrapper>
       <PopupItem>
         <Title>Data Style Settings</Title>
       </PopupItem>

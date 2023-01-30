@@ -13,6 +13,8 @@ const WelcomeScreen: React.FC = () => {
     handleShowVideo,
     handleCloseVideo,
     handleClose,
+    handleOpenHelp,
+    handleOpenCatalog,
   } = useHooks();
 
   return (
@@ -26,7 +28,7 @@ const WelcomeScreen: React.FC = () => {
                 ようこそ
               </Title>
               <Text weight={500} size={isMobile ? 16 : 20}>
-                マップを使ってみる
+                {isMobile ? "データがお好きですか？" : "マップを使ってみる"}
               </Text>
             </TextWrapper>
             <ContentWrapper isMobile={isMobile}>
@@ -36,12 +38,14 @@ const WelcomeScreen: React.FC = () => {
                 </ImgWrapper>
               )}
               <BtnsWrapper isMobile={isMobile}>
-                <ButtonWrapper>
-                  <Text weight={500} size={14}>
-                    ヘルプをみる
-                  </Text>
-                </ButtonWrapper>
-                <ButtonWrapper>
+                {!isMobile && (
+                  <ButtonWrapper onClick={handleOpenHelp}>
+                    <Text weight={500} size={14}>
+                      ヘルプをみる
+                    </Text>
+                  </ButtonWrapper>
+                )}
+                <ButtonWrapper onClick={handleOpenCatalog}>
                   <Icon size={20} icon="plusCircle" color="#fafafa" />
                   <Text weight={500} size={14}>
                     カタログから検索する
