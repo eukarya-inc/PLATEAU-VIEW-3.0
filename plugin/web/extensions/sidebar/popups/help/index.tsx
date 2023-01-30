@@ -23,9 +23,9 @@ const Help: React.FC = () => {
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return null;
-      if (e.data.type) {
-        if (e.data.type === "msgToPopup" && e.data.message) {
-          setCurrentPopup(e.data.message);
+      if (e.data.action) {
+        if (e.data.action === "msgToPopup" && e.data.payload) {
+          setCurrentPopup(e.data.payload);
         }
       }
     };

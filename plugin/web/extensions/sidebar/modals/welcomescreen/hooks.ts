@@ -1,9 +1,29 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default () => {
-  const [ShowVideo, setShowVideo] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    postMsg({ action: "initWelcome" });
+  }, []);
+
+  useEffect(() => {
+    const eventListenerCallback = (e: any) => {
+      if (e.source !== parent) return null;
+      if (e.data.type) {
+        if (e.data.type === "msgToModal" && e.data.message) {
+          setIsMobile(e.data.message);
+        }
+      }
+    };
+    (globalThis as any).addEventListener("message", (e: any) => eventListenerCallback(e));
+    return () => {
+      (globalThis as any).removeEventListener("message", eventListenerCallback);
+    };
+  });
 
   const handleDontShowAgain = useCallback(() => {
     setDontShowAgain(!dontShowAgain);
@@ -27,9 +47,10 @@ export default () => {
   }, [dontShowAgain]);
 
   return {
-    handleDontShowAgain,
-    ShowVideo,
+    isMobile,
+    showVideo,
     dontShowAgain,
+    handleDontShowAgain,
     handleShowVideo,
     handleCloseVideo,
     handleClose,

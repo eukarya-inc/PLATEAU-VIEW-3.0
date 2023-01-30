@@ -6,6 +6,7 @@ import { Data } from "../../../newTypes";
 import DatasetCard from "../common/DatasetCard";
 
 export type Props = {
+  className?: string;
   inEditor?: boolean;
   selectedDatasets?: Data[];
   // onDatasetUpdate?: (dataset: Dataset) => void;
@@ -15,6 +16,7 @@ export type Props = {
 };
 
 const Selection: React.FC<Props> = ({
+  className,
   inEditor,
   selectedDatasets,
   // onDatasetUpdate,
@@ -23,12 +25,14 @@ const Selection: React.FC<Props> = ({
   onModalOpen,
 }) => {
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <InnerWrapper>
-        <StyledButton onClick={onModalOpen}>
-          <StyledIcon icon="plusCircle" size={20} />
-          <ButtonText>カタログから検索する</ButtonText>
-        </StyledButton>
+        {onModalOpen && (
+          <StyledButton onClick={onModalOpen}>
+            <StyledIcon icon="plusCircle" size={20} />
+            <ButtonText>カタログから検索する</ButtonText>
+          </StyledButton>
+        )}
         {selectedDatasets
           ?.map(d => (
             <DatasetCard key={d.id} dataset={d} inEditor={inEditor} onRemove={onDatasetRemove} />

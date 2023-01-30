@@ -8,10 +8,11 @@ import useHooks from "./hooks";
 
 export type Props = {
   overrides: ReearthApi;
+  isMobile?: boolean;
   onOverridesUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
-const MapSettings: React.FC<Props> = ({ overrides, onOverridesUpdate }) => {
+const MapSettings: React.FC<Props> = ({ overrides, isMobile, onOverridesUpdate }) => {
   const {
     mapViewData,
     baseMapData,
@@ -26,7 +27,7 @@ const MapSettings: React.FC<Props> = ({ overrides, onOverridesUpdate }) => {
   } = useHooks({ overrides, onOverridesUpdate });
 
   return (
-    <CommonPage title="マップ設定">
+    <CommonPage title="マップ設定" isMobile={isMobile}>
       <>
         <SubTitle>マップビュー</SubTitle>
         <Section>

@@ -1,29 +1,40 @@
+import { CatalogRawItem } from "./core/processCatalog";
+
 type ActionType =
-  | "initSidebar"
+  | "init"
   | "initDataCatalog"
   | "initPopup"
+  | "initWelcome"
   | "storageSave"
   | "storageFetch"
   | "storageKeys"
   | "storageDelete"
-  | "updateOverrides"
+  | "updateProject"
   | "screenshot"
   | "screenshotPreview"
   | "screenshotSave"
   | "addDatasetToScene"
   | "catalogModalOpen"
-  | "welcomeModalOpen"
   | "mapModalOpen"
   | "clipModalOpen"
   | "modalClose"
   | "msgFromModal"
-  | "popupOpen"
+  | "helpPopupOpen"
   | "popupClose"
   | "msgToPopup"
   | "msgFromPopup"
+  | "mobileDropdownOpen"
+  | "msgToMobileDropdown"
+  | "checkIfMobile"
+  | "extendPopup"
   | "minimize";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
+
+export type Project = {
+  sceneOverrides: ReearthApi;
+  selectedDatasets: CatalogRawItem[];
+};
 
 export type ReearthApi = {
   default?: {

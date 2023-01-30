@@ -347,7 +347,6 @@ export default () => {
     minimized,
     scenes,
     isMobile,
-    playerHeight,
     contentWidth,
     setPlayerHeight,
     handleMinimize,

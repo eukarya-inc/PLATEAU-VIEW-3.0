@@ -6,17 +6,14 @@ import terrainHtml from "../dist/web/location/modals/terrain/index.html?raw";
 
 const reearth = (globalThis as any).reearth;
 
-reearth.ui.show(html, { width: 350, height: 40 });
+if (!reearth.viewport.isMobile) {
+  reearth.ui.show(html, { width: 350, height: 40 });
+}
 
 reearth.on("mousemove", (mousedata: MouseEvent) => {
-  reearth.ui.postMessage(
-    {
-      type: "mousedata",
-      payload: mousedata,
-    },
-    "*",
-  );
+  reearth.ui.postMessage({ type: "mousedata", payload: mousedata });
 });
+
 reearth.on("cameramove", () => {
   reearth.ui.postMessage({
     type: "getScreenLocation",

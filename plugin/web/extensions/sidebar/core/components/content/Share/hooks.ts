@@ -1,16 +1,16 @@
-import { ReearthApi as ReearthApiType } from "@web/extensions/sidebar/types";
+import { Project as ProjectType } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export type ReearthApi = ReearthApiType;
+export type Project = ProjectType;
 
 export default ({
-  overrides,
+  project,
   reearthURL,
   backendURL,
   messageApi,
 }: {
-  overrides?: ReearthApi;
+  project?: Project;
   reearthURL?: string;
   backendURL?: string;
   messageApi: any;
@@ -29,14 +29,14 @@ export default ({
 
   const handleProjectShare = useCallback(async () => {
     setShareDisable(true);
-    if (overrides) {
+    if (project) {
       if (!backendURL || !reearthURL) return;
       const resp = await fetch(`${backendURL}/share`, {
         headers: {
           "Content-Type": "application/json",
         },
         method: "POST",
-        body: JSON.stringify(overrides),
+        body: JSON.stringify(project),
       });
       if (resp.status !== 200) {
         messageApi.open({
@@ -54,7 +54,7 @@ export default ({
     timer.current = setTimeout(() => {
       setShareDisable(false);
     }, 3000);
-  }, [messageApi, reearthURL, backendURL, overrides, setPublishedUrl]);
+  }, [messageApi, reearthURL, backendURL, project, setPublishedUrl]);
 
   useEffect(() => {
     return () => {

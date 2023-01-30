@@ -12,7 +12,6 @@ const Storytelling: React.FC = () => {
     minimized,
     scenes,
     isMobile,
-    playerHeight,
     contentWidth,
     setPlayerHeight,
     handleMinimize,
@@ -28,7 +27,7 @@ const Storytelling: React.FC = () => {
   } = useHooks();
 
   return (
-    <Wrapper size={size} mode={mode} playerHeight={playerHeight} minimized={minimized}>
+    <Wrapper size={size} mode={mode} minimized={minimized}>
       <MiniPane onClick={handleMinimize} minimized={minimized}>
         <Icon icon="cornersOut" color="#4A4A4A" size={24} />
         <MiniTitle>ストーリー</MiniTitle>
@@ -70,7 +69,6 @@ const Storytelling: React.FC = () => {
 const Wrapper = styled.div<{
   size: Size;
   mode?: string;
-  playerHeight: number;
   minimized: boolean;
 }>`
   position: relative;

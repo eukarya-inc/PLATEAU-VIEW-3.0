@@ -10,7 +10,7 @@ const Help: React.FC = () => {
   const { items, selectedTab, handleItemClicked } = useHooks();
 
   useEffect(() => {
-    postMsg({ action: "popupOpen" });
+    postMsg({ action: "helpPopupOpen" });
     return () => {
       postMsg({ action: "popupClose" });
     };

@@ -71,7 +71,7 @@ export default () => {
     return () => {
       (globalThis as any).removeEventListener("message", eventListenerCallback);
     };
-  }, [updateCurrentPoint, updateDistanceLabel]);
+  });
 
   return {
     currentPoint,
