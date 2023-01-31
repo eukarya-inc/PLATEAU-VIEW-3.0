@@ -2,12 +2,18 @@ package searchindex
 
 import (
 	"archive/zip"
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"net/http"
+	"net/url"
+	"path"
 
+	"github.com/dustin/go-humanize"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex/indexer"
+	"github.com/reearth/reearthx/log"
 )
 
 var builtinConfig = &indexer.Config{
@@ -27,25 +33,39 @@ var builtinConfig = &indexer.Config{
 }
 
 type Indexer struct {
-	i      *indexer.Indexer
-	config *indexer.Config
-	cms    cms.Interface
-	pid    string
+	base    *url.URL
+	config  *indexer.Config
+	cms     cms.Interface
+	pid     string
+	zipMode bool
 }
 
-func NewIndexer(cms cms.Interface, pid, base string) *Indexer {
+func NewIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
 	return &Indexer{
-		i:      indexer.NewIndexer(builtinConfig, indexer.NewHTTPFS(nil, base), nil),
-		config: builtinConfig,
-		cms:    cms,
-		pid:    pid,
+		base:    base,
+		config:  builtinConfig,
+		cms:     cms,
+		pid:     pid,
+		zipMode: false,
 	}
 }
 
+func NewZipIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
+	i := NewIndexer(cms, pid, base)
+	i.zipMode = true
+	return i
+}
+
 func (i *Indexer) BuildIndex(ctx context.Context, name string) (string, error) {
-	res, err := i.i.Build()
+	indfs, err := i.fs()
 	if err != nil {
-		return "", fmt.Errorf("インデックスを作成できませんでした。 %w", err)
+		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)
+	}
+
+	ind := indexer.NewIndexer(builtinConfig, indfs, nil)
+	res, err := ind.Build()
+	if err != nil {
+		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)
 	}
 
 	pr, pw := io.Pipe()
@@ -78,4 +98,47 @@ func (i *Indexer) BuildIndex(ctx context.Context, name string) (string, error) {
 		return "", fmt.Errorf("結果のアップロードに失敗しました。(3) %w", err)
 	}
 	return aid, nil
+}
+
+func (i *Indexer) fs() (indexer.FS, error) {
+	if i.zipMode {
+		u := i.base.String()
+		log.Infof("indexer webhook: zip indexer donwloads %s", u)
+		res, err := http.DefaultClient.Get(u)
+		if err != nil {
+			return nil, fmt.Errorf("3D TilesのZipファイルのダウンロードに失敗しました。%w", err)
+		}
+
+		defer func() {
+			_ = res.Body.Close()
+		}()
+
+		if res.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("3D TilesのZipファイルのダウンロードに失敗しました。ステータスコードが%dでした。", res.StatusCode)
+		}
+
+		b := bytes.NewBuffer(nil)
+		size, err := io.Copy(b, res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("3D TilesのZipファイルのダウンロードに失敗しました。%w", err)
+		}
+
+		log.Infof("indexer webhook: zip indexer donwloaded %s from %s", humanize.Bytes(uint64(size)), u)
+
+		z, err := zip.NewReader(bytes.NewReader(b.Bytes()), size)
+		if err != nil {
+			return nil, fmt.Errorf("3D TilesのZipファイルが不正なフォーマットです。%w", err)
+		}
+
+		return indexer.NewZipFS(z), nil
+	}
+
+	return indexer.NewHTTPFS(nil, getAssetBase(i.base)), nil
+}
+
+func getAssetBase(u *url.URL) string {
+	u2 := *u
+	b := path.Join(path.Dir(u.Path), pathFileName(u.Path))
+	u2.Path = b
+	return u2.String()
 }

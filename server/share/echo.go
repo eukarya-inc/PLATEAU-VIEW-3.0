@@ -13,20 +13,32 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-const dataFieldKey = "data"
+const (
+	cmsModel        = "share"
+	cmsDataFieldKey = "data"
+)
 
 type Config struct {
-	CMSBase         string
-	CMSToken        string
-	CMSProject      string
-	CMSModel        string
+	CMSBase    string
+	CMSToken   string
+	CMSProject string
+	// optional
+	CMSModel string
+	// optional
 	CMSDataFieldKey string
 }
 
-func Echo(g *echo.Group, conf Config) error {
-	if conf.CMSDataFieldKey == "" {
-		conf.CMSDataFieldKey = dataFieldKey
+func (conf *Config) Normalize() {
+	if conf.CMSModel == "" {
+		conf.CMSModel = cmsModel
 	}
+	if conf.CMSDataFieldKey == "" {
+		conf.CMSDataFieldKey = cmsDataFieldKey
+	}
+}
+
+func Echo(g *echo.Group, conf Config) error {
+	conf.Normalize()
 
 	cmsapi, err := cms.New(conf.CMSBase, conf.CMSToken)
 	if err != nil {

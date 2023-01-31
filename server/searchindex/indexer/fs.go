@@ -62,6 +62,22 @@ func (f *FSFS) Open(name string) (io.ReadCloser, error) {
 	return file, nil
 }
 
+type ZipFS struct {
+	z *zip.Reader
+}
+
+func NewZipFS(z *zip.Reader) *ZipFS {
+	return &ZipFS{z: z}
+}
+
+func (f *ZipFS) Open(name string) (io.ReadCloser, error) {
+	file, err := f.z.Open(name)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
 type OSOutputFS struct {
 	base string
 }
@@ -116,7 +132,7 @@ func (f *HTTPFS) Open(name string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("failed to get url from %s and %s: %w", f.base, name, err)
 	}
 
-	log.Infof("indexer: http get: %s", u)
+	log.Debugf("indexer: http get: %s", u)
 	res, err := f.c.Get(u)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get from %s: %w", u, err)

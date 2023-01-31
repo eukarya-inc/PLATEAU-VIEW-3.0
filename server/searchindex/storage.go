@@ -8,7 +8,7 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-const storageModel = "sys_itemasset"
+const storageModel = "itemasset"
 
 type StorageItems []StorageItem
 
@@ -99,8 +99,10 @@ func (s *Storage) Set(ctx context.Context, item StorageItem) (err error) {
 	cms.Marshal(item, &citem)
 	if citem.ID == "" {
 		_, err = s.c.CreateItemByKey(ctx, s.pid, storageModel, citem.Fields)
-	} else {
+	} else if len(item.Item) > 0 {
 		_, err = s.c.UpdateItem(ctx, citem.ID, citem.Fields)
+	} else {
+		err = s.Delete(ctx, item.ID)
 	}
 	return
 }

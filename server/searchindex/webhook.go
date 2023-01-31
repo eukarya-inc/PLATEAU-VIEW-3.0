@@ -79,14 +79,6 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		// all zip files are decompressed
-		if w.Type == cmswebhook.EventAssetDecompress {
-			if err2 := st.Delete(ctx, si.ID); err2 != nil {
-				log.Errorf("searchindex webhook: cannot delete item from storage %s: %v", si.ID, err2)
-				return nil
-			}
-		}
-
 		if err := c.CommentToItem(ctx, item.ID, "検索インデックスの構築を開始しました。"); err != nil {
 			log.Errorf("searchindex webhook: failed to comment: %s", err)
 		}
@@ -144,27 +136,22 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 		aid := w.AssetData.ID
 		m, err2 := st.FindByAsset(ctx, aid)
 		if err2 != nil {
-			err = fmt.Errorf("searchindex webhook: cannot get data from storage: %v", err2)
+			err = fmt.Errorf("cannot get data from storage: %v", err2)
 			return
 		} else if m.ID == "" {
-			log.Infof("searchindex webhook: skipped: asset not registered", err)
-			return
-		}
-
-		m = m.RemoveAsset(aid)
-		if len(m.Asset) > 0 {
-			if err := st.Set(ctx, m); err != nil {
-				log.Errorf("searchindex webook: cannot set to storage: %w", err)
-			}
-
-			log.Infof("searchindex webhook: skipped: asset %s was decompressed but still waiting for asset to be decompressed: %v", aid, m.Asset)
+			err = errors.New("item and asset not registered to storage")
 			return
 		}
 
 		witem, err2 = c.GetItem(ctx, m.Item)
 		if err2 != nil {
-			err = fmt.Errorf("searchindex webhook: cannot get item %s: %v", m.Item, err2)
+			err = fmt.Errorf("cannot get item %s: %v", m.Item, err2)
 			return
+		}
+
+		m = m.RemoveAsset(aid)
+		if err := st.Set(ctx, m); err != nil {
+			log.Errorf("searchindex webook: cannot set to storage: %w", err)
 		}
 	} else {
 		// when item was created or updated
@@ -245,7 +232,7 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL) ([]strin
 		}
 
 		log.Infof("searchindex webhook: start processing for %s", name)
-		indexer := NewIndexer(c, pid, getAssetBase(u))
+		indexer := NewZipIndexer(c, pid, u)
 		aid, err := indexer.BuildIndex(ctx, name)
 		if err != nil {
 			return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
@@ -257,11 +244,4 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL) ([]strin
 
 func pathFileName(p string) string {
 	return strings.TrimSuffix(path.Base(p), path.Ext(p))
-}
-
-func getAssetBase(u *url.URL) string {
-	u2 := *u
-	b := path.Join(path.Dir(u.Path), pathFileName(u.Path))
-	u2.Path = b
-	return u2.String()
 }
