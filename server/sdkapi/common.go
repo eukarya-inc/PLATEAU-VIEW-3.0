@@ -31,9 +31,9 @@ type DatasetResponse struct {
 }
 
 type DatasetPref struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
-	Data  []DatasetCity
+	ID    string        `json:"id"`
+	Title string        `json:"title"`
+	Data  []DatasetCity `json:"data"`
 }
 
 type DatasetCity struct {
