@@ -5,6 +5,7 @@ import Col from "@web/sharedComponents/Col";
 import Collapse from "@web/sharedComponents/Collapse";
 import Divider from "@web/sharedComponents/Divider";
 import Dropdown, { Menu } from "@web/sharedComponents/Dropdown";
+import Empty from "@web/sharedComponents/Empty";
 import Form from "@web/sharedComponents/Form";
 import Icon from "@web/sharedComponents/Icon";
 import Input from "@web/sharedComponents/Input";
@@ -40,4 +41,5 @@ export {
   Typography,
   Pagination,
   Collapse,
+  Empty,
 };

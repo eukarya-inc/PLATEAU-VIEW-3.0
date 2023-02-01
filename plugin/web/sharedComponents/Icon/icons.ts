@@ -47,6 +47,11 @@ import { ReactComponent as DotsThreeVertical } from "./Icons/dotsThreeVertical.s
 import { ReactComponent as CaretLeft } from "./Icons/caretLeft.svg";
 import { ReactComponent as Eraser } from "./Icons/eraser.svg";
 import { ReactComponent as DotsSixVertical } from "./Icons/dotsSixVertical.svg";
+import { ReactComponent as MagnifyingGlass } from "./Icons/magnifyingGlass.svg";
+import { ReactComponent as RectMinimize } from "./Icons/rectMinimize.svg";
+import { ReactComponent as RectMaximize } from "./Icons/rectMaximize.svg";
+import { ReactComponent as Funnel } from "./Icons/funnel.svg";
+import { ReactComponent as ListNumbers } from "./Icons/listNumbers.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -98,4 +103,9 @@ export default {
   caretLeft: CaretLeft,
   eraser: Eraser,
   dotsSixVertical: DotsSixVertical,
+  magnifyingGlass: MagnifyingGlass,
+  rectMinimize: RectMinimize,
+  rectMaximize: RectMaximize,
+  funnel: Funnel,
+  listNumbers: ListNumbers,
 };
