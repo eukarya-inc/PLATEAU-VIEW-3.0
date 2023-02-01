@@ -88,13 +88,13 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodGet, "/aaa/data", nil)
+	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/data", nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid")
-	ctx.SetParamValues("aaa")
+	ctx.SetParamValues(testCMSProject)
 
 	handler := newHandler().getAllDataHandler()
 	res := handler(ctx)
@@ -122,13 +122,13 @@ func TestHandler_createDataHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodPost, "/aaa/data", strings.NewReader(`{"hoge":"foo"}`))
+	req := httptest.NewRequest(http.MethodPost, "/"+testCMSProject+"/data", strings.NewReader(`{"hoge":"foo"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid")
-	ctx.SetParamValues("aaa")
+	ctx.SetParamValues(testCMSProject)
 	handler := newHandler().createDataHandler()
 	err := handler(ctx)
 
@@ -220,13 +220,13 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodGet, "/aaa/templates", nil)
+	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/templates", nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid")
-	ctx.SetParamValues("aaa")
+	ctx.SetParamValues(testCMSProject)
 
 	handler := newHandler().fetchTemplatesHandler()
 	res := handler(ctx)
@@ -283,12 +283,12 @@ func TestHandler_createTemplateHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodGet, "/aaa/templates", strings.NewReader(`{"hoge":"hoge"}`))
+	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/templates", strings.NewReader(`{"hoge":"hoge"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid")
-	ctx.SetParamValues("aaa")
+	ctx.SetParamValues(testCMSProject)
 
 	handler := newHandler().createTemplateHandler()
 	res := handler(ctx)
