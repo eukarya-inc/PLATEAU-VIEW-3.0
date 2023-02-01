@@ -1,6 +1,6 @@
 import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
 import PageLayout from "@web/extensions/sidebar/modals/datacatalog/components/content/PageLayout";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import DatasetTree from "./DatasetTree";
 import DatasetDetails, { Tag } from "./Details";
@@ -25,6 +25,12 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
     [],
   );
 
+  const addDisabled = useMemo(() => {
+    return !!addedDatasetIds?.find(
+      id => selectedDataset?.type === "item" && id === selectedDataset.id,
+    );
+  }, [addedDatasetIds, selectedDataset]);
+
   return (
     <PageLayout
       left={
@@ -38,11 +44,7 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
       right={
         <DatasetDetails
           dataset={selectedDataset}
-          addDisabled={
-            !!addedDatasetIds?.find(
-              id => selectedDataset?.type === "item" && id === selectedDataset.id,
-            )
-          }
+          addDisabled={addDisabled}
           onTagSelect={handleTagSelect}
           onDatasetAdd={onDatasetAdd}
         />
