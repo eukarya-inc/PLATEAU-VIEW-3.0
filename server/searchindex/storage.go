@@ -2,6 +2,7 @@ package searchindex
 
 import (
 	"context"
+	"errors"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/samber/lo"
@@ -31,7 +32,7 @@ func (s StorageItems) FindByItem(iid string) *StorageItem {
 }
 
 type StorageItem struct {
-	ID    string
+	ID    string   `json:"id,omitempty" cms:"id"`
 	Item  string   `json:"item,omitempty" cms:"item,text"`
 	Asset []string `json:"asset,omitempty" cms:"asset,asset"`
 }
@@ -81,6 +82,9 @@ func (s *Storage) FindByAsset(ctx context.Context, assetid string) (r StorageIte
 	}
 
 	r2 := all.FindByAsset(assetid)
+	if r2 == nil {
+		return r, errors.New("asset not found in storage")
+	}
 	return lo.FromPtr(r2), nil
 }
 
@@ -91,6 +95,9 @@ func (s *Storage) FindByItem(ctx context.Context, itemid string) (r StorageItem,
 	}
 
 	r2 := all.FindByItem(itemid)
+	if r2 == nil {
+		return r, errors.New("item not found in storage")
+	}
 	return lo.FromPtr(r2), nil
 }
 
