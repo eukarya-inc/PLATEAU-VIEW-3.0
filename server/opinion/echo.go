@@ -16,11 +16,16 @@ import (
 
 const defaultToName = "PLATEAU VIEW ご意見ご要望"
 const titlePrefix = "【PLATEAU VIEW ご意見ご要望】"
+const defaultFromName = "PLATEAU CMS"
 
 type Config struct {
 	SendGridAPIKey string
-	Email          string
-	ToName         string
+	From           string
+	To             string
+	// optional
+	FromName string
+	// optional
+	ToName string
 }
 
 type req struct {
@@ -31,6 +36,11 @@ type req struct {
 }
 
 func Echo(g *echo.Group, conf Config) {
+	fromName := conf.FromName
+	if fromName == "" {
+		fromName = defaultFromName
+	}
+
 	toName := conf.ToName
 	if toName == "" {
 		toName = defaultToName
@@ -46,10 +56,12 @@ func Echo(g *echo.Group, conf Config) {
 			return err
 		}
 
-		from := mail.NewEmail(r.Name, r.Email)
-		to := mail.NewEmail(toName, conf.Email)
+		from := mail.NewEmail(fromName, conf.From)
+		to := mail.NewEmail(toName, conf.To)
 		title := fmt.Sprintf("%s%s", titlePrefix, r.Title)
 		message := mail.NewSingleEmailPlainText(from, title, to, r.Content)
+		replyToEmail := mail.NewEmail(r.Name, r.Email)
+		message.SetReplyTo(replyToEmail)
 
 		// handle an image file
 		if mfh, err := c.FormFile("file"); err == nil {

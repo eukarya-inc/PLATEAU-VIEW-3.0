@@ -48,7 +48,9 @@ type Config struct {
 	Ckan_Private         bool
 	SDK_Token            string
 	SendGrid_APIKey      string
-	Opinion_Email        string
+	Opinion_From         string
+	Opinion_FromName     string
+	Opinion_To           string
 	Opinion_ToName       string
 	Secret               string
 	Debug                bool
@@ -131,7 +133,9 @@ func (c *Config) Share() share.Config {
 func (c *Config) Opinion() opinion.Config {
 	return opinion.Config{
 		SendGridAPIKey: c.SendGrid_APIKey,
-		Email:          c.Opinion_Email,
+		From:           c.Opinion_From,
+		FromName:       c.Opinion_FromName,
+		To:             c.Opinion_To,
 		ToName:         c.Opinion_ToName,
 	}
 }

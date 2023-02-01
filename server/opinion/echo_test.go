@@ -29,7 +29,8 @@ func TestEcho(t *testing.T) {
 	g := e.Group("")
 	Echo(g, Config{
 		SendGridAPIKey: "xxx",
-		Email:          "hoge@example.com",
+		From:           "hoge@example.com",
+		To:             "hoge@example.com",
 	})
 
 	// bad request

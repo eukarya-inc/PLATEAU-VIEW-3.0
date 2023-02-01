@@ -166,7 +166,7 @@ func Share(conf *Config) (*Service, error) {
 
 func Opinion(conf *Config) (*Service, error) {
 	c := conf.Opinion()
-	if c.SendGridAPIKey == "" {
+	if c.SendGridAPIKey == "" || c.From == "" || c.To == "" {
 		return nil, nil
 	}
 
