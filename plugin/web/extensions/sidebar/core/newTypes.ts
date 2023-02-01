@@ -8,19 +8,28 @@ export type Data = {
   dataId: string;
   type: string;
   name?: string; // Might want to make raw type without this
-  public: boolean; // Might want to make raw type without this
+  // public: boolean; // Might want to make raw type without this
   visible?: boolean; // Might want to make raw type without this
+  modelType: "usecase" | "plateau" | "dataset";
   // either template or components
   template?: string; // user-defined template ID or builtin template ID
-  components?: Component[];
+  components?: FieldComponent[];
 };
 
 // ****** Components ******
 
-// type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
-type Component = Camera | Legend | Realtime | Point | Description;
+export const fieldName = {
+  camera: "カメラ",
+  legend: "凡例",
+  realtime: "リアルタイム",
+  point: "ポイント",
+  description: "説明",
+};
 
-type Camera = {
+// type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
+export type FieldComponent = Camera | Legend | Realtime | Point | Description;
+
+export type Camera = {
   type: "camera";
   group?: string;
   position: {
@@ -33,21 +42,19 @@ type Camera = {
   };
 };
 
+type LegendStyleType = "square" | "circle" | "line" | "icon";
+
+type LegendItem = {
+  title: string;
+  color: string;
+  url?: string;
+};
+
 type Legend = {
   type: "legend";
   group?: string;
-  key: string;
-  // If false, legend will be auto-generated from data
-  override?: boolean;
+  style: LegendStyleType;
   items?: LegendItem[];
-};
-
-type LegendItem = {
-  value: string;
-  title?: string;
-  color?: string;
-  image?: string;
-  hidden?: boolean;
 };
 
 type Realtime = {
@@ -69,7 +76,8 @@ type Point = {
 type Description = {
   type: "description";
   group?: string;
-  markdownKey: string;
+  content?: string;
+  isMarkdown?: boolean;
 };
 
 // ****** Template ******
@@ -78,7 +86,7 @@ export type Template = {
   id: string;
   modelId: string;
   name?: string;
-  components?: Component[];
+  components?: FieldComponent[];
 };
 
 // ****** Expression ******

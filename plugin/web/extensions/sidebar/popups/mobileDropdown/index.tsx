@@ -14,11 +14,11 @@ const MobileDropdown: React.FC = () => {
 
   const {
     rawCatalog,
-    processedSelectedDatasets,
     project,
     reearthURL,
     backendURL,
     handleProjectDatasetRemove,
+    handleDatasetUpdate,
     handleDatasetRemoveAll,
     handleProjectSceneUpdate,
   } = useHooks();
@@ -49,7 +49,8 @@ const MobileDropdown: React.FC = () => {
           catalog: <Catalog rawCatalog={rawCatalog} />,
           selection: (
             <Selection
-              selectedDatasets={processedSelectedDatasets}
+              selectedDatasets={project.selectedDatasets}
+              onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
               onDatasetRemoveAll={handleDatasetRemoveAll}
             />

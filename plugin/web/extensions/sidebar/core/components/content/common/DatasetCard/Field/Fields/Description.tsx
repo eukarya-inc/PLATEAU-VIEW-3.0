@@ -2,33 +2,37 @@ import { Switch } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { Remarkable } from "remarkable";
 
-import { BaseField as BaseFieldProps } from ".";
-
-type Props = BaseFieldProps<"description"> & {
-  isMarkdown?: boolean;
-  value?: string;
+type Props = {
+  value?: {
+    content?: string;
+    isMarkdown?: boolean;
+  };
   editMode?: boolean;
 };
 
-const Description: React.FC<Props> = ({ value, isMarkdown, editMode }) => {
+const Description: React.FC<Props> = ({ value, editMode }) => {
   const md = new Remarkable({
     html: false,
     breaks: true,
     typographer: true,
     linkTarget: "__blank",
   });
-  const description = value ? (isMarkdown ? md.render(value) : value) : undefined;
+  const description = value?.content
+    ? value.isMarkdown
+      ? md.render(value.content)
+      : value.content
+    : undefined;
 
   return editMode ? (
     <div>
       <Text>内容</Text>
-      <TextBox rows={4} defaultValue={value} />
+      <TextBox rows={4} defaultValue={value?.content} />
       <SwitchWrapper>
-        <Switch checked={isMarkdown} size="small" />
+        <Switch checked={value?.isMarkdown} size="small" />
         <Text>マークダウン</Text>
       </SwitchWrapper>
     </div>
-  ) : isMarkdown && description ? (
+  ) : value?.isMarkdown && description ? (
     <div dangerouslySetInnerHTML={{ __html: description }} />
   ) : (
     <div>{description}</div>

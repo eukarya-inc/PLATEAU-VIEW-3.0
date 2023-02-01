@@ -1,3 +1,7 @@
+import {
+  FieldComponent as FieldComponentType,
+  fieldName,
+} from "@web/extensions/sidebar/core/newTypes";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
@@ -10,15 +14,10 @@ import {
   AccordionItemState,
 } from "react-accessible-accordion";
 
-import fields, { BaseField as BaseFieldProps, FieldType } from "./Fields";
-
-export type Field = BaseFieldProps<FieldType> & {
-  value: any;
-  icon?: string; // MAYBE NOT NEEDED
-};
+import fields from "./Fields";
 
 export type Props = {
-  field: Field;
+  field: FieldComponentType;
   editMode?: boolean;
   onGroupAdd?: () => void;
   onRemove?: () => void;
@@ -43,7 +42,7 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onGroupAdd, onRemove
     [onRemove],
   );
 
-  return !editMode && field.type === "idealZoom" ? null : (
+  return !editMode && field.type === "camera" ? null : (
     <StyledAccordionComponent allowZeroExpanded>
       <AccordionItem>
         <AccordionItemState>
@@ -53,7 +52,7 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onGroupAdd, onRemove
                 <HeaderContents>
                   <LeftContents>
                     <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
-                    <Title>{field.title}</Title>
+                    <Title>{fieldName[field.type]}</Title>
                   </LeftContents>
                   <RightContents>
                     <StyledIcon icon="group" size={16} onClick={handleGroupAdd} />
@@ -62,14 +61,16 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onGroupAdd, onRemove
                 </HeaderContents>
               ) : (
                 <HeaderContents>
-                  <Title>{field.title}</Title>
+                  <Title>{fieldName[field.type]}</Title>
                   <ArrowIcon icon="arrowDown" size={16} direction="left" expanded={expanded} />
                 </HeaderContents>
               )}
             </Header>
           )}
         </AccordionItemState>
-        <BodyWrapper>{FieldContent && <FieldContent {...field} editMode={editMode} />}</BodyWrapper>
+        <BodyWrapper>
+          {FieldContent && <FieldContent value={{ ...field }} editMode={editMode} />}
+        </BodyWrapper>
       </AccordionItem>
     </StyledAccordionComponent>
   );

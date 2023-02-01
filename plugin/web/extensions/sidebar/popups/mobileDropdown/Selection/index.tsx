@@ -8,11 +8,17 @@ import PopupItem from "../sharedComponents/PopupItem";
 
 type Props = {
   selectedDatasets: Data[];
+  onDatasetUpdate: (updatedDataset: Data) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
 };
 
-const Selection: React.FC<Props> = ({ selectedDatasets, onDatasetRemove, onDatasetRemoveAll }) => {
+const Selection: React.FC<Props> = ({
+  selectedDatasets,
+  onDatasetUpdate,
+  onDatasetRemove,
+  onDatasetRemoveAll,
+}) => {
   useEffect(() => {
     postMsg({ action: "extendPopup" });
   }, []);
@@ -24,6 +30,7 @@ const Selection: React.FC<Props> = ({ selectedDatasets, onDatasetRemove, onDatas
       </PopupItem>
       <SelectionComponent
         selectedDatasets={selectedDatasets}
+        onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}
       />

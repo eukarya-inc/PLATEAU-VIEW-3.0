@@ -1,5 +1,5 @@
 import { Data } from "@web/extensions/sidebar/core/newTypes";
-import { Icon } from "@web/sharedComponents";
+import { Dropdown, Icon, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -13,9 +13,8 @@ import {
 
 import AddButton from "../AddButton";
 
-import Field, { Field as FieldType } from "./Field";
-
-export type Field = FieldType;
+import Field from "./Field";
+import useHooks from "./hooks";
 
 type Tabs = "default" | "edit";
 
@@ -29,12 +28,23 @@ type BaseFieldType = Partial<Data> & {
 export type Props = {
   dataset: Data;
   inEditor?: boolean;
-  onRemove?: (id: string) => void;
+  onRemoveDataset?: (id: string) => void;
+  onDatasetUpdate: (dataset: Data) => void;
+  onUpdateField?: (id: string) => void;
+  onRemoveField?: (id: string) => void;
 };
-
-const DatasetCard: React.FC<Props> = ({ dataset, inEditor, onRemove }) => {
+const DatasetCard: React.FC<Props> = ({
+  dataset,
+  inEditor,
+  onRemoveDataset,
+  onDatasetUpdate,
+  // onUpdateField,
+  // onRemoveField,
+}) => {
   const [visible, setVisibility] = useState(false);
   const [currentTab, changeTab] = useState<Tabs>("default");
+
+  const { fieldGroups } = useHooks({ dataset, inEditor, onDatasetUpdate });
 
   const baseFields: BaseFieldType[] = useMemo(
     () => [
@@ -46,9 +56,9 @@ const DatasetCard: React.FC<Props> = ({ dataset, inEditor, onRemove }) => {
         onClick: () => alert("MOVE CAMERA"),
       },
       { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
-      { id: "remove", icon: "trash", onClick: () => onRemove?.(dataset.id) },
+      { id: "remove", icon: "trash", onClick: () => onRemoveDataset?.(dataset.id) },
     ],
-    [dataset, onRemove],
+    [dataset, onRemoveDataset],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
@@ -57,8 +67,41 @@ const DatasetCard: React.FC<Props> = ({ dataset, inEditor, onRemove }) => {
   }, []);
 
   useEffect(() => {
-    setVisibility(dataset.type !== "group" ? !!dataset.visible : false);
+    setVisibility(dataset.visible ?? false);
   }, [dataset]);
+
+  // const handleUpdateField = ({ key }) => {
+  //   if (!inEditor) return;
+  //   onAddField?.(key);
+  // };
+
+  const menuGenerator = (menuItems: { [key: string]: any }) => (
+    <Menu
+      items={Object.keys(menuItems).map(i => {
+        if (menuItems[i].fields) {
+          return {
+            key: i,
+            label: (
+              <Dropdown
+                overlay={menuGenerator(menuItems[i].fields)}
+                placement="bottom"
+                trigger={["click"]}>
+                <div onClick={e => e.stopPropagation()}>
+                  <p style={{ margin: 0 }}>{menuItems[i].name}</p>
+                </div>
+              </Dropdown>
+            ),
+          };
+        } else {
+          return {
+            key: i,
+            label: <p style={{ margin: 0 }}>{menuItems[i].name}</p>,
+            onClick: menuItems[i]?.onClick?.(),
+          };
+        }
+      })}
+    />
+  );
 
   return (
     <StyledAccordionComponent allowZeroExpanded>
@@ -103,48 +146,12 @@ const DatasetCard: React.FC<Props> = ({ dataset, inEditor, onRemove }) => {
                 {field.title && <FieldName>{field.title}</FieldName>}
               </BaseField>
             ))}
-            {(
-              [
-                {
-                  id: "legend",
-                  icon: undefined,
-                  title: "凡例",
-                  type: "legend",
-                  value: {
-                    style: "circle",
-                    items: [
-                      {
-                        title: "An item",
-                        color: "#CAD74D",
-                        url: "https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/good-icon.png", // will only show if style is icon
-                      },
-                      {
-                        title: "An item2",
-                        color: "purple",
-                        url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjFMDc3xdT2anLKSofsMQir0NWYJQTjFjln463UQH8rn0c2pIekG0yD31Mp6r1DzC0jmM&usqp=CAU",
-                      },
-                    ],
-                  },
-                },
-                { id: "camera", icon: undefined, title: "カメラ（カスタム）", type: "idealZoom" },
-                {
-                  id: "description",
-                  icon: undefined,
-                  title: "説明",
-                  value: `*This is my descripadsfojl.*
-                  (c) (C) (r) (R) (tm) (TM) (p) (P) +-
-                  [link text](http://google.ca)`,
-                  isMarkdown: true,
-                  type: "description",
-                },
-                { id: "template", icon: undefined, title: "Template", type: "template" },
-              ] as FieldType[]
-            )?.map((field, idx) => (
-              <Field key={idx} field={field} editMode={inEditor && currentTab === "edit"} />
+            {dataset.components?.map((c, idx) => (
+              <Field key={idx} field={c} editMode={inEditor && currentTab === "edit"} />
             ))}
           </Content>
           {inEditor && currentTab === "edit" && (
-            <StyledAddButton text="フィルドを追加" onClick={() => alert("ADDING SOMETHING")} />
+            <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldGroups)} />
           )}
         </BodyWrapper>
       </AccordionItem>
@@ -200,6 +207,10 @@ const LeftMain = styled.div`
 const Title = styled.p`
   margin: 0;
   font-size: 16px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 250px;
+  white-space: nowrap;
 `;
 
 const Content = styled.div`
@@ -255,3 +266,13 @@ const Tab = styled.p<{ selected?: boolean }>`
 const StyledAddButton = styled(AddButton)`
   margin-top: 12px;
 `;
+
+// const StyledDropdownButton = styled.div`
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   width: 100%;
+//   align-content: center;
+//   padding: 0 16px;
+//   cursor: pointer;
+// `;

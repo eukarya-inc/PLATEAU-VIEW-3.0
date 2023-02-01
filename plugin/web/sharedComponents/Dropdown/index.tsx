@@ -1,5 +1,7 @@
-import { Dropdown, Menu } from "antd";
+import { Dropdown, Menu, MenuProps } from "antd";
 
 export { Menu };
+
+export type { MenuProps };
 
 export default Dropdown;

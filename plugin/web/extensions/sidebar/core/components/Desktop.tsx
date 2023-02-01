@@ -16,7 +16,6 @@ export type Props = {
 
 const DesktopSidebar: React.FC<Props> = ({ className }) => {
   const {
-    processedSelectedDatasets,
     project,
     minimized,
     inEditor,
@@ -30,6 +29,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     handleTemplateUpdate,
     handleTemplateRemove,
     handleProjectDatasetRemove,
+    handleDatasetUpdate,
     handleDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
@@ -51,7 +51,8 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
               data: (
                 <Selection
                   inEditor={inEditor}
-                  selectedDatasets={processedSelectedDatasets}
+                  selectedDatasets={project.selectedDatasets}
+                  onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
                   onDatasetRemoveAll={handleDatasetRemoveAll}
                   onModalOpen={handleModalOpen}

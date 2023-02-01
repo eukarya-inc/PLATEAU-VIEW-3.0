@@ -68,13 +68,36 @@ export default () => {
     updateProject(({ sceneOverrides, selectedDatasets }) => {
       const updatedProject = {
         sceneOverrides,
-        selectedDatasets: [...selectedDatasets, dataset],
+        selectedDatasets: [
+          ...selectedDatasets,
+          {
+            id: dataset.id,
+            dataId: `plateau-2022-${dataset.cityName ?? dataset.name}`,
+            type: dataset.type,
+            name: dataset.cityName ?? dataset.name,
+            visible: true,
+          } as Data,
+        ],
       };
       postMsg({ action: "updateProject", payload: updatedProject });
       return updatedProject;
     });
 
     postMsg({ action: "addDatasetToScene", payload: dataset }); // MIGHT NEED TO MOVE THIS ELSEWHEREEEE
+  }, []);
+
+  const handleDatasetUpdate = useCallback((updatedDataset: Data) => {
+    updateProject(({ sceneOverrides, selectedDatasets }) => {
+      const datasetIndex = selectedDatasets.findIndex(d => d.id === updatedDataset.id);
+      selectedDatasets[datasetIndex] = updatedDataset;
+      console.log("Selected DATASETS: ", selectedDatasets);
+      const updatedProject: Project = {
+        sceneOverrides,
+        selectedDatasets,
+      };
+      postMsg({ action: "updateProject", payload: updatedProject });
+      return updatedProject;
+    });
   }, []);
 
   const handleProjectDatasetRemove = useCallback(
@@ -215,48 +238,48 @@ export default () => {
   // ****************************************
   // Processed Data
 
-  const [data, setData] = useState<Data[]>();
-  const processedSelectedDatasets: Data[] = useMemo(() => {
-    // if (!data) return data;
-    console.log("PROJECT: ", project);
-    return project.selectedDatasets
-      .map(d => {
-        console.log("DATA: ", data);
-        if (d.modelType === "usecase") {
-          // If usecase, check "data" for saved template, components, etc
-          // return data?.filter(d3 => d3.dataId === `plateau-2022-${d.cityName}`);
-          return {
-            id: d.id,
-            dataId: "ASDFSDFASDFasdf", // <======= NEEDS TO BE UPDATED
-            type: d.type ?? "", // maybe not needed
-            name: d.cityName ?? d.name,
-            public: false, //<======= NEEDS TO BE UPDATED
-            // visible <=== this will come from data (or be default true)
-            // template <=== this will come from data (and/or be added later from editor)
-            // components: data?.filter(d=> d.),
-          };
-          // } else if (d.modelType === "plateau") {
-          //   // Else, if PLATEAUデータ(plateau), do ....(HARDCODED TEMPLATE)
-          //   return d;
-          // } else if (d.modelType === "dataset") {
-          //   // Else, if 関連データセット(dataset), do ....(HARDCODED TEMPLATE)
-          //   return d;
-        } else {
-          return {
-            id: d.id,
-            dataId: `plateau-2022-${d.cityName ?? d.name}`,
-            type: d.type ?? "", // maybe not needed
-            name: d.cityName ?? d.name,
-            public: false,
-            visible: true,
-            template: "SOME TEMPLATE NAME???????????????????????????????",
-            components: [],
-          };
-        }
-      })
-      .flat(1)
-      .filter(p => p);
-  }, [data, project]);
+  // const [data, setData] = useState<Data[]>();
+  // const processedSelectedDatasets: Data[] = useMemo(() => {
+  //   // if (!data) return data;
+  //   console.log("PROJECT: ", project);
+  //   return project.selectedDatasets
+  //     .map(d => {
+  //       console.log("DATA: ", data);
+  //       if (d.modelType === "usecase") {
+  //         // If usecase, check "data" for saved template, components, etc
+  //         // return data?.filter(d3 => d3.dataId === `plateau-2022-${d.cityName}`);
+  //         return {
+  //           id: d.id,
+  //           dataId: "ASDFSDFASDFasdf", // <======= NEEDS TO BE UPDATED
+  //           type: d.type ?? "", // maybe not needed
+  //           name: d.cityName ?? d.name,
+  //           public: false, //<======= NEEDS TO BE UPDATED
+  //           // visible <=== this will come from data (or be default true)
+  //           // template <=== this will come from data (and/or be added later from editor)
+  //           // components: data?.filter(d=> d.),
+  //         };
+  //         // } else if (d.modelType === "plateau") {
+  //         //   // Else, if PLATEAUデータ(plateau), do ....(HARDCODED TEMPLATE)
+  //         //   return d;
+  //         // } else if (d.modelType === "dataset") {
+  //         //   // Else, if 関連データセット(dataset), do ....(HARDCODED TEMPLATE)
+  //         //   return d;
+  //       } else {
+  //         return {
+  //           id: d.id,
+  //           dataId: `plateau-2022-${d.cityName ?? d.name}`,
+  //           type: d.type ?? "", // maybe not needed
+  //           name: d.cityName ?? d.name,
+  //           public: false,
+  //           visible: true,
+  //           template: "SOME TEMPLATE NAME???????????????????????????????",
+  //           components: [],
+  //         };
+  //       }
+  //     })
+  //     .flat(1)
+  //     .filter(p => p);
+  // }, [data, project]);
   // ****************************************
 
   useEffect(() => {
@@ -306,7 +329,8 @@ export default () => {
         if (res.status !== 200) return;
         const results: Root = (await res.json()).results;
         setTemplates(results.templates);
-        setData(results.data);
+        // updateProject(results.data);
+        console.log("RESULTS.DATA: ", results.data);
       })();
     }
   }, [projectID, backendURL]);
@@ -334,7 +358,6 @@ export default () => {
   }, [minimized, setMinimize]);
 
   return {
-    processedSelectedDatasets,
     project,
     minimized,
     inEditor,
@@ -348,6 +371,7 @@ export default () => {
     handleTemplateUpdate,
     handleTemplateRemove,
     setMinimize,
+    handleDatasetUpdate,
     handleProjectDatasetRemove,
     handleDatasetRemoveAll,
     handleProjectSceneUpdate,

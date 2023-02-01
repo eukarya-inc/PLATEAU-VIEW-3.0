@@ -3,8 +3,6 @@ import { Icon, Dropdown, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseField as BaseFieldProps } from ".";
-
 type LegendStyleType = "square" | "circle" | "line" | "icon";
 
 const legendStyles: { [key: string]: string } = {
@@ -20,14 +18,15 @@ type LegendItem = {
   url?: string;
 };
 
-type Legend = {
-  id?: string; // NOT SURE ID IS NEEDED OR WILL BE OBTAINABLE
+type LegendType = {
+  type: "legend";
+  group?: string;
   style: LegendStyleType;
   items?: LegendItem[];
 };
 
-type Props = BaseFieldProps<"legend"> & {
-  value: Legend;
+type Props = {
+  value: LegendType;
   editMode?: boolean;
 };
 
@@ -42,7 +41,7 @@ function array_move(arr: any[], old_index: number, new_index: number) {
 }
 
 const Legend: React.FC<Props> = ({ value, editMode }) => {
-  const [legend, updateLegend] = useState<Legend>(value);
+  const [legend, updateLegend] = useState<LegendType>(value);
 
   const handleStyleChange = useCallback((style: LegendStyleType) => {
     updateLegend(l => {
@@ -77,7 +76,7 @@ const Legend: React.FC<Props> = ({ value, editMode }) => {
         return { ...l, items: newItems };
       });
     },
-    [legend.items],
+    [legend],
   );
 
   const handleAdd = useCallback(() => {
@@ -93,41 +92,6 @@ const Legend: React.FC<Props> = ({ value, editMode }) => {
       return { ...l, items: newItems };
     });
   }, []);
-
-  // [
-  //   {
-  //     key: "1",
-  //     label: (
-  //       <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-  //         1st menu item
-  //       </a>
-  //     ),
-  //   },
-  //   {
-  //     key: "2",
-  //     label: (
-  //       <a target="_blank" rel="noopener noreferrer" href="https://www.aliyun.com">
-  //         2nd menu item (disabled)
-  //       </a>
-  //     ),
-  //     // icon: <SmileOutlined />,
-  //     disabled: true,
-  //   },
-  //   {
-  //     key: "3",
-  //     label: (
-  //       <a target="_blank" rel="noopener noreferrer" href="https://www.luohanacademy.com">
-  //         3rd menu item (disabled)
-  //       </a>
-  //     ),
-  //     disabled: true,
-  //   },
-  //   {
-  //     key: "4",
-  //     danger: true,
-  //     label: "a danger item",
-  //   },
-  // ]
 
   const menu = (
     <Menu

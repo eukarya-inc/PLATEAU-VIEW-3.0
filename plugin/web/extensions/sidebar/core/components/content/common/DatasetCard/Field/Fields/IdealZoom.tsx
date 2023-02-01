@@ -1,25 +1,25 @@
-import { Camera } from "@web/extensions/sidebar/types";
+// import { Camera } from "@web/extensions/sidebar/types";
+import { Camera } from "@web/extensions/sidebar/core/newTypes";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseField as BaseFieldProps } from ".";
-
-type Props = BaseFieldProps<"idealZoom"> & {
+type Props = {
+  value?: Camera["position"];
   editMode?: boolean;
-  onCapture?: (camera: Partial<Camera>) => void;
+  onCapture?: (camera: Partial<Camera["position"]>) => void;
 };
 
-const initialValues = {
-  lat: 0,
+export const initialCameraValues = {
   lng: 0,
-  altitude: 0,
-  heading: 0,
+  lat: 0,
+  height: 0,
   pitch: 0,
+  heading: 0,
   roll: 0,
 };
 
-const IdealZoom: React.FC<Props> = ({ editMode, onCapture }) => {
-  const [camera, setCamera] = useState<Camera>(initialValues);
+const IdealZoom: React.FC<Props> = ({ value, editMode, onCapture }) => {
+  const [camera, setCamera] = useState<Camera["position"]>(value ?? initialCameraValues);
 
   const handleLatitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e);
@@ -57,7 +57,7 @@ const IdealZoom: React.FC<Props> = ({ editMode, onCapture }) => {
   }, [camera, onCapture]);
 
   const handleClean = useCallback(() => {
-    setCamera(initialValues);
+    setCamera(initialCameraValues);
   }, []);
 
   return editMode ? (
@@ -80,7 +80,7 @@ const IdealZoom: React.FC<Props> = ({ editMode, onCapture }) => {
           <Input
             type="number"
             placeholder="高度" // Altitude
-            value={camera.altitude}
+            value={camera.height}
             onChange={handleAltitudeChange}
           />
         </InputWrapper>

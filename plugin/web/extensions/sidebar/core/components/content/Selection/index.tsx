@@ -9,7 +9,7 @@ export type Props = {
   className?: string;
   inEditor?: boolean;
   selectedDatasets?: Data[];
-  // onDatasetUpdate?: (dataset: Dataset) => void;
+  onDatasetUpdate: (dataset: Data) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
@@ -19,7 +19,7 @@ const Selection: React.FC<Props> = ({
   className,
   inEditor,
   selectedDatasets,
-  // onDatasetUpdate,
+  onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
   onModalOpen,
@@ -35,7 +35,13 @@ const Selection: React.FC<Props> = ({
         )}
         {selectedDatasets
           ?.map(d => (
-            <DatasetCard key={d.id} dataset={d} inEditor={inEditor} onRemove={onDatasetRemove} />
+            <DatasetCard
+              key={d.id}
+              dataset={d}
+              inEditor={inEditor}
+              onDatasetUpdate={onDatasetUpdate}
+              onRemoveDataset={onDatasetRemove}
+            />
           ))
           .reverse()}
       </InnerWrapper>

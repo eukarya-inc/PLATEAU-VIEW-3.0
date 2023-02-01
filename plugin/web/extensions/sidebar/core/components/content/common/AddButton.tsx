@@ -1,24 +1,27 @@
-import { Icon, Dropdown, Menu } from "@web/sharedComponents";
+import { Icon, Dropdown } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
 type Props = {
   className?: string;
   text: string;
-  menuItems?: { [key: string]: string }[];
+  items?: JSX.Element;
+  direction?:
+    | "topLeft"
+    | "topCenter"
+    | "topRight"
+    | "bottomLeft"
+    | "bottomCenter"
+    | "bottomRight"
+    | "top"
+    | "bottom"
+    | undefined;
   onClick?: () => void;
 };
 
-const AddButton: React.FC<Props> = ({ className, text, menuItems, onClick }) => {
-  return menuItems ? (
-    <Dropdown
-      overlay={
-        <Menu
-          items={Object.keys(menuItems).map(ls => {
-            return { key: ls, label: <p style={{ margin: 0 }}>{ls}</p> };
-          })}
-        />
-      }>
-      <StyledButton className={className} onClick={onClick}>
+const AddButton: React.FC<Props> = ({ className, text, items, direction = "bottom", onClick }) => {
+  return items ? (
+    <Dropdown overlay={items} placement={direction} trigger={["click"]}>
+      <StyledButton className={className}>
         <Icon icon="plus" size={14} />
         <Text>{text}</Text>
       </StyledButton>
