@@ -26,7 +26,7 @@ func Echo(g *echo.Group, c Config) error {
 }
 
 func initEcho(g *echo.Group, c Config, cms cms.Interface) {
-	h := NewHandler(cms, c.CMSProject)
+	h := NewHandler(cms)
 	g.GET("/:pid", h.fetchRoot())
 	g.GET("/:pid/data", h.getAllDataHandler())
 	g.GET("/:pid/data/:iid", h.getDataHandler())

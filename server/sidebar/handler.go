@@ -18,14 +18,12 @@ const (
 )
 
 type Handler struct {
-	CMSProject string
-	CMS        cms.Interface
+	CMS cms.Interface
 }
 
-func NewHandler(CMS cms.Interface, prj string) *Handler {
+func NewHandler(CMS cms.Interface) *Handler {
 	return &Handler{
-		CMSProject: prj,
-		CMS:        CMS,
+		CMS: CMS,
 	}
 }
 
@@ -33,13 +31,14 @@ func NewHandler(CMS cms.Interface, prj string) *Handler {
 func (h *Handler) fetchRoot() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
 
-		data, err := h.CMS.GetItemsByKey(ctx, h.CMSProject, dataModelKey)
+		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey)
 		if err != nil {
 			return err
 		}
 
-		templates, err := h.CMS.GetItemsByKey(ctx, h.CMSProject, templateModelKey)
+		templates, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey)
 		if err != nil {
 			return err
 		}
@@ -55,8 +54,9 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
 
-		data, err := h.CMS.GetItemsByKey(ctx, h.CMSProject, dataModelKey)
+		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey)
 		if err != nil {
 			return err
 		}
@@ -92,6 +92,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 func (h *Handler) createDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return err
@@ -105,7 +106,7 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 			Key:   dataField,
 			Value: string(b),
 		}}
-		item, err := h.CMS.CreateItemByKey(ctx, h.CMSProject, dataModelKey, fields)
+		item, err := h.CMS.CreateItemByKey(ctx, prj, dataModelKey, fields)
 		if err != nil {
 			return err
 		}
@@ -123,7 +124,6 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 func (h *Handler) updateDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-
 		itemID := c.Param("iid")
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
@@ -172,8 +172,9 @@ func (h *Handler) deleteDataHandler() func(c echo.Context) error {
 func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
 
-		templates, err := h.CMS.GetItemsByKey(ctx, h.CMSProject, templateModelKey)
+		templates, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey)
 		if err != nil {
 			return err
 		}
@@ -206,6 +207,7 @@ func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return err
@@ -220,7 +222,7 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		item, err := h.CMS.CreateItemByKey(ctx, h.CMSProject, templateModelKey, fields)
+		item, err := h.CMS.CreateItemByKey(ctx, prj, templateModelKey, fields)
 		if err != nil {
 			return err
 		}

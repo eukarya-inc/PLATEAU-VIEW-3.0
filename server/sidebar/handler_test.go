@@ -26,8 +26,7 @@ const (
 func newHandler() *Handler {
 	CMS := lo.Must(cms.New(testCMSHost, testCMSToken))
 	return &Handler{
-		CMS:        CMS,
-		CMSProject: testCMSProject,
+		CMS: CMS,
 	}
 }
 
