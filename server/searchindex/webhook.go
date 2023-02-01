@@ -128,7 +128,7 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 
 	if w.Type == cmswebhook.EventAssetDecompress {
 		// when asset was decompressed, find data from storage and get the item
-		if w.AssetData == nil {
+		if w.AssetData == nil || w.AssetData.ID == "" {
 			log.Debugf("searchindex webhook: invalid event data: %+v", w.Data)
 			return
 		}

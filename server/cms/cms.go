@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/reearth/reearthx/log"
+	"github.com/reearth/reearthx/rerror"
 )
 
 type Interface interface {
@@ -368,10 +369,16 @@ func (c *CMS) send(ctx context.Context, m string, p []string, ct string, body an
 		defer func() {
 			_ = res.Body.Close()
 		}()
+
+		if res.StatusCode == http.StatusNotFound {
+			return nil, rerror.ErrNotFound
+		}
+
 		b, err := io.ReadAll(res.Body)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read body: %w", err)
 		}
+
 		return nil, fmt.Errorf("failed to request: code=%d, body=%s", res.StatusCode, b)
 	}
 

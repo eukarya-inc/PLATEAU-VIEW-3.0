@@ -152,7 +152,7 @@ func SDKAPI(conf *Config) (*Service, error) {
 
 func Share(conf *Config) (*Service, error) {
 	c := conf.Share()
-	if c.CMSBase == "" || c.CMSToken == "" || c.CMSProject == "" {
+	if c.CMSBase == "" || c.CMSToken == "" {
 		return nil, nil
 	}
 

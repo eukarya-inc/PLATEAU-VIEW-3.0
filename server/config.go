@@ -122,9 +122,8 @@ func (c *Config) SDKAPI() sdkapi.Config {
 
 func (c *Config) Share() share.Config {
 	return share.Config{
-		CMSBase:    c.CMS_BaseURL,
-		CMSToken:   c.CMS_Token,
-		CMSProject: c.CMS_SystemProject,
+		CMSBase:  c.CMS_BaseURL,
+		CMSToken: c.CMS_Token,
 		// CMSModel:   c.CMS_ShareModel,
 		// CMSDataFieldKey: c.CMS_ShareField,
 	}
