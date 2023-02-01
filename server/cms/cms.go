@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/reearth/reearthx/log"
@@ -16,7 +17,9 @@ import (
 
 type Interface interface {
 	GetItem(ctx context.Context, itemID string) (*Item, error)
+	GetItemsPartially(ctx context.Context, modelID string, page, perPage int) (*Items, error)
 	GetItems(ctx context.Context, modelID string) (*Items, error)
+	GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, page, perPage int) (*Items, error)
 	GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string) (*Items, error)
 	CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error)
 	CreateItemByKey(ctx context.Context, projectID, modelID string, fields []Field) (*Item, error)
@@ -63,8 +66,67 @@ func (c *CMS) GetItem(ctx context.Context, itemID string) (*Item, error) {
 	return item, nil
 }
 
+func (c *CMS) GetItemsPartially(ctx context.Context, modelID string, page, perPage int) (*Items, error) {
+	q := map[string][]string{}
+	if page >= 1 {
+		q["page"] = []string{strconv.Itoa(page)}
+	}
+	if perPage >= 1 {
+		q["perPage"] = []string{strconv.Itoa(perPage)}
+	}
+
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "models", modelID, "items"}, "", q)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get items: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	items := &Items{}
+	if err := json.NewDecoder(b).Decode(items); err != nil {
+		return nil, fmt.Errorf("failed to parse items: %w", err)
+	}
+
+	return items, nil
+}
+
 func (c *CMS) GetItems(ctx context.Context, modelID string) (*Items, error) {
-	b, err := c.send(ctx, http.MethodGet, []string{"api", "models", modelID, "items"}, "", nil)
+	var items *Items
+	const perPage = 100
+	for p := 1; ; p++ {
+		i, err := c.GetItemsPartially(ctx, modelID, p, perPage)
+		if err != nil {
+			return nil, err
+		}
+
+		if i == nil || i.PerPage <= 0 {
+			return nil, fmt.Errorf("invalid response: %#v", i)
+		}
+
+		if items == nil {
+			items = i
+		} else {
+			items.Items = append(items.Items, i.Items...)
+		}
+
+		allPageCount := i.TotalCount / i.PerPage
+		if i.Page >= allPageCount {
+			break
+		}
+	}
+
+	return items, nil
+}
+
+func (c *CMS) GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, page, perPage int) (*Items, error) {
+	q := map[string][]string{}
+	if page >= 1 {
+		q["page"] = []string{strconv.Itoa(page)}
+	}
+	if perPage >= 1 {
+		q["perPage"] = []string{strconv.Itoa(perPage)}
+	}
+
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "projects", projectIDOrAlias, "models", modelIDOrAlias, "items"}, "", q)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get items: %w", err)
 	}
@@ -79,15 +141,28 @@ func (c *CMS) GetItems(ctx context.Context, modelID string) (*Items, error) {
 }
 
 func (c *CMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string) (*Items, error) {
-	b, err := c.send(ctx, http.MethodGet, []string{"api", "projects", projectIDOrAlias, "models", modelIDOrAlias, "items"}, "", nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get items: %w", err)
-	}
-	defer func() { _ = b.Close() }()
+	var items *Items
+	const perPage = 100
+	for p := 1; ; p++ {
+		i, err := c.GetItemsPartiallyByKey(ctx, projectIDOrAlias, modelIDOrAlias, p, perPage)
+		if err != nil {
+			return nil, err
+		}
 
-	items := &Items{}
-	if err := json.NewDecoder(b).Decode(items); err != nil {
-		return nil, fmt.Errorf("failed to parse items: %w", err)
+		if i == nil || i.PerPage <= 0 {
+			return nil, fmt.Errorf("invalid response: %#v", i)
+		}
+
+		if items == nil {
+			items = i
+		} else {
+			items.Items = append(items.Items, i.Items...)
+		}
+
+		allPageCount := i.TotalCount / i.PerPage
+		if i.Page >= allPageCount {
+			break
+		}
 	}
 
 	return items, nil
@@ -308,20 +383,27 @@ func (c *CMS) request(ctx context.Context, m string, p []string, ct string, body
 		ct = "application/json"
 	}
 
+	u := c.base.JoinPath(p...)
 	var b io.Reader
-	if ct == "application/json" && body != nil {
-		bb, err := json.Marshal(body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal JSON: %w", err)
+
+	if m == "POST" || m == "PUT" || m == "PATCH" {
+		if ct == "application/json" && body != nil {
+			bb, err := json.Marshal(body)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal JSON: %w", err)
+			}
+			b = bytes.NewReader(bb)
+		} else if strings.HasPrefix(ct, "multipart/form-data") {
+			if bb, ok := body.(io.Reader); ok {
+				b = bb
+			}
 		}
-		b = bytes.NewReader(bb)
-	} else if strings.HasPrefix(ct, "multipart/form-data") {
-		if bb, ok := body.(io.Reader); ok {
-			b = bb
-		}
+	} else if q, ok := body.(map[string][]string); ok {
+		v := url.Values(q)
+		u.RawQuery = v.Encode()
 	}
 
-	req, err := http.NewRequestWithContext(ctx, m, c.base.JoinPath(p...).String(), b)
+	req, err := http.NewRequestWithContext(ctx, m, u.String(), b)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init request: %w", err)
 	}

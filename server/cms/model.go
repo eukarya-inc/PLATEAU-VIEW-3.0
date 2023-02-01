@@ -1,6 +1,7 @@
 package cms
 
 import (
+	"encoding/json"
 	"reflect"
 	"strings"
 
@@ -222,6 +223,20 @@ func (f *Field) ValueInt() *int {
 		return &v
 	}
 	return nil
+}
+
+func (f *Field) ValueJSON() (any, error) {
+	if f == nil {
+		return nil, nil
+	}
+	s := f.ValueString()
+	if s == nil {
+		return nil, nil
+	}
+
+	var j any
+	err := json.Unmarshal([]byte(*s), &j)
+	return j, err
 }
 
 type Schema struct {

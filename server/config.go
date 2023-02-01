@@ -12,6 +12,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
+	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/reearth/reearthx/log"
@@ -21,6 +22,13 @@ import (
 const configPrefix = "REEARTH_PLATEAUVIEW"
 
 type Config struct {
+	CMS_ModelID      string
+	CMS_ShareProject string
+	CMS_ShareModel   string
+	// CMS_ShareField            string
+	CMS_IndexerStorageProject string
+	CMS_IndexerStorageModel   string
+	// CMS_SDKModel              string
 	Port                 uint   `default:"8080" envconfig:"PORT"`
 	Host                 string `default:"http://localhost:8080"`
 	Origin               []string
@@ -44,6 +52,7 @@ type Config struct {
 	Opinion_ToName       string
 	Secret               string
 	Debug                bool
+	Sidebar_Token        string
 }
 
 func NewConfig() (*Config, error) {
@@ -136,5 +145,14 @@ func (c *Config) Geospatialjp() geospatialjp.Config {
 		CMSToken:       c.CMS_Token,
 		CMSBase:        c.CMS_BaseURL,
 		CMSIntegration: c.CMS_IntegrationID,
+	}
+}
+
+func (c *Config) Sidebar() sidebar.Config {
+	return sidebar.Config{
+		CMSBaseURL: c.CMS_BaseURL,
+		CMSToken:   c.CMS_Token,
+		CMSProject: c.CMS_SystemProject,
+		AdminToken: c.Sidebar_Token,
 	}
 }

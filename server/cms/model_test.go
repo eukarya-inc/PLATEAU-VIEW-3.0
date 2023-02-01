@@ -145,3 +145,11 @@ func TestField_ValueInt(t *testing.T) {
 		Value: "100",
 	}).ValueInt())
 }
+
+func TestField_ValueJSON(t *testing.T) {
+	r, err := (&Field{
+		Value: `{"foo":"bar"}`,
+	}).ValueJSON()
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]any{"foo": "bar"}, r)
+}

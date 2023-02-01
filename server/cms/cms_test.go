@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -21,10 +22,10 @@ func TestCMS(t *testing.T) {
 	ctx := context.Background()
 
 	// valid
-	call := mockCMS(t, "http://fme.example.com", "TOKEN")
-	f := lo.Must(New("http://fme.example.com", "TOKEN"))
+	call := mockCMS(t, "http://cms.example.com", "TOKEN")
+	c := lo.Must(New("http://cms.example.com", "TOKEN"))
 
-	item, err := f.GetItem(ctx, "a")
+	item, err := c.GetItem(ctx, "a")
 	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
@@ -32,37 +33,7 @@ func TestCMS(t *testing.T) {
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
-	items, err := f.GetItems(ctx, "mmm")
-	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
-	assert.NoError(t, err)
-	assert.Equal(t, &Items{
-		Items: []Item{
-			{
-				ID:     "a",
-				Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
-			},
-		},
-		Page:       1,
-		PerPage:    50,
-		TotalCount: 1,
-	}, items)
-
-	items, err = f.GetItemsByKey(ctx, "ppp", "mmm")
-	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
-	assert.NoError(t, err)
-	assert.Equal(t, &Items{
-		Items: []Item{
-			{
-				ID:     "a",
-				Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
-			},
-		},
-		Page:       1,
-		PerPage:    50,
-		TotalCount: 1,
-	}, items)
-
-	item, err = f.CreateItem(ctx, "a", nil)
+	item, err = c.CreateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("POST /api/models/a/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
@@ -70,7 +41,7 @@ func TestCMS(t *testing.T) {
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
-	item, err = f.CreateItemByKey(ctx, "ppp", "mmm", nil)
+	item, err = c.CreateItemByKey(ctx, "ppp", "mmm", nil)
 	assert.Equal(t, 1, call("POST /api/projects/ppp/models/mmm/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
@@ -78,7 +49,7 @@ func TestCMS(t *testing.T) {
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
-	item, err = f.UpdateItem(ctx, "a", nil)
+	item, err = c.UpdateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
@@ -86,84 +57,143 @@ func TestCMS(t *testing.T) {
 		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
 	}, item)
 
-	err = f.DeleteItem(ctx, "a")
+	err = c.DeleteItem(ctx, "a")
 	assert.Equal(t, 1, call("DELETE /api/items/a"))
 	assert.NoError(t, err)
 
-	a, err := f.Asset(ctx, "a")
+	a, err := c.Asset(ctx, "a")
 	assert.Equal(t, 1, call("GET /api/assets/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Asset{ID: "a", URL: "url"}, a)
 
-	assetID, err := f.UploadAsset(ctx, "ppp", "aaa")
+	assetID, err := c.UploadAsset(ctx, "ppp", "aaa")
 	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.NoError(t, err)
 	assert.Equal(t, "idid", assetID)
 
-	assetID, err = f.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
+	assetID, err = c.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
 	assert.Equal(t, 2, call("POST /api/projects/ppp/assets"))
 	assert.NoError(t, err)
 	assert.Equal(t, "idid", assetID)
 
-	assert.NoError(t, f.CommentToAsset(ctx, "c", "comment"))
+	assert.NoError(t, c.CommentToAsset(ctx, "c", "comment"))
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 
 	// invalid token
 	httpmock.Reset()
-	call = mockCMS(t, "http://fme.example.com", "TOKEN")
-	f = lo.Must(New("http://fme.example.com", "TOKEN2"))
+	call = mockCMS(t, "http://cms.example.com", "TOKEN")
+	c = lo.Must(New("http://cms.example.com", "TOKEN2"))
 
-	item, err = f.GetItem(ctx, "a")
+	item, err = c.GetItem(ctx, "a")
 	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err = f.GetItems(ctx, "mmm")
+	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1)
 	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err = f.GetItemsByKey(ctx, "ppp", "mmm")
+	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1)
 	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	item, err = f.CreateItemByKey(ctx, "ppp", "mmm", nil)
+	items, err = c.GetItems(ctx, "mmm")
+	assert.Equal(t, 2, call("GET /api/models/mmm/items"))
+	assert.Nil(t, items)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	items, err = c.GetItemsByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 2, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.Nil(t, items)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	item, err = c.CreateItemByKey(ctx, "ppp", "mmm", nil)
 	assert.Equal(t, 1, call("POST /api/projects/ppp/models/mmm/items"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	item, err = f.CreateItem(ctx, "a", nil)
+	item, err = c.CreateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("POST /api/models/a/items"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	item, err = f.UpdateItem(ctx, "a", nil)
+	item, err = c.UpdateItem(ctx, "a", nil)
 	assert.Equal(t, 1, call("PATCH /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	err = f.DeleteItem(ctx, "a")
+	err = c.DeleteItem(ctx, "a")
 	assert.Equal(t, 1, call("DELETE /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	assetID, err = f.UploadAsset(ctx, "ppp", "aaa")
+	assetID, err = c.UploadAsset(ctx, "ppp", "aaa")
 	assert.Equal(t, 1, call("POST /api/projects/ppp/assets"))
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, "", assetID)
 
-	assetID, err = f.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
+	assetID, err = c.UploadAssetDirectly(ctx, "ppp", "file.txt", strings.NewReader("datadata"))
 	assert.Equal(t, 2, call("POST /api/projects/ppp/assets"))
 	assert.ErrorContains(t, err, "failed to request: code=401")
 	assert.Equal(t, "", assetID)
 
-	assert.ErrorContains(t, f.CommentToAsset(ctx, "c", "comment"), "failed to request: code=401")
+	assert.ErrorContains(t, c.CommentToAsset(ctx, "c", "comment"), "failed to request: code=401")
 	assert.Equal(t, 1, call("POST /api/assets/c/comments"))
 
-	_, err = f.Asset(ctx, "a")
+	_, err = c.Asset(ctx, "a")
 	assert.Equal(t, 1, call("GET /api/assets/a"))
 	assert.ErrorContains(t, err, "failed to request: code=401")
+}
+
+func TestCMS_GetItems(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	ctx := context.Background()
+	call := mockCMS(t, "http://cms.example.com", "TOKEN")
+	c := lo.Must(New("http://cms.example.com", "TOKEN"))
+
+	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1)
+	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems[0:1],
+		Page:       1,
+		PerPage:    1,
+		TotalCount: len(testItems),
+	}, items)
+
+	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1)
+	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems[0:1],
+		Page:       1,
+		PerPage:    1,
+		TotalCount: len(testItems),
+	}, items)
+
+	items, err = c.GetItems(ctx, "mmm")
+	assert.Equal(t, 6, call("GET /api/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems,
+		Page:       1,
+		PerPage:    100,
+		TotalCount: len(testItems),
+	}, items)
+
+	items, err = c.GetItemsByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 6, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems,
+		Page:       1,
+		PerPage:    100,
+		TotalCount: len(testItems),
+	}, items)
 }
 
 func mockCMS(t *testing.T, host, token string) func(string) int {
@@ -196,38 +226,35 @@ func mockCMS(t *testing.T, host, token string) func(string) int {
 		}, nil
 	}))
 
-	httpmock.RegisterResponder("GET", host+"/api/projects/ppp/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
+	itemsResponder := checkHeader(func(r *http.Request) (any, error) {
+		page, _ := strconv.Atoi(r.URL.Query().Get("page"))
+		perPage, _ := strconv.Atoi(r.URL.Query().Get("perPage"))
+		if page < 1 {
+			page = 1
+		}
+		if perPage < 1 {
+			perPage = 50
+		}
+		max := page * perPage
+		if max > len(testItems) {
+			max = len(testItems)
+		}
+
 		return map[string]any{
-			"items": []map[string]any{
-				{
-					"id":     "a",
-					"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
-				},
-			},
-			"page":       1,
-			"perPage":    50,
-			"totalCount": 1,
+			"items":      testItems[(page-1)*perPage : max],
+			"page":       page,
+			"perPage":    perPage,
+			"totalCount": len(testItems),
 		}, nil
-	}))
+	})
+
+	httpmock.RegisterResponder("GET", host+"/api/projects/ppp/models/mmm/items", itemsResponder)
+	httpmock.RegisterResponder("GET", host+"/api/models/mmm/items", itemsResponder)
 
 	httpmock.RegisterResponder("POST", host+"/api/projects/ppp/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
 		return map[string]any{
 			"id":     "a",
 			"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
-		}, nil
-	}))
-
-	httpmock.RegisterResponder("GET", host+"/api/models/mmm/items", checkHeader(func(r *http.Request) (any, error) {
-		return map[string]any{
-			"items": []map[string]any{
-				{
-					"id":     "a",
-					"fields": []map[string]string{{"id": "f", "type": "text", "value": "t"}},
-				},
-			},
-			"page":       1,
-			"perPage":    50,
-			"totalCount": 1,
 		}, nil
 	}))
 
@@ -297,3 +324,10 @@ func parseToken(r *http.Request) string {
 	}
 	return token
 }
+
+var testItems = lo.Map(lo.Range(500), func(i, _ int) Item {
+	return Item{
+		ID:     strconv.Itoa(i),
+		Fields: []Field{{ID: "f", Type: "text", Value: "t"}},
+	}
+})
