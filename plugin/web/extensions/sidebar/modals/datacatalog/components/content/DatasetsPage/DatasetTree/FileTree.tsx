@@ -10,6 +10,7 @@ export type DataCatalog = DataCatalogType;
 
 export type Props = {
   catalog: DataCatalog;
+  isMobile?: boolean;
   onOpenDetails?: (data?: CatalogItem) => void;
 };
 
@@ -64,7 +65,7 @@ const TreeBuilder: React.FC<{
   );
 };
 
-const FileTree: React.FC<Props> = ({ catalog, onOpenDetails }) => {
+const FileTree: React.FC<Props> = ({ catalog, isMobile, onOpenDetails }) => {
   const [selectedId, select] = useState<string>();
 
   const handleSelect = useCallback((id?: string) => {
@@ -72,27 +73,34 @@ const FileTree: React.FC<Props> = ({ catalog, onOpenDetails }) => {
   }, []);
 
   return (
-    <Tree>
-      {catalog.map(item =>
-        TreeBuilder({
-          item,
-          selectedId,
-          nestLevel: 1,
-          onOpenDetails,
-          onSelect: handleSelect,
-        }),
-      )}
-    </Tree>
+    <TreeWrapper isMobile={isMobile}>
+      <Tree>
+        {catalog.map(item =>
+          TreeBuilder({
+            item,
+            selectedId,
+            nestLevel: 1,
+            onOpenDetails,
+            onSelect: handleSelect,
+          }),
+        )}
+      </Tree>
+    </TreeWrapper>
   );
 };
 
 export default FileTree;
 
+const TreeWrapper = styled.div<{ isMobile?: boolean }>`
+  width: 298px;
+  height: ${({ isMobile }) => (isMobile ? "100%" : "400px")};
+  overflow-y: scroll;
+`;
+
 const Tree = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  width: 298px;
 `;
 
 const Folder = styled.div<{ isOpen?: boolean }>`
