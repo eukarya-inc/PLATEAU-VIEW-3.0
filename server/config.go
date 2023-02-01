@@ -156,7 +156,6 @@ func (c *Config) Sidebar() sidebar.Config {
 	return sidebar.Config{
 		CMSBaseURL: c.CMS_BaseURL,
 		CMSToken:   c.CMS_Token,
-		CMSProject: c.CMS_SystemProject,
 		AdminToken: c.Sidebar_Token,
 	}
 }

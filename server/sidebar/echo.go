@@ -9,7 +9,6 @@ import (
 )
 
 type Config struct {
-	CMSProject string
 	CMSBaseURL string
 	CMSToken   string
 	AdminToken string
