@@ -1,7 +1,8 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/AddButton";
 import { Icon, Dropdown, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
+import _ from "lodash";
+import { useCallback, useEffect, useState } from "react";
 
 type LegendStyleType = "square" | "circle" | "line" | "icon";
 
@@ -28,6 +29,7 @@ type LegendType = {
 type Props = {
   value: LegendType;
   editMode?: boolean;
+  onFieldUpdate?: (property: LegendType) => void;
 };
 
 function array_move(arr: any[], old_index: number, new_index: number) {
@@ -40,8 +42,14 @@ function array_move(arr: any[], old_index: number, new_index: number) {
   arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 }
 
-const Legend: React.FC<Props> = ({ value, editMode }) => {
+const Legend: React.FC<Props> = ({ value, editMode, onFieldUpdate }) => {
   const [legend, updateLegend] = useState<LegendType>(value);
+
+  useEffect(() => {
+    if (!_.isEqual(legend, value)) {
+      onFieldUpdate?.(legend);
+    }
+  }, [value, legend, onFieldUpdate]);
 
   const handleStyleChange = useCallback((style: LegendStyleType) => {
     updateLegend(l => {
@@ -80,7 +88,16 @@ const Legend: React.FC<Props> = ({ value, editMode }) => {
   );
 
   const handleAdd = useCallback(() => {
-    alert("ADD ITEM");
+    updateLegend(l => {
+      const newItem = {
+        title: "New Item",
+        color: "white",
+      };
+      return {
+        ...l,
+        items: l.items ? [...l.items, newItem] : [newItem],
+      };
+    });
   }, []);
 
   const handleRemove = useCallback((idx: number) => {

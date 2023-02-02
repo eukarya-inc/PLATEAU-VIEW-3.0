@@ -71,7 +71,7 @@ export default ({
         setScreenshot(e.data.payload);
       }
     };
-    addEventListener("message", e => eventListenerCallback(e));
+    addEventListener("message", eventListenerCallback);
     return () => {
       removeEventListener("message", eventListenerCallback);
     };

@@ -28,6 +28,7 @@ type BaseFieldType = Partial<Data> & {
 export type Props = {
   dataset: Data;
   inEditor?: boolean;
+  onDatasetSave: (datasetId: string) => void;
   onRemoveDataset?: (id: string) => void;
   onDatasetUpdate: (dataset: Data) => void;
   onUpdateField?: (id: string) => void;
@@ -36,6 +37,7 @@ export type Props = {
 const DatasetCard: React.FC<Props> = ({
   dataset,
   inEditor,
+  onDatasetSave,
   onRemoveDataset,
   onDatasetUpdate,
   // onUpdateField,
@@ -44,7 +46,7 @@ const DatasetCard: React.FC<Props> = ({
   const [visible, setVisibility] = useState(false);
   const [currentTab, changeTab] = useState<Tabs>("default");
 
-  const { fieldGroups } = useHooks({ dataset, inEditor, onDatasetUpdate });
+  const { fieldGroups, handleFieldUpdate } = useHooks({ dataset, inEditor, onDatasetUpdate });
 
   const baseFields: BaseFieldType[] = useMemo(
     () => [
@@ -70,10 +72,10 @@ const DatasetCard: React.FC<Props> = ({
     setVisibility(dataset.visible ?? false);
   }, [dataset]);
 
-  // const handleUpdateField = ({ key }) => {
-  //   if (!inEditor) return;
-  //   onAddField?.(key);
-  // };
+  const handleFieldSave = useCallback(() => {
+    if (!inEditor) return;
+    onDatasetSave(dataset.id);
+  }, [dataset.id, inEditor, onDatasetSave]);
 
   const menuGenerator = (menuItems: { [key: string]: any }) => (
     <Menu
@@ -147,11 +149,22 @@ const DatasetCard: React.FC<Props> = ({
               </BaseField>
             ))}
             {dataset.components?.map((c, idx) => (
-              <Field key={idx} field={c} editMode={inEditor && currentTab === "edit"} />
+              <Field
+                key={idx}
+                field={c}
+                editMode={inEditor && currentTab === "edit"}
+                onFieldUpdate={handleFieldUpdate}
+              />
             ))}
           </Content>
           {inEditor && currentTab === "edit" && (
-            <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldGroups)} />
+            <>
+              <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldGroups)} />
+              <SaveButton onClick={handleFieldSave}>
+                <Icon icon="save" size={14} />
+                <Text>保存</Text>
+              </SaveButton>
+            </>
           )}
         </BodyWrapper>
       </AccordionItem>
@@ -265,6 +278,29 @@ const Tab = styled.p<{ selected?: boolean }>`
 
 const StyledAddButton = styled(AddButton)`
   margin-top: 12px;
+`;
+
+const SaveButton = styled.div`
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 5px;
+  height: 32px;
+  cursor: pointer;
+
+  :hover {
+    background: #f4f4f4;
+  }
+`;
+
+const Text = styled.p`
+  margin: 0;
+  line-height: 15px;
 `;
 
 // const StyledDropdownButton = styled.div`

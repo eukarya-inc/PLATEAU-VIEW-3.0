@@ -40,7 +40,7 @@ export default () => {
         setRawCatalog(e.data.payload.rawCatalog);
       }
     };
-    addEventListener("message", e => eventListenerCallback(e));
+    addEventListener("message", eventListenerCallback);
     return () => {
       removeEventListener("message", eventListenerCallback);
     };

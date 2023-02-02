@@ -31,7 +31,7 @@ export default () => {
         }
       }
     };
-    (globalThis as any).addEventListener("message", (e: any) => eventListenerCallback(e));
+    (globalThis as any).addEventListener("message", eventListenerCallback);
     return () => {
       (globalThis as any).removeEventListener("message", eventListenerCallback);
     };

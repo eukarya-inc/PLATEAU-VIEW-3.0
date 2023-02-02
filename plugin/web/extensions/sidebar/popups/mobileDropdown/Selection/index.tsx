@@ -8,6 +8,7 @@ import PopupItem from "../sharedComponents/PopupItem";
 
 type Props = {
   selectedDatasets: Data[];
+  onDatasetSave: (datasetId: string) => void;
   onDatasetUpdate: (updatedDataset: Data) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
@@ -15,6 +16,7 @@ type Props = {
 
 const Selection: React.FC<Props> = ({
   selectedDatasets,
+  onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
@@ -30,6 +32,7 @@ const Selection: React.FC<Props> = ({
       </PopupItem>
       <SelectionComponent
         selectedDatasets={selectedDatasets}
+        onDatasetSave={onDatasetSave}
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}

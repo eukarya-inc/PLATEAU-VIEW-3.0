@@ -19,11 +19,18 @@ import fields from "./Fields";
 export type Props = {
   field: FieldComponentType;
   editMode?: boolean;
+  onFieldUpdate?: (property: any) => void;
   onGroupAdd?: () => void;
   onRemove?: () => void;
 };
 
-const FieldComponent: React.FC<Props> = ({ field, editMode, onGroupAdd, onRemove }) => {
+const FieldComponent: React.FC<Props> = ({
+  field,
+  editMode,
+  onFieldUpdate,
+  onGroupAdd,
+  onRemove,
+}) => {
   const FieldContent = fields[field.type];
 
   const handleGroupAdd = useCallback(
@@ -69,7 +76,9 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onGroupAdd, onRemove
           )}
         </AccordionItemState>
         <BodyWrapper>
-          {FieldContent && <FieldContent value={{ ...field }} editMode={editMode} />}
+          {FieldContent && (
+            <FieldContent value={{ ...field }} editMode={editMode} onFieldUpdate={onFieldUpdate} />
+          )}
         </BodyWrapper>
       </AccordionItem>
     </StyledAccordionComponent>

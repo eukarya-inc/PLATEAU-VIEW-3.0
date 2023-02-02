@@ -6,8 +6,10 @@ import terrainHtml from "../dist/web/location/modals/terrain/index.html?raw";
 
 const reearth = (globalThis as any).reearth;
 
-if (!reearth.viewport.isMobile) {
-  reearth.ui.show(html, { width: 350, height: 40 });
+reearth.ui.show(html, { width: 350, height: 40 });
+
+if (reearth.viewport.isMobile) {
+  reearth.ui.close();
 }
 
 reearth.on("mousemove", (mousedata: MouseEvent) => {

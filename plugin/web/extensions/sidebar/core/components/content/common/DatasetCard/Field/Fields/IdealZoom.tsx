@@ -4,8 +4,9 @@ import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
 type Props = {
-  value?: Camera["position"];
+  value: Camera;
   editMode?: boolean;
+  onFieldUpdate?: (property: Camera) => void;
   onCapture?: (camera: Partial<Camera["position"]>) => void;
 };
 
@@ -19,7 +20,9 @@ export const initialCameraValues = {
 };
 
 const IdealZoom: React.FC<Props> = ({ value, editMode, onCapture }) => {
-  const [camera, setCamera] = useState<Camera["position"]>(value ?? initialCameraValues);
+  const [camera, setCamera] = useState<Camera["position"]>(
+    value["position"] ?? initialCameraValues,
+  );
 
   const handleLatitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e);

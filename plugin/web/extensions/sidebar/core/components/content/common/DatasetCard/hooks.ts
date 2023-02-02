@@ -1,4 +1,5 @@
 import { Data } from "@web/extensions/sidebar/core/newTypes";
+import { useCallback } from "react";
 
 export default ({
   dataset,
@@ -9,7 +10,7 @@ export default ({
   inEditor?: boolean;
   onDatasetUpdate: (dataset: Data) => void;
 }) => {
-  const handleAddField =
+  const handleFieldAdd =
     (property: any) =>
     ({ key }: { key: string }) => {
       if (!inEditor) return;
@@ -25,13 +26,31 @@ export default ({
       });
     };
 
+  const handleFieldUpdate = useCallback(
+    (property: any) => {
+      if (!inEditor) return;
+      const newDatasetComponents = dataset.components ? [...dataset.components] : [];
+      const componentIndex = newDatasetComponents?.findIndex(c => c.type === property.type);
+
+      if (!newDatasetComponents || componentIndex === undefined) return;
+
+      newDatasetComponents[componentIndex] = property;
+
+      onDatasetUpdate?.({
+        ...dataset,
+        components: newDatasetComponents,
+      });
+    },
+    [dataset, inEditor, onDatasetUpdate],
+  );
+
   const generalFields: {
     [key: string]: { name: string; onClick: (property: any) => void };
   } = {
     camera: {
       name: "カメラ",
       onClick: () =>
-        handleAddField({
+        handleFieldAdd({
           position: {
             lng: 0,
             lat: 0,
@@ -44,11 +63,11 @@ export default ({
     },
     description: {
       name: "説明",
-      onClick: () => handleAddField({}),
+      onClick: () => handleFieldAdd({}),
     },
     legend: {
       name: "凡例",
-      onClick: () => handleAddField({ style: "square", items: [{ title: "hey", color: "red" }] }),
+      onClick: () => handleFieldAdd({ style: "square", items: [{ title: "hey", color: "red" }] }),
     },
   };
 
@@ -58,7 +77,7 @@ export default ({
   //     camera: {
   //       name: "カメラ",
   //       onClick: () =>
-  //         handleAddField({
+  //         handleFieldAdd({
   //           position: {
   //             lng: 0,
   //             lat: 0,
@@ -77,7 +96,7 @@ export default ({
   //     camera: {
   //       name: "カメラ",
   //       onClick: () =>
-  //         handleAddField({
+  //         handleFieldAdd({
   //           position: {
   //             lng: 0,
   //             lat: 0,
@@ -96,7 +115,7 @@ export default ({
   //     camera: {
   //       name: "カメラ",
   //       onClick: () =>
-  //         handleAddField({
+  //         handleFieldAdd({
   //           position: {
   //             lng: 0,
   //             lat: 0,
@@ -115,7 +134,7 @@ export default ({
   //     camera: {
   //       name: "カメラ",
   //       onClick: () =>
-  //         handleAddField({
+  //         handleFieldAdd({
   //           position: {
   //             lng: 0,
   //             lat: 0,
@@ -134,7 +153,7 @@ export default ({
   //     camera: {
   //       name: "カメラ",
   //       onClick: () =>
-  //         handleAddField({
+  //         handleFieldAdd({
   //           position: {
   //             lng: 0,
   //             lat: 0,
@@ -192,5 +211,6 @@ export default ({
   };
   return {
     fieldGroups,
+    handleFieldUpdate,
   };
 };

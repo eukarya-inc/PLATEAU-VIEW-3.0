@@ -38,7 +38,7 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
         handleTabSelect("catalog");
       }
     };
-    (globalThis as any).addEventListener("message", (e: any) => eventListenerCallback(e));
+    (globalThis as any).addEventListener("message", eventListenerCallback);
     return () => {
       (globalThis as any).removeEventListener("message", eventListenerCallback);
     };

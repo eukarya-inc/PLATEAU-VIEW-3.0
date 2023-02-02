@@ -255,7 +255,7 @@ reearth.on("resize", () => {
   // Popups
   if (mobileDropdownIsOpen) {
     reearth.popup.update({
-      width: reearth.viewport.width - 12,
+      width: reearth.viewport.width - 10,
     });
   }
 

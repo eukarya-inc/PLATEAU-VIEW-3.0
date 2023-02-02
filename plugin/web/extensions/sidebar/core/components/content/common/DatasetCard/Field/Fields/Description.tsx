@@ -1,38 +1,59 @@
 import { Switch } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Remarkable } from "remarkable";
 
-type Props = {
-  value?: {
-    content?: string;
-    isMarkdown?: boolean;
-  };
-  editMode?: boolean;
+type DescriptionType = {
+  type: "description";
+  group?: string;
+  content?: string;
+  isMarkdown?: boolean;
 };
 
-const Description: React.FC<Props> = ({ value, editMode }) => {
-  const md = new Remarkable({
-    html: false,
-    breaks: true,
-    typographer: true,
-    linkTarget: "__blank",
-  });
-  const description = value?.content
-    ? value.isMarkdown
-      ? md.render(value.content)
-      : value.content
-    : undefined;
+type Props = {
+  value: DescriptionType;
+  editMode?: boolean;
+  onFieldUpdate?: (property: DescriptionType) => void;
+};
+
+const Description: React.FC<Props> = ({ value, editMode, onFieldUpdate }) => {
+  const [isMarkdown, setIsMarkdown] = useState(!!value.isMarkdown);
+  const [content, setContent] = useState(value.content ?? "");
+
+  const description = useMemo(() => {
+    const md = new Remarkable({
+      html: false,
+      breaks: true,
+      typographer: true,
+      linkTarget: "__blank",
+    });
+    return content ? (isMarkdown ? md.render(content) : content) : undefined;
+  }, [content, isMarkdown]);
+
+  useEffect(() => {
+    if (content !== value.content || isMarkdown !== value.isMarkdown) {
+      onFieldUpdate?.({
+        type: "description",
+        content,
+        isMarkdown,
+      });
+    }
+  }, [value, content, isMarkdown, onFieldUpdate]);
+
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.currentTarget.value);
+  }, []);
 
   return editMode ? (
     <div>
       <Text>内容</Text>
-      <TextBox rows={4} defaultValue={value?.content} />
+      <TextBox rows={4} defaultValue={content} onChange={handleContentChange} />
       <SwitchWrapper>
-        <Switch checked={value?.isMarkdown} size="small" />
+        <Switch checked={isMarkdown} size="small" onChange={() => setIsMarkdown(!isMarkdown)} />
         <Text>マークダウン</Text>
       </SwitchWrapper>
     </div>
-  ) : value?.isMarkdown && description ? (
+  ) : isMarkdown && description ? (
     <div dangerouslySetInnerHTML={{ __html: description }} />
   ) : (
     <div>{description}</div>
