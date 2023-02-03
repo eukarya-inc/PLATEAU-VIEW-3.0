@@ -51,7 +51,9 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 
 		item, siid, err := getItem(ctx, c, st, w)
 		if err != nil || item.ID == "" {
-			log.Errorf("searchindex webhook: failed to get item: %v", err)
+			if err != errSkipped {
+				log.Errorf("searchindex webhook: failed to get item: %v", err)
+			}
 			return nil
 		}
 
@@ -134,10 +136,16 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 		aid := w.AssetData.ID
 		si, err2 := st.FindByAsset(ctx, aid)
 		if err2 != nil {
+			if errors.Is(err, rerror.ErrNotFound) {
+				log.Infof("searchindex webhook: skipped: asset not registered")
+				err = errSkipped
+				return
+			}
 			err = fmt.Errorf("cannot get data from storage: %v", err2)
 			return
 		} else if si.ID == "" {
-			err = errors.New("item and asset not registered to storage")
+			log.Infof("searchindex webhook: skipped: asset not registered")
+			err = errSkipped
 			return
 		}
 
