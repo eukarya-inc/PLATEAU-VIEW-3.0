@@ -10,7 +10,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/reearth/go3dtiles v0.0.0-20221207041852-493e7e51cca9
-	github.com/reearth/reearthx v0.0.0-20221109022045-dd54f4626639
+	github.com/reearth/reearthx v0.0.0-20230203210115-d04054013125
 	github.com/samber/lo v1.33.0
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
 	github.com/stretchr/testify v1.8.1
@@ -20,8 +20,12 @@ require (
 )
 
 require (
+	github.com/fatih/color v1.10.0 // indirect
+	github.com/goccy/go-yaml v1.9.8 // indirect
+	github.com/nicksnyder/go-i18n/v2 v2.2.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
 
 require (
@@ -47,7 +51,7 @@ require (
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.2.0 // indirect
 	golang.org/x/exp v0.0.0-20220706164943-b4a6d9510983
 	golang.org/x/sys v0.3.0 // indirect

@@ -7,7 +7,6 @@ import (
 	"io"
 	"math/rand"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
-	"go.uber.org/zap/zapcore"
 )
 
 func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
@@ -354,11 +352,10 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 
 func initLogger(t *testing.T) func() string {
 	t.Helper()
-	log.SetLevel(zapcore.DebugLevel)
 	buf := bytes.NewBuffer(nil)
 	scanner := bufio.NewScanner(buf)
 	log.SetOutput(buf)
-	t.Cleanup(func() { log.SetOutput(os.Stdout) })
+	t.Cleanup(func() { log.SetOutput(log.DefaultOutput) })
 	return func() string {
 		if scanner.Scan() {
 			t := scanner.Text()
