@@ -45,7 +45,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 		st := NewStorage(c, stprj, conf.CMSStorageModel)
 
-		item, err := getItem(ctx, c, st, w)
+		item, siid, err := getItem(ctx, c, st, w)
 		if err != nil || item.ID == "" {
 			log.Errorf("searchindex webhook: failed to get item: %v", err)
 			return nil
@@ -63,13 +63,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		si, err := st.FindByItem(ctx, item.ID)
-		if err != nil {
-			log.Errorf("searchindex webhook: cannot get data from storage: %v", err)
-			return nil
-		}
-
-		assetURLs, err := findAsset(ctx, c, st, item, pid, si.ID)
+		assetURLs, err := findAsset(ctx, c, st, item, pid, siid)
 		if err != nil {
 			if err == errSkipped {
 				log.Infof("searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg")
@@ -123,7 +117,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}, nil
 }
 
-func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload) (item Item, err error) {
+func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload) (item Item, siid string, err error) {
 	var witem *cms.Item
 
 	if w.Type == cmswebhook.EventAssetDecompress {
@@ -134,23 +128,24 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 		}
 
 		aid := w.AssetData.ID
-		m, err2 := st.FindByAsset(ctx, aid)
+		si, err2 := st.FindByAsset(ctx, aid)
 		if err2 != nil {
 			err = fmt.Errorf("cannot get data from storage: %v", err2)
 			return
-		} else if m.ID == "" {
+		} else if si.ID == "" {
 			err = errors.New("item and asset not registered to storage")
 			return
 		}
 
-		witem, err2 = c.GetItem(ctx, m.Item)
+		siid = si.ID
+		witem, err2 = c.GetItem(ctx, si.Item)
 		if err2 != nil {
-			err = fmt.Errorf("cannot get item %s: %v", m.Item, err2)
+			err = fmt.Errorf("cannot get item %s: %v", si.Item, err2)
 			return
 		}
 
-		m = m.RemoveAsset(aid)
-		if err := st.Set(ctx, m); err != nil {
+		si = si.RemoveAsset(aid)
+		if err := st.Set(ctx, si); err != nil {
 			log.Errorf("searchindex webook: cannot set to storage: %w", err)
 		}
 	} else {
