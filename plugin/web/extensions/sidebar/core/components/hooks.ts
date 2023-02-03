@@ -2,7 +2,7 @@ import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Root, Data, Template } from "../newTypes";
+import { Data, Template } from "../newTypes";
 import processCatalog, { CatalogRawItem } from "../processCatalog";
 
 import { Pages } from "./Header";
@@ -348,10 +348,10 @@ export default () => {
     (async () => {
       const res = await fetch(`${backendURL}/sidebar/plateau_sys`);
       if (res.status !== 200) return;
-      const results: Root = (await res.json()).results;
-      setTemplates(results.templates);
+      const root = await res.json();
+      setTemplates(root.templates);
       // setData(results.data);
-      console.log("RESULTS.DATA: ", results.data);
+      console.log("RESULTS.DATA: ", root.data);
     })();
   }, [backendURL]);
 

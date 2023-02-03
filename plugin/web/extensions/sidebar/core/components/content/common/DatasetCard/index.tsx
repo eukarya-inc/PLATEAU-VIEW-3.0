@@ -32,7 +32,6 @@ export type Props = {
   onRemoveDataset?: (id: string) => void;
   onDatasetUpdate: (dataset: Data) => void;
   onUpdateField?: (id: string) => void;
-  onRemoveField?: (id: string) => void;
 };
 const DatasetCard: React.FC<Props> = ({
   dataset,
@@ -41,12 +40,15 @@ const DatasetCard: React.FC<Props> = ({
   onRemoveDataset,
   onDatasetUpdate,
   // onUpdateField,
-  // onRemoveField,
 }) => {
   const [visible, setVisibility] = useState(false);
   const [currentTab, changeTab] = useState<Tabs>("default");
 
-  const { fieldGroups, handleFieldUpdate } = useHooks({ dataset, inEditor, onDatasetUpdate });
+  const { fieldGroups, handleFieldUpdate, handleFieldRemove } = useHooks({
+    dataset,
+    inEditor,
+    onDatasetUpdate,
+  });
 
   const baseFields: BaseFieldType[] = useMemo(
     () => [
@@ -153,7 +155,8 @@ const DatasetCard: React.FC<Props> = ({
                 key={idx}
                 field={c}
                 editMode={inEditor && currentTab === "edit"}
-                onFieldUpdate={handleFieldUpdate}
+                onUpdate={handleFieldUpdate}
+                onRemove={handleFieldRemove}
               />
             ))}
           </Content>

@@ -1,7 +1,3 @@
-import {
-  FieldComponent as FieldComponentType,
-  fieldName,
-} from "@web/extensions/sidebar/core/newTypes";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
@@ -15,22 +11,17 @@ import {
 } from "react-accessible-accordion";
 
 import fields from "./Fields";
+import { FieldComponent as FieldComponentType, fieldName } from "./Fields/types";
 
 export type Props = {
   field: FieldComponentType;
   editMode?: boolean;
-  onFieldUpdate?: (property: any) => void;
+  onUpdate?: (property: any) => void;
+  onRemove: (type: string) => void;
   onGroupAdd?: () => void;
-  onRemove?: () => void;
 };
 
-const FieldComponent: React.FC<Props> = ({
-  field,
-  editMode,
-  onFieldUpdate,
-  onGroupAdd,
-  onRemove,
-}) => {
+const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, onGroupAdd }) => {
   const FieldContent = fields[field.type];
 
   const handleGroupAdd = useCallback(
@@ -44,9 +35,9 @@ const FieldComponent: React.FC<Props> = ({
   const handleRemove = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent> | undefined) => {
       e?.stopPropagation();
-      onRemove?.();
+      onRemove?.(field.type);
     },
-    [onRemove],
+    [field, onRemove],
   );
 
   return !editMode && field.type === "camera" ? null : (
@@ -77,7 +68,7 @@ const FieldComponent: React.FC<Props> = ({
         </AccordionItemState>
         <BodyWrapper>
           {FieldContent && (
-            <FieldContent value={{ ...field }} editMode={editMode} onFieldUpdate={onFieldUpdate} />
+            <FieldContent value={{ ...field }} editMode={editMode} onUpdate={onUpdate} />
           )}
         </BodyWrapper>
       </AccordionItem>

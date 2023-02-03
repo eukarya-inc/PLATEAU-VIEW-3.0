@@ -1,12 +1,9 @@
-// import { Camera } from "@web/extensions/sidebar/types";
-import { Camera } from "@web/extensions/sidebar/core/newTypes";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-type Props = {
-  value: Camera;
-  editMode?: boolean;
-  onFieldUpdate?: (property: Camera) => void;
+import { BaseFieldProps, Camera } from "./types";
+
+type Props = BaseFieldProps<"camera"> & {
   onCapture?: (camera: Partial<Camera["position"]>) => void;
 };
 

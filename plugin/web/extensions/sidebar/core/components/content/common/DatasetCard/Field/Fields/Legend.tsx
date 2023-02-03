@@ -4,32 +4,13 @@ import { styled } from "@web/theme";
 import _ from "lodash";
 import { useCallback, useEffect, useState } from "react";
 
-type LegendStyleType = "square" | "circle" | "line" | "icon";
+import { BaseFieldProps, LegendItem, LegendStyleType } from "./types";
 
 const legendStyles: { [key: string]: string } = {
   square: "四角",
   circle: "丸",
   line: "線",
   icon: "アイコン",
-};
-
-type LegendItem = {
-  title: string;
-  color: string;
-  url?: string;
-};
-
-type LegendType = {
-  type: "legend";
-  group?: string;
-  style: LegendStyleType;
-  items?: LegendItem[];
-};
-
-type Props = {
-  value: LegendType;
-  editMode?: boolean;
-  onFieldUpdate?: (property: LegendType) => void;
 };
 
 function array_move(arr: any[], old_index: number, new_index: number) {
@@ -42,14 +23,14 @@ function array_move(arr: any[], old_index: number, new_index: number) {
   arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 }
 
-const Legend: React.FC<Props> = ({ value, editMode, onFieldUpdate }) => {
-  const [legend, updateLegend] = useState<LegendType>(value);
+const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate }) => {
+  const [legend, updateLegend] = useState(value);
 
   useEffect(() => {
     if (!_.isEqual(legend, value)) {
-      onFieldUpdate?.(legend);
+      onUpdate(legend);
     }
-  }, [value, legend, onFieldUpdate]);
+  }, [value, legend, onUpdate]);
 
   const handleStyleChange = useCallback((style: LegendStyleType) => {
     updateLegend(l => {

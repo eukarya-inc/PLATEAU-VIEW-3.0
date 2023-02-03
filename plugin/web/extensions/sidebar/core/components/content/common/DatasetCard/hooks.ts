@@ -44,6 +44,24 @@ export default ({
     [dataset, inEditor, onDatasetUpdate],
   );
 
+  const handleFieldRemove = useCallback(
+    (type: string) => {
+      if (!inEditor) return;
+      const newDatasetComponents = dataset.components ? [...dataset.components] : [];
+      const componentIndex = newDatasetComponents?.findIndex(c => c.type === type);
+
+      if (!newDatasetComponents || componentIndex === undefined) return;
+
+      newDatasetComponents.splice(componentIndex, 1);
+
+      onDatasetUpdate?.({
+        ...dataset,
+        components: newDatasetComponents,
+      });
+    },
+    [dataset, inEditor, onDatasetUpdate],
+  );
+
   const generalFields: {
     [key: string]: { name: string; onClick: (property: any) => void };
   } = {
@@ -212,5 +230,6 @@ export default ({
   return {
     fieldGroups,
     handleFieldUpdate,
+    handleFieldRemove,
   };
 };

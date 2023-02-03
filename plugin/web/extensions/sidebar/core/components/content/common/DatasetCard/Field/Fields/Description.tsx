@@ -3,20 +3,9 @@ import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Remarkable } from "remarkable";
 
-type DescriptionType = {
-  type: "description";
-  group?: string;
-  content?: string;
-  isMarkdown?: boolean;
-};
+import { BaseFieldProps } from "./types";
 
-type Props = {
-  value: DescriptionType;
-  editMode?: boolean;
-  onFieldUpdate?: (property: DescriptionType) => void;
-};
-
-const Description: React.FC<Props> = ({ value, editMode, onFieldUpdate }) => {
+const Description: React.FC<BaseFieldProps<"description">> = ({ value, editMode, onUpdate }) => {
   const [isMarkdown, setIsMarkdown] = useState(!!value.isMarkdown);
   const [content, setContent] = useState(value.content ?? "");
 
@@ -32,13 +21,13 @@ const Description: React.FC<Props> = ({ value, editMode, onFieldUpdate }) => {
 
   useEffect(() => {
     if (content !== value.content || isMarkdown !== value.isMarkdown) {
-      onFieldUpdate?.({
+      onUpdate({
         type: "description",
         content,
         isMarkdown,
       });
     }
-  }, [value, content, isMarkdown, onFieldUpdate]);
+  }, [value, content, isMarkdown, onUpdate]);
 
   const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.currentTarget.value);
