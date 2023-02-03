@@ -40,7 +40,7 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 				return nil
 			}
 
-			if w.ItemData.Model.Key != conf.CMSStorageModel {
+			if w.ItemData.Model.Key != conf.CMSModel {
 				log.Debugf("searchindex webhook: skipped: model key expected=%s actual=%s", conf.CMSModel, w.ItemData.Model.Key)
 				return nil
 			}
@@ -262,14 +262,16 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 		if skipIndexer {
 			// for unit tests
 			results = append(results, name+"_asset")
-		} else {
-			indexer := NewZipIndexer(c, pid, u)
-			aid, err := indexer.BuildIndex(ctx, name)
-			if err != nil {
-				return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
-			}
-			results = append(results, aid)
+			continue
 		}
+
+		// build indexes
+		indexer := NewZipIndexer(c, pid, u)
+		aid, err := indexer.BuildIndex(ctx, name)
+		if err != nil {
+			return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
+		}
+		results = append(results, aid)
 	}
 	return results, nil
 }
