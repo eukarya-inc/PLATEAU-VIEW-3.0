@@ -12,6 +12,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/reearth/reearthx/log"
+	"github.com/reearth/reearthx/rerror"
 )
 
 var (
@@ -24,7 +25,10 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	if err != nil {
 		return nil, err
 	}
+	return webhookHandler(c, conf), nil
+}
 
+func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate && w.Type != cmswebhook.EventAssetDecompress {
 			log.Debugf("searchindex webhook: invalid event type: %s", w.Type)
@@ -85,7 +89,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		log.Infof("searchindex webhook: start processing")
 
-		result, err := do(ctx, c, pid, assetURLs)
+		result, err := do(ctx, c, pid, assetURLs, conf.skipIndexer)
 		if err != nil {
 			log.Errorf("searchindex webhook: %v", err)
 
@@ -114,7 +118,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		log.Infof("searchindex webhook: done")
 		return nil
-	}, nil
+	}
 }
 
 func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload) (item Item, siid string, err error) {
@@ -158,6 +162,15 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 		if w.ItemData.Model.Key != modelKey {
 			log.Debugf("searchindex webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
 			return
+		}
+
+		// check stroage
+		si, err2 := st.FindByItem(ctx, w.ItemData.Item.ID)
+		if err2 != nil && !errors.Is(err2, rerror.ErrNotFound) {
+			err = fmt.Errorf("cannot get data from storage: %v", err2)
+			return
+		} else if si.ID != "" {
+			siid = si.ID
 		}
 
 		witem = w.ItemData.Item
@@ -218,7 +231,7 @@ func findAsset(ctx context.Context, c cms.Interface, st *Storage, item Item, pid
 	return urls, nil
 }
 
-func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL) ([]string, error) {
+func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipIndexer bool) ([]string, error) {
 	var results []string
 	for _, u := range u {
 		name := pathFileName(u.Path)
@@ -227,12 +240,17 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL) ([]strin
 		}
 
 		log.Infof("searchindex webhook: start processing for %s", name)
-		indexer := NewZipIndexer(c, pid, u)
-		aid, err := indexer.BuildIndex(ctx, name)
-		if err != nil {
-			return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
+		if skipIndexer {
+			// for unit tests
+			results = append(results, name+"_asset")
+		} else {
+			// indexer := NewZipIndexer(c, pid, u)
+			// aid, err := indexer.BuildIndex(ctx, name)
+			// if err != nil {
+			// 	return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
+			// }
+			// results = append(results, aid)
 		}
-		results = append(results, aid)
 	}
 	return results, nil
 }

@@ -136,9 +136,28 @@ func (i *Indexer) fs() (indexer.FS, error) {
 	return indexer.NewHTTPFS(nil, getAssetBase(i.base)), nil
 }
 
-func getAssetBase(u *url.URL) string {
-	u2 := *u
-	b := path.Join(path.Dir(u.Path), pathFileName(u.Path))
-	u2.Path = b
-	return u2.String()
+type OutputFS struct {
+	c   cms.Interface
+	cb  func(assetID string, err error)
+	ctx context.Context
+	pid string
+}
+
+func NewOutputFS(ctx context.Context, c cms.Interface, projectID string, cb func(assetID string, err error)) *OutputFS {
+	return &OutputFS{
+		c:   c,
+		cb:  cb,
+		ctx: ctx,
+		pid: projectID,
+	}
+}
+
+func (f *OutputFS) Open(p string) (indexer.WriteCloser, error) {
+	pr, pw := io.Pipe()
+
+	go func() {
+		f.cb(f.c.UploadAssetDirectly(f.ctx, f.pid, path.Base(p), pr))
+	}()
+
+	return pw, nil
 }

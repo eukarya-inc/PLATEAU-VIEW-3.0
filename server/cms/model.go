@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 )
 
 const (
@@ -18,6 +19,18 @@ type Asset struct {
 	ProjectID               string `json:"projectId"`
 	URL                     string `json:"url"`
 	ArchiveExtractionStatus string `json:"archiveExtractionStatus"`
+}
+
+func (a *Asset) Clone() *Asset {
+	if a == nil {
+		return nil
+	}
+	return &Asset{
+		ID:                      a.ID,
+		ProjectID:               a.ProjectID,
+		URL:                     a.URL,
+		ArchiveExtractionStatus: a.ArchiveExtractionStatus,
+	}
 }
 
 type Model struct {
@@ -36,6 +49,17 @@ type Item struct {
 	ID      string  `json:"id"`
 	ModelID string  `json:"modelId"`
 	Fields  []Field `json:"fields"`
+}
+
+func (i *Item) Clone() *Item {
+	if i == nil {
+		return nil
+	}
+	return &Item{
+		ID:      i.ID,
+		ModelID: i.ModelID,
+		Fields:  slices.Clone(i.Fields),
+	}
 }
 
 func (i Item) Field(id string) *Field {
@@ -237,6 +261,18 @@ func (f *Field) ValueJSON() (any, error) {
 	var j any
 	err := json.Unmarshal([]byte(*s), &j)
 	return j, err
+}
+
+func (f *Field) Clone() *Field {
+	if f == nil {
+		return nil
+	}
+	return &Field{
+		ID:    f.ID,
+		Type:  f.Type,
+		Value: f.Value,
+		Key:   f.Key,
+	}
 }
 
 type Schema struct {
