@@ -20,7 +20,7 @@ type Config struct {
 	Token      string
 }
 
-func (c *Config) Normalize() {
+func (c *Config) Default() {
 	if c.Model == "" {
 		c.Model = modelKey
 	}

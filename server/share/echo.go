@@ -28,7 +28,7 @@ type Config struct {
 	CMSDataFieldKey string
 }
 
-func (conf *Config) Normalize() {
+func (conf *Config) Default() {
 	if conf.CMSModel == "" {
 		conf.CMSModel = cmsModel
 	}
@@ -38,7 +38,7 @@ func (conf *Config) Normalize() {
 }
 
 func Echo(g *echo.Group, conf Config) error {
-	conf.Normalize()
+	conf.Default()
 
 	cmsapi, err := cms.New(conf.CMSBase, conf.CMSToken)
 	if err != nil {

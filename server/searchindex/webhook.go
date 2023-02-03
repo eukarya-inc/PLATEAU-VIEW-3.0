@@ -15,10 +15,7 @@ import (
 	"github.com/reearth/reearthx/rerror"
 )
 
-var (
-	modelKey   = "plateau"
-	errSkipped = errors.New("not decompressed")
-)
+var errSkipped = errors.New("not decompressed")
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	c, err := cms.New(conf.CMSBase, conf.CMSToken)
@@ -29,10 +26,24 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 }
 
 func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
+	conf.Default()
+
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate && w.Type != cmswebhook.EventAssetDecompress {
 			log.Debugf("searchindex webhook: invalid event type: %s", w.Type)
 			return nil
+		}
+
+		if w.Type == cmswebhook.EventItemCreate || w.Type == cmswebhook.EventItemUpdate {
+			if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Item.ID == "" || w.ItemData.Model == nil || w.ItemData.Model.Key == "" {
+				log.Debugf("searchindex webhook: invalid payload: no item or model")
+				return nil
+			}
+
+			if w.ItemData.Model.Key != conf.CMSStorageModel {
+				log.Debugf("searchindex webhook: skipped: model key expected=%s actual=%s", conf.CMSModel, w.ItemData.Model.Key)
+				return nil
+			}
 		}
 
 		pid := w.ProjectID()
@@ -49,7 +60,7 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 		}
 		st := NewStorage(c, stprj, conf.CMSStorageModel)
 
-		item, siid, err := getItem(ctx, c, st, w)
+		item, siid, err := getItem(ctx, c, st, w, conf.CMSModel)
 		if err != nil || item.ID == "" {
 			if err != errSkipped {
 				log.Errorf("searchindex webhook: failed to get item: %v", err)
@@ -57,17 +68,17 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 			return nil
 		}
 
-		log.Infof("searchindex webhook: item: %+v", item)
-
 		if item.SearchIndexStatus != "" && item.SearchIndexStatus != StatusReady {
-			log.Infof("searchindex webhook: skipped: %s", item.SearchIndexStatus)
+			log.Debugf("searchindex webhook: skipped: %s", item.SearchIndexStatus)
 			return nil
 		}
 
 		if len(item.Bldg) == 0 {
-			log.Infof("searchindex webhook: skipped: no bldg assets")
+			log.Debugf("searchindex webhook: skipped: no bldg assets")
 			return nil
 		}
+
+		log.Infof("searchindex webhook: item: %+v", item)
 
 		assetURLs, err := findAsset(ctx, c, st, item, pid, siid)
 		if err != nil {
@@ -123,7 +134,7 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 	}
 }
 
-func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload) (item Item, siid string, err error) {
+func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload, model string) (item Item, siid string, err error) {
 	var witem *cms.Item
 
 	if w.Type == cmswebhook.EventAssetDecompress {
@@ -137,14 +148,14 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 		si, err2 := st.FindByAsset(ctx, aid)
 		if err2 != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
-				log.Infof("searchindex webhook: skipped: asset not registered")
+				log.Debugf("searchindex webhook: skipped: asset not registered")
 				err = errSkipped
 				return
 			}
 			err = fmt.Errorf("cannot get data from storage: %v", err2)
 			return
 		} else if si.ID == "" {
-			log.Infof("searchindex webhook: skipped: asset not registered")
+			log.Debugf("searchindex webhook: skipped: asset not registered")
 			err = errSkipped
 			return
 		}
@@ -167,7 +178,7 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 			return
 		}
 
-		if w.ItemData.Model.Key != modelKey {
+		if w.ItemData.Model.Key != model {
 			log.Debugf("searchindex webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
 			return
 		}

@@ -19,7 +19,7 @@ import (
 )
 
 func Handler(conf Config, g *echo.Group) {
-	conf.Normalize()
+	conf.Default()
 	cl := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
 
 	g.GET("/datasets", func(c echo.Context) error {

@@ -5,14 +5,24 @@ import (
 	"path"
 )
 
+const modelKey = "plateau"
+
 type Config struct {
 	CMSBase           string
 	CMSToken          string
 	CMSStorageProject string
 	// optioanl
 	CMSStorageModel string
+	// optional
+	CMSModel string
 	// internal
 	skipIndexer bool
+}
+
+func (c *Config) Default() {
+	if c.CMSModel == "" {
+		c.CMSModel = modelKey
+	}
 }
 
 func getAssetBase(u *url.URL) string {

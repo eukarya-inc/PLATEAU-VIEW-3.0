@@ -26,6 +26,7 @@ func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
 	log := initLogger(t)
 
 	itemsProject := "prj"
+	itemsModel := "itemitem"
 	storageProject := "sys"
 	assetName := "bldg_lod1"
 	assetName2 := "bldg2_lod1"
@@ -57,11 +58,12 @@ func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
 				SearchIndex:       nil,
 				SearchIndexStatus: StatusReady,
 			}.Fields(),
-			ModelID: modelKey,
+			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, modelKey, storageProject, storageModel, items, assets)
+	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
+		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
 		skipIndexer:       true,
 	})
@@ -71,7 +73,7 @@ func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
 		ItemData: &cmswebhook.ItemData{
 			Item: items[0],
 			Model: &cms.Model{
-				Key: modelKey,
+				Key: itemsModel,
 			},
 			Schema: &cms.Schema{
 				ProjectID: itemsProject,
@@ -107,6 +109,7 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 	log := initLogger(t)
 
 	itemsProject := "prj"
+	itemsModel := "itemitem"
 	storageProject := "sys"
 	assetName := "bldg_lod1"
 	assetName2 := "bldg2_lod1"
@@ -132,11 +135,12 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 				SearchIndex:       nil,
 				SearchIndexStatus: StatusReady,
 			}.Fields(),
-			ModelID: modelKey,
+			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, modelKey, storageProject, storageModel, items, assets)
+	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
+		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
 		skipIndexer:       true,
 	})
@@ -147,7 +151,7 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 		ItemData: &cmswebhook.ItemData{
 			Item: items[0],
 			Model: &cms.Model{
-				Key: modelKey,
+				Key: itemsModel,
 			},
 			Schema: &cms.Schema{
 				ProjectID: itemsProject,
@@ -215,6 +219,7 @@ func TestWebhook_AssetNotDecompressed_DoubleUpdate(t *testing.T) {
 	_ = initLogger(t)
 
 	itemsProject := "prj"
+	itemsModel := "itemitem"
 	storageProject := "sys"
 	assetName := "bldg_lod1"
 	assetName2 := "bldg2_lod1"
@@ -240,11 +245,12 @@ func TestWebhook_AssetNotDecompressed_DoubleUpdate(t *testing.T) {
 				SearchIndex:       nil,
 				SearchIndexStatus: StatusReady,
 			}.Fields(),
-			ModelID: modelKey,
+			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, modelKey, storageProject, storageModel, items, assets)
+	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
+		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
 		skipIndexer:       true,
 	})
@@ -255,7 +261,7 @@ func TestWebhook_AssetNotDecompressed_DoubleUpdate(t *testing.T) {
 		ItemData: &cmswebhook.ItemData{
 			Item: items[0],
 			Model: &cms.Model{
-				Key: modelKey,
+				Key: itemsModel,
 			},
 			Schema: &cms.Schema{
 				ProjectID: itemsProject,
@@ -285,6 +291,7 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 	log := initLogger(t)
 
 	itemsProject := "prj"
+	itemsModel := "itemitem"
 	storageProject := "sys"
 	assetName := "bldg_lod2"
 	assets := []*cms.Asset{
@@ -303,11 +310,12 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 				SearchIndex:       nil,
 				SearchIndexStatus: StatusReady,
 			}.Fields(),
-			ModelID: modelKey,
+			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, modelKey, storageProject, storageModel, items, assets)
+	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
+		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
 		skipIndexer:       true,
 	})
@@ -317,7 +325,7 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 		ItemData: &cmswebhook.ItemData{
 			Item: items[0],
 			Model: &cms.Model{
-				Key: modelKey,
+				Key: itemsModel,
 			},
 			Schema: &cms.Schema{
 				ProjectID: itemsProject,

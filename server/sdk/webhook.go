@@ -40,17 +40,18 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		item := ItemFrom(*w.ItemData.Item)
-		log.Infof("sdk webhook: item: %+v", item)
 
 		if item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
-			log.Infof("sdk webhook: skipped: %s", item.MaxLODStatus)
+			log.Debugf("sdk webhook: skipped: %s", item.MaxLODStatus)
 			return nil
 		}
 
 		if item.CityGML == "" {
-			log.Infof("sdk webhook: skipped: no citygml")
+			log.Debugf("sdk webhook: skipped: no citygml")
 			return nil
 		}
+
+		log.Infof("sdk webhook: item: %+v", item)
 
 		ctx := req.Context()
 		citygml, err := s.CMS.Asset(ctx, item.CityGML)

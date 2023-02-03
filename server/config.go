@@ -22,22 +22,17 @@ import (
 const configPrefix = "REEARTH_PLATEAUVIEW"
 
 type Config struct {
-	CMS_ModelID      string
-	CMS_ShareProject string
-	CMS_ShareModel   string
-	// CMS_ShareField            string
-	CMS_IndexerStorageProject string
-	CMS_IndexerStorageModel   string
-	// CMS_SDKModel              string
 	Port                 uint   `default:"8080" envconfig:"PORT"`
 	Host                 string `default:"http://localhost:8080"`
+	Debug                bool
 	Origin               []string
+	Secret               string
 	CMS_Webhook_Secret   string
 	CMS_BaseURL          string
 	CMS_Token            string
 	CMS_IntegrationID    string
+	CMS_PlateauProject   string
 	CMS_SystemProject    string
-	CMS_SDKProject       string
 	FME_BaseURL          string
 	FME_Mock             bool
 	FME_Token            string
@@ -52,8 +47,6 @@ type Config struct {
 	Opinion_FromName     string
 	Opinion_To           string
 	Opinion_ToName       string
-	Secret               string
-	Debug                bool
 	Sidebar_Token        string
 }
 
@@ -95,6 +88,7 @@ func (c *Config) SearchIndex() searchindex.Config {
 		CMSBase:           c.CMS_BaseURL,
 		CMSToken:          c.CMS_Token,
 		CMSStorageProject: c.CMS_SystemProject,
+		// CMSModel: c.CMS_Model,
 		// CMSStorageModel:   c.CMS_IndexerStorageModel,
 	}
 }
@@ -114,7 +108,7 @@ func (c *Config) SDK() sdk.Config {
 func (c *Config) SDKAPI() sdkapi.Config {
 	return sdkapi.Config{
 		CMSBaseURL: c.CMS_BaseURL,
-		Project:    c.CMS_SDKProject,
+		Project:    c.CMS_PlateauProject,
 		// Model:      c.CMS_SDKModel,
 		Token: c.SDK_Token,
 	}
