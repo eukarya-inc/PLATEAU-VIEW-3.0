@@ -57,7 +57,6 @@ func NewIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
 func NewZipIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
 	i := NewIndexer(cms, pid, base)
 	i.zipMode = true
-	i.bufferMode = true // TODO: using pipe with zip mode may freeze the thread...
 	return i
 }
 
