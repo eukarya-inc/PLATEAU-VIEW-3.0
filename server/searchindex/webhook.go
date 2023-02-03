@@ -244,12 +244,12 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 			// for unit tests
 			results = append(results, name+"_asset")
 		} else {
-			// indexer := NewZipIndexer(c, pid, u)
-			// aid, err := indexer.BuildIndex(ctx, name)
-			// if err != nil {
-			// 	return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
-			// }
-			// results = append(results, aid)
+			indexer := NewZipIndexer(c, pid, u)
+			aid, err := indexer.BuildIndex(ctx, name)
+			if err != nil {
+				return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
+			}
+			results = append(results, aid)
 		}
 	}
 	return results, nil
