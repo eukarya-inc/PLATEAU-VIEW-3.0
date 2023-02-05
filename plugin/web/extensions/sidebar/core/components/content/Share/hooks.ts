@@ -31,7 +31,7 @@ export default ({
     setShareDisable(true);
     if (project) {
       if (!backendURL || !reearthURL) return;
-      const resp = await fetch(`${backendURL}/share/plateau_sys`, {
+      const resp = await fetch(`${backendURL}/share/plateauview`, {
         headers: {
           "Content-Type": "application/json",
         },

@@ -39,6 +39,20 @@ export default () => {
   const [cmsURL, setCMSURL] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
 
+  const [data, setData] = useState<Data[]>();
+  const [project, updateProject] = useState<Project>(defaultProject);
+  const [processedSelectedDatasets, setProcessedSelectedDatasets] = useState<Data[]>([]);
+
+  const handleBackendFetch = useCallback(async () => {
+    if (!backendURL) return;
+    const res = await fetch(`${backendURL}/sidebar/plateauview`);
+    if (res.status !== 200) return;
+    const resData = await res.json();
+
+    setTemplates(resData.templates);
+    setData(resData.data);
+  }, [backendURL]);
+
   // ****************************************
   // Init
   useEffect(() => {
@@ -48,7 +62,6 @@ export default () => {
 
   // ****************************************
   // Project
-  const [project, updateProject] = useState<Project>(defaultProject);
 
   const handleProjectSceneUpdate = useCallback(
     (updatedProperties: Partial<ReearthApi>) => {
@@ -128,29 +141,38 @@ export default () => {
   );
 
   const handleDatasetSave = useCallback(
-    (datasetId: string) => {
+    (datasetID: string) => {
       (async () => {
-        const datasetToSave = project.selectedDatasets.find(d => d.id === datasetId);
+        if (!inEditor) return;
+        const datasetToSave = processedSelectedDatasets.find(d => d.id === datasetID);
+        const isNew = !data?.find(d => d.id === datasetID);
 
         if (!backendURL || !backendAccessToken || !datasetToSave) return;
-        //Check if already
-        // if has, PATCH
-        // if not, POST
-        const res = await fetch(`${backendURL}/sidebar/plateau_sys/data`, {
+
+        const fetchURL = !isNew
+          ? `${backendURL}/sidebar/plateauview/data/${datasetToSave.id}`
+          : `${backendURL}/sidebar/plateauview/data`;
+
+        const method = !isNew ? "PATCH" : "POST";
+
+        const res = await fetch(fetchURL, {
           headers: {
             authorization: `Bearer ${backendAccessToken}`,
           },
-          method: "POST",
+          method,
           body: JSON.stringify(datasetToSave),
         });
-        if (res.status !== 200) return;
-        const data = await res.json();
+        if (res.status !== 200) {
+          handleBackendFetch();
+          return;
+        }
+        const data2 = await res.json();
         // setTemplates(t => [...t, data.results]);
-        console.log("SAVED DATA: ", data);
-        // return data.results;
+        console.log("DATA JUST SAVED: ", data2);
+        handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
       })();
     },
-    [project.selectedDatasets, backendAccessToken, backendURL],
+    [data, processedSelectedDatasets, inEditor, backendAccessToken, backendURL, handleBackendFetch],
   );
 
   // ****************************************
@@ -196,7 +218,7 @@ export default () => {
   const handleTemplateAdd = useCallback(
     async (newTemplate?: Template) => {
       if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateau_sys/templates`, {
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -214,7 +236,7 @@ export default () => {
   const handleTemplateUpdate = useCallback(
     async (template: Template) => {
       if (!template.modelId || !backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateau_sys/templates/${template.modelId}`, {
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.modelId}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -238,7 +260,7 @@ export default () => {
   const handleTemplateRemove = useCallback(
     async (template: Template) => {
       if (!template.modelId || !backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateau_sys/templates/${template.modelId}`, {
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.modelId}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -250,53 +272,6 @@ export default () => {
     [backendURL, backendAccessToken],
   );
 
-  // ****************************************
-
-  // ****************************************
-  // Processed Data
-
-  // const [data, setData] = useState<Data[]>();
-  // const processedSelectedDatasets: Data[] = useMemo(() => {
-  //   if (!data) return;
-  //   console.log("PROJECT: ", project);
-  //   return project.selectedDatasets
-  //     .map(d => {
-  //       console.log("DATA: ", data);
-  //       if (d.modelType === "usecase") {
-  //         // If usecase, check "data" for saved template, components, etc
-  //         // return data?.filter(d3 => d3.dataId === `plateau-2022-${d.cityName}`);
-  //         return {
-  //           id: d.id,
-  //           dataId: "ASDFSDFASDFasdf", // <======= NEEDS TO BE UPDATED
-  //           type: d.type ?? "", // maybe not needed
-  //           name: d.cityName ?? d.name,
-  //           public: false, //<======= NEEDS TO BE UPDATED
-  //           // visible <=== this will come from data (or be default true)
-  //           // template <=== this will come from data (and/or be added later from editor)
-  //           // components: data?.filter(d=> d.),
-  //         };
-  //         // } else if (d.modelType === "plateau") {
-  //         //   // Else, if PLATEAUデータ(plateau), do ....(HARDCODED TEMPLATE)
-  //         //   return d;
-  //         // } else if (d.modelType === "dataset") {
-  //         //   // Else, if 関連データセット(dataset), do ....(HARDCODED TEMPLATE)
-  //         //   return d;
-  //       } else {
-  //         return {
-  //           id: d.id,
-  //           dataId: `plateau-2022-${d.cityName ?? d.name}`,
-  //           type: d.type ?? "", // maybe not needed
-  //           name: d.cityName ?? d.name,
-  //           public: false,
-  //           visible: true,
-  //           template: "SOME TEMPLATE NAME???????????????????????????????",
-  //           components: [],
-  //         };
-  //       }
-  //     })
-  //     .flat(1)
-  //     .filter(p => p);
-  // }, [data, project]);
   // ****************************************
 
   useEffect(() => {
@@ -332,7 +307,7 @@ export default () => {
     if (!backendURL) return;
     if (projectID) {
       (async () => {
-        const res = await fetch(`${backendURL}/share/plateau_sys/${projectID}`);
+        const res = await fetch(`${backendURL}/share/plateauview/${projectID}`);
         if (res.status !== 200) return;
         const data = await res.json();
         if (data) {
@@ -344,16 +319,31 @@ export default () => {
   }, [projectID, backendURL]);
 
   useEffect(() => {
-    if (!backendURL) return;
-    (async () => {
-      const res = await fetch(`${backendURL}/sidebar/plateau_sys`);
-      if (res.status !== 200) return;
-      const root = await res.json();
-      setTemplates(root.templates);
-      // setData(results.data);
-      console.log("RESULTS.DATA: ", root.data);
-    })();
-  }, [backendURL]);
+    if (backendURL) {
+      handleBackendFetch();
+    }
+  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setProcessedSelectedDatasets(
+      !data
+        ? project.selectedDatasets
+        : project.selectedDatasets
+            .map(sd => {
+              const savedData = data.find(d => d.dataId === sd.dataId);
+              if (savedData) {
+                return {
+                  ...sd,
+                  ...savedData,
+                };
+              } else {
+                return sd;
+              }
+            })
+            .flat(1)
+            .filter(p => p),
+    );
+  }, [data, project.selectedDatasets]);
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 
@@ -364,6 +354,7 @@ export default () => {
   return {
     rawCatalog,
     project,
+    processedSelectedDatasets,
     inEditor,
     reearthURL,
     backendURL,

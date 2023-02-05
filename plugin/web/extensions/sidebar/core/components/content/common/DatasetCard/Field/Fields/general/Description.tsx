@@ -1,9 +1,9 @@
 import { Switch } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Remarkable } from "remarkable";
 
-import { BaseFieldProps } from "./types";
+import { BaseFieldProps } from "../types";
 
 const Description: React.FC<BaseFieldProps<"description">> = ({ value, editMode, onUpdate }) => {
   const [isMarkdown, setIsMarkdown] = useState(!!value.isMarkdown);
@@ -19,26 +19,33 @@ const Description: React.FC<BaseFieldProps<"description">> = ({ value, editMode,
     return content ? (isMarkdown ? md.render(content) : content) : undefined;
   }, [content, isMarkdown]);
 
-  useEffect(() => {
-    if (content !== value.content || isMarkdown !== value.isMarkdown) {
+  const handleIsMarkdownChange = useCallback(() => {
+    setIsMarkdown(!isMarkdown);
+    onUpdate({
+      type: "description",
+      content,
+      isMarkdown: !isMarkdown,
+    });
+  }, [content, isMarkdown, onUpdate]);
+
+  const handleContentChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setContent(e.currentTarget.value);
       onUpdate({
         type: "description",
-        content,
+        content: e.currentTarget.value,
         isMarkdown,
       });
-    }
-  }, [value, content, isMarkdown, onUpdate]);
-
-  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.currentTarget.value);
-  }, []);
+    },
+    [isMarkdown, onUpdate],
+  );
 
   return editMode ? (
     <div>
       <Text>内容</Text>
       <TextBox rows={4} defaultValue={content} onChange={handleContentChange} />
       <SwitchWrapper>
-        <Switch checked={isMarkdown} size="small" onChange={() => setIsMarkdown(!isMarkdown)} />
+        <Switch checked={isMarkdown} size="small" onChange={handleIsMarkdownChange} />
         <Text>マークダウン</Text>
       </SwitchWrapper>
     </div>

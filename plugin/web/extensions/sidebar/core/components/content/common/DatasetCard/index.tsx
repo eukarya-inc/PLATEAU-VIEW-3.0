@@ -80,12 +80,11 @@ const DatasetCard: React.FC<Props> = ({
   }, [dataset.id, inEditor, onDatasetSave]);
 
   const menuGenerator = (menuItems: { [key: string]: any }) => (
-    <Menu
-      items={Object.keys(menuItems).map(i => {
+    <Menu>
+      {Object.keys(menuItems).map(i => {
         if (menuItems[i].fields) {
-          return {
-            key: i,
-            label: (
+          return (
+            <Menu.Item key={menuItems[i].key}>
               <Dropdown
                 overlay={menuGenerator(menuItems[i].fields)}
                 placement="bottom"
@@ -94,17 +93,17 @@ const DatasetCard: React.FC<Props> = ({
                   <p style={{ margin: 0 }}>{menuItems[i].name}</p>
                 </div>
               </Dropdown>
-            ),
-          };
+            </Menu.Item>
+          );
         } else {
-          return {
-            key: i,
-            label: <p style={{ margin: 0 }}>{menuItems[i].name}</p>,
-            onClick: menuItems[i]?.onClick?.(),
-          };
+          return (
+            <Menu.Item key={i} onClick={menuItems[i]?.onClick}>
+              <p style={{ margin: 0 }}>{menuItems[i].name}</p>
+            </Menu.Item>
+          );
         }
       })}
-    />
+    </Menu>
   );
 
   return (

@@ -4,10 +4,27 @@ export const fieldName = {
   realtime: "リアルタイム",
   point: "ポイント",
   description: "説明",
+  pointColor: "色",
+  pointColorGradient: "色（Gradient)",
+  pointSize: "サイズ",
+  pointIcon: "アイコン",
+  pointLabel: "ラベル",
+  pointModel: "モデル",
+  pointStroke: "ストロック",
 };
 
 // type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
-export type FieldComponent = Camera | Legend | Description;
+export type FieldComponent =
+  | Camera
+  | Legend
+  | Description
+  | PointColor
+  | PointColorGradient
+  | PointSize
+  | PointIcon
+  | PointLabel
+  | PointModel
+  | PointStroke;
 
 export type Camera = {
   type: "camera";
@@ -60,10 +77,52 @@ export type Description = {
   isMarkdown?: boolean;
 };
 
+type PointColor = {
+  type: "pointColor";
+  group?: string;
+};
+type PointColorGradient = {
+  type: "pointColorGradient";
+  group?: string;
+};
+type PointSize = {
+  type: "pointSize";
+  group?: string;
+};
+type PointIcon = {
+  type: "pointIcon";
+  group?: string;
+};
+type PointLabel = {
+  type: "pointLabel";
+  group?: string;
+};
+type PointModel = {
+  type: "pointModel";
+  group?: string;
+};
+type PointStroke = {
+  type: "pointStroke";
+  group?: string;
+};
+
 type Fields = {
+  // general
   camera: Camera;
   legend: Legend;
   description: Description;
+  // point
+  pointColor: PointColor;
+  pointColorGradient: PointColorGradient;
+  pointSize: PointSize;
+  pointIcon: PointIcon;
+  pointLabel: PointLabel;
+  pointModel: PointModel;
+  pointStroke: PointStroke;
+  // polyline
+  // polygon
+  // 3d-model
+  // 3d-tile
 };
 
 export type BaseFieldProps<T extends keyof Fields> = {

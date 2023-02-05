@@ -1,7 +1,7 @@
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseFieldProps, Camera } from "./types";
+import { BaseFieldProps, Camera } from "../types";
 
 type Props = BaseFieldProps<"camera"> & {
   onCapture?: (camera: Partial<Camera["position"]>) => void;
