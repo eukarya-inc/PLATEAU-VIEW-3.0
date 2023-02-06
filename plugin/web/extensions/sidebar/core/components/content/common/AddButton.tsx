@@ -4,6 +4,7 @@ import { styled } from "@web/theme";
 type Props = {
   className?: string;
   text: string;
+  height?: number;
   items?: JSX.Element;
   direction?:
     | "topLeft"
@@ -18,16 +19,23 @@ type Props = {
   onClick?: () => void;
 };
 
-const AddButton: React.FC<Props> = ({ className, text, items, direction = "bottom", onClick }) => {
+const AddButton: React.FC<Props> = ({
+  className,
+  text,
+  height,
+  items,
+  direction = "bottom",
+  onClick,
+}) => {
   return items ? (
     <Dropdown overlay={items} placement={direction} trigger={["click"]}>
-      <StyledButton className={className}>
+      <StyledButton className={className} height={height}>
         <Icon icon="plus" size={14} />
         <Text>{text}</Text>
       </StyledButton>
     </Dropdown>
   ) : (
-    <StyledButton className={className} onClick={onClick}>
+    <StyledButton className={className} onClick={onClick} height={height}>
       <Icon icon="plus" size={14} />
       <Text>{text}</Text>
     </StyledButton>
@@ -36,7 +44,7 @@ const AddButton: React.FC<Props> = ({ className, text, items, direction = "botto
 
 export default AddButton;
 
-const StyledButton = styled.div`
+const StyledButton = styled.div<{ height?: number }>`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,7 +53,7 @@ const StyledButton = styled.div`
   border: 1px solid #d9d9d9;
   border-radius: 2px;
   padding: 5px;
-  height: 32px;
+  height: ${({ height }) => (height ? height + "px" : "32px")};
   cursor: pointer;
 
   :hover {

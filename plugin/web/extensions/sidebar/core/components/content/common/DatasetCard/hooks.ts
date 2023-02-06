@@ -71,17 +71,16 @@ export default ({
   const generalFields: FieldDropdownItem = {
     camera: {
       name: fieldName["camera"],
-      onClick: () =>
-        handleFieldAdd({
-          position: {
-            lng: 0,
-            lat: 0,
-            height: 0,
-            pitch: 0,
-            heading: 0,
-            roll: 0,
-          },
-        }),
+      onClick: handleFieldAdd({
+        position: {
+          lng: 0,
+          lat: 0,
+          height: 0,
+          pitch: 0,
+          heading: 0,
+          roll: 0,
+        },
+      }),
     },
     description: {
       name: fieldName["description"],
@@ -89,14 +88,17 @@ export default ({
     },
     legend: {
       name: fieldName["legend"],
-      onClick: handleFieldAdd({ style: "square", items: [{ title: "hey", color: "red" }] }),
+      onClick: handleFieldAdd({
+        style: "square",
+        items: [{ title: "hey", color: "red" }],
+      }),
     },
   };
 
   const pointFields: FieldDropdownItem = {
     pointColor: {
       name: fieldName["pointColor"],
-      onClick: ({ key }) => console.log("do something: ", key),
+      onClick: handleFieldAdd({}),
     },
     pointColorGradient: {
       name: fieldName["pointColorGradient"],

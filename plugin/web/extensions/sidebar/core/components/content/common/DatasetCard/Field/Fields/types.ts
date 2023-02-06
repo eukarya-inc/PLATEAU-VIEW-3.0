@@ -26,9 +26,12 @@ export type FieldComponent =
   | PointModel
   | PointStroke;
 
-export type Camera = {
-  type: "camera";
+type FieldBase<T extends keyof typeof fieldName> = {
+  type: T;
   group?: string;
+};
+
+export type Camera = FieldBase<"camera"> & {
   position: {
     lng: number;
     lat: number;
@@ -47,9 +50,7 @@ export type LegendItem = {
   url?: string;
 };
 
-export type Legend = {
-  type: "legend";
-  group?: string;
+export type Legend = FieldBase<"legend"> & {
   style: LegendStyleType;
   items?: LegendItem[];
 };
@@ -60,53 +61,78 @@ export type Legend = {
 //   updateInterval: number; // 1000 * 60 -> 1m
 // };
 
-// type Point = {
-//   type: "point";
-//   group?: string;
-//   visible?: Expression;
-//   pointColor?: Expression;
-//   pointSize?: Expression;
-//   image?: Expression;
-//   modelUrl?: string;
-// };
-
-export type Description = {
-  type: "description";
-  group?: string;
+export type Description = FieldBase<"description"> & {
   content?: string;
   isMarkdown?: boolean;
 };
 
-type PointColor = {
-  type: "pointColor";
-  group?: string;
+// MAYBE POINT TYPE IS JUST TO CONCEPTUALIZE THE JSONNNN
+// type Point = {
+//   type: "point";
+//   group?: string;
+//   visible?: Expression;
+//   pointColor?: Expression[];
+//   // pointSize?: Expression;
+//   pointSize?: number;
+//   image?: Expression;
+//   modelUrl?: string;
+// };
+
+type PointColor = FieldBase<"pointColor"> & {
+  pointColors?: {
+    condition: Cond<number>;
+    color: string;
+  }[];
 };
-type PointColorGradient = {
-  type: "pointColorGradient";
-  group?: string;
+
+type PointColorGradient = FieldBase<"pointColorGradient"> & {
+  field?: string;
+  startColor?: string;
+  endColor?: string;
+  step?: number;
 };
+
 type PointSize = {
   type: "pointSize";
   group?: string;
+  pointSize?: number;
 };
+
 type PointIcon = {
   type: "pointIcon";
   group?: string;
 };
+
 type PointLabel = {
   type: "pointLabel";
   group?: string;
+  field?: string;
+  fontSize?: number;
+  fontColor?: string;
+  height?: number;
+  extruded?: boolean;
+  useBackground?: boolean;
+  backgroundColor?: string;
 };
+
 type PointModel = {
   type: "pointModel";
   group?: string;
+  modelURL?: string;
+  scale?: number;
 };
+
 type PointStroke = {
   type: "pointStroke";
   group?: string;
+  conditions?: {
+    expression: Expression;
+    strokeColor: string;
+    strokeWidth: number;
+  }[];
 };
 
-type Fields = {
+export type Fields = {
   // general
   camera: Camera;
   legend: Legend;
@@ -131,20 +157,26 @@ export type BaseFieldProps<T extends keyof Fields> = {
   onUpdate: (property: Fields[T]) => void;
 };
 
-// type Expression<T extends string | number | boolean = string | number | boolean> =
-//   | T
-//   | {
-//       conditions: Cond<T>[];
-//     }
-//   | {
-//       gradient: {
-//         key: string;
-//         defaultValue?: T;
-//         steps: { min?: number; max: number; value: T }[];
-//       };
-//     };
+type Expression<T extends string | number | boolean = string | number | boolean> =
+  | T
+  | {
+      conditions: Cond<T>[];
+    }
+  | {
+      gradient: {
+        key: string;
+        defaultValue?: T;
+        steps: { min?: number; max: number; value: T }[];
+      };
+    };
 
-// type Cond<T> =
+export type Cond<T> = {
+  key: string;
+  operator: "=" | ">=" | "<=" | ">" | "<" | "!=";
+  operand: string;
+  value: T;
+};
+// export type Cond<T> =
 //   | {
 //       key: string;
 //       operator: "=" | ">=" | "<=" | ">" | "<" | "!=";

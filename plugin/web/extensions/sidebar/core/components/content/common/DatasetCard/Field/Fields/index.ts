@@ -16,22 +16,22 @@ import { FieldComponent } from "./types";
 // import Template from "./Template";
 
 export type Fields<FC extends FieldComponent> = {
-  [F in FC["type"]]: ComponentType<FieldComponent & any>;
+  [F in FC["type"]]: { Component: ComponentType<FieldComponent & any>; hasUI: boolean };
 };
 
-const fieldComponents: Fields<FieldComponent> = {
+const fields: Fields<FieldComponent> = {
   // general
-  camera: IdealZoom,
-  legend: Legend,
-  description: Description,
+  camera: { Component: IdealZoom, hasUI: false },
+  legend: { Component: Legend, hasUI: true },
+  description: { Component: Description, hasUI: true },
   // point
-  pointColor: PointColor,
-  pointColorGradient: PointColorGradient,
-  pointSize: PointSize,
-  pointIcon: PointIcon,
-  pointLabel: PointLabel,
-  pointModel: PointModel,
-  pointStroke: PointStroke,
+  pointColor: { Component: PointColor, hasUI: false },
+  pointColorGradient: { Component: PointColorGradient, hasUI: false },
+  pointSize: { Component: PointSize, hasUI: false },
+  pointIcon: { Component: PointIcon, hasUI: false },
+  pointLabel: { Component: PointLabel, hasUI: false },
+  pointModel: { Component: PointModel, hasUI: false },
+  pointStroke: { Component: PointStroke, hasUI: false },
   // polyline
   // polygon
   // 3d-model
@@ -40,4 +40,4 @@ const fieldComponents: Fields<FieldComponent> = {
   // template: Template,
 };
 
-export default fieldComponents;
+export default fields;

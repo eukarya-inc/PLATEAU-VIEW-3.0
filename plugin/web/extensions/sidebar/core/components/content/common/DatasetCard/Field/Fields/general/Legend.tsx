@@ -65,10 +65,12 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
           newItems = l.items;
           array_move(newItems, idx, idx + 1);
         }
-        return { ...l, items: newItems };
+        const newLegend = { ...l, items: newItems };
+        onUpdate(newLegend);
+        return newLegend;
       });
     },
-    [legend],
+    [legend, onUpdate],
   );
 
   const handleAdd = useCallback(() => {
@@ -77,22 +79,29 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
         title: "New Item",
         color: "white",
       };
-      return {
+      const newLegend = {
         ...l,
         items: l.items ? [...l.items, newItem] : [newItem],
       };
+      onUpdate(newLegend);
+      return newLegend;
     });
-  }, []);
+  }, [onUpdate]);
 
-  const handleRemove = useCallback((idx: number) => {
-    updateLegend(l => {
-      let newItems: LegendItem[] | undefined = undefined;
-      if (l.items) {
-        newItems = l.items.filter((_, idx2) => idx2 != idx);
-      }
-      return { ...l, items: newItems };
-    });
-  }, []);
+  const handleRemove = useCallback(
+    (idx: number) => {
+      updateLegend(l => {
+        let newItems: LegendItem[] | undefined = undefined;
+        if (l.items) {
+          newItems = l.items.filter((_, idx2) => idx2 != idx);
+        }
+        const newLegend = { ...l, items: newItems };
+        onUpdate(newLegend);
+        return newLegend;
+      });
+    },
+    [onUpdate],
+  );
 
   const menu = (
     <Menu

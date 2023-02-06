@@ -32,7 +32,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     handleDatasetSave,
     handleProjectDatasetRemove,
     handleDatasetUpdate,
-    handleDatasetRemoveAll,
+    handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
   } = useHooks();
@@ -81,7 +81,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
-                  onDatasetRemoveAll={handleDatasetRemoveAll}
+                  onDatasetRemoveAll={handleProjectDatasetRemoveAll}
                   onModalOpen={handleModalOpen}
                 />
               ),

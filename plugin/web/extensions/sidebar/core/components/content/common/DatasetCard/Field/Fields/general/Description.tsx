@@ -22,22 +22,20 @@ const Description: React.FC<BaseFieldProps<"description">> = ({ value, editMode,
   const handleIsMarkdownChange = useCallback(() => {
     setIsMarkdown(!isMarkdown);
     onUpdate({
-      type: "description",
-      content,
+      ...value,
       isMarkdown: !isMarkdown,
     });
-  }, [content, isMarkdown, onUpdate]);
+  }, [value, isMarkdown, onUpdate]);
 
   const handleContentChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setContent(e.currentTarget.value);
       onUpdate({
-        type: "description",
+        ...value,
         content: e.currentTarget.value,
-        isMarkdown,
       });
     },
-    [isMarkdown, onUpdate],
+    [value, onUpdate],
   );
 
   return editMode ? (

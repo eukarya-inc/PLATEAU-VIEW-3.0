@@ -99,21 +99,6 @@ export default () => {
     postMsg({ action: "addDatasetToScene", payload: dataset }); // MIGHT NEED TO MOVE THIS ELSEWHEREEEE
   }, []);
 
-  const handleDatasetUpdate = useCallback((updatedDataset: Data) => {
-    updateProject(({ sceneOverrides, selectedDatasets }) => {
-      const updatedDatasets = [...selectedDatasets];
-      const datasetIndex = updatedDatasets.findIndex(d => d.id === updatedDataset.id);
-
-      updatedDatasets[datasetIndex] = updatedDataset;
-      const updatedProject: Project = {
-        sceneOverrides,
-        selectedDatasets: updatedDatasets,
-      };
-      postMsg({ action: "updateProject", payload: updatedProject });
-      return updatedProject;
-    });
-  }, []);
-
   const handleProjectDatasetRemove = useCallback(
     (id: string) =>
       updateProject(({ sceneOverrides, selectedDatasets }) => {
@@ -127,7 +112,7 @@ export default () => {
     [],
   );
 
-  const handleDatasetRemoveAll = useCallback(
+  const handleProjectDatasetRemoveAll = useCallback(
     () =>
       updateProject(({ sceneOverrides }) => {
         const updatedProject = {
@@ -138,6 +123,19 @@ export default () => {
         return updatedProject;
       }),
     [],
+  );
+
+  const handleDatasetUpdate = useCallback(
+    (updatedDataset: Data) => {
+      if (processedSelectedDatasets.length < 1) return;
+
+      const updatedProcessedDatasets = [...processedSelectedDatasets];
+      const datasetIndex = updatedProcessedDatasets.findIndex(d2 => d2.id === updatedDataset.id);
+
+      updatedProcessedDatasets[datasetIndex] = updatedDataset;
+      setProcessedSelectedDatasets(updatedProcessedDatasets);
+    },
+    [processedSelectedDatasets],
   );
 
   const handleDatasetSave = useCallback(
@@ -367,7 +365,7 @@ export default () => {
     handleDatasetSave,
     handleDatasetUpdate,
     handleProjectDatasetRemove,
-    handleDatasetRemoveAll,
+    handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
   };

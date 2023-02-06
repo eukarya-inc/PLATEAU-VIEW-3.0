@@ -22,7 +22,7 @@ export type Props = {
 };
 
 const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, onGroupAdd }) => {
-  const FieldContent = fields[field.type];
+  const { Component: FieldContent, hasUI } = fields[field.type];
 
   const handleGroupAdd = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent> | undefined) => {
@@ -40,7 +40,7 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, 
     [field, onRemove],
   );
 
-  return !editMode && field.type === "camera" ? null : (
+  return !editMode && !hasUI ? null : (
     <StyledAccordionComponent allowZeroExpanded>
       <AccordionItem>
         <AccordionItemState>
