@@ -81,7 +81,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, nil)
 		}
 
-		data, err := h.CMS.GetItem(ctx, itemID)
+		item, err := h.CMS.GetItem(ctx, itemID)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -89,7 +89,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(data.FieldByKey(dataField))
+		res := itemJSON(item.FieldByKey(dataField), item.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -124,7 +124,7 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(item.FieldByKey(dataField))
+		res := itemJSON(item.FieldByKey(dataField), item.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -160,7 +160,7 @@ func (h *Handler) updateDataHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(item.FieldByKey(dataField))
+		res := itemJSON(item.FieldByKey(dataField), item.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -218,7 +218,7 @@ func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(template.FieldByKey(dataField))
+		res := itemJSON(template.FieldByKey(dataField), template.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -246,7 +246,7 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		item, err := h.CMS.CreateItemByKey(ctx, prj, templateModelKey, fields)
+		template, err := h.CMS.CreateItemByKey(ctx, prj, templateModelKey, fields)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -254,7 +254,7 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(item.FieldByKey(dataField))
+		res := itemJSON(template.FieldByKey(dataField), template.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -283,7 +283,7 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		item, err := h.CMS.UpdateItem(ctx, templateID, fields)
+		template, err := h.CMS.UpdateItem(ctx, templateID, fields)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -291,7 +291,7 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 			return err
 		}
 
-		res := fieldJSON(item.FieldByKey(dataField))
+		res := itemJSON(template.FieldByKey(dataField), template.ID)
 		if res == nil {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
@@ -318,20 +318,20 @@ func (h *Handler) deleteTemplateHandler() func(c echo.Context) error {
 }
 
 func itemsToJSONs(items []cms.Item) []any {
-	return lo.FilterMap(items, func(d cms.Item, _ int) (any, bool) {
-		j := fieldJSON(d.FieldByKey(dataField))
+	return lo.FilterMap(items, func(i cms.Item, _ int) (any, bool) {
+		j := itemJSON(i.FieldByKey(dataField), i.ID)
 		return j, j != nil
 	})
 }
 
-func fieldJSON(f *cms.Field) any {
+func itemJSON(f *cms.Field, id string) any {
 	j, err := f.ValueJSON()
 	if j == nil || err != nil {
 		return nil
 	}
 	if f.ID != "" {
 		if o, ok := j.(map[string]any); ok {
-			o["id"] = f.ID
+			o["id"] = id
 			return o
 		}
 	}
