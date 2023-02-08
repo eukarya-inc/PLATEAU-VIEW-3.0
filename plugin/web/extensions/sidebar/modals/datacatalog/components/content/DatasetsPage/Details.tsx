@@ -10,12 +10,19 @@ export type Tag = TagType;
 
 export type Props = {
   dataset?: CatalogItem;
+  isMobile?: boolean;
   addDisabled: boolean;
   onTagSelect: (tag: Tag) => void;
   onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
-const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, onDatasetAdd }) => {
+const DatasetDetails: React.FC<Props> = ({
+  dataset,
+  isMobile,
+  addDisabled,
+  onTagSelect,
+  onDatasetAdd,
+}) => {
   const datasetTags = useMemo(
     () => (dataset?.type !== "group" ? dataset?.tags?.map(tag => tag) : undefined),
     [dataset],
@@ -28,7 +35,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, addDisabled, onTagSelect, on
 
   const ContentComponent: React.FC = () => (
     <>
-      <Tags tags={datasetTags} onTagSelect={onTagSelect} />
+      {!isMobile && <Tags tags={datasetTags} onTagSelect={onTagSelect} />}
       {dataset && dataset?.type !== "group" && <Content>{dataset.description}</Content>}
     </>
   );

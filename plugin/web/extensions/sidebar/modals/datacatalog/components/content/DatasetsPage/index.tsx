@@ -39,6 +39,7 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
           selectedTags={selectedTags}
           onTagSelect={handleTagSelect}
           onOpenDetails={handleOpenDetails}
+          onDatasetAdd={onDatasetAdd}
         />
       }
       right={

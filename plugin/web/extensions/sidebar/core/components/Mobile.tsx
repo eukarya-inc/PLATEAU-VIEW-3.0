@@ -36,6 +36,8 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
       } else if (e.data.action === "triggerCatalogOpen") {
         postMsg({ action: "modalClose" });
         handleTabSelect("catalog");
+      } else if (e.data.action === "msgFromPopup") {
+        setSelected(e.data.payload);
       }
     };
     (globalThis as any).addEventListener("message", eventListenerCallback);

@@ -1,9 +1,10 @@
 import useHooks from "@web/extensions/sidebar/core/components/hooks";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Tab } from "../../core/components/Mobile";
+import { CatalogItem, CatalogRawItem } from "../../core/processCatalog";
 
 import Catalog from "./Catalog";
 import Menu from "./Menu";
@@ -20,10 +21,27 @@ const MobileDropdown: React.FC = () => {
     backendURL,
     handleDatasetSave,
     handleDatasetUpdate,
+    handleProjectDatasetAdd,
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
   } = useHooks();
+
+  const changeTab = useCallback(
+    (tab: Tab) => {
+      postMsg({ action: "msgFromPopup", payload: { currentTab: tab } }); // changes the selected tab in the ui
+      setCurrentTab(tab); // changes the selected tab in the popup
+    },
+    [setCurrentTab],
+  );
+
+  const handleDatasetAdd = useCallback(
+    (dataset: CatalogItem) => {
+      handleProjectDatasetAdd(dataset as CatalogRawItem);
+      changeTab("selection");
+    },
+    [changeTab, handleProjectDatasetAdd],
+  );
 
   useEffect(() => {
     postMsg({ action: "initPopup" });
@@ -44,11 +62,23 @@ const MobileDropdown: React.FC = () => {
     };
   });
 
+  const addedDatasetIds = useMemo(
+    () => project.selectedDatasets.map(dataset => dataset.id),
+    [project.selectedDatasets],
+  );
+
   return (
     <Wrapper>
       {currentTab &&
         {
-          catalog: <Catalog rawCatalog={rawCatalog} />,
+          catalog: (
+            <Catalog
+              addedDatasetIds={addedDatasetIds}
+              isMobile
+              rawCatalog={rawCatalog}
+              onDatasetAdd={handleDatasetAdd}
+            />
+          ),
           selection: (
             <Selection
               selectedDatasets={processedSelectedDatasets}

@@ -364,6 +364,7 @@ export default () => {
     handleTemplateRemove,
     handleDatasetSave,
     handleDatasetUpdate,
+    handleProjectDatasetAdd,
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,

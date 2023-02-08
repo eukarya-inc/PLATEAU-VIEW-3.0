@@ -200,6 +200,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   } else if (action === "msgFromPopup") {
     if (payload.height) {
       reearth.popup.update({ height: payload.height, width: reearth.viewport.width - 12 });
+    } else if (payload.currentTab) {
+      reearth.ui.postMessage({ action: "msgFromPopup", payload: payload.currentTab });
     }
   } else if (action === "popupClose") {
     reearth.popup.close();
