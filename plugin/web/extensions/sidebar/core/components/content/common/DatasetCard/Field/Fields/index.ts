@@ -5,6 +5,7 @@ import ButtonLink from "./general/ButtonLink";
 import Description from "./general/Description";
 import IdealZoom from "./general/IdealZoom";
 import Legend from "./general/Legend";
+import SwitchGroup from "./general/SwitchGroup";
 // point
 import PointColor from "./point/PointColor";
 import PointColorGradient from "./point/PointColorGradient";
@@ -25,6 +26,7 @@ const fields: Fields<FieldComponent> = {
   camera: { Component: IdealZoom, hasUI: false },
   legend: { Component: Legend, hasUI: true },
   description: { Component: Description, hasUI: true },
+  switchGroup: { Component: SwitchGroup, hasUI: true },
   buttonLink: { Component: ButtonLink, hasUI: true },
 
   // point

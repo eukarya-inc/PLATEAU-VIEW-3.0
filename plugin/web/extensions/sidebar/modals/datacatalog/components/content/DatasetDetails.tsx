@@ -103,14 +103,14 @@ const BaseButton = styled.button<{ disabled?: boolean; isShareable?: boolean }>`
   border: 1px solid #e6e6e6;
 `;
 
-const AddButton = styled(BaseButton) <{ disabled?: boolean }>`
+const AddButton = styled(BaseButton)<{ disabled?: boolean }>`
   color: ${({ disabled }) => (disabled ? "grey" : "#ffffff")};
   background-color: ${({ disabled }) => (disabled ? "#dcdcdc" : "#00bebe")};
   flex: 1;
   ${({ disabled }) => !disabled && "cursor: pointer;"}
 `;
 
-const ShareButton = styled(BaseButton) <{ isShareable?: boolean }>`
+const ShareButton = styled(BaseButton)<{ isShareable?: boolean }>`
   display: ${({ isShareable }) => (isShareable !== false ? "flex" : "none")};
   color: #00bebe;
   background-color: #ffffff;
@@ -118,7 +118,7 @@ const ShareButton = styled(BaseButton) <{ isShareable?: boolean }>`
   cursor: pointer;
 `;
 
-const PublishButton = styled(BaseButton) <{ published?: boolean; isShareable?: boolean }>`
+const PublishButton = styled(BaseButton)<{ published?: boolean; isShareable?: boolean }>`
   display: ${({ isShareable }) => (isShareable !== false ? "flex" : "none")};
   min-width: 120px;
   color: #ffffff;
