@@ -31,6 +31,7 @@ var services = [](func(*Config) (*Service, error)){
 	Share,
 	Opinion,
 	Sidebar,
+	DataCatalog,
 }
 
 func Services(conf *Config) (srv []*Service, _ error) {

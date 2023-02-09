@@ -10,7 +10,7 @@ import (
 func Echo(c Config, e *echo.Group) error {
 	f, err := NewFetcher(nil, c)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	e.GET("", func(c echo.Context) error {
