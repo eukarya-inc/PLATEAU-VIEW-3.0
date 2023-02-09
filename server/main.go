@@ -4,6 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"reflect"
+	"runtime"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/go-playground/validator/v10"
@@ -119,4 +122,8 @@ func (cv *customValidator) Validate(i any) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
+}
+
+func funcName(i interface{}) string {
+	return strings.TrimPrefix(runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name(), "main.")
 }

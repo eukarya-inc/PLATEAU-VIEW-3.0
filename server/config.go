@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
@@ -150,5 +151,12 @@ func (c *Config) Sidebar() sidebar.Config {
 		CMSBaseURL: c.CMS_BaseURL,
 		CMSToken:   c.CMS_Token,
 		AdminToken: c.Sidebar_Token,
+	}
+}
+
+func (c *Config) DataCatalog() datacatalog.Config {
+	return datacatalog.Config{
+		CMSBase:    c.CMS_BaseURL,
+		CMSProject: c.CMS_PlateauProject,
 	}
 }

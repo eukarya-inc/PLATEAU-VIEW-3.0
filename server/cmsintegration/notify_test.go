@@ -1,8 +1,12 @@
 package cmsintegration
 
 import (
+	"context"
+	"net/http"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,4 +40,17 @@ func TestItemFromUploadResult(t *testing.T) {
 		"tnm":        {"tnm"},
 		"ifld":       {"ifld"},
 	}))
+}
+
+func TestReadDic(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	httpmock.RegisterResponder("GET", "https://example.com", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"hello": []any{"world"},
+	})))
+
+	d, err := readDic(context.Background(), "https://example.com")
+	assert.NoError(t, err)
+	assert.Equal(t, `{"hello":["world"]}`, d)
 }

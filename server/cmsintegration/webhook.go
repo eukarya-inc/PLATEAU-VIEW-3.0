@@ -42,6 +42,22 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		ctx := req.Context()
 		item := ItemFrom(*w.ItemData.Item)
 
+		// embed dic
+		if item.Dic == "" && item.Dictionary != "" {
+			if dicAsset, err := s.CMS.Asset(ctx, item.Dictionary); err != nil {
+				log.Errorf("cmsintegration webhook: failed to get dic asset: %v", err)
+			} else if d, err := readDic(ctx, dicAsset.URL); err != nil {
+				log.Errorf("cmsintegration webhook: failed to read dic: %v", err)
+			} else if _, err = s.CMS.UpdateItem(ctx, item.ID, Item{
+				Dic: d,
+			}.Fields()); err != nil {
+				log.Errorf("cmsintegration webhook: failed to update dic: %v", err)
+			} else {
+				item.Dic = d
+				log.Infof("cmsintegration webhook: dic embedded to %s", item.ID)
+			}
+		}
+
 		if !item.ConversionEnabled.Enabled() {
 			log.Infof("cmsintegration webhook: convertion disabled: %+v", item)
 			return nil

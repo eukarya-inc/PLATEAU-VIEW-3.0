@@ -28,9 +28,11 @@ func (r PublicAPIListResponse[T]) HasNext() bool {
 }
 
 type PublicAsset struct {
-	ID    string   `json:"id"`
-	URL   string   `json:"url"`
-	Files []string `json:"files"`
+	Type        string   `json:"type,omitempty"`
+	ID          string   `json:"id,omitempty"`
+	URL         string   `json:"url,omitempty"`
+	Files       []string `json:"files,omitempty"`
+	ContentType string   `json:"contentType,omitempty"`
 }
 
 type PublicAPIClient[T any] struct {

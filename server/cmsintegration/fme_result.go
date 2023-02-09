@@ -93,6 +93,17 @@ func (b FMEResult) GetResult() (r FMEResultAssets, unknown []string) {
 	return
 }
 
+func (d FMEResult) GetDic() string {
+	for k, v := range d.Results {
+		if k == "_dic" {
+			if v2, ok := v.(string); ok {
+				return v2
+			}
+		}
+	}
+	return ""
+}
+
 func getFld(o any) (r []string) {
 	switch p := o.(type) {
 	case string:

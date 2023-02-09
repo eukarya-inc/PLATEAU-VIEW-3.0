@@ -3,6 +3,7 @@ package cmsintegration
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -74,20 +75,6 @@ func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
 			return nil
 		}
 
-		if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
-			ConversionStatus: StatusOK,
-		}.Fields()); err != nil {
-			log.Errorf("cmsintegration notify: failed to update item: %w", err)
-
-			if conf.Debug {
-				if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("debug: failed to update item 2: %s", err)); err != nil {
-					log.Errorf("cmsintegration notify: failed to comment: %w", err)
-				}
-			}
-
-			return nil
-		}
-
 		r, unknown, err := uploadAssets(ctx, s.CMS, id.ProjectID, f)
 		if err != nil {
 			log.Errorf("cmsintegration notify: failed to update assets: %w", err)
@@ -105,6 +92,13 @@ func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
 			}
 		}
 
+		if dicURL := f.GetDic(); dicURL != "" {
+			if r.Dic, err = readDic(ctx, dicURL); err != nil {
+				log.Errorf("cmsintegration: failed to read dic from %s: %v", dicURL, err)
+			}
+		}
+
+		r.ConversionStatus = StatusOK
 		if f := r.Fields(); len(f) > 0 {
 			if _, err := s.CMS.UpdateItem(ctx, id.ItemID, f); err != nil {
 				log.Errorf("cmsintegration notify: failed to update item: %w", err)
@@ -252,4 +246,26 @@ func itemFromUploadResult(r map[string][]string) (i Item) {
 		}
 	}
 	return
+}
+
+func readDic(ctx context.Context, u string) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	if err != nil {
+		return "", err
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		_ = res.Body.Close()
+	}()
+	if res.StatusCode >= 300 {
+		return "", fmt.Errorf("status code is %d", err)
+	}
+	s, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(s), nil
 }

@@ -92,6 +92,8 @@ type Item struct {
 	All string `json:"all,omitempty" cms:"all,asset"`
 	// asset: dictionary
 	Dictionary string `json:"dictionary,omitempty" cms:"dictionary,asset"`
+	// textarea: dic
+	Dic string `json:"dic,omitempty" cms:"dic,textarea"`
 	// select: conversion_status: 未実行, 実行中, 完了, エラー
 	ConversionStatus Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
 }
