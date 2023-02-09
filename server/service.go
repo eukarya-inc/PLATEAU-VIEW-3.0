@@ -144,8 +144,7 @@ func SDKAPI(conf *Config) (*Service, error) {
 	return &Service{
 		Name: "sdkapi",
 		Echo: func(g *echo.Group) error {
-			sdkapi.Handler(c, g.Group("/sdk"))
-			return nil
+			return sdkapi.Handler(c, g.Group("/sdk"))
 		},
 	}, nil
 }

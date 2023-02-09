@@ -40,7 +40,7 @@ type DatasetCity struct {
 	ID           string   `json:"id"`
 	Title        string   `json:"title"`
 	Description  string   `json:"description"`
-	FeatureTypes []string `json:"feature_types"`
+	FeatureTypes []string `json:"featureTypes"`
 }
 
 type FilesResponse map[string][]File
@@ -48,7 +48,7 @@ type FilesResponse map[string][]File
 type File struct {
 	Code   string  `json:"code"`
 	URL    string  `json:"url"`
-	MaxLOD float64 `json:"max_lod"`
+	MaxLOD float64 `json:"maxLod"`
 }
 
 type Items []Item
@@ -115,7 +115,7 @@ type MaxLODColumns []MaxLODColumn
 type MaxLODColumn struct {
 	Code   string  `json:"code"`
 	Type   string  `json:"type"`
-	MaxLOD float64 `json:"max_lod"`
+	MaxLOD float64 `json:"maxLod"`
 }
 
 type MaxLODMap map[string]map[string]float64

@@ -18,9 +18,12 @@ import (
 	"github.com/samber/lo"
 )
 
-func Handler(conf Config, g *echo.Group) {
+func Handler(conf Config, g *echo.Group) error {
 	conf.Default()
-	cl := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
+	cl, err := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
+	if err != nil {
+		return err
+	}
 
 	g.GET("/datasets", func(c echo.Context) error {
 		data, err := Datasets(c.Request().Context(), cl, conf.Model)
@@ -37,10 +40,12 @@ func Handler(conf Config, g *echo.Group) {
 		}
 		return c.JSON(http.StatusOK, data)
 	}, auth(conf.Token))
+
+	return nil
 }
 
 func Datasets(ctx context.Context, c *cms.PublicAPIClient[Item], model string) (*DatasetResponse, error) {
-	items, err := c.GetItems(ctx, model)
+	items, err := c.GetAllItems(ctx, model)
 	if err != nil {
 		return nil, rerror.ErrInternalBy(err)
 	}

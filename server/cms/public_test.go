@@ -11,28 +11,75 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPublicAPIClient_GetItems(t *testing.T) {
+func TestPublicAPIListResponse_HasNext(t *testing.T) {
+	assert.True(t, PublicAPIListResponse[any]{Page: 1, PerPage: 50, TotalCount: 100}.HasNext())
+	assert.False(t, PublicAPIListResponse[any]{Page: 2, PerPage: 50, TotalCount: 100}.HasNext())
+	assert.True(t, PublicAPIListResponse[any]{Page: 1, PerPage: 10, TotalCount: 11}.HasNext())
+	assert.False(t, PublicAPIListResponse[any]{Page: 2, PerPage: 10, TotalCount: 11}.HasNext())
+}
+
+func TestPublicAPIClient_GetAllItems(t *testing.T) {
 	ctx := context.Background()
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	httpmock.RegisterResponder("GET", "https://example.com/api/p/ppp/mmm", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results": []any{
 			map[string]any{"id": "a"},
+		},
+		"totalCount": 101,
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=2&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"results": []any{
 			map[string]any{"id": "b"},
 		},
+		"totalCount": 101,
 	})))
-	httpmock.RegisterResponder("GET", "https://example.com/api/p/ppp/mmm2", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm2", "", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
 
-	c := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
-	res, err := c.GetItems(ctx, "mmm")
+	c, err := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	assert.NoError(t, err)
+	res, err := c.GetAllItems(ctx, "mmm")
 	assert.NoError(t, err)
 	assert.Equal(t, []any{
 		map[string]any{"id": "a"},
 		map[string]any{"id": "b"},
 	}, res)
 
-	res, err = c.GetItems(ctx, "mmm2")
+	res, err = c.GetAllItems(ctx, "mmm2")
+	assert.Equal(t, rerror.ErrNotFound, err)
+	assert.Nil(t, res)
+}
+
+func TestPublicAPIClient_GetItems(t *testing.T) {
+	ctx := context.Background()
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"results": []any{
+			map[string]any{"id": "a"},
+			map[string]any{"id": "b"},
+		},
+		"totalCount": 2,
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm2", "", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
+
+	c, err := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	assert.NoError(t, err)
+	res, err := c.GetItems(ctx, "mmm", 1, 100)
+	assert.NoError(t, err)
+	assert.Equal(t, &PublicAPIListResponse[any]{
+		Results: []any{
+			map[string]any{"id": "a"},
+			map[string]any{"id": "b"},
+		},
+		PerPage:    100,
+		Page:       1,
+		TotalCount: 2,
+	}, res)
+
+	res, err = c.GetItems(ctx, "mmm2", 0, 0)
 	assert.Equal(t, rerror.ErrNotFound, err)
 	assert.Nil(t, res)
 }
@@ -47,7 +94,8 @@ func TestPublicAPIClient_GetItem(t *testing.T) {
 	})))
 	httpmock.RegisterResponder("GET", "https://example.com/api/p/ppp/mmm/iii2", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
 
-	c := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	c, err := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	assert.NoError(t, err)
 	res, err := c.GetItem(ctx, "mmm", "iii")
 	assert.NoError(t, err)
 	assert.Equal(t, map[string]any{"id": "a"}, res)
@@ -69,7 +117,8 @@ func TestPublicAPIClient_GetAsset(t *testing.T) {
 	})))
 	httpmock.RegisterResponder("GET", "https://example.com/api/p/ppp/assets/aaa2", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
 
-	c := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	c, err := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	assert.NoError(t, err)
 	res, err := c.GetAsset(ctx, "aaa")
 	assert.NoError(t, err)
 	assert.Equal(t, &PublicAsset{
