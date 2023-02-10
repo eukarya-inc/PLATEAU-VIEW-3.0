@@ -1,6 +1,10 @@
 package datacatalog
 
-import "github.com/samber/lo"
+import (
+	"strings"
+
+	"github.com/samber/lo"
+)
 
 type Dic map[string][]DicEntry
 
@@ -17,6 +21,12 @@ func (d Dic) WardName(code string) string {
 	if e == nil {
 		return ""
 	}
+
+	_, b, ok := strings.Cut(e.Name, " ")
+	if ok {
+		return b
+	}
+
 	return e.Name
 }
 

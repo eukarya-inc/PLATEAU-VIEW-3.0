@@ -13,22 +13,22 @@ var reLod = regexp.MustCompile(`_lod([0-9\.]+?)`)
 var reWard = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
 
 type AssetName struct {
-	CityCode    string
-	CityEn      string
-	Year        string
-	Format      string
-	Op          string
-	Feature     string
-	Ex          string
-	Ext         string
-	WardCode    string
-	WardEn      string
-	LOD         string
-	LowTexture  bool
-	NoTexture   bool
-	FldCategory string
-	FldName     string
-	UrfType     string
+	CityCode       string
+	CityEn         string
+	Year           string
+	Format         string
+	Op             string
+	Feature        string
+	Ex             string
+	Ext            string
+	WardCode       string
+	WardEn         string
+	LOD            string
+	LowTexture     bool
+	NoTexture      bool
+	FldCategory    string
+	FldName        string
+	UrfFeatureType string
 }
 
 func AssetNameFrom(name string) (a AssetName) {
@@ -67,7 +67,7 @@ func AssetNameFrom(name string) (a AssetName) {
 	a.NoTexture = strings.Contains(a.Ex, "_no_texture")
 
 	if a.Feature == "urf" {
-		a.UrfType = a.Ex
+		a.UrfFeatureType = a.Ex
 	} else if a.Feature == "fld" || a.Feature == "htd" || a.Feature == "ifld" || a.Feature == "tnm" {
 		fldCategory, fldName, found := strings.Cut(a.Ex, "_")
 		if found {

@@ -13,6 +13,7 @@ require (
 	github.com/reearth/reearthx v0.0.0-20230203210115-d04054013125
 	github.com/samber/lo v1.33.0
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
+	github.com/spkg/bom v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/net v0.4.0

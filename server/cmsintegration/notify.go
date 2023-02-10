@@ -11,6 +11,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
+	"github.com/spkg/bom"
 )
 
 func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
@@ -263,7 +264,7 @@ func readDic(ctx context.Context, u string) (string, error) {
 	if res.StatusCode >= 300 {
 		return "", fmt.Errorf("status code is %d", err)
 	}
-	s, err := io.ReadAll(res.Body)
+	s, err := io.ReadAll(bom.NewReader(res.Body))
 	if err != nil {
 		return "", err
 	}

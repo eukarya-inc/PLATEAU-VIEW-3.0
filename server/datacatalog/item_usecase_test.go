@@ -16,7 +16,7 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		Prefecture:  "pref",
 		City:        "city",
 		Format:      "3dtiles",
-		Layers:      "layers",
+		Layers:      []string{"layers", "layers2"},
 		URL:         "https://example.com/aaaaa/tileset.json",
 		Description: "desc",
 		Year:        2021,
@@ -31,7 +31,7 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		Description: "desc",
 		Year:        "令和3年度以前",
 		DataFormat:  "3D Tiles",
-		DataLayers:  "layers",
+		DataLayers:  "layers, layers2",
 		DataURL:     "https://example.com/aaaaa.zip",
 		Config:      `{"a":"b"}`,
 	}.DataCatalogs())

@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/reearth/reearthx/util"
+	"github.com/samber/lo"
 )
 
 var usecaseTypes = map[string]string{
@@ -65,6 +67,11 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		t += "情報"
 	}
 
+	var layers []string
+	if i.DataLayers != "" {
+		layers = lo.Filter(util.Map(strings.Split(i.DataLayers, ","), strings.TrimSpace), func(s string, _ int) bool { return s != "" })
+	}
+
 	return []DataCatalogItem{{
 		ID:          i.ID,
 		Name:        i.Name,
@@ -76,7 +83,7 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		URL:         assetURLFromFormat(u, f),
 		Description: i.Description,
 		Config:      c,
-		Layers:      i.DataLayers,
+		Layers:      layers,
 		Year:        y,
 	}}
 }

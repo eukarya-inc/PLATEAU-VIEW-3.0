@@ -45,15 +45,15 @@ func TestAssetNameFrom(t *testing.T) {
 	}, AssetNameFrom("13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13109_shinagawa-ku_lod2_no_texture.zip"))
 
 	assert.Equal(t, AssetName{
-		CityCode: "23212",
-		CityEn:   "anjo-shi",
-		Year:     "2020",
-		Format:   "mvt",
-		Op:       "4_op",
-		Feature:  "urf",
-		Ex:       "UseDistrict",
-		Ext:      ".zip",
-		UrfType:  "UseDistrict",
+		CityCode:       "23212",
+		CityEn:         "anjo-shi",
+		Year:           "2020",
+		Format:         "mvt",
+		Op:             "4_op",
+		Feature:        "urf",
+		Ex:             "UseDistrict",
+		Ext:            ".zip",
+		UrfFeatureType: "UseDistrict",
 	}, AssetNameFrom("23212_anjo-shi_2020_mvt_4_op_urf_UseDistrict.zip"))
 
 	assert.Equal(t, AssetName{
@@ -117,15 +117,15 @@ func TestAssetName_String(t *testing.T) {
 	}.String())
 
 	assert.Equal(t, "23212_anjo-shi_2020_mvt_4_op_urf_UseDistrict.zip", AssetName{
-		CityCode: "23212",
-		CityEn:   "anjo-shi",
-		Year:     "2020",
-		Format:   "mvt",
-		Op:       "4_op",
-		Feature:  "urf",
-		Ex:       "UseDistrict",
-		Ext:      ".zip",
-		UrfType:  "UseDistrict",
+		CityCode:       "23212",
+		CityEn:         "anjo-shi",
+		Year:           "2020",
+		Format:         "mvt",
+		Op:             "4_op",
+		Feature:        "urf",
+		Ex:             "UseDistrict",
+		Ext:            ".zip",
+		UrfFeatureType: "UseDistrict",
 	}.String())
 
 	assert.Equal(t, "14130_kawasaki-shi_2022_3dtiles_1_op_frn.zip", AssetName{
