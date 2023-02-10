@@ -1,7 +1,6 @@
 import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
-import DatasetTree, {
-  Tag,
-} from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
+import { FilterType } from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage";
+import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import DatasetDetails from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Details";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
@@ -22,7 +21,7 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
   }, []);
 
   const [selectedDataset, setDataset] = useState<CatalogItem>();
-  const [selectedTags, selectTags] = useState<Tag[]>([]);
+  const [filter, setFilter] = useState<FilterType>("prefecture");
   const [page, setPage] = useState<"catalog" | "details">("catalog");
 
   const handleOpenDetails = useCallback((data?: CatalogItem) => {
@@ -30,11 +29,9 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
     setPage("details");
   }, []);
 
-  const handleTagSelect = useCallback(
-    (tag: Tag) =>
-      selectTags(tags => (tags.includes(tag) ? [...tags.filter(t => t !== tag)] : [...tags, tag])),
-    [],
-  );
+  const handleFilter = useCallback((filter: FilterType) => {
+    setFilter(filter);
+  }, []);
 
   const addDisabled = useMemo(() => {
     return !!addedDatasetIds?.find(
@@ -54,8 +51,8 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
             selectedDataset={selectedDataset}
             isMobile={isMobile}
             rawCatalog={rawCatalog}
-            selectedTags={selectedTags}
-            onTagSelect={handleTagSelect}
+            filter={filter}
+            onFilter={handleFilter}
             onOpenDetails={handleOpenDetails}
             onDatasetAdd={onDatasetAdd}
           />
@@ -70,7 +67,6 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
             dataset={selectedDataset}
             isMobile={isMobile}
             addDisabled={addDisabled}
-            onTagSelect={handleTagSelect}
             onDatasetAdd={onDatasetAdd}
           />
         </>

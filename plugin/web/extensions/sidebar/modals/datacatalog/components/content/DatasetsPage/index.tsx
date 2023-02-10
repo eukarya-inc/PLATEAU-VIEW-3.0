@@ -11,18 +11,31 @@ export type Props = {
   onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
+export type FilterType = "prefecture" | "fileType" | "tag";
+
 const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetAdd }) => {
   const [selectedDataset, setDataset] = useState<CatalogItem>();
   const [selectedTags, selectTags] = useState<Tag[]>([]);
+  const [filter, setFilter] = useState<FilterType>("prefecture");
 
   const handleOpenDetails = useCallback((data?: CatalogItem) => {
     setDataset(data);
   }, []);
 
+  const handleFilter = useCallback((filter: FilterType) => {
+    setFilter(filter);
+  }, []);
+
   const handleTagSelect = useCallback(
     (tag: Tag) =>
-      selectTags(tags => (tags.includes(tag) ? [...tags.filter(t => t !== tag)] : [...tags, tag])),
-    [],
+      selectTags(tags => {
+        const selected = tags.find(selectedTag => selectedTag.name === tag.name)
+          ? [...tags.filter(t => t.name !== tag.name)]
+          : [...tags, tag];
+        selected.length > 0 ? handleFilter("tag") : handleFilter("prefecture");
+        return selected;
+      }),
+    [handleFilter],
   );
 
   const addDisabled = useMemo(() => {
@@ -35,8 +48,12 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
     <PageLayout
       left={
         <DatasetTree
+          addedDatasetIds={addedDatasetIds}
+          selectedDataset={selectedDataset}
           rawCatalog={rawCatalog}
           selectedTags={selectedTags}
+          filter={filter}
+          onFilter={handleFilter}
           onTagSelect={handleTagSelect}
           onOpenDetails={handleOpenDetails}
           onDatasetAdd={onDatasetAdd}

@@ -12,7 +12,7 @@ export type Props = {
   dataset?: CatalogItem;
   isMobile?: boolean;
   addDisabled: boolean;
-  onTagSelect: (tag: Tag) => void;
+  onTagSelect?: (tag: Tag) => void;
   onDatasetAdd: (dataset: CatalogItem) => void;
 };
 
