@@ -1,12 +1,12 @@
 import { array_move } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
-import { groupItem, SwitchGroup } from "../../types";
+import { GroupItem, SwitchGroup } from "../../types";
 
 export default (value: SwitchGroup) => {
   const [switchGroupObj, updateGroups] = useState<SwitchGroup>(value);
   const [groupsTitle, setGroupsTitle] = useState(value.title);
-  const [currentGroup, setCurrentGroup] = useState<groupItem>(value.groups[0]);
+  const [currentGroup, setCurrentGroup] = useState<GroupItem>(value.groups[0]);
   const [modifiedGroups, updateModifiedGroups] = useState<SwitchGroup | undefined>();
 
   //initialize the helper array (modifiedGroups)
@@ -18,7 +18,7 @@ export default (value: SwitchGroup) => {
   const handAddItem = useCallback(() => {
     updateModifiedGroups(switchGroup => {
       if (!switchGroup?.groups) return;
-      let newArray: groupItem[] | undefined = undefined;
+      let newArray: GroupItem[] | undefined = undefined;
       newArray = switchGroup.groups;
       newArray.length == 0
         ? newArray.push({ id: 0, group: currentGroup.group, title: currentGroup.title })
@@ -30,7 +30,7 @@ export default (value: SwitchGroup) => {
   //modiy the group in the helper array
   const handleModifyGroup = (group: string, index: number) => {
     updateModifiedGroups(switchGroup => {
-      let newArray: groupItem[] | undefined = undefined;
+      let newArray: GroupItem[] | undefined = undefined;
       if (!switchGroup?.groups) return;
       newArray = switchGroup.groups;
       newArray[index].group = group;
@@ -41,7 +41,7 @@ export default (value: SwitchGroup) => {
   //modify the title in the helper array
   const handleModifyGroupTitle = (title: string, index: number) => {
     updateModifiedGroups(switchGroup => {
-      let newArray: groupItem[] | undefined = undefined;
+      let newArray: GroupItem[] | undefined = undefined;
       if (!switchGroup?.groups) return;
       newArray = switchGroup.groups;
       newArray[index].title = title;
@@ -55,14 +55,14 @@ export default (value: SwitchGroup) => {
   }, []);
 
   //handle on change group in main field component
-  const handleChooseGroup = useCallback((item: groupItem) => {
+  const handleChooseGroup = useCallback((item: GroupItem) => {
     setCurrentGroup(item);
   }, []);
 
   const handleMoveUp = useCallback((idx: number) => {
     if (idx === 0) return;
     updateModifiedGroups(switchGroup => {
-      let newItems: groupItem[] | undefined = undefined;
+      let newItems: GroupItem[] | undefined = undefined;
       if (!switchGroup?.groups) return;
       newItems = switchGroup.groups;
       array_move(newItems, idx, idx - 1);
@@ -74,7 +74,7 @@ export default (value: SwitchGroup) => {
     (idx: number) => {
       if (modifiedGroups?.groups && idx >= modifiedGroups.groups.length - 1) return;
       updateModifiedGroups(switchGroup => {
-        let newItems: groupItem[] | undefined = undefined;
+        let newItems: GroupItem[] | undefined = undefined;
         if (!switchGroup?.groups) return;
         newItems = switchGroup.groups;
         array_move(newItems, idx, idx + 1);
@@ -86,7 +86,7 @@ export default (value: SwitchGroup) => {
 
   const handleRemove = useCallback((idx: number) => {
     updateModifiedGroups(switchGroup => {
-      let newItems: groupItem[] | undefined = undefined;
+      let newItems: GroupItem[] | undefined = undefined;
       if (!switchGroup?.groups) return;
       newItems = switchGroup.groups.filter((_, idx2) => idx2 != idx);
       return { ...switchGroup, groups: newItems };

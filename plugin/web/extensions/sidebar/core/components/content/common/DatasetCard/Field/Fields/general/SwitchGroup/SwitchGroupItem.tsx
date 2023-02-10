@@ -1,11 +1,11 @@
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import { groupItem } from "../../types";
+import { GroupItem } from "../../types";
 
 type Props = {
-  items?: groupItem[];
-  switchGroups: groupItem[];
+  items?: GroupItem[];
+  switchGroups: GroupItem[];
   handleMoveDown: (idx: number) => void;
   handleMoveUp: (idx: number) => void;
   handleRemove: (idx: number) => void;

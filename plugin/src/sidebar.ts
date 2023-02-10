@@ -7,6 +7,7 @@ import dataCatalogHtml from "../dist/web/sidebar/modals/datacatalog/index.html?r
 import mapVideoHtml from "../dist/web/sidebar/modals/mapVideo/index.html?raw";
 import welcomeScreenHtml from "../dist/web/sidebar/modals/welcomescreen/index.html?raw";
 import buildingSearchHtml from "../dist/web/sidebar/popups/buildingSearch/index.html?raw";
+import groupSelectPopupHtml from "../dist/web/sidebar/popups/groupSelect/index.html?raw";
 import helpPopupHtml from "../dist/web/sidebar/popups/help/index.html?raw";
 import mobileDropdownHtml from "../dist/web/sidebar/popups/mobileDropdown/index.html?raw";
 
@@ -191,6 +192,12 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
   } else if (action === "helpPopupOpen") {
     reearth.popup.show(helpPopupHtml, { position: "right-start", offset: 4 });
+  } else if (action === "groupSelectOpen") {
+    reearth.popup.show(groupSelectPopupHtml, { position: "right", offset: 4 });
+    reearth.popup.postMessage({ action: "groupSelectInit", payload });
+  } else if (action === "saveGroups") {
+    reearth.ui.postMessage({ action, payload });
+    reearth.popup.close();
   } else if (action === "initPopup") {
     reearth.ui.postMessage({ action });
   } else if (action === "initWelcome") {
@@ -205,6 +212,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "popupClose") {
     reearth.popup.close();
+    reearth.ui.postMessage({ action });
     mobileDropdownIsOpen = false;
   } else if (action === "mapModalOpen") {
     reearth.modal.show(mapVideoHtml, { background: "transparent" });

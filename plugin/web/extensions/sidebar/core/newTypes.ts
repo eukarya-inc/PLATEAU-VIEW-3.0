@@ -16,6 +16,12 @@ export type Data = {
   // either template or components
   template?: string; // user-defined template ID or builtin template ID
   components?: FieldComponent[];
+  fieldGroups: Group[];
+};
+
+export type Group = {
+  id: number;
+  name: string;
 };
 
 // ****** Template ******

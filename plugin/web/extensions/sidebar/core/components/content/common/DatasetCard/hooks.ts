@@ -1,4 +1,4 @@
-import { Data } from "@web/extensions/sidebar/core/newTypes";
+import { Data, Group } from "@web/extensions/sidebar/core/newTypes";
 import { useCallback } from "react";
 
 import { fieldName } from "./Field/Fields/types";
@@ -68,6 +68,26 @@ export default ({
     [dataset, inEditor, onDatasetUpdate],
   );
 
+  const handleGroupsUpdate = useCallback(
+    (field: string) => (groups: Group[], selectedGroup?: string) => {
+      if (!inEditor) return;
+
+      const newDatasetComponents = dataset.components ? [...dataset.components] : [];
+      const componentIndex = newDatasetComponents.findIndex(c => c.type === field);
+
+      if (newDatasetComponents.length > 0 && componentIndex !== undefined) {
+        newDatasetComponents[componentIndex].group = selectedGroup;
+      }
+
+      onDatasetUpdate?.({
+        ...dataset,
+        components: newDatasetComponents,
+        fieldGroups: groups,
+      });
+    },
+    [dataset, inEditor, onDatasetUpdate],
+  );
+
   const generalFields: FieldDropdownItem = {
     camera: {
       name: fieldName["camera"],
@@ -92,6 +112,17 @@ export default ({
         style: "square",
         items: [{ title: "hey", color: "red" }],
       }),
+    },
+    switchGroup: {
+      name: fieldName["switchGroup"],
+      onClick: handleFieldAdd({
+        title: "Switch Group",
+        groups: [],
+      }),
+    },
+    buttonLink: {
+      name: fieldName["buttonLink"],
+      onClick: handleFieldAdd({}),
     },
   };
 
@@ -249,5 +280,6 @@ export default ({
     fieldGroups,
     handleFieldUpdate,
     handleFieldRemove,
+    handleGroupsUpdate,
   };
 };

@@ -1,6 +1,8 @@
+import { Group } from "@web/extensions/sidebar/core/newTypes";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -16,20 +18,33 @@ import { FieldComponent as FieldComponentType, fieldName } from "./Fields/types"
 export type Props = {
   field: FieldComponentType;
   editMode?: boolean;
+  selectGroups?: Group[];
   onUpdate?: (property: any) => void;
   onRemove: (type: string) => void;
-  onGroupAdd?: () => void;
+  onGroupsUpdate: (groups: Group[], selectedGroup?: string | undefined) => void;
 };
 
-const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, onGroupAdd }) => {
+const FieldComponent: React.FC<Props> = ({
+  field,
+  editMode,
+  selectGroups,
+  onUpdate,
+  onRemove,
+  onGroupsUpdate,
+}) => {
   const { Component: FieldContent, hasUI } = fields[field.type];
+  const [groupPopupOpen, setGroupPopup] = useState(false);
 
-  const handleGroupAdd = useCallback(
+  const handleGroupSelectOpen = useCallback(
     (e: React.MouseEvent<HTMLDivElement, MouseEvent> | undefined) => {
       e?.stopPropagation();
-      onGroupAdd?.();
+      postMsg({
+        action: "groupSelectOpen",
+        payload: { groups: selectGroups, selected: field.group },
+      });
+      setGroupPopup(true);
     },
-    [onGroupAdd],
+    [field.group, selectGroups],
   );
 
   const handleRemove = useCallback(
@@ -39,6 +54,24 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, 
     },
     [field, onRemove],
   );
+
+  useEffect(() => {
+    const eventListenerCallback = (e: any) => {
+      if (e.source !== parent) return;
+      if (groupPopupOpen) {
+        if (e.data.action === "saveGroups") {
+          onGroupsUpdate(e.data.payload.groups, e.data.payload.selected);
+          setGroupPopup(false);
+        } else if (e.data.action === "popupClose") {
+          setGroupPopup(false);
+        }
+      }
+    };
+    (globalThis as any).addEventListener("message", eventListenerCallback);
+    return () => {
+      (globalThis as any).removeEventListener("message", eventListenerCallback);
+    };
+  }, [groupPopupOpen, onGroupsUpdate]);
 
   return !editMode && !hasUI ? null : (
     <StyledAccordionComponent allowZeroExpanded>
@@ -53,7 +86,12 @@ const FieldComponent: React.FC<Props> = ({ field, editMode, onUpdate, onRemove, 
                     <Title>{fieldName[field.type]}</Title>
                   </LeftContents>
                   <RightContents>
-                    <StyledIcon icon="group" size={16} onClick={handleGroupAdd} />
+                    <StyledIcon
+                      icon="group"
+                      color={field.group ? "#00BEBE" : "inherit"}
+                      size={16}
+                      onClick={handleGroupSelectOpen}
+                    />
                     <StyledIcon icon="trash" size={16} onClick={handleRemove} />
                   </RightContents>
                 </HeaderContents>

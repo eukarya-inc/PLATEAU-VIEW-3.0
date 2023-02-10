@@ -22,14 +22,14 @@ const ButtonLink: React.FC<BaseFieldProps<"buttonLink">> = ({ editMode }) => {
   return editMode ? (
     <Wrapper>
       <Field>
-        <FieldTitle>Title</FieldTitle>
+        <FieldTitle>タイトル</FieldTitle>
         <FieldValue>
           <TextInput onChange={handleChangeButtonTitle} />
         </FieldValue>
       </Field>
 
       <Field>
-        <FieldTitle>Link</FieldTitle>
+        <FieldTitle>リンク</FieldTitle>
         <FieldValue>
           <TextInput onChange={handleChangeButtonLink} />
         </FieldValue>
