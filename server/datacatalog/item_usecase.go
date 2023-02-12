@@ -28,6 +28,7 @@ type UsecaseItem struct {
 	Type        string           `json:"type,omitempty"`
 	Prefecture  string           `json:"prefecture,omitempty"`
 	CityName    string           `json:"city_name,omitempty"`
+	WardName    string           `json:"ward_name,omitempty"`
 	OpenDataURL string           `json:"opendata_url,omitempty"`
 	Description string           `json:"description,omitempty"`
 	Year        string           `json:"year,omitempty"`
@@ -72,13 +73,22 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		layers = lo.Filter(util.Map(strings.Split(i.DataLayers, ","), strings.TrimSpace), func(s string, _ int) bool { return s != "" })
 	}
 
+	var city, ward string
+	if i.WardName != "" {
+		city = i.CityName
+		ward = i.WardName
+	} else {
+		city, ward, _ = strings.Cut(i.CityName, "/")
+	}
+
 	return []DataCatalogItem{{
 		ID:          i.ID,
 		Name:        i.Name,
 		Type:        t,
 		TypeEn:      usecaseTypes[i.Type],
 		Prefecture:  i.Prefecture,
-		City:        i.CityName,
+		City:        city,
+		Ward:        ward,
 		Format:      f,
 		URL:         assetURLFromFormat(u, f),
 		Description: i.Description,
