@@ -74,8 +74,8 @@ const FieldComponent: React.FC<Props> = ({
   }, [groupPopupOpen, onGroupsUpdate]);
 
   return !editMode && !hasUI ? null : (
-    <StyledAccordionComponent allowZeroExpanded>
-      <AccordionItem>
+    <StyledAccordionComponent allowZeroExpanded preExpanded={[field.type]}>
+      <AccordionItem uuid={field.type}>
         <AccordionItemState>
           {({ expanded }) => (
             <Header expanded={expanded}>

@@ -121,8 +121,8 @@ const DatasetCard: React.FC<Props> = ({
   );
 
   return (
-    <StyledAccordionComponent allowZeroExpanded>
-      <AccordionItem>
+    <StyledAccordionComponent allowZeroExpanded preExpanded={["datasetcard"]}>
+      <AccordionItem uuid="datasetcard">
         <AccordionItemState>
           {({ expanded }) => (
             <Header expanded={expanded}>
