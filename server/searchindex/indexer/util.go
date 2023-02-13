@@ -11,6 +11,7 @@ import (
 
 	"github.com/qmuntal/gltf"
 	b3dms "github.com/reearth/go3dtiles/b3dm"
+	"github.com/reearth/reearthx/log"
 	"gonum.org/v1/gonum/mat"
 )
 
@@ -152,9 +153,11 @@ func Retry(RetriableFunc RetriableFunc) error {
 	for shouldRetry {
 		err := RetriableFunc()
 		if err != nil {
+			log.Errorf("retry error (%d): %v", n, err)
+
 			// if this is last attempt - don't wait
 			if n == config.attempts-1 {
-				return fmt.Errorf("Retry Failed after 10 attempts: %v", err)
+				return fmt.Errorf("retry failed after %d attempts: %v", n, err)
 			}
 
 			select {
@@ -188,7 +191,7 @@ type DelayTypeFunc func(n uint, err error, config *RetryConfig) time.Duration
 
 func newDefaultRetryConfig() *RetryConfig {
 	return &RetryConfig{
-		attempts:  uint(10),
+		attempts:  uint(5),
 		delay:     100 * time.Millisecond,
 		maxJitter: 100 * time.Millisecond,
 		delayType: combineDelay(backOffDelay, randomDelay),
