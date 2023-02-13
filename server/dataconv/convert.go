@@ -1,21 +1,16 @@
-package main
+package dataconv
 
 import (
 	"bytes"
 	_ "embed"
-	"encoding/json"
 	"fmt"
 	"image/color"
-	"io"
 	"net/http"
-	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	geojson "github.com/paulmach/go.geojson"
 	"github.com/samber/lo"
-	"github.com/spf13/afero"
 	"github.com/tdewolff/canvas"
 	"github.com/tdewolff/canvas/renderers"
 	"github.com/vincent-petithory/dataurl"
@@ -35,14 +30,14 @@ const (
 )
 
 var (
-	//go:embed yellow_gradient.png
+	//go:embed assets/yellow_gradient.png
 	wallImage        []byte
 	wallImageDataURL = dataurl.New(wallImage, http.DetectContentType(wallImage)).String()
 
 	billboardBgColor   = color.RGBA{R: 0, G: 189, B: 189, A: 255} // #00BDBD
 	billboardTextColor = color.White
 
-	//go:embed fonts/NotoSansJP-Light.otf
+	//go:embed assets/NotoSansJP-Light.otf
 	billboardFontData   []byte
 	billboardFontFamily = canvas.NewFontFamily("Noto Sans Japanese")
 	billboardFontStyle  = canvas.FontLight
@@ -50,139 +45,6 @@ var (
 
 func init() {
 	billboardFontFamily.MustLoadFont(billboardFontData, 0, billboardFontStyle)
-}
-
-type Convert struct {
-	Input    string   `help:"入力元ディレクトリパス。デフォルトはカレントディレクトリです。"`
-	Output   string   `help:"出力先ディレクトリパス。デフォルトはカレントディレクトリです。"`
-	InputFS  afero.Fs `opts:"-"`
-	OutputFS afero.Fs `opts:"-"`
-	Copy     bool     `help:"CZML生成対象外のGeoJSONをそのまま出力先にコピーします。デフォルトではコピーしません。"`
-}
-
-func (c *Convert) Execute() error {
-	// workaround for walking
-	if !filepath.IsAbs(c.Input) {
-		dir := filepath.Base(lo.Must(os.Getwd()))
-		c.Input = filepath.Join("..", dir, c.Input)
-	}
-	c.InputFS = afero.NewBasePathFs(afero.NewOsFs(), c.Input)
-
-	if c.Output == "" || path.Clean(c.Output) == "." {
-		c.OutputFS = afero.NewOsFs()
-	} else {
-		c.OutputFS = afero.NewBasePathFs(afero.NewOsFs(), c.Output)
-	}
-	return c.execute()
-}
-
-func (c *Convert) execute() error {
-	files, err := afero.ReadDir(c.InputFS, "")
-	if err != nil {
-		return fmt.Errorf("ディレクトリの読み込みに失敗しました。%w", err)
-	}
-
-	for _, fi := range files {
-		if fi.IsDir() {
-			continue
-		}
-
-		name := fi.Name()
-		if path.Ext(name) != ".geojson" {
-			continue
-		}
-
-		t := detectType(name)
-		if t == "" {
-			if c.Copy {
-				os.Stderr.WriteString(fmt.Sprintf("copy: %s\n", name))
-				if err := c.copyFile(name); err != nil {
-					return fmt.Errorf("「%s」のコピーに失敗しました。%w", name, err)
-				}
-			}
-			continue
-		}
-
-		fc, err := c.loadGeoJSON(name)
-		if err != nil {
-			return fmt.Errorf("GeoJSONファイル「%s」の読み込みに失敗しました。%w", name, err)
-		}
-
-		id := strings.TrimSuffix(name, path.Ext(name))
-		var czml any
-		switch t {
-		case "landmark":
-			os.Stderr.WriteString(fmt.Sprintf("land: %s\n", name))
-			czml, err = ConvertLandmark(fc, id)
-		case "border":
-			os.Stderr.WriteString(fmt.Sprintf("bord: %s\n", name))
-			czml, err = ConvertBorder(fc, id)
-		}
-
-		if err != nil {
-			return fmt.Errorf("CZMLデータの生成に失敗しました。%w", err)
-		}
-		if czml == nil {
-			continue
-		}
-
-		if err := c.writeCZML(id, czml); err != nil {
-			return fmt.Errorf("CZMLファイルの書き込みに失敗しました。%w", err)
-		}
-	}
-
-	return nil
-}
-
-func (c *Convert) copyFile(name string) error {
-	f, err := c.InputFS.Open(name)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = f.Close()
-	}()
-
-	f2, err := c.OutputFS.Create(name)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = f2.Close()
-	}()
-
-	_, err = io.Copy(f2, f)
-	return err
-}
-
-func (c *Convert) loadGeoJSON(path string) (*geojson.FeatureCollection, error) {
-	f, err := c.InputFS.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		_ = f.Close()
-	}()
-
-	fc := &geojson.FeatureCollection{}
-	if err := json.NewDecoder(f).Decode(&fc); err != nil {
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (c *Convert) writeCZML(name string, d any) error {
-	f, err := c.OutputFS.Create(name + ".czml")
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_ = f.Close()
-	}()
-
-	return json.NewEncoder(f).Encode(d)
 }
 
 func detectType(name string) string {
@@ -242,7 +104,7 @@ func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 				"sizeInMeters":   true,
 			},
 			"position": map[string]any{
-				"cartographicDegrees": f.Geometry.Point,
+				"cartographicDegrees": lo.Map(f.Geometry.Point, func(p float64, _ int) any { return p }),
 			},
 			"properties": f.Properties,
 		})
@@ -285,33 +147,51 @@ func GenerateLandmarkImage(name string) ([]byte, error) {
 func ConvertBorder(fc *geojson.FeatureCollection, id string) (any, error) {
 	packets := make([]any, 0, len(fc.Features))
 	for i, f := range fc.Features {
-		if len(f.Geometry.Polygon) == 0 || len(f.Geometry.Polygon[0]) == 0 {
+		var possrc [][][]float64
+		if len(f.Geometry.MultiLineString) > 0 {
+			possrc = f.Geometry.MultiLineString
+		} else if len(f.Geometry.LineString) > 0 {
+			possrc = [][][]float64{f.Geometry.LineString}
+		} else if len(f.Geometry.MultiPolygon) > 0 {
+			possrc = lo.FilterMap(f.Geometry.MultiPolygon, func(p [][][]float64, _ int) ([][]float64, bool) {
+				if len(p) == 0 {
+					return nil, false
+				}
+				return p[0], true
+			})
+		} else if len(f.Geometry.Polygon) > 0 {
+			possrc = f.Geometry.Polygon
+		}
+
+		if len(possrc) == 0 {
 			continue
 		}
 
-		positions := lo.FlatMap(f.Geometry.Polygon[0], func(p []float64, _ int) []float64 {
-			if len(p) < 2 {
-				return nil
-			}
-			return []float64{p[0], p[1], wallHeight}
-		})
+		for j, pos := range possrc {
+			positions := lo.FlatMap(pos, func(p []float64, _ int) []float64 {
+				if len(p) < 2 {
+					return nil
+				}
+				return []float64{p[0], p[1], wallHeight}
+			})
 
-		packets = append(packets, map[string]any{
-			"id": fmt.Sprintf("%s_%d", id, i+1),
-			"wall": map[string]any{
-				"material": map[string]any{
-					"image": map[string]any{
-						"image":       wallImageDataURL,
-						"repeat":      true,
-						"transparent": true,
+			packets = append(packets, map[string]any{
+				"id": fmt.Sprintf("%s_%d_%d", id, i+1, j+1),
+				"wall": map[string]any{
+					"material": map[string]any{
+						"image": map[string]any{
+							"image":       wallImageDataURL,
+							"repeat":      true,
+							"transparent": true,
+						},
+					},
+					"positions": map[string]any{
+						"cartographicDegrees": lo.Map(positions, func(p float64, _ int) any { return p }),
 					},
 				},
-				"positions": map[string]any{
-					"cartographicDegrees": positions,
-				},
-			},
-			"properties": f.Properties,
-		})
+				"properties": f.Properties,
+			})
+		}
 	}
 
 	return czml(id, packets...), nil

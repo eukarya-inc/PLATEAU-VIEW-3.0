@@ -7,6 +7,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
+	"github.com/eukarya-inc/reearth-plateauview/server/dataconv"
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
@@ -49,6 +50,7 @@ type Config struct {
 	Opinion_To           string
 	Opinion_ToName       string
 	Sidebar_Token        string
+	DataConv_Disable     bool
 }
 
 func NewConfig() (*Config, error) {
@@ -158,5 +160,15 @@ func (c *Config) DataCatalog() datacatalog.Config {
 	return datacatalog.Config{
 		CMSBase:    c.CMS_BaseURL,
 		CMSProject: c.CMS_PlateauProject,
+	}
+}
+
+func (c *Config) DataConv() dataconv.Config {
+	return dataconv.Config{
+		Disable:    c.DataConv_Disable,
+		CMSBase:    c.CMS_BaseURL,
+		CMSToken:   c.CMS_Token,
+		CMSProject: c.CMS_PlateauProject,
+		// CMSModel: ,
 	}
 }

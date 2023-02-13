@@ -1,12 +1,11 @@
-package main
+package dataconv
 
 import (
 	"encoding/json"
 	"os"
 	"testing"
 
-	"github.com/samber/lo"
-	"github.com/spf13/afero"
+	geojson "github.com/paulmach/go.geojson"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,7 +19,7 @@ const border = `{
 		{
 			"type" : "Feature",
 			"geometry" : {
-				"type" : "Polygon",
+				"type" : "MultiLineString",
 				"coordinates" : [
 					[
 						[ 139.6050448421, 36.0366165201 ],
@@ -47,7 +46,7 @@ var expectedBorder = `[
     "version": "1.0"
   },
   {
-    "id": "11238_hasuda-shi_border_1",
+    "id": "11238_hasuda-shi_border_1_1",
     "wall": {
       "material": {
         "image": {
@@ -82,21 +81,17 @@ var expectedBorder = `[
 	}
 ]`
 
-func TestConvert_Execute(t *testing.T) {
-	fs := afero.NewMemMapFs()
-	_ = afero.WriteFile(fs, borderName+".geojson", []byte(border), 0666)
+func TestConvertBorder(t *testing.T) {
+	var fc *geojson.FeatureCollection
+	assert.NoError(t, json.Unmarshal([]byte(border), &fc))
 
-	require.NoError(t, (&Convert{
-		InputFS:  fs,
-		OutputFS: fs,
-	}).execute())
+	res, err := ConvertBorder(fc, borderName)
+	assert.NoError(t, err)
 
 	var expectedBorderJSON any
-	var actualBorderJSON any
 	assert.NoError(t, json.Unmarshal([]byte(expectedBorder), &expectedBorderJSON))
-	assert.NoError(t, json.Unmarshal(lo.Must(afero.ReadFile(fs, borderName+".czml")), &actualBorderJSON))
 
-	assert.Equal(t, expectedBorderJSON, actualBorderJSON)
+	assert.Equal(t, expectedBorderJSON, res)
 }
 
 func TestGenerateLandmarkImage(t *testing.T) {

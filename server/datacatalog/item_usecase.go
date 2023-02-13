@@ -64,7 +64,7 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 	}
 
 	t := i.Type
-	if t != "" && t != "ユースケース" {
+	if t != "" && t != "ユースケース" && !strings.HasSuffix(t, "情報") {
 		t += "情報"
 	}
 
