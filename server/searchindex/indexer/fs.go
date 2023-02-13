@@ -2,6 +2,7 @@ package indexer
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"io"
 	"io/fs"
@@ -75,7 +76,15 @@ func (f *ZipFS) Open(name string) (io.ReadCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	return file, nil
+	defer file.Close()
+
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, file)
+	if err != nil {
+		return nil, err
+	}
+
+	return io.NopCloser(buf), nil
 }
 
 type OSOutputFS struct {
