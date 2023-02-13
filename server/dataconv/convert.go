@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"image/color"
 	"net/http"
-	"path"
-	"strings"
 
 	geojson "github.com/paulmach/go.geojson"
 	"github.com/samber/lo"
@@ -47,17 +45,7 @@ func init() {
 	billboardFontFamily.MustLoadFont(billboardFontData, 0, billboardFontStyle)
 }
 
-func detectType(name string) string {
-	fn := strings.TrimSuffix(name, path.Ext(name))
-	if strings.HasSuffix(fn, "_landmark") || strings.HasSuffix(fn, "_station") {
-		return "landmark"
-	} else if strings.HasSuffix(fn, "_border") {
-		return "border"
-	}
-	return ""
-}
-
-// ConvertLandmark は国土数値情報を基に作成されたランドマーク・鉄道駅GeoJSONデータをPLATEAU VIEW用のCZMLに変換します。
+// ConvertLandmark は国土基本情報を基に作成されたランドマーク・鉄道駅GeoJSONデータをPLATEAU VIEW用のCZMLに変換します。
 func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 	packets := make([]any, 0, len(fc.Features))
 	for i, f := range fc.Features {
