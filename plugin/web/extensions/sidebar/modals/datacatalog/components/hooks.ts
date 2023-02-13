@@ -38,7 +38,7 @@ export default () => {
       if (e.source !== parent) return;
       if (e.data.type === "initDataCatalog") {
         setAddedDatasetIds(e.data.payload.addedDatasets);
-        setCatalog(e.data.payload.catalogData);
+        setCatalog(e.data.payload.dataCatalog);
       }
     };
     addEventListener("message", eventListenerCallback);

@@ -13,6 +13,7 @@ export type Data = {
   // public: boolean; // Might want to make raw type without this
   visible?: boolean; // Might want to make raw type without this
   modelType: "usecase" | "plateau" | "dataset";
+  url?: string;
   // either template or components
   template?: string; // user-defined template ID or builtin template ID
   components?: FieldComponent[];

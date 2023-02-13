@@ -30,7 +30,7 @@ export type Props = {
   dataset: Data;
   inEditor?: boolean;
   onDatasetSave: (datasetId: string) => void;
-  onRemoveDataset?: (id: string) => void;
+  onDatasetRemove?: (id: string) => void;
   onDatasetUpdate: (dataset: Data) => void;
   onUpdateField?: (id: string) => void;
 };
@@ -38,11 +38,10 @@ const DatasetCard: React.FC<Props> = ({
   dataset,
   inEditor,
   onDatasetSave,
-  onRemoveDataset,
+  onDatasetRemove,
   onDatasetUpdate,
   // onUpdateField,
 }) => {
-  const [visible, setVisibility] = useState(false);
   const [currentTab, changeTab] = useState<Tabs>("default");
 
   const { fieldGroups, handleFieldUpdate, handleFieldRemove, handleGroupsUpdate } = useHooks({
@@ -61,19 +60,19 @@ const DatasetCard: React.FC<Props> = ({
         onClick: () => alert("MOVE CAMERA"),
       },
       { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
-      { id: "remove", icon: "trash", onClick: () => onRemoveDataset?.(dataset.id) },
+      {
+        id: "remove",
+        icon: "trash",
+        onClick: () => onDatasetRemove?.(dataset.id),
+      },
     ],
-    [dataset, onRemoveDataset],
+    [dataset, onDatasetRemove],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
     e.stopPropagation();
     changeTab(e.currentTarget.id as Tabs);
   }, []);
-
-  useEffect(() => {
-    setVisibility(dataset.visible ?? false);
-  }, [dataset]);
 
   const handleFieldSave = useCallback(() => {
     if (!inEditor) return;
@@ -130,11 +129,11 @@ const DatasetCard: React.FC<Props> = ({
                 <HeaderContents>
                   <LeftMain>
                     <Icon
-                      icon={!visible ? "hidden" : "visible"}
+                      icon={!dataset.visible ? "hidden" : "visible"}
                       size={20}
                       onClick={e => {
                         e?.stopPropagation();
-                        setVisibility(!visible);
+                        onDatasetUpdate({ ...dataset, visible: !dataset.visible });
                       }}
                     />
                     <Title>{dataset.name}</Title>

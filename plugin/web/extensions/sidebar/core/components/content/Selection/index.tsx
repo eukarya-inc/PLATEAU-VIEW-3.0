@@ -43,7 +43,7 @@ const Selection: React.FC<Props> = ({
               inEditor={inEditor}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}
-              onRemoveDataset={onDatasetRemove}
+              onDatasetRemove={onDatasetRemove}
             />
           ))
           .reverse()}
