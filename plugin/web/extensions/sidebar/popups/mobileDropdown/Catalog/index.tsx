@@ -1,5 +1,4 @@
-import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
-import { FilterType } from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage";
+import { DataCatalogItem, GroupBy } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import DatasetDetails from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Details";
 import { postMsg } from "@web/extensions/sidebar/utils";
@@ -11,25 +10,21 @@ import PopupItem from "../sharedComponents/PopupItem";
 type Props = {
   addedDatasetIds?: string[];
   isMobile?: boolean;
-  rawCatalog?: CatalogRawItem[];
-  onDatasetAdd: (dataset: CatalogItem) => void;
+  catalogData?: DataCatalogItem[];
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
 };
 
-const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDatasetAdd }) => {
-  useEffect(() => {
-    postMsg({ action: "extendPopup" });
-  }, []);
-
-  const [selectedDataset, setDataset] = useState<CatalogItem>();
-  const [filter, setFilter] = useState<FilterType>("prefecture");
+const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, catalogData, onDatasetAdd }) => {
+  const [selectedDataset, setDataset] = useState<DataCatalogItem>();
+  const [filter, setFilter] = useState<GroupBy>("city");
   const [page, setPage] = useState<"catalog" | "details">("catalog");
 
-  const handleOpenDetails = useCallback((data?: CatalogItem) => {
+  const handleOpenDetails = useCallback((data?: DataCatalogItem) => {
     setDataset(data);
     setPage("details");
   }, []);
 
-  const handleFilter = useCallback((filter: FilterType) => {
+  const handleFilter = useCallback((filter: GroupBy) => {
     setFilter(filter);
   }, []);
 
@@ -38,6 +33,10 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
       id => selectedDataset?.type === "item" && id === selectedDataset.id,
     );
   }, [addedDatasetIds, selectedDataset]);
+
+  useEffect(() => {
+    postMsg({ action: "extendPopup" });
+  }, []);
 
   return (
     <Wrapper>
@@ -50,7 +49,7 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, rawCatalog, onDat
             addedDatasetIds={addedDatasetIds}
             selectedDataset={selectedDataset}
             isMobile={isMobile}
-            rawCatalog={rawCatalog}
+            catalog={catalogData}
             filter={filter}
             onFilter={handleFilter}
             onOpenDetails={handleOpenDetails}

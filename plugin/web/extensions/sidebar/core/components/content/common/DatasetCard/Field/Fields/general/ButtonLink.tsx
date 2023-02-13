@@ -1,7 +1,7 @@
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseFieldProps, ButtonLink } from "../types";
+import { BaseFieldProps } from "../types";
 
 const ButtonLink: React.FC<BaseFieldProps<"buttonLink">> = ({ value, editMode, onUpdate }) => {
   const [title, setTitle] = useState(value.title);

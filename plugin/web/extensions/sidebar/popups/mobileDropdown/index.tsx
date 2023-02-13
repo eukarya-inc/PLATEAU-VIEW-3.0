@@ -4,7 +4,7 @@ import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Tab } from "../../core/components/Mobile";
-import { CatalogItem, CatalogRawItem } from "../../core/processCatalog";
+import { DataCatalogItem } from "../../modals/datacatalog/api/api";
 
 import Catalog from "./Catalog";
 import Menu from "./Menu";
@@ -14,7 +14,7 @@ const MobileDropdown: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>();
 
   const {
-    rawCatalog,
+    catalogData,
     project,
     processedSelectedDatasets,
     reearthURL,
@@ -36,8 +36,8 @@ const MobileDropdown: React.FC = () => {
   );
 
   const handleDatasetAdd = useCallback(
-    (dataset: CatalogItem) => {
-      handleProjectDatasetAdd(dataset as CatalogRawItem);
+    (dataset: DataCatalogItem) => {
+      handleProjectDatasetAdd(dataset as DataCatalogItem);
       changeTab("selection");
     },
     [changeTab, handleProjectDatasetAdd],
@@ -75,7 +75,7 @@ const MobileDropdown: React.FC = () => {
             <Catalog
               addedDatasetIds={addedDatasetIds}
               isMobile
-              rawCatalog={rawCatalog}
+              catalogData={catalogData}
               onDatasetAdd={handleDatasetAdd}
             />
           ),

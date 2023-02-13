@@ -1,126 +1,60 @@
-import { prefectures } from "@web/extensions/sidebar/core/dataTypes";
-import { CatalogRawItem, CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import { Input, Tabs } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+// import { useCallback, useEffect, useState } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { FilterType } from "..";
+import { DataCatalogItem, getDataCatalogTree, GroupBy } from "../../../../api/api";
 import Tags, { Tag as TagType } from "../Tags";
 
-import FileTree, { DataCatalog } from "./FileTree";
+import FileTree from "./FileTree";
 
 export type Tag = TagType;
 
 export type Props = {
   addedDatasetIds?: string[];
-  selectedDataset?: CatalogItem;
+  selectedDataset?: DataCatalogItem;
   isMobile?: boolean;
-  rawCatalog?: CatalogRawItem[];
+  catalog?: DataCatalogItem[];
   selectedTags?: Tag[];
-  filter: FilterType;
-  onFilter: (filter: FilterType) => void;
+  filter: GroupBy;
+  onFilter: (filter: GroupBy) => void;
   onTagSelect?: (tag: Tag) => void;
-  onDatasetAdd: (dataset: CatalogItem) => void;
-  onOpenDetails?: (data?: CatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 
-function typeFilter(catalog: CatalogRawItem[]): DataCatalog {
-  const filteredCatalog: CatalogItem[] = prefectures.map(p => {
-    const items: CatalogItem[] = catalog.filter(i => {
-      if (i.prefecture === p) {
-        return {
-          type: "item",
-          ...i,
-        };
-      }
-    }) as CatalogItem[];
+// function typeFilter(catalog: Catalog): DataCatalog {
+//   const filteredCatalog: CatalogItem[] = prefectures.map(p => {
+//     const items: CatalogItem[] = catalog.filter(i => {
+//       if (i.prefecture === p) {
+//         return {
+//           type: "item",
+//           ...i,
+//         };
+//       }
+//     }) as CatalogItem[];
 
-    return {
-      type: "group",
-      name: p,
-      children: items,
-    };
-  });
-  return filteredCatalog;
-}
+//     return {
+//       type: "group",
+//       name: p,
+//       children: items,
+//     };
+//   });
+//   return filteredCatalog;
+// }
 
-function tagFilter(catalog: CatalogRawItem[], tags?: Tag[]): DataCatalog {
-  return catalog
-    .filter(item =>
-      tags?.every(selectedTag => item.tags?.some(tag => selectedTag.name === tag.name)),
-    )
-    .map(item => ({ type: "item", ...item } as CatalogItem));
-}
-
-function prefectureFilter(catalog: CatalogRawItem[]): DataCatalog {
-  return prefectures
-    .map(p => {
-      const usecase: CatalogItem = {
-        type: "group",
-        name: "ユースケース",
-        children: [],
-      };
-
-      const items: CatalogItem[] = catalog
-        .filter(i => i.prefecture === p)
-        .map(i => {
-          if (i.modelType === "usecase") {
-            usecase.children.push({
-              type: "item",
-              ...i,
-            } as CatalogItem);
-            return;
-          }
-          return {
-            type: "item",
-            ...i,
-          };
-        })
-        .filter(i => !!i) as CatalogItem[];
-
-      if (usecase.children.length > 0) {
-        items.push(usecase);
-      }
-
-      if (items.length < 1) return;
-
-      return {
-        type: "group",
-        name: p,
-        children: items,
-      };
-    })
-    .filter(c => !!(c && c.children.length > 0)) as DataCatalog;
-}
-
-function searchCatalog(catalog: CatalogRawItem[], searchTerm = ""): DataCatalog {
-  const rawData = catalog.filter(
-    item =>
-      item.name?.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-      item.cityName?.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()),
-  );
-  // selected filter might has to be applied instead
-  return prefectureFilter(rawData);
-}
-
-function filterCatalog(
-  rawCatalog: CatalogRawItem[],
-  filter: FilterType,
-  payload?: { tags?: Tag[] },
-): CatalogItem[] | undefined {
-  if (filter === "fileType") {
-    return typeFilter(rawCatalog);
-  } else if (filter === "tag") {
-    return tagFilter(rawCatalog, payload?.tags);
-  } else {
-    return prefectureFilter(rawCatalog);
-  }
-}
+// function tagFilter(catalog: CatalogRawItem[], tags?: Tag[]): DataCatalog {
+//   return catalog
+//     .filter(item =>
+//       tags?.every(selectedTag => item.tags?.some(tag => selectedTag.name === tag.name)),
+//     )
+//     .map(item => ({ type: "item", ...item } as CatalogItem));
+// }
 
 const DatasetTree: React.FC<Props> = ({
   addedDatasetIds,
   isMobile,
-  rawCatalog,
+  catalog,
   selectedTags,
   filter,
   onFilter,
@@ -129,7 +63,6 @@ const DatasetTree: React.FC<Props> = ({
   onOpenDetails,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [catalog, setCatalog] = useState<DataCatalog>();
   const [loading, _toggleLoading] = useState(false); // needs implementation
   const [expandAll, toggleExpandAll] = useState(false);
 
@@ -138,18 +71,19 @@ const DatasetTree: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    if (rawCatalog && rawCatalog.length > 0) {
-      let filteredCatalog: CatalogItem[] | undefined;
-      if (searchTerm.length > 0) {
-        filteredCatalog = searchCatalog(rawCatalog, searchTerm);
-        toggleExpandAll(true);
-      } else {
-        filteredCatalog = filterCatalog(rawCatalog, filter, { tags: selectedTags });
-        toggleExpandAll(false);
-      }
-      setCatalog(filteredCatalog);
+    if (searchTerm.length > 0) {
+      toggleExpandAll(true);
+    } else {
+      toggleExpandAll(false);
     }
-  }, [rawCatalog, filter, searchTerm, selectedTags]);
+  }, [searchTerm]);
+
+  const dataCatalogTree = useMemo(
+    () =>
+      catalog &&
+      getDataCatalogTree(catalog, filter, searchTerm.length > 0 ? searchTerm : undefined),
+    [catalog, filter, searchTerm],
+  );
 
   const showInput = useMemo(
     () => !selectedTags?.length || searchTerm.length > 0,
@@ -181,12 +115,12 @@ const DatasetTree: React.FC<Props> = ({
       <StyledTabs
         defaultActiveKey="prefecture"
         tabBarStyle={showTabs ? { display: "none" } : { userSelect: "none" }}
-        onChange={active => onFilter(active as FilterType)}>
+        onChange={active => onFilter(active as GroupBy)}>
         <Tabs.TabPane key="prefecture" tab="都道府県">
-          {catalog && (
+          {dataCatalogTree && (
             <FileTree
               addedDatasetIds={addedDatasetIds}
-              catalog={catalog}
+              catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
               onDatasetAdd={onDatasetAdd}
@@ -195,10 +129,10 @@ const DatasetTree: React.FC<Props> = ({
           )}
         </Tabs.TabPane>
         <Tabs.TabPane key="type" tab="種類">
-          {catalog && (
+          {dataCatalogTree && (
             <FileTree
               addedDatasetIds={addedDatasetIds}
-              catalog={catalog}
+              catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
               onDatasetAdd={onDatasetAdd}

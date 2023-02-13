@@ -1,15 +1,16 @@
-import { CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { ComponentType, useCallback, useState } from "react";
 
+import { DataCatalogItem } from "../../api/api";
+
 export type Props = {
-  dataset: CatalogItem | UserDataItem;
+  dataset: DataCatalogItem | UserDataItem;
   isShareable?: boolean;
   addDisabled: boolean;
   contentSection?: ComponentType;
-  onDatasetAdd: (dataset: CatalogItem | UserDataItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
 };
 
 const DatasetDetails: React.FC<Props> = ({
@@ -35,7 +36,7 @@ const DatasetDetails: React.FC<Props> = ({
     <>
       <TopWrapper>
         <HeaderWrapper>
-          <Title>{dataset.type === "item" && (dataset.cityName ?? dataset.name)}</Title>
+          <Title>{dataset.name}</Title>
           <PublishButton onClick={handlePublish} published={published} isShareable={isShareable}>
             <HoverText published={published}>公開</HoverText>
             <Text published={published}>{published ? "公開済み" : "未公開"}</Text>

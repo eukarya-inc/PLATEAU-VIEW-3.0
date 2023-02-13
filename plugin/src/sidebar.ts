@@ -1,4 +1,4 @@
-import { CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
+import { DataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import { PostMessageProps, Project } from "@web/extensions/sidebar/types";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
@@ -49,7 +49,7 @@ let buildingSearchIsOpen = false;
 const defaultLocation = { zone: "outer", section: "left", area: "middle" };
 const mobileLocation = { zone: "outer", section: "center", area: "top" };
 
-let rawCatalog: CatalogRawItem[] = [];
+let catalogData: DataCatalogItem[] = [];
 let addedDatasets: string | undefined = undefined;
 
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
@@ -176,7 +176,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "catalogModalOpen") {
     addedDatasets = payload.addedDatasets;
-    rawCatalog = payload.rawCatalog;
+    catalogData = payload.catalogData;
     reearth.modal.show(dataCatalogHtml, { background: "transparent" });
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
@@ -188,7 +188,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   } else if (action === "initDataCatalog") {
     reearth.modal.postMessage({
       type: action,
-      payload: { rawCatalog, addedDatasets },
+      payload: { catalogData, addedDatasets },
     });
   } else if (action === "helpPopupOpen") {
     reearth.popup.show(helpPopupHtml, { position: "right-start", offset: 4 });

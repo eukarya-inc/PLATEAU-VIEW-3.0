@@ -1,16 +1,17 @@
-import { CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo } from "react";
 
+import { DataCatalogItem } from "../../../../api/api";
+
 export type Props = {
-  item: CatalogItem;
+  item: DataCatalogItem;
   isMobile?: boolean;
   addedDatasetIds?: string[];
   nestLevel: number;
-  selected: boolean;
-  onDatasetAdd: (dataset: CatalogItem) => void;
-  onOpenDetails?: (item?: CatalogItem) => void;
+  selectedID?: string;
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onOpenDetails?: (item?: DataCatalogItem) => void;
   onSelect?: (id: string) => void;
 };
 
@@ -19,7 +20,7 @@ const File: React.FC<Props> = ({
   isMobile,
   addedDatasetIds,
   nestLevel,
-  selected,
+  selectedID,
   onDatasetAdd,
   onOpenDetails,
   onSelect,
@@ -29,7 +30,7 @@ const File: React.FC<Props> = ({
   }, [item, onDatasetAdd]);
 
   const handleOpenDetails = useCallback(() => {
-    if (item.type === "group") return;
+    if (!item.id) return;
     onOpenDetails?.(item);
     onSelect?.(item.id);
   }, [item, onOpenDetails, onSelect]);
@@ -39,11 +40,16 @@ const File: React.FC<Props> = ({
     [addedDatasetIds, item],
   );
 
-  return item.type === "item" ? (
+  const selected = useMemo(
+    () => (item.type !== "group" ? selectedID === item.id : false),
+    [selectedID, item],
+  );
+
+  return (
     <Wrapper nestLevel={nestLevel} selected={selected}>
       <NameWrapper onClick={handleOpenDetails}>
         <Icon icon="file" size={20} />
-        <Name isMobile={isMobile}>{item.cityName ?? item.name}</Name>
+        <Name isMobile={isMobile}>{item.name}</Name>
       </NameWrapper>
       <StyledButton
         type="link"
@@ -52,7 +58,7 @@ const File: React.FC<Props> = ({
         disabled={addDisabled}
       />
     </Wrapper>
-  ) : null;
+  );
 };
 
 export default File;

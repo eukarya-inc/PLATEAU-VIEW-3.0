@@ -1,33 +1,16 @@
-import { CatalogItem } from "@web/extensions/sidebar/core/processCatalog";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-import TreeBuilder from "./TreeBuilder";
-
-type Props = {
-  item: CatalogItem;
+export type Props = {
+  name: string;
   isMobile?: boolean;
   expandAll?: boolean;
-  addedDatasetIds?: string[];
-  selectedId?: string;
   nestLevel: number;
-  onDatasetAdd: (dataset: CatalogItem) => void;
-  onOpenDetails?: (item?: CatalogItem) => void;
-  onSelect?: (id: string) => void;
+  children?: React.ReactNode;
 };
 
-const Folder: React.FC<Props> = ({
-  item,
-  isMobile,
-  expandAll,
-  addedDatasetIds,
-  selectedId,
-  nestLevel,
-  onDatasetAdd,
-  onOpenDetails,
-  onSelect,
-}) => {
+const Folder: React.FC<Props> = ({ name, isMobile, expandAll, nestLevel, children }) => {
   const [isOpen, open] = useState(false);
 
   useEffect(() => {
@@ -35,28 +18,14 @@ const Folder: React.FC<Props> = ({
   }, [expandAll]);
 
   return (
-    <Wrapper isOpen={isOpen}>
+    <Wrapper key={name} isOpen={isOpen}>
       <FolderItem nestLevel={nestLevel} onClick={() => open(!isOpen)}>
         <NameWrapper>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
-          <Name isMobile={isMobile}>{item.name}</Name>
+          <Name isMobile={isMobile}>{name}</Name>
         </NameWrapper>
       </FolderItem>
-      {item.type === "group" &&
-        item.children.map(m => (
-          <TreeBuilder
-            key={m.name}
-            item={m}
-            isMobile={isMobile}
-            expandAll={expandAll}
-            addedDatasetIds={addedDatasetIds}
-            selectedId={selectedId}
-            nestLevel={nestLevel + 1}
-            onDatasetAdd={onDatasetAdd}
-            onOpenDetails={onOpenDetails}
-            onSelect={onSelect}
-          />
-        ))}
+      {children}
     </Wrapper>
   );
 };

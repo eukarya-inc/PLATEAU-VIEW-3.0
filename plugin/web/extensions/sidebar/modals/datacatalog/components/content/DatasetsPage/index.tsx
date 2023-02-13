@@ -1,28 +1,27 @@
-import { CatalogItem, CatalogRawItem } from "@web/extensions/sidebar/core/processCatalog";
 import PageLayout from "@web/extensions/sidebar/modals/datacatalog/components/content/PageLayout";
 import { useCallback, useMemo, useState } from "react";
+
+import { DataCatalogItem, GroupBy } from "../../../api/api";
 
 import DatasetTree from "./DatasetTree";
 import DatasetDetails, { Tag } from "./Details";
 
 export type Props = {
-  rawCatalog?: CatalogRawItem[];
+  catalog?: DataCatalogItem[];
   addedDatasetIds?: string[];
-  onDatasetAdd: (dataset: CatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
 };
 
-export type FilterType = "prefecture" | "fileType" | "tag";
-
-const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetAdd }) => {
-  const [selectedDataset, setDataset] = useState<CatalogItem>();
+const DatasetsPage: React.FC<Props> = ({ catalog, addedDatasetIds, onDatasetAdd }) => {
+  const [selectedDataset, setDataset] = useState<DataCatalogItem>();
   const [selectedTags, selectTags] = useState<Tag[]>([]);
-  const [filter, setFilter] = useState<FilterType>("prefecture");
+  const [filter, setFilter] = useState<GroupBy>("city");
 
-  const handleOpenDetails = useCallback((data?: CatalogItem) => {
+  const handleOpenDetails = useCallback((data?: DataCatalogItem) => {
     setDataset(data);
   }, []);
 
-  const handleFilter = useCallback((filter: FilterType) => {
+  const handleFilter = useCallback((filter: GroupBy) => {
     setFilter(filter);
   }, []);
 
@@ -32,7 +31,7 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
         const selected = tags.find(selectedTag => selectedTag.name === tag.name)
           ? [...tags.filter(t => t.name !== tag.name)]
           : [...tags, tag];
-        selected.length > 0 ? handleFilter("tag") : handleFilter("prefecture");
+        selected.length > 0 ? handleFilter("tag") : handleFilter("city");
         return selected;
       }),
     [handleFilter],
@@ -50,7 +49,7 @@ const DatasetsPage: React.FC<Props> = ({ rawCatalog, addedDatasetIds, onDatasetA
         <DatasetTree
           addedDatasetIds={addedDatasetIds}
           selectedDataset={selectedDataset}
-          rawCatalog={rawCatalog}
+          catalog={catalog}
           selectedTags={selectedTags}
           filter={filter}
           onFilter={handleFilter}

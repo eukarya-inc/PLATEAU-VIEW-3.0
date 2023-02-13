@@ -1,7 +1,9 @@
-import { Tag as TagType } from "@web/extensions/sidebar/core/processCatalog";
 import { styled } from "@web/theme";
 
-export type Tag = TagType;
+export type Tag = {
+  name: string;
+  type: "location" | "data-type";
+};
 
 const Tags: React.FC<{ tags?: Tag[]; onTagSelect?: (tag: Tag) => void }> = ({
   tags,

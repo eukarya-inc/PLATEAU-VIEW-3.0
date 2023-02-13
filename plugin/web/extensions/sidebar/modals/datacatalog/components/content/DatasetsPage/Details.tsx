@@ -1,32 +1,35 @@
-import { CatalogItem, Tag as TagType } from "@web/extensions/sidebar/core/processCatalog";
 import DetailsComponent from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetDetails";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 
-import Tags from "./Tags";
+// import { useCallback, useMemo } from "react";
+import { DataCatalogItem } from "../../../api/api";
+
+import { Tag as TagType } from "./Tags";
+// import Tags, {Tag as TagType} from "./Tags";
 
 export type Tag = TagType;
 
 export type Props = {
-  dataset?: CatalogItem;
+  dataset?: DataCatalogItem;
   isMobile?: boolean;
   addDisabled: boolean;
-  onTagSelect?: (tag: Tag) => void;
-  onDatasetAdd: (dataset: CatalogItem) => void;
+  onTagSelect?: (tag: TagType) => void;
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
 };
 
 const DatasetDetails: React.FC<Props> = ({
   dataset,
-  isMobile,
+  // isMobile,
   addDisabled,
-  onTagSelect,
+  // onTagSelect,
   onDatasetAdd,
 }) => {
-  const datasetTags = useMemo(
-    () => (dataset?.type !== "group" ? dataset?.tags?.map(tag => tag) : undefined),
-    [dataset],
-  );
+  // const datasetTags = useMemo(
+  //   () => (dataset?.type !== "group" ? dataset?.tags?.map(tag => tag) : undefined),
+  //   [dataset],
+  // );
 
   const handleDatasetAdd = useCallback(() => {
     if (!dataset || addDisabled) return;
@@ -35,8 +38,8 @@ const DatasetDetails: React.FC<Props> = ({
 
   const ContentComponent: React.FC = () => (
     <>
-      {!isMobile && <Tags tags={datasetTags} onTagSelect={onTagSelect} />}
-      {dataset && dataset?.type !== "group" && <Content>{dataset.description}</Content>}
+      {/* {!isMobile && <Tags tags={datasetTags} onTagSelect={onTagSelect} />} */}
+      {dataset && dataset?.type !== "group" && <Content>{dataset.desc}</Content>}
     </>
   );
 

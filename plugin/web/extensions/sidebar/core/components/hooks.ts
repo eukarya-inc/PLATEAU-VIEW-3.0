@@ -1,9 +1,9 @@
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import { DataCatalogItem, getDataCatalog } from "../../modals/datacatalog/api/api";
 import { Data, Template } from "../newTypes";
-import processCatalog, { CatalogRawItem } from "../processCatalog";
 
 import { Pages } from "./Header";
 
@@ -36,7 +36,7 @@ export default () => {
   const [inEditor, setInEditor] = useState(true);
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
-  const [cmsURL, setCMSURL] = useState<string>();
+  // const [cmsURL, setCMSURL] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
 
   const [data, setData] = useState<Data[]>();
@@ -77,7 +77,7 @@ export default () => {
     [updateProject],
   );
 
-  const handleProjectDatasetAdd = useCallback((dataset: CatalogRawItem) => {
+  const handleProjectDatasetAdd = useCallback((dataset: any) => {
     updateProject(({ sceneOverrides, selectedDatasets }) => {
       const updatedProject: Project = {
         sceneOverrides,
@@ -177,36 +177,21 @@ export default () => {
 
   // ****************************************
   // Catalog
-  const [plateauData, setPlateauData] = useState<any[]>([]);
-  const [usecaseData, setUsecaseData] = useState<any[]>([]);
-  const [datasetData, setDatasetData] = useState<any[]>([]);
+  const [catalogData, setCatalog] = useState<DataCatalogItem[]>([]);
 
   useEffect(() => {
-    async function fetchRawData() {
-      const plateau = (await (await fetch(`${cmsURL}/plateau`)).json()).results;
-      const usecase = (await (await fetch(`${cmsURL}/usecase`)).json()).results;
-      const dataset = (await (await fetch(`${cmsURL}/dataset`)).json()).results;
-      setPlateauData(plateau);
-      setUsecaseData(usecase);
-      setDatasetData(dataset);
-    }
-    if (cmsURL) {
-      fetchRawData();
-    }
-  }, [cmsURL, setPlateauData, setUsecaseData, setDatasetData]);
-
-  const rawCatalog = useMemo(
-    () => processCatalog(plateauData, usecaseData, datasetData),
-    [plateauData, usecaseData, datasetData],
-  );
+    getDataCatalog("https://api.plateau.reearth.io/").then(res => {
+      setCatalog(res);
+    });
+  }, []);
 
   const handleModalOpen = useCallback(() => {
     const selectedIds = project.selectedDatasets.map(d => d.id);
     postMsg({
       action: "catalogModalOpen",
-      payload: { addedDatasets: selectedIds, rawCatalog },
+      payload: { addedDatasets: selectedIds, catalogData },
     });
-  }, [rawCatalog, project.selectedDatasets]);
+  }, [catalogData, project.selectedDatasets]);
   // ****************************************
 
   // ****************************************
@@ -284,7 +269,7 @@ export default () => {
         setInEditor(e.data.payload.inEditor);
         setBackendAccessToken(e.data.payload.backendAccessToken);
         setBackendURL(e.data.payload.backendURL);
-        setCMSURL(`${e.data.payload.cmsURL}/api/p/plateau-2022`);
+        // setCMSURL(`${e.data.payload.cmsURL}/api/p/plateau-2022`);
         setReearthURL(`${e.data.payload.reearthURL}`);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
@@ -350,7 +335,7 @@ export default () => {
   }, []);
 
   return {
-    rawCatalog,
+    catalogData,
     project,
     processedSelectedDatasets,
     inEditor,

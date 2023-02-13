@@ -1,21 +1,17 @@
-import {
-  CatalogItem,
-  DataCatalog as DataCatalogType,
-} from "@web/extensions/sidebar/core/processCatalog";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import TreeBuilder from "./TreeBuilder";
+import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
 
-export type DataCatalog = DataCatalogType;
+import TreeBuilder from "./TreeBuilder";
 
 export type Props = {
   addedDatasetIds?: string[];
-  catalog: DataCatalog;
+  catalog: (DataCatalogItem | DataCatalogGroup)[];
   isMobile?: boolean;
   expandAll?: boolean;
-  onDatasetAdd: (dataset: CatalogItem) => void;
-  onOpenDetails?: (data?: CatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 
 const FileTree: React.FC<Props> = ({
@@ -35,20 +31,17 @@ const FileTree: React.FC<Props> = ({
   return (
     <TreeWrapper isMobile={isMobile}>
       <Tree>
-        {catalog.map(item => (
-          <TreeBuilder
-            key={item.name}
-            item={item}
-            isMobile={isMobile}
-            expandAll={expandAll}
-            addedDatasetIds={addedDatasetIds}
-            selectedId={selectedId}
-            nestLevel={1}
-            onDatasetAdd={onDatasetAdd}
-            onOpenDetails={onOpenDetails}
-            onSelect={handleSelect}
-          />
-        ))}
+        <TreeBuilder
+          catalogItem={catalog}
+          addedDatasetIds={addedDatasetIds}
+          isMobile={isMobile}
+          expandAll={expandAll}
+          selectedId={selectedId}
+          nestLevel={0}
+          onDatasetAdd={onDatasetAdd}
+          onOpenDetails={onOpenDetails}
+          onSelect={handleSelect}
+        />
       </Tree>
     </TreeWrapper>
   );
