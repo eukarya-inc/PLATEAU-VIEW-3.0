@@ -96,6 +96,7 @@ export default () => {
             name: dataset.name,
             url: "dataURL" in dataset ? dataset.dataURL : undefined,
             visible: true,
+            fieldGroups: [],
           } as Data,
         ],
       };

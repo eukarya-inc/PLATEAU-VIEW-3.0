@@ -9,10 +9,9 @@ export type Data = {
   id: string;
   dataId: string;
   type: string;
-  name?: string; // Might want to make raw type without this
-  // public: boolean; // Might want to make raw type without this
-  visible?: boolean; // Might want to make raw type without this
-  modelType: "usecase" | "plateau" | "dataset";
+  name?: string;
+  // public: boolean;
+  visible?: boolean;
   url?: string;
   // either template or components
   template?: string; // user-defined template ID or builtin template ID

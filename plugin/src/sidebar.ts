@@ -143,9 +143,9 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           addedDatasets.push([sd.id, sd.visible ? "showing" : "hidden", layerID]);
         });
         if (isMobile) {
-          reearth.popup.postMessage({ action, outBoundPayload });
+          reearth.popup.postMessage({ action, payload: outBoundPayload });
         } else {
-          reearth.ui.postMessage({ action, outBoundPayload });
+          reearth.ui.postMessage({ action, payload: outBoundPayload });
         }
       });
     });
@@ -180,6 +180,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       const layerID = reearth.layers.add(data);
       addedDatasets.push([payload.id, "showing", layerID]);
     }
+  } else if (action === "updateDatasetInScene") {
+    reearth.layers.override(addedDatasets.find(ad => ad[0] === payload.id)?.[2], payload.update);
   } else if (action === "removeDatasetFromScene") {
     reearth.layers.hide(addedDatasets.find(ad => ad[0] === payload)?.[2]);
     const idx = addedDatasets.findIndex(ad => ad[0] === payload);
@@ -189,12 +191,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       reearth.layers.hide(ad[2]);
       ad[1] = "removed";
     });
-  } else if (action === "updateDatasetInScene") {
-    // update dataset
-    // update dataset
-    // update dataset
-    // update dataset
-    reearth.layers.overrideProperty();
   } else if (
     action === "screenshot" ||
     action === "screenshotPreview" ||

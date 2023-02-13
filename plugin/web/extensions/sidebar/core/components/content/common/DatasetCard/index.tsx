@@ -166,6 +166,7 @@ const DatasetCard: React.FC<Props> = ({
               <Field
                 key={idx}
                 field={c}
+                datasetID={dataset.id}
                 editMode={inEditor && currentTab === "edit"}
                 selectGroups={dataset.fieldGroups}
                 onUpdate={handleFieldUpdate}

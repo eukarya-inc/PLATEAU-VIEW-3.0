@@ -131,30 +131,32 @@ export default ({
       name: fieldName["pointColor"],
       onClick: handleFieldAdd({}),
     },
-    pointColorGradient: {
-      name: fieldName["pointColorGradient"],
-      onClick: ({ key }) => console.log("do something: ", key),
-    },
+    // pointColorGradient: {
+    //   name: fieldName["pointColorGradient"],
+    //   onClick: ({ key }) => console.log("do something: ", key),
+    // },
     pointSize: {
       name: fieldName["pointSize"],
       onClick: ({ key }) => console.log("do something: ", key),
     },
     pointIcon: {
       name: fieldName["pointIcon"],
-      onClick: ({ key }) => console.log("do something: ", key),
+      onClick: handleFieldAdd({
+        size: 1,
+      }),
     },
-    pointLabel: {
-      name: fieldName["pointLabel"],
-      onClick: ({ key }) => console.log("do something: ", key),
-    },
-    pointModel: {
-      name: fieldName["pointModel"],
-      onClick: ({ key }) => console.log("do something: ", key),
-    },
-    pointStroke: {
-      name: fieldName["pointStroke"],
-      onClick: ({ key }) => console.log("do something: ", key),
-    },
+    // pointLabel: {
+    //   name: fieldName["pointLabel"],
+    //   onClick: ({ key }) => console.log("do something: ", key),
+    // },
+    // pointModel: {
+    //   name: fieldName["pointModel"],
+    //   onClick: ({ key }) => console.log("do something: ", key),
+    // },
+    // pointStroke: {
+    //   name: fieldName["pointStroke"],
+    //   onClick: ({ key }) => console.log("do something: ", key),
+    // },
   };
 
   //   const polylineFields: {
