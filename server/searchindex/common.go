@@ -16,6 +16,7 @@ type Config struct {
 	CMSModel        string
 	Delegate        bool
 	DelegateURL     string
+	Debug           bool
 	// internal
 	skipIndexer bool
 }

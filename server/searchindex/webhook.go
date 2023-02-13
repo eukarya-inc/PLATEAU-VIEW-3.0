@@ -114,7 +114,7 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 
 		log.Infof("searchindex webhook: start processing")
 
-		result, err := do(ctx, c, pid, assetURLs, conf.skipIndexer)
+		result, err := do(ctx, c, pid, assetURLs, conf.skipIndexer, conf.Debug)
 		if err != nil {
 			log.Errorf("searchindex webhook: %v", err)
 
@@ -262,7 +262,7 @@ func findAsset(ctx context.Context, c cms.Interface, st *Storage, item Item, pid
 	return urls, nil
 }
 
-func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipIndexer bool) ([]string, error) {
+func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipIndexer, debug bool) ([]string, error) {
 	var results []string
 	for _, u := range u {
 		name := pathFileName(u.Path)
@@ -278,7 +278,7 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 		}
 
 		// build indexes
-		indexer := NewZipIndexer(c, pid, u)
+		indexer := NewZipIndexer(c, pid, u, debug)
 		aid, err := indexer.BuildIndex(ctx, name)
 		if err != nil {
 			return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)

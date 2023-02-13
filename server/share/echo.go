@@ -23,9 +23,9 @@ type Config struct {
 	CMSBase  string
 	CMSToken string
 	// optional
-	CMSModel string
-	// optional
+	CMSModel        string
 	CMSDataFieldKey string
+	Disable         bool
 }
 
 func (conf *Config) Default() {
@@ -39,6 +39,9 @@ func (conf *Config) Default() {
 
 func Echo(g *echo.Group, conf Config) error {
 	conf.Default()
+	if conf.Disable {
+		return nil
+	}
 
 	cmsapi, err := cms.New(conf.CMSBase, conf.CMSToken)
 	if err != nil {

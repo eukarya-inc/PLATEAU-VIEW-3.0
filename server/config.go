@@ -51,6 +51,7 @@ type Config struct {
 	Opinion_To           string
 	Opinion_ToName       string
 	Sidebar_Token        string
+	Share_Disable        bool
 	DataConv_Disable     bool
 	Indexer_Delegate     bool
 }
@@ -95,6 +96,7 @@ func (c *Config) SearchIndex() searchindex.Config {
 		CMSStorageProject: c.CMS_SystemProject,
 		Delegate:          c.Indexer_Delegate,
 		DelegateURL:       c.Delegate_URL,
+		Debug:             c.Debug,
 		// CMSModel: c.CMS_Model,
 		// CMSStorageModel:   c.CMS_IndexerStorageModel,
 	}
@@ -125,6 +127,7 @@ func (c *Config) Share() share.Config {
 	return share.Config{
 		CMSBase:  c.CMS_BaseURL,
 		CMSToken: c.CMS_Token,
+		Disable:  c.Share_Disable,
 		// CMSModel:   c.CMS_ShareModel,
 		// CMSDataFieldKey: c.CMS_ShareField,
 	}

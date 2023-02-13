@@ -37,25 +37,27 @@ type Indexer struct {
 	config *indexer.Config
 	cms    cms.Interface
 	pid    string
+	debug  bool
 	// true -> faster but uses more memory
 	zipMode bool
 	// true -> more stable but uses more memory
 	bufferMode bool
 }
 
-func NewIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
+func NewIndexer(cms cms.Interface, pid string, base *url.URL, debug bool) *Indexer {
 	return &Indexer{
 		base:       base,
 		config:     builtinConfig,
 		cms:        cms,
 		pid:        pid,
+		debug:      debug,
 		zipMode:    false,
 		bufferMode: false,
 	}
 }
 
-func NewZipIndexer(cms cms.Interface, pid string, base *url.URL) *Indexer {
-	i := NewIndexer(cms, pid, base)
+func NewZipIndexer(cms cms.Interface, pid string, base *url.URL, debug bool) *Indexer {
+	i := NewIndexer(cms, pid, base, debug)
 	i.zipMode = true
 	return i
 }
@@ -66,7 +68,7 @@ func (i *Indexer) BuildIndex(ctx context.Context, name string) (string, error) {
 		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)
 	}
 
-	ind := indexer.NewIndexer(builtinConfig, indfs, nil)
+	ind := indexer.NewIndexer(builtinConfig, indfs, nil, i.debug)
 	res, err := ind.Build()
 	if err != nil {
 		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)

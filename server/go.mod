@@ -14,7 +14,6 @@ require (
 	github.com/reearth/reearthx v0.0.0-20230203210115-d04054013125
 	github.com/samber/lo v1.33.0
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
-	github.com/spf13/afero v1.9.3
 	github.com/spkg/bom v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tdewolff/canvas v0.0.0-20221230020303-9eb6d3934367

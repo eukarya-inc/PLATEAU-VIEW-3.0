@@ -50,9 +50,16 @@ jobs:
           docker tag $IMAGE $IMAGE_GCP && \
           docker push $IMAGE &&
           docker push $IMAGE_GCP
-      - name: Deploy to Cloud Run
+      - name: Deploy server to Cloud Run
         run: |
           gcloud run deploy plateauview-api \
+            --image $IMAGE_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
+      - name: Deploy indexer server to Cloud Run
+        run: |
+          gcloud run deploy plateauview-api-indexer \
             --image $IMAGE_GCP \
             --region $GCP_REGION \
             --platform managed \

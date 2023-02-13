@@ -39,7 +39,7 @@ func TestIndexer(t *testing.T) {
 
 	input := NewFSFS(os.DirFS("testdata"))
 	output := NewZipOutputFS(zw, "")
-	indexer := NewIndexer(config, input, output)
+	indexer := NewIndexer(config, input, output, true)
 
 	err = indexer.BuildAndWrite()
 	assert.NoError(t, err)
@@ -66,7 +66,7 @@ func TestIndexerWithHTTPFS(t *testing.T) {
 
 	input := NewHTTPFS(nil, u)
 	output := NewZipOutputFS(zw, "")
-	indexer := NewIndexer(config, input, output)
+	indexer := NewIndexer(config, input, output, true)
 
 	err := indexer.BuildAndWrite()
 	assert.NoError(t, err)
