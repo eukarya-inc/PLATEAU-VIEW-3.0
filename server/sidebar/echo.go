@@ -6,6 +6,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type Config struct {
@@ -26,6 +27,9 @@ func Echo(g *echo.Group, c Config) error {
 
 func initEcho(g *echo.Group, c Config, cms cms.Interface) {
 	h := NewHandler(cms)
+
+	g.Use(middleware.CORS(), middleware.BodyLimit("5M"))
+
 	g.GET("/:pid", h.fetchRoot())
 	g.GET("/:pid/data", h.getAllDataHandler())
 	g.GET("/:pid/data/:iid", h.getDataHandler())

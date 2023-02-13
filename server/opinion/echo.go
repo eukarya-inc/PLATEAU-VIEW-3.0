@@ -103,5 +103,5 @@ func Echo(g *echo.Group, conf Config) {
 		}
 
 		return c.JSON(http.StatusOK, "ok")
-	}, middleware.BodyLimit("10M"))
+	}, middleware.BodyLimit("10M"), middleware.CORS())
 }

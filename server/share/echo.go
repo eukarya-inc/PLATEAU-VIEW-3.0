@@ -45,6 +45,8 @@ func Echo(g *echo.Group, conf Config) error {
 		return fmt.Errorf("share: failed to init cms: %w", err)
 	}
 
+	g.Use(middleware.CORS())
+
 	g.GET("/:project/:id", func(c echo.Context) error {
 		prj := c.Param("project")
 		if prj == "" {

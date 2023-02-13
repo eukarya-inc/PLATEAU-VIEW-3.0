@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/reearth/reearthx/log"
 )
 
@@ -20,7 +21,7 @@ func Echo(c Config, e *echo.Group) error {
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	})
+	}, middleware.CORS())
 
 	return nil
 }
