@@ -13,8 +13,9 @@ type Config struct {
 	CMSStorageProject string
 	// optioanl
 	CMSStorageModel string
-	// optional
-	CMSModel string
+	CMSModel        string
+	Delegate        bool
+	DelegateURL     string
 	// internal
 	skipIndexer bool
 }

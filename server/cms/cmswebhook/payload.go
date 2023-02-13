@@ -8,11 +8,13 @@ import (
 )
 
 type Payload struct {
-	Type      string          `json:"type"`
-	Data      json.RawMessage `json:"data"`
+	Type      string          `json:"type,omitempty"`
+	Data      json.RawMessage `json:"data,omitempty"`
 	AssetData *AssetData      `json:"-"`
 	ItemData  *ItemData       `json:"-"`
-	Operator  Operator        `json:"operator"`
+	Operator  Operator        `json:"operator,omitempty"`
+	Sig       string          `json:"-"`
+	Body      []byte          `json:"-"`
 }
 
 func (p *Payload) UnmarshalJSON(data []byte) error {
@@ -33,6 +35,25 @@ func (p *Payload) UnmarshalJSON(data []byte) error {
 	}
 	p.Data = nil
 	return nil
+}
+
+func (p *Payload) MarshalJSON() (_ []byte, err error) {
+	if p.ItemData != nil {
+		if p.Data, err = json.Marshal(p.ItemData); err != nil {
+			return nil, err
+		}
+	} else if p.AssetData != nil {
+		if p.Data, err = json.Marshal(p.AssetData); err != nil {
+			return nil, err
+		}
+	}
+
+	type payload2 Payload
+	b, err := json.Marshal((*payload2)(p))
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
 }
 
 func (p Payload) ProjectID() string {

@@ -1,6 +1,7 @@
 package searchindex
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -53,6 +54,17 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 		}
 
 		ctx := req.Context()
+
+		if conf.Delegate && conf.DelegateURL != "" {
+			// delegate
+			log.Infof("searchindex webhook: delegate to %s", conf.DelegateURL)
+			if err := delegate(ctx, w, conf.DelegateURL); err != nil {
+				log.Errorf("searchindex webhook: error from delegate: %v", err)
+				return nil
+			}
+			log.Info("searchindex webhook: done to delegate")
+			return nil
+		}
 
 		stprj := conf.CMSStorageProject
 		if stprj == "" {
@@ -278,4 +290,35 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 
 func pathFileName(p string) string {
 	return strings.TrimSuffix(path.Base(p), path.Ext(p))
+}
+
+func delegate(ctx context.Context, w *cmswebhook.Payload, u string) error {
+	if w.Body == nil {
+		return errors.New("webhook payload body is nil")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", u, bytes.NewReader(w.Body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if w.Sig != "" {
+		req.Header.Set(cmswebhook.SignatureHeader, w.Sig)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = res.Body.Close()
+	}()
+
+	if res.StatusCode >= 300 {
+		return fmt.Errorf("status code is %d", res.StatusCode)
+	}
+
+	return nil
 }

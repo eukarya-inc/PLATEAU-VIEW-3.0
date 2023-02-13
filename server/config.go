@@ -29,6 +29,7 @@ type Config struct {
 	Debug                bool
 	Origin               []string
 	Secret               string
+	Delegate_URL         string
 	CMS_Webhook_Secret   string
 	CMS_BaseURL          string
 	CMS_Token            string
@@ -51,6 +52,7 @@ type Config struct {
 	Opinion_ToName       string
 	Sidebar_Token        string
 	DataConv_Disable     bool
+	Indexer_Delegate     bool
 }
 
 func NewConfig() (*Config, error) {
@@ -91,6 +93,8 @@ func (c *Config) SearchIndex() searchindex.Config {
 		CMSBase:           c.CMS_BaseURL,
 		CMSToken:          c.CMS_Token,
 		CMSStorageProject: c.CMS_SystemProject,
+		Delegate:          c.Indexer_Delegate,
+		DelegateURL:       c.Delegate_URL,
 		// CMSModel: c.CMS_Model,
 		// CMSStorageModel:   c.CMS_IndexerStorageModel,
 	}

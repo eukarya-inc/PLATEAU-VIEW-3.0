@@ -18,21 +18,24 @@ func EchoMiddleware(secret []byte) echo.MiddlewareFunc {
 				return errors.New("unprocessable entity")
 			}
 
-			sig := c.Request().Header.Get(header)
-			log.Infof("webhook: received: sig=%s", sig)
+			sig := c.Request().Header.Get(SignatureHeader)
+			log.Debugf("webhook: received: sig=%s", sig)
 			if !validateSignature(sig, body, secret) {
 				return c.JSON(http.StatusUnauthorized, "unauthorized")
 			}
 
-			log.Infof("webhook: validated: %s", body)
+			log.Debugf("webhook: body: %s", body)
 
 			p := &Payload{}
 			if err := json.Unmarshal(body, p); err != nil {
 				return c.JSON(http.StatusBadRequest, "invalid payload")
 			}
 
+			p.Body = body
+			p.Sig = sig
 			req := c.Request()
-			c.SetRequest(c.Request().WithContext(AttacPayload(req.Context(), p)))
+			ctx := AttachPayload(req.Context(), p)
+			c.SetRequest(req.WithContext(ctx))
 			return next(c)
 		}
 	}

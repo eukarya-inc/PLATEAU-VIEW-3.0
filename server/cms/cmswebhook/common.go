@@ -17,7 +17,7 @@ import (
 const (
 	version              = "v1"
 	expires              = time.Hour
-	header               = "Reearth-Signature"
+	SignatureHeader      = "Reearth-Signature"
 	EventItemCreate      = "item.create"
 	EventItemUpdate      = "item.update"
 	EventItemPublish     = "item.publish"
@@ -28,7 +28,7 @@ var ctxKey = struct{}{}
 
 type Handler func(*http.Request, *Payload) error
 
-func AttacPayload(ctx context.Context, p *Payload) context.Context {
+func AttachPayload(ctx context.Context, p *Payload) context.Context {
 	return context.WithValue(ctx, ctxKey, p)
 }
 
