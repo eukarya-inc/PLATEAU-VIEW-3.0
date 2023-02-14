@@ -65,7 +65,7 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 		w.ItemData.Model == nil ||
 		w.ItemData.Model.Key != conf.CMSModel ||
 		w.Operator.User == nil {
-		log.Debugf("dataconv: skipped: payload is invalid or model key is not %s", conf.CMSModel)
+		// skipped
 		return nil
 	}
 
@@ -85,7 +85,10 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 	}
 
 	u, err := url.Parse(a.URL)
-	if err != nil || path.Ext(u.Path) != ".geojson" {
+	if b := fileName(u.Path); err != nil ||
+		path.Ext(u.Path) != ".geojson" ||
+		border && !strings.HasSuffix(b, "_border") ||
+		landmark && !strings.HasSuffix(b, "_landmark") && !strings.HasSuffix(b, "_station") {
 		log.Debugf("dataconv: skipped: invalid URL or ext is not geojson: %s", u)
 		return nil
 	}
@@ -160,4 +163,8 @@ func getGeoJSON(ctx context.Context, u string) (*geojson.FeatureCollection, erro
 	}
 
 	return &f, nil
+}
+
+func fileName(p string) string {
+	return strings.TrimSuffix(path.Base(p), path.Ext(p))
 }

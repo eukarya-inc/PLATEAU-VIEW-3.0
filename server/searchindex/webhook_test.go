@@ -59,7 +59,7 @@ func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
 			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
+	c := newMockedCMS(t, itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
 		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
@@ -136,7 +136,7 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
+	c := newMockedCMS(t, itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
 		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
@@ -246,7 +246,7 @@ func TestWebhook_AssetNotDecompressed_DoubleUpdate(t *testing.T) {
 			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
+	c := newMockedCMS(t, itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
 		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
@@ -311,7 +311,7 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 			ModelID: itemsModel,
 		},
 	}
-	c := newMockedCMS(itemsProject, itemsModel, storageProject, storageModel, items, assets)
+	c := newMockedCMS(t, itemsProject, itemsModel, storageProject, storageModel, items, assets)
 	h := webhookHandler(c, Config{
 		CMSModel:          itemsModel,
 		CMSStorageProject: storageProject,
@@ -353,9 +353,11 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 func initLogger(t *testing.T) func() string {
 	t.Helper()
 	buf := bytes.NewBuffer(nil)
-	scanner := bufio.NewScanner(buf)
+	// log.SetOutput(io.MultiWriter(log.DefaultOutput, buf))
 	log.SetOutput(buf)
 	t.Cleanup(func() { log.SetOutput(log.DefaultOutput) })
+
+	scanner := bufio.NewScanner(buf)
 	return func() string {
 		if scanner.Scan() {
 			t := scanner.Text()
@@ -375,6 +377,7 @@ func initLogger(t *testing.T) func() string {
 
 type mockedCMS struct {
 	cms.Interface
+	t                 *testing.T
 	itemsprojectkey   string
 	storageprojectkey string
 	storagekey        string
@@ -385,8 +388,9 @@ type mockedCMS struct {
 	assets            *util.SyncMap[string, *cms.Asset]
 }
 
-func newMockedCMS(itemsprojectkey, itemskey, storageprojectkey, storagekey string, items []*cms.Item, assets []*cms.Asset) *mockedCMS {
+func newMockedCMS(t *testing.T, itemsprojectkey, itemskey, storageprojectkey, storagekey string, items []*cms.Item, assets []*cms.Asset) *mockedCMS {
 	return &mockedCMS{
+		t:                 t,
 		itemsprojectkey:   itemsprojectkey,
 		storageprojectkey: storageprojectkey,
 		storagekey:        storagekey,

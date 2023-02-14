@@ -26,53 +26,40 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	return webhookHandler(c, conf), nil
 }
 
-func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
+func webhookHandler(cms cms.Interface, conf Config) cmswebhook.Handler {
 	conf.Default()
 
-	return func(req *http.Request, w *cmswebhook.Payload) error {
-		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate && w.Type != cmswebhook.EventAssetDecompress {
-			log.Debugf("searchindex webhook: invalid event type: %s", w.Type)
+	return func(req *http.Request, wp *cmswebhook.Payload) error {
+		if wp.Type != cmswebhook.EventItemCreate && wp.Type != cmswebhook.EventItemUpdate && wp.Type != cmswebhook.EventAssetDecompress {
+			log.Debugf("searchindex webhook: invalid event type: %s", wp.Type)
 			return nil
 		}
 
-		if w.Type == cmswebhook.EventItemCreate || w.Type == cmswebhook.EventItemUpdate {
-			if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Item.ID == "" || w.ItemData.Model == nil || w.ItemData.Model.Key == "" {
-				log.Debugf("searchindex webhook: invalid payload: no item or model")
+		if wp.Type == cmswebhook.EventItemCreate || wp.Type == cmswebhook.EventItemUpdate {
+			if wp.ItemData == nil || wp.ItemData.Item == nil || wp.ItemData.Item.ID == "" || wp.ItemData.Model == nil || wp.ItemData.Model.Key == "" {
+				log.Debug("searchindex webhook: invalid payload: no item or model")
 				return nil
 			}
 
-			if w.ItemData.Model.Key != conf.CMSModel {
-				log.Debugf("searchindex webhook: skipped: model key expected=%s actual=%s", conf.CMSModel, w.ItemData.Model.Key)
+			if wp.ItemData.Model.Key != conf.CMSModel {
+				log.Debugf("searchindex webhook: skipped: model key expected=%s actual=%s", conf.CMSModel, wp.ItemData.Model.Key)
 				return nil
 			}
 		}
 
-		pid := w.ProjectID()
-		if pid == "" {
-			log.Debugf("searchindex webhook: invalid payload: no project id")
+		if wp.Type == cmswebhook.EventAssetDecompress && wp.AssetData == nil {
+			log.Debug("searchindex webhook: invalid payload: no item or model")
 			return nil
 		}
 
 		ctx := req.Context()
-
-		if conf.Delegate && conf.DelegateURL != "" {
-			// delegate
-			log.Infof("searchindex webhook: delegate to %s", conf.DelegateURL)
-			if err := delegate(ctx, w, conf.DelegateURL); err != nil {
-				log.Errorf("searchindex webhook: error from delegate: %v", err)
-				return nil
-			}
-			log.Info("searchindex webhook: done to delegate")
+		wc := newWebhookContext(cms, conf, wp)
+		if wc == nil {
+			log.Debugf("searchindex webhook: invalid payload: no project id")
 			return nil
 		}
 
-		stprj := conf.CMSStorageProject
-		if stprj == "" {
-			stprj = pid
-		}
-		st := NewStorage(c, stprj, conf.CMSStorageModel)
-
-		item, siid, err := getItem(ctx, c, st, w, conf.CMSModel)
+		item, si, err := wc.GetItem(ctx)
 		if err != nil || item.ID == "" {
 			if err != errSkipped {
 				log.Errorf("searchindex webhook: failed to get item: %v", err)
@@ -90,9 +77,24 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 			return nil
 		}
 
+		if conf.Delegate {
+			log.Infof("searchindex webhook: delegate to %s", conf.DelegateURL)
+			if err := wc.Delegate(ctx); err != nil {
+				log.Errorf("searchindex webhook: error from delegate: %v", err)
+				return nil
+			}
+			log.Info("searchindex webhook: done to delegate")
+			return nil
+		}
+
+		if err := wc.RemoveAssetFromStorage(ctx, si); err != nil {
+			log.Errorf("searchindex webook: cannot update storage item: %w", err)
+			return nil
+		}
+
 		log.Infof("searchindex webhook: item: %+v", item)
 
-		assetURLs, err := findAsset(ctx, c, st, item, pid, siid)
+		assetURLs, err := wc.FindAsset(ctx, item, si.ID)
 		if err != nil {
 			if err == errSkipped {
 				log.Infof("searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg")
@@ -102,11 +104,11 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 			return nil
 		}
 
-		if err := c.CommentToItem(ctx, item.ID, "検索インデックスの構築を開始しました。"); err != nil {
+		if err := wc.CMS.CommentToItem(ctx, item.ID, "検索インデックスの構築を開始しました。"); err != nil {
 			log.Errorf("searchindex webhook: failed to comment: %s", err)
 		}
 
-		if _, err := c.UpdateItem(ctx, item.ID, Item{
+		if _, err := wc.CMS.UpdateItem(ctx, item.ID, Item{
 			SearchIndexStatus: StatusProcessing,
 		}.Fields()); err != nil {
 			log.Errorf("searchindex webhook: failed to update item: %w", err)
@@ -114,30 +116,30 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 
 		log.Infof("searchindex webhook: start processing")
 
-		result, err := do(ctx, c, pid, assetURLs, conf.skipIndexer, conf.Debug)
+		result, err := wc.BuildIndexes(ctx, assetURLs)
 		if err != nil {
 			log.Errorf("searchindex webhook: %v", err)
 
-			if _, err := c.UpdateItem(ctx, item.ID, Item{
+			if _, err := wc.CMS.UpdateItem(ctx, item.ID, Item{
 				SearchIndexStatus: StatusError,
 			}.Fields()); err != nil {
 				log.Errorf("searchindex webhook: failed to update item: %s", err)
 			}
 
-			if err := c.CommentToItem(ctx, item.ID, fmt.Sprintf("検索インデックスの構築に失敗しました。%v", err)); err != nil {
+			if err := wc.CMS.CommentToItem(ctx, item.ID, fmt.Sprintf("検索インデックスの構築に失敗しました。%v", err)); err != nil {
 				log.Errorf("searchindex webhook: failed to comment: %s", err)
 			}
 			return nil
 		}
 
-		if _, err := c.UpdateItem(ctx, item.ID, Item{
+		if _, err := wc.CMS.UpdateItem(ctx, item.ID, Item{
 			SearchIndexStatus: StatusOK,
 			SearchIndex:       result,
 		}.Fields()); err != nil {
 			log.Errorf("searchindex webhook: failed to update item: %s", err)
 		}
 
-		if err := c.CommentToItem(ctx, item.ID, "検索インデックスの構築が完了しました。"); err != nil {
+		if err := wc.CMS.CommentToItem(ctx, item.ID, "検索インデックスの構築が完了しました。"); err != nil {
 			log.Errorf("searchindex webhook: failed to comment: %s", err)
 		}
 
@@ -146,25 +148,60 @@ func webhookHandler(c cms.Interface, conf Config) cmswebhook.Handler {
 	}
 }
 
-func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Payload, model string) (item Item, siid string, err error) {
+type webhookContext struct {
+	CMS         cms.Interface
+	wp          *cmswebhook.Payload
+	st          *Storage
+	model       string
+	Pid         string
+	SkipIndexer bool
+	debug       bool
+	delegateURL string
+}
+
+func newWebhookContext(cms cms.Interface, conf Config, wp *cmswebhook.Payload) *webhookContext {
+	conf.Default()
+
+	pid := wp.ProjectID()
+	if pid == "" {
+		return nil
+	}
+
+	stprj := conf.CMSStorageProject
+	if stprj == "" {
+		stprj = pid
+	}
+
+	return &webhookContext{
+		CMS:         cms,
+		wp:          wp,
+		st:          NewStorage(cms, stprj, conf.CMSStorageModel),
+		model:       conf.CMSModel,
+		Pid:         pid,
+		SkipIndexer: conf.skipIndexer,
+		debug:       conf.Debug,
+		delegateURL: conf.DelegateURL,
+	}
+}
+
+func (wc *webhookContext) GetItem(ctx context.Context) (item Item, si StorageItem, err error) {
 	var witem *cms.Item
 
-	if w.Type == cmswebhook.EventAssetDecompress {
+	if wc.wp.Type == cmswebhook.EventAssetDecompress {
 		// when asset was decompressed, find data from storage and get the item
-		if w.AssetData == nil || w.AssetData.ID == "" {
-			log.Debugf("searchindex webhook: invalid event data: %+v", w.Data)
+		if wc.wp.AssetData == nil || wc.wp.AssetData.ID == "" {
+			log.Debugf("searchindex webhook: invalid event data: %+v", wc.wp.Data)
 			return
 		}
 
-		aid := w.AssetData.ID
-		si, err2 := st.FindByAsset(ctx, aid)
-		if err2 != nil {
+		aid := wc.wp.AssetData.ID
+		if si, err = wc.st.FindByAsset(ctx, aid); err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				log.Debugf("searchindex webhook: skipped: asset not registered")
 				err = errSkipped
 				return
 			}
-			err = fmt.Errorf("cannot get data from storage: %v", err2)
+			err = fmt.Errorf("cannot get data from storage: %v", err)
 			return
 		} else if si.ID == "" {
 			log.Debugf("searchindex webhook: skipped: asset not registered")
@@ -172,39 +209,32 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 			return
 		}
 
-		siid = si.ID
-		witem, err2 = c.GetItem(ctx, si.Item)
-		if err2 != nil {
-			err = fmt.Errorf("cannot get item %s: %v", si.Item, err2)
+		if witem, err = wc.CMS.GetItem(ctx, si.Item); err != nil {
+			err = fmt.Errorf("cannot get item %s: %v", si.Item, err)
 			return
-		}
-
-		si = si.RemoveAsset(aid)
-		if err := st.Set(ctx, si); err != nil {
-			log.Errorf("searchindex webook: cannot set to storage: %w", err)
 		}
 	} else {
 		// when item was created or updated
-		if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Model == nil {
-			log.Debugf("searchindex webhook: invalid event data: %+v", w.Data)
+		if wc.wp.ItemData == nil || wc.wp.ItemData.Item == nil || wc.wp.ItemData.Model == nil {
+			log.Debugf("searchindex webhook: invalid event data: %+v", wc.wp.Data)
 			return
 		}
 
-		if w.ItemData.Model.Key != model {
-			log.Debugf("searchindex webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
+		if wc.wp.ItemData.Model.Key != wc.model {
+			log.Debugf("searchindex webhook: invalid model id: %s, key: %s", wc.wp.ItemData.Item.ModelID, wc.wp.ItemData.Model.Key)
 			return
 		}
 
 		// check stroage
-		si, err2 := st.FindByItem(ctx, w.ItemData.Item.ID)
-		if err2 != nil && !errors.Is(err2, rerror.ErrNotFound) {
-			err = fmt.Errorf("cannot get data from storage: %v", err2)
+		si, err = wc.st.FindByItem(ctx, wc.wp.ItemData.Item.ID)
+		if err != nil && !errors.Is(err, rerror.ErrNotFound) {
+			err = fmt.Errorf("cannot get data from storage: %v", err)
 			return
-		} else if si.ID != "" {
-			siid = si.ID
+		} else {
+			err = nil
 		}
 
-		witem = w.ItemData.Item
+		witem = wc.wp.ItemData.Item
 	}
 
 	if witem == nil {
@@ -215,11 +245,55 @@ func getItem(ctx context.Context, c cms.Interface, st *Storage, w *cmswebhook.Pa
 	return
 }
 
-func findAsset(ctx context.Context, c cms.Interface, st *Storage, item Item, pid, siid string) ([]*url.URL, error) {
+func (wc *webhookContext) Delegate(ctx context.Context) error {
+	if wc.delegateURL == "" {
+		return errors.New("delegate url is empty")
+	}
+	if wc.wp.Body == nil {
+		return errors.New("webhook payload body is nil")
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", wc.delegateURL, bytes.NewReader(wc.wp.Body))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	if wc.wp.Sig != "" {
+		req.Header.Set(cmswebhook.SignatureHeader, wc.wp.Sig)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		_ = res.Body.Close()
+	}()
+
+	if res.StatusCode >= 300 {
+		return fmt.Errorf("status code is %d", res.StatusCode)
+	}
+
+	return nil
+}
+
+func (wc *webhookContext) RemoveAssetFromStorage(ctx context.Context, si StorageItem) error {
+	if wc.wp.AssetData == nil || wc.wp.AssetData.ID == "" {
+		return nil
+	}
+	if err := wc.st.Set(ctx, si.RemoveAsset(wc.wp.AssetData.ID)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (wc *webhookContext) FindAsset(ctx context.Context, item Item, siid string) ([]*url.URL, error) {
 	var assetNotDecompressed []string
 	var urls []*url.URL
 	for _, aid := range item.Bldg {
-		a, err := c.Asset(ctx, aid)
+		a, err := wc.CMS.Asset(ctx, aid)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get an asset (%s): %s", aid, err)
 		}
@@ -244,7 +318,7 @@ func findAsset(ctx context.Context, c cms.Interface, st *Storage, item Item, pid
 	}
 
 	if len(assetNotDecompressed) > 0 {
-		if err := st.Set(ctx, StorageItem{
+		if err := wc.st.Set(ctx, StorageItem{
 			ID:    siid,
 			Item:  item.ID,
 			Asset: assetNotDecompressed,
@@ -262,7 +336,7 @@ func findAsset(ctx context.Context, c cms.Interface, st *Storage, item Item, pid
 	return urls, nil
 }
 
-func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipIndexer, debug bool) ([]string, error) {
+func (wc *webhookContext) BuildIndexes(ctx context.Context, u []*url.URL) ([]string, error) {
 	var results []string
 	for _, u := range u {
 		name := pathFileName(u.Path)
@@ -271,14 +345,14 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 		}
 
 		log.Infof("searchindex webhook: start processing for %s", name)
-		if skipIndexer {
+		if wc.SkipIndexer {
 			// for unit tests
 			results = append(results, name+"_asset")
 			continue
 		}
 
 		// build indexes
-		indexer := NewZipIndexer(c, pid, u, debug)
+		indexer := NewZipIndexer(wc.CMS, wc.Pid, u, wc.debug)
 		aid, err := indexer.BuildIndex(ctx, name)
 		if err != nil {
 			return nil, fmt.Errorf("「%s」の処理中にエラーが発生しました。%w", name, err)
@@ -290,35 +364,4 @@ func do(ctx context.Context, c cms.Interface, pid string, u []*url.URL, skipInde
 
 func pathFileName(p string) string {
 	return strings.TrimSuffix(path.Base(p), path.Ext(p))
-}
-
-func delegate(ctx context.Context, w *cmswebhook.Payload, u string) error {
-	if w.Body == nil {
-		return errors.New("webhook payload body is nil")
-	}
-
-	req, err := http.NewRequestWithContext(ctx, "POST", u, bytes.NewReader(w.Body))
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	if w.Sig != "" {
-		req.Header.Set(cmswebhook.SignatureHeader, w.Sig)
-	}
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
-
-	defer func() {
-		_ = res.Body.Close()
-	}()
-
-	if res.StatusCode >= 300 {
-		return fmt.Errorf("status code is %d", res.StatusCode)
-	}
-
-	return nil
 }

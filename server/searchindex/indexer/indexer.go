@@ -256,14 +256,20 @@ func computeFeaturePositionsFromGltfVertices(doc *gltf.Document, tileTransform, 
 				}
 				pos, err := pd.ReadAttr(primitive, "POSITION", nil)
 				if err != nil {
-					return nil, fmt.Errorf("failed to read Positions: %v", err)
+					return nil, fmt.Errorf("failed to read positions: %v", err)
 				}
 				positions = pos.([][3]float32)
 
-				for _, batch := range bi.([]uint8) {
-					batchIds = append(batchIds, uint16(batch))
+				var ok bool
+				if batchIds, ok = bi.([]uint16); !ok {
+					if bi8, ok := bi.([]uint8); ok {
+						for _, batch := range bi8 {
+							batchIds = append(batchIds, uint16(batch))
+						}
+					} else {
+						return nil, fmt.Errorf("failed to read batchIds: invalid bi type: %T", bi)
+					}
 				}
-
 			} else {
 				bi, err := b3dms.GetGltfAttribute(primitive, doc, "_BATCHID")
 				if err != nil {
