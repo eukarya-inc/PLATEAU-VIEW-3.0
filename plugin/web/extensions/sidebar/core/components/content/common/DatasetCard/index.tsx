@@ -29,8 +29,8 @@ type BaseFieldType = Partial<Data> & {
 export type Props = {
   dataset: Data;
   inEditor?: boolean;
-  onDatasetSave: (datasetId: string) => void;
-  onDatasetRemove?: (id: string) => void;
+  onDatasetSave: (dataID: string) => void;
+  onDatasetRemove?: (dataID: string) => void;
   onDatasetUpdate: (dataset: Data) => void;
   onUpdateField?: (id: string) => void;
 };
@@ -64,7 +64,7 @@ const DatasetCard: React.FC<Props> = ({
       {
         id: "remove",
         icon: "trash",
-        onClick: () => onDatasetRemove?.(dataset.id),
+        onClick: () => onDatasetRemove?.(dataset.dataID),
       },
     ],
     [dataset, onDatasetRemove],
@@ -77,8 +77,8 @@ const DatasetCard: React.FC<Props> = ({
 
   const handleFieldSave = useCallback(() => {
     if (!inEditor) return;
-    onDatasetSave(dataset.id);
-  }, [dataset.id, inEditor, onDatasetSave]);
+    onDatasetSave(dataset.dataID);
+  }, [dataset.dataID, inEditor, onDatasetSave]);
 
   useEffect(() => {
     const eventListenerCallback = (e: any) => {

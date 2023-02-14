@@ -54,7 +54,7 @@ const mobileLocation = { zone: "outer", section: "center", area: "top" };
 
 let dataCatalog: DataCatalogItem[] = [];
 const addedDatasets: [
-  datasetID: string,
+  dataID: string,
   status: "showing" | "hidden" | "removed",
   layerID?: string,
 ][] = [];
@@ -140,7 +140,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           const dataset = payload.dataCatalog.find((d: DataCatalogItem) => d.id === sd.id);
           const data = createLayer(dataset ?? {});
           const layerID = reearth.layers.add(data);
-          addedDatasets.push([sd.id, sd.visible ? "showing" : "hidden", layerID]);
+          addedDatasets.push([sd.dataID, sd.visible ? "showing" : "hidden", layerID]);
         });
         if (isMobile) {
           reearth.popup.postMessage({ action, payload: outBoundPayload });
@@ -171,20 +171,23 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.visualizer.overrideProperty(payload.sceneOverrides);
     reearth.clientStorage.setAsync("draftProject", payload);
   } else if (action === "addDatasetToScene") {
-    if (addedDatasets.find(d => d[0] === payload.dataset.id)) {
-      const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataset.id);
+    if (addedDatasets.find(d => d[0] === payload.dataset.dataID)) {
+      const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataset.dataID);
       addedDatasets[idx][1] = "showing";
       reearth.layers.show(addedDatasets[idx][2]);
     } else {
       const data = createLayer(payload.dataset, payload.updates);
       const layerID = reearth.layers.add(data);
-      addedDatasets.push([payload.dataset.id, "showing", layerID]);
+      addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
     }
   } else if (action === "updateDatasetInScene") {
-    reearth.layers.override(addedDatasets.find(ad => ad[0] === payload.id)?.[2], payload.update);
+    reearth.layers.override(
+      addedDatasets.find(ad => ad[0] === payload.dataID)?.[2],
+      payload.update,
+    );
   } else if (action === "removeDatasetFromScene") {
-    reearth.layers.hide(addedDatasets.find(ad => ad[0] === payload)?.[2]);
-    const idx = addedDatasets.findIndex(ad => ad[0] === payload);
+    reearth.layers.hide(addedDatasets.find(ad => ad[0] === payload.dataID)?.[2]);
+    const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataID);
     addedDatasets[idx][1] = "removed";
   } else if (action === "removeAllDatasetsFromScene") {
     addedDatasets.forEach(ad => {
@@ -342,18 +345,19 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       property: { default: { size: "medium" } },
     },
     ...(dataset.format === "geojson"
-      ? {
-          marker: {
-            style: "point",
-            // pointOutlineColor: "red",
-            // pointOutlineWidth: 6,
-            // label: true,
-            // labelText: "SOME TEXT",
-            // labelPosition: "right",
-            // labelBackground: true,
-          },
-          ...(options ?? {}),
-        }
+      ? options
+        ? options
+        : {
+            marker: {
+              style: "point",
+              // pointOutlineColor: "red",
+              // pointOutlineWidth: 6,
+              // label: true,
+              // labelText: "SOME TEXT",
+              // labelPosition: "right",
+              // labelBackground: true,
+            },
+          }
       : { ...(options ?? {}) }),
   };
 }

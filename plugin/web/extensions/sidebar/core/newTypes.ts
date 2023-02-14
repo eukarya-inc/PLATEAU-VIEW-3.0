@@ -7,7 +7,7 @@ export type Root = {
 
 export type Data = {
   id: string;
-  dataId: string;
+  dataID: string;
   type: string;
   name?: string;
   // public: boolean;
