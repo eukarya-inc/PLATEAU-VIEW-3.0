@@ -93,7 +93,6 @@ func (c *Config) SearchIndex() searchindex.Config {
 	return searchindex.Config{
 		CMSBase:           c.CMS_BaseURL,
 		CMSToken:          c.CMS_Token,
-		CMSProject:        c.CMS_PlateauProject,
 		CMSStorageProject: c.CMS_SystemProject,
 		Delegate:          c.Indexer_Delegate,
 		DelegateURL:       c.Delegate_URL,

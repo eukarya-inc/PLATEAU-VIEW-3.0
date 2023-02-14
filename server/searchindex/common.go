@@ -10,7 +10,6 @@ const modelKey = "plateau"
 type Config struct {
 	CMSBase           string
 	CMSToken          string
-	CMSProject        string
 	CMSStorageProject string
 	// optioanl
 	CMSStorageModel string

@@ -95,7 +95,7 @@ func Geospatialjp(conf *Config) (*Service, error) {
 
 func SearchIndex(conf *Config) (*Service, error) {
 	c := conf.SearchIndex()
-	if c.CMSBase == "" || c.CMSToken == "" || c.CMSProject == "" || c.CMSStorageProject == "" {
+	if c.CMSBase == "" || c.CMSToken == "" || c.CMSStorageProject == "" {
 		return nil, nil
 	}
 
