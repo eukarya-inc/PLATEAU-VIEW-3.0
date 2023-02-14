@@ -1,4 +1,5 @@
 import { Data, Group } from "@web/extensions/sidebar/core/newTypes";
+import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
 import { fieldName } from "./Field/Fields/types";
@@ -25,6 +26,7 @@ export default ({
         components: [
           ...(dataset.components ?? []),
           {
+            id: generateID(),
             type: key,
             ...property,
           },
@@ -69,11 +71,11 @@ export default ({
   );
 
   const handleGroupsUpdate = useCallback(
-    (field: string) => (groups: Group[], selectedGroup?: string) => {
+    (fieldID: string) => (groups: Group[], selectedGroup?: number) => {
       if (!inEditor) return;
 
       const newDatasetComponents = dataset.components ? [...dataset.components] : [];
-      const componentIndex = newDatasetComponents.findIndex(c => c.type === field);
+      const componentIndex = newDatasetComponents.findIndex(c => c.id === fieldID);
 
       if (newDatasetComponents.length > 0 && componentIndex !== undefined) {
         newDatasetComponents[componentIndex].group = selectedGroup;
@@ -117,7 +119,9 @@ export default ({
       name: fieldName["switchGroup"],
       onClick: handleFieldAdd({
         title: "Switch Group",
-        groups: [],
+        groups: dataset.fieldGroups[0]
+          ? [{ id: generateID(), title: "新グループ1", fieldGroupID: dataset.fieldGroups[0].id }]
+          : [],
       }),
     },
     buttonLink: {
@@ -261,7 +265,7 @@ export default ({
         {},
       );
 
-  const fieldGroups: {
+  const fieldComponentsList: {
     [key: string]: {
       name: string;
       fields: { [key: string]: { name: string; onClick?: (property: any) => void } };
@@ -281,7 +285,7 @@ export default ({
     // "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
   };
   return {
-    fieldGroups,
+    fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
     handleGroupsUpdate,

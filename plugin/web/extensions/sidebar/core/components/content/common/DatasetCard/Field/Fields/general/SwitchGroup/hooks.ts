@@ -1,129 +1,118 @@
-import { array_move } from "@web/extensions/sidebar/utils";
+import { Group } from "@web/extensions/sidebar/core/newTypes";
+import { array_move, generateID } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { GroupItem, SwitchGroup } from "../../types";
 
-export default (value: SwitchGroup) => {
-  const [switchGroupObj, updateGroups] = useState<SwitchGroup>(value);
-  const [groupsTitle, setGroupsTitle] = useState(value.title);
-  const [currentGroup, setCurrentGroup] = useState<GroupItem>(value.groups[0]);
-  const [modifiedGroups, updateModifiedGroups] = useState<SwitchGroup | undefined>();
+export default ({
+  value,
+  fieldGroups,
+  onUpdate,
+  onCurrentGroupChange,
+}: {
+  value: SwitchGroup;
+  fieldGroups?: Group[];
+  onUpdate: (property: SwitchGroup) => void;
+  onCurrentGroupChange: (group: number) => void;
+}) => {
+  const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
+  const [title, setTitle] = useState(value.title);
+  const [selectedGroup, selectGroup] = useState(value.groups[0]);
 
-  //initialize the helper array (modifiedGroups)
   useEffect(() => {
-    updateModifiedGroups({ type: "switchGroup", title: "Temp", groups: [] });
-  }, []);
+    onCurrentGroupChange(selectedGroup.fieldGroupID);
+  }, [selectedGroup.fieldGroupID, onCurrentGroupChange]);
 
-  //add empty item each time we press on add item
-  const handAddItem = useCallback(() => {
-    updateModifiedGroups(switchGroup => {
-      if (!switchGroup?.groups) return;
-      let newArray: GroupItem[] | undefined = undefined;
-      newArray = switchGroup.groups;
-      newArray.length == 0
-        ? newArray.push({ id: 0, group: currentGroup.group, title: currentGroup.title })
-        : newArray.push({ id: 0, group: "", title: "" });
-      return { ...switchGroup, groups: newArray };
-    });
-  }, [currentGroup]);
-
-  //modiy the group in the helper array
-  const handleModifyGroup = (group: string, index: number) => {
-    updateModifiedGroups(switchGroup => {
-      let newArray: GroupItem[] | undefined = undefined;
-      if (!switchGroup?.groups) return;
-      newArray = switchGroup.groups;
-      newArray[index].group = group;
-      return { ...switchGroup, groups: newArray };
-    });
-  };
-
-  //modify the title in the helper array
-  const handleModifyGroupTitle = (title: string, index: number) => {
-    updateModifiedGroups(switchGroup => {
-      let newArray: GroupItem[] | undefined = undefined;
-      if (!switchGroup?.groups) return;
-      newArray = switchGroup.groups;
-      newArray[index].title = title;
-      return { ...switchGroup, groups: newArray };
-    });
-  };
-
-  //modify the title of the switch group in config and reflect it on main switch group field component
-  const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setGroupsTitle(e.target.value);
-  }, []);
-
-  //handle on change group in main field component
-  const handleChooseGroup = useCallback((item: GroupItem) => {
-    setCurrentGroup(item);
-  }, []);
-
-  const handleMoveUp = useCallback((idx: number) => {
-    if (idx === 0) return;
-    updateModifiedGroups(switchGroup => {
-      let newItems: GroupItem[] | undefined = undefined;
-      if (!switchGroup?.groups) return;
-      newItems = switchGroup.groups;
-      array_move(newItems, idx, idx - 1);
-      return { ...switchGroup, groups: newItems };
-    });
-  }, []);
-
-  const handleMoveDown = useCallback(
-    (idx: number) => {
-      if (modifiedGroups?.groups && idx >= modifiedGroups.groups.length - 1) return;
-      updateModifiedGroups(switchGroup => {
-        let newItems: GroupItem[] | undefined = undefined;
-        if (!switchGroup?.groups) return;
-        newItems = switchGroup.groups;
-        array_move(newItems, idx, idx + 1);
-        return { ...switchGroup, groups: newItems };
-      });
+  const handleTitleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(e.target.value);
+      onUpdate({ ...value, title: e.target.value });
     },
-    [modifiedGroups?.groups],
+    [value, onUpdate],
   );
 
-  const handleRemove = useCallback((idx: number) => {
-    updateModifiedGroups(switchGroup => {
-      let newItems: GroupItem[] | undefined = undefined;
-      if (!switchGroup?.groups) return;
-      newItems = switchGroup.groups.filter((_, idx2) => idx2 != idx);
-      return { ...switchGroup, groups: newItems };
-    });
-  }, []);
+  const handleGroupChoose = useCallback(
+    (id: string) => {
+      const selected = groupItems?.find(gi => gi.id === id);
+      if (!selected) return;
+      selectGroup(selected);
+    },
+    [groupItems],
+  );
 
-  useEffect(() => {
-    updateGroups(switchGroup => {
-      return {
-        ...switchGroup,
-        groupsTitle,
-      };
-    });
+  const handleItemAdd = useCallback(() => {
+    if (!fieldGroups) return;
+    const newItem: GroupItem = {
+      id: generateID(),
+      title: `新グループ${value.groups.length ? value.groups.length + 1 : 1}`,
+      fieldGroupID: fieldGroups[0].id,
+    };
+    updateGroupItems(gi => (gi ? [...gi, newItem] : [newItem]));
+    onUpdate({ ...value, groups: value.groups ? [...value.groups, newItem] : [newItem] });
+  }, [value, fieldGroups, onUpdate]);
 
-    updateGroups(switchGroup => {
-      switchGroup.groups?.forEach(item1 => {
-        const itemFromArr2 = modifiedGroups?.groups.find(item2 => item2.group == item1.group);
-        if (itemFromArr2) {
-          item1.title = itemFromArr2.title;
-        }
-      });
-      return { ...switchGroup };
-    });
-  }, [groupsTitle, modifiedGroups]);
+  const handleItemRemove = useCallback(
+    (id: string) => {
+      if (value.groups.length < 2) return;
+      const newGroups = value.groups?.filter(g => g.id !== id);
+      if (!newGroups) return;
+      onUpdate({ ...value, groups: newGroups });
+    },
+    [value, onUpdate],
+  );
+
+  const handleItemGroupChange = useCallback(
+    (idx: number, fieldGroupID?: number) => {
+      if (!fieldGroupID || !value.groups) return;
+      const updatedGroups = value.groups;
+      updatedGroups[idx].fieldGroupID = fieldGroupID;
+      updateGroupItems(updatedGroups);
+      onUpdate({ ...value, groups: updatedGroups });
+    },
+    [value, onUpdate],
+  );
+
+  const handleItemTitleChange = useCallback(
+    (title: string, idx: number) => {
+      if (!value.groups) return;
+      const updatedGroups = value.groups;
+      updatedGroups[idx].title = title;
+      onUpdate({ ...value, groups: updatedGroups });
+    },
+    [value, onUpdate],
+  );
+
+  const handleItemMoveUp = useCallback(
+    (idx: number) => {
+      if (idx === 0 || !value.groups) return;
+      const newGroups = value.groups;
+      array_move(newGroups, idx, idx - 1);
+      onUpdate({ ...value, groups: newGroups });
+    },
+    [value, onUpdate],
+  );
+
+  const handleItemMoveDown = useCallback(
+    (idx: number) => {
+      if (!value.groups || idx >= value.groups.length - 1) return;
+      const newGroups = value.groups;
+      array_move(newGroups, idx, idx + 1);
+      onUpdate({ ...value, groups: newGroups });
+    },
+    [value, onUpdate],
+  );
 
   return {
-    switchGroupObj,
-    groupsTitle,
-    currentGroup,
-    modifiedGroups,
-    handleModifyGroupTitle,
-    handleModifyGroup,
-    handAddItem,
-    handleRemove,
-    handleMoveDown,
-    handleMoveUp,
+    title,
+    groupItems,
+    selectedGroup,
     handleTitleChange,
-    handleChooseGroup,
+    handleGroupChoose,
+    handleItemGroupChange,
+    handleItemTitleChange,
+    handleItemAdd,
+    handleItemRemove,
+    handleItemMoveUp,
+    handleItemMoveDown,
   };
 };

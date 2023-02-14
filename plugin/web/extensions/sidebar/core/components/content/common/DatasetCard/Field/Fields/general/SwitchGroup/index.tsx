@@ -5,32 +5,56 @@ import { styled } from "@web/theme";
 import { BaseFieldProps } from "../../types";
 
 import useHooks from "./hooks";
-import SwitchGroupItems from "./SwitchGroupItem";
 
-const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({ value, editMode }) => {
+const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
+  value,
+  editMode,
+  fieldGroups,
+  onUpdate,
+  onCurrentGroupChange,
+}) => {
   const {
-    switchGroupObj,
-    groupsTitle,
-    currentGroup,
-    modifiedGroups,
+    title,
+    groupItems,
+    selectedGroup,
     handleTitleChange,
-    handleChooseGroup,
-    handleMoveDown,
-    handleRemove,
-    handleMoveUp,
-    handAddItem,
-    handleModifyGroup,
-    handleModifyGroupTitle,
-  } = useHooks(value);
+    handleGroupChoose,
+    handleItemGroupChange,
+    handleItemTitleChange,
+    handleItemAdd,
+    handleItemRemove,
+    handleItemMoveUp,
+    handleItemMoveDown,
+  } = useHooks({
+    value,
+    fieldGroups,
+    onUpdate,
+    onCurrentGroupChange,
+  });
 
-  const menu = (
+  const uiMenu = (
     <Menu
-      items={switchGroupObj.groups.map(ls => {
+      items={groupItems?.map((gi, idx) => {
         return {
-          key: ls.group,
+          key: idx,
           label: (
-            <p style={{ margin: 0 }} onClick={() => handleChooseGroup(ls)}>
-              {ls.group}
+            <p style={{ margin: 0 }} onClick={() => handleGroupChoose(gi.id)}>
+              {gi.title}
+            </p>
+          ),
+        };
+      })}
+    />
+  );
+
+  const editGroupMenu = (groupItemIndex: number) => (
+    <Menu
+      items={fieldGroups?.map((fg, idx) => {
+        return {
+          key: idx,
+          label: (
+            <p style={{ margin: 0 }} onClick={() => handleItemGroupChange(groupItemIndex, fg.id)}>
+              {fg.name}
             </p>
           ),
         };
@@ -43,28 +67,52 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({ value, editMode 
       <Field>
         <FieldTitle>タイトル</FieldTitle>
         <FieldValue>
-          <TextInput defaultValue={groupsTitle} onChange={handleTitleChange} />
+          <TextInput defaultValue={title} onChange={handleTitleChange} />
         </FieldValue>
       </Field>
-      <AddButton text="Add Item" onClick={handAddItem} />
-      <SwitchGroupItems
-        items={modifiedGroups?.groups}
-        switchGroups={switchGroupObj.groups}
-        handleMoveDown={handleMoveDown}
-        handleMoveUp={handleMoveUp}
-        handleRemove={handleRemove}
-        handleModifyGroup={handleModifyGroup}
-        handleModifyGroupTitle={handleModifyGroupTitle}
-      />
+      <AddButton text="Add Item" onClick={handleItemAdd} />
+      {value.groups.map((g, idx) => (
+        <Item key={idx}>
+          <ItemControls>
+            <Icon icon="arrowUpThin" size={16} onClick={() => handleItemMoveUp(idx)} />
+            <Icon icon="arrowDownThin" size={16} onClick={() => handleItemMoveDown(idx)} />
+            <TrashIcon icon="trash" size={16} onClick={() => handleItemRemove(g.id)} />
+          </ItemControls>
+          <Field>
+            <FieldTitle>グループ</FieldTitle>
+            <FieldValue>
+              <Dropdown overlay={editGroupMenu(idx)} placement="bottom" trigger={["click"]}>
+                <StyledDropdownButton>
+                  <p style={{ margin: 0 }}>
+                    {fieldGroups?.find(fg => fg.id === g.fieldGroupID)?.name ?? "-"}
+                  </p>
+                  <Icon icon="arrowDownSimple" size={12} />
+                </StyledDropdownButton>
+              </Dropdown>
+            </FieldValue>
+          </Field>
+          <Field>
+            <FieldTitle>名前</FieldTitle>
+            <FieldValue>
+              <TextInput
+                defaultValue={g.title}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  handleItemTitleChange(e.target.value, idx);
+                }}
+              />
+            </FieldValue>
+          </Field>
+        </Item>
+      ))}
     </Wrapper>
   ) : (
     <Wrapper>
       <Field>
-        <FieldTitle>{groupsTitle}</FieldTitle>
+        <FieldTitle>{title}</FieldTitle>
         <FieldValue>
-          <Dropdown overlay={menu} placement="bottom" trigger={["click"]}>
+          <Dropdown overlay={uiMenu} placement="bottom" trigger={["click"]}>
             <StyledDropdownButton>
-              <p style={{ margin: 0 }}>{currentGroup.group}</p>
+              <p style={{ margin: 0 }}>{selectedGroup ? selectedGroup.title : "-"}</p>
               <Icon icon="arrowDownSimple" size={12} />
             </StyledDropdownButton>
           </Dropdown>
@@ -94,6 +142,15 @@ const StyledDropdownButton = styled.div`
 
 const Text = styled.p`
   margin: 0;
+`;
+
+const TrashIcon = styled(Icon)<{ disabled?: boolean }>`
+  ${({ disabled }) =>
+    disabled &&
+    `
+      color: rgb(209, 209, 209);
+      pointer-events: none;
+    `}
 `;
 
 const Field = styled.div<{ gap?: number }>`
@@ -127,4 +184,20 @@ const TextInput = styled.input.attrs({ type: "text" })`
   :focus {
     border: none;
   }
+`;
+
+const Item = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid #d9d9d9;
+  border-radius: 2px;
+  padding: 8px;
+`;
+
+const ItemControls = styled.div`
+  display: flex;
+  justify-content: right;
+  gap: 4px;
+  cursor: pointer;
 `;

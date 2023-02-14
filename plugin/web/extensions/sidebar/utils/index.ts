@@ -30,3 +30,7 @@ export function array_move(arr: any[], old_index: number, new_index: number) {
   }
   arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
 }
+
+export function generateID() {
+  return Date.now().toString(36) + Math.random().toString(16).slice(2);
+}

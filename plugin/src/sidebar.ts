@@ -171,14 +171,14 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.visualizer.overrideProperty(payload.sceneOverrides);
     reearth.clientStorage.setAsync("draftProject", payload);
   } else if (action === "addDatasetToScene") {
-    if (addedDatasets.find(d => d[0] === payload.id)) {
-      const idx = addedDatasets.findIndex(ad => ad[0] === payload.id);
+    if (addedDatasets.find(d => d[0] === payload.dataset.id)) {
+      const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataset.id);
       addedDatasets[idx][1] = "showing";
       reearth.layers.show(addedDatasets[idx][2]);
     } else {
-      const data = createLayer(payload ?? {});
+      const data = createLayer(payload.dataset, payload.updates);
       const layerID = reearth.layers.add(data);
-      addedDatasets.push([payload.id, "showing", layerID]);
+      addedDatasets.push([payload.dataset.id, "showing", layerID]);
     }
   } else if (action === "updateDatasetInScene") {
     reearth.layers.override(addedDatasets.find(ad => ad[0] === payload.id)?.[2], payload.update);
@@ -321,7 +321,7 @@ reearth.on("resize", () => {
 });
 
 function createLayer(dataset: DataCatalogItem, options?: any) {
-  const layer: any = {
+  return {
     type: "simple",
     title: dataset.name,
     data: {
@@ -341,20 +341,19 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       ],
       property: { default: { size: "medium" } },
     },
-    ...options,
+    ...(dataset.format === "geojson"
+      ? {
+          marker: {
+            style: "point",
+            // pointOutlineColor: "red",
+            // pointOutlineWidth: 6,
+            // label: true,
+            // labelText: "SOME TEXT",
+            // labelPosition: "right",
+            // labelBackground: true,
+          },
+          ...(options ?? {}),
+        }
+      : { ...(options ?? {}) }),
   };
-
-  // Add file type specific fields
-  if (dataset.format === "geojson") {
-    layer["marker"] = {
-      style: "point",
-      // pointOutlineColor: "red",
-      // pointOutlineWidth: 6,
-      // label: true,
-      // labelText: "SOME TEXT",
-      // labelPosition: "right",
-      // labelBackground: true,
-    };
-  }
-  return layer;
 }

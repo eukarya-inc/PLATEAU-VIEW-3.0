@@ -104,7 +104,8 @@ export default () => {
       return updatedProject;
     });
 
-    postMsg({ action: "addDatasetToScene", payload: dataset });
+    // const options = data?.find(d => d.id === dataset.id)?.components;
+    postMsg({ action: "addDatasetToScene", payload: { dataset } });
   }, []);
 
   const handleProjectDatasetRemove = useCallback((id: string) => {
@@ -294,26 +295,25 @@ export default () => {
     }
   }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleDatasetProcessing = useCallback((dataset: Data, savedData?: Data[]) => {
+    if (!savedData) return dataset;
+
+    const datasetSavedData = savedData.find(d => d.dataId === dataset.dataId);
+    if (datasetSavedData) {
+      return {
+        ...dataset,
+        ...datasetSavedData,
+      };
+    } else {
+      return dataset;
+    }
+  }, []);
+
   useEffect(() => {
     setProcessedSelectedDatasets(
-      !data
-        ? project.selectedDatasets
-        : project.selectedDatasets
-            .map(sd => {
-              const savedData = data.find(d => d.dataId === sd.dataId);
-              if (savedData) {
-                return {
-                  ...sd,
-                  ...savedData,
-                };
-              } else {
-                return sd;
-              }
-            })
-            .flat(1)
-            .filter(p => p),
+      project.selectedDatasets.map(sd => handleDatasetProcessing(sd, data)),
     );
-  }, [data, project.selectedDatasets]);
+  }, [data, project.selectedDatasets, handleDatasetProcessing]);
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 

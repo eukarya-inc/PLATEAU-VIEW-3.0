@@ -1,3 +1,5 @@
+import { Group } from "@web/extensions/sidebar/core/newTypes";
+
 export const fieldName = {
   camera: "カメラ",
   legend: "凡例",
@@ -31,8 +33,9 @@ export type FieldComponent =
   | PointStroke;
 
 type FieldBase<T extends keyof typeof fieldName> = {
+  id: string;
   type: T;
-  group?: string;
+  group?: number;
 };
 
 export type Camera = FieldBase<"camera"> & {
@@ -71,9 +74,9 @@ export type Description = FieldBase<"description"> & {
 };
 
 export type GroupItem = {
+  id: string;
   title: string;
-  group: string;
-  id?: number;
+  fieldGroupID: number;
 };
 
 export type SwitchGroup = FieldBase<"switchGroup"> & {
@@ -112,9 +115,7 @@ type PointColorGradient = FieldBase<"pointColorGradient"> & {
   step?: number;
 };
 
-type PointSize = {
-  type: "pointSize";
-  group?: string;
+type PointSize = FieldBase<"pointSize"> & {
   pointSize?: number;
 };
 
@@ -123,9 +124,7 @@ type PointIcon = FieldBase<"pointIcon"> & {
   size: number;
 };
 
-type PointLabel = {
-  type: "pointLabel";
-  group?: string;
+type PointLabel = FieldBase<"pointLabel"> & {
   field?: string;
   fontSize?: number;
   fontColor?: string;
@@ -135,16 +134,12 @@ type PointLabel = {
   backgroundColor?: string;
 };
 
-type PointModel = {
-  type: "pointModel";
-  group?: string;
+type PointModel = FieldBase<"pointModel"> & {
   modelURL?: string;
   scale?: number;
 };
 
-type PointStroke = {
-  type: "pointStroke";
-  group?: string;
+type PointStroke = FieldBase<"pointStroke"> & {
   items?: {
     strokeColor: string;
     strokeWidth: number;
@@ -177,7 +172,9 @@ export type BaseFieldProps<T extends keyof Fields> = {
   value: Fields[T];
   datasetID: string;
   editMode?: boolean;
+  fieldGroups?: Group[];
   onUpdate: (property: Fields[T]) => void;
+  onCurrentGroupChange: (group: number) => void;
 };
 
 export type Expression<T extends string | number | boolean = string | number | boolean> =

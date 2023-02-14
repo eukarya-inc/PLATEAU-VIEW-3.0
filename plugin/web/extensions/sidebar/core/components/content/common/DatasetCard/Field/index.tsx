@@ -18,21 +18,25 @@ import { FieldComponent as FieldComponentType, fieldName } from "./Fields/types"
 export type Props = {
   field: FieldComponentType;
   datasetID: string;
+  isActive: boolean;
   editMode?: boolean;
   selectGroups?: Group[];
   onUpdate?: (property: any) => void;
   onRemove: (type: string) => void;
-  onGroupsUpdate: (groups: Group[], selectedGroup?: string | undefined) => void;
+  onGroupsUpdate: (groups: Group[], selectedGroup?: number | undefined) => void;
+  onCurrentGroupChange: (group: number) => void;
 };
 
 const FieldComponent: React.FC<Props> = ({
   field,
   datasetID,
+  isActive,
   editMode,
   selectGroups,
   onUpdate,
   onRemove,
   onGroupsUpdate,
+  onCurrentGroupChange,
 }) => {
   const { Component: FieldContent, hasUI } = fields[field.type];
   const [groupPopupOpen, setGroupPopup] = useState(false);
@@ -75,7 +79,7 @@ const FieldComponent: React.FC<Props> = ({
     };
   }, [groupPopupOpen, onGroupsUpdate]);
 
-  return !editMode && !hasUI ? null : (
+  return !editMode && (!hasUI || !isActive) ? null : (
     <StyledAccordionComponent allowZeroExpanded preExpanded={[field.type]}>
       <AccordionItem uuid={field.type}>
         <AccordionItemState>
@@ -109,10 +113,12 @@ const FieldComponent: React.FC<Props> = ({
         <BodyWrapper>
           {FieldContent && (
             <FieldContent
-              datasetID={datasetID}
               value={{ ...field }}
               editMode={editMode}
+              fieldGroups={selectGroups}
+              datasetID={datasetID}
               onUpdate={onUpdate}
+              onCurrentGroupChange={onCurrentGroupChange}
             />
           )}
         </BodyWrapper>

@@ -1,4 +1,5 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/AddButton";
+import { array_move } from "@web/extensions/sidebar/utils";
 import { Icon, Dropdown, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
@@ -11,16 +12,6 @@ const legendStyles: { [key: string]: string } = {
   line: "線",
   icon: "アイコン",
 };
-
-function array_move(arr: any[], old_index: number, new_index: number) {
-  if (new_index >= arr.length) {
-    let k = new_index - arr.length + 1;
-    while (k--) {
-      arr.push(undefined);
-    }
-  }
-  arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-}
 
 const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate }) => {
   const [legend, updateLegend] = useState(value);
@@ -103,6 +94,48 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
     [onUpdate],
   );
 
+  const handleURLChange = useCallback(
+    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateLegend(l => {
+        if (!l.items) return l;
+        const newItems = l.items;
+        newItems[idx].url = e.currentTarget.value;
+        const newLegend = { ...l, items: newItems };
+        onUpdate(newLegend);
+        return newLegend;
+      });
+    },
+    [onUpdate],
+  );
+
+  const handleColorChange = useCallback(
+    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateLegend(l => {
+        if (!l.items) return l;
+        const newItems = l.items;
+        newItems[idx].color = e.currentTarget.value;
+        const newLegend = { ...l, items: newItems };
+        onUpdate(newLegend);
+        return newLegend;
+      });
+    },
+    [onUpdate],
+  );
+
+  const handleTitleChange = useCallback(
+    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      updateLegend(l => {
+        if (!l.items) return l;
+        const newItems = l.items;
+        newItems[idx].title = e.currentTarget.value;
+        const newLegend = { ...l, items: newItems };
+        onUpdate(newLegend);
+        return newLegend;
+      });
+    },
+    [onUpdate],
+  );
+
   const menu = (
     <Menu
       items={Object.keys(legendStyles).map(ls => {
@@ -143,7 +176,7 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
             <Field>
               <FieldTitle>URL</FieldTitle>
               <FieldValue>
-                <TextInput value={item.url} />
+                <TextInput defaultValue={item.url} onChange={handleURLChange(idx)} />
               </FieldValue>
             </Field>
           )}
@@ -151,13 +184,13 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
             <FieldTitle>色</FieldTitle>
             <FieldValue>
               <ColorBlock color={item.color} />
-              <TextInput value={item.color} />
+              <TextInput defaultValue={item.color} onChange={handleColorChange(idx)} />
             </FieldValue>
           </Field>
           <Field>
             <FieldTitle>タイトル</FieldTitle>
             <FieldValue>
-              <TextInput value={item.title} />
+              <TextInput defaultValue={item.title} onChange={handleTitleChange(idx)} />
             </FieldValue>
           </Field>
         </Item>

@@ -44,11 +44,12 @@ const DatasetCard: React.FC<Props> = ({
 }) => {
   const [currentTab, changeTab] = useState<Tabs>("default");
 
-  const { fieldGroups, handleFieldUpdate, handleFieldRemove, handleGroupsUpdate } = useHooks({
-    dataset,
-    inEditor,
-    onDatasetUpdate,
-  });
+  const { fieldComponentsList, handleFieldUpdate, handleFieldRemove, handleGroupsUpdate } =
+    useHooks({
+      dataset,
+      inEditor,
+      onDatasetUpdate,
+    });
 
   const baseFields: BaseFieldType[] = useMemo(
     () => [
@@ -119,6 +120,23 @@ const DatasetCard: React.FC<Props> = ({
     </Menu>
   );
 
+  const [selectedGroup, setGroup] = useState<number>();
+
+  const handleCurrentGroupChange = useCallback((group: number) => {
+    setGroup(group);
+  }, []);
+
+  const activeComponentIDs = useMemo(
+    () =>
+      (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
+        ? dataset.components
+        : dataset.components.filter(
+            c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
+          )
+      )?.map(c => c.id),
+    [selectedGroup, dataset.components, dataset.fieldGroups],
+  );
+
   return (
     <StyledAccordionComponent allowZeroExpanded preExpanded={["datasetcard"]}>
       <AccordionItem uuid="datasetcard">
@@ -166,18 +184,20 @@ const DatasetCard: React.FC<Props> = ({
               <Field
                 key={idx}
                 field={c}
+                isActive={!!activeComponentIDs?.find(id => id === c.id)}
                 datasetID={dataset.id}
                 editMode={inEditor && currentTab === "edit"}
                 selectGroups={dataset.fieldGroups}
                 onUpdate={handleFieldUpdate}
                 onRemove={handleFieldRemove}
-                onGroupsUpdate={handleGroupsUpdate(c.type)}
+                onGroupsUpdate={handleGroupsUpdate(c.id)}
+                onCurrentGroupChange={handleCurrentGroupChange}
               />
             ))}
           </Content>
           {inEditor && currentTab === "edit" && (
             <>
-              <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldGroups)} />
+              <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldComponentsList)} />
               <SaveButton onClick={handleFieldSave}>
                 <Icon icon="save" size={14} />
                 <Text>保存</Text>
