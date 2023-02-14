@@ -2,7 +2,7 @@ import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import { Data } from "../../../newTypes";
+import { Data } from "../../../types";
 import DatasetCard from "../common/DatasetCard";
 
 export type Props = {

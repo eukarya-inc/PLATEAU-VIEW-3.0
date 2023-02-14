@@ -1,4 +1,4 @@
-import { Data } from "@web/extensions/sidebar/core/newTypes";
+import { Data } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Dropdown, Icon, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";

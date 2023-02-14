@@ -1,4 +1,4 @@
-import { Group } from "@web/extensions/sidebar/core/newTypes";
+import { Group } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";

@@ -1,4 +1,4 @@
-import { Data, Group } from "@web/extensions/sidebar/core/newTypes";
+import { Data, Group } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 

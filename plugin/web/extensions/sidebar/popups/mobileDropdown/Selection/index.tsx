@@ -1,5 +1,5 @@
 import SelectionComponent from "@web/extensions/sidebar/core/components/content/Selection";
-import { Data } from "@web/extensions/sidebar/core/newTypes";
+import { Data } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useEffect } from "react";

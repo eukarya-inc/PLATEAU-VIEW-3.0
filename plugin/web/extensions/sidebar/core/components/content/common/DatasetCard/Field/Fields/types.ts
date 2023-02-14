@@ -1,4 +1,4 @@
-import { Group } from "@web/extensions/sidebar/core/newTypes";
+import { Group } from "@web/extensions/sidebar/core/types";
 
 export const fieldName = {
   camera: "カメラ",

@@ -1,4 +1,4 @@
-import { Group } from "@web/extensions/sidebar/core/newTypes";
+import { Group } from "@web/extensions/sidebar/core/types";
 import { array_move, generateID } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 

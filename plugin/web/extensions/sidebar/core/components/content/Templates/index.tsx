@@ -3,7 +3,7 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { Template } from "../../../newTypes";
+import { Template } from "../../../types";
 
 /*
 [

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { DataCatalogItem, getDataCatalog } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
-import { Data, Template } from "../newTypes";
+import { Data, Template } from "../types";
 
 import { Pages } from "./Header";
 

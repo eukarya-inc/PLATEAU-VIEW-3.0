@@ -3,7 +3,7 @@ import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
 
-import { Group } from "../../core/newTypes";
+import { Group } from "../../core/types";
 
 const GroupSelect: React.FC = () => {
   const [selectedGroup, selectGroup] = useState<number>();

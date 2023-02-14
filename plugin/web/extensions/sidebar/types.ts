@@ -1,4 +1,4 @@
-import { Data } from "./core/newTypes";
+import { Data } from "./core/types";
 
 type ActionType =
   | "init"
