@@ -22,6 +22,10 @@ var (
 )
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
+	if conf.DisableCatalogCheck && conf.DisablePublication {
+		return nil, nil
+	}
+
 	s, err := NewServices(conf)
 	if err != nil {
 		return nil, err
@@ -54,6 +58,11 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		var err error
 		var act string
 		if w.Type == cmswebhook.EventItemPublish {
+			if conf.DisablePublication {
+				// skip
+				return nil
+			}
+
 			// publish event: create resources to ckan
 			act = "create resources to ckan"
 			err = s.RegisterCkanResources(ctx, item)
@@ -65,8 +74,8 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 				s.commentToItem(ctx, item.ID, "G空間情報センターへの登録が完了しました")
 			}
 		} else {
-			if item.CatalogStatus != "" && item.CatalogStatus != StatusReady {
-				log.Infof("geospatialjp webhook: skipped: status is %s", item.CatalogStatus)
+			if conf.DisableCatalogCheck || item.CatalogStatus != "" && item.CatalogStatus != StatusReady {
+				// skip
 				return nil
 			}
 

@@ -24,36 +24,38 @@ import (
 const configPrefix = "REEARTH_PLATEAUVIEW"
 
 type Config struct {
-	Port                 uint   `default:"8080" envconfig:"PORT"`
-	Host                 string `default:"http://localhost:8080"`
-	Debug                bool
-	Origin               []string
-	Secret               string
-	Delegate_URL         string
-	CMS_Webhook_Secret   string
-	CMS_BaseURL          string
-	CMS_Token            string
-	CMS_IntegrationID    string
-	CMS_PlateauProject   string
-	CMS_SystemProject    string
-	FME_BaseURL          string
-	FME_Mock             bool
-	FME_Token            string
-	FME_SkipQualityCheck bool
-	Ckan_BaseURL         string
-	Ckan_Org             string
-	Ckan_Token           string
-	Ckan_Private         bool
-	SDK_Token            string
-	SendGrid_APIKey      string
-	Opinion_From         string
-	Opinion_FromName     string
-	Opinion_To           string
-	Opinion_ToName       string
-	Sidebar_Token        string
-	Share_Disable        bool
-	DataConv_Disable     bool
-	Indexer_Delegate     bool
+	Port                               uint   `default:"8080" envconfig:"PORT"`
+	Host                               string `default:"http://localhost:8080"`
+	Debug                              bool
+	Origin                             []string
+	Secret                             string
+	Delegate_URL                       string
+	CMS_Webhook_Secret                 string
+	CMS_BaseURL                        string
+	CMS_Token                          string
+	CMS_IntegrationID                  string
+	CMS_PlateauProject                 string
+	CMS_SystemProject                  string
+	FME_BaseURL                        string
+	FME_Mock                           bool
+	FME_Token                          string
+	FME_SkipQualityCheck               bool
+	Ckan_BaseURL                       string
+	Ckan_Org                           string
+	Ckan_Token                         string
+	Ckan_Private                       bool
+	SDK_Token                          string
+	SendGrid_APIKey                    string
+	Opinion_From                       string
+	Opinion_FromName                   string
+	Opinion_To                         string
+	Opinion_ToName                     string
+	Sidebar_Token                      string
+	Share_Disable                      bool
+	Geospartialjp_Publication_Disable  bool
+	Geospartialjp_CatalocCheck_Disable bool
+	DataConv_Disable                   bool
+	Indexer_Delegate                   bool
 }
 
 func NewConfig() (*Config, error) {
@@ -145,13 +147,15 @@ func (c *Config) Opinion() opinion.Config {
 
 func (c *Config) Geospatialjp() geospatialjp.Config {
 	return geospatialjp.Config{
-		CkanBase:       c.Ckan_BaseURL,
-		CkanOrg:        c.Ckan_Org,
-		CkanToken:      c.Ckan_Token,
-		CkanPrivate:    c.Ckan_Private,
-		CMSToken:       c.CMS_Token,
-		CMSBase:        c.CMS_BaseURL,
-		CMSIntegration: c.CMS_IntegrationID,
+		CkanBase:            c.Ckan_BaseURL,
+		CkanOrg:             c.Ckan_Org,
+		CkanToken:           c.Ckan_Token,
+		CkanPrivate:         c.Ckan_Private,
+		CMSToken:            c.CMS_Token,
+		CMSBase:             c.CMS_BaseURL,
+		CMSIntegration:      c.CMS_IntegrationID,
+		DisablePublication:  c.Geospartialjp_Publication_Disable,
+		DisableCatalogCheck: c.Geospartialjp_CatalocCheck_Disable,
 	}
 }
 

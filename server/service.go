@@ -86,6 +86,9 @@ func Geospatialjp(conf *Config) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
+	if w == nil {
+		return nil, nil
+	}
 
 	return &Service{
 		Name:    "geospatialjp",
