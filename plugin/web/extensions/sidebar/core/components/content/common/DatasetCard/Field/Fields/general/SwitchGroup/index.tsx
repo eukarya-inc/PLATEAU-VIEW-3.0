@@ -1,4 +1,4 @@
-import AddButton from "@web/extensions/sidebar/core/components/content/common/AddButton";
+import AddButton from "@web/extensions/sidebar/core/components/content/common/DatasetCard/AddButton";
 import { Icon, Dropdown, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 

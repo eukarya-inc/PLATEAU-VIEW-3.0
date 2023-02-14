@@ -1,4 +1,4 @@
-import AddButton from "@web/extensions/sidebar/core/components/content/common/AddButton";
+import AddButton from "@web/extensions/sidebar/core/components/content/common/DatasetCard/AddButton";
 import { array_move } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 

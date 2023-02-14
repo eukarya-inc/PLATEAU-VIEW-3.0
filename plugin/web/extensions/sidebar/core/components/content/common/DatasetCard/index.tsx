@@ -12,8 +12,7 @@ import {
   AccordionItemState,
 } from "react-accessible-accordion";
 
-import AddButton from "../AddButton";
-
+import AddButton from "./AddButton";
 import Field from "./Field";
 import useHooks from "./hooks";
 
