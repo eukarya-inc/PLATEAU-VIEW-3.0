@@ -3,6 +3,8 @@ import { styled } from "@web/theme";
 
 import { Cond } from "../../types";
 
+import { FieldTitle, FieldValue, FieldWrapper } from "./styled";
+
 const operators: { [key: string]: string } = {
   greater: ">",
   less: "<",
@@ -34,8 +36,8 @@ const ConditionField: React.FC<Props> = ({ title, fieldGap, condition }) => {
   );
 
   return (
-    <Field gap={fieldGap}>
-      <Text>{title}</Text>
+    <FieldWrapper gap={fieldGap}>
+      <FieldTitle>{title}</FieldTitle>
       <FieldValue>
         <Dropdown overlay={menu} placement="bottom" trigger={["click"]}>
           <StyledDropdownButton>
@@ -55,31 +57,11 @@ const ConditionField: React.FC<Props> = ({ title, fieldGap, condition }) => {
       <FieldValue>
         <NumberInput value={condition.value} />
       </FieldValue>
-    </Field>
+    </FieldWrapper>
   );
 };
 
 export default ConditionField;
-
-const Text = styled.p`
-  margin: 0;
-`;
-
-const Field = styled.div<{ gap?: number }>`
-  display: flex;
-  align-items: center;
-  ${({ gap }) => gap && `gap: ${gap}px;`}
-  height: 32px;
-`;
-
-const FieldValue = styled.div`
-  display: flex;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  flex: 1;
-  height: 100%;
-  width: 100%;
-`;
 
 const NumberInput = styled.input.attrs({ type: "number" })`
   height: 100%;

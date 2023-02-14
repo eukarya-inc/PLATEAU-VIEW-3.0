@@ -1,13 +1,13 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/AddButton";
 import { array_move } from "@web/extensions/sidebar/utils";
-import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
 import { BaseFieldProps, Cond } from "../types";
 
+import ColorField from "./common/ColorField";
 import ConditionField from "./common/ConditionField";
-import Field from "./common/Field";
 import ItemControls from "./common/ItemControls";
+import { ButtonWrapper, Item, Wrapper } from "./common/styled";
 
 const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, onUpdate }) => {
   const [pointColors, updatePointColors] = useState(value.pointColors);
@@ -97,16 +97,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
             handleRemove={handleRemove}
           />
           <ConditionField title="if" fieldGap={8} condition={c.condition} />
-          <Field
-            title="色"
-            titleWidth={82}
-            value={
-              <>
-                <ColorBlock color={c.color} />
-                <TextInput value={c.color} />
-              </>
-            }
-          />
+          <ColorField title="色" titleWidth={82} color={c.color} />
         </Item>
       ))}
       <ButtonWrapper>
@@ -117,50 +108,3 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
 };
 
 export default PointColor;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  padding: 8px;
-`;
-
-const TextInput = styled.input.attrs({ type: "text" })`
-  height: 100%;
-  width: 100%;
-  flex: 1;
-  padding: 0 12px;
-  border: none;
-  outline: none;
-
-  :focus {
-    border: none;
-  }
-`;
-
-const ColorBlock = styled.div<{ color: string; legendStyle?: "circle" | "square" | "line" }>`
-  width: 30px;
-  height: ${({ legendStyle }) => (legendStyle === "line" ? "3px" : "30px")};
-  background: ${({ color }) => color ?? "#d9d9d9"};
-  border-radius: ${({ legendStyle }) =>
-    legendStyle
-      ? legendStyle === "circle"
-        ? "50%"
-        : legendStyle === "line"
-        ? "5px"
-        : "2px"
-      : "1px 0 0 1px"};
-`;
-
-const ButtonWrapper = styled.div`
-  width: 125px;
-  align-self: flex-end;
-`;
