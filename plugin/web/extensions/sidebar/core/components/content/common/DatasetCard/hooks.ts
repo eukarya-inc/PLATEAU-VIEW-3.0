@@ -153,10 +153,10 @@ export default ({
     //   name: fieldName["pointModel"],
     //   onClick: ({ key }) => console.log("do something: ", key),
     // },
-    // pointStroke: {
-    //   name: fieldName["pointStroke"],
-    //   onClick: ({ key }) => console.log("do something: ", key),
-    // },
+    pointStroke: {
+      name: fieldName["pointStroke"],
+      onClick: handleFieldAdd({}),
+    },
   };
 
   //   const polylineFields: {
