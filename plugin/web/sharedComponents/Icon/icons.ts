@@ -53,6 +53,7 @@ import { ReactComponent as RectMaximize } from "./Icons/rectMaximize.svg";
 import { ReactComponent as Funnel } from "./Icons/funnel.svg";
 import { ReactComponent as ListNumbers } from "./Icons/listNumbers.svg";
 import { ReactComponent as Save } from "./Icons/save.svg";
+import { ReactComponent as Transparent } from "./Icons/transparent.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -110,4 +111,5 @@ export default {
   funnel: Funnel,
   listNumbers: ListNumbers,
   save: Save,
+  transparent: Transparent,
 };

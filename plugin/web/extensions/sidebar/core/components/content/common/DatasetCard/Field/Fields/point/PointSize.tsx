@@ -2,8 +2,8 @@ import { useCallback, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-import Field from "./common/Field";
-import { TextInput } from "./common/styled";
+import { Field } from "./common";
+import { TextInput } from "./commonComponents";
 
 const PointSize: React.FC<BaseFieldProps<"pointSize">> = ({ value, editMode, onUpdate }) => {
   const [size, setSize] = useState(value.pointSize);

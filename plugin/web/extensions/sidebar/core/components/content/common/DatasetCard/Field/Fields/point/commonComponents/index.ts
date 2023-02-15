@@ -1,3 +1,4 @@
+import { Input } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
 export const Wrapper = styled.div`
@@ -15,7 +16,7 @@ export const Item = styled.div`
   padding: 8px;
 `;
 
-export const TextInput = styled.input.attrs({ type: "text" })`
+export const TextInput = styled(Input)`
   height: 100%;
   width: 100%;
   flex: 1;
@@ -40,10 +41,12 @@ export const FieldWrapper = styled.div<{ gap?: number }>`
   height: 32px;
 `;
 
-export const FieldValue = styled.div`
+export const FieldValue = styled.div<{ noBorder?: boolean }>`
   display: flex;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
+  justify-content: start;
+  align-items: center;
+  ${({ noBorder }) => !noBorder && "border: 1px solid #d9d9d9;"}
+  ${({ noBorder }) => !noBorder && "border-radius: 2px;"}
   flex: 1;
   height: 100%;
   width: 100%;

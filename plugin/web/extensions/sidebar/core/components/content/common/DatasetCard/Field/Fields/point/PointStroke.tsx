@@ -4,11 +4,8 @@ import { useCallback, useState } from "react";
 
 import { BaseFieldProps, Cond, Fields } from "../types";
 
-import ColorField from "./common/ColorField";
-import ConditionField from "./common/ConditionField";
-import Field from "./common/Field";
-import ItemControls from "./common/ItemControls";
-import { ButtonWrapper, Item, TextInput, Wrapper } from "./common/styled";
+import { ColorField, ConditionField, Field, ItemControls } from "./common";
+import { ButtonWrapper, Item, TextInput, Wrapper } from "./commonComponents";
 
 const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode, onUpdate }) => {
   const [items, updateItems] = useState(value.items);
