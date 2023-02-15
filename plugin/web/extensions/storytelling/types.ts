@@ -104,9 +104,6 @@ export type StoryCancelPlay = {
 // storytelling -> sidebar
 export type StoryShare = {
   action: "storyShare";
-  payload: {
-    scenes: string;
-  };
 };
 
 export type StorySaveData = {

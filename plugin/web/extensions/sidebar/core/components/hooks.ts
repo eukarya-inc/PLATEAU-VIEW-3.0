@@ -254,16 +254,18 @@ export default () => {
     [backendURL, backendAccessToken],
   );
 
-  const handleStoryShare = useCallback((story: Story) => {
+  const handleStorySaveData = useCallback((story: Story) => {
+    // save user story
     updateProject(project => {
       const updatedProject: Project = {
         ...project,
-        userStory: story,
+        userStory: {
+          scenes: story.scenes,
+        },
       };
       postMsg({ action: "updateProject", payload: updatedProject });
       return updatedProject;
     });
-    setCurrentPage("share");
   }, []);
 
   const handleInitUserStory = useCallback((story: Story) => {
@@ -294,7 +296,9 @@ export default () => {
       } else if (e.data.action === "triggerHelpOpen") {
         handlePageChange("help");
       } else if (e.data.action === "storyShare") {
-        handleStoryShare(e.data.payload);
+        setCurrentPage("share");
+      } else if (e.data.action === "storySaveData") {
+        handleStorySaveData(e.data.payload);
       }
     };
     addEventListener("message", eventListenerCallback);

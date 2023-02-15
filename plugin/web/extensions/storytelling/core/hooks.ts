@@ -106,11 +106,7 @@ export default () => {
 
   // scenes
   const [scenes, setScenes] = useState<Scene[]>([]);
-
-  const sceneCreate = useCallback((scene: Scene) => {
-    setScenes(scenes => [...scenes, scene]);
-    postMsg("sceneEdit", { id: scene.id, title: scene.title, description: scene.description });
-  }, []);
+  const newSceneCamera = useRef<Camera>();
 
   const sceneView = useCallback((camera: Camera) => {
     postMsg("sceneView", camera);
@@ -155,17 +151,10 @@ export default () => {
     });
   }, []);
 
-  const handleSceneCapture = useCallback(
-    (camera: Camera) => {
-      sceneCreate({
-        id: generateId(),
-        title: "",
-        description: "",
-        camera,
-      });
-    },
-    [sceneCreate],
-  );
+  const handleSceneCapture = useCallback((camera: Camera) => {
+    newSceneCamera.current = camera;
+    postMsg("sceneEdit", { id: generateId(), title: "", description: "" });
+  }, []);
 
   const handleSceneRecapture = useCallback(({ camera, id }: { camera: Camera; id: string }) => {
     setScenes(scenes => {
@@ -183,6 +172,11 @@ export default () => {
       if (scene) {
         scene.title = sceneInfo.title;
         scene.description = sceneInfo.description;
+      } else {
+        scenes.push({
+          ...sceneInfo,
+          camera: newSceneCamera.current,
+        });
       }
       return [...scenes];
     });
@@ -197,7 +191,11 @@ export default () => {
   }, []);
 
   const storyShare = useCallback(() => {
-    postMsg("storyShare", {
+    postMsg("storyShare");
+  }, []);
+
+  useEffect(() => {
+    postMsg("storySaveData", {
       scenes: JSON.stringify(scenes),
     });
   }, [scenes]);

@@ -5,14 +5,14 @@ import useHooks from "./hooks";
 type Props = {};
 
 const SceneEditor: React.FC<Props> = () => {
-  const { titleRef, descriptionRef, onSave, onCancel } = useHooks();
+  const { titleRef, descriptionRef, canSave, onTitleChange, onSave, onCancel } = useHooks();
 
   return (
     <Wrapper>
-      <TitleInput placeholder="タイトル" ref={titleRef} />
+      <TitleInput placeholder="タイトル" ref={titleRef} onChange={onTitleChange} />
       <ContentInput placeholder="内容" ref={descriptionRef} />
       <Actions>
-        <Button primary onClick={onSave}>
+        <Button primary onClick={onSave} disabled={!canSave}>
           保存
         </Button>
         <Button onClick={onCancel}>キャンセル</Button>
@@ -86,18 +86,20 @@ const Actions = styled.div`
   gap: 12px;
 `;
 
-const Button = styled.div<{ primary?: boolean }>`
+const Button = styled.div<{ primary?: boolean; disabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   height: 29px;
   padding: 4px 12px;
   border-radius: 4px;
-  background-color: ${({ primary }) => (primary ? "#00bebe" : "#d1d1d1")};
+  background-color: ${({ primary, disabled }) =>
+    disabled ? "#d1d1d1" : primary ? "#00bebe" : "#d1d1d1"};
   color: #fff;
   font-size: 14px;
   line-height: 21px;
   cursor: pointer;
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
 `;
 
 export default SceneEditor;

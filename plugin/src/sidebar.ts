@@ -335,6 +335,8 @@ reearth.on("resize", () => {
 reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   if (pluginMessage.data.action === "storyShare") {
     reearth.ui.postMessage(pluginMessage.data);
+  } else if (pluginMessage.data.action === "storySaveData") {
+    reearth.ui.postMessage(pluginMessage.data);
   }
 });
 
