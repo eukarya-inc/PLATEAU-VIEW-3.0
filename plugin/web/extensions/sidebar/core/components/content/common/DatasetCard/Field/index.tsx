@@ -23,8 +23,8 @@ export type Props = {
   selectGroups?: Group[];
   onUpdate?: (property: any) => void;
   onRemove: (type: string) => void;
-  onGroupsUpdate: (groups: Group[], selectedGroup?: number | undefined) => void;
-  onCurrentGroupChange: (group: number) => void;
+  onGroupsUpdate: (groups: Group[], selectedGroup?: string) => void;
+  onCurrentGroupChange: (fieldGroupID: string) => void;
 };
 
 const FieldComponent: React.FC<Props> = ({
@@ -79,8 +79,11 @@ const FieldComponent: React.FC<Props> = ({
     };
   }, [groupPopupOpen, onGroupsUpdate]);
 
-  return !editMode && (!hasUI || !isActive) ? null : (
-    <StyledAccordionComponent allowZeroExpanded preExpanded={[field.type]}>
+  return !editMode && !isActive ? null : (
+    <StyledAccordionComponent
+      allowZeroExpanded
+      preExpanded={[field.type]}
+      hide={!editMode && !hasUI}>
       <AccordionItem uuid={field.type}>
         <AccordionItemState>
           {({ expanded }) => (
@@ -115,6 +118,7 @@ const FieldComponent: React.FC<Props> = ({
             <FieldContent
               value={{ ...field }}
               editMode={editMode}
+              isActive={isActive}
               fieldGroups={selectGroups}
               datasetID={datasetID}
               onUpdate={onUpdate}
@@ -129,7 +133,8 @@ const FieldComponent: React.FC<Props> = ({
 
 export default FieldComponent;
 
-const StyledAccordionComponent = styled(Accordion)`
+const StyledAccordionComponent = styled(Accordion)<{ hide: boolean }>`
+  ${({ hide }) => hide && "display: none;"}
   width: 100%;
   border: 1px solid #e6e6e6;
   border-radius: 4px;

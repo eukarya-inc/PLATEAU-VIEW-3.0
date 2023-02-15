@@ -119,10 +119,10 @@ const DatasetCard: React.FC<Props> = ({
     </Menu>
   );
 
-  const [selectedGroup, setGroup] = useState<number>();
+  const [selectedGroup, setGroup] = useState<string>();
 
-  const handleCurrentGroupChange = useCallback((group: number) => {
-    setGroup(group);
+  const handleCurrentGroupChange = useCallback((fieldGroupID: string) => {
+    setGroup(fieldGroupID);
   }, []);
 
   const activeComponentIDs = useMemo(

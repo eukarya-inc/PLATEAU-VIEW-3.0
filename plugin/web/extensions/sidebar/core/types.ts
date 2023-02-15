@@ -20,7 +20,7 @@ export type Data = {
 };
 
 export type Group = {
-  id: number;
+  id: string;
   name: string;
 };
 

@@ -13,7 +13,7 @@ export default ({
   value: SwitchGroup;
   fieldGroups?: Group[];
   onUpdate: (property: SwitchGroup) => void;
-  onCurrentGroupChange: (group: number) => void;
+  onCurrentGroupChange: (fieldGroupID: string) => void;
 }) => {
   const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
   const [title, setTitle] = useState(value.title);
@@ -62,7 +62,7 @@ export default ({
   );
 
   const handleItemGroupChange = useCallback(
-    (idx: number, fieldGroupID?: number) => {
+    (idx: number, fieldGroupID?: string) => {
       if (!fieldGroupID || !value.groups) return;
       const updatedGroups = value.groups;
       updatedGroups[idx].fieldGroupID = fieldGroupID;

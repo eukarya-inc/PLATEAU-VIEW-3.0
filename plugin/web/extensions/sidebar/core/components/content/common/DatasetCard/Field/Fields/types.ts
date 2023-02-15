@@ -35,7 +35,7 @@ export type FieldComponent =
 type FieldBase<T extends keyof typeof fieldName> = {
   id: string;
   type: T;
-  group?: number;
+  group?: string;
 };
 
 export type Camera = FieldBase<"camera"> & {
@@ -76,7 +76,7 @@ export type Description = FieldBase<"description"> & {
 export type GroupItem = {
   id: string;
   title: string;
-  fieldGroupID: number;
+  fieldGroupID: string;
 };
 
 export type SwitchGroup = FieldBase<"switchGroup"> & {
@@ -172,9 +172,10 @@ export type BaseFieldProps<T extends keyof Fields> = {
   value: Fields[T];
   datasetID: string;
   editMode?: boolean;
+  isActive?: boolean;
   fieldGroups?: Group[];
   onUpdate: (property: Fields[T]) => void;
-  onCurrentGroupChange: (group: number) => void;
+  onCurrentGroupChange: (fieldGroupID: string) => void;
 };
 
 export type Expression<T extends string | number | boolean = string | number | boolean> =

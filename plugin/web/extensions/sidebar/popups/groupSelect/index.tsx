@@ -1,4 +1,4 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { generateID, postMsg } from "@web/extensions/sidebar/utils";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Group } from "../../core/types";
 
 const GroupSelect: React.FC = () => {
-  const [selectedGroup, selectGroup] = useState<number>();
+  const [selectedGroup, selectGroup] = useState<string>();
   const [draftGroups, updateDraftGroups] = useState<Group[]>([]);
 
   const handleSave = useCallback(() => {
@@ -19,14 +19,16 @@ const GroupSelect: React.FC = () => {
 
   const handleGroupAdd = useCallback(() => {
     updateDraftGroups(dgs => {
-      const newID = draftGroups.length ? draftGroups[draftGroups.length - 1].id + 1 : 1;
-      const newGroup = { id: newID, name: `グループ${newID}` };
+      const newGroup = {
+        id: generateID(),
+        name: `グループ${draftGroups.length ? draftGroups.length + 1 : 1}`,
+      };
       return dgs ? [...dgs, newGroup] : [newGroup];
     });
   }, [draftGroups]);
 
   const handleGroupSelect = useCallback(
-    (id: number) => {
+    (id: string) => {
       if (selectedGroup === id) {
         selectGroup(undefined);
       } else {

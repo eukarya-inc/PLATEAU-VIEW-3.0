@@ -8,6 +8,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
   datasetID,
   value,
   editMode,
+  isActive,
   onUpdate,
 }) => {
   const [imageURL, setImageURL] = useState(value.url ?? "");
@@ -39,6 +40,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
   );
 
   useEffect(() => {
+    if (!isActive) return;
     const timer = setTimeout(() => {
       postMsg({
         action: "updateDatasetInScene",
@@ -48,8 +50,11 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
         },
       });
     }, 500);
-    return () => clearTimeout(timer);
-  }, [datasetID, imageURL, imageSize]);
+    return () => {
+      clearTimeout(timer);
+      postMsg({ action: "updateDatasetInScene", payload: { id: datasetID } });
+    };
+  }, [datasetID, imageURL, imageSize, isActive]);
 
   return editMode ? (
     <Wrapper>

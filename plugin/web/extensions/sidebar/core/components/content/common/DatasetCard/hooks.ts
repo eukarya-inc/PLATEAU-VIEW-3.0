@@ -71,14 +71,14 @@ export default ({
   );
 
   const handleGroupsUpdate = useCallback(
-    (fieldID: string) => (groups: Group[], selectedGroup?: number) => {
+    (fieldID: string) => (groups: Group[], selectedGroupID?: string) => {
       if (!inEditor) return;
 
       const newDatasetComponents = dataset.components ? [...dataset.components] : [];
       const componentIndex = newDatasetComponents.findIndex(c => c.id === fieldID);
 
       if (newDatasetComponents.length > 0 && componentIndex !== undefined) {
-        newDatasetComponents[componentIndex].group = selectedGroup;
+        newDatasetComponents[componentIndex].group = selectedGroupID;
       }
 
       onDatasetUpdate?.({
