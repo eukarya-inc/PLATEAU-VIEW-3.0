@@ -15,6 +15,7 @@ export const fieldName = {
   pointLabel: "ラベル",
   pointModel: "モデル",
   pointStroke: "ストロック",
+  clipping: "クリッピング",
 };
 
 // type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
@@ -30,7 +31,8 @@ export type FieldComponent =
   | PointIcon
   | PointLabel
   | PointModel
-  | PointStroke;
+  | PointStroke
+  | Clipping;
 
 type FieldBase<T extends keyof typeof fieldName> = {
   id: string;
@@ -147,6 +149,13 @@ type PointStroke = FieldBase<"pointStroke"> & {
   }[];
 };
 
+type Clipping = FieldBase<"clipping"> & {
+  enabled: boolean;
+  show: boolean;
+  aboveGroundOnly: boolean;
+  direction: "inside" | "outside";
+};
+
 export type Fields = {
   // general
   camera: Camera;
@@ -166,6 +175,7 @@ export type Fields = {
   // polygon
   // 3d-model
   // 3d-tile
+  clipping: Clipping;
 };
 
 export type BaseFieldProps<T extends keyof Fields> = {

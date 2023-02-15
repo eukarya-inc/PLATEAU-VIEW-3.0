@@ -203,24 +203,17 @@ export default ({
   //     },
   //   };
 
-  //   const ThreeDModelFields: {
-  //     [key: string]: { name: string; onClick?: (property: any) => void };
-  //   } = {
-  //     camera: {
-  //       name: "カメラ",
-  //       onClick: () =>
-  //         handleFieldAdd({
-  //           position: {
-  //             lng: 0,
-  //             lat: 0,
-  //             height: 0,
-  //             pitch: 0,
-  //             heading: 0,
-  //             roll: 0,
-  //           },
-  //         }),
-  //     },
-  //   };
+  const ThreeDModelFields: FieldDropdownItem = {
+    clipping: {
+      name: fieldName["clipping"],
+      onClick: handleFieldAdd({
+        enabled: false,
+        show: false,
+        aboveGroundOnly: false,
+        direction: "inside",
+      }),
+    },
+  };
 
   //   const ThreeDTileFields: {
   //     [key: string]: { name: string; onClick?: (property: any) => void };
@@ -281,7 +274,7 @@ export default ({
     },
     // polyline: { name: "ポリライン", fields: polylineFields },
     // polygone: { name: "ポリゴン", fields: polygonFields },
-    // "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
+    "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
     // "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
   };
   return {
