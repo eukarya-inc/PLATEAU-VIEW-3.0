@@ -99,7 +99,7 @@ function sortByType(a: DataCatalogItem, b: DataCatalogItem): number {
 function filter(q: string | undefined, items: DataCatalogItem[]): DataCatalogItem[] {
   if (!q) return items;
   return items.filter(
-    i => i.name.includes(q) || i.pref.includes(q) || i.city.includes(q) || i.ward?.includes(q),
+    i => i.name.includes(q) || i.pref.includes(q) || i.city?.includes(q) || i.ward?.includes(q),
   );
 }
 
