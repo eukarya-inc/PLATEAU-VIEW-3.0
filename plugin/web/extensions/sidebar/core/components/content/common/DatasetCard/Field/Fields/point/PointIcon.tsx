@@ -52,7 +52,6 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
     }, 500);
     return () => {
       clearTimeout(timer);
-      // postMsg({ action: "updateDatasetInScene", payload: { dataID } });
     };
   }, [dataID, imageURL, imageSize, isActive]);
 

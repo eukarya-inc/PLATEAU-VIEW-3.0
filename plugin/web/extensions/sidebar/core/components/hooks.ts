@@ -1,7 +1,7 @@
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import { Story } from "@web/extensions/storytelling/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getDataCatalog, RawDataCatalogItem } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
@@ -333,9 +333,11 @@ export default () => {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const fetchedSharedProject = useRef(false);
+
   useEffect(() => {
-    if (!backendURL) return;
-    if (projectID) {
+    if (!backendURL || fetchedSharedProject.current) return;
+    if (projectID && processedCatalog.length) {
       (async () => {
         const res = await fetch(`${backendURL}/share/plateauview/${projectID}`);
         if (res.status !== 200) return;
@@ -343,13 +345,21 @@ export default () => {
         if (data) {
           updateProject(data);
           postMsg({ action: "updateProject", payload: data });
+          (data.datasets as Data[]).forEach(d => {
+            const dataset = processedCatalog.find(item => item.dataID === d.dataID);
+            if (dataset) {
+              setSelectedDatasets(sds => [...sds, dataset]);
+              postMsg({ action: "addDatasetToScene", payload: { dataset } });
+            }
+          });
           if (data.userStory) {
             handleInitUserStory(data.userStory);
           }
         }
+        fetchedSharedProject.current = true;
       })();
     }
-  }, [projectID, backendURL, handleInitUserStory]);
+  }, [projectID, backendURL, processedCatalog, handleInitUserStory]);
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 

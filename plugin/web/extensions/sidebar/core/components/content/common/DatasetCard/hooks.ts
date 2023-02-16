@@ -35,10 +35,10 @@ export default ({
     };
 
   const handleFieldUpdate = useCallback(
-    (property: any) => {
+    (id: string) => (property: any) => {
       if (!inEditor) return;
       const newDatasetComponents = dataset.components ? [...dataset.components] : [];
-      const componentIndex = newDatasetComponents?.findIndex(c => c.type === property.type);
+      const componentIndex = newDatasetComponents?.findIndex(c => c.id === id);
 
       if (!newDatasetComponents || componentIndex === undefined) return;
 
@@ -53,10 +53,10 @@ export default ({
   );
 
   const handleFieldRemove = useCallback(
-    (type: string) => {
+    (id: string) => {
       if (!inEditor) return;
       const newDatasetComponents = dataset.components ? [...dataset.components] : [];
-      const componentIndex = newDatasetComponents?.findIndex(c => c.type === type);
+      const componentIndex = newDatasetComponents?.findIndex(c => c.id === id);
 
       if (!newDatasetComponents || componentIndex === undefined) return;
 

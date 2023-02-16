@@ -388,20 +388,20 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       ],
       property: { default: { size: "medium" } },
     },
-    ...(dataset.format === "geojson"
+    ...(options
       ? options
-        ? options
-        : {
-            marker: {
-              style: "point",
-              // pointOutlineColor: "red",
-              // pointOutlineWidth: 6,
-              // label: true,
-              // labelText: "SOME TEXT",
-              // labelPosition: "right",
-              // labelBackground: true,
-            },
-          }
+      : dataset.format === "geojson"
+      ? {
+          marker: {
+            // style: "point",
+            // pointOutlineColor: "red",
+            // pointOutlineWidth: 6,
+            // label: true,
+            // labelText: "SOME TEXT",
+            // labelPosition: "right",
+            // labelBackground: true,
+          },
+        }
       : { ...(options ?? {}) }),
   };
 }
