@@ -1,6 +1,10 @@
+import { DataCatalogGroup, DataCatalogItem } from "@web/extensions/sidebar/core/types";
+
 import { omit, makeTree, mapTree } from "./utils";
 
-export type DataCatalogItem = {
+export type { DataCatalogItem, DataCatalogGroup };
+
+export type RawDataCatalogItem = {
   id: string;
   name: string;
   pref: string;
@@ -24,14 +28,9 @@ export type DataCatalogItem = {
   search_index?: string;
 };
 
-export type DataCatalogGroup = {
-  name: string;
-  children: (DataCatalogItem | DataCatalogGroup)[];
-};
-
 export type GroupBy = "city" | "type" | "tag"; // Tag not implemented yet
 
-export async function getDataCatalog(base: string): Promise<DataCatalogItem[]> {
+export async function getDataCatalog(base: string): Promise<RawDataCatalogItem[]> {
   const res = await fetch(base + "/datacatalog");
   if (res.status !== 200) {
     throw new Error("failed to fetch data catalog");

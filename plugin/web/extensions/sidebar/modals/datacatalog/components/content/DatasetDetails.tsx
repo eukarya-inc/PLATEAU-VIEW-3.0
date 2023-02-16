@@ -1,9 +1,8 @@
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { ComponentType, useCallback, useState } from "react";
-
-import { DataCatalogItem } from "../../api/api";
 
 export type Props = {
   dataset: DataCatalogItem | UserDataItem;
@@ -53,8 +52,7 @@ const DatasetDetails: React.FC<Props> = ({
               <Icon icon="share" />
               シェア
             </ShareButton>
-            )
-          }
+          )}
         </ButtonWrapper>
       </TopWrapper>
       {ContentSection && (

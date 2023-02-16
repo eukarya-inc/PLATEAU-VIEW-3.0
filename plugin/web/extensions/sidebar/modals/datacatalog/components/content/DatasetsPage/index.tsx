@@ -1,7 +1,8 @@
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import PageLayout from "@web/extensions/sidebar/modals/datacatalog/components/content/PageLayout";
 import { useCallback, useMemo, useState } from "react";
 
-import { DataCatalogItem, GroupBy } from "../../../api/api";
+import { GroupBy } from "../../../api/api";
 
 import DatasetTree from "./DatasetTree";
 import DatasetDetails, { Tag } from "./Details";

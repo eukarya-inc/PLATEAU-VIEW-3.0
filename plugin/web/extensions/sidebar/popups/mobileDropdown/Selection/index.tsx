@@ -1,5 +1,5 @@
 import SelectionComponent from "@web/extensions/sidebar/core/components/content/Selection";
-import { Data } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useEffect } from "react";
@@ -7,9 +7,9 @@ import { useEffect } from "react";
 import PopupItem from "../sharedComponents/PopupItem";
 
 type Props = {
-  selectedDatasets: Data[];
+  selectedDatasets: DataCatalogItem[];
   onDatasetSave: (datasetId: string) => void;
-  onDatasetUpdate: (updatedDataset: Data) => void;
+  onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
 };

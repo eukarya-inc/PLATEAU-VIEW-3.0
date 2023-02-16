@@ -1,4 +1,4 @@
-import { Data } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Dropdown, Icon, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
@@ -18,7 +18,7 @@ import useHooks from "./hooks";
 
 type Tabs = "default" | "edit";
 
-type BaseFieldType = Partial<Data> & {
+type BaseFieldType = Partial<DataCatalogItem> & {
   title?: string;
   icon?: string;
   value?: string | number;
@@ -26,11 +26,11 @@ type BaseFieldType = Partial<Data> & {
 };
 
 export type Props = {
-  dataset: Data;
+  dataset: DataCatalogItem;
   inEditor?: boolean;
   onDatasetSave: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
-  onDatasetUpdate: (dataset: Data) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem) => void;
   onUpdateField?: (id: string) => void;
 };
 const DatasetCard: React.FC<Props> = ({
@@ -57,7 +57,7 @@ const DatasetCard: React.FC<Props> = ({
         title: "カメラ",
         icon: "mapPin",
         value: 1,
-        onClick: () => alert("MOVE CAMERA"),
+        onClick: () => postMsg({ action: "cameraFlyTo", payload: dataset.dataID }),
       },
       { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
       {
@@ -184,7 +184,7 @@ const DatasetCard: React.FC<Props> = ({
                 key={idx}
                 field={c}
                 isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                datasetID={dataset.id}
+                dataID={dataset.dataID}
                 editMode={inEditor && currentTab === "edit"}
                 selectGroups={dataset.fieldGroups}
                 onUpdate={handleFieldUpdate}

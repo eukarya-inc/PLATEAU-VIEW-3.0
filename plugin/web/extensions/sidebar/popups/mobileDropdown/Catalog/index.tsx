@@ -29,9 +29,7 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, catalogData, onDa
   }, []);
 
   const addDisabled = useMemo(() => {
-    return !!addedDatasetIds?.find(
-      id => selectedDataset?.type === "item" && id === selectedDataset.id,
-    );
+    return !!addedDatasetIds?.find(id => id === selectedDataset?.dataID);
   }, [addedDatasetIds, selectedDataset]);
 
   useEffect(() => {

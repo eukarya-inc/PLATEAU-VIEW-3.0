@@ -1,5 +1,5 @@
 import { Project as ProjectType } from "@web/extensions/sidebar/types";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export type Project = ProjectType;
@@ -29,32 +29,11 @@ export default ({
 
   const handleProjectShare = useCallback(async () => {
     setShareDisable(true);
-    if (project) {
-      if (!backendURL || !reearthURL) return;
-      const resp = await fetch(`${backendURL}/share/plateauview`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(project),
-      });
-      if (resp.status !== 200) {
-        messageApi.open({
-          type: "error",
-          content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
-        });
-        if (timer.current) {
-          clearTimeout(timer.current);
-        }
-      } else {
-        const project = await resp.json();
-        setPublishedUrl(`${reearthURL}${reearthURL.includes("?") ? "&" : "?"}projectID=${project}`);
-      }
-    }
+    postMsg({ action: "getCurrentCamera" });
     timer.current = setTimeout(() => {
       setShareDisable(false);
     }, 3000);
-  }, [messageApi, reearthURL, backendURL, project, setPublishedUrl]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -64,6 +43,50 @@ export default ({
     };
   }, []);
 
+  addEventListener("message", async e => {
+    if (e.source !== parent) return;
+    if (e.data.action) {
+      if (e.data.action === "screenshotPreview") {
+        generatePrintView(e.data.payload);
+      } else if (e.data.action === "screenshotSave") {
+        const link = document.createElement("a");
+        link.download = "screenshot.png";
+        link.href = e.data.payload;
+        link.click();
+        link.remove();
+      } else if (e.data.action === "getCurrentCamera") {
+        if (!backendURL || !reearthURL || !project || !e.data.payload) return;
+        const updatedProject: Project = {
+          ...project,
+          sceneOverrides: [project.sceneOverrides, { default: { camera: e.data.payload } }].reduce(
+            (p, v) => mergeProperty(p, v),
+          ),
+        };
+        const resp = await fetch(`${backendURL}/share/plateauview`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify(updatedProject),
+        });
+        if (resp.status !== 200) {
+          messageApi.open({
+            type: "error",
+            content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
+          });
+          if (timer.current) {
+            clearTimeout(timer.current);
+          }
+        } else {
+          const project = await resp.json();
+          setPublishedUrl(
+            `${reearthURL}${reearthURL.includes("?") ? "&" : "?"}projectID=${project}`,
+          );
+        }
+      }
+    }
+  });
+
   return {
     shareDisabled,
     publishedUrl,
@@ -72,21 +95,6 @@ export default ({
     handleScreenshotSave,
   };
 };
-
-addEventListener("message", e => {
-  if (e.source !== parent) return;
-  if (e.data.type) {
-    if (e.data.type === "screenshotPreview") {
-      generatePrintView(e.data.payload);
-    } else if (e.data.type === "screenshotSave") {
-      const link = document.createElement("a");
-      link.download = "screenshot.png";
-      link.href = e.data.payload;
-      link.click();
-      link.remove();
-    }
-  }
-});
 
 function generatePrintView(payload?: string) {
   const doc = window.open()?.document;

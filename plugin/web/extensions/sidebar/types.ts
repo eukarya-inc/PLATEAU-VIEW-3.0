@@ -11,6 +11,7 @@ type ActionType =
   | "storageFetch"
   | "storageKeys"
   | "storageDelete"
+  | "updateCatalog"
   | "updateProject"
   | "screenshot"
   | "screenshotPreview"
@@ -39,13 +40,14 @@ type ActionType =
   | "groupSelectOpen"
   | "saveGroups"
   | "cameraFlyTo"
+  | "getCurrentCamera"
   | "storyPlay";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 
 export type Project = {
   sceneOverrides: ReearthApi;
-  selectedDatasets: Data[];
+  datasets: Data[];
   userStory?: Story;
 };
 
@@ -78,12 +80,14 @@ type Tile = {
 };
 
 export type Camera = {
-  lat: number;
-  lng: number;
-  altitude: number;
-  heading: number;
-  pitch: number;
-  roll: number;
+  lat?: number;
+  lng?: number;
+  altitude?: number;
+  height?: number;
+  heading?: number;
+  pitch?: number;
+  roll?: number;
+  fov?: number;
 };
 
 type PluginActionType = "storyShare";

@@ -130,6 +130,7 @@ test("getDataCatalogTree filter", () => {
 
 const chiyodakuBldg = {
   id: "a",
+  dataID: "e2",
   type: "建築物モデル",
   type_en: "bldg",
   name: "建築物モデル（千代田区）",
@@ -144,9 +145,11 @@ const chiyodakuBldg = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const chiyodakuShelter = {
   id: "b",
+  dataID: "e2",
   type: "避難施設情報",
   type_en: "shelter",
   name: "避難施設情報（千代田区）",
@@ -161,9 +164,11 @@ const chiyodakuShelter = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const setagayakuBldg = {
   id: "c",
+  dataID: "e2",
   type: "建築物モデル",
   type_en: "bldg",
   name: "建築物モデル（世田谷区）",
@@ -178,9 +183,11 @@ const setagayakuBldg = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const setagayakuShelter = {
   id: "d",
+  dataID: "e2",
   type: "避難施設情報",
   type_en: "shelter",
   name: "避難施設情報（世田谷区）",
@@ -195,9 +202,11 @@ const setagayakuShelter = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const tokyo23kuPark = {
   id: "e",
+  dataID: "e2",
   type: "公園情報",
   type_en: "park",
   name: "公園情報（東京都23区）",
@@ -209,9 +218,11 @@ const tokyo23kuPark = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const hachiojiBldg = {
   id: "f",
+  dataID: "f2",
   type: "建築物モデル",
   type_en: "bldg",
   name: "建築物モデル（八王子市）",
@@ -223,9 +234,11 @@ const hachiojiBldg = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const hachiojiLandmark = {
   id: "f",
+  dataID: "f2",
   type: "ランドマーク情報",
   type_en: "landmark",
   name: "ランドマーク情報（八王子市）",
@@ -237,9 +250,11 @@ const hachiojiLandmark = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 const utsunomiyashiBldg = {
   id: "g",
+  dataID: "g2",
   type: "建築物モデル",
   type_en: "bldg",
   name: "建築物モデル（宇都宮市）",
@@ -251,6 +266,7 @@ const utsunomiyashiBldg = {
   url: "",
   desc: "",
   year: 2022,
+  fieldGroups: [],
 };
 
 const dataCatalog: DataCatalogItem[] = [

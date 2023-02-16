@@ -19,7 +19,7 @@ export type Props = {
 const DesktopSidebar: React.FC<Props> = ({ className }) => {
   const {
     project,
-    processedSelectedDatasets,
+    selectedDatasets,
     inEditor,
     reearthURL,
     backendURL,
@@ -77,7 +77,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
               data: (
                 <Selection
                   inEditor={inEditor}
-                  selectedDatasets={processedSelectedDatasets}
+                  selectedDatasets={selectedDatasets}
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}

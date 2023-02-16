@@ -1,4 +1,4 @@
-import { Data, Group } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, Group } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
@@ -13,9 +13,9 @@ export default ({
   inEditor,
   onDatasetUpdate,
 }: {
-  dataset: Data;
+  dataset: DataCatalogItem;
   inEditor?: boolean;
-  onDatasetUpdate: (dataset: Data) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem) => void;
 }) => {
   const handleFieldAdd =
     (property: any) =>

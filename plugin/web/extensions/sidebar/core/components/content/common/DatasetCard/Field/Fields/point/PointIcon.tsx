@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BaseFieldProps } from "../types";
 
 const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
-  datasetID,
+  dataID,
   value,
   editMode,
   isActive,
@@ -40,21 +40,21 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
   );
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || !dataID) return;
     const timer = setTimeout(() => {
       postMsg({
         action: "updateDatasetInScene",
         payload: {
-          id: datasetID,
+          dataID,
           update: { marker: { style: "image", image: imageURL, imageSize } },
         },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
-      postMsg({ action: "updateDatasetInScene", payload: { id: datasetID } });
+      // postMsg({ action: "updateDatasetInScene", payload: { dataID } });
     };
-  }, [datasetID, imageURL, imageSize, isActive]);
+  }, [dataID, imageURL, imageSize, isActive]);
 
   return editMode ? (
     <Wrapper>

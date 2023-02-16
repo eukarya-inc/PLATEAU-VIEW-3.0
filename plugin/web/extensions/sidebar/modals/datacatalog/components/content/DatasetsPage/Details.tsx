@@ -1,10 +1,10 @@
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import DetailsComponent from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetDetails";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
 // import { useCallback, useMemo } from "react";
-import { DataCatalogItem } from "../../../api/api";
 
 import { Tag as TagType } from "./Tags";
 // import Tags, {Tag as TagType} from "./Tags";

@@ -1,3 +1,5 @@
+import { RawDataCatalogItem } from "../modals/datacatalog/api/api";
+
 import { FieldComponent } from "./components/content/common/DatasetCard/Field/Fields/types";
 
 export type Root = {
@@ -5,14 +7,17 @@ export type Root = {
   templates: Template[];
 };
 
+export type DataCatalogGroup = {
+  name: string;
+  children: (DataCatalogItem | DataCatalogGroup)[];
+};
+
+export type DataCatalogItem = RawDataCatalogItem & Data;
+
 export type Data = {
-  id: string;
   dataID: string;
-  type: string;
-  name?: string;
-  // public: boolean;
+  public?: boolean;
   visible?: boolean;
-  url?: string;
   // either template or components
   template?: string; // user-defined template ID or builtin template ID
   components?: FieldComponent[];

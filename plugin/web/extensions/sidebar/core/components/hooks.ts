@@ -1,17 +1,27 @@
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import { Story } from "@web/extensions/storytelling/types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { DataCatalogItem, getDataCatalog } from "../../modals/datacatalog/api/api";
+import { getDataCatalog, RawDataCatalogItem } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
-import { Data, Template } from "../types";
+import { Data, DataCatalogItem, Template } from "../types";
 
 import { Pages } from "./Header";
 
 export const defaultProject: Project = {
   sceneOverrides: {
     default: {
+      camera: {
+        lat: 35.65075152248653,
+        lng: 139.7617718208305,
+        altitude: 2219.7187259974316,
+        heading: 6.132702058010316,
+        pitch: -0.5672459184621266,
+        roll: 0.00019776785897196447,
+        fov: 1.0471975511965976,
+        height: 2219.7187259974316,
+      },
       sceneMode: "3d",
       depthTestAgainstTerrain: false,
     },
@@ -30,7 +40,7 @@ export const defaultProject: Project = {
       },
     ],
   },
-  selectedDatasets: [],
+  datasets: [],
   userStory: undefined,
 };
 
@@ -39,12 +49,11 @@ export default () => {
   const [inEditor, setInEditor] = useState(true);
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
-  // const [cmsURL, setCMSURL] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
 
   const [data, setData] = useState<Data[]>();
   const [project, updateProject] = useState<Project>(defaultProject);
-  const [processedSelectedDatasets, setProcessedSelectedDatasets] = useState<Data[]>([]);
+  const [selectedDatasets, setSelectedDatasets] = useState<DataCatalogItem[]>([]);
 
   const handleBackendFetch = useCallback(async () => {
     if (!backendURL) return;
@@ -58,14 +67,30 @@ export default () => {
 
   // ****************************************
   // Init
-  const [catalogData, setCatalog] = useState<DataCatalogItem[]>([]);
+  const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
 
   useEffect(() => {
+    postMsg({ action: "init" }); // Needed to trigger sending initialization data to sidebar
     getDataCatalog("https://api.plateau.reearth.io/").then(res => {
       setCatalog(res);
-      postMsg({ action: "init", payload: { dataCatalog: res } }); // Needed to trigger sending initialization data to sidebar
     });
   }, []);
+
+  useEffect(() => {
+    if (backendURL) {
+      handleBackendFetch();
+    }
+  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const processedCatalog = useMemo(
+    () => handleDataCatalogProcessing(catalogData, data),
+    [catalogData, data],
+  );
+
+  useEffect(() => {
+    postMsg({ action: "updateCatalog", payload: processedCatalog });
+  }, [processedCatalog]);
+
   // ****************************************
 
   // ****************************************
@@ -73,10 +98,10 @@ export default () => {
 
   const handleProjectSceneUpdate = useCallback(
     (updatedProperties: Partial<ReearthApi>) => {
-      updateProject(({ sceneOverrides, selectedDatasets }) => {
+      updateProject(({ sceneOverrides, datasets }) => {
         const updatedProject: Project = {
           sceneOverrides: [sceneOverrides, updatedProperties].reduce((p, v) => mergeProperty(p, v)),
-          selectedDatasets,
+          datasets,
         };
         postMsg({ action: "updateProject", payload: updatedProject });
         return updatedProject;
@@ -87,27 +112,26 @@ export default () => {
 
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
-      updateProject(({ sceneOverrides, selectedDatasets }) => {
-        let datasetToAdd = data?.find(d => d.dataID === `plateau-2022-${dataset.name}`);
+      updateProject(project => {
+        if (!("dataID" in dataset)) {
+          postMsg({ action: "addDatasetToScene", payload: { dataset } });
+          return project;
+        }
 
-        if (!datasetToAdd) {
-          datasetToAdd = {
-            id: dataset.id,
-            dataID: `plateau-2022-${dataset.name}`,
-            type: dataset.type,
-            name: dataset.name,
-            url:
-              "dataUrl" in dataset ? dataset.dataUrl : "url" in dataset ? dataset.url : undefined,
-            visible: true,
-            fieldGroups: [{ id: generateID(), name: "グループ1" }],
-          };
+        let dataToAdd = data?.find(d => d.dataID === dataset.dataID);
+
+        if (!dataToAdd) {
+          dataToAdd = convertToData(dataset);
         }
 
         const updatedProject: Project = {
-          sceneOverrides,
-          selectedDatasets: [...selectedDatasets, datasetToAdd],
+          ...project,
+          datasets: [...project.datasets, dataToAdd],
         };
+
         postMsg({ action: "updateProject", payload: updatedProject });
+        setSelectedDatasets(sds => [...sds, dataset]);
+
         return updatedProject;
       });
 
@@ -118,14 +142,15 @@ export default () => {
   );
 
   const handleProjectDatasetRemove = useCallback((dataID: string) => {
-    updateProject(({ sceneOverrides, selectedDatasets }) => {
+    updateProject(({ sceneOverrides, datasets }) => {
       const updatedProject = {
         sceneOverrides,
-        selectedDatasets: selectedDatasets.filter(d => d.dataID !== dataID),
+        datasets: datasets.filter(d => d.dataID !== dataID),
       };
       postMsg({ action: "updateProject", payload: updatedProject });
       return updatedProject;
     });
+    setSelectedDatasets(sds => sds.filter(sd => sd.dataID !== dataID));
     postMsg({ action: "removeDatasetFromScene", payload: dataID });
   }, []);
 
@@ -133,40 +158,40 @@ export default () => {
     updateProject(({ sceneOverrides }) => {
       const updatedProject = {
         sceneOverrides,
-        selectedDatasets: [],
+        datasets: [],
       };
       postMsg({ action: "updateProject", payload: updatedProject });
       return updatedProject;
     });
+    setSelectedDatasets([]);
     postMsg({ action: "removeAllDatasetsFromScene" });
   }, []);
 
-  const handleDatasetUpdate = useCallback(
-    (updatedDataset: Data) => {
-      if (processedSelectedDatasets.length < 1) return;
-
-      const updatedProcessedDatasets = [...processedSelectedDatasets];
-      const datasetIndex = updatedProcessedDatasets.findIndex(
-        d2 => d2.dataID === updatedDataset.dataID,
-      );
-
-      updatedProcessedDatasets[datasetIndex] = updatedDataset;
-      setProcessedSelectedDatasets(updatedProcessedDatasets);
-    },
-    [processedSelectedDatasets],
-  );
+  const handleDatasetUpdate = useCallback((updatedDataset: DataCatalogItem) => {
+    setSelectedDatasets(selectedDatasets => {
+      const updatedDatasets = [...selectedDatasets];
+      const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === updatedDataset.dataID);
+      if (datasetIndex >= 0) {
+        updatedDatasets[datasetIndex] = updatedDataset;
+      }
+      return updatedDatasets;
+    });
+  }, []);
 
   const handleDatasetSave = useCallback(
     (dataID: string) => {
       (async () => {
         if (!inEditor) return;
-        const datasetToSave = processedSelectedDatasets.find(d => d.dataID === dataID);
+        const selectedDataset = selectedDatasets.find(d => d.dataID === dataID);
+
+        if (!backendURL || !backendAccessToken || !selectedDataset) return;
+
+        const datasetToSave = convertToData(selectedDataset);
+
         const isNew = !data?.find(d => d.dataID === dataID);
 
-        if (!backendURL || !backendAccessToken || !datasetToSave) return;
-
         const fetchURL = !isNew
-          ? `${backendURL}/sidebar/plateauview/data/${datasetToSave.id}` // should be id and not dataID because id here is the CMS item's id
+          ? `${backendURL}/sidebar/plateauview/data/${selectedDataset.id}` // should be id and not dataID because id here is the CMS item's id
           : `${backendURL}/sidebar/plateauview/data`;
 
         const method = !isNew ? "PATCH" : "POST";
@@ -188,7 +213,7 @@ export default () => {
         handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
       })();
     },
-    [data, processedSelectedDatasets, inEditor, backendAccessToken, backendURL, handleBackendFetch],
+    [data, selectedDatasets, inEditor, backendAccessToken, backendURL, handleBackendFetch],
   );
 
   // ****************************************
@@ -254,6 +279,8 @@ export default () => {
     [backendURL, backendAccessToken],
   );
 
+  // ****************************************
+
   const handleStorySaveData = useCallback((story: Story) => {
     // save user story
     updateProject(project => {
@@ -286,7 +313,6 @@ export default () => {
         setInEditor(e.data.payload.inEditor);
         setBackendAccessToken(e.data.payload.backendAccessToken);
         setBackendURL(e.data.payload.backendURL);
-        // setCMSURL(`${e.data.payload.cmsURL}/api/p/plateau-2022`);
         setReearthURL(`${e.data.payload.reearthURL}`);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
@@ -325,32 +351,6 @@ export default () => {
     }
   }, [projectID, backendURL, handleInitUserStory]);
 
-  useEffect(() => {
-    if (backendURL) {
-      handleBackendFetch();
-    }
-  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleDatasetProcessing = useCallback((dataset: Data, savedData?: Data[]) => {
-    if (!savedData) return dataset;
-
-    const datasetSavedData = savedData.find(d => d.dataID === dataset.dataID);
-    if (datasetSavedData) {
-      return {
-        ...dataset,
-        ...datasetSavedData,
-      };
-    } else {
-      return dataset;
-    }
-  }, []);
-
-  useEffect(() => {
-    setProcessedSelectedDatasets(
-      project.selectedDatasets.map(sd => handleDatasetProcessing(sd, data)),
-    );
-  }, [data, project.selectedDatasets, handleDatasetProcessing]);
-
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 
   const handlePageChange = useCallback((p: Pages) => {
@@ -364,9 +364,9 @@ export default () => {
   }, []);
 
   return {
-    catalogData,
+    catalog: processedCatalog,
     project,
-    processedSelectedDatasets,
+    selectedDatasets,
     inEditor,
     reearthURL,
     backendURL,
@@ -410,3 +410,41 @@ function updateExtended(e: { vertically: boolean }) {
     root?.classList.remove("extended");
   }
 }
+
+const newItem = (ri: RawDataCatalogItem): DataCatalogItem => {
+  return {
+    ...ri,
+    dataID: ri.id,
+    public: false,
+    fieldGroups: [{ id: generateID(), name: "グループ1" }],
+  };
+};
+
+const handleDataCatalogProcessing = (
+  catalog: (DataCatalogItem | RawDataCatalogItem)[],
+  savedData?: Data[],
+): DataCatalogItem[] =>
+  catalog.map(item => {
+    if (!savedData) return newItem(item);
+
+    const savedData2 = savedData.find(d => d.dataID === ("dataID" in item ? item.dataID : item.id));
+    if (savedData2) {
+      return {
+        ...item,
+        ...savedData2,
+      };
+    } else {
+      return newItem(item);
+    }
+  });
+
+const convertToData = (item: DataCatalogItem): Data => {
+  return {
+    dataID: item.dataID,
+    public: item.public,
+    visible: item.visible,
+    template: item.template,
+    components: item.components,
+    fieldGroups: item.fieldGroups,
+  };
+};

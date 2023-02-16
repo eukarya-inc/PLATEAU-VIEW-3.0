@@ -1,8 +1,7 @@
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo } from "react";
-
-import { DataCatalogItem } from "../../../../api/api";
 
 export type Props = {
   item: DataCatalogItem;

@@ -14,9 +14,9 @@ const MobileDropdown: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>();
 
   const {
-    catalogData,
+    catalog,
     project,
-    processedSelectedDatasets,
+    selectedDatasets,
     reearthURL,
     backendURL,
     handleDatasetSave,
@@ -37,7 +37,7 @@ const MobileDropdown: React.FC = () => {
 
   const handleDatasetAdd = useCallback(
     (dataset: DataCatalogItem) => {
-      handleProjectDatasetAdd(dataset as DataCatalogItem);
+      handleProjectDatasetAdd(dataset);
       changeTab("selection");
     },
     [changeTab, handleProjectDatasetAdd],
@@ -63,8 +63,8 @@ const MobileDropdown: React.FC = () => {
   });
 
   const addedDatasetIds = useMemo(
-    () => project.selectedDatasets.map(dataset => dataset.id),
-    [project.selectedDatasets],
+    () => project.datasets.map(dataset => dataset.dataID),
+    [project.datasets],
   );
 
   return (
@@ -75,13 +75,13 @@ const MobileDropdown: React.FC = () => {
             <Catalog
               addedDatasetIds={addedDatasetIds}
               isMobile
-              catalogData={catalogData}
+              catalogData={catalog}
               onDatasetAdd={handleDatasetAdd}
             />
           ),
           selection: (
             <Selection
-              selectedDatasets={processedSelectedDatasets}
+              selectedDatasets={selectedDatasets}
               onDatasetSave={handleDatasetSave}
               onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
@@ -92,7 +92,7 @@ const MobileDropdown: React.FC = () => {
             <Menu
               project={{
                 sceneOverrides: project.sceneOverrides,
-                selectedDatasets: processedSelectedDatasets,
+                datasets: selectedDatasets,
               }}
               backendURL={backendURL}
               reearthURL={reearthURL}

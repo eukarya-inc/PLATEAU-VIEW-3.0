@@ -1,7 +1,6 @@
+import { DataCatalogItem, DataCatalogGroup } from "@web/extensions/sidebar/core/types";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
-
-import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
 
 import TreeBuilder from "./TreeBuilder";
 

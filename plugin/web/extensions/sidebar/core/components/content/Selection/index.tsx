@@ -2,15 +2,15 @@ import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import { Data } from "../../../types";
+import { DataCatalogItem } from "../../../types";
 import DatasetCard from "../common/DatasetCard";
 
 export type Props = {
   className?: string;
   inEditor?: boolean;
-  selectedDatasets?: Data[];
+  selectedDatasets?: DataCatalogItem[];
   onDatasetSave: (dataID: string) => void;
-  onDatasetUpdate: (dataset: Data) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem) => void;
   onDatasetRemove: (dataID: string) => void;
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
