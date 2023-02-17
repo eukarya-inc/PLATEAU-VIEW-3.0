@@ -91,8 +91,8 @@ export default ({
   );
 
   const generalFields: FieldDropdownItem = {
-    camera: {
-      name: fieldName["camera"],
+    idealZoom: {
+      name: fieldName["idealZoom"],
       onClick: handleFieldAdd({
         position: {
           lng: 0,

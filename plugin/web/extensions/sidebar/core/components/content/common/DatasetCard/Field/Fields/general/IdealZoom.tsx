@@ -1,11 +1,8 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseFieldProps, Camera } from "../types";
-
-type Props = BaseFieldProps<"camera"> & {
-  onCapture?: (camera: Partial<Camera["position"]>) => void;
-};
+import { BaseFieldProps, IdealZoom as IdealZoomType } from "../types";
 
 export const initialCameraValues = {
   lng: 0,
@@ -16,49 +13,159 @@ export const initialCameraValues = {
   roll: 0,
 };
 
-const IdealZoom: React.FC<Props> = ({ value, editMode, onCapture }) => {
-  const [camera, setCamera] = useState<Camera["position"]>(
+const IdealZoom: React.FC<BaseFieldProps<"idealZoom">> = ({ value, editMode, onUpdate }) => {
+  const [camera, setCamera] = useState<IdealZoomType["position"]>(
     value["position"] ?? initialCameraValues,
   );
 
-  const handleLatitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handleLatitudeChange
-  }, []);
+  const handleLatitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const lat = !isNaN(parseFloat(e.currentTarget.value)) ? parseFloat(e.currentTarget.value) : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          lat,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          lat,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
-  const handleLongitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handleLongitudeChange
-  }, []);
+  const handleLongitudeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const lng = !isNaN(parseFloat(e.currentTarget.value)) ? parseFloat(e.currentTarget.value) : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          lng,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          lng,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
-  const handleAltitudeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handleAltitudeChange
-  }, []);
+  const handleHeightChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const height = !isNaN(parseFloat(e.currentTarget.value))
+        ? parseFloat(e.currentTarget.value)
+        : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          height,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          height,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
-  const handleHeadingChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handleHeadingChange
-  }, []);
+  const handleHeadingChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const heading = !isNaN(parseFloat(e.currentTarget.value))
+        ? parseFloat(e.currentTarget.value)
+        : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          heading,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          heading,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
-  const handlePitchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handlePitchChange
-  }, []);
+  const handlePitchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const pitch = !isNaN(parseFloat(e.currentTarget.value))
+        ? parseFloat(e.currentTarget.value)
+        : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          pitch,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          pitch,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
-  const handleRollChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
-    // handleRollChange
-  }, []);
+  const handleRollChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const roll = !isNaN(parseFloat(e.currentTarget.value))
+        ? parseFloat(e.currentTarget.value)
+        : 0;
+      setCamera(c => {
+        return {
+          ...c,
+          roll,
+        };
+      });
+      onUpdate({
+        ...value,
+        position: {
+          ...value.position,
+          roll,
+        },
+      });
+    },
+    [value, onUpdate],
+  );
 
   const handleCapture = useCallback(() => {
-    if (!camera) return;
-    onCapture?.(camera);
-  }, [camera, onCapture]);
+    postMsg({ action: "getCurrentCamera" });
+  }, []);
 
   const handleClean = useCallback(() => {
     setCamera(initialCameraValues);
   }, []);
+
+  addEventListener("message", async e => {
+    if (e.source !== parent) return;
+    if (e.data.action) {
+      if (e.data.action === "getCurrentCamera") {
+        setCamera(e.data.payload);
+        onUpdate({
+          ...value,
+          position: e.data.payload,
+        });
+      }
+    }
+  });
 
   return editMode ? (
     <div>
@@ -79,9 +186,9 @@ const IdealZoom: React.FC<Props> = ({ value, editMode, onCapture }) => {
           />
           <Input
             type="number"
-            placeholder="高度" // Altitude
+            placeholder="高度" // Height
             value={camera.height}
-            onChange={handleAltitudeChange}
+            onChange={handleHeightChange}
           />
         </InputWrapper>
       </InnerWrapper>
