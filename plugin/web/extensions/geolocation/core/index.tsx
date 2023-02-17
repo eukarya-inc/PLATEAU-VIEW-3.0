@@ -35,8 +35,8 @@ const Wrapper = styled.div`
   justify-content: center;
   flex-shrink: 0;
   cursor: pointer;
-  width: 44px;
-  height: 44px;
-  background: #ececec;
-  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border-radius: 16px;
 `;
