@@ -5,6 +5,8 @@ import { useCallback, useState } from "react";
 
 import { Template } from "../../../types";
 
+import TemplateCard from "./TemplateCard";
+
 /*
 [
     { name: "建物モデル", fields: [{ title: "Filter" }] },
@@ -14,43 +16,50 @@ import { Template } from "../../../types";
 
 export type Props = {
   templates: Template[];
-  onTemplateAdd: (newTemplate?: Template) => Promise<Template | undefined>;
-  onTemplateUpdate: (template: Template) => Promise<void>;
-  onTemplateRemove: (template: Template) => Promise<void>;
+  onTemplateAdd: () => Promise<Template | undefined>;
+  onTemplateSave: (template: Template) => Promise<void>;
+  onTemplateRemove: (id: string) => Promise<void>;
 };
 
 const Templates: React.FC<Props> = ({
   templates,
   onTemplateAdd,
-  // onTemplateUpdate,
+  onTemplateSave,
   onTemplateRemove,
 }) => {
-  const [selected, changeSelected] = useState<Template>();
+  const [selectedTemplate, changeSelectedTemplate] = useState<Template>();
 
   const handleTemplateAdd = useCallback(async () => {
     const newTemplate = await onTemplateAdd();
-    changeSelected(newTemplate);
+    changeSelectedTemplate(newTemplate);
   }, [onTemplateAdd]);
 
   const handleTemplateSelect = useCallback((template?: Template) => {
-    changeSelected(template);
+    changeSelectedTemplate(template);
   }, []);
 
   const handleBack = useCallback(() => {
-    changeSelected(undefined);
+    changeSelectedTemplate(undefined);
+  }, []);
+
+  const handleTemplateUpdate = useCallback((updatedTemplate: Template) => {
+    changeSelectedTemplate(updatedTemplate);
   }, []);
 
   return (
     <CommonPage>
       <Content>
-        {selected ? (
+        {selectedTemplate ? (
           <TemplateEditWrapper>
             <div style={{ height: "36px" }}>
               <BackButton icon="arrowLeft" size={20} onClick={handleBack} />
             </div>
-            <TemplateComponent>
-              <p style={{ margin: 0 }}>{selected.name}</p>
-            </TemplateComponent>
+            <TemplateCard
+              template={selectedTemplate}
+              onTemplateSave={onTemplateSave}
+              onTemplateUpdate={handleTemplateUpdate}
+              onTemplateRemove={onTemplateRemove}
+            />
           </TemplateEditWrapper>
         ) : (
           <>
@@ -67,7 +76,7 @@ const Templates: React.FC<Props> = ({
                     size={16}
                     onClick={e => {
                       e?.stopPropagation();
-                      onTemplateRemove(t);
+                      onTemplateRemove(t.id);
                     }}
                   />
                 </TemplateComponent>

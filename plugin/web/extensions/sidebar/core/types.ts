@@ -33,7 +33,14 @@ export type Group = {
 
 export type Template = {
   id: string;
-  modelId: string;
-  name?: string;
+  type: "field" | "infobox";
+  name: string;
+  fields?: Field[];
   components?: FieldComponent[];
+};
+
+type Field = {
+  title: string;
+  path: string;
+  visible: boolean;
 };

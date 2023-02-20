@@ -61,7 +61,10 @@ export default () => {
     if (res.status !== 200) return;
     const resData = await res.json();
 
-    setTemplates(resData.templates);
+    if (resData.templates) {
+      setFieldTemplates(resData.templates.filter((t: Template) => t.type === "field"));
+      // TODO: send type "infobox" to the infobox block
+    }
     setData(resData.data);
   }, [backendURL]);
 
@@ -203,7 +206,6 @@ export default () => {
         return;
       }
       const data2 = await res.json();
-      // setTemplates(t => [...t, data.results]);
       console.log("DATA JUST SAVED: ", data2);
       handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
     },
@@ -242,30 +244,27 @@ export default () => {
 
   // ****************************************
   // Templates
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
 
-  const handleTemplateAdd = useCallback(
-    async (newTemplate?: Template) => {
-      if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
-        headers: {
-          authorization: `Bearer ${backendAccessToken}`,
-        },
-        method: "POST",
-        body: JSON.stringify(newTemplate),
-      });
-      if (res.status !== 200) return;
-      const data = await res.json();
-      setTemplates(t => [...t, data.results]);
-      return data.results as Template;
-    },
-    [backendURL, backendAccessToken],
-  );
+  const handleTemplateAdd = useCallback(async () => {
+    if (!backendURL || !backendAccessToken) return;
+    const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
+      headers: {
+        authorization: `Bearer ${backendAccessToken}`,
+      },
+      method: "POST",
+      body: JSON.stringify({ type: "field", name: "新しいテンプレート" }),
+    });
+    if (res.status !== 200) return;
+    const newTemplate = await res.json();
+    setFieldTemplates(t => [...t, newTemplate]);
+    return newTemplate as Template;
+  }, [backendURL, backendAccessToken]);
 
-  const handleTemplateUpdate = useCallback(
+  const handleTemplateSave = useCallback(
     async (template: Template) => {
-      if (!template.modelId || !backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.modelId}`, {
+      if (!backendURL || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.id}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -273,8 +272,8 @@ export default () => {
         body: JSON.stringify(template),
       });
       if (res.status !== 200) return;
-      const updatedTemplate = (await res.json()).results;
-      setTemplates(t => {
+      const updatedTemplate = await res.json();
+      setFieldTemplates(t => {
         return t.map(t2 => {
           if (t2.id === updatedTemplate.id) {
             return updatedTemplate;
@@ -287,16 +286,16 @@ export default () => {
   );
 
   const handleTemplateRemove = useCallback(
-    async (template: Template) => {
-      if (!template.modelId || !backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.modelId}`, {
+    async (id: string) => {
+      if (!backendURL || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${id}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
         method: "DELETE",
       });
       if (res.status !== 200) return;
-      setTemplates(t => t.filter(t2 => t2.modelId !== template.modelId));
+      setFieldTemplates(t => t.filter(t2 => t2.id !== id));
     },
     [backendURL, backendAccessToken],
   );
@@ -404,11 +403,11 @@ export default () => {
     inEditor,
     reearthURL,
     backendURL,
-    templates,
+    templates: fieldTemplates,
     currentPage,
     handlePageChange,
     handleTemplateAdd,
-    handleTemplateUpdate,
+    handleTemplateSave,
     handleTemplateRemove,
     handleDatasetSave,
     handleDatasetUpdate,

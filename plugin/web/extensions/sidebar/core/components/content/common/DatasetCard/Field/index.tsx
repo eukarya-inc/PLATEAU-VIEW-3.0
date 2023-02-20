@@ -17,14 +17,14 @@ import { FieldComponent as FieldComponentType, fieldName } from "./Fields/types"
 
 export type Props = {
   field: FieldComponentType;
-  dataID: string;
+  dataID?: string;
   isActive: boolean;
   editMode?: boolean;
   selectGroups?: Group[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove: (id: string) => void;
   onGroupsUpdate: (groups: Group[], selectedGroup?: string) => void;
-  onCurrentGroupChange: (fieldGroupID: string) => void;
+  onCurrentGroupChange?: (fieldGroupID: string) => void;
 };
 
 const FieldComponent: React.FC<Props> = ({
