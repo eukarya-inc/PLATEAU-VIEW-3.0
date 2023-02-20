@@ -22,6 +22,9 @@ import PointStroke from "./point/PointStroke";
 import PolygonColor from "./polygon/PolygonColor";
 import PolygonColorGradient from "./polygon/PolygonColorGradient";
 import PolygonStroke from "./polygon/PolygonStroke";
+import PolylineColor from "./polyline/PolylineColor";
+import PolylineColorGradient from "./polyline/PolylineColorGradient";
+import PolylineStrokeWeight from "./polyline/PolylineStrokeWeight";
 import { FieldComponent } from "./types";
 
 // import Template from "./Template";
@@ -49,6 +52,9 @@ const fields: Fields<FieldComponent> = {
   pointModel: { Component: PointModel, hasUI: false },
   pointStroke: { Component: PointStroke, hasUI: false },
   // polyline
+  polylineColor: { Component: PolylineColor, hasUI: false },
+  polylineColorGradient: { Component: PolylineColorGradient, hasUI: false },
+  polylineStrokeWeight: { Component: PolylineStrokeWeight, hasUI: false },
   // polygon
   polygonColor: { Component: PolygonColor, hasUI: false },
   polygonColorGradient: { Component: PolygonColorGradient, hasUI: false },

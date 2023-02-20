@@ -10,7 +10,7 @@ export const fieldName = {
   point: "ポイント",
   description: "説明",
   pointColor: "色",
-  pointColorGradient: "色（Gradient)",
+  pointColorGradient: "色（Gradient）",
   pointSize: "サイズ",
   pointIcon: "アイコン",
   pointLabel: "ラベル",
@@ -24,6 +24,9 @@ export const fieldName = {
   buildingTransparency: "透明度",
   buildingColor: "色分け",
   buildingShadow: "影",
+  polylineColor: "ポリライン色",
+  polylineColorGradient: "ポリライン色（Gradient）",
+  polylineStrokeWeight: "ポリラインストロック",
 };
 
 // type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
@@ -42,6 +45,9 @@ export type FieldComponent =
   | PointLabel
   | PointModel
   | PointStroke
+  | PolylineColor
+  | PolylineColorGradient
+  | PolylineStrokeWeight
   | PolygonColor
   | PolygonColorGradient
   | PolygonStroke
@@ -215,6 +221,24 @@ type BuildingColor = FieldBase<"buildingColor"> & {
   colorType: string;
 };
 
+type PolylineColor = FieldBase<"polylineColor"> & {
+  items?: {
+    condition: Cond<number>;
+    color: string;
+  }[];
+};
+
+type PolylineColorGradient = FieldBase<"polylineColorGradient"> & {
+  field?: string;
+  startColor?: string;
+  endColor?: string;
+  step?: number;
+};
+
+type PolylineStrokeWeight = FieldBase<"polylineStrokeWeight"> & {
+  strokeWidth: number;
+};
+
 export type Fields = {
   // general
   idealZoom: IdealZoom;
@@ -233,6 +257,9 @@ export type Fields = {
   pointModel: PointModel;
   pointStroke: PointStroke;
   // polyline
+  polylineColor: PolylineColor;
+  polylineColorGradient: PolylineColorGradient;
+  polylineStrokeWeight: PolylineStrokeWeight;
   // polygon
   polygonColor: PolygonColor;
   polygonColorGradient: PolygonColorGradient;
