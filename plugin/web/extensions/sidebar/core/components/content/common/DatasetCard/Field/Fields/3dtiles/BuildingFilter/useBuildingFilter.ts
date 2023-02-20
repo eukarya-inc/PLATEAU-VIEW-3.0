@@ -9,13 +9,15 @@ export const MAX_ABOVEGROUND_FLOOR = 50;
 export const MAX_BASEMENT_FLOOR = 5;
 
 export const useBuildingFilter = ({
-  value,
+  options,
   dataID,
-}: Pick<BaseFieldProps<"buildingFilter">, "value" | "dataID">) => {
+}: Pick<BaseFieldProps<"buildingFilter">, "dataID"> & {
+  options: Omit<BaseFieldProps<"buildingFilter">["value"], "id" | "group" | "type">;
+}) => {
   const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
-    () => debounce(() => renderRef.current?.(), 300, { maxWait: 1000 }),
+    () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
@@ -23,20 +25,20 @@ export const useBuildingFilter = ({
     if (!renderer.current) {
       renderer.current = mountTileset({
         dataID,
-        height: value.height,
-        abovegroundFloor: value.abovegroundFloor,
-        basementFloor: value.basementFloor,
+        height: options.height,
+        abovegroundFloor: options.abovegroundFloor,
+        basementFloor: options.basementFloor,
       });
     }
     if (renderer.current) {
       renderer.current.update({
         dataID,
-        height: value.height,
-        abovegroundFloor: value.abovegroundFloor,
-        basementFloor: value.basementFloor,
+        height: options.height,
+        abovegroundFloor: options.abovegroundFloor,
+        basementFloor: options.basementFloor,
       });
     }
-  }, [value, dataID]);
+  }, [options, dataID]);
 
   useEffect(() => {
     renderRef.current = render;

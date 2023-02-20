@@ -4,36 +4,38 @@ import { useEffect, useRef } from "react";
 import { BaseFieldProps } from "../../types";
 
 export const useClippingBox = ({
-  value,
+  options,
   dataID,
-}: Pick<BaseFieldProps<"clipping">, "value" | "dataID">) => {
+}: Pick<BaseFieldProps<"clipping">, "dataID"> & {
+  options: Omit<BaseFieldProps<"clipping">["value"], "id" | "group" | "type">;
+}) => {
   const renderer = useRef<ClippingBoxRenderer>();
 
   useEffect(() => {
     const render = async () => {
-      if (value.enabled && !renderer.current) {
+      if (options.enabled && !renderer.current) {
         renderer.current = await mountClippingBox({
           dataID,
-          keepBoxAboveGround: value.aboveGroundOnly,
-          show: value.show,
-          direction: value.direction,
+          keepBoxAboveGround: options.aboveGroundOnly,
+          show: options.show,
+          direction: options.direction,
         });
       }
       if (renderer.current) {
         renderer.current.update({
           dataID,
-          keepBoxAboveGround: value.aboveGroundOnly,
-          show: value.show,
-          direction: value.direction,
+          keepBoxAboveGround: options.aboveGroundOnly,
+          show: options.show,
+          direction: options.direction,
         });
       }
-      if (!value.enabled && renderer.current) {
+      if (!options.enabled && renderer.current) {
         renderer.current.unmount();
         renderer.current = undefined;
       }
     };
     render();
-  }, [value, dataID]);
+  }, [options, dataID]);
 };
 
 const reearth = (globalThis.parent as any).reearth;

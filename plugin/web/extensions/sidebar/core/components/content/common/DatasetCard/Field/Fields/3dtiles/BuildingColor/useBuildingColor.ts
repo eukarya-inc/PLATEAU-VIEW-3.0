@@ -8,18 +8,19 @@ import { COLOR_TYPE_CONDITIONS, makeSelectedFloodCondition } from "./conditions"
 import { INDEPENDENT_COLOR_TYPE } from "./constants";
 
 export const useBuildingColor = ({
-  value,
+  options,
   initialized,
   floods,
   dataID,
-}: Pick<BaseFieldProps<"buildingColor">, "value" | "dataID"> & {
+}: Pick<BaseFieldProps<"buildingColor">, "dataID"> & {
   initialized: boolean;
+  options: Omit<BaseFieldProps<"buildingColor">["value"], "id" | "group" | "type">;
   floods: { id: string; label: string; featurePropertyName: string }[];
 }) => {
   const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
-    () => debounce(() => renderRef.current?.(), 300, { maxWait: 1000 }),
+    () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
@@ -28,17 +29,17 @@ export const useBuildingColor = ({
       renderer.current = mountTileset({
         dataID,
         floods,
-        colorType: value.colorType,
+        colorType: options.colorType,
       });
     }
     if (renderer.current) {
       renderer.current.update({
         dataID,
         floods,
-        colorType: value.colorType,
+        colorType: options.colorType,
       });
     }
-  }, [value, dataID, floods]);
+  }, [options, dataID, floods]);
 
   useEffect(() => {
     if (!initialized) {

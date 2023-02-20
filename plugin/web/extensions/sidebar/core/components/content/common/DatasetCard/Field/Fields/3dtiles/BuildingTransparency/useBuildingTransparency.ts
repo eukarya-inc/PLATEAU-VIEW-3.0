@@ -5,9 +5,11 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { BaseFieldProps } from "../../types";
 
 export const useBuildingTransparency = ({
-  value,
+  options,
   dataID,
-}: Pick<BaseFieldProps<"buildingTransparency">, "value" | "dataID">) => {
+}: Pick<BaseFieldProps<"buildingTransparency">, "dataID"> & {
+  options: Omit<BaseFieldProps<"buildingTransparency">["value"], "id" | "group" | "type">;
+}) => {
   const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
@@ -19,16 +21,16 @@ export const useBuildingTransparency = ({
     if (!renderer.current) {
       renderer.current = mountTileset({
         dataID,
-        transparency: value.transparency,
+        transparency: options.transparency,
       });
     }
     if (renderer.current) {
       renderer.current.update({
         dataID,
-        transparency: value.transparency,
+        transparency: options.transparency,
       });
     }
-  }, [value, dataID]);
+  }, [options, dataID]);
 
   useEffect(() => {
     renderRef.current = render;
@@ -40,7 +42,7 @@ export const useBuildingTransparency = ({
       renderer.current?.unmount();
       renderer.current = undefined;
     },
-    [render, debouncedRender],
+    [],
   );
 };
 

@@ -1,4 +1,3 @@
-import isEqual from "lodash/isEqual";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -37,7 +36,7 @@ const useHooks = ({
   const initialized = useRef(false);
   useEffect(() => {
     if (!initialized.current) return;
-    if (!isEqual(options, value)) {
+    if (options.shadow !== value.shadow) {
       setOptions({ ...value });
     }
   }, [value, options]);

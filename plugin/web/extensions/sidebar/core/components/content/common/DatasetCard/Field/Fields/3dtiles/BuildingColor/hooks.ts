@@ -1,6 +1,5 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Radio } from "@web/sharedComponents";
-import isEqual from "lodash/isEqual";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -44,7 +43,7 @@ const useHooks = ({
     );
 
   useEffect(() => {
-    if (!isEqual(options, value)) {
+    if (options.colorType !== value.colorType) {
       setOptions({ ...value });
     }
   }, [value, options]);
@@ -121,7 +120,7 @@ const useHooks = ({
     });
   }, [dataID]);
 
-  useBuildingColor({ value, dataID, floods, initialized });
+  useBuildingColor({ options, dataID, floods, initialized });
 
   return {
     options,

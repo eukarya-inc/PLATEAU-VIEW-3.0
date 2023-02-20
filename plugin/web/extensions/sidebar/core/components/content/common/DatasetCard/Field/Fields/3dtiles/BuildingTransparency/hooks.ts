@@ -1,4 +1,3 @@
-import isEqual from "lodash/isEqual";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -35,12 +34,12 @@ const useHooks = ({
   );
 
   useEffect(() => {
-    if (!isEqual(options, value)) {
+    if (options.transparency !== value.transparency) {
       setOptions({ ...value });
     }
   }, [value, onUpdate, options]);
 
-  useBuildingTransparency({ value, dataID });
+  useBuildingTransparency({ options, dataID });
 
   return {
     options,

@@ -1,4 +1,5 @@
 import isEqual from "lodash/isEqual";
+import pick from "lodash/pick";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -39,12 +40,12 @@ const useHooks = ({
   );
 
   useEffect(() => {
-    if (!isEqual(options, value)) {
+    if (!isEqual(options, pick(value, "height", "abovegroundFloor", "basementFloor"))) {
       setOptions({ ...value });
     }
   }, [options, value, onUpdate]);
 
-  useBuildingFilter({ value, dataID });
+  useBuildingFilter({ options, dataID });
 
   return {
     options,

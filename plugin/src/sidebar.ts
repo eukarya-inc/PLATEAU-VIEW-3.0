@@ -11,6 +11,8 @@ import groupSelectPopupHtml from "../dist/web/sidebar/popups/groupSelect/index.h
 import helpPopupHtml from "../dist/web/sidebar/popups/help/index.html?raw";
 import mobileDropdownHtml from "../dist/web/sidebar/popups/mobileDropdown/index.html?raw";
 
+import { getRGBAFromString, RGBA, rgbaToString } from "./utils/color";
+
 const defaultProject: Project = {
   sceneOverrides: {
     default: {
@@ -75,6 +77,16 @@ const addedBoxIDs: {
   [dataID: string]: {
     layerID: string;
   };
+} = {};
+
+// For storing 3dtiles color
+const colorStoreFor3dtiles: {
+  [dataID: string]:
+    | {
+        color?: string | { expression: { conditions: [expression: string, color: string][] } };
+        transparency?: number;
+      }
+    | undefined;
 } = {};
 
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
@@ -420,31 +432,75 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     override3dtiles(dataID, { shadows: "enabled" });
   }
 
-  // FIXME(@keiya): We need to compose transparency with color,
-  //                but currently rgba is not working on NLS.
-  //                So I will fix NLS and implement composing color.
-  // TODO
-  // - [ ] Compose transparency with color
-  // - [ ] Compose color with transparency
-  // - [ ] Reset transparency with color
-  // - [ ] Reset color with transparency
-
   // For 3dtiles transparency
   if (action === "update3dtilesTransparency") {
     const { dataID, transparency } = payload;
-    const rgba = [255, 255, 255, transparency];
-    override3dtiles(dataID, { color: `rgba(${rgba.join(",")})` });
+    const storedObj = colorStoreFor3dtiles[dataID];
+    const color = storedObj?.color;
+    colorStoreFor3dtiles[dataID] = {
+      ...(storedObj || {}),
+      transparency,
+    };
+
+    const defaultRGBA = rgbaToString([255, 255, 255, transparency]);
+    const expression = (() => {
+      if (!color) {
+        return defaultRGBA;
+      }
+      if (typeof color === "string") {
+        const rgba = getRGBAFromString(color);
+        return rgba ? rgbaToString([...rgba.slice(0, -1), transparency] as RGBA) : defaultRGBA;
+      }
+      return {
+        expression: {
+          conditions: color.expression.conditions.map(([k, v]: [string, string]) => {
+            const rgba = getRGBAFromString(v);
+            if (!rgba) {
+              return [k, defaultRGBA];
+            }
+            const composedRGBA = [...rgba.slice(0, -1), transparency] as RGBA;
+            return [k, rgbaToString(composedRGBA)];
+          }),
+        },
+      };
+    })();
+    override3dtiles(dataID, { color: expression });
   } else if (action === "reset3dtilesTransparency") {
     const { dataID } = payload;
-    override3dtiles(dataID, { color: "rgba(255, 255, 255, 1)" });
+    const storedObj = colorStoreFor3dtiles[dataID];
+    delete colorStoreFor3dtiles[dataID]?.transparency;
+    override3dtiles(dataID, { color: storedObj?.color || "rgba(255, 255, 255, 1)" });
   }
   // For 3dtiles color
   if (action === "update3dtilesColor") {
     const { dataID, color } = payload;
-    override3dtiles(dataID, { color });
+    const storedObj = colorStoreFor3dtiles[dataID];
+    const transparency = storedObj?.transparency;
+    colorStoreFor3dtiles[dataID] = {
+      ...(storedObj || {}),
+      color,
+    };
+
+    const expression = {
+      ...color,
+      expression: {
+        ...color.expression,
+        conditions: color.expression.conditions.map(([k, v]: [string, string]) => {
+          const rgba = getRGBAFromString(v);
+          if (!rgba) {
+            return [k, v];
+          }
+          const composedRGBA = [...rgba.slice(0, -1), transparency || rgba[3]] as RGBA;
+          return [k, rgbaToString(composedRGBA)];
+        }),
+      },
+    };
+    override3dtiles(dataID, { color: expression });
   } else if (action === "reset3dtilesColor") {
     const { dataID } = payload;
-    override3dtiles(dataID, { color: "rgba(255, 255, 255, 1)" });
+    const storedObj = colorStoreFor3dtiles[dataID];
+    delete colorStoreFor3dtiles[dataID]?.color;
+    override3dtiles(dataID, { color: `rgba(255, 255, 255, ${storedObj?.transparency || 1})` });
   }
   // ************************************************
 });
