@@ -204,6 +204,14 @@ export default ({
   //   };
 
   const ThreeDModelFields: FieldDropdownItem = {
+    buildingFilter: {
+      name: fieldName["buildingFilter"],
+      onClick: handleFieldAdd({
+        height: [0, 200],
+        abovegroundFloor: [1, 50],
+        basementFloor: [0, 5],
+      }),
+    },
     clipping: {
       name: fieldName["clipping"],
       onClick: handleFieldAdd({

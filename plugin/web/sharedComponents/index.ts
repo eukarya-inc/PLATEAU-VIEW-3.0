@@ -15,6 +15,7 @@ import message from "@web/sharedComponents/message";
 import Pagination from "@web/sharedComponents/Pagination";
 import Row from "@web/sharedComponents/Row";
 import Select from "@web/sharedComponents/Select";
+import Slider from "@web/sharedComponents/Slider";
 import Space from "@web/sharedComponents/Space";
 import Switch from "@web/sharedComponents/Switch";
 import Tabs from "@web/sharedComponents/Tabs";
@@ -37,6 +38,7 @@ export {
   message,
   Row,
   Select,
+  Slider,
   Space,
   Switch,
   Tabs,

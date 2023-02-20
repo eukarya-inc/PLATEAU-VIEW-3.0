@@ -328,7 +328,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 
   // ************************************************
   // For 3dtiles
-  // For clipping box
   const override3dtiles = (dataID: string, property: Record<string, any>) => {
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const tilesetLayer = reearth.layers.findById(tilesetLayerID);
@@ -339,6 +338,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       },
     });
   };
+
+  // For clipping box
   if (action === "addClippingBox") {
     const { dataID, box, clipping } = payload;
     if (addedBoxIDs[dataID]) {
@@ -381,6 +382,17 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
 
     delete addedBoxIDs[dataID];
+  }
+  // For 3dtiles show
+  if (action === "update3dtilesShow") {
+    const { dataID, show } = payload;
+    override3dtiles(dataID, { show });
+  } else if (action === "reset3dtilesShow") {
+    const { dataID } = payload;
+
+    override3dtiles(dataID, {
+      show: true,
+    });
   }
   // ************************************************
 });

@@ -44,7 +44,9 @@ type ActionType =
   | "storyPlay"
   | "addClippingBox"
   | "updateClippingBox"
-  | "removeClippingBox";
+  | "removeClippingBox"
+  | "update3dtilesShow"
+  | "reset3dtilesShow";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 
