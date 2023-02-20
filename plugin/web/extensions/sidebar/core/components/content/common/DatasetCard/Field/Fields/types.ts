@@ -17,6 +17,7 @@ export const fieldName = {
   pointStroke: "ストロック",
   clipping: "クリッピング",
   buildingFilter: "建物フィルター",
+  buildingShadow: "影",
   buildingTransparency: "透明度",
 };
 
@@ -36,6 +37,7 @@ export type FieldComponent =
   | PointStroke
   | Clipping
   | BuildingFilter
+  | BuildingShadow;
   | BuildingTransparency;
 
 type FieldBase<T extends keyof typeof fieldName> = {
@@ -168,6 +170,10 @@ type BuildingFilter = FieldBase<"buildingFilter"> & {
   basementFloor: [from: number, to: number];
 };
 
+type BuildingShadow = FieldBase<"buildingShadow"> & {
+  shadow: "disabled" | "enabled" | "cast_only" | "receive_only";
+}
+
 type BuildingTransparency = FieldBase<"buildingTransparency"> & {
   transparency: number;
 };
@@ -193,6 +199,7 @@ export type Fields = {
   // 3d-tile
   clipping: Clipping;
   buildingFilter: BuildingFilter;
+  buildingShadow: BuildingShadow;
   buildingTransparency: BuildingTransparency;
 };
 

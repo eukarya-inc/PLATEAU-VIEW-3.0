@@ -212,6 +212,12 @@ export default ({
         basementFloor: [0, 5],
       }),
     },
+    buildingShadow: {
+      name: fieldName["buildingShadow"],
+      onClick: handleFieldAdd({
+        shadow: "disabled",
+      })
+    },
     buildingTransparency: {
       name: fieldName["buildingTransparency"],
       onClick: handleFieldAdd({
