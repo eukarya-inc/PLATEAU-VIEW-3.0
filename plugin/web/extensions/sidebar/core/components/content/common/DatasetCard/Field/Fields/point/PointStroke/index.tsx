@@ -1,10 +1,13 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/DatasetCard/AddButton";
+import {
+  ButtonWrapper,
+  Wrapper,
+} from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 
-import { BaseFieldProps, Cond } from "../types";
+import { BaseFieldProps, Cond } from "../../types";
 
-import { ButtonWrapper, Wrapper } from "./commonComponents";
 import PointStrokeItem from "./PointStrokeItem";
 
 const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode, onUpdate }) => {

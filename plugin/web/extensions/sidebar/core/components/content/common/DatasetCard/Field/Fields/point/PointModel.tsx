@@ -1,9 +1,11 @@
+import { Field } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/common";
+import {
+  TextInput,
+  Wrapper,
+} from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { useCallback, useState } from "react";
 
 import { BaseFieldProps } from "../types";
-
-import { Field } from "./common";
-import { TextInput, Wrapper } from "./commonComponents";
 
 const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({ value, editMode, onUpdate }) => {
   const [modelURL, setModelURL] = useState(value.modelURL ?? "");
