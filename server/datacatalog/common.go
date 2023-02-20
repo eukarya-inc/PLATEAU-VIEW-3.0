@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/eukarya-inc/jpareacode"
 )
 
 func assetURLFromFormat(u, f string) string {
@@ -40,4 +42,31 @@ func assetURLFromFormat(u, f string) string {
 func assetRootPath(p string) string {
 	fn := strings.TrimSuffix(path.Base(p), path.Ext(p))
 	return path.Join(path.Dir(p), fn)
+}
+
+func normalizePref(pref string) (string, int) {
+	if pref == "全球" || pref == "全国" {
+		pref = "全球データ"
+	}
+
+	var prefCode int
+	if pref == "全球データ" {
+		prefCode = 0
+	} else {
+		prefCode = jpareacode.PrefectureCodeInt(pref)
+	}
+
+	return pref, prefCode
+}
+
+func cityCode(code, name string, prefCode int) string {
+	if code == "" {
+		cityName := strings.Split(name, "/")
+		if len(cityName) > 0 {
+			if city := jpareacode.CityByName(prefCode, cityName[len(cityName)-1]); city != nil {
+				code = jpareacode.FormatCityCode(city.Code)
+			}
+		}
+	}
+	return code
 }

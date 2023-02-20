@@ -561,7 +561,7 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
     title: dataset.name,
     data: {
       type: dataset.format.toLowerCase(),
-      url: dataset.url ?? dataset.config.data[0].url,
+      url: dataset.config?.data?.[0].url ?? dataset.url,
     },
     visible: true,
     infobox: {

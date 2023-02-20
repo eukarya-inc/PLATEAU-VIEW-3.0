@@ -2,10 +2,12 @@ package datacatalog
 
 import (
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
+	"github.com/eukarya-inc/jpareacode"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
@@ -81,20 +83,35 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		city, ward, _ = strings.Cut(i.CityName, "/")
 	}
 
+	name := i.Name
+	if t != "" && t != "ユースケース" {
+		cityOrWard := city
+		if ward != "" {
+			cityOrWard = ward
+		}
+		name = fmt.Sprintf("%s（%s）", t, cityOrWard)
+	}
+
+	pref, prefCode := normalizePref(i.Prefecture)
+
 	return []DataCatalogItem{{
 		ID:          i.ID,
-		Name:        i.Name,
+		Name:        name,
 		Type:        t,
 		TypeEn:      usecaseTypes[i.Type],
-		Prefecture:  i.Prefecture,
+		Pref:        pref,
+		PrefCode:    jpareacode.FormatPrefectureCode(prefCode),
 		City:        city,
+		CityCode:    cityCode("", city, prefCode),
 		Ward:        ward,
+		WardCode:    cityCode("", ward, prefCode),
 		Format:      f,
 		URL:         assetURLFromFormat(u, f),
 		Description: i.Description,
 		Config:      c,
 		Layers:      layers,
 		Year:        y,
+		OpenDataURL: i.OpenDataURL,
 	}}
 }
 

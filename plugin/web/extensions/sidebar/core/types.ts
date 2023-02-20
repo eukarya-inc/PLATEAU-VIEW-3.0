@@ -9,10 +9,12 @@ export type Root = {
 
 export type DataCatalogGroup = {
   name: string;
-  children: (DataCatalogItem | DataCatalogGroup)[];
+  children: DataCatalogTreeItem[];
 };
 
 export type DataCatalogItem = RawDataCatalogItem & Data;
+
+export type DataCatalogTreeItem = DataCatalogGroup | DataCatalogItem;
 
 export type Data = {
   dataID: string;

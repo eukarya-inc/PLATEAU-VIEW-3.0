@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/eukarya-inc/jpareacode"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
@@ -253,6 +254,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 	}, func(s string, _ int) bool { return s != "" }), "_")
 
 	y, _ := strconv.Atoi(an.Year)
+	pref, prefCode := normalizePref(i.Prefecture)
 
 	return &DataCatalogItem{
 		ID:          id,
@@ -261,18 +263,20 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		Type2:       t2,
 		Type2En:     t2en,
 		Name:        name,
-		Prefecture:  i.Prefecture,
+		Pref:        pref,
+		PrefCode:    jpareacode.FormatPrefectureCode(prefCode),
 		City:        i.City,
 		CityEn:      i.CityEn,
-		CityCode:    i.CityCode,
+		CityCode:    cityCode(i.CityCode, i.City, prefCode),
 		Ward:        wardName,
 		WardEn:      an.WardEn,
-		WardCode:    an.WardCode,
+		WardCode:    cityCode(an.WardCode, wardName, prefCode),
 		Description: desc,
 		URL:         assetURLFromFormat(assetURL, an.Format),
 		Format:      an.Format,
 		Year:        y,
 		Layers:      layers,
+		// OpenDataURL: i.OpenDataURL, // TODO
 	}
 }
 
