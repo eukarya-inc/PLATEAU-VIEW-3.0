@@ -46,7 +46,9 @@ type ActionType =
   | "updateClippingBox"
   | "removeClippingBox"
   | "update3dtilesShow"
-  | "reset3dtilesShow";
+  | "reset3dtilesShow"
+  | "update3dtilesTransparency"
+  | "reset3dtilesTransparency";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 

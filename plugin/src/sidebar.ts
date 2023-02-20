@@ -394,6 +394,16 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       show: true,
     });
   }
+
+  // For 3dtiles color
+  if (action === "update3dtilesTransparency") {
+    const { dataID, transparency } = payload;
+    const rgba = [255, 255, 255, transparency];
+    override3dtiles(dataID, { color: `rgba(${rgba.join(",")})` });
+  } else if (action === "reset3dtilesTransparency") {
+    const { dataID } = payload;
+    override3dtiles(dataID, { color: "rgba(255, 255, 255, 1)" });
+  }
   // ************************************************
 });
 

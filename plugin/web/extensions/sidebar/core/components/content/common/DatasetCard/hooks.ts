@@ -212,6 +212,12 @@ export default ({
         basementFloor: [0, 5],
       }),
     },
+    buildingTransparency: {
+      name: fieldName["buildingTransparency"],
+      onClick: handleFieldAdd({
+        transparency: 100,
+      }),
+    },
     clipping: {
       name: fieldName["clipping"],
       onClick: handleFieldAdd({
