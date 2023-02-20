@@ -5,26 +5,28 @@ import { useCallback, useState } from "react";
 import TreeBuilder from "./TreeBuilder";
 
 export type Props = {
-  addedDatasetIds?: string[];
+  addedDatasetDataIDs?: string[];
   catalog: (DataCatalogItem | DataCatalogGroup)[];
   isMobile?: boolean;
   expandAll?: boolean;
+  addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem) => void;
   onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 
 const FileTree: React.FC<Props> = ({
-  addedDatasetIds,
+  addedDatasetDataIDs,
   catalog,
   isMobile,
   expandAll,
+  addDisabled,
   onDatasetAdd,
   onOpenDetails,
 }) => {
-  const [selectedId, select] = useState<string>();
+  const [selectedID, select] = useState<string>();
 
-  const handleSelect = useCallback((id?: string) => {
-    select(id);
+  const handleSelect = useCallback((dataID?: string) => {
+    select(dataID);
   }, []);
 
   return (
@@ -32,11 +34,12 @@ const FileTree: React.FC<Props> = ({
       <Tree>
         <TreeBuilder
           catalogItem={catalog}
-          addedDatasetIds={addedDatasetIds}
+          addedDatasetDataIDs={addedDatasetDataIDs}
           isMobile={isMobile}
           expandAll={expandAll}
-          selectedId={selectedId}
+          selectedID={selectedID}
           nestLevel={0}
+          addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
           onOpenDetails={onOpenDetails}
           onSelect={handleSelect}

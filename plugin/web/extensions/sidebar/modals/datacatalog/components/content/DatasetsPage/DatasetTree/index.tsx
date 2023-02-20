@@ -11,12 +11,13 @@ import FileTree from "./FileTree";
 export type Tag = TagType;
 
 export type Props = {
-  addedDatasetIds?: string[];
+  addedDatasetDataIDs?: string[];
   selectedDataset?: DataCatalogItem;
   isMobile?: boolean;
   catalog?: DataCatalogItem[];
   selectedTags?: Tag[];
   filter: GroupBy;
+  addDisabled: (dataID: string) => boolean;
   onFilter: (filter: GroupBy) => void;
   onTagSelect?: (tag: Tag) => void;
   onDatasetAdd: (dataset: DataCatalogItem) => void;
@@ -52,11 +53,12 @@ export type Props = {
 // }
 
 const DatasetTree: React.FC<Props> = ({
-  addedDatasetIds,
+  addedDatasetDataIDs,
   isMobile,
   catalog,
   selectedTags,
   filter,
+  addDisabled,
   onFilter,
   onTagSelect,
   onDatasetAdd,
@@ -119,10 +121,11 @@ const DatasetTree: React.FC<Props> = ({
         <Tabs.TabPane key="prefecture" tab="都道府県">
           {dataCatalogTree && (
             <FileTree
-              addedDatasetIds={addedDatasetIds}
+              addedDatasetDataIDs={addedDatasetDataIDs}
               catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
+              addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}
             />
@@ -131,10 +134,11 @@ const DatasetTree: React.FC<Props> = ({
         <Tabs.TabPane key="type" tab="種類">
           {dataCatalogTree && (
             <FileTree
-              addedDatasetIds={addedDatasetIds}
+              addedDatasetDataIDs={addedDatasetDataIDs}
               catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
+              addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}
             />

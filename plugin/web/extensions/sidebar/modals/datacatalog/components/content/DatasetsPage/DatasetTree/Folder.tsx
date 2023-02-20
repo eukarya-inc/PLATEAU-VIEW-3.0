@@ -20,9 +20,9 @@ const Folder: React.FC<Props> = ({ name, isMobile, expandAll, nestLevel, childre
   return (
     <Wrapper key={name} isOpen={isOpen}>
       <FolderItem nestLevel={nestLevel} onClick={() => open(!isOpen)}>
-        <NameWrapper>
+        <NameWrapper isMobile={isMobile}>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
-          <Name isMobile={isMobile}>{name}</Name>
+          <Name>{name}</Name>
         </NameWrapper>
       </FolderItem>
       {children}
@@ -49,7 +49,8 @@ const FolderItem = styled.div<{ nestLevel: number; selected?: boolean }>`
   justify-content: space-between;
   box-sizing: border-box;
   gap: 8px;
-  min-height: 29px;
+  height: 29px;
+
   ${({ selected }) =>
     selected &&
     `
@@ -67,15 +68,17 @@ const FolderItem = styled.div<{ nestLevel: number; selected?: boolean }>`
   }
 `;
 
-const NameWrapper = styled.div`
+const NameWrapper = styled.div<{ isMobile?: boolean }>`
   display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 `;
 
-const Name = styled.p<{ isMobile?: boolean }>`
-  margin: 0 0 0 8px;
+const Name = styled.p`
+  margin: 0;
   user-select: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  width: ${({ isMobile }) => (isMobile ? "calc(100vw - 150px)" : "175px")};
 `;

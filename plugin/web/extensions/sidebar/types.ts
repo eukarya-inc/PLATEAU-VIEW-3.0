@@ -20,6 +20,7 @@ type ActionType =
   | "updateDatasetInScene"
   | "removeDatasetFromScene"
   | "removeAllDatasetsFromScene"
+  | "updateDataset"
   | "catalogModalOpen"
   | "triggerCatalogOpen"
   | "triggerHelpOpen"

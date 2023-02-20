@@ -190,6 +190,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.clientStorage.deleteAsync(payload.key);
   } else if (action === "updateCatalog") {
     dataCatalog = payload;
+    reearth.modal.postMessage({ action, payload });
     // reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
     //   draftProject.datasets.forEach(d => {
     //     const dataset = payload.find((d: DataCatalogItem) => d.dataID === d.dataID);
@@ -233,6 +234,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       reearth.layers.hide(ad[2]);
       ad[1] = "removed";
     });
+  } else if (action === "updateDataset") {
+    reearth.ui.postMessage({ action, payload });
   } else if (
     action === "screenshot" ||
     action === "screenshotPreview" ||
@@ -261,7 +264,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     welcomePageIsOpen = false;
   } else if (action === "initDataCatalog") {
     reearth.modal.postMessage({
-      type: action,
+      action,
       payload: {
         dataCatalog,
         addedDatasets: addedDatasets.filter(ad => ad[1] !== "removed").map(d => d[0]),

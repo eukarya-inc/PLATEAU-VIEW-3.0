@@ -6,20 +6,20 @@ import { useCallback, useMemo } from "react";
 export type Props = {
   item: DataCatalogItem;
   isMobile?: boolean;
-  addedDatasetIds?: string[];
   nestLevel: number;
   selectedID?: string;
+  addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
-  onSelect?: (id: string) => void;
+  onSelect?: (dataID: string) => void;
 };
 
 const File: React.FC<Props> = ({
   item,
   isMobile,
-  addedDatasetIds,
   nestLevel,
   selectedID,
+  addDisabled,
   onDatasetAdd,
   onOpenDetails,
   onSelect,
@@ -29,15 +29,9 @@ const File: React.FC<Props> = ({
   }, [item, onDatasetAdd]);
 
   const handleOpenDetails = useCallback(() => {
-    if (!item.id) return;
     onOpenDetails?.(item);
-    onSelect?.(item.id);
+    onSelect?.(item.dataID);
   }, [item, onOpenDetails, onSelect]);
-
-  const addDisabled = useMemo(
-    () => !!addedDatasetIds?.find(id => item?.type === "item" && id === item.id),
-    [addedDatasetIds, item],
-  );
 
   const selected = useMemo(
     () => (item.type !== "group" ? selectedID === item.id : false),
@@ -46,15 +40,16 @@ const File: React.FC<Props> = ({
 
   return (
     <Wrapper nestLevel={nestLevel} selected={selected}>
-      <NameWrapper onClick={handleOpenDetails}>
+      <NameWrapper isMobile={isMobile} onClick={handleOpenDetails}>
         <Icon icon="file" size={20} />
-        <Name isMobile={isMobile}>{item.name}</Name>
+        {!item.public && <UnpublishedIndicator />}
+        <Name>{item.name}</Name>
       </NameWrapper>
       <StyledButton
         type="link"
         icon={<StyledIcon icon="plusCircle" selected={selected ?? false} />}
         onClick={handleClick}
-        disabled={addDisabled}
+        disabled={addDisabled(item.dataID)}
       />
     </Wrapper>
   );
@@ -68,7 +63,7 @@ const Wrapper = styled.div<{ nestLevel: number; selected?: boolean }>`
   justify-content: space-between;
   box-sizing: border-box;
   gap: 8px;
-  min-height: 29px;
+  height: 29px;
   ${({ selected }) =>
     selected &&
     `
@@ -86,17 +81,19 @@ const Wrapper = styled.div<{ nestLevel: number; selected?: boolean }>`
   }
 `;
 
-const NameWrapper = styled.div`
+const NameWrapper = styled.div<{ isMobile?: boolean }>`
   display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 `;
 
-const Name = styled.p<{ isMobile?: boolean }>`
-  margin: 0 0 0 8px;
+const Name = styled.p`
+  margin: 0;
   user-select: none;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-  width: ${({ isMobile }) => (isMobile ? "calc(100vw - 150px)" : "175px")};
 `;
 
 const StyledButton = styled(Button)<{ disabled: boolean }>`
@@ -108,4 +105,11 @@ const StyledIcon = styled(Icon)<{ selected: boolean }>`
   ${Wrapper}:hover & {
     color: #ffffff;
   }
+`;
+
+const UnpublishedIndicator = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6d6d6d;
 `;

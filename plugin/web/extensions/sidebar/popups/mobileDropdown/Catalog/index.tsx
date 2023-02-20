@@ -1,20 +1,21 @@
 import { DataCatalogItem, GroupBy } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import DatasetDetails from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Details";
+import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import PopupItem from "../sharedComponents/PopupItem";
 
 type Props = {
-  addedDatasetIds?: string[];
+  addedDatasetDataIDs?: string[];
   isMobile?: boolean;
   catalogData?: DataCatalogItem[];
-  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
 };
 
-const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, catalogData, onDatasetAdd }) => {
+const Catalog: React.FC<Props> = ({ addedDatasetDataIDs, isMobile, catalogData, onDatasetAdd }) => {
   const [selectedDataset, setDataset] = useState<DataCatalogItem>();
   const [filter, setFilter] = useState<GroupBy>("city");
   const [page, setPage] = useState<"catalog" | "details">("catalog");
@@ -28,9 +29,12 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, catalogData, onDa
     setFilter(filter);
   }, []);
 
-  const addDisabled = useMemo(() => {
-    return !!addedDatasetIds?.find(id => id === selectedDataset?.dataID);
-  }, [addedDatasetIds, selectedDataset]);
+  const addDisabled = useCallback(
+    (dataID: string) => {
+      return !!addedDatasetDataIDs?.find(dataID2 => dataID2 === dataID);
+    },
+    [addedDatasetDataIDs],
+  );
 
   useEffect(() => {
     postMsg({ action: "extendPopup" });
@@ -44,11 +48,12 @@ const Catalog: React.FC<Props> = ({ addedDatasetIds, isMobile, catalogData, onDa
             <Title>データカタログ</Title>
           </PopupItem>
           <DatasetTree
-            addedDatasetIds={addedDatasetIds}
+            addedDatasetDataIDs={addedDatasetDataIDs}
             selectedDataset={selectedDataset}
             isMobile={isMobile}
             catalog={catalogData}
             filter={filter}
+            addDisabled={addDisabled}
             onFilter={handleFilter}
             onOpenDetails={handleOpenDetails}
             onDatasetAdd={onDatasetAdd}

@@ -82,10 +82,10 @@ export default () => {
     }
   }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const processedCatalog = useMemo(
-    () => handleDataCatalogProcessing(catalogData, data),
-    [catalogData, data],
-  );
+  const processedCatalog = useMemo(() => {
+    const c = handleDataCatalogProcessing(catalogData, data);
+    return inEditor ? c : c.filter(c => !!c.public);
+  }, [catalogData, inEditor, data]);
 
   useEffect(() => {
     postMsg({ action: "updateCatalog", payload: processedCatalog });
@@ -178,42 +178,64 @@ export default () => {
     });
   }, []);
 
+  const handleDataRequest = useCallback(
+    async (dataset?: DataCatalogItem) => {
+      if (!backendURL || !backendAccessToken || !dataset) return;
+      const datasetToSave = convertToData(dataset);
+
+      const isNew = !data?.find(d => d.dataID === dataset.dataID);
+
+      const fetchURL = !isNew
+        ? `${backendURL}/sidebar/plateauview/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
+        : `${backendURL}/sidebar/plateauview/data`;
+
+      const method = !isNew ? "PATCH" : "POST";
+
+      const res = await fetch(fetchURL, {
+        headers: {
+          authorization: `Bearer ${backendAccessToken}`,
+        },
+        method,
+        body: JSON.stringify(datasetToSave),
+      });
+      if (res.status !== 200) {
+        handleBackendFetch();
+        return;
+      }
+      const data2 = await res.json();
+      // setTemplates(t => [...t, data.results]);
+      console.log("DATA JUST SAVED: ", data2);
+      handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
+    },
+    [data, backendAccessToken, backendURL, handleBackendFetch],
+  );
+
   const handleDatasetSave = useCallback(
     (dataID: string) => {
       (async () => {
         if (!inEditor) return;
         const selectedDataset = selectedDatasets.find(d => d.dataID === dataID);
 
-        if (!backendURL || !backendAccessToken || !selectedDataset) return;
-
-        const datasetToSave = convertToData(selectedDataset);
-
-        const isNew = !data?.find(d => d.dataID === dataID);
-
-        const fetchURL = !isNew
-          ? `${backendURL}/sidebar/plateauview/data/${selectedDataset.id}` // should be id and not dataID because id here is the CMS item's id
-          : `${backendURL}/sidebar/plateauview/data`;
-
-        const method = !isNew ? "PATCH" : "POST";
-
-        const res = await fetch(fetchURL, {
-          headers: {
-            authorization: `Bearer ${backendAccessToken}`,
-          },
-          method,
-          body: JSON.stringify(datasetToSave),
-        });
-        if (res.status !== 200) {
-          handleBackendFetch();
-          return;
-        }
-        const data2 = await res.json();
-        // setTemplates(t => [...t, data.results]);
-        console.log("DATA JUST SAVED: ", data2);
-        handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
+        await handleDataRequest(selectedDataset);
       })();
     },
-    [data, selectedDatasets, inEditor, backendAccessToken, backendURL, handleBackendFetch],
+    [selectedDatasets, inEditor, handleDataRequest],
+  );
+
+  const handleDatasetPublish = useCallback(
+    (dataID: string, publish: boolean) => {
+      (async () => {
+        if (!inEditor || !processedCatalog) return;
+        const dataset = processedCatalog.find(item => item.dataID === dataID);
+
+        if (!dataset) return;
+
+        dataset.public = publish;
+
+        await handleDataRequest(dataset);
+      })();
+    },
+    [processedCatalog, inEditor, handleDataRequest],
   );
 
   // ****************************************
@@ -317,6 +339,8 @@ export default () => {
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }
+      } else if (e.data.action === "updateDataset") {
+        handleDatasetPublish(e.data.payload.dataID, e.data.payload.publish);
       } else if (e.data.action === "triggerCatalogOpen") {
         handleModalOpen();
       } else if (e.data.action === "triggerHelpOpen") {
@@ -331,7 +355,7 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleDatasetPublish]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchedSharedProject = useRef(false);
 
