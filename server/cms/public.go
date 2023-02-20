@@ -80,7 +80,7 @@ func (c *PublicAPIClient[T]) GetItems(ctx context.Context, model string, page, p
 		q.Set("page", strconv.Itoa(page))
 	}
 	if perPage > 0 {
-		q.Set("perPage", strconv.Itoa(perPage))
+		q.Set("per_page", strconv.Itoa(perPage))
 	}
 	u.RawQuery = q.Encode()
 

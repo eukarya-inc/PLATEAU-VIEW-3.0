@@ -15,7 +15,9 @@ type DataCatalogItem struct {
 	WardEn            string   `json:"ward_en,omitempty"`
 	WardCode          string   `json:"ward_code,omitempty"`
 	Type              string   `json:"type,omitempty"`
+	Type2             string   `json:"type2,omitempty"`
 	TypeEn            string   `json:"type_en,omitempty"`
+	Type2En           string   `json:"type2_en,omitempty"`
 	Format            string   `json:"format,omitempty"`
 	Layers            []string `json:"layers,omitempty"`
 	URL               string   `json:"url,omitempty"`

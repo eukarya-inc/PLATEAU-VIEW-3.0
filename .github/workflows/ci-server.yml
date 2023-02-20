@@ -41,6 +41,7 @@ jobs:
         with:
           version: v1.49
           working-directory: server
+          args: --timeout=5m
       - name: test
         run: go test ./... -v -race
 

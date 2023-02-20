@@ -13,25 +13,27 @@ import (
 )
 
 func TestFetcher(t *testing.T) {
-	// t.Log(string(lo.Must(json.MarshalIndent(lo.Must(lo.Must(NewFetcher(nil, Config{
+	// res := lo.Must(lo.Must(NewFetcher(nil, Config{
 	// 	CMSBase:    "",
 	// 	CMSProject: "",
-	// })).Do(context.Background())).usecase(), "", "  "))))
+	// })).Do(context.Background()))
+	// j := res.usecase()
+	// t.Log(string(lo.Must(json.MarshalIndent(j, "", "  "))))
 }
 
 func TestFetcher_Do(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results":    []any{map[string]string{"id": "x"}},
 		"totalCount": 1,
 	})))
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/usecase", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/usecase", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results":    []any{map[string]string{"id": "y"}},
 		"totalCount": 1,
 	})))
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/dataset", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/dataset", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results":    []any{map[string]string{"id": "z"}},
 		"totalCount": 1,
 	})))
@@ -49,11 +51,11 @@ func TestFetcher_all(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results":    []any{map[string]string{"id": "x"}},
 		"totalCount": 101,
 	})))
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=2&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/plateau", "page=2&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results":    []any{map[string]string{"id": "y"}},
 		"totalCount": 101,
 	})))
@@ -89,7 +91,7 @@ func TestFetcher_get(t *testing.T) {
 }
 
 func TestFetcher_url(t *testing.T) {
-	assert.Equal(t, "https://example.com/a?page=1&perPage=2", (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).url("a", 1, 2))
+	assert.Equal(t, "https://example.com/a?page=1&per_page=2", (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).url("a", 1, 2))
 }
 
 func TestResponse_UnmarshalJSON(t *testing.T) {
@@ -112,8 +114,4 @@ func TestResponse_HasNext(t *testing.T) {
 	assert.False(t, response{Page: 2, PerPage: 50, TotalCount: 100}.HasNext())
 	assert.True(t, response{Page: 1, PerPage: 10, TotalCount: 11}.HasNext())
 	assert.False(t, response{Page: 2, PerPage: 10, TotalCount: 11}.HasNext())
-}
-
-func TestResponse_DataCatalogs(t *testing.T) {
-	// assert.Equal(t, []DataCatalogItem{}, response{}.DataCatalogs())
 }

@@ -9,6 +9,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
@@ -129,7 +130,9 @@ func (f *Fetcher) get(ctx context.Context, model string, page, perPage int) (r r
 		perPage = 100
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", f.url(model, page, perPage), nil)
+	u := f.url(model, page, perPage)
+	log.Infof("datacatalog: get: %s", u)
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
 	if err != nil {
 		return
 	}
@@ -158,8 +161,8 @@ func (f *Fetcher) url(model string, page, perPage int) string {
 	u := util.CloneRef(f.base)
 	u.Path = path.Join(u.Path, model)
 	u.RawQuery = url.Values{
-		"page":    []string{strconv.Itoa(page)},
-		"perPage": []string{strconv.Itoa(perPage)},
+		"page":     []string{strconv.Itoa(page)},
+		"per_page": []string{strconv.Itoa(perPage)},
 	}.Encode()
 	return u.String()
 }

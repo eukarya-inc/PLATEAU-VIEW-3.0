@@ -62,48 +62,6 @@ type PlateauItem struct {
 	SearchIndex     []*cms.PublicAsset `json:"search_index"`
 }
 
-func (i PlateauItem) BldgItems(c PlateauIntermediateItem) []*DataCatalogItem {
-	assets := assetsByWards(i.Bldg)
-	if len(assets) == 0 {
-		return nil
-	}
-
-	return lo.Filter(lo.MapToSlice(assets, func(k string, v []*cms.PublicAsset) *DataCatalogItem {
-		s := maxLODBldg(v)
-		if s == nil || s.Texture == nil {
-			return nil
-		}
-
-		dci := c.DataCatalogItem("建築物モデル", AssetNameFrom(s.Texture.URL), s.Texture.URL, i.DescriptionBldg, nil)
-		if s.LowTexture != nil {
-			dci.BldgLowTextureURL = assetURLFromFormat(s.LowTexture.URL, "3dtiles")
-		}
-		if s.NoTexture != nil {
-			dci.BldgNoTextureURL = assetURLFromFormat(s.NoTexture.URL, "3dtiles")
-		}
-		dci.SearchIndex = searchIndexURLFrom(i.SearchIndex, dci.WardCode)
-		return dci
-	}), func(a *DataCatalogItem, _ int) bool {
-		return a != nil
-	})
-}
-
-func (i PlateauItem) TranItem(c PlateauIntermediateItem) *DataCatalogItem {
-	a, lod := maxLOD(i.Tran)
-	if a == nil {
-		return nil
-	}
-
-	// LOD1: Road（道路）, LOD2: TrafficArea（交通領域）, AuxiliaryTrafficArea（交通補助領域）
-	var layers []string
-	if lod == 2 {
-		layers = []string{"TrafficArea", "AuxiliaryTrafficArea"}
-	} else if lod == 1 {
-		layers = []string{"Road"}
-	}
-	return c.DataCatalogItem("道路モデル", AssetNameFrom(a.URL), a.URL, i.DescriptionTran, layers)
-}
-
 func (i PlateauItem) FrnItem(c PlateauIntermediateItem) *DataCatalogItem {
 	if len(i.Frn) == 0 {
 		return nil
@@ -271,13 +229,15 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		cityOrWardName = wardName
 	}
 
-	name := ""
+	var name, t2, t2en string
 	if an.Feature == "urf" {
 		urfName := urfFeatureTypes[an.UrfFeatureType]
 		if urfName == "" {
 			urfName = an.UrfFeatureType
 		}
 		name = fmt.Sprintf("%s（%s）", urfName, cityOrWardName)
+		t2 = urfName
+		t2en = an.UrfFeatureType
 	} else {
 		name = fmt.Sprintf("%s（%s）", t, cityOrWardName)
 	}
@@ -298,6 +258,8 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		ID:          id,
 		Type:        t,
 		TypeEn:      an.Feature,
+		Type2:       t2,
+		Type2En:     t2en,
 		Name:        name,
 		Prefecture:  i.Prefecture,
 		City:        i.City,
@@ -334,86 +296,6 @@ func assetsByWards(a []*cms.PublicAsset) map[string][]*cms.PublicAsset {
 		}
 	}
 	return r
-}
-
-func maxLOD(a []*cms.PublicAsset) (*cms.PublicAsset, int) {
-	if len(a) == 0 {
-		return nil, 0
-	}
-
-	type lod struct {
-		A   *cms.PublicAsset
-		LOD int
-	}
-
-	lods := lo.FilterMap(a, func(a *cms.PublicAsset, _ int) (lod, bool) {
-		if a == nil {
-			return lod{}, false
-		}
-		m := reLod.FindStringSubmatch(a.URL)
-		if len(m) < 2 {
-			return lod{}, false
-		}
-		l, err := strconv.Atoi(m[1])
-		if err != nil {
-			return lod{}, false
-		}
-		return lod{A: a, LOD: l}, true
-	})
-
-	r := lo.MaxBy(lods, func(a, b lod) bool {
-		return a.LOD > b.LOD
-	})
-	return r.A, r.LOD
-}
-
-type BldgSet struct {
-	LOD        int
-	Texture    *cms.PublicAsset
-	LowTexture *cms.PublicAsset
-	NoTexture  *cms.PublicAsset
-}
-
-func maxLODBldg(a []*cms.PublicAsset) *BldgSet {
-	if len(a) == 0 {
-		return nil
-	}
-
-	type lod struct {
-		A   *cms.PublicAsset
-		F   AssetName
-		LOD int
-	}
-
-	lods := lo.FilterMap(a, func(a *cms.PublicAsset, _ int) (lod, bool) {
-		if a == nil {
-			return lod{}, false
-		}
-		f := AssetNameFrom(a.URL)
-		l, _ := strconv.Atoi(f.LOD)
-		return lod{A: a, LOD: l, F: f}, true
-	})
-
-	l := lo.MaxBy(lods, func(a, b lod) bool {
-		return a.LOD > b.LOD
-	})
-
-	tex, _ := lo.Find(lods, func(a lod) bool {
-		return a.LOD == l.LOD && !a.F.LowTexture && !a.F.NoTexture
-	})
-	lowtex, _ := lo.Find(lods, func(a lod) bool {
-		return a.LOD == l.LOD && a.F.LowTexture
-	})
-	notex, _ := lo.Find(lods, func(a lod) bool {
-		return a.LOD == l.LOD && a.F.NoTexture
-	})
-
-	return &BldgSet{
-		LOD:        l.LOD,
-		Texture:    tex.A,
-		LowTexture: lowtex.A,
-		NoTexture:  notex.A,
-	}
 }
 
 func descFromAsset(a *cms.PublicAsset, descs []string) string {
@@ -456,4 +338,41 @@ func fldName(t, cityName, raw string, e *DicEntry) string {
 		return raw
 	}
 	return fmt.Sprintf("%s %s %s（%s）", t, e.Description, e.Scale, cityName)
+}
+
+type DataCatalogItemConfig struct {
+	Data []DataCatalogItemConfigItem `json:"data,omitempty"`
+}
+
+type DataCatalogItemConfigItem struct {
+	Name   string   `json:"name"`
+	URL    string   `json:"url"`
+	Type   string   `json:"type"`
+	Layers []string `json:"layer,omitempty"`
+}
+
+type assetWithLOD struct {
+	A   *cms.PublicAsset
+	F   AssetName
+	LOD int
+}
+
+func assetWithLODFromList(a []*cms.PublicAsset) ([]assetWithLOD, int) {
+	maxLOD := 0
+	return lo.FilterMap(a, func(a *cms.PublicAsset, _ int) (assetWithLOD, bool) {
+		l := assetWithLODFrom(a)
+		if l != nil && maxLOD < l.LOD {
+			maxLOD = l.LOD
+		}
+		return *l, l != nil
+	}), maxLOD
+}
+
+func assetWithLODFrom(a *cms.PublicAsset) *assetWithLOD {
+	if a == nil {
+		return nil
+	}
+	f := AssetNameFrom(a.URL)
+	l, _ := strconv.Atoi(f.LOD)
+	return &assetWithLOD{A: a, LOD: l, F: f}
 }

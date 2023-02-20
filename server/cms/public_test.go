@@ -23,13 +23,13 @@ func TestPublicAPIClient_GetAllItems(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results": []any{
 			map[string]any{"id": "a"},
 		},
 		"totalCount": 101,
 	})))
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=2&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=2&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results": []any{
 			map[string]any{"id": "b"},
 		},
@@ -56,7 +56,7 @@ func TestPublicAPIClient_GetItems(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&perPage=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
 		"results": []any{
 			map[string]any{"id": "a"},
 			map[string]any{"id": "b"},

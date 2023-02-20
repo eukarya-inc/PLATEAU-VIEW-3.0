@@ -9,7 +9,7 @@ import (
 )
 
 var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_(.+?_op.*?)(?:_(.+?)(?:_(.+))?)?$`)
-var reLod = regexp.MustCompile(`_lod([0-9\.]+?)`)
+var reLod = regexp.MustCompile(`(?:^|_)lod([0-9]+?)`)
 var reWard = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
 
 type AssetName struct {
