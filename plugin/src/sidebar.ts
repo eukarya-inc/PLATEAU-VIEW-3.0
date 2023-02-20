@@ -328,6 +328,22 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 
   // ************************************************
   // For 3dtiles
+  if (action === "findTileset") {
+    const { dataID } = payload;
+    const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
+    const tilesetLayer = reearth.layers.findById(tilesetLayerID);
+    reearth.ui.postMessage({
+      action,
+      payload: {
+        layer: {
+          id: tilesetLayer.id,
+          data: tilesetLayer.data,
+          ["3dtiles"]: tilesetLayer?.["3dtiles"],
+        },
+      },
+    });
+  }
+
   const override3dtiles = (dataID: string, property: Record<string, any>) => {
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const tilesetLayer = reearth.layers.findById(tilesetLayerID);
@@ -404,12 +420,29 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     override3dtiles(dataID, { shadows: "enabled" });
   }
 
-  // For 3dtiles color
+  // FIXME(@keiya): We need to compose transparency with color,
+  //                but currently rgba is not working on NLS.
+  //                So I will fix NLS and implement composing color.
+  // TODO
+  // - [ ] Compose transparency with color
+  // - [ ] Compose color with transparency
+  // - [ ] Reset transparency with color
+  // - [ ] Reset color with transparency
+
+  // For 3dtiles transparency
   if (action === "update3dtilesTransparency") {
     const { dataID, transparency } = payload;
     const rgba = [255, 255, 255, transparency];
     override3dtiles(dataID, { color: `rgba(${rgba.join(",")})` });
   } else if (action === "reset3dtilesTransparency") {
+    const { dataID } = payload;
+    override3dtiles(dataID, { color: "rgba(255, 255, 255, 1)" });
+  }
+  // For 3dtiles color
+  if (action === "update3dtilesColor") {
+    const { dataID, color } = payload;
+    override3dtiles(dataID, { color });
+  } else if (action === "reset3dtilesColor") {
     const { dataID } = payload;
     override3dtiles(dataID, { color: "rgba(255, 255, 255, 1)" });
   }

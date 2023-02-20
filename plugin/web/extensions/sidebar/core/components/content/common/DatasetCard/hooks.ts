@@ -204,6 +204,12 @@ export default ({
   //   };
 
   const ThreeDModelFields: FieldDropdownItem = {
+    buildingColor: {
+      name: fieldName["buildingColor"],
+      onClick: handleFieldAdd({
+        colorType: "none",
+      }),
+    },
     buildingFilter: {
       name: fieldName["buildingFilter"],
       onClick: handleFieldAdd({
