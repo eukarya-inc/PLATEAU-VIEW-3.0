@@ -402,6 +402,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   } else if (action === "reset3dtilesShadow") {
     const { dataID } = payload;
     override3dtiles(dataID, { shadows: "enabled" });
+  }
 
   // For 3dtiles color
   if (action === "update3dtilesTransparency") {
