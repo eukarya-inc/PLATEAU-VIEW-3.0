@@ -9,6 +9,7 @@ import Empty from "@web/sharedComponents/Empty";
 import Form from "@web/sharedComponents/Form";
 import Icon from "@web/sharedComponents/Icon";
 import Input from "@web/sharedComponents/Input";
+import InputNumber from "@web/sharedComponents/InputNumber";
 import { Content, Footer } from "@web/sharedComponents/Layout";
 import message from "@web/sharedComponents/message";
 import Pagination from "@web/sharedComponents/Pagination";
@@ -30,6 +31,7 @@ export {
   Form,
   Icon,
   Input,
+  InputNumber,
   Content,
   Footer,
   message,

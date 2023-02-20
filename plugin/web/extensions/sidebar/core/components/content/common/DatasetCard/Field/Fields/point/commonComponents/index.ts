@@ -1,4 +1,4 @@
-import { Input } from "@web/sharedComponents";
+import { Input, InputNumber } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
 export const Wrapper = styled.div`
@@ -17,6 +17,19 @@ export const Item = styled.div`
 `;
 
 export const TextInput = styled(Input)`
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  padding: 0 12px;
+  border: none;
+  outline: none;
+
+  :focus {
+    border: none;
+  }
+`;
+
+export const NumberInput = styled(InputNumber)`
   height: 100%;
   width: 100%;
   flex: 1;

@@ -1,24 +1,19 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/DatasetCard/AddButton";
-import { array_move } from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 
 import { BaseFieldProps, Cond } from "../types";
 
-import { ColorField, ConditionField, ItemControls } from "./common";
-import { ButtonWrapper, Item, Wrapper } from "./commonComponents";
+import { ButtonWrapper, Wrapper } from "./commonComponents";
+import PointColorItem from "./PointColorItem";
 
 const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, onUpdate }) => {
   const [pointColors, updatePointColors] = useState(value.pointColors);
 
   const handleMoveUp = useCallback(
     (idx: number) => {
-      if (idx === 0) return;
       updatePointColors(c => {
-        let newPointColors: { condition: Cond<number>; color: string }[] | undefined = undefined;
-        if (c) {
-          newPointColors = c;
-          array_move(newPointColors, idx, idx - 1);
-        }
+        const newPointColors = moveItemUp(idx, c) ?? c;
         onUpdate({
           ...value,
           pointColors: newPointColors,
@@ -31,13 +26,8 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
 
   const handleMoveDown = useCallback(
     (idx: number) => {
-      if (pointColors && idx >= pointColors.length - 1) return;
       updatePointColors(c => {
-        let newPointColors: { condition: Cond<number>; color: string }[] | undefined = undefined;
-        if (c) {
-          newPointColors = c;
-          array_move(newPointColors, idx, idx + 1);
-        }
+        const newPointColors = moveItemDown(idx, c) ?? c;
         onUpdate({
           ...value,
           pointColors: newPointColors,
@@ -45,19 +35,19 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
         return newPointColors;
       });
     },
-    [value, pointColors, onUpdate],
+    [onUpdate, value],
   );
 
   const handleAdd = useCallback(() => {
     updatePointColors(c => {
       const newPointColor: { condition: Cond<number>; color: string } = {
         condition: {
-          key: "ARGH",
+          key: generateID(),
           operator: "=",
-          operand: "AField",
+          operand: "width",
           value: 1,
         },
-        color: "brown",
+        color: "",
       };
       onUpdate({
         ...value,
@@ -70,10 +60,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
   const handleRemove = useCallback(
     (idx: number) => {
       updatePointColors(c => {
-        let newPointColors: { condition: Cond<number>; color: string }[] | undefined = undefined;
-        if (c) {
-          newPointColors = c.filter((_, idx2) => idx2 != idx);
-        }
+        const newPointColors = removeItem(idx, c) ?? c;
         onUpdate({
           ...value,
           pointColors: newPointColors,
@@ -84,19 +71,30 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
     [value, onUpdate],
   );
 
+  const handleItemUpdate = (item: { condition: Cond<number>; color: string }, index: number) => {
+    updatePointColors(c => {
+      const newPointColors = [...(c ?? [])];
+      newPointColors.splice(index, 1, item);
+      onUpdate({
+        ...value,
+        pointColors: newPointColors,
+      });
+      return newPointColors;
+    });
+  };
+
   return editMode ? (
     <Wrapper>
-      {value.pointColors?.map((c, idx) => (
-        <Item key={idx}>
-          <ItemControls
-            index={idx}
-            handleMoveDown={handleMoveDown}
-            handleMoveUp={handleMoveUp}
-            handleRemove={handleRemove}
-          />
-          <ConditionField title="if" fieldGap={8} condition={c.condition} />
-          <ColorField title="色" titleWidth={82} color={c.color} />
-        </Item>
+      {pointColors?.map((c, idx) => (
+        <PointColorItem
+          key={idx}
+          index={idx}
+          item={c}
+          handleMoveDown={handleMoveDown}
+          handleMoveUp={handleMoveUp}
+          handleRemove={handleRemove}
+          onItemUpdate={handleItemUpdate}
+        />
       ))}
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />

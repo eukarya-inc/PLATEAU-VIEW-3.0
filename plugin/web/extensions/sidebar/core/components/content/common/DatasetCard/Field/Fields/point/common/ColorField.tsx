@@ -1,6 +1,6 @@
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 import { FieldTitle, FieldValue, FieldWrapper, TextInput } from "../commonComponents";
 
@@ -18,6 +18,11 @@ function isValidColor(color: string) {
 const ColorField: React.FC<Props> = ({ title, titleWidth, color, onChange }) => {
   const [text, setText] = useState(color);
   const [selectedColor, setSelectedColor] = useState(color);
+
+  useEffect(() => {
+    setText(color);
+    setSelectedColor(color);
+  }, [color]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
