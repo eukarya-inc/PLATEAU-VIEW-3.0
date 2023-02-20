@@ -115,6 +115,14 @@ export default ({
         items: [{ title: "hey", color: "red" }],
       }),
     },
+    realtime: {
+      name: fieldName["realtime"],
+      onClick: handleFieldAdd({ updateInterval: 30 }),
+    },
+    styleCode: {
+      name: fieldName["styleCode"],
+      onClick: handleFieldAdd({ src: " " }),
+    },
     switchGroup: {
       name: fieldName["switchGroup"],
       onClick: handleFieldAdd({

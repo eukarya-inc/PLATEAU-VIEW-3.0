@@ -23,11 +23,21 @@ const ButtonLink: React.FC<BaseFieldProps<"buttonLink">> = ({ value, editMode, o
       setLink(e.currentTarget.value);
       onUpdate({
         ...value,
-        link: e.currentTarget.value,
+        link: link,
       });
     },
-    [value, onUpdate],
+    [onUpdate, value, link],
   );
+
+  const handleButtonClick = useCallback(() => {
+    if (!link) return;
+    const prefix = "https://";
+    let url = link;
+    if (!url.match(/^[a-zA-Z]+:\/\//)) {
+      url = prefix + url;
+    }
+    window.open(url, "_blank", "noopener");
+  }, [link]);
 
   return editMode ? (
     <Wrapper>
@@ -46,9 +56,7 @@ const ButtonLink: React.FC<BaseFieldProps<"buttonLink">> = ({ value, editMode, o
       </Field>
     </Wrapper>
   ) : (
-    <StyledButton onClick={() => link && window.open(link, "_blank", "noopener")}>
-      {title && <Text>{title}</Text>}
-    </StyledButton>
+    <StyledButton onClick={handleButtonClick}>{title && <Text>{title}</Text>}</StyledButton>
   );
 };
 
@@ -62,6 +70,9 @@ const Wrapper = styled.div`
 
 const Text = styled.p`
   margin: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 22px;
 `;
 
 const Field = styled.div<{ gap?: number }>`

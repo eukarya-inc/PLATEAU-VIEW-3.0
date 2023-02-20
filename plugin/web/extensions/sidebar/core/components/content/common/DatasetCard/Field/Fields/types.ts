@@ -6,6 +6,7 @@ export const fieldName = {
   realtime: "リアルタイム",
   switchGroup: "スイッチグループ",
   buttonLink: "リンクボタン",
+  styleCode: "Style code (General)",
   point: "ポイント",
   description: "説明",
   pointColor: "色",
@@ -29,9 +30,11 @@ export const fieldName = {
 export type FieldComponent =
   | IdealZoom
   | Legend
+  | StyleCode
+  | ButtonLink
   | Description
   | SwitchGroup
-  | ButtonLink
+  | Realtime
   | PointColor
   | PointColorGradient
   | PointSize
@@ -80,17 +83,18 @@ export type Legend = FieldBase<"legend"> & {
   items?: LegendItem[];
 };
 
-// type Realtime = {
-//   type: "realtime";
-//   group?: string;
-//   updateInterval: number; // 1000 * 60 -> 1m
-// };
+type Realtime = FieldBase<"realtime"> & {
+  updateInterval: number; // 1000 * 60 -> 1m
+};
 
 export type Description = FieldBase<"description"> & {
   content?: string;
   isMarkdown?: boolean;
 };
 
+export type StyleCode = FieldBase<"styleCode"> & {
+  src: string;
+};
 export type GroupItem = {
   id: string;
   title: string;
@@ -106,7 +110,6 @@ export type ButtonLink = FieldBase<"buttonLink"> & {
   title?: string;
   link?: string;
 };
-
 // MAYBE POINT TYPE IS JUST TO CONCEPTUALIZE THE JSONNNN
 // type Point = {
 //   type: "point";
@@ -217,8 +220,10 @@ export type Fields = {
   idealZoom: IdealZoom;
   legend: Legend;
   description: Description;
+  styleCode: StyleCode;
   switchGroup: SwitchGroup;
   buttonLink: ButtonLink;
+  realtime: Realtime;
   // point
   pointColor: PointColor;
   pointColorGradient: PointColorGradient;
