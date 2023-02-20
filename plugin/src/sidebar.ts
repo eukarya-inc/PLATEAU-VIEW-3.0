@@ -70,6 +70,13 @@ const addedDatasets: [
   layerID?: string,
 ][] = [];
 
+// For clipping box
+const addedBoxIDs: {
+  [dataID: string]: {
+    layerID: string;
+  };
+} = {};
+
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
   (i: PluginExtensionInstance) => i.id === reearth.widget.id,
 );
@@ -318,6 +325,64 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload,
     });
   }
+
+  // ************************************************
+  // For 3dtiles
+  // For clipping box
+  const override3dtiles = (dataID: string, property: Record<string, any>) => {
+    const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
+    const tilesetLayer = reearth.layers.findById(tilesetLayerID);
+    reearth.layers.override(tilesetLayerID, {
+      "3dtiles": {
+        ...(tilesetLayer?.["3dtiles"] || {}),
+        ...property,
+      },
+    });
+  };
+  if (action === "addClippingBox") {
+    const { dataID, box, clipping } = payload;
+    if (addedBoxIDs[dataID]) {
+      return;
+    }
+    const boxID = reearth.layers.add(box);
+    addedBoxIDs[dataID] = { layerID: boxID };
+
+    override3dtiles(dataID, { experimental_clipping: clipping });
+    reearth.ui.postMessage({
+      action,
+      payload: { layerID: boxID },
+    });
+  } else if (action === "updateClippingBox") {
+    const { dataID, shouldUpdateClipping, box, clipping } = payload;
+    const addedBoxID = addedBoxIDs[dataID];
+    if (!addedBoxID) {
+      return;
+    }
+    const boxID = addedBoxID.layerID;
+    reearth.layers.override(boxID, box);
+
+    if (shouldUpdateClipping) {
+      new Promise(resolve => {
+        override3dtiles(dataID, { experimental_clipping: clipping });
+        resolve(undefined);
+      });
+    }
+  } else if (action === "removeClippingBox") {
+    const { dataID } = payload;
+    const addedBoxID = addedBoxIDs[dataID];
+    if (!addedBoxID) {
+      return;
+    }
+    const boxID = addedBoxID.layerID;
+    reearth.layers.delete(boxID);
+
+    override3dtiles(dataID, {
+      experimental_clipping: undefined,
+    });
+
+    delete addedBoxIDs[dataID];
+  }
+  // ************************************************
 });
 
 reearth.on("update", () => {

@@ -39,7 +39,7 @@ const fields: Fields<FieldComponent> = {
   // polyline
   // polygon
   // 3d-model
-  clipping: { Component: Clipping, hasUI: false },
+  clipping: { Component: Clipping, hasUI: true },
   // 3d-tile
   // realtime: Realtime,
   // template: Template,

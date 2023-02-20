@@ -274,7 +274,7 @@ export default ({
     },
     // polyline: { name: "ポリライン", fields: polylineFields },
     // polygone: { name: "ポリゴン", fields: polygonFields },
-    "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
+    "3d-model": { name: "3Dモデル", fields: filterFields(ThreeDModelFields) },
     // "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
   };
   return {
