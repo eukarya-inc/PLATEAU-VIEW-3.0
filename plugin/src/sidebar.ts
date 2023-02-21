@@ -347,38 +347,29 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   } else if (action === "updateInterval") {
     const { dataID, interval } = payload;
     const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    const layer = reearth.layers.findById(layerId);
-    if (layer) {
-      reearth.layers.override(layerId, {
-        data: {
-          ...layer.data,
-          updateInterval: interval,
-        },
-      });
-    }
+    reearth.layers.override(layerId, {
+      data: {
+        updateInterval: interval,
+      },
+    });
   } else if (action === "updateTimeBasedDisplay") {
     const { dataID, timeBasedDisplay } = payload;
     const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    const layer = reearth.layers.findById(layerId);
-    if (layer) {
-      if (timeBasedDisplay) {
-        reearth.layers.override(layerId, {
-          data: {
-            ...layer.data,
-            time: {
-              property: "time",
-              interval: 86400000,
-            },
+    if (timeBasedDisplay) {
+      reearth.layers.override(layerId, {
+        data: {
+          time: {
+            property: "time",
+            interval: 86400000,
           },
-        });
-      } else {
-        reearth.layers.override(layerId, {
-          data: {
-            ...layer.data,
-            time: undefined,
-          },
-        });
-      }
+        },
+      });
+    } else {
+      reearth.layers.override(layerId, {
+        data: {
+          time: undefined,
+        },
+      });
     }
   }
 
@@ -402,12 +393,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 
   const override3dtiles = (dataID: string, property: Record<string, any>) => {
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
-    const tilesetLayer = reearth.layers.findById(tilesetLayerID);
     reearth.layers.override(tilesetLayerID, {
-      "3dtiles": {
-        ...(tilesetLayer?.["3dtiles"] || {}),
-        ...property,
-      },
+      "3dtiles": property,
     });
   };
 
