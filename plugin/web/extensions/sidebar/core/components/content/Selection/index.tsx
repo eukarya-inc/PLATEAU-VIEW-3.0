@@ -2,13 +2,14 @@ import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import { DataCatalogItem } from "../../../types";
+import { DataCatalogItem, Template } from "../../../types";
 import DatasetCard from "../common/DatasetCard";
 
 export type Props = {
   className?: string;
   inEditor?: boolean;
   selectedDatasets?: DataCatalogItem[];
+  templates?: Template[];
   onDatasetSave: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem) => void;
   onDatasetRemove: (dataID: string) => void;
@@ -21,6 +22,7 @@ const Selection: React.FC<Props> = ({
   className,
   inEditor,
   selectedDatasets,
+  templates,
   onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
@@ -42,6 +44,7 @@ const Selection: React.FC<Props> = ({
             <DatasetCard
               key={d.id}
               dataset={d}
+              templates={templates}
               inEditor={inEditor}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}

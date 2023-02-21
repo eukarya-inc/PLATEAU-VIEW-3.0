@@ -21,7 +21,7 @@ export type Data = {
   public?: boolean;
   visible?: boolean;
   // either template or components
-  template?: string; // user-defined template ID or builtin template ID
+  template?: string;
   components?: FieldComponent[];
   fieldGroups: Group[];
 };

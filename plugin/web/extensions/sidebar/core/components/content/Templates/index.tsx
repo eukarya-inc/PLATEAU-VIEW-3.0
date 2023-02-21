@@ -58,7 +58,6 @@ const Templates: React.FC<Props> = ({
               template={selectedTemplate}
               onTemplateSave={onTemplateSave}
               onTemplateUpdate={handleTemplateUpdate}
-              onTemplateRemove={onTemplateRemove}
             />
           </TemplateEditWrapper>
         ) : (

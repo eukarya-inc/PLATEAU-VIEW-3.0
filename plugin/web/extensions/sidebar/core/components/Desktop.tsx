@@ -79,6 +79,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                 <Selection
                   inEditor={inEditor}
                   selectedDatasets={selectedDatasets}
+                  templates={templates}
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}

@@ -1,4 +1,4 @@
-import { DataCatalogItem, Group } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, Group, Template } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
@@ -6,10 +6,12 @@ import generateFieldComponentsList from "./Field/fieldHooks";
 
 export default ({
   dataset,
+  templates,
   inEditor,
   onDatasetUpdate,
 }: {
   dataset: DataCatalogItem;
+  templates?: Template[];
   inEditor?: boolean;
   onDatasetUpdate: (dataset: DataCatalogItem) => void;
 }) => {
@@ -23,7 +25,7 @@ export default ({
           ...(dataset.components ?? []),
           {
             id: generateID(),
-            type: key,
+            type: key.includes("template") ? "template" : key,
             ...property,
           },
         ],
@@ -88,6 +90,7 @@ export default ({
 
   const fieldComponentsList = generateFieldComponentsList({
     fieldGroups: dataset.fieldGroups,
+    templates,
     onFieldAdd: handleFieldAdd,
   });
 

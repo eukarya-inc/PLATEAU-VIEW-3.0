@@ -23,7 +23,7 @@ export type Props = {
   selectGroups?: Group[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove: (id: string) => void;
-  onGroupsUpdate: (groups: Group[], selectedGroup?: string) => void;
+  onGroupsUpdate?: (groups: Group[], selectedGroup?: string) => void;
   onCurrentGroupChange?: (fieldGroupID: string) => void;
 };
 
@@ -38,7 +38,7 @@ const FieldComponent: React.FC<Props> = ({
   onGroupsUpdate,
   onCurrentGroupChange,
 }) => {
-  const { Component: FieldContent, hasUI } = fields[field.type];
+  const Field = field.type === "template" ? null : fields[field.type];
   const [groupPopupOpen, setGroupPopup] = useState(false);
 
   const handleGroupSelectOpen = useCallback(
@@ -66,7 +66,7 @@ const FieldComponent: React.FC<Props> = ({
       if (e.source !== parent) return;
       if (groupPopupOpen) {
         if (e.data.action === "saveGroups") {
-          onGroupsUpdate(e.data.payload.groups, e.data.payload.selected);
+          onGroupsUpdate?.(e.data.payload.groups, e.data.payload.selected);
           setGroupPopup(false);
         } else if (e.data.action === "popupClose") {
           setGroupPopup(false);
@@ -82,17 +82,19 @@ const FieldComponent: React.FC<Props> = ({
   return !editMode && !isActive ? null : (
     <StyledAccordionComponent
       allowZeroExpanded
-      preExpanded={[field.type]}
-      hide={!editMode && !hasUI}>
-      <AccordionItem uuid={field.type}>
+      preExpanded={[field.id]}
+      hide={!editMode && !Field?.hasUI}>
+      <AccordionItem uuid={field.id}>
         <AccordionItemState>
           {({ expanded }) => (
-            <Header expanded={expanded}>
+            <Header expanded={expanded} hideBorder={field.type === "template"}>
               {editMode ? (
                 <HeaderContents>
                   <LeftContents>
-                    <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
-                    <Title>{fieldName[field.type]}</Title>
+                    {Field && (
+                      <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
+                    )}
+                    <Title>{field.type === "template" ? field.name : fieldName[field.type]}</Title>
                   </LeftContents>
                   <RightContents>
                     <StyledIcon
@@ -113,9 +115,9 @@ const FieldComponent: React.FC<Props> = ({
             </Header>
           )}
         </AccordionItemState>
-        <BodyWrapper>
-          {FieldContent && (
-            <FieldContent
+        {Field?.Component && (
+          <BodyWrapper>
+            <Field.Component
               value={{ ...field }}
               editMode={editMode}
               isActive={isActive}
@@ -124,8 +126,8 @@ const FieldComponent: React.FC<Props> = ({
               onUpdate={onUpdate?.(field.id)}
               onCurrentGroupChange={onCurrentGroupChange}
             />
-          )}
-        </BodyWrapper>
+          </BodyWrapper>
+        )}
       </AccordionItem>
     </StyledAccordionComponent>
   );
@@ -141,11 +143,15 @@ const StyledAccordionComponent = styled(Accordion)<{ hide: boolean }>`
   background: #ffffff;
 `;
 
-const Header = styled(AccordionItemHeading)<{ expanded?: boolean }>`
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: transparent;
-  ${({ expanded }) => expanded && "border-bottom-color: #e0e0e0;"}
+const Header = styled(AccordionItemHeading)<{ expanded?: boolean; hideBorder?: boolean }>`
+  ${({ hideBorder, expanded }) =>
+    !hideBorder &&
+    `
+border-bottom-width: 1px;
+border-bottom-style: solid;
+border-bottom-color: transparent;
+${expanded && "border-bottom-color: #e0e0e0;"}
+`}
   display: flex;
   height: 30px;
 `;

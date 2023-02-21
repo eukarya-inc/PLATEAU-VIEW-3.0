@@ -29,6 +29,7 @@ export const fieldName = {
   polylineColor: "ポリライン色",
   polylineColorGradient: "ポリライン色（Gradient）",
   polylineStrokeWeight: "ポリラインストロック",
+  template: "テンプレート",
 };
 
 // type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
@@ -59,12 +60,18 @@ export type FieldComponent =
   | BuildingFilter
   | BuildingTransparency
   | BuildingColor
-  | BuildingShadow;
+  | BuildingShadow
+  | Template;
 
 type FieldBase<T extends keyof typeof fieldName> = {
   id: string;
   type: T;
   group?: string;
+};
+
+type Template = FieldBase<"template"> & {
+  templateID: string;
+  name: string;
 };
 
 type CameraPosition = {
