@@ -26,6 +26,7 @@ const MobileDropdown: React.FC = () => {
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
+    handleThreeDTilesSearch,
   } = useHooks();
 
   const changeTab = useCallback(
@@ -87,6 +88,7 @@ const MobileDropdown: React.FC = () => {
               onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
               onDatasetRemoveAll={handleProjectDatasetRemoveAll}
+              onThreeDTilesSearch={handleThreeDTilesSearch}
             />
           ),
           menu: (

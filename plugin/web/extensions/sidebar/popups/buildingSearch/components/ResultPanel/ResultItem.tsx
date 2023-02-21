@@ -1,42 +1,49 @@
 import { styled } from "@web/theme";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { Result } from "../../types";
 
 type Props = {
   item: Result;
-  selected: string[];
-  onSelect: (selected: string[]) => void;
+  selected: Result[];
+  hasBorderBottom: boolean;
+  onSelect: (selected: Result[]) => void;
 };
 
-const ResultItem: React.FC<Props> = ({ item, selected, onSelect }) => {
+const ResultItem: React.FC<Props> = ({ item, selected, hasBorderBottom, onSelect }) => {
   const onClick = useCallback(() => {
-    if (selected.includes(item.id)) {
-      onSelect(selected.filter(sid => sid !== item.id));
+    if (selected.find(s => s.gml_id === item.gml_id)) {
+      onSelect(selected.filter(s => s.gml_id !== item.gml_id));
     } else {
-      onSelect([item.id]);
+      onSelect([item]);
     }
   }, [onSelect, item, selected]);
+
+  const isActive = useMemo(() => {
+    return !!selected.find(s => s.gml_id === item.gml_id);
+  }, [selected, item]);
+
   return (
-    <StyledResultItem onClick={onClick} active={selected.includes(item.id)}>
-      {item.id}
+    <StyledResultItem onClick={onClick} active={isActive} hasBorderBottom={hasBorderBottom}>
+      {item.gml_id}
     </StyledResultItem>
   );
 };
 
-const StyledResultItem = styled.div<{ active: boolean }>`
+const StyledResultItem = styled.div<{ active: boolean; hasBorderBottom: boolean }>`
   display: flex;
   align-items: center;
   width: 100%;
   height: 38px;
   padding: 0 12px;
   border-bottom: 1px solid #d9d9d9;
+  font-size: 12px;
   background: ${({ active }) => (active ? "var(--theme-color)" : "#fff")};
   color: ${({ active }) => (active ? "#fff" : "#000")};
   cursor: pointer;
 
   &:last-child {
-    border-bottom: none;
+    border-bottom: ${({ hasBorderBottom }) => (hasBorderBottom ? "1px solid #d9d9d9" : "none")};
   }
 `;
 

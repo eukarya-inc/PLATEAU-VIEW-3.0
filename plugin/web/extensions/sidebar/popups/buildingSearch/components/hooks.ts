@@ -1,14 +1,28 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
+import { uniq, intersection } from "lodash";
+import Papa from "papaparse";
 import { useCallback, useEffect, useState, useRef } from "react";
 
-import { postMsg } from "../../../utils";
-import type { DatasetIndexes, Condition, Result, Viewport } from "../types";
+import type {
+  InitData,
+  Dataset,
+  Condition,
+  Result,
+  Viewport,
+  RawDatasetData,
+  IndexData,
+  SearchIndex,
+  SearchResults,
+} from "../types";
 
-import { TEST_DATASET_INDEX_DATA, TEST_RESULT_DATA } from "./TEST_DATA";
+// import { TEST_RESULT_DATA } from "./TEST_DATA";
 
 export type Size = {
   width: number;
   height: number;
 };
+
+type DataRowIds = number[];
 
 export default () => {
   // UI
@@ -78,40 +92,187 @@ export default () => {
   const onClickResult = useCallback(() => {
     setActiveTab("result");
   }, []);
+  const [conditionsState, setConditionsState] = useState<"loading" | "empty" | "ready">("loading");
 
   // Data
-  const [datasetIndexes, setDatasetIndexes] = useState<DatasetIndexes>();
+  const [dataset, setDataset] = useState<Dataset>();
   const [conditions, setConditions] = useState<Condition[]>([]);
   const [results, setResults] = useState<Result[]>([]);
+  const [resultStyleCondition, setResultStyleCondition] = useState<string>();
   const [highlightAll, setHighlightAll] = useState<boolean>(true);
   const [showMatchingOnly, setShowMatchingOnly] = useState<boolean>(false);
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selected, setSelected] = useState<Result[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
 
-  const conditionApply = useCallback(() => {
-    // TODO: Search logic here
-    console.log(conditions);
-    const computeResult = TEST_RESULT_DATA;
+  const searchIndexes = useRef<SearchIndex[]>();
+  const searchResults = useRef<SearchResults[]>();
 
-    setResults(computeResult);
-    setActiveTab("result");
-    setHighlightAll(true);
-    setShowMatchingOnly(false);
-  }, [conditions]);
+  const loadDetailData = useCallback(async (url: string) => {
+    let results: { dataRowId: number }[] = [];
+    await fetch(url)
+      .then(response => response.text())
+      .then(v => {
+        results = Papa.parse(v, { header: true, skipEmptyLines: true }).data as typeof results;
+      });
+    return results;
+  }, []);
+
+  const loadResultsData = useCallback(async (si: SearchIndex) => {
+    if (si.resultsData) return;
+    await fetch(`${si.baseURL}/resultsData.csv`)
+      .then(response => response.text())
+      .then(v => {
+        si.resultsData = Papa.parse(v, {
+          header: true,
+          skipEmptyLines: true,
+          fastMode: true,
+        }).data;
+      });
+  }, []);
 
   useEffect(() => {
-    // TODO: flyTo the selected building
+    if (!dataset?.dataID) return;
+
+    const colorConditions: [string, string][] = [];
+
+    if (highlightAll && resultStyleCondition) {
+      colorConditions.push([resultStyleCondition, "color('red')"]);
+    } else {
+      if (selected) {
+        let selectedConditon = "";
+        selected.forEach(bldg => {
+          if (selectedConditon) selectedConditon += " || ";
+          selectedConditon += "${gml_id} === '" + bldg.gml_id + "'";
+        });
+        if (selectedConditon) {
+          colorConditions.push([selectedConditon, "color('red')"]);
+        }
+      }
+    }
+
+    colorConditions.push(["true", "color()"]);
+
+    const showConditions: [string, string][] = [];
+
+    if (showMatchingOnly) {
+      if (resultStyleCondition) {
+        showConditions.push([resultStyleCondition, "true"]);
+      }
+      showConditions.push(["true", "false"]);
+    } else {
+      showConditions.push(["true", "true"]);
+    }
+
+    const styles = {
+      "3dtiles": {
+        color: {
+          expression: {
+            conditions: colorConditions,
+          },
+        },
+        show: {
+          expression: {
+            conditions: showConditions,
+          },
+        },
+      },
+    };
+
+    postMsg({
+      action: "updateDatasetInScene",
+      payload: {
+        dataID: dataset.dataID,
+        update: styles,
+      },
+    });
+  }, [selected, resultStyleCondition, dataset?.dataID, highlightAll, showMatchingOnly]);
+
+  const conditionApply = useCallback(() => {
+    searchResults.current = [];
+    const combinedResults: Result[] = [];
+
+    (async () => {
+      if (searchIndexes.current) {
+        await Promise.all(
+          searchIndexes.current.map(async si => {
+            // get all conditions groups for current search index
+            const tilesetId = si.baseURL.split("/").pop() ?? "";
+            const condGroups: DataRowIds[] = [];
+
+            await Promise.all(
+              conditions.map(async cond => {
+                if (cond.values.length > 0) {
+                  const condGroup: DataRowIds = [];
+                  await Promise.all(
+                    cond.values.map(async v => {
+                      await loadDetailData(
+                        `${si.baseURL}/${si.indexRoot.indexes[cond.field].values[v].url}`,
+                      ).then(v => {
+                        condGroup.push(...v.map(item => item.dataRowId));
+                      });
+                    }),
+                  );
+                  condGroups.push(condGroup);
+                }
+              }),
+            );
+
+            let results: Result[] = [];
+
+            const rowIds = intersection(...condGroups);
+            if (rowIds) {
+              await loadResultsData(si);
+              results = rowIds.map(rowId => si.resultsData?.[rowId]);
+            }
+
+            searchResults.current?.push({
+              tilesetId,
+              results,
+            });
+
+            combinedResults.push(...results);
+          }),
+        );
+
+        setResults(combinedResults);
+        setIsSearching(false);
+        setResultStyleCondition(() => {
+          let resultCondition = "";
+          conditions.map(c => {
+            if (c.values.length > 0) {
+              if (resultCondition) resultCondition += " && ";
+              let currentCondition = "(";
+              c.values.map(value => {
+                if (currentCondition !== "(") currentCondition += " || ";
+                currentCondition += "${" + c.field + "} === '" + value + "'";
+              });
+              currentCondition += ")";
+              resultCondition += currentCondition;
+            }
+          });
+          return resultCondition;
+        });
+      }
+    })();
+
+    setResults([]);
+    setIsSearching(true);
+    setActiveTab("result");
+    setSelected([]);
+    setHighlightAll(true);
+    setShowMatchingOnly(false);
+  }, [conditions, loadDetailData, loadResultsData]);
+
+  useEffect(() => {
     if (selected.length === 1) {
       postMsg({
-        action: "cameraFlyTo",
+        action: "cameraLookAt",
         payload: [
           {
-            lng: 137.31210397018728,
-            lat: 34.60832876429294,
-            height: 54735.3396536646,
-            heading: 0.06105070089725917,
-            pitch: -0.8254743840751195,
-            roll: 6.283184517370357,
-            fov: 1.0471975511965976,
+            lng: Number(selected[0].Longitude),
+            lat: Number(selected[0].Latitude),
+            height: Number(selected[0].Height) + 100,
+            range: 200,
           },
           { duration: 2 },
         ],
@@ -120,19 +281,15 @@ export default () => {
   }, [selected]);
 
   useEffect(() => {
-    // TODO: flyTo the result if only one
-    if (results.length === 1) {
+    if (results.length > 0) {
       postMsg({
-        action: "cameraFlyTo",
+        action: "cameraLookAt",
         payload: [
           {
-            lng: 137.31210397018728,
-            lat: 34.60832876429294,
-            height: 54735.3396536646,
-            heading: 0.06105070089725917,
-            pitch: -0.8254743840751195,
-            roll: 6.283184517370357,
-            fov: 1.0471975511965976,
+            lng: Number(results[0].Longitude),
+            lat: Number(results[0].Latitude),
+            height: Number(results[0].Height) + 100,
+            range: 200,
           },
           { duration: 2 },
         ],
@@ -140,33 +297,106 @@ export default () => {
     }
   }, [results]);
 
-  useEffect(() => {
-    // TODO: Update 3D tiles style
-  }, [highlightAll, showMatchingOnly, selected, results]);
+  const initDatasetData = useCallback(
+    (rawDatasetData: RawDatasetData) => {
+      setResults([]);
+      setSelected([]);
+      setActiveTab("condition");
+      setConditionsState("loading");
+
+      if (!rawDatasetData.searchIndex) {
+        setConditionsState("empty");
+      } else {
+        searchIndexes.current = [];
+
+        const indexData: IndexData[] = [];
+
+        const allIndexes =
+          typeof rawDatasetData.searchIndex === "string"
+            ? [{ url: rawDatasetData.searchIndex }]
+            : rawDatasetData.searchIndex;
+
+        (async () => {
+          await Promise.all(
+            allIndexes.map(async si => {
+              const baseURL = si.url.replace("/indexRoot.json", "").replace(".zip", "");
+
+              const indexRootRes = await fetch(`${baseURL}/indexRoot.json`);
+              if (indexRootRes.status !== 200) return;
+
+              const indexRoot = await indexRootRes.json();
+              if (indexRoot && searchIndexes.current) {
+                searchIndexes.current.push({
+                  baseURL,
+                  indexRoot,
+                });
+
+                Object.keys(indexRoot.indexes).forEach(field => {
+                  const f = indexData.find(mi => mi.field === field);
+                  if (!f) {
+                    indexData.push({
+                      field,
+                      values: Object.keys(indexRoot.indexes[field].values),
+                    });
+                  } else {
+                    f.values.push(...Object.keys(indexRoot.indexes[field].values));
+                  }
+                });
+              }
+            }),
+          );
+
+          if (indexData.length > 0) {
+            indexData.forEach(indexDataItem => {
+              indexDataItem.values = uniq(indexDataItem.values);
+            });
+
+            setDataset({
+              title: rawDatasetData.title,
+              dataID: rawDatasetData.dataID,
+              indexes: indexData,
+            });
+            setConditions(indexData.map(index => ({ field: index.field, values: [] })));
+            setConditionsState("ready");
+
+            // preload results data
+            setTimeout(() => {
+              searchIndexes.current?.forEach(si => {
+                loadResultsData(si);
+              });
+            }, 0);
+          } else {
+            setConditionsState("empty");
+          }
+        })();
+      }
+    },
+    [loadResultsData],
+  );
 
   const popupClose = useCallback(() => {
     postMsg({ action: "popupClose" });
   }, []);
 
-  useEffect(() => {
-    if ((window as any).buildingSearchInit) {
-      const init = (window as any).buildingSearchInit;
-      if (init.viewport.isMobile) {
+  const onInit = useCallback(
+    (initData: InitData | undefined) => {
+      if (!initData) return;
+      if (initData.viewport.isMobile) {
         setIsMobile(true);
         setSizes({
           ...sizes,
-          mobile: { width: init.viewport.width * 0.9, height: sizes.mobile.height },
+          mobile: { width: initData.viewport.width * 0.9, height: sizes.mobile.height },
         });
       }
-    }
+      setMinimized(false);
+      initDatasetData((window as any).buildingSearchInit?.data);
+    },
+    [initDatasetData, sizes],
+  );
 
+  useEffect(() => {
     document.documentElement.style.setProperty("--theme-color", "#00BEBE");
-
-    const datasetIndexes = ((window as any).buildingSearchInit?.data ??
-      TEST_DATASET_INDEX_DATA) as DatasetIndexes;
-
-    setDatasetIndexes(datasetIndexes);
-    setConditions(datasetIndexes.indexes.map(index => ({ field: index.field, values: [] })));
+    onInit((window as any).buildingSearchInit);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,11 +408,14 @@ export default () => {
         case "resize":
           handleResize(e.data.payload);
           break;
+        case "buildingSearchInit":
+          onInit(e.data.payload);
+          break;
         default:
           break;
       }
     },
-    [handleResize],
+    [handleResize, onInit],
   );
 
   useEffect(() => {
@@ -196,11 +429,13 @@ export default () => {
     size,
     minimized,
     activeTab,
-    datasetIndexes,
+    dataset,
     results,
     highlightAll,
     showMatchingOnly,
     selected,
+    isSearching,
+    conditionsState,
     onClickCondition,
     onClickResult,
     toggleMinimize,

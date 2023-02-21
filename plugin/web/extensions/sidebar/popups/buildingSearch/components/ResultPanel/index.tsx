@@ -1,4 +1,4 @@
-import { Empty } from "@web/sharedComponents";
+import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
@@ -11,10 +11,11 @@ type Props = {
   results: Result[];
   highlightAll: boolean;
   showMatchingOnly: boolean;
-  selected: string[];
+  selected: Result[];
+  isSearching: boolean;
   setHighlightAll: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMatchingOnly: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelected: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelected: React.Dispatch<React.SetStateAction<Result[]>>;
 };
 
 const ResultPanel: React.FC<Props> = ({
@@ -23,6 +24,7 @@ const ResultPanel: React.FC<Props> = ({
   highlightAll,
   showMatchingOnly,
   selected,
+  isSearching,
   setHighlightAll,
   setShowMatchingOnly,
   setSelected,
@@ -41,7 +43,7 @@ const ResultPanel: React.FC<Props> = ({
   }, [setShowMatchingOnly]);
 
   const onSelect = useCallback(
-    (selected: string[]) => {
+    (selected: Result[]) => {
       setSelected(selected);
       if (highlightAll) {
         setHighlightAll(false);
@@ -52,23 +54,39 @@ const ResultPanel: React.FC<Props> = ({
 
   return (
     <Wrapper active={active}>
-      <ResultInfo>{`${results.length} matches found`}</ResultInfo>
+      <ResultInfo>{isSearching ? "検索中..." : `${results.length} 件が見つかりました`}</ResultInfo>
       <ResultWrapper>
-        {results?.map((item, index) => (
-          <ResultItem key={index} item={item} onSelect={onSelect} selected={selected} />
-        ))}
-        {results.length === 0 && (
+        {!isSearching &&
+          results?.map((item, index) => (
+            <ResultItem
+              key={index}
+              item={item}
+              onSelect={onSelect}
+              selected={selected}
+              hasBorderBottom={results.length < 10}
+            />
+          ))}
+        {!isSearching && results.length === 0 && (
           <EmptyWrapper>
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            <Empty>
+              <Icon icon="fileDotted" size={24} />
+              <EmptyInfo>検索結果がありません</EmptyInfo>
+            </Empty>
           </EmptyWrapper>
         )}
       </ResultWrapper>
       <ButtonWrapper>
-        <Button active={highlightAll} onClick={onHighlightAll}>
-          Highlight all
+        <Button
+          active={highlightAll}
+          onClick={onHighlightAll}
+          disabled={isSearching || results.length === 0}>
+          結果をハイライト表示
         </Button>
-        <Button active={showMatchingOnly} onClick={onShowMatchingOnly}>
-          Show matching only
+        <Button
+          active={showMatchingOnly}
+          onClick={onShowMatchingOnly}
+          disabled={isSearching || results.length === 0}>
+          結果のみ表示
         </Button>
       </ButtonWrapper>
     </Wrapper>
@@ -109,23 +127,37 @@ const EmptyWrapper = styled.div`
   justify-content: center;
 `;
 
+const Empty = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #bfbfbf;
+`;
+
+const EmptyInfo = styled.span``;
+
 const ButtonWrapper = styled.div`
   padding: 6px 12px;
   display: flex;
   gap: 12px;
 `;
 
-const Button = styled.div<{ active: boolean }>`
+const Button = styled.div<{ active: boolean; disabled?: boolean }>`
   width: 50%;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${({ active }) => (active ? "#fff" : "#000")};
-  background: ${({ active }) => (active ? "var(--theme-color)" : "#fff")};
-  border: ${({ active }) => (active ? "1px solid var(--theme-color)" : "1px solid #e6e6e6")};
+  color: ${({ active, disabled }) => (disabled ? "rgba(0, 0, 0, 0.25)" : active ? "#fff" : "#000")};
+  background: ${({ active, disabled }) =>
+    disabled ? "none" : active ? "var(--theme-color)" : "#fff"};
+  border: ${({ active, disabled }) =>
+    disabled ? "1px solid #D9D9D9" : active ? "1px solid var(--theme-color)" : "1px solid #e6e6e6"};
   border-radius: 4px;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "default" : "pointer")};
+  pointer-events: ${({ disabled }) => (disabled ? "none" : "all")};
 `;
 
 export default ResultPanel;

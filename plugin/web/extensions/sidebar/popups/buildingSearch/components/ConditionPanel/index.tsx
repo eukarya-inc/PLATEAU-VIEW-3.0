@@ -1,37 +1,56 @@
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import type { DatasetIndexes, Condition as ConditionType } from "../../types";
+import type { Dataset, Condition as ConditionType } from "../../types";
 
 import Condition from "./Condition";
 
 type Props = {
   active: boolean;
-  datasetIndexes?: DatasetIndexes;
+  dataset?: Dataset;
+  conditionsState: "loading" | "empty" | "ready";
   conditionApply: () => void;
   setConditions: React.Dispatch<React.SetStateAction<ConditionType[]>>;
 };
 
 const ConditionPanel: React.FC<Props> = ({
   active,
-  datasetIndexes,
+  dataset,
+  conditionsState,
   conditionApply,
   setConditions,
 }) => {
   return (
     <Wrapper active={active}>
-      <DatasetInfo>
-        <Icon icon="database" size={24} />
-        <DatasetName>{datasetIndexes?.title}</DatasetName>
-      </DatasetInfo>
-      <Conditions>
-        {datasetIndexes?.indexes.map(indexItem => (
-          <Condition key={indexItem.field} indexItem={indexItem} setConditions={setConditions} />
-        ))}
-      </Conditions>
-      <ButtonWrapper>
-        <Button onClick={conditionApply}>Apply</Button>
-      </ButtonWrapper>
+      {conditionsState === "loading" && <Loading>Loading...</Loading>}
+      {conditionsState === "ready" && (
+        <ConditionWrapper>
+          <DatasetInfo>
+            <Icon icon="database" size={24} />
+            <DatasetName>{dataset?.title}</DatasetName>
+          </DatasetInfo>
+          <Conditions>
+            {dataset?.indexes.map(indexItem => (
+              <Condition
+                key={indexItem.field}
+                indexItem={indexItem}
+                setConditions={setConditions}
+              />
+            ))}
+          </Conditions>
+          <ButtonWrapper>
+            <Button onClick={conditionApply}>検索</Button>
+          </ButtonWrapper>
+        </ConditionWrapper>
+      )}
+      {conditionsState === "empty" && (
+        <EmptyWrapper>
+          <Empty>
+            <Icon icon="fileDotted" size={24} />
+            <EmptyInfo>データがありません</EmptyInfo>
+          </Empty>
+        </EmptyWrapper>
+      )}
     </Wrapper>
   );
 };
@@ -39,8 +58,40 @@ const ConditionPanel: React.FC<Props> = ({
 const Wrapper = styled.div<{ active: boolean }>`
   display: ${({ active }) => (active ? "flex" : "none")};
   padding: 8px 0;
-  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
 `;
+
+const ConditionWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+
+const Loading = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  color: #8c8c8c;
+`;
+
+const EmptyWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const Empty = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #bfbfbf;
+`;
+
+const EmptyInfo = styled.span``;
 
 const DatasetInfo = styled.div`
   height: 40px;

@@ -33,6 +33,7 @@ export type Props = {
   onDatasetRemove?: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem) => void;
   onUpdateField?: (id: string) => void;
+  onThreeDTilesSearch: (id: string) => void;
 };
 const DatasetCard: React.FC<Props> = ({
   dataset,
@@ -41,6 +42,7 @@ const DatasetCard: React.FC<Props> = ({
   onDatasetRemove,
   onDatasetUpdate,
   // onUpdateField,
+  onThreeDTilesSearch,
 }) => {
   const [currentTab, changeTab] = useState<Tabs>("default");
 
@@ -51,8 +53,8 @@ const DatasetCard: React.FC<Props> = ({
       onDatasetUpdate,
     });
 
-  const baseFields: BaseFieldType[] = useMemo(
-    () => [
+  const baseFields: BaseFieldType[] = useMemo(() => {
+    const fields = [
       {
         id: "zoom",
         title: "カメラ",
@@ -74,9 +76,20 @@ const DatasetCard: React.FC<Props> = ({
         icon: "trash",
         onClick: () => onDatasetRemove?.(dataset.dataID),
       },
-    ],
-    [dataset, onDatasetRemove],
-  );
+    ];
+    if (currentTab === "default" && dataset.components?.find(c => c.type === "search")) {
+      fields.push({
+        id: "search",
+        title: "データを検索",
+        icon: "search",
+        value: 1,
+        onClick: () => {
+          onThreeDTilesSearch(dataset.dataID);
+        },
+      });
+    }
+    return fields;
+  }, [currentTab, dataset, onDatasetRemove, onThreeDTilesSearch]);
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
     e.stopPropagation();

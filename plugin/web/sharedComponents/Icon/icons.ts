@@ -55,6 +55,7 @@ import { ReactComponent as ListNumbers } from "./Icons/listNumbers.svg";
 import { ReactComponent as Save } from "./Icons/save.svg";
 import { ReactComponent as Clock } from "./Icons/clock.svg";
 import { ReactComponent as Transparent } from "./Icons/transparent.svg";
+import { ReactComponent as FileDotted } from "./Icons/fileDotted.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -114,4 +115,5 @@ export default {
   save: Save,
   clock: Clock,
   transparent: Transparent,
+  fileDotted: FileDotted,
 };

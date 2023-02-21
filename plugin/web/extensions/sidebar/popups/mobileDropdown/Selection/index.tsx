@@ -12,6 +12,7 @@ type Props = {
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
+  onThreeDTilesSearch: (id: string) => void;
 };
 
 const Selection: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const Selection: React.FC<Props> = ({
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
+  onThreeDTilesSearch,
 }) => {
   useEffect(() => {
     postMsg({ action: "extendPopup" });
@@ -36,6 +38,7 @@ const Selection: React.FC<Props> = ({
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}
+        onThreeDTilesSearch={onThreeDTilesSearch}
       />
     </Wrapper>
   );

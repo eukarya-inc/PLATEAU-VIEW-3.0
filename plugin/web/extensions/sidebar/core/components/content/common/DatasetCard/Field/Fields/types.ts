@@ -16,6 +16,7 @@ export const fieldName = {
   pointLabel: "ラベル",
   pointModel: "モデル",
   pointStroke: "ストロック",
+  search: "データを検索",
   polygonColor: "ポリゴン色",
   polygonColorGradient: "ポリゴン色（Gradient）",
   polygonStroke: "ポリゴンストロック",
@@ -45,6 +46,7 @@ export type FieldComponent =
   | PointLabel
   | PointModel
   | PointStroke
+  | Search
   | PolylineColor
   | PolylineColorGradient
   | PolylineStrokeWeight
@@ -174,6 +176,8 @@ type PointStroke = FieldBase<"pointStroke"> & {
   }[];
 };
 
+type Search = FieldBase<"search">;
+
 type PolygonColor = FieldBase<"polygonColor"> & {
   items?: {
     condition: Cond<number>;
@@ -266,6 +270,7 @@ export type Fields = {
   polygonStroke: PolygonStroke;
   // 3d-model
   // 3d-tile
+  search: Search;
   clipping: Clipping;
   buildingFilter: BuildingFilter;
   buildingTransparency: BuildingTransparency;

@@ -41,6 +41,7 @@ type ActionType =
   | "groupSelectOpen"
   | "saveGroups"
   | "cameraFlyTo"
+  | "cameraLookAt"
   | "getCurrentCamera"
   | "storyPlay"
   | "addClippingBox"

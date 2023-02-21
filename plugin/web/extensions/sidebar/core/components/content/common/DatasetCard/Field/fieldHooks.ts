@@ -167,6 +167,13 @@ export default ({
     },
   };
 
+  const ThreeDTileFields: FieldDropdownItem = {
+    search: {
+      name: fieldName["search"],
+      onClick: onFieldAdd({}),
+    },
+  };
+
   //   const ThreeDTileFields: {
   //     [key: string]: { name: string; onClick?: (property: any) => void };
   //   } = {
@@ -203,7 +210,7 @@ export default ({
     polygone: { name: "ポリゴン", fields: polygonFields },
     polyline: { name: "ポリライン", fields: polylineFields },
     "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
-    // "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
+    "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
   };
 
   return fieldComponentsList;

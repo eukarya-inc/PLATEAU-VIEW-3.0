@@ -30,7 +30,8 @@ const Condition: React.FC<Props> = ({ indexItem, setConditions }) => {
       <StyledSelect
         mode="multiple"
         showArrow
-        placeholder="Type in key word"
+        placeholder="キーワードを入力"
+        listHeight={200}
         onChange={handleChange}
         options={options}
       />

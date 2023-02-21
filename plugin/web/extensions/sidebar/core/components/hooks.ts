@@ -390,6 +390,24 @@ export default () => {
     setCurrentPage(p);
   }, []);
 
+  // ThreeDTilesSearch
+  const handleThreeDTilesSearch = useCallback(
+    (dataID: string) => {
+      const plateauItem = catalogData.find(pd => pd.id === dataID);
+      const searchIndex = plateauItem?.["search_index"];
+
+      postMsg({
+        action: "buildingSearchOpen",
+        payload: {
+          title: plateauItem?.["name"] ?? "",
+          dataID,
+          searchIndex,
+        },
+      });
+    },
+    [catalogData],
+  );
+
   const handleModalOpen = useCallback(() => {
     postMsg({
       action: "catalogModalOpen",
@@ -416,6 +434,7 @@ export default () => {
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
+    handleThreeDTilesSearch,
   };
 };
 

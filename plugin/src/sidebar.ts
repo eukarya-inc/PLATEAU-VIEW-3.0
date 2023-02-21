@@ -324,6 +324,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       const layerID = addedDatasets.find(ad => ad[0] === payload)?.[2];
       reearth.camera.flyTo(layerID);
     }
+  } else if (action === "cameraLookAt") {
+    reearth.camera.lookAt(...payload);
   } else if (action === "getCurrentCamera") {
     reearth.ui.postMessage({ action, payload: reearth.camera.position });
   } else if (action === "checkIfMobile") {
