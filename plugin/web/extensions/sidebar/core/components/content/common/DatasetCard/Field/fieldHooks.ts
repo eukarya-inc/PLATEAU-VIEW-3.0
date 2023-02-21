@@ -55,6 +55,10 @@ export default ({
         name: fieldName["styleCode"],
         onClick: onFieldAdd({ src: " " }),
       },
+      buttonLink: {
+        name: fieldName["buttonLink"],
+        onClick: onFieldAdd({}),
+      },
       switchGroup: {
         name: fieldName["switchGroup"],
         onClick: onFieldAdd({
@@ -64,8 +68,8 @@ export default ({
             : [],
         }),
       },
-      buttonLink: {
-        name: fieldName["buttonLink"],
+      switchDataset: {
+        name: fieldName["switchDataset"],
         onClick: onFieldAdd({}),
       },
     };

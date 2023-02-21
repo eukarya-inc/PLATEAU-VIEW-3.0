@@ -12,6 +12,7 @@ import IdealZoom from "./general/IdealZoom";
 import Legend from "./general/Legend";
 import Realtime from "./general/Realtime";
 import StyleCode from "./general/StyleCode";
+import SwitchDataset from "./general/SwitchDataset";
 import SwitchGroup from "./general/SwitchGroup";
 import Timeline from "./general/Timeline";
 import PointColor from "./point/PointColor";
@@ -43,6 +44,7 @@ const fields: Fields<FieldComponent> = {
   styleCode: { Component: StyleCode, hasUI: false },
   realtime: { Component: Realtime, hasUI: true },
   timeline: { Component: Timeline, hasUI: true },
+  switchDataset: { Component: SwitchDataset, hasUI: true },
   // point
   pointColor: { Component: PointColor, hasUI: false },
   pointColorGradient: { Component: PointColorGradient, hasUI: false },

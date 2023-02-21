@@ -13,7 +13,7 @@ import {
 } from "react-accessible-accordion";
 
 import fields from "./Fields";
-import { FieldComponent as FieldComponentType, fieldName } from "./Fields/types";
+import { ConfigData, FieldComponent as FieldComponentType, fieldName } from "./Fields/types";
 
 export type Props = {
   field: FieldComponentType;
@@ -21,6 +21,7 @@ export type Props = {
   isActive: boolean;
   editMode?: boolean;
   selectGroups?: Group[];
+  configData?: ConfigData[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove: (id: string) => void;
   onGroupsUpdate?: (groups: Group[], selectedGroup?: string) => void;
@@ -33,6 +34,7 @@ const FieldComponent: React.FC<Props> = ({
   isActive,
   editMode,
   selectGroups,
+  configData,
   onUpdate,
   onRemove,
   onGroupsUpdate,
@@ -87,7 +89,7 @@ const FieldComponent: React.FC<Props> = ({
       <AccordionItem uuid={field.id}>
         <AccordionItemState>
           {({ expanded }) => (
-            <Header expanded={expanded} hideBorder={field.type === "template"}>
+            <Header showBorder={expanded && field.type !== "template"}>
               {editMode ? (
                 <HeaderContents>
                   <LeftContents>
@@ -122,6 +124,7 @@ const FieldComponent: React.FC<Props> = ({
               editMode={editMode}
               isActive={isActive}
               fieldGroups={selectGroups}
+              configData={configData}
               dataID={dataID}
               onUpdate={onUpdate?.(field.id)}
               onCurrentGroupChange={onCurrentGroupChange}
@@ -143,15 +146,11 @@ const StyledAccordionComponent = styled(Accordion)<{ hide: boolean }>`
   background: #ffffff;
 `;
 
-const Header = styled(AccordionItemHeading)<{ expanded?: boolean; hideBorder?: boolean }>`
-  ${({ hideBorder, expanded }) =>
-    !hideBorder &&
-    `
-border-bottom-width: 1px;
-border-bottom-style: solid;
-border-bottom-color: transparent;
-${expanded && "border-bottom-color: #e0e0e0;"}
-`}
+const Header = styled(AccordionItemHeading)<{ showBorder?: boolean }>`
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: transparent;
+  ${({ showBorder }) => showBorder && "border-bottom-color: #e0e0e0;"}
   display: flex;
   height: 30px;
 `;
