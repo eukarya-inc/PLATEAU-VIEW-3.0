@@ -4,6 +4,7 @@ export const fieldName = {
   idealZoom: "カメラ",
   legend: "凡例",
   realtime: "リアルタイム",
+  timeline: "タイムラインデータ",
   switchGroup: "スイッチグループ",
   buttonLink: "リンクボタン",
   styleCode: "Style code (General)",
@@ -39,6 +40,7 @@ export type FieldComponent =
   | Description
   | SwitchGroup
   | Realtime
+  | Timeline
   | PointColor
   | PointColorGradient
   | PointSize
@@ -93,6 +95,10 @@ export type Legend = FieldBase<"legend"> & {
 
 type Realtime = FieldBase<"realtime"> & {
   updateInterval: number; // 1000 * 60 -> 1m
+};
+
+export type Timeline = FieldBase<"timeline"> & {
+  timeBasedDisplay: boolean;
 };
 
 export type Description = FieldBase<"description"> & {
@@ -252,6 +258,7 @@ export type Fields = {
   switchGroup: SwitchGroup;
   buttonLink: ButtonLink;
   realtime: Realtime;
+  timeline: Timeline;
   // point
   pointColor: PointColor;
   pointColorGradient: PointColorGradient;

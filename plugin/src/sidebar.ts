@@ -356,6 +356,30 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         },
       });
     }
+  } else if (action === "updateTimeBasedDisplay") {
+    const { dataID, timeBasedDisplay } = payload;
+    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
+    const layer = reearth.layers.findById(layerId);
+    if (layer) {
+      if (timeBasedDisplay) {
+        reearth.layers.override(layerId, {
+          data: {
+            ...layer.data,
+            time: {
+              property: "time",
+              interval: 86400000,
+            },
+          },
+        });
+      } else {
+        reearth.layers.override(layerId, {
+          data: {
+            ...layer.data,
+            time: undefined,
+          },
+        });
+      }
+    }
   }
 
   // ************************************************

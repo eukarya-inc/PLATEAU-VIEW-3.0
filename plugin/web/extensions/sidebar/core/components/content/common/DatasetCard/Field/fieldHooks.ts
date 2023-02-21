@@ -43,6 +43,10 @@ export default ({
       name: fieldName["realtime"],
       onClick: onFieldAdd({ updateInterval: 30 }),
     },
+    timeline: {
+      name: fieldName["timeline"],
+      onClick: onFieldAdd({ timeBasedDisplay: true }),
+    },
     styleCode: {
       name: fieldName["styleCode"],
       onClick: onFieldAdd({ src: " " }),

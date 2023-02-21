@@ -13,6 +13,7 @@ import Legend from "./general/Legend";
 import Realtime from "./general/Realtime";
 import StyleCode from "./general/StyleCode";
 import SwitchGroup from "./general/SwitchGroup";
+import Timeline from "./general/Timeline";
 import PointColor from "./point/PointColor";
 import PointColorGradient from "./point/PointColorGradient";
 import PointIcon from "./point/PointIcon";
@@ -43,6 +44,7 @@ const fields: Fields<FieldComponent> = {
   buttonLink: { Component: ButtonLink, hasUI: true },
   styleCode: { Component: StyleCode, hasUI: false },
   realtime: { Component: Realtime, hasUI: true },
+  timeline: { Component: Timeline, hasUI: true },
 
   // point
   pointColor: { Component: PointColor, hasUI: false },
