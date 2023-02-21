@@ -12,6 +12,7 @@ import helpPopupHtml from "../dist/web/sidebar/popups/help/index.html?raw";
 import mobileDropdownHtml from "../dist/web/sidebar/popups/mobileDropdown/index.html?raw";
 
 import { getRGBAFromString, RGBA, rgbaToString } from "./utils/color";
+import { proxyGTFS } from "./utils/proxy";
 
 const defaultProject: Project = {
   sceneOverrides: {
@@ -221,9 +222,11 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
     }
   } else if (action === "updateDatasetInScene") {
+    const layerId = addedDatasets.find(ad => ad[0] === payload.dataID)?.[2];
+    const layer = reearth.layers.findById(layerId);
     reearth.layers.override(
       addedDatasets.find(ad => ad[0] === payload.dataID)?.[2],
-      payload.update,
+      layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
     );
   } else if (action === "removeDatasetFromScene") {
     reearth.layers.hide(addedDatasets.find(ad => ad[0] === payload)?.[2]);
@@ -568,11 +571,12 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
 });
 
 function createLayer(dataset: DataCatalogItem, options?: any) {
+  const format = dataset.format.toLowerCase();
   return {
     type: "simple",
     title: dataset.name,
     data: {
-      type: dataset.format.toLowerCase(),
+      type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
     },
     visible: true,
@@ -590,7 +594,7 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
     },
     ...(options
       ? options
-      : dataset.format === "geojson"
+      : format === "geojson"
       ? {
           marker: {
             // style: "point",
@@ -602,6 +606,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
             // labelBackground: true,
           },
         }
+      : format === "gtfs"
+      ? proxyGTFS(options)
       : { ...(options ?? {}) }),
   };
 }
