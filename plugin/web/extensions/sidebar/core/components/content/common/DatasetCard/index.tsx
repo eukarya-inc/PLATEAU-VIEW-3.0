@@ -150,15 +150,24 @@ const DatasetCard: React.FC<Props> = ({
     setGroup(fieldGroupID);
   }, []);
 
+  const defaultTemplate = useMemo(() => {
+    const t = templates?.find(t => t.name === dataset.type); // Should we do a check for type2 here, too??
+    if (t && !dataset.components?.length) {
+      return t;
+    }
+  }, [templates, dataset]);
+
   const activeComponentIDs = useMemo(
     () =>
-      (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
-        ? dataset.components
-        : dataset.components.filter(
-            c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
-          )
+      (
+        defaultTemplate?.components ??
+        (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
+          ? dataset.components
+          : dataset.components.filter(
+              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
+            ))
       )?.map(c => c.id),
-    [selectedGroup, dataset.components, dataset.fieldGroups],
+    [selectedGroup, dataset.components, dataset.fieldGroups, defaultTemplate?.components],
   );
 
   return (
@@ -204,10 +213,48 @@ const DatasetCard: React.FC<Props> = ({
                 {field.title && <FieldName>{field.title}</FieldName>}
               </BaseField>
             ))}
-            {dataset.components?.map((c, idx) => {
-              if (c.type === "template") {
-                const template = templates?.find(t => t.id === c.templateID);
-                return inEditor && currentTab === "edit" ? (
+            {defaultTemplate?.components?.map((tc, idx) => (
+              <Field
+                key={idx}
+                field={tc}
+                isActive={!!activeComponentIDs?.find(id => id === tc.id)}
+                dataID={dataset.dataID}
+                selectGroups={dataset.fieldGroups}
+                onUpdate={handleFieldUpdate}
+              />
+            )) ??
+              dataset.components?.map((c, idx) => {
+                if (c.type === "template") {
+                  const template = templates?.find(t => t.id === c.templateID);
+                  return inEditor && currentTab === "edit" ? (
+                    <Field
+                      key={idx}
+                      field={c}
+                      isActive={!!activeComponentIDs?.find(id => id === c.id)}
+                      dataID={dataset.dataID}
+                      editMode={inEditor && currentTab === "edit"}
+                      selectGroups={dataset.fieldGroups}
+                      onUpdate={handleFieldUpdate}
+                      onRemove={handleFieldRemove}
+                      onGroupsUpdate={handleGroupsUpdate(c.id)}
+                      onCurrentGroupChange={handleCurrentGroupChange}
+                    />
+                  ) : (
+                    template?.components?.map((tc, idx2) => (
+                      <Field
+                        key={idx2}
+                        field={tc}
+                        isActive={!!activeComponentIDs?.find(id => id === c.id)}
+                        dataID={dataset.dataID}
+                        selectGroups={dataset.fieldGroups}
+                        onUpdate={handleFieldUpdate}
+                        onRemove={handleFieldRemove}
+                        onCurrentGroupChange={handleCurrentGroupChange}
+                      />
+                    ))
+                  );
+                }
+                return (
                   <Field
                     key={idx}
                     field={c}
@@ -215,42 +262,14 @@ const DatasetCard: React.FC<Props> = ({
                     dataID={dataset.dataID}
                     editMode={inEditor && currentTab === "edit"}
                     selectGroups={dataset.fieldGroups}
+                    configData={dataset.config?.data}
                     onUpdate={handleFieldUpdate}
                     onRemove={handleFieldRemove}
                     onGroupsUpdate={handleGroupsUpdate(c.id)}
                     onCurrentGroupChange={handleCurrentGroupChange}
                   />
-                ) : (
-                  template?.components?.map((tc, idx2) => (
-                    <Field
-                      key={idx2}
-                      field={tc}
-                      isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                      dataID={dataset.dataID}
-                      selectGroups={dataset.fieldGroups}
-                      onUpdate={handleFieldUpdate}
-                      onRemove={handleFieldRemove}
-                      onCurrentGroupChange={handleCurrentGroupChange}
-                    />
-                  ))
                 );
-              }
-              return (
-                <Field
-                  key={idx}
-                  field={c}
-                  isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                  dataID={dataset.dataID}
-                  editMode={inEditor && currentTab === "edit"}
-                  selectGroups={dataset.fieldGroups}
-                  configData={dataset.config?.data}
-                  onUpdate={handleFieldUpdate}
-                  onRemove={handleFieldRemove}
-                  onGroupsUpdate={handleGroupsUpdate(c.id)}
-                  onCurrentGroupChange={handleCurrentGroupChange}
-                />
-              );
-            })}
+              })}
           </Content>
           {inEditor && currentTab === "edit" && (
             <>
