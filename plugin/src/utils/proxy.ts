@@ -19,12 +19,14 @@ const APPEARANCES = {
 export const proxyGTFS = (layer: any) => {
   const appearancesNeedNearFar = omit(APPEARANCES, "3dtiles", "resource", "raster", "model");
   const layerByAppearance = pick(layer, Object.keys(appearancesNeedNearFar));
+
+  const result: Record<string, any> = {};
   Object.keys(layerByAppearance).forEach(k => {
-    layerByAppearance[k].near = 1000;
+    result[k] = {
+      ...layerByAppearance[k],
+      near: 1000,
+    };
   });
 
-  return {
-    ...layer,
-    ...layerByAppearance,
-  };
+  return { ...layer, ...result };
 };
