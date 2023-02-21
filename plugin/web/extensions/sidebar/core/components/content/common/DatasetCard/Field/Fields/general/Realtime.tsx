@@ -1,10 +1,11 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon, Switch } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpdate }) => {
+const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpdate, dataID }) => {
   const [intervalInSecond, setIntervalValue] = useState<number>(value.updateInterval ?? 30);
   const [timer, setTimer] = useState<string>("00:00:00");
   const [enableUpdate, changeUpdateState] = useState<boolean>(true);
@@ -60,11 +61,35 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
     [intervalInSecond, onUpdate, startTimer, value],
   );
 
+  const propagateRealTimeToLayer = useCallback(() => {
+    if (enableUpdate) {
+      postMsg({
+        action: "updateInterval",
+        payload: {
+          dataID,
+          interval: intervalInSecond * 1000, // to ms
+        },
+      });
+    } else {
+      postMsg({
+        action: "updateInterval",
+        payload: {
+          dataID,
+          interval: undefined, // to ms
+        },
+      });
+    }
+  }, [intervalInSecond, dataID, enableUpdate]);
+
   useEffect(() => {
     if (enableUpdate) {
       startTimer(intervalInSecond);
     } else clearTimer();
   }, [clearTimer, enableUpdate, intervalInSecond, startTimer]);
+
+  useEffect(() => {
+    propagateRealTimeToLayer();
+  }, [propagateRealTimeToLayer, enableUpdate]);
 
   return editMode ? (
     <Wrapper>
