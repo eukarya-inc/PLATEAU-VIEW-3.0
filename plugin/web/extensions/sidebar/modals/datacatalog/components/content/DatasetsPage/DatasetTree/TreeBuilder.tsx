@@ -85,7 +85,7 @@ const TreeBuilder: React.FC<Props> = ({
         <File
           item={catalogItem}
           isMobile={isMobile}
-          nestLevel={nestLevel + 1}
+          nestLevel={nestLevel}
           selectedID={selectedID}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}

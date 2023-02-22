@@ -89,6 +89,7 @@ const StyledButton = styled.button`
 
 const ButtonText = styled.p`
   margin: 0;
+  user-select: none;
 `;
 
 const StyledIcon = styled(Icon)`

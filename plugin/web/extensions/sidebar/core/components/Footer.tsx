@@ -34,6 +34,7 @@ const FooterBan = styled.div`
 
 const Text = styled.p`
   margin: 0;
+  user-select: none;
 `;
 
 const RemoveBtn = styled.button`

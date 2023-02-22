@@ -171,6 +171,12 @@ export default () => {
       const updatedDatasets = [...selectedDatasets];
       const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === updatedDataset.dataID);
       if (datasetIndex >= 0) {
+        if (updatedDatasets[datasetIndex].visible !== updatedDataset.visible) {
+          postMsg({
+            action: "updateDatasetVisibility",
+            payload: { dataID: updatedDataset.dataID, hide: !updatedDataset.visible },
+          });
+        }
         updatedDatasets[datasetIndex] = updatedDataset;
       }
       return updatedDatasets;
@@ -552,6 +558,7 @@ const newItem = (ri: RawDataCatalogItem): DataCatalogItem => {
     ...ri,
     dataID: ri.id,
     public: false,
+    visible: true,
     fieldGroups: [{ id: generateID(), name: "グループ1" }],
   };
 };

@@ -192,22 +192,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   } else if (action === "updateCatalog") {
     dataCatalog = payload;
     reearth.modal.postMessage({ action, payload });
-    // reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
-    //   draftProject.datasets.forEach(d => {
-    //     const dataset = payload.find((d: DataCatalogItem) => d.dataID === d.dataID);
-    //     if (addedDatasets.find(ad => ad[0] === d.dataID)) {
-    //       const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataset.dataID);
-    //       if (addedDatasets[idx][1] !== "showing") {
-    //         addedDatasets[idx][1] = "showing";
-    //         reearth.layers.show(addedDatasets[idx][2]);
-    //       }
-    //     } else {
-    //       const data = createLayer(dataset ?? {});
-    //       const layerID = reearth.layers.add(data);
-    //       addedDatasets.push([d.dataID, d.visible ? "showing" : "hidden", layerID]);
-    //     }
-    //   });
-    // });
   } else if (action === "updateProject") {
     reearth.visualizer.overrideProperty(payload.sceneOverrides);
     reearth.clientStorage.setAsync("draftProject", payload);
@@ -219,7 +203,11 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     } else {
       const data = createLayer(payload.dataset, payload.updates);
       const layerID = reearth.layers.add(data);
-      addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
+      const idx = addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
+      if (!payload.dataset.visible) {
+        reearth.layers.hide(addedDatasets[idx][2]);
+        addedDatasets[idx][1] = "hidden";
+      }
     }
   } else if (action === "updateDatasetInScene") {
     const layerId = addedDatasets.find(ad => ad[0] === payload.dataID)?.[2];
@@ -228,6 +216,15 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       addedDatasets.find(ad => ad[0] === payload.dataID)?.[2],
       layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
     );
+  } else if (action === "updateDatasetVisibility") {
+    const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataID);
+    if (payload.hide) {
+      reearth.layers.hide(addedDatasets[idx][2]);
+      addedDatasets[idx][1] = "hidden";
+    } else {
+      reearth.layers.show(addedDatasets[idx][2]);
+      addedDatasets[idx][1] = "showing";
+    }
   } else if (action === "removeDatasetFromScene") {
     reearth.layers.delete(addedDatasets.find(ad => ad[0] === payload)?.[2]);
     const idx = addedDatasets.findIndex(ad => ad[0] === payload);
@@ -662,19 +659,27 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
         format === "mvt" ? dataset.config?.data?.[0].layers?.[0] ?? dataset.layers?.[0] : undefined,
     },
     visible: true,
-    infobox: {
-      blocks: [
-        {
-          pluginId: reearth.plugins.instances.find(
-            (i: PluginExtensionInstance) => i.name === "plateau-plugin",
-          ).pluginId,
-          extensionId: "infobox",
-        },
-      ],
-      property: {
-        default: { bgcolor: "#d9d9d9ff", heightType: "auto", showTitle: false, size: "medium" },
-      },
-    },
+    infobox:
+      format === "3dtiles"
+        ? {
+            blocks: [
+              {
+                pluginId: reearth.plugins.instances.find(
+                  (i: PluginExtensionInstance) => i.name === "plateau-plugin",
+                ).pluginId,
+                extensionId: "infobox",
+              },
+            ],
+            property: {
+              default: {
+                bgcolor: "#d9d9d9ff",
+                heightType: "auto",
+                showTitle: false,
+                size: "medium",
+              },
+            },
+          }
+        : null,
     ...(options
       ? options
       : format === "geojson"

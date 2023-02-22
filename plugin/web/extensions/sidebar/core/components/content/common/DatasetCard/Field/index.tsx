@@ -172,6 +172,7 @@ const BodyWrapper = styled(AccordionItemPanel)`
 
 const Title = styled.p`
   margin: 0;
+  user-select: none;
 `;
 
 const StyledIcon = styled(Icon)`

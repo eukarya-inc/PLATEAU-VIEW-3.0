@@ -213,16 +213,25 @@ const DatasetCard: React.FC<Props> = ({
                 {field.title && <FieldName>{field.title}</FieldName>}
               </BaseField>
             ))}
-            {defaultTemplate?.components?.map((tc, idx) => (
-              <Field
-                key={idx}
-                field={tc}
-                isActive={!!activeComponentIDs?.find(id => id === tc.id)}
-                dataID={dataset.dataID}
-                selectGroups={dataset.fieldGroups}
-                onUpdate={handleFieldUpdate}
-              />
-            )) ??
+            {dataset.openDataUrl && (
+              <OpenDataButton
+                onClick={() => window.open(dataset.openDataUrl, "_blank", "noopener")}>
+                <Text>オープンデータを入手</Text>
+              </OpenDataButton>
+            )}
+            {defaultTemplate?.components?.map((tc, idx) => {
+              if (currentTab === "edit") return;
+              return (
+                <Field
+                  key={idx}
+                  field={tc}
+                  isActive={!!activeComponentIDs?.find(id => id === tc.id)}
+                  dataID={dataset.dataID}
+                  selectGroups={dataset.fieldGroups}
+                  onUpdate={handleFieldUpdate}
+                />
+              );
+            }) ??
               dataset.components?.map((c, idx) => {
                 if (c.type === "template") {
                   const template = templates?.find(t => t.id === c.templateID);
@@ -338,6 +347,7 @@ const Title = styled.p`
   overflow: hidden;
   width: 250px;
   white-space: nowrap;
+  user-select: none;
 `;
 
 const Content = styled.div`
@@ -372,6 +382,7 @@ const ArrowIcon = styled(Icon)<{ expanded?: boolean }>`
 
 const FieldName = styled.p`
   margin: 0;
+  user-select: none;
 `;
 
 const TabWrapper = styled.div`
@@ -388,6 +399,7 @@ const Tab = styled.p<{ selected?: boolean }>`
   border-bottom-color: ${({ selected }) => (selected ? "#1890FF" : "transparent")};
   color: ${({ selected }) => (selected ? "#1890FF" : "inherit")};
   cursor: pointer;
+  user-select: none;
 `;
 
 const StyledAddButton = styled(AddButton)`
@@ -415,14 +427,17 @@ const SaveButton = styled.div`
 const Text = styled.p`
   margin: 0;
   line-height: 15px;
+  user-select: none;
 `;
 
-// const StyledDropdownButton = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   width: 100%;
-//   align-content: center;
-//   padding: 0 16px;
-//   cursor: pointer;
-// `;
+const OpenDataButton = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 38px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+  cursor: pointer;
+`;
