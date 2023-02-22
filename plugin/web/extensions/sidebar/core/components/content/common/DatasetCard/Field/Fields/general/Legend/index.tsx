@@ -4,7 +4,9 @@ import { Icon, Dropdown, Menu } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { BaseFieldProps, LegendItem, LegendStyleType } from "../types";
+import { BaseFieldProps, LegendItem, LegendStyleType } from "../../types";
+
+import LegendItemComponent from "./LegendItem";
 
 const legendStyles: { [key: string]: string } = {
   square: "四角",
@@ -94,47 +96,18 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
     [onUpdate],
   );
 
-  const handleURLChange = useCallback(
-    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateLegend(l => {
-        if (!l.items) return l;
-        const newItems = l.items;
-        newItems[idx].url = e.currentTarget.value;
-        const newLegend = { ...l, items: newItems };
-        onUpdate(newLegend);
-        return newLegend;
-      });
-    },
-    [onUpdate],
-  );
-
-  const handleColorChange = useCallback(
-    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateLegend(l => {
-        if (!l.items) return l;
-        const newItems = l.items;
-        newItems[idx].color = e.currentTarget.value;
-        const newLegend = { ...l, items: newItems };
-        onUpdate(newLegend);
-        return newLegend;
-      });
-    },
-    [onUpdate],
-  );
-
-  const handleTitleChange = useCallback(
-    (idx: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      updateLegend(l => {
-        if (!l.items) return l;
-        const newItems = l.items;
-        newItems[idx].title = e.currentTarget.value;
-        const newLegend = { ...l, items: newItems };
-        onUpdate(newLegend);
-        return newLegend;
-      });
-    },
-    [onUpdate],
-  );
+  const handleItemUpdate = (item: LegendItem, index: number) => {
+    updateLegend(l => {
+      const newLegendsItems = [...(l.items ?? [])];
+      newLegendsItems.splice(index, 1, item);
+      const newLegend = {
+        ...value,
+        items: newLegendsItems,
+      };
+      onUpdate(newLegend);
+      return newLegend;
+    });
+  };
 
   const menu = (
     <Menu
@@ -166,34 +139,16 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
       </Field>
       <AddButton text="項目" onClick={handleAdd} />
       {legend.items?.map((item, idx) => (
-        <Item key={idx}>
-          <ItemControls>
-            <Icon icon="arrowUpThin" size={16} onClick={() => handleMoveUp(idx)} />
-            <Icon icon="arrowDownThin" size={16} onClick={() => handleMoveDown(idx)} />
-            <Icon icon="trash" size={16} onClick={() => handleRemove(idx)} />
-          </ItemControls>
-          {legend.style === "icon" && (
-            <Field>
-              <FieldTitle>URL</FieldTitle>
-              <FieldValue>
-                <TextInput defaultValue={item.url} onChange={handleURLChange(idx)} />
-              </FieldValue>
-            </Field>
-          )}
-          <Field>
-            <FieldTitle>色</FieldTitle>
-            <FieldValue>
-              <ColorBlock color={item.color} />
-              <TextInput defaultValue={item.color} onChange={handleColorChange(idx)} />
-            </FieldValue>
-          </Field>
-          <Field>
-            <FieldTitle>タイトル</FieldTitle>
-            <FieldValue>
-              <TextInput defaultValue={item.title} onChange={handleTitleChange(idx)} />
-            </FieldValue>
-          </Field>
-        </Item>
+        <LegendItemComponent
+          key={idx}
+          index={idx}
+          item={item}
+          legendStyle={legend.style}
+          handleMoveDown={handleMoveDown}
+          handleMoveUp={handleMoveUp}
+          handleRemove={handleRemove}
+          onItemUpdate={handleItemUpdate}
+        />
       ))}
     </Wrapper>
   ) : (
@@ -234,22 +189,6 @@ const Text = styled.p`
   margin: 0;
 `;
 
-const Item = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 1px solid #d9d9d9;
-  border-radius: 2px;
-  padding: 8px;
-`;
-
-const ItemControls = styled.div`
-  display: flex;
-  justify-content: right;
-  gap: 4px;
-  cursor: pointer;
-`;
-
 const Field = styled.div<{ gap?: number }>`
   display: flex;
   align-items: center;
@@ -268,19 +207,6 @@ const FieldValue = styled.div`
   flex: 1;
   height: 100%;
   width: 100%;
-`;
-
-const TextInput = styled.input.attrs({ type: "text" })`
-  height: 100%;
-  width: 100%;
-  flex: 1;
-  padding: 0 12px;
-  border: none;
-  outline: none;
-
-  :focus {
-    border: none;
-  }
 `;
 
 const ColorBlock = styled.div<{ color: string; legendStyle?: "circle" | "square" | "line" }>`
