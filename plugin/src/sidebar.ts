@@ -585,6 +585,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
     data: {
       type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
+      layers:
+        format === "mvt" ? dataset.config?.data?.[0].layers?.[0] ?? dataset.layers?.[0] : undefined,
     },
     visible: true,
     infobox: {
@@ -603,18 +605,16 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       ? options
       : format === "geojson"
       ? {
-          marker: {
-            style: "point",
-            // pointOutlineColor: "red",
-            // pointOutlineWidth: 6,
-            // label: true,
-            // labelText: "SOME TEXT",
-            // labelPosition: "right",
-            // labelBackground: true,
-          },
+          marker: {},
         }
       : format === "gtfs"
       ? proxyGTFS(options)
+      : format === "mvt"
+      ? {
+          polygon: {},
+        }
+      : format === "czml"
+      ? { resource: {} }
       : { ...(options ?? {}) }),
   };
 }

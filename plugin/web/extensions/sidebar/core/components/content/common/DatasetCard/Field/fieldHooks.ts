@@ -194,21 +194,23 @@ export default ({
 
   const TemplateFields: FieldDropdownItem | undefined = useMemo(
     () =>
-      templates
-        ?.map(t => {
-          return {
-            [`template-${t.id}`]: {
-              name: t.name,
-              onClick: onFieldAdd({
-                templateID: t.id,
-                name: t.name,
-              }),
-            },
-          };
-        })
-        .reduce((acc, field) => {
-          return { ...acc, ...field };
-        }),
+      templates?.length
+        ? templates
+            .map(t => {
+              return {
+                [`template-${t.id}`]: {
+                  name: t.name,
+                  onClick: onFieldAdd({
+                    templateID: t.id,
+                    name: t.name,
+                  }),
+                },
+              };
+            })
+            .reduce((acc, field) => {
+              return { ...acc, ...field };
+            })
+        : undefined,
     [templates, onFieldAdd],
   );
 
