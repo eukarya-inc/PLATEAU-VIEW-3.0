@@ -57,7 +57,11 @@ type ActionType =
   | "update3dtilesShadow"
   | "reset3dtilesShadow"
   | "updateInterval"
-  | "updateTimeBasedDisplay";
+  | "updateTimeBasedDisplay"
+  | "updatePointCSV"
+  | "resetPointCSV";
+// FIXME(@keiya01): support auto csv field complement
+// | "getLocationNamesFromCSVFeatureProperty"
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 

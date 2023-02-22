@@ -17,6 +17,7 @@ import SwitchGroup from "./general/SwitchGroup";
 import Timeline from "./general/Timeline";
 import PointColor from "./point/PointColor";
 import PointColorGradient from "./point/PointColorGradient";
+import PointCSV from "./point/PointCSV";
 import PointIcon from "./point/PointIcon";
 import PointLabel from "./point/PointLabel";
 import PointModel from "./point/PointModel";
@@ -53,6 +54,7 @@ const fields: Fields<FieldComponent> = {
   pointLabel: { Component: PointLabel, hasUI: false },
   pointModel: { Component: PointModel, hasUI: false },
   pointStroke: { Component: PointStroke, hasUI: false },
+  pointCSV: { Component: PointCSV, hasUI: false },
   // polyline
   polylineColor: { Component: PolylineColor, hasUI: false },
   polylineColorGradient: { Component: PolylineColorGradient, hasUI: false },

@@ -18,6 +18,7 @@ export const fieldName = {
   pointLabel: "ラベル",
   pointModel: "モデル",
   pointStroke: "ストロック",
+  pointCSV: "ポイントに変換（CSV）",
   search: "データを検索",
   polygonColor: "ポリゴン色",
   polygonColorGradient: "ポリゴン色（Gradient）",
@@ -51,6 +52,7 @@ export type FieldComponent =
   | PointLabel
   | PointModel
   | PointStroke
+  | PointCSV
   | Search
   | PolylineColor
   | PolylineColorGradient
@@ -196,6 +198,12 @@ type PointStroke = FieldBase<"pointStroke"> & {
   }[];
 };
 
+type PointCSV = FieldBase<"pointCSV"> & {
+  lng?: string;
+  lat?: string;
+  height?: string;
+};
+
 type Search = FieldBase<"search">;
 
 type PolygonColor = FieldBase<"polygonColor"> & {
@@ -282,6 +290,7 @@ export type Fields = {
   pointLabel: PointLabel;
   pointModel: PointModel;
   pointStroke: PointStroke;
+  pointCSV: PointCSV;
   // polyline
   polylineColor: PolylineColor;
   polylineColorGradient: PolylineColorGradient;

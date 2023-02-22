@@ -368,6 +368,41 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   }
 
+  // CSV
+  if (action === "updatePointCSV") {
+    const { dataID, lng, lat, height } = payload;
+    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
+    reearth.layers.override(layerId, {
+      data: {
+        csv: {
+          lngColumn: lng,
+          latColumn: lat,
+          heightColumn: height,
+        },
+      },
+    });
+  } else if (action === "resetPointCSV") {
+    const { dataID } = payload;
+    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
+    reearth.layers.override(layerId, {
+      data: {
+        csv: undefined,
+      },
+    });
+  }
+  // FIXME(@keiya01): support auto csv field complement
+  // else if (action === "getLocationNamesFromCSVFeatureProperty") {
+  // const { dataID } = payload;
+  // const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
+  // const layer = reearth.layers.findById(layerId);
+  // reearth.ui.postMessage({
+  //   action,
+  //   locationNames: getLocationNamesFromFeatureProperties({
+  //     ...(layer.computed?.features[0] || {}),
+  //   }),
+  // });
+  // }
+
   // ************************************************
   // For 3dtiles
   if (action === "findTileset") {
