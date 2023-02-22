@@ -44,6 +44,7 @@ const defaultProject: Project = {
         tile_type: "url",
       },
     ],
+    atmosphere: { shadows: true },
   },
   datasets: [],
 };
