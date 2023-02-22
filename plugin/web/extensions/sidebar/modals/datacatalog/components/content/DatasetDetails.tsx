@@ -8,6 +8,7 @@ export type Props = {
   dataset: DataCatalogItem | UserDataItem;
   isShareable?: boolean;
   addDisabled: boolean;
+  inEditor?: boolean;
   contentSection?: ComponentType;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
   onDatasetPublish?: (dataID: string, publish: boolean) => void;
@@ -19,6 +20,7 @@ const DatasetDetails: React.FC<Props> = ({
   dataset,
   isShareable,
   addDisabled,
+  inEditor,
   contentSection: ContentSection,
   onDatasetAdd,
   onDatasetPublish,
@@ -39,7 +41,7 @@ const DatasetDetails: React.FC<Props> = ({
       <TopWrapper>
         <HeaderWrapper>
           <Title>{dataset.name}</Title>
-          {"dataID" in dataset && (
+          {"dataID" in dataset && inEditor && (
             <PublishButton
               published={(dataset as DataCatalogItem).public}
               onClick={handleDatasetPublish}>

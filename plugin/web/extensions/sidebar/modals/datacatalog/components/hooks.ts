@@ -9,6 +9,7 @@ export default () => {
   const [currentTab, changeTabs] = useState<Tab>("dataset");
   const [addedDatasetDataIDs, setAddedDatasetDataIDs] = useState<string[]>();
   const [catalog, setCatalog] = useState<DataCatalogItem[]>([]);
+  const [inEditor, setEditorState] = useState(false);
 
   const handleClose = useCallback(() => {
     postMsg({ action: "modalClose" });
@@ -41,6 +42,7 @@ export default () => {
       if (e.data.action === "initDataCatalog") {
         setAddedDatasetDataIDs(e.data.payload.addedDatasets);
         setCatalog(e.data.payload.dataCatalog);
+        setEditorState(e.data.payload.inEditor);
       } else if (e.data.action === "updateCatalog") {
         setCatalog(e.data.payload);
       }
@@ -55,6 +57,7 @@ export default () => {
     currentTab,
     catalog,
     addedDatasetDataIDs,
+    inEditor,
     handleClose,
     handleTabChange: changeTabs,
     handleDatasetAdd,

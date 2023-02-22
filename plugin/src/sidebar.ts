@@ -265,6 +265,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload: {
         dataCatalog,
         addedDatasets: addedDatasets.map(d => d[0]),
+        inEditor: reearth.scene.inEditor,
       },
     });
   } else if (action === "helpPopupOpen") {

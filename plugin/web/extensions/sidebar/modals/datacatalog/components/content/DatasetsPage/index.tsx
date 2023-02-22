@@ -11,6 +11,7 @@ import DatasetDetails, { Tag } from "./Details";
 export type Props = {
   catalog?: DataCatalogItem[];
   addedDatasetDataIDs?: string[];
+  inEditor?: boolean;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
   onDatasetPublish: (dataID: string, publish: boolean) => void;
 };
@@ -18,6 +19,7 @@ export type Props = {
 const DatasetsPage: React.FC<Props> = ({
   catalog,
   addedDatasetDataIDs,
+  inEditor,
   onDatasetAdd,
   onDatasetPublish,
 }) => {
@@ -74,6 +76,7 @@ const DatasetsPage: React.FC<Props> = ({
       right={
         <DatasetDetails
           dataset={selectedDataset}
+          inEditor={inEditor}
           addDisabled={addDisabled}
           onTagSelect={handleTagSelect}
           onDatasetAdd={onDatasetAdd}
