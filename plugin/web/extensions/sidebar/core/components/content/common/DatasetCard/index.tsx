@@ -151,7 +151,7 @@ const DatasetCard: React.FC<Props> = ({
   }, []);
 
   const defaultTemplate = useMemo(() => {
-    const t = templates?.find(t => t.name === dataset.type); // Should we do a check for type2 here, too??
+    const t = templates?.find(t => t.name === dataset.type || t.name === dataset.type2);
     if (t && !dataset.components?.length) {
       return t;
     }
