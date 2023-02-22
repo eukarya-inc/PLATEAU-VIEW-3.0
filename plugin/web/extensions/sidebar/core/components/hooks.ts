@@ -116,15 +116,10 @@ export default () => {
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
       updateProject(project => {
-        if (!("dataID" in dataset)) {
-          postMsg({ action: "addDatasetToScene", payload: { dataset } });
-          return project;
-        }
-
         let dataToAdd = data?.find(d => d.dataID === dataset.dataID);
 
         if (!dataToAdd) {
-          dataToAdd = convertToData(dataset);
+          dataToAdd = convertToData(dataset as DataCatalogItem);
         }
 
         const updatedProject: Project = {
@@ -133,7 +128,7 @@ export default () => {
         };
 
         postMsg({ action: "updateProject", payload: updatedProject });
-        setSelectedDatasets(sds => [...sds, dataset]);
+        setSelectedDatasets(sds => [...sds, dataset as DataCatalogItem]);
 
         return updatedProject;
       });

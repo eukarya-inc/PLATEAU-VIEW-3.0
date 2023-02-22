@@ -1,6 +1,6 @@
 import { Select } from "@web/sharedComponents";
 
-export const fileFormats = ".kml,.kmz,.csv,.czml,.gpx,.geojson,.json,.zip";
+export const fileFormats = ".kml,.csv,.czml,.gpx,.geojson,.georss,.shapefile,.zip";
 
 export type FileType =
   | "auto"
@@ -9,7 +9,7 @@ export type FileType =
   | "csv"
   | "czml"
   | "gpx"
-  | "json"
+  // | "json"
   | "georss"
   | "shapefile";
 
@@ -43,10 +43,10 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
       value: "gpx",
       label: "GPX",
     },
-    {
-      value: "json",
-      label: "JSON",
-    },
+    // {
+    //   value: "json",
+    //   label: "JSON",
+    // },
     {
       value: "georss",
       label: "GeoRSS",

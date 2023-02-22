@@ -578,7 +578,7 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
 });
 
 function createLayer(dataset: DataCatalogItem, options?: any) {
-  const format = dataset.format.toLowerCase();
+  const format = dataset.format?.toLowerCase();
   return {
     type: "simple",
     title: dataset.name,

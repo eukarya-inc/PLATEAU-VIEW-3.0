@@ -6,7 +6,7 @@ import Upload, { UploadProps, UploadFile } from "@web/sharedComponents/Upload";
 import { RcFile } from "antd/lib/upload";
 import { useCallback, useMemo, useState } from "react";
 
-import FileTypeSelect, { fileFormats, FileType } from "./FileTypeSelect";
+import FileTypeSelect, { fileFormats, FileType } from "./LocalFileTypeSelect";
 
 type Props = {
   onOpenDetails?: (data?: UserDataItem) => void;
@@ -26,8 +26,18 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
     if (type === "auto") {
       // more exceptions will be added in the future
       switch (extension) {
-        case "kmz":
-          return "kml";
+        // 3dtiles
+        case "json":
+          return "json";
+        // georss
+        case "rss":
+          return "rss";
+        // georss
+        case "xml":
+          return "xml";
+        // shapefile
+        case "zip":
+          return "zip";
         default:
           return extension;
       }
@@ -37,29 +47,34 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
 
   const beforeUpload = useCallback(
     (file: RcFile, files: RcFile[]) => {
-      // Catalog Item
-      const filename = file.name;
-      const id = "id" + Math.random().toString(16).slice(2);
-      const url = URL.createObjectURL(file);
-      const item: UserDataItem = {
-        type: "item",
-        id: id,
-        description:
-          "This file only exists in your browser. To share it, you must load it onto a public web server.",
-        name: filename,
-        dataUrl: url,
-        dataFormat: setDataFormat(fileType, filename),
-      };
-      if (onOpenDetails) onOpenDetails(item);
-      if (setSelectedLocalItem) setSelectedLocalItem(item);
+      const reader = new FileReader();
+      reader.addEventListener(
+        "load",
+        () => {
+          // convert image file to base64 string
+          // Catalog Item
+          const filename = file.name;
+          const id = "id" + Math.random().toString(16).slice(2);
+          const url = reader.result?.toString();
+          const item: UserDataItem = {
+            type: "item",
+            id: id,
+            dataID: id,
+            description:
+              "This file only exists in your browser. To share it, you must load it onto a public web server.",
+            name: filename,
+            url: url,
+            format: setDataFormat(fileType, filename),
+          };
+          if (onOpenDetails) onOpenDetails(item);
+          if (setSelectedLocalItem) setSelectedLocalItem(item);
+        },
+        false,
+      );
 
-      // Raw Data
-      // const reader = new FileReader();
-      // reader.readAsText(file);
-      // let data;
-      // reader.onload = e => {
-      //   data = e?.target?.result;
-      // };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
 
       setFileList([...files]);
       return false;

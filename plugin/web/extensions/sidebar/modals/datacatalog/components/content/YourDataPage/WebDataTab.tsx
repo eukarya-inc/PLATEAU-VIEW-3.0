@@ -3,7 +3,7 @@ import { getExtension } from "@web/extensions/sidebar/utils/file";
 import { Input, Form, Button } from "@web/sharedComponents";
 import { useCallback, useState } from "react";
 
-import FileTypeSelect, { FileType } from "./FileTypeSelect";
+import WebFileTypeSelect, { FileType } from "./WebFileTypeSelect";
 
 type Props = {
   onOpenDetails?: (data?: UserDataItem) => void;
@@ -30,8 +30,15 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
     if (type === "auto") {
       // more exceptions will be added in the future
       switch (extension) {
-        case "kmz":
-          return "kml";
+        // georss
+        case "rss":
+          return "rss";
+        // georss
+        case "xml":
+          return "xml";
+        // shapefile
+        case "zip":
+          return "zip";
         default:
           return extension;
       }
@@ -48,17 +55,15 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
       const item: UserDataItem = {
         type: "item",
         id: id,
+        dataID: id,
         description:
           "Please contact the provider of this data for more information, including information about usage rights and constraints.",
         name: filename,
-        dataUrl: dataUrl,
-        dataFormat: setDataFormat(fileType, filename),
+        url: dataUrl,
+        format: setDataFormat(fileType, filename),
       };
       if (onOpenDetails) onOpenDetails(item);
       if (setSelectedWebItem) setSelectedWebItem(item);
-
-      // Raw Data
-      // const data = await result.text();
     }
   }, [dataUrl, fetchDataFromUrl, fileType, onOpenDetails, setDataFormat, setSelectedWebItem]);
 
@@ -69,7 +74,7 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
   return (
     <Form layout="vertical">
       <Form.Item name="file-type" label="Select file type">
-        <FileTypeSelect onFileTypeSelect={handleFileTypeSelect} />
+        <WebFileTypeSelect onFileTypeSelect={handleFileTypeSelect} />
       </Form.Item>
       <Form.Item
         name="url"

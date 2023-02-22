@@ -1,11 +1,5 @@
-export type UserDataItem = {
-  type: string;
-  id: string;
-  name?: string;
-  prefecture?: string;
-  cityName?: string;
+import { DataCatalogItem } from "./api/api";
+
+export type UserDataItem = Partial<DataCatalogItem> & {
   description?: string;
-  data?: string;
-  dataUrl?: string;
-  dataFormat?: string;
 };
