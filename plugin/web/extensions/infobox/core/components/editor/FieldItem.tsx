@@ -1,19 +1,20 @@
-import type { PublicProperty } from "@web/extensions/infobox/types";
+import type { Field } from "@web/extensions/infobox/types";
 import { Icon, Checkbox } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import type { Identifier, XYCoord } from "dnd-core";
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 
-export type PropertyItem = PublicProperty & {
+export type FieldItem = Field & {
   value?: any;
 };
 
 type Props = {
   id: string;
   index: number;
-  property: PropertyItem;
+  field: FieldItem;
   onCheckChange: (e: any) => void;
+  onTitleChange: (e: any) => void;
   moveProperty: (dragIndex: number, hoverIndex: number) => void;
 };
 
@@ -23,12 +24,19 @@ interface DragItem {
   type: string;
 }
 
-const PropertyItem: React.FC<Props> = ({ id, index, property, onCheckChange, moveProperty }) => {
+const FieldItem: React.FC<Props> = ({
+  id,
+  index,
+  field,
+  onCheckChange,
+  onTitleChange,
+  moveProperty,
+}) => {
   const dragRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const [{ isDragging }, drag, preview] = useDrag({
-    type: "propertyItem",
+    type: "FieldItem",
     item: () => {
       return { id, index };
     },
@@ -38,7 +46,7 @@ const PropertyItem: React.FC<Props> = ({ id, index, property, onCheckChange, mov
   });
 
   const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
-    accept: "propertyItem",
+    accept: "FieldItem",
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -81,7 +89,7 @@ const PropertyItem: React.FC<Props> = ({ id, index, property, onCheckChange, mov
 
   return (
     <StyledPropertyItem
-      disabled={property.hidden}
+      disabled={!field.visible}
       ref={previewRef}
       data-handler-id={handlerId}
       style={{ opacity }}>
@@ -89,18 +97,19 @@ const PropertyItem: React.FC<Props> = ({ id, index, property, onCheckChange, mov
         <DragHandle ref={dragRef}>
           <Icon icon="dotsSixVertical" size={16} />
         </DragHandle>
-        <StyledCheckbox
-          onChange={onCheckChange}
-          data-key={property.key}
-          checked={!property.hidden}
-        />
+        <StyledCheckbox onChange={onCheckChange} data-path={field.path} checked={field.visible} />
       </IconsWrapper>
       <ContentWrapper>
-        <JsonPath>{property.key}</JsonPath>
+        <JsonPath>{field.path}</JsonPath>
         <Title>
-          <TitleInput disabled={!!property.hidden} />
+          <TitleInput
+            onChange={onTitleChange}
+            data-path={field.path}
+            disabled={!field.visible}
+            value={field.title}
+          />
         </Title>
-        <Value>{property.value}</Value>
+        <Value>{field.value}</Value>
       </ContentWrapper>
     </StyledPropertyItem>
   );
@@ -163,4 +172,4 @@ const Value = styled.div`
   word-break: break-all;
 `;
 
-export default PropertyItem;
+export default FieldItem;

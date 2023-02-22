@@ -18,6 +18,7 @@ import Row from "@web/sharedComponents/Row";
 import Select from "@web/sharedComponents/Select";
 import Slider from "@web/sharedComponents/Slider";
 import Space from "@web/sharedComponents/Space";
+import Spin from "@web/sharedComponents/Spin";
 import Switch from "@web/sharedComponents/Switch";
 import Tabs from "@web/sharedComponents/Tabs";
 import Typography from "@web/sharedComponents/Typography";
@@ -48,4 +49,5 @@ export {
   Pagination,
   Collapse,
   Empty,
+  Spin,
 };

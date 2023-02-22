@@ -57,6 +57,8 @@ type ActionType =
   | "update3dtilesShadow"
   | "reset3dtilesShadow"
   | "updateInterval"
+  | "infoboxFieldsFetch"
+  | "infoboxFieldsSaved"
   | "updateTimeBasedDisplay"
   | "updatePointCSV"
   | "resetPointCSV";

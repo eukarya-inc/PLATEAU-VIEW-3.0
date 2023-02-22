@@ -1,92 +1,120 @@
-import type { Primitive, PublicSetting, PublicProperty } from "@web/extensions/infobox/types";
-import { Collapse, Button } from "@web/sharedComponents";
+import type { Field, Fields, Feature } from "@web/extensions/infobox/types";
+import { Button } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import update from "immutability-helper";
 import { useCallback, useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import type { PropertyItem as PropertyItemType } from "./PropertyItem";
-import PropertyItem from "./PropertyItem";
+import type { FieldItem as FieldItemType } from "./FieldItem";
+import PropertyItem from "./FieldItem";
 
 type Props = {
-  publicSetting: PublicSetting;
-  primitives: Primitive[];
-  savePublicSetting: (publicSetting: PublicSetting) => void;
+  fields: Fields;
+  feature?: Feature;
+  isSaving: boolean;
+  ready: boolean;
+  saveFields: (fields: Fields) => void;
+  updateSize: () => void;
 };
 
-const Editor: React.FC<Props> = ({ primitives, publicSetting, savePublicSetting, ...props }) => {
-  const [propertyList, setPropertyList] = useState<PropertyItemType[]>([]);
+const Editor: React.FC<Props> = ({ feature, fields, isSaving, ready, saveFields, updateSize }) => {
+  const [fieldList, setFieldList] = useState<FieldItemType[]>([]);
 
   useEffect(() => {
-    const proptyItems: PropertyItemType[] = [];
-    const primitive = primitives.findLast(p => p.type === publicSetting.type);
+    const fieldItems: FieldItemType[] = [];
 
-    if (!publicSetting || publicSetting.properties.length === 0) {
-      primitive?.properties.forEach(pp => {
-        proptyItems.push({
-          ...pp,
+    if (!fields?.fields || fields.fields?.length === 0) {
+      feature?.properties.forEach(fp => {
+        fieldItems.push({
+          title: "",
+          path: fp.key,
+          value: fp.value,
+          visible: true,
         });
       });
     } else {
-      publicSetting.properties.forEach(p => {
-        proptyItems.push({
-          ...p,
-          value: primitive?.properties.find(pp => pp.key === p.key)?.value,
+      const processedFields: string[] = [];
+      fields.fields.forEach(f => {
+        fieldItems.push({
+          ...f,
+          value: feature?.properties.find(fp => fp.key === f.path)?.value ?? "",
         });
+        processedFields.push(f.path);
       });
+      feature?.properties
+        .filter(fp => !processedFields.includes(fp.key))
+        .forEach(fp => {
+          fieldItems.push({
+            title: "",
+            path: fp.key,
+            value: fp.value,
+            visible: true,
+          });
+        });
     }
 
-    setPropertyList(proptyItems);
-  }, [primitives, publicSetting]);
+    setFieldList(fieldItems);
+  }, [feature, fields]);
 
   const onCheckChange = useCallback((e: any) => {
-    setPropertyList(list => {
-      const propertyItem = list.find(item => item.key === e.target["data-key"]);
-      if (propertyItem) {
-        propertyItem.hidden = !e.target.checked;
+    setFieldList(list => {
+      const fieldItem = list.find(item => item.path === e.target["data-path"]);
+      if (fieldItem) {
+        fieldItem.visible = !!e.target.checked;
+      }
+      return [...list];
+    });
+  }, []);
+
+  const onTitleChange = useCallback((e: any) => {
+    setFieldList(list => {
+      const fieldItem = list.find(item => item.path === e.target.dataset.path);
+      if (fieldItem) {
+        fieldItem.title = e.target.value;
       }
       return [...list];
     });
   }, []);
 
   const moveProperty = useCallback((dragIndex: number, hoverIndex: number) => {
-    setPropertyList((prevCards: PropertyItemType[]) =>
+    setFieldList((prevCards: FieldItemType[]) =>
       update(prevCards, {
         $splice: [
           [dragIndex, 1],
-          [hoverIndex, 0, prevCards[dragIndex] as PropertyItemType],
+          [hoverIndex, 0, prevCards[dragIndex] as FieldItemType],
         ],
       }),
     );
   }, []);
 
   const onSave = useCallback(() => {
-    const outputProperties: PublicProperty[] = [];
-    propertyList.forEach(p => {
-      const property: PublicProperty = {
-        key: p.key,
-      };
-      if (p.title) property.title = p.title;
-      if (p.hidden) property.hidden = p.hidden;
-      outputProperties.push(property);
+    const outputFields: Field[] = [];
+    fieldList.forEach(f => {
+      outputFields.push({
+        path: f.path,
+        title: f.title,
+        visible: f.visible,
+      });
     });
-    savePublicSetting({
-      type: publicSetting.type,
-      properties: outputProperties,
+    saveFields({
+      ...fields,
+      fields: outputFields,
     });
-  }, [propertyList, publicSetting, savePublicSetting]);
+  }, [fieldList, fields, saveFields]);
+
+  useEffect(() => {
+    updateSize();
+  }, [fieldList, updateSize]);
 
   return (
-    <StyledPanel
-      header={publicSetting.typeTitle}
-      key={publicSetting.type}
-      extra={
-        <StyledButton size="small" onClick={onSave}>
+    <StyledEditor ready={ready}>
+      <Header>
+        <EditorTitle>{fields.name}</EditorTitle>
+        <StyledButton size="small" onClick={onSave} loading={isSaving}>
           保存
         </StyledButton>
-      }
-      {...props}>
+      </Header>
       <Wrapper>
         <PropertyHeader>
           <IconsWrapper />
@@ -97,39 +125,56 @@ const Editor: React.FC<Props> = ({ primitives, publicSetting, savePublicSetting,
           </ContentWrapper>
         </PropertyHeader>
         <DndProvider backend={HTML5Backend}>
-          {propertyList.map((property, index) => (
+          {fieldList.map((field, index) => (
             <PropertyItem
-              id={property.key}
+              id={field.path}
               index={index}
-              key={property.key}
-              property={property}
+              key={field.path}
+              field={field}
               onCheckChange={onCheckChange}
+              onTitleChange={onTitleChange}
               moveProperty={moveProperty}
             />
           ))}
         </DndProvider>
       </Wrapper>
-    </StyledPanel>
+    </StyledEditor>
   );
 };
 
-const StyledPanel = styled(Collapse.Panel)`
+const StyledEditor = styled.div<{ ready: boolean }>`
   background: #f4f4f4;
   margin-bottom: 6px;
   box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.25);
   border-radius: 4px !important;
   overflow: hidden;
+  opacity: ${({ ready }) => (ready ? 1 : 0.2)};
+  transition: all 0.25s ease;
+`;
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 12px;
+`;
+
+const EditorTitle = styled.div`
+  font-size: 16px;
+  color: #000;
 `;
 
 const StyledButton = styled(Button)`
   border-radius: 4px;
-  margin-right: 10px;
 `;
 
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border-top: 1px solid #e0e0e0;
+  padding: 12px;
 `;
 
 const PropertyHeader = styled.div`

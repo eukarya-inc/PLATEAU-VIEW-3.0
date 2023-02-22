@@ -1,42 +1,32 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { postMsg } from "../core/utils";
-import { Primitive, PublicSetting } from "../types";
-
-import { TEST_SELECTED_LAYERS, TEST_PUBLIC_SETTINGS, TEST_LAYER_TYPES } from "./TEST_DATA";
+import { Feature, Fields } from "../types";
 
 type Mode = "edit" | "view" | "pending";
 
 export default () => {
   const [mode, setMode] = useState<Mode>("pending");
-  const [primitives, setPrimitives] = useState<Primitive[]>([]);
-  const [publicSettings, setPublicSettings] = useState<PublicSetting[]>([]);
-
-  useEffect(() => {
-    const allPrimitives: Primitive[] = [];
-    TEST_SELECTED_LAYERS.forEach(layer => {
-      layer.primitives.forEach(p => {
-        allPrimitives.push({
-          type: TEST_LAYER_TYPES.find(lt => lt.layerId === layer.id)?.tilesType,
-          ...p,
-        });
-      });
-    });
-    setPrimitives(allPrimitives); // DEV ONLY
-    setPublicSettings(TEST_PUBLIC_SETTINGS); // DEV ONLY
-    setMode("edit"); // DEV ONLY
-  }, []);
+  const [dataState, setDataState] = useState<"loading" | "empty" | "ready">("loading");
+  const [feature, setFeature] = useState<Feature>();
+  const [fields, setFields] = useState<Fields>();
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleInEditor = useCallback((inEditor: boolean) => {
     setMode(inEditor ? "edit" : "view");
   }, []);
 
-  useEffect(() => {
-    postMsg("getInEditor");
+  const handleFillData = useCallback((data: { feature: Feature; fields: Fields }) => {
+    setFeature(data.feature);
+    if (data.fields) {
+      setFields(data.fields);
+    }
+    setDataState("ready");
   }, []);
 
-  const savePublicSetting = useCallback((publicSetting: PublicSetting) => {
-    postMsg("savePublicSetting", publicSetting);
+  const saveFields = useCallback((fields: Fields) => {
+    setIsSaving(true);
+    postMsg("saveFields", fields);
   }, []);
 
   const onMessage = useCallback(
@@ -46,12 +36,31 @@ export default () => {
         case "getInEditor":
           handleInEditor(e.data.payload);
           break;
+        case "fillData":
+          handleFillData(e.data.payload);
+          break;
+        case "setLoading":
+          setDataState("loading");
+          break;
+        case "setEmpty":
+          setDataState("empty");
+          break;
+        case "saveFinish":
+          setIsSaving(false);
+          break;
         default:
           break;
       }
     },
-    [handleInEditor],
+    [handleInEditor, handleFillData],
   );
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const updateSize = useCallback(() => {
+    if (wrapperRef.current) {
+      document.documentElement.style.height = `${wrapperRef.current.clientHeight}px`;
+    }
+  }, []);
 
   useEffect(() => {
     addEventListener("message", onMessage);
@@ -60,10 +69,18 @@ export default () => {
     };
   }, [onMessage]);
 
+  useEffect(() => {
+    postMsg("init");
+  }, []);
+
   return {
     mode,
-    primitives,
-    publicSettings,
-    savePublicSetting,
+    dataState,
+    feature,
+    fields,
+    wrapperRef,
+    isSaving,
+    saveFields,
+    updateSize,
   };
 };

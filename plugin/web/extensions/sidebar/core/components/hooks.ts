@@ -64,7 +64,7 @@ export default () => {
 
     if (resData.templates) {
       setFieldTemplates(resData.templates.filter((t: Template) => t.type === "field"));
-      // TODO: send type "infobox" to the infobox block
+      setInfoboxTemplates(resData.templates.filter((t: Template) => t.type === "infobox"));
     }
     setData(resData.data);
   }, [backendURL]);
@@ -318,6 +318,90 @@ export default () => {
 
   // ****************************************
 
+  // Infobox
+  const [infoboxTemplates, setInfoboxTemplates] = useState<Template[]>([]);
+
+  const handleInfoboxTemplateAdd = useCallback(
+    async (template: Omit<Template, "id">) => {
+      if (!backendURL || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
+        headers: {
+          authorization: `Bearer ${backendAccessToken}`,
+        },
+        method: "POST",
+        body: JSON.stringify(template),
+      });
+      if (res.status !== 200) return;
+      const newTemplate = await res.json();
+      setInfoboxTemplates(t => [...t, newTemplate]);
+      return newTemplate as Template;
+    },
+    [backendURL, backendAccessToken],
+  );
+
+  const handleInfoboxTemplateSave = useCallback(
+    async (template: Template) => {
+      if (!backendURL || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.id}`, {
+        headers: {
+          authorization: `Bearer ${backendAccessToken}`,
+        },
+        method: "PATCH",
+        body: JSON.stringify(template),
+      });
+      if (res.status !== 200) return;
+      const updatedTemplate = await res.json();
+      setInfoboxTemplates(t => {
+        return t.map(t2 => {
+          if (t2.id === updatedTemplate.id) {
+            return updatedTemplate;
+          }
+          return t2;
+        });
+      });
+      postMsg({
+        action: "infoboxFieldsSaved",
+      });
+    },
+    [backendURL, backendAccessToken],
+  );
+
+  const handleInfoboxFieldsFetch = useCallback(
+    (dataID: string) => {
+      const name = catalogData?.find(d => d.id === dataID)?.type ?? "";
+      const fields = infoboxTemplates.find(ft => ft.type === "infobox" && ft.name === name) ?? {
+        id: "",
+        type: "infobox",
+        name,
+        fields: [],
+      };
+      postMsg({
+        action: "infoboxFieldsFetch",
+        payload: fields,
+      });
+    },
+    [catalogData, infoboxTemplates],
+  );
+  const handleInfoboxFieldsFetchRef = useRef<any>();
+  handleInfoboxFieldsFetchRef.current = handleInfoboxFieldsFetch;
+
+  const handleInfoboxFieldsSave = useCallback(
+    async (template: Template) => {
+      if (template.id) {
+        handleInfoboxTemplateSave(template);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...templateData } = template;
+        handleInfoboxTemplateAdd(templateData);
+      }
+    },
+    [handleInfoboxTemplateAdd, handleInfoboxTemplateSave],
+  );
+  const handleInfoboxFieldsSaveRef = useRef<any>();
+  handleInfoboxFieldsSaveRef.current = handleInfoboxFieldsSave;
+
+  // ****************************************
+
   useEffect(() => {
     const eventListenerCallback = (e: MessageEvent<any>) => {
       if (e.source !== parent) return;
@@ -344,6 +428,10 @@ export default () => {
         setCurrentPage("share");
       } else if (e.data.action === "storySaveData") {
         handleStorySaveData(e.data.payload);
+      } else if (e.data.action === "infoboxFieldsFetch") {
+        handleInfoboxFieldsFetchRef.current(e.data.payload);
+      } else if (e.data.action === "infoboxFieldsSave") {
+        handleInfoboxFieldsSaveRef.current(e.data.payload);
       }
     };
     addEventListener("message", eventListenerCallback);

@@ -41,7 +41,7 @@ export type Template = {
   components?: FieldComponent[];
 };
 
-type Field = {
+export type Field = {
   title: string;
   path: string;
   visible: boolean;

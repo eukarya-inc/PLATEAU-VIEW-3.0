@@ -1,7 +1,7 @@
 import {
   PostMessageProps,
   PluginExtensionInstance,
-  SavePublicSetting,
+  PluginMessage,
 } from "@web/extensions/infobox/types";
 
 import html from "../dist/web/infobox/core/index.html?raw";
@@ -19,18 +19,68 @@ const getSidebarId = () => {
 };
 getSidebarId();
 
+const infoboxFieldsFetch = () => {
+  getSidebarId();
+  if (!sidebarId) return;
+  reearth.plugins.postMessage(sidebarId, {
+    action: "infoboxFieldsFetch",
+  });
+};
+
 reearth.on("message", ({ action, payload }: PostMessageProps) => {
-  if (action === "getInEditor") {
+  if (action === "init") {
     reearth.ui.postMessage({
       action: "getInEditor",
       payload: reearth.scene.inEditor,
     });
-  } else if (action === "savePublicSetting") {
+    infoboxFieldsFetch();
+  } else if (action === "saveFields") {
     getSidebarId();
     if (!sidebarId) return;
     reearth.plugins.postMessage(sidebarId, {
-      action: "savePublicSetting",
+      action: "infoboxFieldsSave",
       payload,
-    } as SavePublicSetting);
+    });
   }
+});
+
+reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
+  if (pluginMessage.data.action === "infoboxFieldsFetch") {
+    if (reearth.layers.selectedFeature) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { attributes, ...rawProperties } = reearth.layers.selectedFeature.properties;
+      const properties: { key: string; value?: any }[] = [];
+      Object.keys(rawProperties).forEach(key => {
+        properties.push({
+          key,
+          value: rawProperties[key],
+        });
+      });
+      reearth.ui.postMessage({
+        action: "fillData",
+        payload: {
+          feature: {
+            properties,
+          },
+          fields: pluginMessage.data.payload,
+        },
+      });
+    } else {
+      reearth.ui.postMessage({
+        action: "setEmpty",
+      });
+    }
+  } else if (pluginMessage.data.action === "infoboxFieldsSaved") {
+    reearth.ui.postMessage({
+      action: "saveFinish",
+    });
+  }
+});
+
+reearth.on("select", () => {
+  infoboxFieldsFetch();
+
+  reearth.ui.postMessage({
+    action: "setLoading",
+  });
 });
