@@ -54,13 +54,11 @@ func main() {
 		}
 	}
 
-	if len(webhookHandlers) > 0 {
-		cmswebhook.Echo(
-			e.Group("/webhook"),
-			[]byte(conf.CMS_Webhook_Secret),
-			webhookHandlers...,
-		)
-	}
+	cmswebhook.Echo(
+		e.Group("/webhook"),
+		[]byte(conf.CMS_Webhook_Secret),
+		webhookHandlers...,
+	)
 
 	log.Infof("enabled services: %v", serviceNames)
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
