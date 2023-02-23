@@ -47,14 +47,14 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   if (pluginMessage.data.action === "infoboxFieldsFetch") {
     if (reearth.layers.selectedFeature) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { attributes, ...rawProperties } = reearth.layers.selectedFeature.properties;
       const properties: { key: string; value?: any }[] = [];
-      Object.keys(rawProperties).forEach(key => {
-        properties.push({
-          key,
-          value: rawProperties[key],
-        });
+      Object.entries(reearth.layers.selectedFeature.properties).forEach(([key, value]) => {
+        if (typeof value !== "object") {
+          properties.push({
+            key,
+            value,
+          });
+        }
       });
       reearth.ui.postMessage({
         action: "fillData",
