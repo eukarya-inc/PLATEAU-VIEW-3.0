@@ -113,6 +113,7 @@ type Realtime = FieldBase<"realtime"> & {
 
 export type Timeline = FieldBase<"timeline"> & {
   timeBasedDisplay: boolean;
+  timeFieldName: string;
 };
 
 export type Description = FieldBase<"description"> & {

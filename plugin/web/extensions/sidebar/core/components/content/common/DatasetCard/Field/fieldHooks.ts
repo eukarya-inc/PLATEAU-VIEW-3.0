@@ -49,7 +49,7 @@ export default ({
       },
       timeline: {
         name: fieldName["timeline"],
-        onClick: onFieldAdd({ timeBasedDisplay: true }),
+        onClick: onFieldAdd({ timeBasedDisplay: true, timeFieldName: "" }),
       },
       styleCode: {
         name: fieldName["styleCode"],

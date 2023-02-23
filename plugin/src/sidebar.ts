@@ -333,13 +333,13 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       },
     });
   } else if (action === "updateTimeBasedDisplay") {
-    const { dataID, timeBasedDisplay } = payload;
+    const { dataID, timeBasedDisplay, timeFieldName } = payload;
     const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
     if (timeBasedDisplay) {
       reearth.layers.override(layerId, {
         data: {
           time: {
-            property: "time",
+            property: timeFieldName,
             interval: 86400000,
           },
         },
