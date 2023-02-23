@@ -38,7 +38,7 @@ export const useBuildingFilter = ({
         basementFloor: options.basementFloor,
       });
     }
-  }, [options, dataID]);
+  }, [options.height, options.abovegroundFloor, options.basementFloor, dataID]);
 
   useEffect(() => {
     renderRef.current = render;

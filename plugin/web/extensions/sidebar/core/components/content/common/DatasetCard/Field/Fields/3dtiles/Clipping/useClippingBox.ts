@@ -35,7 +35,7 @@ export const useClippingBox = ({
       }
     };
     render();
-  }, [options, dataID]);
+  }, [options.aboveGroundOnly, options.direction, options.enabled, options.show, dataID]);
 };
 
 const reearth = (globalThis.parent as any).reearth;
