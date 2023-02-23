@@ -4,6 +4,7 @@ export const fieldName = {
   idealZoom: "カメラ",
   legend: "凡例",
   realtime: "リアルタイム",
+  story: "ストーリー",
   timeline: "タイムラインデータ",
   switchGroup: "スイッチグループ",
   buttonLink: "リンクボタン",
@@ -42,6 +43,8 @@ export type FieldComponent =
   | ButtonLink
   | Description
   | SwitchGroup
+  | ButtonLink
+  | Story
   | Realtime
   | Timeline
   | SwitchDataset
@@ -140,6 +143,16 @@ export type ButtonLink = FieldBase<"buttonLink"> & {
   title?: string;
   link?: string;
 };
+export type StoryItem = {
+  id: string;
+  title?: string;
+  scenes?: string;
+};
+
+export type Story = FieldBase<"story"> & {
+  stories?: StoryItem[];
+};
+
 // MAYBE POINT TYPE IS JUST TO CONCEPTUALIZE THE JSONNNN
 // type Point = {
 //   type: "point";
@@ -279,6 +292,7 @@ export type Fields = {
   styleCode: StyleCode;
   switchGroup: SwitchGroup;
   buttonLink: ButtonLink;
+  story: Story;
   realtime: Realtime;
   timeline: Timeline;
   switchDataset: SwitchDataset;

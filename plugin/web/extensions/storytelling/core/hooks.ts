@@ -6,7 +6,7 @@ import type {
   Scene,
   Viewport,
   StoryEdit,
-  StorySave,
+  StoryEditFinish,
   StoryDelete,
   StoryPlay,
   StoryCancelPlay,
@@ -68,12 +68,6 @@ export default () => {
         setMode(newMode);
         if (newMode === "editor") {
           setPlayerHeight(0);
-          if (storyId.current) {
-            postMsg("storyCancelPlay", {
-              id: storyId.current,
-            });
-            storyId.current = undefined;
-          }
         }
       }
     },
@@ -183,11 +177,16 @@ export default () => {
   }, []);
 
   // story
-  const storyId = useRef<string>();
+  const storyId = useRef<string | undefined>();
+  const curDataID = useRef<string | undefined>();
 
   const storyClear = useCallback(() => {
-    storyId.current = undefined;
     setScenes([]);
+  }, []);
+
+  const unlinkDatasetStory = useCallback(() => {
+    storyId.current = undefined;
+    curDataID.current = undefined;
   }, []);
 
   const storyShare = useCallback(() => {
@@ -196,14 +195,17 @@ export default () => {
 
   useEffect(() => {
     postMsg("storySaveData", {
+      id: storyId.current,
+      dataID: curDataID.current,
       scenes: JSON.stringify(scenes),
     });
   }, [scenes]);
 
   const handleStoryEdit = useCallback(
-    ({ id, scenes }: StoryEdit["payload"]) => {
+    ({ id, dataID, scenes }: StoryEdit["payload"]) => {
       handleSetMode("editor");
       storyId.current = id;
+      curDataID.current = dataID;
       setScenes(scenes ? JSON.parse(scenes) : []);
       if (minimized) {
         handleMinimize();
@@ -212,26 +214,28 @@ export default () => {
     [handleSetMode, minimized, handleMinimize],
   );
 
-  const handleStorySave = useCallback(
-    ({ id }: StorySave["payload"]) => {
-      postMsg("storySaveData", {
-        id,
-        scenes: JSON.stringify(scenes),
-      });
+  const handleStoryEditFinish = useCallback(
+    ({ id }: StoryEditFinish["payload"]) => {
+      if (id === storyId.current) {
+        unlinkDatasetStory();
+        setScenes([]);
+      }
     },
-    [scenes],
+    [unlinkDatasetStory],
   );
 
-  const handleStoryDelete = useCallback(({ id }: StoryDelete["payload"]) => {
-    if (storyId.current === id) {
-      storyId.current = undefined;
-      setScenes([]);
-    }
-  }, []);
+  const handleStoryDelete = useCallback(
+    ({ id }: StoryDelete["payload"]) => {
+      if (storyId.current === id) {
+        unlinkDatasetStory();
+        setScenes([]);
+      }
+    },
+    [unlinkDatasetStory],
+  );
 
   const handleStoryPlay = useCallback(
-    ({ id, scenes }: StoryPlay["payload"]) => {
-      storyId.current = id;
+    ({ scenes }: StoryPlay["payload"]) => {
       setScenes(JSON.parse(scenes ?? "[]"));
       handleSetMode("player");
       if (minimized) {
@@ -303,8 +307,8 @@ export default () => {
         case "storyEdit":
           handleStoryEdit(e.data.payload);
           break;
-        case "storySave":
-          handleStorySave(e.data.payload);
+        case "storyEditFinish":
+          handleStoryEditFinish(e.data.payload);
           break;
         case "storyDelete":
           handleStoryDelete(e.data.payload);
@@ -325,7 +329,7 @@ export default () => {
       handleSceneRecapture,
       handleSceneSave,
       handleStoryEdit,
-      handleStorySave,
+      handleStoryEditFinish,
       handleStoryDelete,
       handleStoryPlay,
       handleStoryCancelPlay,

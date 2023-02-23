@@ -73,13 +73,6 @@ let dataCatalog: DataCatalogItem[] = [];
 
 let addedDatasets: [dataID: string, status: "showing" | "hidden", layerID?: string][] = [];
 
-// For clipping box
-const addedBoxIDs: {
-  [dataID: string]: {
-    layerID: string;
-  };
-} = {};
-
 // For storing 3dtiles color
 const colorStoreFor3dtiles: {
   [dataID: string]:
@@ -331,15 +324,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       height: reearth.viewport.height - 68,
       width: reearth.viewport.width - 12,
     });
-  } else if (action === "storyPlay") {
-    const storyTellingWidgetId = reearth.plugins.instances.find(
-      (instance: PluginExtensionInstance) => instance.extensionId === "storytelling",
-    )?.id;
-    if (!storyTellingWidgetId) return;
-    reearth.plugins.postMessage(storyTellingWidgetId, {
-      action: "storyPlay",
-      payload,
-    });
   } else if (action === "updateInterval") {
     const { dataID, interval } = payload;
     const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
@@ -369,6 +353,25 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   }
 
+  // ************************************************
+  // Story
+  else if (
+    action === "storyPlay" ||
+    action === "storyEdit" ||
+    action === "storyEditFinish" ||
+    action === "storyDelete"
+  ) {
+    const storyTellingWidgetId = reearth.plugins.instances.find(
+      (instance: PluginExtensionInstance) => instance.extensionId === "storytelling",
+    )?.id;
+    if (!storyTellingWidgetId) return;
+    reearth.plugins.postMessage(storyTellingWidgetId, {
+      action,
+      payload,
+    });
+  }
+
+  // ************************************************
   // CSV
   if (action === "updatePointCSV") {
     const { dataID, lng, lat, height } = payload;
@@ -443,56 +446,28 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
   }
 
-  const override3dtiles = (dataID: string, property: Record<string, any>) => {
+  const override3dtiles = (
+    dataID: string,
+    property: Record<string, any>,
+    clippingBox?: Record<string, any>,
+  ) => {
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     reearth.layers.override(tilesetLayerID, {
       "3dtiles": property,
+      ...(clippingBox ? { box: clippingBox } : {}),
     });
   };
 
   // For clipping box
-  if (action === "addClippingBox") {
+  if (action === "updateClippingBox") {
     const { dataID, box, clipping } = payload;
-    if (addedBoxIDs[dataID]) {
-      return;
-    }
-    const boxID = reearth.layers.add(box);
-    addedBoxIDs[dataID] = { layerID: boxID };
-
-    override3dtiles(dataID, { experimental_clipping: clipping });
-    reearth.ui.postMessage({
-      action,
-      payload: { layerID: boxID },
-    });
-  } else if (action === "updateClippingBox") {
-    const { dataID, shouldUpdateClipping, box, clipping } = payload;
-    const addedBoxID = addedBoxIDs[dataID];
-    if (!addedBoxID) {
-      return;
-    }
-    const boxID = addedBoxID.layerID;
-    reearth.layers.override(boxID, box);
-
-    if (shouldUpdateClipping) {
-      new Promise(resolve => {
-        override3dtiles(dataID, { experimental_clipping: clipping });
-        resolve(undefined);
-      });
-    }
+    override3dtiles(dataID, { experimental_clipping: { ...clipping, useBuiltinBox: true } }, box);
   } else if (action === "removeClippingBox") {
     const { dataID } = payload;
-    const addedBoxID = addedBoxIDs[dataID];
-    if (!addedBoxID) {
-      return;
-    }
-    const boxID = addedBoxID.layerID;
-    reearth.layers.delete(boxID);
 
     override3dtiles(dataID, {
       experimental_clipping: undefined,
     });
-
-    delete addedBoxIDs[dataID];
   }
   // For 3dtiles show
   if (action === "update3dtilesShow") {

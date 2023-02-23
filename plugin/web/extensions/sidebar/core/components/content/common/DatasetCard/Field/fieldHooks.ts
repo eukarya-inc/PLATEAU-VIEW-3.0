@@ -55,6 +55,10 @@ export default ({
         name: fieldName["styleCode"],
         onClick: onFieldAdd({ src: " " }),
       },
+      story: {
+        name: fieldName["story"],
+        onClick: onFieldAdd({}),
+      },
       buttonLink: {
         name: fieldName["buttonLink"],
         onClick: onFieldAdd({}),
