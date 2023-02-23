@@ -20,6 +20,7 @@ const MobileDropdown: React.FC = () => {
     selectedDatasets,
     reearthURL,
     backendURL,
+    backendProjectName,
     handleDatasetSave,
     handleDatasetUpdate,
     handleProjectDatasetAdd,
@@ -97,8 +98,9 @@ const MobileDropdown: React.FC = () => {
                 sceneOverrides: project.sceneOverrides,
                 datasets: selectedDatasets,
               }}
-              backendURL={backendURL}
               reearthURL={reearthURL}
+              backendURL={backendURL}
+              backendProjectName={backendProjectName}
               onProjectSceneUpdate={handleProjectSceneUpdate}
             />
           ),

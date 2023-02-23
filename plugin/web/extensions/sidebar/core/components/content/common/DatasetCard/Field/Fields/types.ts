@@ -97,8 +97,8 @@ export type IdealZoom = FieldBase<"idealZoom"> & {
 export type LegendStyleType = "square" | "circle" | "line" | "icon";
 
 export type LegendItem = {
-  title: string;
-  color: string;
+  title?: string;
+  color?: string;
   url?: string;
 };
 

@@ -9,10 +9,17 @@ export type Props = {
   project: Project;
   reearthURL?: string;
   backendURL?: string;
+  backendProjectName?: string;
   isMobile?: boolean;
 };
 
-const Share: React.FC<Props> = ({ project, reearthURL, backendURL, isMobile }) => {
+const Share: React.FC<Props> = ({
+  project,
+  reearthURL,
+  backendURL,
+  backendProjectName,
+  isMobile,
+}) => {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedIframe, setCopiedIframe] = useState(false);
 
@@ -28,6 +35,7 @@ const Share: React.FC<Props> = ({ project, reearthURL, backendURL, isMobile }) =
     project,
     reearthURL,
     backendURL,
+    backendProjectName,
     messageApi,
   });
 
