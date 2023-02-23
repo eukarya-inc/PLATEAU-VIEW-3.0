@@ -3,14 +3,27 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useState } from "react";
+import {
+  generateID,
+  moveItemDown,
+  moveItemUp,
+  removeItem,
+  postMsg,
+} from "@web/extensions/sidebar/utils";
+import { useCallback, useEffect, useState } from "react";
 
+import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond } from "../../types";
 
 import PointStrokeItem from "./PointStrokeItem";
 
-const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode, onUpdate }) => {
+const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
+  dataID,
+  value,
+  editMode,
+  isActive,
+  onUpdate,
+}) => {
   const [items, updateItems] = useState(value.items);
 
   const handleMoveUp = useCallback(
@@ -54,9 +67,9 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode,
         strokeWidth: 0,
         condition: {
           key: generateID(),
-          operator: "=",
-          operand: "width",
-          value: 1,
+          operator: "",
+          operand: "",
+          value: "",
         },
       };
       onUpdate({
@@ -95,6 +108,53 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode,
       return newItems;
     });
   };
+
+  useEffect(() => {
+    if (!isActive || !dataID) return;
+    const timer = setTimeout(() => {
+      const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
+      const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
+      items?.forEach(item => {
+        const resStrokeColor = "color" + `("${item.strokeColor}")`;
+        const resStrokeWidth = String(item.strokeWidth);
+        const cond = stringifyCondition(item.condition);
+        pointOutlineColorConditions.unshift([cond, resStrokeColor]);
+        pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
+
+        postMsg({
+          action: "updateDatasetInScene",
+          payload: {
+            dataID,
+            update: {
+              marker: {
+                style: "point",
+                pointOutlineColor: {
+                  expression: {
+                    conditions: pointOutlineColorConditions,
+                  },
+                },
+                pointOutlineWidth: {
+                  expression: {
+                    conditions: pointOutlineWidthConditions,
+                  },
+                },
+              },
+            },
+          },
+        });
+      });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: { marker: undefined },
+        },
+      });
+    };
+  }, [dataID, isActive, items]);
 
   return editMode ? (
     <Wrapper>

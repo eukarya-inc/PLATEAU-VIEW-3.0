@@ -3,16 +3,25 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useState } from "react";
+import {
+  generateID,
+  moveItemDown,
+  moveItemUp,
+  removeItem,
+  postMsg,
+} from "@web/extensions/sidebar/utils";
+import { useCallback, useEffect, useState } from "react";
 
+import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond } from "../../types";
 
 import PolygonStrokeItem from "./PolygonStrokeItem";
 
 const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
+  dataID,
   value,
   editMode,
+  isActive,
   onUpdate,
 }) => {
   const [items, updateItems] = useState(value.items);
@@ -58,9 +67,9 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
         strokeWidth: 0,
         condition: {
           key: generateID(),
-          operator: "=",
-          operand: "width",
-          value: 1,
+          operator: "",
+          operand: "",
+          value: "",
         },
       };
       onUpdate({
@@ -99,6 +108,59 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
       return newItems;
     });
   };
+
+  useEffect(() => {
+    if (!isActive || !dataID) return;
+    const timer = setTimeout(() => {
+      const strokeConditions: [string, string][] = [["true", "true"]];
+      const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
+      const strokeWidthConditions: [string, string][] = [["true", "1"]];
+      items?.forEach(item => {
+        const resStrokeColor = "color" + `("${item.strokeColor}")`;
+        const resStrokeWidth = String(item.strokeWidth);
+        const cond = stringifyCondition(item.condition);
+        strokeColorConditions.unshift([cond, resStrokeColor]);
+        strokeWidthConditions.unshift([cond, resStrokeWidth]);
+        strokeConditions.unshift([cond, cond]);
+
+        postMsg({
+          action: "updateDatasetInScene",
+          payload: {
+            dataID,
+            update: {
+              polygon: {
+                stroke: {
+                  expression: {
+                    conditions: strokeConditions,
+                  },
+                },
+                strokeColor: {
+                  expression: {
+                    conditions: strokeColorConditions,
+                  },
+                },
+                strokeWidth: {
+                  expression: {
+                    conditions: strokeColorConditions,
+                  },
+                },
+              },
+            },
+          },
+        });
+      });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: { polygon: undefined },
+        },
+      });
+    };
+  }, [dataID, isActive, items]);
 
   return editMode ? (
     <Wrapper>

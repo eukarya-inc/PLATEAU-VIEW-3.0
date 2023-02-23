@@ -3,14 +3,27 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useState } from "react";
+import {
+  generateID,
+  moveItemDown,
+  moveItemUp,
+  removeItem,
+  postMsg,
+} from "@web/extensions/sidebar/utils";
+import { useCallback, useEffect, useState } from "react";
 
+import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond } from "../../types";
 
 import PointColorItem from "./PointColorItem";
 
-const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, onUpdate }) => {
+const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
+  dataID,
+  value,
+  editMode,
+  isActive,
+  onUpdate,
+}) => {
   const [pointColors, updatePointColors] = useState(value.pointColors);
 
   const handleMoveUp = useCallback(
@@ -43,12 +56,12 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
 
   const handleAdd = useCallback(() => {
     updatePointColors(c => {
-      const newPointColor: { condition: Cond<number>; color: string } = {
+      const newPointColor: { condition: Cond<any>; color: string } = {
         condition: {
           key: generateID(),
-          operator: "=",
-          operand: "width",
-          value: 1,
+          operator: "",
+          operand: "",
+          value: "",
         },
         color: "",
       };
@@ -85,6 +98,45 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
       return newPointColors;
     });
   };
+
+  useEffect(() => {
+    if (!isActive || !dataID) return;
+
+    const timer = setTimeout(() => {
+      const conditions: [string, string][] = [["true", 'color("white")']];
+      pointColors?.forEach(item => {
+        const res = "color" + `("${item.color}")`;
+        const cond = stringifyCondition(item.condition);
+        conditions.unshift([cond, res]);
+        postMsg({
+          action: "updateDatasetInScene",
+          payload: {
+            dataID,
+            update: {
+              marker: {
+                style: "point",
+                pointColor: {
+                  expression: {
+                    conditions,
+                  },
+                },
+              },
+            },
+          },
+        });
+      });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: { marker: undefined },
+        },
+      });
+    };
+  }, [dataID, isActive, pointColors]);
 
   return editMode ? (
     <Wrapper>
