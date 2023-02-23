@@ -13,7 +13,7 @@ export const useBuildingTransparency = ({
   const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
-    () => debounce(() => renderRef.current?.(), 50, { maxWait: 100 }),
+    () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
@@ -30,7 +30,7 @@ export const useBuildingTransparency = ({
         transparency: options.transparency,
       });
     }
-  }, [options, dataID]);
+  }, [options.transparency, dataID]);
 
   useEffect(() => {
     renderRef.current = render;

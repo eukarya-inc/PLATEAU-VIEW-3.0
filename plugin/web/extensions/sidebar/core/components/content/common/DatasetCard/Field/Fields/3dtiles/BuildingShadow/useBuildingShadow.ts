@@ -28,7 +28,7 @@ export const useBuildingShadow = ({
         shadow: options.shadow,
       });
     }
-  }, [options, dataID]);
+  }, [options.shadow, dataID]);
 
   useEffect(() => {
     render();

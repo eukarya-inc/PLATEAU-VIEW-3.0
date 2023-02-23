@@ -43,7 +43,7 @@ const useHooks = ({
     if (!isEqual(options, pick(value, "height", "abovegroundFloor", "basementFloor"))) {
       setOptions({ ...value });
     }
-  }, [options, value, onUpdate]);
+  }, [options, value]);
 
   useBuildingFilter({ options, dataID });
 

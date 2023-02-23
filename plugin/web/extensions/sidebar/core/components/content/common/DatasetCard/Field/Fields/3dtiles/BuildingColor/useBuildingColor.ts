@@ -39,7 +39,7 @@ export const useBuildingColor = ({
         colorType: options.colorType,
       });
     }
-  }, [options, dataID, floods]);
+  }, [options.colorType, dataID, floods]);
 
   useEffect(() => {
     if (!initialized) {
