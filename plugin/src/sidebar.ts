@@ -206,7 +206,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const layerId = addedDatasets.find(ad => ad[0] === payload.dataID)?.[2];
     const layer = reearth.layers.findById(layerId);
     reearth.layers.override(
-      addedDatasets.find(ad => ad[0] === payload.dataID)?.[2],
+      layerId,
       layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
     );
   } else if (action === "updateDatasetVisibility") {
