@@ -37,8 +37,16 @@ export default ({
           : dataset.components.filter(
               c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
             ))
-      )?.map(c => c.id),
-    [selectedGroup, dataset.components, dataset.fieldGroups, defaultTemplate?.components],
+      )
+        ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
+        ?.map(c => c.id),
+    [
+      selectedGroup,
+      dataset.components,
+      dataset.fieldGroups,
+      dataset.config?.data,
+      defaultTemplate?.components,
+    ],
   );
 
   const handleFieldAdd =

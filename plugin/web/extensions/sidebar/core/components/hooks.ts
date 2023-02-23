@@ -187,6 +187,12 @@ export default () => {
         }
         updatedDatasets[datasetIndex] = updatedDataset;
       }
+      updateProject(project => {
+        return {
+          ...project,
+          datasets: updatedDatasets.map(ud => convertToData(ud)),
+        };
+      });
       return updatedDatasets;
     });
   }, []);
@@ -617,7 +623,7 @@ const convertToData = (item: DataCatalogItem): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
-    visible: item.visible,
+    visible: item.visible ?? true,
     template: item.template,
     components: item.components,
     fieldGroups: item.fieldGroups,
