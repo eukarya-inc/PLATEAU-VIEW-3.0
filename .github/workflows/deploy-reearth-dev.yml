@@ -41,7 +41,7 @@ jobs:
           APP_NAME: PLATEAU VIEW(Ver2.0)
         run: |
           SOURCE=$(cat $APP_PATH)
-          SOURCE=${SOURCE/\/assets\/favicon*.ico/$PLATEAU_FAVICON}
+          SOURCE=${SOURCE/\/static\/favicon*.ico/$PLATEAU_FAVICON}
           SOURCE=${SOURCE/\<title\>*\<\/title\>/<title>$APP_NAME</title>}
           echo $SOURCE > $APP_PATH
       - name: Deploy
