@@ -7,7 +7,7 @@ on:
         description: Deploy the specific version of web to specify the run ID. If specified, deployment of the server will be skipped. (Optional)
         required: false
 env:
-  GCS_DEST: gs://	plateau-prod-reearth-app-bucket
+  GCS_DEST: gs://plateau-prod-reearth-app-bucket
   IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth:latest
   IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth:latest
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
