@@ -55,7 +55,7 @@ export type PluginExtensionInstance = {
 
 // Communications
 export type PluginMessage = {
-  data: StoryEdit | StorySave | StoryDelete | StoryPlay | StoryCancelPlay;
+  data: StoryEdit | StoryDelete | StoryPlay | StoryCancelPlay;
   sender: string;
 };
 
@@ -64,13 +64,14 @@ export type StoryEdit = {
   action: "storyEdit";
   payload: {
     id: string;
+    dataID?: string;
     scenes: string;
     title?: string;
   };
 };
 
-export type StorySave = {
-  action: "storySave";
+export type StoryEditFinish = {
+  action: "storyEditFinish";
   payload: {
     id: string;
   };

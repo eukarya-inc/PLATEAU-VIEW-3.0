@@ -11,6 +11,7 @@ import Description from "./general/Description";
 import IdealZoom from "./general/IdealZoom";
 import Legend from "./general/Legend";
 import Realtime from "./general/Realtime";
+import Story from "./general/Story";
 import StyleCode from "./general/StyleCode";
 import SwitchDataset from "./general/SwitchDataset";
 import SwitchGroup from "./general/SwitchGroup";
@@ -42,6 +43,7 @@ const fields: Fields<FieldComponent> = {
   description: { Component: Description, hasUI: true },
   switchGroup: { Component: SwitchGroup, hasUI: true },
   buttonLink: { Component: ButtonLink, hasUI: true },
+  story: { Component: Story, hasUI: true },
   styleCode: { Component: StyleCode, hasUI: false },
   realtime: { Component: Realtime, hasUI: true },
   timeline: { Component: Timeline, hasUI: true },

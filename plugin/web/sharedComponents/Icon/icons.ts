@@ -65,7 +65,10 @@ import { ReactComponent as Mousetip } from "./Icons/mousetip.svg";
 import { ReactComponent as ViewIndicator } from "./Icons/viewIndicator.svg";
 import { ReactComponent as Clock } from "./Icons/clock.svg";
 import { ReactComponent as Transparent } from "./Icons/transparent.svg";
+import { ReactComponent as CircledPlay } from "./Icons/circledPlay.svg";
 import { ReactComponent as FileDotted } from "./Icons/fileDotted.svg";
+import { ReactComponent as EditStop } from "./Icons/editStop.svg";
+import { ReactComponent as EditUnderline } from "./Icons/editUnderline.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -135,5 +138,8 @@ export default {
   viewIndicator: ViewIndicator,
   clock: Clock,
   transparent: Transparent,
+  circledPlay: CircledPlay,
   fileDotted: FileDotted,
+  editStop: EditStop,
+  editUnderline: EditUnderline,
 };
