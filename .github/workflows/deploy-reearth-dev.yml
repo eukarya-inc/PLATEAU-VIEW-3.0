@@ -34,6 +34,16 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Extract
         run: mv reearth-web{_rc,}.tar.gz && tar -xvf reearth-web.tar.gz
+      - name: Replace favicon / App name
+        env:
+          PLATEAU_FAVICON: https://www.mlit.go.jp/plateau/assets/img/icons/favicon.svg
+          APP_PATH: reearth-web/index.html
+          APP_NAME: PLATEAU VIEW(Ver2.0)
+        run: |
+          SOURCE=$(cat $APP_PATH)
+          SOURCE=${SOURCE/\/assets\/favicon*.ico/$PLATEAU_FAVICON}
+          SOURCE=${SOURCE/\<title\>*\<\/title\>/<title>$APP_NAME</title>}
+          echo $SOURCE > $APP_PATH
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-web/ ${{ env.GCS_DEST }}
       - name: Save as artifact
