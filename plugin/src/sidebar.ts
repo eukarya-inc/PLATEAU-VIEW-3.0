@@ -662,6 +662,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       : format === "geojson"
       ? {
           marker: {},
+          polygon: {},
+          polyline: {},
         }
       : format === "gtfs"
       ? proxyGTFS(options)
