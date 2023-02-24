@@ -1,5 +1,6 @@
 import mapVideo from "@web/extensions/sidebar/core/assets/mapVideo.png";
 import { postMsg } from "@web/extensions/sidebar/utils";
+import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback } from "react";
 
@@ -25,26 +26,30 @@ const TryMapInfo: React.FC = () => {
         <ParagraphItem>
           <NumberingWrapper number={1} />
           <Paragraph>
-            Add Data から使用可能なデータを表示して、マップに追加してみましょう。
+            「
+            <InlineIcon icon="plusCircle" size={16} color={" #00bebe"} />
+            <BlueText>カタログから検索する</BlueText>
+            」ボタンで使用可能なデータを表示し、マップに追加してみましょう。
           </Paragraph>
         </ParagraphItem>
         <ParagraphItem>
           <NumberingWrapper number={2} />
-          <Paragraph>画面の左側に現れるボタンで表示/非表示ボタンを切り替えてみましょう。</Paragraph>
+          <Paragraph>
+            画面の左側に現れる
+            <InlineIcon icon={"visible"} size={16} />
+            ボタンで表示/非表示ボタンを切り替えてみましょう。
+          </Paragraph>
         </ParagraphItem>
         <ParagraphItem>
           <NumberingWrapper number={3} />
           <Paragraph>
-            マップ上でデータをクリックして、より詳細な情報や元データについての情報を見てみましょう。
+            「<InlineIcon icon="sliders" size={16} />
+            <BlueText>マップ設定</BlueText>」ボタンをクリックして、背景図を変更してみましょう。
           </Paragraph>
         </ParagraphItem>
         <ParagraphItem>
           <NumberingWrapper number={4} />
-          <Paragraph>Map Settingsボタンをクリックして、背景図を変更してみましょう。</Paragraph>
-        </ParagraphItem>
-        <ParagraphItem>
-          <NumberingWrapper number={5} />
-          <Paragraph>画面右手のズームや回転ボタンを使って、視点を変化させてみましょう。</Paragraph>
+          <Paragraph>画面右上のズームや回転ボタンを使って、視点を変化させてみましょう。</Paragraph>
         </ParagraphItem>
       </ContentWrapper>
     </Wrapper>
@@ -60,7 +65,7 @@ const Wrapper = styled.div`
   padding: 0px 16px;
   gap: 24px;
   width: 333px;
-  height: 712px;
+  height: 670px;
 `;
 
 const ImgWrapper = styled.div`
@@ -77,8 +82,6 @@ const Title = styled.p`
 `;
 
 const Paragraph = styled.p`
-  font-size: 14px;
-  line-height: 22px;
   color: rgba(0, 0, 0, 0.45);
 `;
 
@@ -90,4 +93,12 @@ const ContentWrapper = styled.div`
   gap: 20px;
   width: 301px;
   height: 664px;
+`;
+
+const BlueText = styled.span`
+  color: #00bebe;
+`;
+const InlineIcon = styled(Icon)`
+  display: inline-block;
+  color: #00bebe;
 `;
