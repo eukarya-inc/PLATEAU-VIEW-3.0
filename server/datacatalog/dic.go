@@ -22,12 +22,12 @@ func (d Dic) WardName(code string) string {
 		return ""
 	}
 
-	_, b, ok := strings.Cut(e.Name, " ")
+	_, b, ok := strings.Cut(e.Description, " ")
 	if ok {
 		return b
 	}
 
-	return e.Name
+	return e.Description
 }
 
 func (d Dic) Fld(name string) *DicEntry {

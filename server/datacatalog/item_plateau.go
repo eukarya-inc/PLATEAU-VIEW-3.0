@@ -225,6 +225,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 	if wardName == "" && an.WardCode != "" {
 		wardName = an.WardEn
 	}
+
 	cityOrWardName := i.City
 	if wardName != "" {
 		cityOrWardName = wardName
