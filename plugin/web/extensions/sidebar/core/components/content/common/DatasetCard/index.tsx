@@ -80,7 +80,17 @@ const DatasetCard: React.FC<Props> = ({
           });
         },
       },
-      { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
+      {
+        id: "about",
+        title: "About Data",
+        icon: "about",
+        onClick: () => {
+          postMsg({
+            action: "catalogModalOpen",
+            payload: { dataset },
+          });
+        },
+      },
       {
         id: "remove",
         icon: "trash",

@@ -248,6 +248,9 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "catalogModalOpen") {
     reearth.modal.show(dataCatalogHtml, { background: "transparent" });
+    if (payload) {
+      reearth.modal.postMessage({ action, payload });
+    }
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "triggerHelpOpen") {

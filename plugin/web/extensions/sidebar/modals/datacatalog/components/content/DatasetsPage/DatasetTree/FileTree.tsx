@@ -1,6 +1,6 @@
 import { DataCatalogItem, DataCatalogGroup } from "@web/extensions/sidebar/core/types";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import TreeBuilder from "./TreeBuilder";
 
@@ -28,6 +28,14 @@ const FileTree: React.FC<Props> = ({
   const handleSelect = useCallback((dataID?: string) => {
     select(dataID);
   }, []);
+
+  useEffect(() => {
+    const { selectedDataset } = window as any;
+    if (selectedDataset) {
+      onOpenDetails?.(selectedDataset);
+      handleSelect(selectedDataset.dataID);
+    }
+  }, [handleSelect, onOpenDetails]);
 
   return (
     <TreeWrapper isMobile={isMobile}>

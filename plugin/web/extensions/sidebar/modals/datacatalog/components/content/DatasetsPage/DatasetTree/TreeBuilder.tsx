@@ -38,7 +38,9 @@ const TreeBuilder: React.FC<Props> = ({
               name={item.name}
               nestLevel={nestLevel + 1}
               isMobile={isMobile}
-              expandAll={expandAll}>
+              expandAll={expandAll}
+              item={item}
+              selectedID={selectedID}>
               <TreeBuilder
                 catalogItem={item.children}
                 addedDatasetDataIDs={addedDatasetDataIDs}
@@ -69,7 +71,9 @@ const TreeBuilder: React.FC<Props> = ({
           name={catalogItem.name}
           nestLevel={nestLevel + 1}
           isMobile={isMobile}
-          expandAll={expandAll}>
+          expandAll={expandAll}
+          item={catalogItem}
+          selectedID={selectedID}>
           <TreeBuilder
             catalogItem={catalogItem.children}
             addedDatasetDataIDs={addedDatasetDataIDs}
