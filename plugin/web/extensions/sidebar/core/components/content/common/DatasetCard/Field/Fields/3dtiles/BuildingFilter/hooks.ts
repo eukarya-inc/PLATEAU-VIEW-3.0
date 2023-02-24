@@ -1,31 +1,31 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import isEqual from "lodash/isEqual";
-import pick from "lodash/pick";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
+import { FILTERING_FIELD_DEFINITION, OptionsState } from "./constants";
 import { useBuildingFilter } from "./useBuildingFilter";
-
-type OptionsState = Omit<BaseFieldProps<"buildingFilter">["value"], "id" | "group" | "type">;
 
 const useHooks = ({
   value,
   dataID,
   onUpdate,
 }: Pick<BaseFieldProps<"buildingFilter">, "value" | "dataID" | "onUpdate">) => {
-  const [options, setOptions] = useState<OptionsState>({
-    height: value.height,
-    abovegroundFloor: value.abovegroundFloor,
-    basementFloor: value.basementFloor,
-  });
+  const [options, setOptions] = useState<OptionsState>({});
 
   const handleUpdate = useCallback(
-    <P extends keyof OptionsState>(prop: P, v?: OptionsState[P]) => {
+    <P extends keyof OptionsState>(prop: P, v?: Exclude<OptionsState[P], undefined>["value"]) => {
       setOptions(o => {
-        const next = { ...o, [prop]: v };
-        onUpdate({ id: value.id, type: value.type, group: value.group, ...next });
-        return next;
+        return {
+          ...o,
+          [prop]: {
+            ...o[prop],
+            value: v,
+          },
+        };
       });
+      onUpdate({ id: value.id, type: value.type, group: value.group, [prop]: v });
     },
     [onUpdate, value],
   );
@@ -40,10 +40,74 @@ const useHooks = ({
   );
 
   useEffect(() => {
-    if (!isEqual(options, pick(value, "height", "abovegroundFloor", "basementFloor"))) {
-      setOptions({ ...value });
+    const entries = Object.entries(options);
+    if (
+      !entries.every(
+        ([k, v]) =>
+          !value[k as keyof OptionsState] || isEqual(value[k as keyof OptionsState], v.value),
+      )
+    ) {
+      setOptions(o => {
+        entries.forEach(([k_, v]) => {
+          const k = k_ as keyof OptionsState;
+          if (o[k]) {
+            o[k] = {
+              ...v,
+              value: value[k],
+            } as OptionsState[typeof k];
+          }
+        });
+        return { ...o };
+      });
     }
   }, [options, value]);
+
+  useEffect(() => {
+    const handleFilteringFields = (data: any) => {
+      const tempOptions: typeof options = {};
+      Object.entries(data?.properties || {}).forEach(([propertyKey, propertyValue]) => {
+        Object.entries(FILTERING_FIELD_DEFINITION).forEach(([k_, type]) => {
+          const k = k_ as keyof OptionsState;
+          if (
+            propertyKey === type.featurePropertyName &&
+            propertyValue &&
+            typeof propertyValue === "object" &&
+            Object.keys(propertyValue).length
+          ) {
+            tempOptions[k] = type;
+          }
+        });
+      });
+      setOptions(tempOptions);
+    };
+    const waitReturnedPostMsg = async (e: MessageEvent<any>) => {
+      if (e.source !== parent) return;
+      if (e.data.action === "findTileset") {
+        const layer = e.data.payload.layer;
+        const url = layer?.data?.url;
+        if (!url) {
+          return;
+        }
+        const data = await (async () => {
+          try {
+            return await fetch(url).then(r => r.json());
+          } catch (e) {
+            console.error(e);
+          }
+        })();
+        handleFilteringFields(data);
+
+        removeEventListener("message", waitReturnedPostMsg);
+      }
+    };
+    addEventListener("message", waitReturnedPostMsg);
+    postMsg({
+      action: "findTileset",
+      payload: {
+        dataID,
+      },
+    });
+  }, [dataID]);
 
   useBuildingFilter({ options, dataID });
 

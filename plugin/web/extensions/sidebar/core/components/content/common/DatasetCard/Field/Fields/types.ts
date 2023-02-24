@@ -250,9 +250,9 @@ type Clipping = FieldBase<"clipping"> & {
 };
 
 type BuildingFilter = FieldBase<"buildingFilter"> & {
-  height: [from: number, to: number];
-  abovegroundFloor: [from: number, to: number];
-  basementFloor: [from: number, to: number];
+  height?: [from: number, to: number];
+  abovegroundFloor?: [from: number, to: number];
+  basementFloor?: [from: number, to: number];
 };
 
 type BuildingShadow = FieldBase<"buildingShadow"> & {

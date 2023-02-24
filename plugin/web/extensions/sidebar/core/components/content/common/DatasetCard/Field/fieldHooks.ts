@@ -164,11 +164,7 @@ export default ({
       },
       buildingFilter: {
         name: fieldName["buildingFilter"],
-        onClick: onFieldAdd({
-          height: [0, 200],
-          abovegroundFloor: [1, 50],
-          basementFloor: [0, 5],
-        }),
+        onClick: onFieldAdd({}),
       },
       buildingShadow: {
         name: fieldName["buildingShadow"],
