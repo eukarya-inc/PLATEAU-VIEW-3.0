@@ -319,8 +319,8 @@ const StyledAccordionItemButton = styled(AccordionItemButton)`
 const HeaderContents = styled.div`
   display: flex;
   align-items: center;
-  height: 46px;
-  padding: 0 12px;
+  height: auto;
+  padding: 12px;
   gap: 12px;
   outline: none;
   cursor: pointer;
@@ -345,10 +345,9 @@ const LeftMain = styled.div`
 const Title = styled.p`
   margin: 0;
   font-size: 16px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  width: 250px;
   user-select: none;
+  overflow-wrap: break-word;
 `;
 
 const Content = styled.div`
