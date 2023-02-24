@@ -3,11 +3,18 @@ import {
   TextInput,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { useCallback, useState } from "react";
+import { postMsg } from "@web/extensions/sidebar/utils";
+import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({ value, editMode, onUpdate }) => {
+const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
+  dataID,
+  value,
+  editMode,
+  isActive,
+  onUpdate,
+}) => {
   const [modelURL, setModelURL] = useState(value.modelURL ?? "");
   const [scale, setImageSize] = useState(value.scale);
 
@@ -35,6 +42,31 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({ value, editMode, o
     },
     [onUpdate, value, scale],
   );
+
+  useEffect(() => {
+    if (!isActive || !dataID) return;
+    const timer = setTimeout(() => {
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: { model: { url: modelURL, scale } },
+        },
+      });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: {
+            model: undefined,
+          },
+        },
+      });
+    };
+  }, [dataID, isActive, modelURL, scale]);
 
   return editMode ? (
     <Wrapper>
