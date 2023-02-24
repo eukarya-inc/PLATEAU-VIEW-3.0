@@ -11,8 +11,9 @@ import PopupItem from "../sharedComponents/PopupItem";
 
 export type Props = {
   project: Project;
-  backendURL?: string;
   reearthURL?: string;
+  backendURL?: string;
+  backendProjectName?: string;
   onProjectSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
@@ -42,7 +43,13 @@ const menuItems: MenuItem[] = [
   },
 ];
 
-const Menu: React.FC<Props> = ({ project, backendURL, reearthURL, onProjectSceneUpdate }) => {
+const Menu: React.FC<Props> = ({
+  project,
+  reearthURL,
+  backendURL,
+  backendProjectName,
+  onProjectSceneUpdate,
+}) => {
   const [currentItem, changeItem] = useState<MenuItem | undefined>();
 
   const handleHeightUpdate = useCallback(
@@ -96,8 +103,9 @@ const Menu: React.FC<Props> = ({ project, backendURL, reearthURL, onProjectScene
                 share: (
                   <Share
                     project={project}
-                    backendURL={backendURL}
                     reearthURL={reearthURL}
+                    backendURL={backendURL}
+                    backendProjectName={backendProjectName}
                     isMobile
                   />
                 ),

@@ -40,7 +40,7 @@ export default ({
         name: fieldName["legend"],
         onClick: onFieldAdd({
           style: "square",
-          items: [{ title: "hey", color: "red" }],
+          items: [{ title: "新しいアイテム", color: "#00bebe" }],
         }),
       },
       realtime: {
@@ -49,7 +49,7 @@ export default ({
       },
       timeline: {
         name: fieldName["timeline"],
-        onClick: onFieldAdd({ timeBasedDisplay: true }),
+        onClick: onFieldAdd({ timeBasedDisplay: true, timeFieldName: "" }),
       },
       styleCode: {
         name: fieldName["styleCode"],

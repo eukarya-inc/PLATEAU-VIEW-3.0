@@ -48,9 +48,12 @@ export const defaultProject: Project = {
 export default () => {
   const [projectID, setProjectID] = useState<string>();
   const [inEditor, setInEditor] = useState(true);
-  const [backendAccessToken, setBackendAccessToken] = useState<string>();
-  const [backendURL, setBackendURL] = useState<string>();
+
+  const [catalogURL, setCatalogURL] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
+  const [backendURL, setBackendURL] = useState<string>();
+  const [backendProjectName, setBackendProjectName] = useState<string>();
+  const [backendAccessToken, setBackendAccessToken] = useState<string>();
 
   const [data, setData] = useState<Data[]>();
   const [project, updateProject] = useState<Project>(defaultProject);
@@ -58,7 +61,7 @@ export default () => {
 
   const handleBackendFetch = useCallback(async () => {
     if (!backendURL) return;
-    const res = await fetch(`${backendURL}/sidebar/plateauview`);
+    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}`);
     if (res.status !== 200) return;
     const resData = await res.json();
 
@@ -67,7 +70,7 @@ export default () => {
       setInfoboxTemplates(resData.templates.filter((t: Template) => t.type === "infobox"));
     }
     setData(resData.data);
-  }, [backendURL]);
+  }, [backendURL, backendProjectName]);
 
   // ****************************************
   // Init
@@ -75,10 +78,15 @@ export default () => {
 
   useEffect(() => {
     postMsg({ action: "init" }); // Needed to trigger sending initialization data to sidebar
-    getDataCatalog("https://api.plateau.reearth.io/").then(res => {
-      setCatalog(res);
-    });
   }, []);
+
+  useEffect(() => {
+    if (catalogURL) {
+      getDataCatalog(catalogURL).then(res => {
+        setCatalog(res);
+      });
+    }
+  }, [catalogURL]);
 
   useEffect(() => {
     if (backendURL) {
@@ -179,6 +187,12 @@ export default () => {
         }
         updatedDatasets[datasetIndex] = updatedDataset;
       }
+      updateProject(project => {
+        return {
+          ...project,
+          datasets: updatedDatasets.map(ud => convertToData(ud)),
+        };
+      });
       return updatedDatasets;
     });
   }, []);
@@ -191,8 +205,8 @@ export default () => {
       const isNew = !data?.find(d => d.dataID === dataset.dataID);
 
       const fetchURL = !isNew
-        ? `${backendURL}/sidebar/plateauview/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
-        : `${backendURL}/sidebar/plateauview/data`;
+        ? `${backendURL}/sidebar/${backendProjectName}/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
+        : `${backendURL}/sidebar/${backendProjectName}/data`;
 
       const method = !isNew ? "PATCH" : "POST";
 
@@ -211,7 +225,7 @@ export default () => {
       console.log("DATA JUST SAVED: ", data2);
       handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
     },
-    [data, backendAccessToken, backendURL, handleBackendFetch],
+    [data, backendAccessToken, backendURL, backendProjectName, handleBackendFetch],
   );
 
   const handleDatasetSave = useCallback(
@@ -249,8 +263,8 @@ export default () => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
 
   const handleTemplateAdd = useCallback(async () => {
-    if (!backendURL || !backendAccessToken) return;
-    const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
+    if (!backendURL || !backendProjectName || !backendAccessToken) return;
+    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`, {
       headers: {
         authorization: `Bearer ${backendAccessToken}`,
       },
@@ -261,18 +275,21 @@ export default () => {
     const newTemplate = await res.json();
     setFieldTemplates(t => [...t, newTemplate]);
     return newTemplate as Template;
-  }, [backendURL, backendAccessToken]);
+  }, [backendURL, backendProjectName, backendAccessToken]);
 
   const handleTemplateSave = useCallback(
     async (template: Template) => {
-      if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.id}`, {
-        headers: {
-          authorization: `Bearer ${backendAccessToken}`,
+      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      const res = await fetch(
+        `${backendURL}/sidebar/${backendProjectName}/templates/${template.id}`,
+        {
+          headers: {
+            authorization: `Bearer ${backendAccessToken}`,
+          },
+          method: "PATCH",
+          body: JSON.stringify(template),
         },
-        method: "PATCH",
-        body: JSON.stringify(template),
-      });
+      );
       if (res.status !== 200) return;
       const updatedTemplate = await res.json();
       setFieldTemplates(t => {
@@ -284,13 +301,13 @@ export default () => {
         });
       });
     },
-    [backendURL, backendAccessToken],
+    [backendURL, backendProjectName, backendAccessToken],
   );
 
   const handleTemplateRemove = useCallback(
     async (id: string) => {
-      if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${id}`, {
+      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates/${id}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -299,7 +316,7 @@ export default () => {
       if (res.status !== 200) return;
       setFieldTemplates(t => t.filter(t2 => t2.id !== id));
     },
-    [backendURL, backendAccessToken],
+    [backendURL, backendProjectName, backendAccessToken],
   );
 
   // ****************************************
@@ -344,8 +361,8 @@ export default () => {
 
   const handleInfoboxTemplateAdd = useCallback(
     async (template: Omit<Template, "id">) => {
-      if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates`, {
+      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
@@ -357,19 +374,22 @@ export default () => {
       setInfoboxTemplates(t => [...t, newTemplate]);
       return newTemplate as Template;
     },
-    [backendURL, backendAccessToken],
+    [backendURL, backendProjectName, backendAccessToken],
   );
 
   const handleInfoboxTemplateSave = useCallback(
     async (template: Template) => {
-      if (!backendURL || !backendAccessToken) return;
-      const res = await fetch(`${backendURL}/sidebar/plateauview/templates/${template.id}`, {
-        headers: {
-          authorization: `Bearer ${backendAccessToken}`,
+      if (!backendURL || backendProjectName || !backendAccessToken) return;
+      const res = await fetch(
+        `${backendURL}/sidebar/${backendProjectName}/templates/${template.id}`,
+        {
+          headers: {
+            authorization: `Bearer ${backendAccessToken}`,
+          },
+          method: "PATCH",
+          body: JSON.stringify(template),
         },
-        method: "PATCH",
-        body: JSON.stringify(template),
-      });
+      );
       if (res.status !== 200) return;
       const updatedTemplate = await res.json();
       setInfoboxTemplates(t => {
@@ -384,7 +404,7 @@ export default () => {
         action: "infoboxFieldsSaved",
       });
     },
-    [backendURL, backendAccessToken],
+    [backendURL, backendProjectName, backendAccessToken],
   );
 
   const handleInfoboxFieldsFetch = useCallback(
@@ -433,9 +453,11 @@ export default () => {
       } else if (e.data.action === "init" && e.data.payload) {
         setProjectID(e.data.payload.projectID);
         setInEditor(e.data.payload.inEditor);
-        setBackendAccessToken(e.data.payload.backendAccessToken);
-        setBackendURL(e.data.payload.backendURL);
+        setCatalogURL(e.data.payload.catalogURL);
         setReearthURL(`${e.data.payload.reearthURL}`);
+        setBackendURL(e.data.payload.backendURL);
+        setBackendProjectName(e.data.payload.backendProjectName);
+        setBackendAccessToken(e.data.payload.backendAccessToken);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }
@@ -464,10 +486,10 @@ export default () => {
   const fetchedSharedProject = useRef(false);
 
   useEffect(() => {
-    if (!backendURL || fetchedSharedProject.current) return;
+    if (!backendURL || !backendProjectName || fetchedSharedProject.current) return;
     if (projectID && processedCatalog.length) {
       (async () => {
-        const res = await fetch(`${backendURL}/share/plateauview/${projectID}`);
+        const res = await fetch(`${backendURL}/share/${backendProjectName}/${projectID}`);
         if (res.status !== 200) return;
         const data = await res.json();
         if (data) {
@@ -487,7 +509,7 @@ export default () => {
         fetchedSharedProject.current = true;
       })();
     }
-  }, [projectID, backendURL, processedCatalog, handleInitUserStory]);
+  }, [projectID, backendURL, backendProjectName, processedCatalog, handleInitUserStory]);
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 
@@ -526,6 +548,7 @@ export default () => {
     inEditor,
     reearthURL,
     backendURL,
+    backendProjectName,
     templates: fieldTemplates,
     currentPage,
     handlePageChange,
@@ -600,7 +623,7 @@ const convertToData = (item: DataCatalogItem): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
-    visible: item.visible,
+    visible: item.visible ?? true,
     template: item.template,
     components: item.components,
     fieldGroups: item.fieldGroups,

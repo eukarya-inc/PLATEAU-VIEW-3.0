@@ -152,9 +152,11 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         const outBoundPayload = {
           projectID: reearth.viewport.query.projectID,
           inEditor: reearth.scene.inEditor,
-          backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
-          backendURL: reearth.widget.property.default?.plateauURL ?? "",
+          catalogURL: reearth.widget.property.default?.catalogURL ?? "",
           reearthURL: reearth.widget.property.default?.reearthURL ?? "",
+          backendURL: reearth.widget.property.default?.plateauURL ?? "",
+          backendProjectName: reearth.widget.property.default?.projectName ?? "",
+          backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
           draftProject,
         };
         if (isMobile) {
@@ -206,7 +208,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const layerId = addedDatasets.find(ad => ad[0] === payload.dataID)?.[2];
     const layer = reearth.layers.findById(layerId);
     reearth.layers.override(
-      addedDatasets.find(ad => ad[0] === payload.dataID)?.[2],
+      layerId,
       layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
     );
   } else if (action === "updateDatasetVisibility") {
@@ -333,13 +335,13 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       },
     });
   } else if (action === "updateTimeBasedDisplay") {
-    const { dataID, timeBasedDisplay } = payload;
+    const { dataID, timeBasedDisplay, timeFieldName } = payload;
     const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
     if (timeBasedDisplay) {
       reearth.layers.override(layerId, {
         data: {
           time: {
-            property: "time",
+            property: timeFieldName,
             interval: 86400000,
           },
         },
@@ -660,6 +662,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
       : format === "geojson"
       ? {
           marker: {},
+          polygon: {},
+          polyline: {},
         }
       : format === "gtfs"
       ? proxyGTFS(options)

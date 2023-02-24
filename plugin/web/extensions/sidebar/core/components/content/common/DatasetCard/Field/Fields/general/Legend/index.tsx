@@ -68,10 +68,7 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
 
   const handleAdd = useCallback(() => {
     updateLegend(l => {
-      const newItem = {
-        title: "New Item",
-        color: "white",
-      };
+      const newItem = { title: "新しいアイテム", color: "#00bebe" };
       const newLegend = {
         ...l,
         items: l.items ? [...l.items, newItem] : [newItem],
@@ -156,7 +153,10 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
       {legend.items?.map((item, idx) => (
         <Field key={idx} gap={12}>
           {legend.style === "icon" ? (
-            <StyledImg src={item.url} />
+            <StyledImgWrapper>
+              <BlendColor color={item.color} />
+              <StyledImg src={item.url} />
+            </StyledImgWrapper>
           ) : (
             <ColorBlock color={item.color} legendStyle={legend.style} />
           )}
@@ -209,7 +209,7 @@ const FieldValue = styled.div`
   width: 100%;
 `;
 
-const ColorBlock = styled.div<{ color: string; legendStyle?: "circle" | "square" | "line" }>`
+const ColorBlock = styled.div<{ color?: string; legendStyle?: "circle" | "square" | "line" }>`
   width: 30px;
   height: ${({ legendStyle }) => (legendStyle === "line" ? "3px" : "30px")};
   background: ${({ color }) => color ?? "#d9d9d9"};
@@ -221,6 +221,20 @@ const ColorBlock = styled.div<{ color: string; legendStyle?: "circle" | "square"
         ? "5px"
         : "2px"
       : "1px 0 0 1px"};
+`;
+
+const StyledImgWrapper = styled.div`
+  position: relative;
+`;
+
+const BlendColor = styled.div<{ color?: string }>`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: ${({ color }) => color ?? "#d9d9d9"};
+  mix-blend-mode: color;
 `;
 
 const StyledImg = styled.img`

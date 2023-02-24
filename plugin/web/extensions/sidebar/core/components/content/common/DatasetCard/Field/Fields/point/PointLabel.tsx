@@ -1,22 +1,22 @@
 import {
   ColorField,
-  SelectField,
   SwitchField,
   TextField,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/common";
 import { Wrapper } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, useCallback, useState, useEffect } from "react";
 
 import { BaseFieldProps, Fields } from "../types";
 
-// TODO: list all options for select field dropdown
-const options = [
-  { value: "Option1", label: "Option1" },
-  { value: "Option2", label: "Option2" },
-];
-
-const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, onUpdate }) => {
+const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({
+  dataID,
+  value,
+  editMode,
+  isActive,
+  onUpdate,
+}) => {
   const [pointLabel, setPointLabel] = useState(value);
 
   const updatePointLabelByProp = useCallback(
@@ -37,8 +37,8 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
   );
 
   const handleFieldChange = useCallback(
-    (field: any) => {
-      updatePointLabelByProp("field", field);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      updatePointLabelByProp("field", e.target.value);
     },
     [updatePointLabelByProp],
   );
@@ -55,17 +55,7 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
 
   const handleFontColorUpdate = useCallback(
     (color: string) => {
-      if (color) updatePointLabelByProp("color", color);
-    },
-    [updatePointLabelByProp],
-  );
-
-  const handleHeightUpdate = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const height = !isNaN(parseFloat(e.currentTarget.value))
-        ? parseFloat(e.currentTarget.value)
-        : 1;
-      updatePointLabelByProp("height", height);
+      if (color) updatePointLabelByProp("fontColor", color);
     },
     [updatePointLabelByProp],
   );
@@ -86,17 +76,57 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
 
   const handleBackgroundColorUpdate = useCallback(
     (color: string) => {
-      if (color) updatePointLabelByProp("color", color);
+      if (color) updatePointLabelByProp("backgroundColor", color);
     },
     [updatePointLabelByProp],
   );
 
+  useEffect(() => {
+    if (!isActive || !dataID) return;
+    const timer = setTimeout(() => {
+      console.log("pointLabel: ", pointLabel);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: {
+            marker: {
+              style: "point",
+              label: true,
+              labelTypography: {
+                fontSize: pointLabel.fontSize,
+                color: pointLabel.fontColor,
+              },
+              heightReference: "relative",
+              labelText: pointLabel.field,
+              extrude: pointLabel.extruded,
+              labelBackground: pointLabel.useBackground,
+              labelBackgroundColor: pointLabel.backgroundColor,
+            },
+          },
+        },
+      });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+      postMsg({
+        action: "updateDatasetInScene",
+        payload: {
+          dataID,
+          update: {
+            marker: undefined,
+          },
+        },
+      });
+    };
+  }, [dataID, isActive, pointLabel]);
+
   return editMode ? (
     <Wrapper>
-      <SelectField
-        title="Choose field"
+      <TextField
+        title="Text"
         titleWidth={82}
-        options={options}
+        defaultValue={pointLabel.fontSize}
         onChange={handleFieldChange}
       />
       <TextField
@@ -111,13 +141,6 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
         titleWidth={82}
         color={pointLabel.fontColor}
         onChange={handleFontColorUpdate}
-      />
-      <TextField
-        title="Height"
-        titleWidth={82}
-        defaultValue={pointLabel.height}
-        suffix={<Suffix>m</Suffix>}
-        onChange={handleHeightUpdate}
       />
       <SwitchField
         title="Extruded"

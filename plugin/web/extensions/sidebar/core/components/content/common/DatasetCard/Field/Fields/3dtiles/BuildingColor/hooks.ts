@@ -61,28 +61,12 @@ const useHooks = ({
       setIndependentColorTypes(tempTypes);
     };
     const handleFloods = (data: any) => {
-      const MARK_TEXT = ["洪水浸水想定区域", "浸水予想区域"];
-      const EXCLUDING_RANGE_NAME = ["改定"];
       const tempFloods: typeof floods = [];
       Object.entries(data?.properties || {}).forEach(([k, v]) => {
         if (k.endsWith("_浸水ランク") && v && typeof v === "object" && Object.keys(v).length > 0) {
-          const marker = MARK_TEXT.find(s => k.includes(s));
-          if (!marker) {
-            return;
-          }
-          const [label, rest] = k.split(`${marker}`);
-          const matches = rest.match(/(（.*）)?_(.*)_浸水ランク/);
-          if (!matches) {
-            return;
-          }
-          const range = matches[1]?.match(/（(.*)）/)?.[1];
-          const scale = matches[2];
-          const level = scale === "想定最大規模" ? "L2" : "L1";
           tempFloods.push({
             id: `floods-${tempFloods.length}`,
-            label: `${level || ""}${scale ? `(${scale})` : ""}_浸水ランク(${label}${
-              range && !EXCLUDING_RANGE_NAME.includes(range) ? `: ${range}` : ""
-            })`,
+            label: k,
             featurePropertyName: k,
           });
         }

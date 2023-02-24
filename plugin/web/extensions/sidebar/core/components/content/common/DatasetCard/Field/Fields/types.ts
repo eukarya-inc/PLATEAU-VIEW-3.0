@@ -8,7 +8,7 @@ export const fieldName = {
   timeline: "タイムラインデータ",
   switchGroup: "スイッチグループ",
   buttonLink: "リンクボタン",
-  styleCode: "Style code (General)",
+  styleCode: "スタイルコード",
   switchDataset: "スイッチデータセット",
   point: "ポイント",
   description: "説明",
@@ -97,8 +97,8 @@ export type IdealZoom = FieldBase<"idealZoom"> & {
 export type LegendStyleType = "square" | "circle" | "line" | "icon";
 
 export type LegendItem = {
-  title: string;
-  color: string;
+  title?: string;
+  color?: string;
   url?: string;
 };
 
@@ -113,6 +113,7 @@ type Realtime = FieldBase<"realtime"> & {
 
 export type Timeline = FieldBase<"timeline"> & {
   timeBasedDisplay: boolean;
+  timeFieldName: string;
 };
 
 export type Description = FieldBase<"description"> & {

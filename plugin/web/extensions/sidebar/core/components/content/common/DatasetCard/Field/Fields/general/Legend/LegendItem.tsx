@@ -18,31 +18,25 @@ const LegendItemComponent: React.FC<{
   onItemUpdate: (property: LegendItem, index: number) => void;
 }> = ({ index, item, legendStyle, handleMoveDown, handleMoveUp, handleRemove, onItemUpdate }) => {
   const handleColorChange = useCallback(
-    (color: string) => {
-      if (color) {
-        const copy = { ...item, color };
-        onItemUpdate(copy, index);
-      }
+    (color?: string) => {
+      const copy = { ...item, color: color };
+      onItemUpdate(copy, index);
     },
     [index, item, onItemUpdate],
   );
 
   const handleTitleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.currentTarget.value) {
-        const copy = { ...item, title: e.currentTarget.value };
-        onItemUpdate(copy, index);
-      }
+      const copy = { ...item, title: e.currentTarget.value };
+      onItemUpdate(copy, index);
     },
     [index, item, onItemUpdate],
   );
 
   const handleURLChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      if (e.currentTarget.value) {
-        const copy = { ...item, url: e.currentTarget.value };
-        onItemUpdate(copy, index);
-      }
+      const copy = { ...item, url: e.currentTarget.value };
+      onItemUpdate(copy, index);
     },
     [index, item, onItemUpdate],
   );

@@ -23,6 +23,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     inEditor,
     reearthURL,
     backendURL,
+    backendProjectName,
     templates,
     currentPage,
     handlePageChange,
@@ -94,7 +95,14 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   onOverridesUpdate={handleProjectSceneUpdate}
                 />
               ),
-              share: <Share project={project} reearthURL={reearthURL} backendURL={backendURL} />,
+              share: (
+                <Share
+                  project={project}
+                  reearthURL={reearthURL}
+                  backendURL={backendURL}
+                  backendProjectName={backendProjectName}
+                />
+              ),
               help: <Help />,
               feedback: <Feedback backendURL={backendURL} />,
               template: (

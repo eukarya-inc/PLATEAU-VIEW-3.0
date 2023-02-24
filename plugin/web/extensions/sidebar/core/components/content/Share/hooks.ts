@@ -8,11 +8,13 @@ export default ({
   project,
   reearthURL,
   backendURL,
+  backendProjectName,
   messageApi,
 }: {
   project?: Project;
   reearthURL?: string;
   backendURL?: string;
+  backendProjectName?: string;
   messageApi: any;
 }) => {
   const [publishedUrl, setPublishedUrl] = useState<string>();
@@ -55,14 +57,15 @@ export default ({
         link.click();
         link.remove();
       } else if (e.data.action === "getCurrentCamera") {
-        if (!backendURL || !reearthURL || !project || !e.data.payload) return;
+        if (!backendURL || !backendProjectName || !reearthURL || !project || !e.data.payload)
+          return;
         const updatedProject: Project = {
           ...project,
           sceneOverrides: [project.sceneOverrides, { default: { camera: e.data.payload } }].reduce(
             (p, v) => mergeProperty(p, v),
           ),
         };
-        const resp = await fetch(`${backendURL}/share/plateauview`, {
+        const resp = await fetch(`${backendURL}/share/${backendProjectName}`, {
           headers: {
             "Content-Type": "application/json",
           },
