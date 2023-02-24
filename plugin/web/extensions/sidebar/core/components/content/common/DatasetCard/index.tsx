@@ -320,6 +320,7 @@ const HeaderContents = styled.div`
   align-items: center;
   height: 46px;
   padding: 0 12px;
+  gap: 12px;
   outline: none;
   cursor: pointer;
 `;
@@ -336,6 +337,7 @@ const LeftMain = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 `;
 
 const Title = styled.p`
@@ -343,7 +345,6 @@ const Title = styled.p`
   font-size: 16px;
   text-overflow: ellipsis;
   overflow: hidden;
-  width: 250px;
   white-space: nowrap;
   user-select: none;
 `;
