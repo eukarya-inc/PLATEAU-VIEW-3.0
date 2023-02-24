@@ -61,7 +61,7 @@ const reearth = (globalThis as any).reearth;
 
 let welcomePageIsOpen = false;
 let mobileDropdownIsOpen = false;
-let buildingSearchIsOpen = false;
+let openedBuildingSearchDataID: string | null = null;
 
 // this is used for infobox
 let currentSelected: string | undefined = undefined;
@@ -224,9 +224,15 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.layers.delete(addedDatasets.find(ad => ad[0] === payload)?.[2]);
     const idx = addedDatasets.findIndex(ad => ad[0] === payload);
     addedDatasets.splice(idx, 1);
+    if (openedBuildingSearchDataID && openedBuildingSearchDataID === payload) {
+      reearth.popup.close();
+    }
   } else if (action === "removeAllDatasetsFromScene") {
     reearth.layers.delete(...addedDatasets.map(ad => ad[2]));
     addedDatasets = [];
+    if (openedBuildingSearchDataID) {
+      reearth.popup.close();
+    }
   } else if (action === "updateDataset") {
     reearth.ui.postMessage({ action, payload });
   } else if (
@@ -310,7 +316,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         data: payload,
       },
     });
-    buildingSearchIsOpen = true;
+    openedBuildingSearchDataID = payload.dataID;
   } else if (action === "cameraFlyTo") {
     if (Array.isArray(payload)) {
       reearth.camera.flyTo(...payload);
@@ -591,7 +597,7 @@ reearth.on("resize", () => {
     });
   }
 
-  if (buildingSearchIsOpen) {
+  if (openedBuildingSearchDataID) {
     reearth.popup.postMessage({
       type: "resize",
       payload: reearth.viewport,
@@ -625,6 +631,10 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
 reearth.on("select", (selected: string | undefined) => {
   // this is used for infobox
   currentSelected = selected;
+});
+
+reearth.on("popupclose", () => {
+  openedBuildingSearchDataID = null;
 });
 
 function createLayer(dataset: DataCatalogItem, options?: any) {
