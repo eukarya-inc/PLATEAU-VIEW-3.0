@@ -166,6 +166,7 @@ const HeaderContents = styled(AccordionItemButton)`
 `;
 
 const BodyWrapper = styled(AccordionItemPanel)`
+  position: relative;
   border-radius: 0px 0px 4px 4px;
   padding: 12px;
 `;

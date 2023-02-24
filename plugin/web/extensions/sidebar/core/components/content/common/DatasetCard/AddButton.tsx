@@ -28,7 +28,11 @@ const AddButton: React.FC<Props> = ({
   onClick,
 }) => {
   return items ? (
-    <Dropdown overlay={items} placement={direction} trigger={["click"]}>
+    <Dropdown
+      overlay={items}
+      placement={direction}
+      trigger={["click"]}
+      getPopupContainer={trigger => trigger.parentElement ?? document.body}>
       <StyledButton className={className} height={height}>
         <Icon icon="plus" size={14} />
         <Text>{text}</Text>

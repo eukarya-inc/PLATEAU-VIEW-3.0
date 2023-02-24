@@ -55,6 +55,7 @@ export const FieldWrapper = styled.div<{ gap?: number }>`
 `;
 
 export const FieldValue = styled.div<{ noBorder?: boolean }>`
+  position: relative;
   display: flex;
   justify-content: start;
   align-items: center;

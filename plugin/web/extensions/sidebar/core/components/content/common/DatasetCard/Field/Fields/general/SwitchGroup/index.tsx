@@ -81,7 +81,11 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
           <Field>
             <FieldTitle>グループ</FieldTitle>
             <FieldValue>
-              <Dropdown overlay={editGroupMenu(idx)} placement="bottom" trigger={["click"]}>
+              <Dropdown
+                overlay={editGroupMenu(idx)}
+                placement="bottom"
+                trigger={["click"]}
+                getPopupContainer={trigger => trigger.parentElement ?? document.body}>
                 <StyledDropdownButton>
                   <p style={{ margin: 0 }}>
                     {fieldGroups?.find(fg => fg.id === g.fieldGroupID)?.name ?? "-"}
@@ -165,6 +169,7 @@ const FieldTitle = styled(Text)`
 `;
 
 const FieldValue = styled.div`
+  position: relative;
   display: flex;
   border: 1px solid #d9d9d9;
   border-radius: 2px;

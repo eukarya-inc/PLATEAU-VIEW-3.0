@@ -45,6 +45,7 @@ const Clipping: React.FC<BaseFieldProps<"clipping">> = ({ value, dataID, editMod
         style={{ width: "100%" }}
         value={options.direction}
         onChange={handleUpdateSelect("direction")}
+        getPopupContainer={trigger => trigger.parentElement ?? document.body}
         options={[
           {
             value: "inside",

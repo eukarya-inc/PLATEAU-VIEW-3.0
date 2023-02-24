@@ -116,7 +116,11 @@ const Scene: React.FC<Props> = ({
       <Header>
         <Title>{title}</Title>
         <ActionsBtn>
-          <Dropdown trigger={["click"]} overlay={menu} placement={"topRight"}>
+          <Dropdown
+            trigger={["click"]}
+            overlay={menu}
+            placement={"topRight"}
+            getPopupContainer={trigger => trigger.parentElement ?? document.body}>
             <Icon icon="dotsThreeVertical" size={24} color={"var(--theme-color)"} />
           </Dropdown>
         </ActionsBtn>
@@ -161,6 +165,7 @@ const Title = styled.div`
 `;
 
 const ActionsBtn = styled.a`
+  position: relative;
   display: flex;
   flex-shrink: 0;
 `;
