@@ -15,6 +15,8 @@ const (
 
 type Item struct {
 	ID string `json:"id,omitempty" cms:"id"`
+	// select: specification
+	Specification string `json:"specification,omitempty" cms:"specification,select"`
 	// select: prefecture
 	Prefecture string `json:"prefecture,omitempty" cms:"prefecture,select"`
 	// text: city_name

@@ -2,7 +2,9 @@ package geospatialjp
 
 import (
 	"testing"
+	"time"
 
+	"github.com/reearth/reearthx/util"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,4 +30,10 @@ func TestExtractCityName(t *testing.T) {
 
 func TestPackageFromCatalog(t *testing.T) {
 	// TODO
+}
+
+func TestNendo(t *testing.T) {
+	defer util.MockNow(time.Date(2021, 3, 31, 15, 0, 0, 0, time.UTC))()
+	assert.Equal(t, 2022, nendo("第2.3版"))
+	assert.Equal(t, 2021, nendo(""))
 }

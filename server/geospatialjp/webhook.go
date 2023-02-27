@@ -204,7 +204,7 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 	log.Infof("geospatialjp: catalog: %+v", c)
 
 	// find or create package
-	pkg, err := s.findAndUpdateOrCreatePackage(ctx, c, cityCode, cityName)
+	pkg, err := s.findAndUpdateOrCreatePackage(ctx, c, cityCode, cityName, i.Specification)
 	if err != nil {
 		return err
 	}
@@ -275,9 +275,9 @@ func (s *Services) parseCatalog(ctx context.Context, catalogURL string) (c Catal
 	return c, cf, nil
 }
 
-func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, cityCode, cityName string) (*ckan.Package, error) {
+func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, cityCode, cityName, spec string) (*ckan.Package, error) {
 	// find
-	pkg, pkgName, err := s.findPackage(ctx, cityCode, cityName)
+	pkg, pkgName, err := s.findPackage(ctx, cityCode, cityName, spec)
 	if err != nil {
 		return nil, fmt.Errorf("G空間情報センターからデータセットを検索できませんでした: %w", err)
 	}
@@ -305,11 +305,11 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c Catalog, 
 	return &pkg2, nil
 }
 
-func (s *Services) findPackage(ctx context.Context, cityCode, cityName string) (_ *ckan.Package, n string, err error) {
+func (s *Services) findPackage(ctx context.Context, cityCode, cityName, spec string) (_ *ckan.Package, n string, err error) {
 	if s.CkanPrivate && cityName != tokyo23ku {
+		currentYear := nendo(spec)
 		// search API is not useful for private packages
 		initialYear := 2020
-		currentYear := util.Now().Year()
 		for y := initialYear; y <= currentYear; y++ {
 			p, _ := s.Ckan.ShowPackage(ctx, fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, y))
 			if p.Name != "" {
@@ -325,7 +325,7 @@ func (s *Services) findPackage(ctx context.Context, cityCode, cityName string) (
 		n = q
 	} else {
 		q = fmt.Sprintf("plateau-%s-%s-*", cityCode, cityName)
-		n = fmt.Sprintf("plateau-%s-%s-%s", cityCode, cityName, util.Now().Format("2006"))
+		n = fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, nendo(spec))
 	}
 
 	p, err := s.Ckan.SearchPackageByName(ctx, q)
