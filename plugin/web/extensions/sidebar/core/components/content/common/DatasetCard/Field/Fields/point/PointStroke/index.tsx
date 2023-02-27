@@ -3,13 +3,7 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import {
-  generateID,
-  moveItemDown,
-  moveItemUp,
-  removeItem,
-  postMsg,
-} from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
@@ -26,34 +20,23 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
 }) => {
   const [items, updateItems] = useState(value.items);
 
-  const handleMoveUp = useCallback(
-    (idx: number) => {
-      if (idx === 0) return;
-      updateItems(c => {
-        const newItems = moveItemUp(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleMoveUp = useCallback((idx: number) => {
+    if (idx === 0) return;
+    updateItems(c => {
+      const newItems = moveItemUp(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleMoveDown = useCallback(
     (idx: number) => {
       if (items && idx >= items.length - 1) return;
       updateItems(c => {
         const newItems = moveItemDown(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
         return newItems;
       });
     },
-    [items, onUpdate, value],
+    [items],
   );
 
   const handleAdd = useCallback(() => {
@@ -72,27 +55,16 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
           value: "",
         },
       };
-      onUpdate({
-        ...value,
-        items: value.items ? [...value.items, newItem] : [newItem],
-      });
       return c ? [...c, newItem] : [newItem];
     });
-  }, [value, onUpdate]);
+  }, []);
 
-  const handleRemove = useCallback(
-    (idx: number) => {
-      updateItems(c => {
-        const newItems = removeItem(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleRemove = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = removeItem(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleItemUpdate = (
     item: { condition: Cond<string | number>; strokeColor: string; strokeWidth: number },
@@ -101,16 +73,12 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
     updateItems(c => {
       const newItems = [...(c ?? [])];
       newItems.splice(index, 1, item);
-      onUpdate({
-        ...value,
-        items: newItems,
-      });
       return newItems;
     });
   };
 
   useEffect(() => {
-    if (!isActive || !dataID) return;
+    if (!isActive || !dataID || value.items === items) return;
     const timer = setTimeout(() => {
       const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
       const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
@@ -120,23 +88,20 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
         const cond = stringifyCondition(item.condition);
         pointOutlineColorConditions.unshift([cond, resStrokeColor]);
         pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
-
-        postMsg({
-          action: "updateDatasetInScene",
-          payload: {
-            dataID,
-            update: {
-              marker: {
-                style: "point",
-                pointOutlineColor: {
-                  expression: {
-                    conditions: pointOutlineColorConditions,
-                  },
+        onUpdate({
+          ...value,
+          items,
+          override: {
+            marker: {
+              style: "point",
+              pointOutlineColor: {
+                expression: {
+                  conditions: pointOutlineColorConditions,
                 },
-                pointOutlineWidth: {
-                  expression: {
-                    conditions: pointOutlineWidthConditions,
-                  },
+              },
+              pointOutlineWidth: {
+                expression: {
+                  conditions: pointOutlineWidthConditions,
                 },
               },
             },
@@ -146,15 +111,8 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
     }, 500);
     return () => {
       clearTimeout(timer);
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: { marker: undefined },
-        },
-      });
     };
-  }, [dataID, isActive, items]);
+  }, [dataID, isActive, items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

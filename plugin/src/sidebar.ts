@@ -196,7 +196,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       addedDatasets[idx][1] = "showing";
       reearth.layers.show(addedDatasets[idx][2]);
     } else {
-      const data = createLayer(payload.dataset, payload.updates);
+      const data = createLayer(payload.dataset, payload.overrides);
+      console.log("DATA to add", data);
       const layerID = reearth.layers.add(data);
       const idx = addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
       if (!payload.dataset.visible) {
@@ -209,7 +210,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const layer = reearth.layers.findById(layerId);
     reearth.layers.override(
       layerId,
-      layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
+      layer.data.type === "gtfs" ? proxyGTFS(payload.overrides) : payload.overrides,
     );
   } else if (action === "updateDatasetVisibility") {
     const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataID);
@@ -637,7 +638,7 @@ reearth.on("popupclose", () => {
   openedBuildingSearchDataID = null;
 });
 
-function createLayer(dataset: DataCatalogItem, options?: any) {
+function createLayer(dataset: DataCatalogItem, overrides?: any) {
   const format = dataset.format?.toLowerCase();
   return {
     type: "simple",
@@ -670,8 +671,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
             },
           }
         : null,
-    ...(options
-      ? options
+    ...(overrides !== undefined
+      ? overrides
       : format === "geojson"
       ? {
           marker: {},
@@ -679,13 +680,13 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
           polyline: {},
         }
       : format === "gtfs"
-      ? proxyGTFS(options)
+      ? proxyGTFS(overrides)
       : format === "mvt"
       ? {
           polygon: {},
         }
       : format === "czml"
       ? { resource: {} }
-      : { ...(options ?? {}) }),
+      : { ...(overrides ?? {}) }),
   };
 }

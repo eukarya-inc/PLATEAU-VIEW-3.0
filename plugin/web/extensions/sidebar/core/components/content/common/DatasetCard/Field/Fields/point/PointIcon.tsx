@@ -1,4 +1,3 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
 
@@ -14,46 +13,29 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
   const [imageURL, setImageURL] = useState(value.url ?? "");
   const [imageSize, setImageSize] = useState(value.size);
 
-  const handleURLUpdate = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setImageURL(e.currentTarget.value);
-      onUpdate({
-        ...value,
-        url: e.currentTarget.value,
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleURLUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageURL(e.currentTarget.value);
+  }, []);
 
-  const handleSizeUpdate = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const size = !isNaN(parseFloat(e.currentTarget.value))
-        ? parseFloat(e.currentTarget.value)
-        : 1;
-      setImageSize(size);
-      onUpdate({
-        ...value,
-        size,
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleSizeUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const size = !isNaN(parseFloat(e.currentTarget.value)) ? parseFloat(e.currentTarget.value) : 1;
+    setImageSize(size);
+  }, []);
 
   useEffect(() => {
-    if (!isActive || !dataID) return;
+    if (!isActive || !dataID || (imageURL === value.url && imageSize === value.size)) return;
     const timer = setTimeout(() => {
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: { marker: { style: "image", image: imageURL, imageSize } },
-        },
+      onUpdate({
+        ...value,
+        url: imageURL,
+        size: imageSize,
+        override: { marker: { style: "image", image: imageURL, imageSize } },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, imageURL, imageSize, isActive]);
+  }, [dataID, imageURL, imageSize, isActive, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

@@ -13,15 +13,8 @@ export default ({
   dataset: DataCatalogItem;
   templates?: Template[];
   inEditor?: boolean;
-  onDatasetUpdate: (dataset: DataCatalogItem) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
 }) => {
-  const defaultTemplate = useMemo(() => {
-    const t = templates?.find(t => t.name === dataset.type || t.name === dataset.type2);
-    if (t && !dataset.components?.length) {
-      return t;
-    }
-  }, [templates, dataset]);
-
   const [selectedGroup, setGroup] = useState<string>();
 
   const handleCurrentGroupChange = useCallback((fieldGroupID: string) => {
@@ -30,23 +23,15 @@ export default ({
 
   const activeComponentIDs = useMemo(
     () =>
-      (
-        defaultTemplate?.components ??
-        (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
-          ? dataset.components
-          : dataset.components.filter(
-              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
-            ))
+      (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
+        ? dataset.components
+        : dataset.components.filter(
+            c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
+          )
       )
         ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
         ?.map(c => c.id),
-    [
-      selectedGroup,
-      dataset.components,
-      dataset.fieldGroups,
-      dataset.config?.data,
-      defaultTemplate?.components,
-    ],
+    [selectedGroup, dataset.components, dataset.fieldGroups, dataset.config?.data],
   );
 
   const handleFieldAdd =
@@ -56,7 +41,7 @@ export default ({
       onDatasetUpdate?.({
         ...dataset,
         components: [
-          ...(defaultTemplate ? [] : dataset.components ?? []),
+          ...(dataset.components ?? []),
           {
             id: generateID(),
             type: key.includes("template") ? "template" : key,
@@ -68,11 +53,7 @@ export default ({
 
   const handleFieldUpdate = useCallback(
     (id: string) => (property: any) => {
-      const newDatasetComponents = defaultTemplate?.components
-        ? [...defaultTemplate.components]
-        : dataset.components
-        ? [...dataset.components]
-        : [];
+      const newDatasetComponents = dataset.components ? [...dataset.components] : [];
       const componentIndex = newDatasetComponents?.findIndex(c => c.id === id);
 
       if (!newDatasetComponents || componentIndex === undefined) return;
@@ -84,7 +65,7 @@ export default ({
         components: newDatasetComponents,
       });
     },
-    [dataset, defaultTemplate?.components, onDatasetUpdate],
+    [dataset, onDatasetUpdate],
   );
 
   const handleFieldRemove = useCallback(
@@ -95,12 +76,15 @@ export default ({
 
       if (!newDatasetComponents || componentIndex === undefined) return;
 
-      newDatasetComponents.splice(componentIndex, 1);
+      const removedDataset = newDatasetComponents.splice(componentIndex, 1)[0];
 
-      onDatasetUpdate?.({
-        ...dataset,
-        components: newDatasetComponents,
-      });
+      onDatasetUpdate?.(
+        {
+          ...dataset,
+          components: newDatasetComponents,
+        },
+        removedDataset.cleanseOverride,
+      );
     },
     [dataset, inEditor, onDatasetUpdate],
   );
@@ -132,7 +116,6 @@ export default ({
   });
 
   return {
-    defaultTemplate,
     activeComponentIDs,
     fieldComponentsList,
     handleFieldUpdate,

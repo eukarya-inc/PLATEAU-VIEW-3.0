@@ -83,7 +83,14 @@ export default ({
     return {
       pointColor: {
         name: fieldName["pointColor"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({
+          cleanseOverride: {
+            marker: {
+              style: null,
+              pointColor: null,
+            },
+          },
+        }),
       },
       // pointColorGradient: {
       //   name: fieldName["pointColorGradient"],
@@ -91,27 +98,63 @@ export default ({
       // },
       pointSize: {
         name: fieldName["pointSize"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({
+          cleanseOverride: {
+            marker: {
+              style: null,
+              pointSize: null,
+            },
+          },
+        }),
       },
       pointIcon: {
         name: fieldName["pointIcon"],
         onClick: onFieldAdd({
           size: 1,
+          cleanseOverride: {
+            marker: {
+              style: null,
+              image: null,
+              imageSize: null,
+            },
+          },
         }),
       },
       pointLabel: {
         name: fieldName["pointLabel"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({
+          cleanseOverride: {
+            marker: {
+              style: null,
+              label: null,
+              labelTypography: null,
+              heightReference: null,
+              labelText: null,
+              extrude: null,
+              labelBackground: null,
+              labelBackgroundColor: null,
+            },
+          },
+        }),
       },
       pointModel: {
         name: fieldName["pointModel"],
         onClick: onFieldAdd({
           scale: 1,
+          cleanseOverride: { model: null },
         }),
       },
       pointStroke: {
         name: fieldName["pointStroke"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({
+          cleanseOverride: {
+            marker: {
+              style: null,
+              pointOutlineColor: null,
+              pointOutlineWidth: null,
+            },
+          },
+        }),
       },
       pointCSV: {
         name: fieldName["pointCSV"],

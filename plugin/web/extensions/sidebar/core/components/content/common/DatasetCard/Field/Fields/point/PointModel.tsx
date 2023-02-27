@@ -3,7 +3,6 @@ import {
   TextInput,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../types";
@@ -18,55 +17,29 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
   const [modelURL, setModelURL] = useState(value.modelURL ?? "");
   const [scale, setImageSize] = useState(value.scale);
 
-  const handleURLUpdate = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setModelURL(e.currentTarget.value);
-      onUpdate({
-        ...value,
-        modelURL: e.currentTarget.value,
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleURLUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setModelURL(e.currentTarget.value);
+  }, []);
 
-  const handleScaleUpdate = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const size = !isNaN(parseFloat(e.currentTarget.value))
-        ? parseFloat(e.currentTarget.value)
-        : 1;
-      setImageSize(size);
-      onUpdate({
-        ...value,
-        scale,
-      });
-    },
-    [onUpdate, value, scale],
-  );
+  const handleScaleUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const size = !isNaN(parseFloat(e.currentTarget.value)) ? parseFloat(e.currentTarget.value) : 1;
+    setImageSize(size);
+  }, []);
 
   useEffect(() => {
-    if (!isActive || !dataID) return;
+    if (!isActive || !dataID || (value.scale === scale && value.modelURL === modelURL)) return;
     const timer = setTimeout(() => {
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: { model: { url: modelURL, scale } },
-        },
+      onUpdate({
+        ...value,
+        modelURL,
+        scale,
+        override: { model: { url: modelURL, scale } },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: {
-            model: undefined,
-          },
-        },
-      });
     };
-  }, [dataID, isActive, modelURL, scale]);
+  }, [dataID, isActive, modelURL, scale, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

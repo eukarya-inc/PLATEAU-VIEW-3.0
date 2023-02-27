@@ -1,12 +1,17 @@
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
+import { isEqual, merge } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getDataCatalog, RawDataCatalogItem } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
 import { Data, DataCatalogItem, Template } from "../types";
 
-import { Story as FieldStory, StoryItem } from "./content/common/DatasetCard/Field/Fields/types";
+import {
+  FieldComponent,
+  Story as FieldStory,
+  StoryItem,
+} from "./content/common/DatasetCard/Field/Fields/types";
 import { Pages } from "./Header";
 
 export const defaultProject: Project = {
@@ -56,6 +61,7 @@ export default () => {
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
 
   const [data, setData] = useState<Data[]>();
+  const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
   const [project, updateProject] = useState<Project>(defaultProject);
   const [selectedDatasets, setSelectedDatasets] = useState<DataCatalogItem[]>([]);
 
@@ -124,12 +130,19 @@ export default () => {
 
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
-      updateProject(project => {
-        let dataToAdd = data?.find(d => d.dataID === dataset.dataID);
+      const datasetToAdd = { ...dataset };
 
-        if (!dataToAdd) {
-          dataToAdd = convertToData(dataset as DataCatalogItem);
+      updateProject(project => {
+        if (!dataset.components?.length) {
+          const defaultTemplate = fieldTemplates.find(
+            ft => ft.name === dataset.type || ft.name === dataset.type2,
+          );
+          if (defaultTemplate) {
+            datasetToAdd.components = defaultTemplate.components;
+          }
         }
+
+        const dataToAdd = convertToData(datasetToAdd as DataCatalogItem);
 
         const updatedProject: Project = {
           ...project,
@@ -137,15 +150,22 @@ export default () => {
         };
 
         postMsg({ action: "updateProject", payload: updatedProject });
-        setSelectedDatasets(sds => [...sds, dataset as DataCatalogItem]);
+        setSelectedDatasets(sds => [...sds, datasetToAdd as DataCatalogItem]);
 
         return updatedProject;
       });
 
-      // const options = data?.find(d => d.id === dataset.id)?.components;
-      postMsg({ action: "addDatasetToScene", payload: { dataset } });
+      const overrides = processOverrides(datasetToAdd.components);
+
+      postMsg({
+        action: "addDatasetToScene",
+        payload: {
+          dataset: datasetToAdd,
+          overrides,
+        },
+      });
     },
-    [data],
+    [fieldTemplates],
   );
 
   const handleProjectDatasetRemove = useCallback((dataID: string) => {
@@ -174,28 +194,42 @@ export default () => {
     postMsg({ action: "removeAllDatasetsFromScene" });
   }, []);
 
-  const handleDatasetUpdate = useCallback((updatedDataset: DataCatalogItem) => {
-    setSelectedDatasets(selectedDatasets => {
-      const updatedDatasets = [...selectedDatasets];
-      const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === updatedDataset.dataID);
-      if (datasetIndex >= 0) {
-        if (updatedDatasets[datasetIndex].visible !== updatedDataset.visible) {
-          postMsg({
-            action: "updateDatasetVisibility",
-            payload: { dataID: updatedDataset.dataID, hide: !updatedDataset.visible },
-          });
+  const handleDatasetUpdate = useCallback(
+    (updatedDataset: DataCatalogItem, cleanseOverride?: any) => {
+      setSelectedDatasets(selectedDatasets => {
+        const updatedDatasets = [...selectedDatasets];
+        const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === updatedDataset.dataID);
+        if (datasetIndex >= 0) {
+          if (updatedDatasets[datasetIndex].visible !== updatedDataset.visible) {
+            postMsg({
+              action: "updateDatasetVisibility",
+              payload: { dataID: updatedDataset.dataID, hide: !updatedDataset.visible },
+            });
+          }
+          if (updatedDataset.visible) {
+            const prevOverrides = processOverrides(updatedDatasets[datasetIndex].components);
+            const overrides = processOverrides(updatedDataset.components, cleanseOverride);
+
+            if (!isEqual(prevOverrides, overrides)) {
+              postMsg({
+                action: "updateDatasetInScene",
+                payload: { dataID: updatedDataset.dataID, overrides },
+              });
+            }
+          }
+          updatedDatasets[datasetIndex] = updatedDataset;
         }
-        updatedDatasets[datasetIndex] = updatedDataset;
-      }
-      updateProject(project => {
-        return {
-          ...project,
-          datasets: updatedDatasets.map(ud => convertToData(ud)),
-        };
+        updateProject(project => {
+          return {
+            ...project,
+            datasets: updatedDatasets.map(ud => convertToData(ud)),
+          };
+        });
+        return updatedDatasets;
       });
-      return updatedDatasets;
-    });
-  }, []);
+    },
+    [],
+  );
 
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
@@ -250,6 +284,23 @@ export default () => {
 
         dataset.public = publish;
 
+        setSelectedDatasets(selectedDatasets => {
+          const updatedDatasets = [...selectedDatasets];
+          const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === dataID);
+          if (datasetIndex >= 0) {
+            updatedDatasets[datasetIndex] = dataset;
+          }
+
+          updateProject(project => {
+            return {
+              ...project,
+              datasets: updatedDatasets.map(ud => convertToData(ud)),
+            };
+          });
+
+          return updatedDatasets;
+        });
+
         await handleDataRequest(dataset);
       })();
     },
@@ -260,7 +311,6 @@ export default () => {
 
   // ****************************************
   // Templates
-  const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
 
   const handleTemplateAdd = useCallback(async () => {
     if (!backendURL || !backendProjectName || !backendAccessToken) return;
@@ -499,7 +549,10 @@ export default () => {
             const dataset = processedCatalog.find(item => item.dataID === d.dataID);
             if (dataset) {
               setSelectedDatasets(sds => [...sds, dataset]);
-              postMsg({ action: "addDatasetToScene", payload: { dataset } });
+              postMsg({
+                action: "addDatasetToScene",
+                payload: { dataset, overrides: processOverrides(dataset.components) },
+              });
             }
           });
           if (data.userStory) {
@@ -628,4 +681,18 @@ const convertToData = (item: DataCatalogItem): Data => {
     components: item.components,
     fieldGroups: item.fieldGroups,
   };
+};
+
+export const processOverrides = (components?: FieldComponent[], cleanseOverride?: any) => {
+  if (!components || !components.length) {
+    if (cleanseOverride) {
+      return cleanseOverride;
+    }
+    return;
+  }
+  const overrides = cleanseOverride ?? {};
+  for (let i = 0; i < components.length; i++) {
+    merge(overrides, components[i].override);
+  }
+  return overrides;
 };
