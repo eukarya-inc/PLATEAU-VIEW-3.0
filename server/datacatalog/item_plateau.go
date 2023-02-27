@@ -61,6 +61,7 @@ type PlateauItem struct {
 	Dictionary      *cms.PublicAsset   `json:"dictionary"`
 	Dic             string             `json:"dic"`
 	SearchIndex     []*cms.PublicAsset `json:"search_index"`
+	OpenDataURL     string             `json:"opendata_url"`
 }
 
 func (i PlateauItem) FrnItem(c PlateauIntermediateItem) *DataCatalogItem {
@@ -198,22 +199,24 @@ func (i PlateauItem) IntermediateItem() PlateauIntermediateItem {
 	_ = json.Unmarshal(bom.Clean([]byte(i.Dic)), &dic)
 
 	return PlateauIntermediateItem{
-		ID:         i.ID,
-		Prefecture: i.Prefecture,
-		City:       i.CityName,
-		CityEn:     an.CityEn,
-		CityCode:   an.CityCode,
-		Dic:        dic,
+		ID:          i.ID,
+		Prefecture:  i.Prefecture,
+		City:        i.CityName,
+		CityEn:      an.CityEn,
+		CityCode:    an.CityCode,
+		Dic:         dic,
+		OpenDataURL: i.OpenDataURL,
 	}
 }
 
 type PlateauIntermediateItem struct {
-	ID         string
-	Prefecture string
-	City       string
-	CityEn     string
-	CityCode   string
-	Dic        Dic
+	ID          string
+	Prefecture  string
+	City        string
+	CityEn      string
+	CityCode    string
+	Dic         Dic
+	OpenDataURL string
 }
 
 func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetURL, desc string, layers []string) *DataCatalogItem {
@@ -277,7 +280,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		Format:      an.Format,
 		Year:        y,
 		Layers:      layers,
-		// OpenDataURL: i.OpenDataURL, // TODO
+		OpenDataURL: i.OpenDataURL,
 	}
 }
 
