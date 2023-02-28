@@ -629,9 +629,59 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   }
 });
 
+let currentClickedFeatureId: string;
+
 reearth.on("select", (selected: string | undefined) => {
   // this is used for infobox
   currentSelected = selected;
+
+  const feature = reearth.layers.selectedFeature;
+  currentClickedFeatureId = feature
+    ? feature?.properties?.gml_id // For 3dtiles
+    : undefined;
+
+  let nextConditions: any[] | undefined;
+  let shouldUpdateTilesetColor = true;
+
+  // Reset previous select color for 3dtiles
+  const prevOverriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
+  const prevCondition = prevOverriddenLayer?.["3dtiles"].color?.expression?.conditions;
+  if (
+    currentClickedFeatureId &&
+    prevOverriddenLayer &&
+    prevOverriddenLayer.data.type === "3dtiles"
+  ) {
+    shouldUpdateTilesetColor = !prevCondition?.find(
+      (c: [string, string]) => c[0] === `\${gml_id} === "${currentClickedFeatureId}"`,
+    );
+    nextConditions =
+      prevCondition?.filter((c: [string, string]) => !c[0].startsWith('${gml_id} === "')) ?? [];
+  }
+
+  // Handle select color for 3dtiles
+  const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
+  if (
+    !feature ||
+    overriddenLayer?.data?.type !== "3dtiles" ||
+    !currentClickedFeatureId ||
+    !shouldUpdateTilesetColor
+  ) {
+    return;
+  } else {
+    reearth.layers.override(selected, {
+      "3dtiles": {
+        color: {
+          expression: {
+            conditions: [
+              [`\${gml_id} === "${currentClickedFeatureId}"`, "color('red')"],
+              ...(nextConditions ??
+                (overriddenLayer?.["3dtiles"]?.color?.expression?.conditions || [])),
+            ],
+          },
+        },
+      },
+    });
+  }
 });
 
 reearth.on("popupclose", () => {
