@@ -5,8 +5,10 @@ env:
   GCS_DEST: gs://cms-plateau-prod
   CMS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth-cms:latest
   CMS_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms:latest
+  CMS_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms:latest
   WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth-cms-worker:latest
   WORKER_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms-worker:latest
+  WORKER_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms-worker:latest
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
   GCP_REGION: asia-northeast1
@@ -80,3 +82,25 @@ jobs:
             --region $GCP_REGION \
             --platform managed \
             --quiet
+  push_hub:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull docker image
+        run: docker pull $CMS_IMAGE_NAME_GHCR && docker pull $WORKER_IMAGE_NAME_GHCR
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push cms image
+        run: docker tag $CMS_IMAGE_NAME_GHCR $CMS_IMAGE_NAME_HUB && docker push $CMS_IMAGE_NAME_HUB
+      - name: Push worker image
+        run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_HUB && docker push $WORKER_IMAGE_NAME_HUB
