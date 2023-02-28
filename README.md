@@ -5,8 +5,8 @@
 PLATEAU VIEW 2.0 は以下のシステムにより構成されます。
 
 - **CMS**: ビューワーに掲載する各種データの管理を行う。[Re:Earth CMS](https://github.com/reearth/reearth-cms)を使用。
-- **エディターー**: ビューワーの作成・公開をノーコードで行う。[Re:Earth](https://github.com/reearth/reearth)を使用。
-- **ビューワー**: PLATEAUデータなどの各種データの可視化が可能なWebアプリケーション。エンドユーザーが操作。
+- **エディター**: ビューワーの作成・公開をノーコードで行う。[Re:Earth](https://github.com/reearth/reearth)を使用。
+- **ビューワー**: PLATEAUデータなどの各種データの可視化が可能なWebアプリケーション。
 - **サイドカーサーバー**: PLATEAU VIEW独自の機能を実行するCMSの補助的なサーバー。
 
 詳細は「実証環境構築マニュアル」を参照してください。
