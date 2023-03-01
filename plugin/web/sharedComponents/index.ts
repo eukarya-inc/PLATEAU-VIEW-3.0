@@ -13,6 +13,7 @@ import InputNumber from "@web/sharedComponents/InputNumber";
 import { Content, Footer } from "@web/sharedComponents/Layout";
 import message from "@web/sharedComponents/message";
 import Pagination from "@web/sharedComponents/Pagination";
+import Popconfirm from "@web/sharedComponents/Popconfirm";
 import Radio from "@web/sharedComponents/Radio";
 import Row from "@web/sharedComponents/Row";
 import Select from "@web/sharedComponents/Select";
@@ -38,6 +39,7 @@ export {
   Content,
   Footer,
   message,
+  Popconfirm,
   Radio,
   Row,
   Select,
