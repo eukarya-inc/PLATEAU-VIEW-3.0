@@ -565,7 +565,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         }),
       },
     };
-    override3dtiles(dataID, { color: expression });
+    override3dtiles(dataID, { color: expression, colorBlendMode: "replace" });
   } else if (action === "reset3dtilesColor") {
     const { dataID } = payload;
     const storedObj = colorStoreFor3dtiles[dataID];
