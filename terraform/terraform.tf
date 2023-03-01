@@ -19,6 +19,6 @@ terraform {
   required_version = ">= v1.3.7"
 
   backend "gcs" {
-    bucket = ""
+    bucket = "plateau-test2-terraform-tfstate"
   }
 }

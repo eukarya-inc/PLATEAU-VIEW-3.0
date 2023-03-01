@@ -26,6 +26,8 @@ Auth0テナントを作成した後、[公式のQuick Start](https://github.com/
 export AUTH0_CLIENT_SECRET=""
 ```
 
+※2度目以降の `terraform apply` でもこの変数の設定が必要です。
+
 ### コマンドラインツールのインストール
 
 公式ドキュメントに従ってインストール。
@@ -121,18 +123,24 @@ Apply complete! Resources: * added, * changed, * destroyed.
 
 Outputs:
 
+plateauview_cms_url = "********"
 plateauview_cms_webhook_secret = "********"
 plateauview_cms_webhook_url = "********"
+plateauview_reearth_url = "********"
 plateauview_sdk_token = "********"
 plateauview_sidebar_token = "********"
+plateauview_sidecar_url = "********"
 ```
 
 これらの outputs は後で使う。なおもう一度 outputs を表示したいときは `terraform output` コマンドで表示可能。
 
-なお、outputs内の以下の値は、ここでは説明しないが、別のセットアップで使用するので留意する。
-
-- plateauview_sdk_token: PLATEAU SDK用のトークン。SDKのUIで設定する。
-- plateauview_sidebar_token: ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する。
+- `plateauview_cms_url`: CMS（Re:Earth CMS）のURL
+- `plateauview_cms_webhook_secret`: 下記「CMS インテグレーション設定」で使用
+- `plateauview_cms_webhook_url`: 下記「CMS インテグレーション設定」で使用
+- `plateauview_reearth_url`: エディタ（Re:Earth）のURL
+- `plateauview_sdk_token`: PLATEAU SDK用のトークン。SDKのUIで設定する（詳しくは実証環境構築マニュアルを参照）。
+- `plateauview_sidebar_token`: ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する（詳しくは実証環境構築マニュアルを参照）。
+- `plateauview_sidecar_url`: サイドカーサーバーのURL。エディタ上でサイドバーウィジェットの設定から設定する（詳しくは実証環境構築マニュアルを参照）。
 
 ### シークレットの設定
 
@@ -210,9 +218,7 @@ curl https://api.${DOMAIN}/ping
 
 ### CMS インテグレーション設定
 
-CMSにログインする。
-
-https://cms.${DOMAIN}
+Terraformのoutputsの `plateauview_cms_url` のURL（`https://reearth.${DOMAIN}`）から、CMSにログインする。
 
 ログイン後、ワークスペース・Myインテグレーションを作成する。
 
@@ -244,5 +250,5 @@ gcloud run deploy plateauview-api \
 
 以下のアプリケーションにログインし、正常に使用できることを確認する。 `${DOMAIN}` はドメイン。
 
-- Re:Earth: `https://reearth.${DOMAIN}`
-- CMS: `https://cms.${DOMAIN}`
+- Re:Earth: Terraformのoutputsの `plateauview_reearth_url` の値（`https://reearth.${DOMAIN}`）
+- CMS: Terraformのoutputsの `plateauview_cms_url` の値（`https://cms.${DOMAIN}`）

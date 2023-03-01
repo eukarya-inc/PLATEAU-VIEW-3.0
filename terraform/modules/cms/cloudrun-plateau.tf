@@ -32,15 +32,18 @@ resource "google_cloud_run_service" "plateauview_api" {
       service_account_name = google_service_account.plateauview_api.email
       timeout_seconds      = 3600
       containers {
-        #MEMO: 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
-        # 　　　　　　　　　　そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
+        # 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
+        # そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
         image = "gcr.io/cloudrun/hello"
         resources {
           limits = {
             cpu    = "1000m"
             memory = "1Gi"
           }
-
+        }
+        ports {
+          container_port = 8080
+          name           = "h2c"
         }
 
         dynamic "env" {
@@ -63,7 +66,6 @@ resource "google_cloud_run_service" "plateauview_api" {
           name  = "REEARTH_PLATEAUVIEW_CMS_BASEURL"
           value = "https://${local.api_cms_domain}"
         }
-
         env {
           name  = "REEARTH_PLATEAUVIEW_CKAN_BASEURL"
           value = var.plateauview.ckan_base_url
