@@ -73,15 +73,15 @@ const mountClippingBox = async (initialState: ClippingBoxState): Promise<Clippin
     viewport.width / 2,
     viewport.height / 2,
   );
-  const location: LatLngHeight = {
-    lng: centerOnScreen.lng,
-    lat: centerOnScreen.lat,
-    height: 0,
-  };
   const dimensions = {
     width: 100,
     height: 100,
     length: 100,
+  };
+  const location: LatLngHeight = {
+    lng: centerOnScreen.lng,
+    lat: centerOnScreen.lat,
+    height: dimensions.height,
   };
   // const clipping = {};
   const box = {
@@ -132,12 +132,14 @@ const mountClippingBox = async (initialState: ClippingBoxState): Promise<Clippin
           activeBox: boxState.activeBox,
           activeScalePointIndex: boxState.activeScalePointIndex,
           activeEdgeIndex: boxState.activeEdgeIndex,
+          allowEnterGround: !state.keepBoxAboveGround,
         },
         clipping: {
           ...boxProperties,
           coordinates: [location.lng, location.lat, location.height],
           visible: state.isVisible,
           direction: state.direction,
+          allowEnterGround: !state.keepBoxAboveGround,
         },
       },
     });
