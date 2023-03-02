@@ -2,15 +2,14 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useState, useEffect, useCallback } from "react";
 
-import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
-
 export type Props = {
   name: string;
   isMobile?: boolean;
   expandAll?: boolean;
   nestLevel: number;
-  item: DataCatalogGroup | DataCatalogItem | (DataCatalogItem | DataCatalogGroup)[];
-  selectedID?: string;
+  nodeKey: string;
+  expandedKeys: string[];
+  setExpandedKeys: React.Dispatch<React.SetStateAction<string[]>>;
   children?: React.ReactNode;
 };
 
@@ -19,30 +18,38 @@ const Folder: React.FC<Props> = ({
   isMobile,
   expandAll,
   nestLevel,
-  item,
-  selectedID,
+  nodeKey,
+  expandedKeys,
+  setExpandedKeys,
   children,
 }) => {
   const [isOpen, open] = useState(false);
 
-  // TODO: should improve performance later
-  const isChildSelected = useCallback(
-    (
-      item: DataCatalogGroup | DataCatalogItem | (DataCatalogItem | DataCatalogGroup)[],
-    ): boolean => {
-      if (!("children" in item)) return "dataID" in item && item.dataID === selectedID;
-      return item.children.some(child => isChildSelected(child));
-    },
-    [selectedID],
-  );
-
   useEffect(() => {
-    open(() => expandAll || (!!selectedID && isChildSelected(item)));
-  }, [expandAll, isChildSelected, item, selectedID]);
+    if (expandAll || expandedKeys.includes(nodeKey)) open(true);
+  }, [expandAll, expandedKeys, nodeKey]);
+
+  const handleExpand = useCallback(
+    (key: string) => {
+      setExpandedKeys((prevState: string[]) => {
+        const newExpandedKeys = [...prevState];
+        if (prevState.includes(key)) {
+          const index = prevState.findIndex(item => item === key);
+          newExpandedKeys.splice(index, 1);
+          open(false);
+        } else {
+          newExpandedKeys.push(key);
+          open(true);
+        }
+        return newExpandedKeys;
+      });
+    },
+    [setExpandedKeys],
+  );
 
   return (
     <Wrapper key={name} isOpen={isOpen}>
-      <FolderItem nestLevel={nestLevel} onClick={() => open(!isOpen)}>
+      <FolderItem nestLevel={nestLevel} onClick={() => handleExpand(nodeKey)}>
         <NameWrapper isMobile={isMobile}>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
           <Name>{name}</Name>

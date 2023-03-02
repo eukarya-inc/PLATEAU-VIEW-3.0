@@ -1,17 +1,19 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 export type Props = {
   item: DataCatalogItem;
   isMobile?: boolean;
   nestLevel: number;
   selectedID?: string;
+  nodeKey: string;
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
   onSelect?: (dataID: string) => void;
+  setExpandedKeys: React.Dispatch<React.SetStateAction<string[]>>;
 };
 
 const File: React.FC<Props> = ({
@@ -19,10 +21,12 @@ const File: React.FC<Props> = ({
   isMobile,
   nestLevel,
   selectedID,
+  nodeKey,
   addDisabled,
   onDatasetAdd,
   onOpenDetails,
   onSelect,
+  setExpandedKeys,
 }) => {
   const handleClick = useCallback(() => {
     onDatasetAdd(item);
@@ -37,6 +41,34 @@ const File: React.FC<Props> = ({
     () => (item.type !== "group" ? selectedID === item.id : false),
     [selectedID, item],
   );
+
+  const expandAllParentKeys = useCallback(
+    (key: string) => {
+      const keyArr = key.split("-");
+      while (keyArr.length > 1) {
+        keyArr.pop();
+        const parent = keyArr.join("-");
+        setExpandedKeys((prevState: string[]) => {
+          const newExpandedKeys = [...prevState];
+          if (!prevState.includes(parent)) newExpandedKeys.push(parent);
+          return newExpandedKeys;
+        });
+      }
+    },
+    [setExpandedKeys],
+  );
+
+  useEffect(() => {
+    const { selectedDataset } = window as any;
+    if (selectedDataset) {
+      onOpenDetails?.(selectedDataset);
+      onSelect?.(selectedDataset.dataID);
+      if (selected) expandAllParentKeys(nodeKey);
+      setTimeout(() => {
+        (window as any).selectedDataset = undefined;
+      }, 500);
+    }
+  }, [expandAllParentKeys, nodeKey, onOpenDetails, onSelect, selected]);
 
   return (
     <Wrapper nestLevel={nestLevel} selected={selected}>
