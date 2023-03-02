@@ -8,20 +8,20 @@ export default ({
   value,
   fieldGroups,
   onUpdate,
-  onCurrentGroupChange,
+  onCurrentGroupUpdate,
 }: {
   value: SwitchGroup;
   fieldGroups?: Group[];
   onUpdate: (property: SwitchGroup) => void;
-  onCurrentGroupChange: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate: (fieldGroupID: string) => void;
 }) => {
   const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
   const [title, setTitle] = useState(value.title);
   const [selectedGroup, selectGroup] = useState(value.groups[0]);
 
   useEffect(() => {
-    onCurrentGroupChange(selectedGroup.fieldGroupID);
-  }, [selectedGroup.fieldGroupID, onCurrentGroupChange]);
+    onCurrentGroupUpdate(selectedGroup.fieldGroupID);
+  }, [selectedGroup.fieldGroupID, onCurrentGroupUpdate]);
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

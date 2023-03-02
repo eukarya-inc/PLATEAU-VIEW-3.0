@@ -1,12 +1,13 @@
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
-import { isEqual, merge } from "lodash";
+import { merge, cloneDeep } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { getDataCatalog, RawDataCatalogItem } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
 import { Data, DataCatalogItem, Template } from "../types";
 
+import { cleanseOverrides } from "./content/common/DatasetCard/Field/fieldHooks";
 import {
   FieldComponent,
   Story as FieldStory,
@@ -64,6 +65,7 @@ export default () => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
   const [project, updateProject] = useState<Project>(defaultProject);
   const [selectedDatasets, setSelectedDatasets] = useState<DataCatalogItem[]>([]);
+  const [cleanseOverride, setCleanseOverride] = useState<string>();
 
   const handleBackendFetch = useCallback(async () => {
     if (!backendURL) return;
@@ -155,7 +157,28 @@ export default () => {
         return updatedProject;
       });
 
-      const overrides = processOverrides(datasetToAdd.components);
+      const activeIDs = (
+        !datasetToAdd.components?.find(c => c.type === "switchGroup") || !datasetToAdd.fieldGroups
+          ? datasetToAdd.components
+          : datasetToAdd.components.filter(
+              c =>
+                (c.group && c.group === datasetToAdd.fieldGroups?.[0].id) ||
+                c.type === "switchGroup",
+            )
+      )
+        ?.filter(c => !(!datasetToAdd.config?.data && c.type === "switchDataset"))
+        ?.map(c => c.id);
+
+      let overrides = undefined;
+      const activeFields = datasetToAdd.components?.filter(
+        c => !!activeIDs?.find(id => id === c.id),
+      );
+      const inactivefields = datasetToAdd.components?.filter(
+        c => !activeIDs?.find(id => id === c.id),
+      );
+
+      const cleanseOverrides = processOverrides("cleanse", inactivefields);
+      overrides = processOverrides("update", activeFields, cleanseOverrides);
 
       postMsg({
         action: "addDatasetToScene",
@@ -206,16 +229,8 @@ export default () => {
               payload: { dataID: updatedDataset.dataID, hide: !updatedDataset.visible },
             });
           }
-          if (updatedDataset.visible) {
-            const prevOverrides = processOverrides(updatedDatasets[datasetIndex].components);
-            const overrides = processOverrides(updatedDataset.components, cleanseOverride);
-
-            if (!isEqual(prevOverrides, overrides)) {
-              postMsg({
-                action: "updateDatasetInScene",
-                payload: { dataID: updatedDataset.dataID, overrides },
-              });
-            }
+          if (cleanseOverride) {
+            setCleanseOverride(cleanseOverride);
           }
           updatedDatasets[datasetIndex] = updatedDataset;
         }
@@ -305,6 +320,28 @@ export default () => {
       })();
     },
     [processedCatalog, inEditor, handleDataRequest],
+  );
+
+  const handleOverride = useCallback(
+    (dataID: string, activeIDs?: string[]) => {
+      if (activeIDs) {
+        let overrides = undefined;
+        const dataset = selectedDatasets.find(sd => sd.dataID === dataID);
+        const activeFields = dataset?.components?.filter(c => !!activeIDs.find(id => id === c.id));
+        const inactivefields = dataset?.components?.filter(c => !activeIDs.find(id => id === c.id));
+
+        const cleanseOverrides = processOverrides("cleanse", inactivefields, cleanseOverride);
+        overrides = processOverrides("update", activeFields, cleanseOverrides);
+
+        setCleanseOverride(undefined);
+
+        postMsg({
+          action: "updateDatasetInScene",
+          payload: { dataID, overrides },
+        });
+      }
+    },
+    [selectedDatasets, cleanseOverride],
   );
 
   // ****************************************
@@ -551,7 +588,7 @@ export default () => {
               setSelectedDatasets(sds => [...sds, dataset]);
               postMsg({
                 action: "addDatasetToScene",
-                payload: { dataset, overrides: processOverrides(dataset.components) },
+                payload: { dataset, overrides: processOverrides("update", dataset.components) },
               });
             }
           });
@@ -616,6 +653,7 @@ export default () => {
     handleProjectSceneUpdate,
     handleModalOpen,
     handleThreeDTilesSearch,
+    handleOverride,
   };
 };
 
@@ -683,16 +721,23 @@ const convertToData = (item: DataCatalogItem): Data => {
   };
 };
 
-export const processOverrides = (components?: FieldComponent[], cleanseOverride?: any) => {
+export const processOverrides = (
+  action: "update" | "cleanse",
+  components?: FieldComponent[],
+  startingOverride?: any,
+) => {
   if (!components || !components.length) {
-    if (cleanseOverride) {
-      return cleanseOverride;
+    if (startingOverride) {
+      return startingOverride;
     }
     return;
   }
-  const overrides = cleanseOverride ?? {};
+  const overrides = cloneDeep(startingOverride ?? {});
   for (let i = 0; i < components.length; i++) {
-    merge(overrides, components[i].override);
+    merge(
+      overrides,
+      action === "cleanse" ? cleanseOverrides[components[i].type] : components[i].override,
+    );
   }
   return overrides;
 };

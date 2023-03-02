@@ -15,7 +15,6 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
   dataID,
   value,
   editMode,
-  isActive,
   onUpdate,
 }) => {
   const [pointColors, updatePointColors] = useState(value.pointColors);
@@ -65,7 +64,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
   };
 
   useEffect(() => {
-    if (!isActive || !dataID || value.pointColors === pointColors) return;
+    if (!dataID || value.pointColors === pointColors) return;
 
     const timer = setTimeout(() => {
       const conditions: [string, string][] = [["true", 'color("white")']];
@@ -92,7 +91,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, isActive, pointColors, value, onUpdate]);
+  }, [dataID, pointColors, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

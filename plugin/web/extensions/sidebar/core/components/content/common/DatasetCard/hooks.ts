@@ -1,53 +1,65 @@
 import { DataCatalogItem, Group, Template } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import generateFieldComponentsList from "./Field/fieldHooks";
+import generateFieldComponentsList, { cleanseOverrides } from "./Field/fieldHooks";
 
 export default ({
   dataset,
   templates,
   inEditor,
   onDatasetUpdate,
+  onOverride,
 }: {
   dataset: DataCatalogItem;
   templates?: Template[];
   inEditor?: boolean;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
+  onOverride?: (dataID: string, activeIDs?: string[]) => void;
 }) => {
   const [selectedGroup, setGroup] = useState<string>();
+  const [activeComponentIDs, setActiveIDs] = useState<string[] | undefined>();
 
-  const handleCurrentGroupChange = useCallback((fieldGroupID: string) => {
+  useEffect(() => {
+    const newActiveIDs = selectedGroup
+      ? (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
+          ? dataset.components
+          : dataset.components.filter(
+              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
+            )
+        )
+          ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
+          ?.map(c => c.id)
+      : dataset.components?.map(c => c.id);
+
+    if (newActiveIDs !== activeComponentIDs) {
+      setActiveIDs(newActiveIDs);
+    }
+  }, [selectedGroup, dataset.components]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (activeComponentIDs) {
+      onOverride?.(dataset.dataID, activeComponentIDs);
+    }
+  }, [activeComponentIDs]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleCurrentGroupUpdate = useCallback((fieldGroupID?: string) => {
     setGroup(fieldGroupID);
   }, []);
-
-  const activeComponentIDs = useMemo(
-    () =>
-      (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
-        ? dataset.components
-        : dataset.components.filter(
-            c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
-          )
-      )
-        ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
-        ?.map(c => c.id),
-    [selectedGroup, dataset.components, dataset.fieldGroups, dataset.config?.data],
-  );
 
   const handleFieldAdd =
     (property: any) =>
     ({ key }: { key: string }) => {
       if (!inEditor) return;
+      const newField = {
+        id: generateID(),
+        type: key.includes("template") ? "template" : key,
+        ...property,
+      };
+
       onDatasetUpdate?.({
         ...dataset,
-        components: [
-          ...(dataset.components ?? []),
-          {
-            id: generateID(),
-            type: key.includes("template") ? "template" : key,
-            ...property,
-          },
-        ],
+        components: [...(dataset.components ?? []), newField],
       });
     };
 
@@ -76,17 +88,21 @@ export default ({
 
       if (!newDatasetComponents || componentIndex === undefined) return;
 
-      const removedDataset = newDatasetComponents.splice(componentIndex, 1)[0];
+      const removedComponent = newDatasetComponents.splice(componentIndex, 1)[0];
+
+      if (removedComponent.type === "switchGroup") {
+        handleCurrentGroupUpdate(undefined);
+      }
 
       onDatasetUpdate?.(
         {
           ...dataset,
           components: newDatasetComponents,
         },
-        removedDataset.cleanseOverride,
+        cleanseOverrides[removedComponent.type] ?? undefined,
       );
     },
-    [dataset, inEditor, onDatasetUpdate],
+    [dataset, inEditor, onDatasetUpdate, handleCurrentGroupUpdate],
   );
 
   const handleGroupsUpdate = useCallback(
@@ -120,7 +136,7 @@ export default ({
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
-    handleCurrentGroupChange,
+    handleCurrentGroupUpdate,
     handleGroupsUpdate,
   };
 };

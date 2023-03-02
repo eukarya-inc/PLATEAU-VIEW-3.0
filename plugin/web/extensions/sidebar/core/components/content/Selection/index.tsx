@@ -16,6 +16,7 @@ export type Props = {
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
   onThreeDTilesSearch: (id: string) => void;
+  onOverride?: (dataID: string, activeIDs?: string[]) => void;
 };
 
 const Selection: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const Selection: React.FC<Props> = ({
   onDatasetRemoveAll,
   onModalOpen,
   onThreeDTilesSearch,
+  onOverride,
 }) => {
   return (
     <Wrapper className={className}>
@@ -50,6 +52,7 @@ const Selection: React.FC<Props> = ({
               onDatasetUpdate={onDatasetUpdate}
               onDatasetRemove={onDatasetRemove}
               onThreeDTilesSearch={onThreeDTilesSearch}
+              onOverride={onOverride}
             />
           ))
           .reverse()}

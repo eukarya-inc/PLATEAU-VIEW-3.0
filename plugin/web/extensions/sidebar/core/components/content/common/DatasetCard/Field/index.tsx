@@ -35,7 +35,7 @@ export type Props = {
   onUpdate?: (id: string) => (property: any) => void;
   onRemove?: (id: string) => void;
   onGroupsUpdate?: (groups: Group[], selectedGroup?: string) => void;
-  onCurrentGroupChange?: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate?: (fieldGroupID: string) => void;
 };
 
 const getFieldGroup = (field: string) => {
@@ -64,7 +64,7 @@ const FieldComponent: React.FC<Props> = ({
   onUpdate,
   onRemove,
   onGroupsUpdate,
-  onCurrentGroupChange,
+  onCurrentGroupUpdate,
 }) => {
   const Field = field.type === "template" ? null : fields[field.type];
   const [groupPopupOpen, setGroupPopup] = useState(false);
@@ -161,7 +161,7 @@ const FieldComponent: React.FC<Props> = ({
               configData={configData}
               dataID={dataID}
               onUpdate={onUpdate?.(field.id)}
-              onCurrentGroupChange={onCurrentGroupChange}
+              onCurrentGroupUpdate={onCurrentGroupUpdate}
             />
           </BodyWrapper>
         )}

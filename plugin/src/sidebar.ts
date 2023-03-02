@@ -663,7 +663,11 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       ? omit(overrides, "data")
       : format === "geojson"
       ? {
-          marker: {},
+          marker: {
+            style: "point",
+            pointSize: 10,
+            pointColor: "white",
+          },
           polygon: {},
           polyline: {},
         }

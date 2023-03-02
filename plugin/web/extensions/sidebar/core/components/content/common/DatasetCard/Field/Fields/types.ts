@@ -358,7 +358,7 @@ export type BaseFieldProps<T extends keyof Fields> = {
   fieldGroups?: Group[];
   configData?: ConfigData[];
   onUpdate: (property: Fields[T]) => void;
-  onCurrentGroupChange: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate: (fieldGroupID: string) => void;
 };
 
 export type ConfigData = { name: string; type: string; url: string; layers?: string[] };

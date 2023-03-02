@@ -11,7 +11,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
   editMode,
   fieldGroups,
   onUpdate,
-  onCurrentGroupChange,
+  onCurrentGroupUpdate,
 }) => {
   const {
     title,
@@ -29,7 +29,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
     value,
     fieldGroups,
     onUpdate,
-    onCurrentGroupChange,
+    onCurrentGroupUpdate,
   });
 
   const uiMenu = (
