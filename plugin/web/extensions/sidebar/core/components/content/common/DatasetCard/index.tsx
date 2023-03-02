@@ -1,6 +1,6 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { Dropdown, Icon, Menu } from "@web/sharedComponents";
+import { Dropdown, Icon, Menu, Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -30,6 +30,7 @@ export type Props = {
   dataset: DataCatalogItem;
   templates?: Template[];
   inEditor?: boolean;
+  savingDataset: boolean;
   onDatasetSave: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
@@ -40,6 +41,7 @@ const DatasetCard: React.FC<Props> = ({
   dataset,
   templates,
   inEditor,
+  savingDataset,
   onDatasetSave,
   onDatasetRemove,
   onDatasetUpdate,
@@ -268,10 +270,15 @@ const DatasetCard: React.FC<Props> = ({
           {inEditor && currentTab === "edit" && (
             <>
               <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldComponentsList)} />
-              <SaveButton onClick={handleFieldSave}>
+              <SaveButton onClick={handleFieldSave} disabled={savingDataset}>
                 <Icon icon="save" size={14} />
                 <Text>保存</Text>
               </SaveButton>
+              {savingDataset && (
+                <Loading>
+                  <Spin />
+                </Loading>
+              )}
             </>
           )}
         </BodyWrapper>
@@ -392,7 +399,7 @@ const StyledAddButton = styled(AddButton)`
   margin-top: 12px;
 `;
 
-const SaveButton = styled.div`
+const SaveButton = styled.div<{ disabled: boolean }>`
   margin-top: 12px;
   display: flex;
   justify-content: center;
@@ -408,6 +415,12 @@ const SaveButton = styled.div`
   :hover {
     background: #f4f4f4;
   }
+  ${({ disabled }) =>
+    disabled &&
+    `
+      color: rgb(209, 209, 209);
+      pointer-events: none;
+    `}
 `;
 
 const Text = styled.p`
@@ -426,4 +439,15 @@ const OpenDataButton = styled.div`
   border: 1px solid #e6e6e6;
   border-radius: 4px;
   cursor: pointer;
+`;
+const Loading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

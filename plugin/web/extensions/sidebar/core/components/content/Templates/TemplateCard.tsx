@@ -1,6 +1,6 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 // import { postMsg } from "@web/extensions/sidebar/utils";
-import { Dropdown, Icon, Menu } from "@web/sharedComponents";
+import { Dropdown, Icon, Menu, Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -28,10 +28,16 @@ type Tabs = "default" | "edit";
 
 export type Props = {
   template: Template;
+  savingTemplate: boolean;
   onTemplateSave: (template: Template) => Promise<void>;
   onTemplateUpdate?: (template: Template) => void;
 };
-const TemplateCard: React.FC<Props> = ({ template, onTemplateSave, onTemplateUpdate }) => {
+const TemplateCard: React.FC<Props> = ({
+  template,
+  savingTemplate,
+  onTemplateSave,
+  onTemplateUpdate,
+}) => {
   const [currentTab, changeTab] = useState<Tabs>("edit");
   const [hidden, setHidden] = useState(false);
 
@@ -182,10 +188,15 @@ const TemplateCard: React.FC<Props> = ({ template, onTemplateSave, onTemplateUpd
           {currentTab === "edit" && (
             <>
               <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldComponentsList)} />
-              <SaveButton onClick={handleTemplateSave}>
+              <SaveButton onClick={handleTemplateSave} disabled={savingTemplate}>
                 <Icon icon="save" size={14} />
                 <Text>保存</Text>
               </SaveButton>
+              {savingTemplate && (
+                <Loading>
+                  <Spin />
+                </Loading>
+              )}
             </>
           )}
         </BodyWrapper>
@@ -303,7 +314,7 @@ const StyledAddButton = styled(AddButton)`
   margin-top: 12px;
 `;
 
-const SaveButton = styled.div`
+const SaveButton = styled.div<{ disabled?: boolean }>`
   margin-top: 12px;
   display: flex;
   justify-content: center;
@@ -319,6 +330,12 @@ const SaveButton = styled.div`
   :hover {
     background: #f4f4f4;
   }
+  ${({ disabled }) =>
+    disabled &&
+    `
+      color: rgb(209, 209, 209);
+      pointer-events: none;
+    `}
 `;
 
 const Text = styled.p`
@@ -338,4 +355,16 @@ const EditIcon = styled(Icon)`
   :hover {
     cursor: pointer;
   }
+`;
+
+const Loading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

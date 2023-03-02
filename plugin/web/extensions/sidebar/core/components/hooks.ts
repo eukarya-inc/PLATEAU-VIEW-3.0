@@ -65,6 +65,7 @@ export default () => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
   const [project, updateProject] = useState<Project>(defaultProject);
   const [selectedDatasets, setSelectedDatasets] = useState<DataCatalogItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [cleanseOverride, setCleanseOverride] = useState<string>();
 
   const handleBackendFetch = useCallback(async () => {
@@ -281,12 +282,14 @@ export default () => {
     (dataID: string) => {
       (async () => {
         if (!inEditor) return;
+        setLoading(true);
         const selectedDataset = selectedDatasets.find(d => d.dataID === dataID);
 
         await handleDataRequest(selectedDataset);
+        setLoading(false);
       })();
     },
-    [selectedDatasets, inEditor, handleDataRequest],
+    [inEditor, selectedDatasets, handleDataRequest],
   );
 
   const handleDatasetPublish = useCallback(
@@ -367,6 +370,7 @@ export default () => {
   const handleTemplateSave = useCallback(
     async (template: Template) => {
       if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      setLoading(true);
       const res = await fetch(
         `${backendURL}/sidebar/${backendProjectName}/templates/${template.id}`,
         {
@@ -387,6 +391,7 @@ export default () => {
           return t2;
         });
       });
+      setLoading(false);
     },
     [backendURL, backendProjectName, backendAccessToken],
   );
@@ -641,6 +646,7 @@ export default () => {
     backendProjectName,
     templates: fieldTemplates,
     currentPage,
+    loading,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,

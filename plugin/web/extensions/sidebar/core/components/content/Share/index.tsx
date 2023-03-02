@@ -1,5 +1,5 @@
 import CommonPage from "@web/extensions/sidebar/core/components/content/CommonPage";
-import { Row, Icon, message } from "@web/sharedComponents";
+import { Row, Icon, message, Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { memo, useState } from "react";
 
@@ -62,6 +62,11 @@ const Share: React.FC<Props> = ({
         <ShareButton onClick={handleProjectShare} disabled={shareDisabled}>
           共有
         </ShareButton>
+        {shareDisabled && (
+          <Loading>
+            <Spin />
+          </Loading>
+        )}
         {publishedUrl && (
           <>
             <Subtitle>URLで共有</Subtitle>
@@ -190,4 +195,15 @@ const ShareTextWrapper = styled.div`
 const ShareText = styled.p`
   margin: 0;
   color: rgba(0, 0, 0, 0.45);
+`;
+const Loading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
