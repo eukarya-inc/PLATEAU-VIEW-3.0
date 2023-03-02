@@ -59,7 +59,8 @@ type ActionType =
   | "update3dtilesShadow"
   | "reset3dtilesShadow"
   | "infoboxFieldsFetch"
-  | "infoboxFieldsSaved";
+  | "infoboxFieldsSaved"
+  | "findLayerByDataID";
 // FIXME(@keiya01): support auto csv field complement
 // | "getLocationNamesFromCSVFeatureProperty"
 

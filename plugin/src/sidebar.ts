@@ -337,6 +337,19 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       height: reearth.viewport.height - 68,
       width: reearth.viewport.width - 12,
     });
+  } else if (action === "findLayerByDataID") {
+    const { dataID } = payload;
+    const layerID = addedDatasets.find(a => a[0] === dataID)?.[2];
+    const layer = reearth.layers.findById(layerID);
+    reearth.ui.postMessage({
+      action,
+      payload: {
+        layer: {
+          id: layer.id,
+          data: layer.data,
+        },
+      },
+    });
   }
 
   // ************************************************
