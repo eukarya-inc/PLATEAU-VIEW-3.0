@@ -634,8 +634,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     data: {
       type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
-      layers:
-        format === "mvt" ? dataset.config?.data?.[0].layers?.[0] ?? dataset.layers?.[0] : undefined,
+      layers: dataset.config?.data?.[0].layers ?? dataset.layers,
       ...(overrides?.data || {}),
     },
     visible: true,
