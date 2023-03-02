@@ -1,5 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
+import omit from "lodash/omit";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -336,33 +337,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       height: reearth.viewport.height - 68,
       width: reearth.viewport.width - 12,
     });
-  } else if (action === "updateInterval") {
-    const { dataID, interval } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        updateInterval: interval,
-      },
-    });
-  } else if (action === "updateTimeBasedDisplay") {
-    const { dataID, timeBasedDisplay, timeFieldName } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    if (timeBasedDisplay) {
-      reearth.layers.override(layerId, {
-        data: {
-          time: {
-            property: timeFieldName,
-            interval: 86400000,
-          },
-        },
-      });
-    } else {
-      reearth.layers.override(layerId, {
-        data: {
-          time: undefined,
-        },
-      });
-    }
   }
 
   // ************************************************
@@ -382,42 +356,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload,
     });
   }
-
-  // ************************************************
-  // CSV
-  if (action === "updatePointCSV") {
-    const { dataID, lng, lat, height } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        csv: {
-          lngColumn: lng,
-          latColumn: lat,
-          heightColumn: height,
-        },
-      },
-    });
-  } else if (action === "resetPointCSV") {
-    const { dataID } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        csv: undefined,
-      },
-    });
-  }
-  // FIXME(@keiya01): support auto csv field complement
-  // else if (action === "getLocationNamesFromCSVFeatureProperty") {
-  // const { dataID } = payload;
-  // const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-  // const layer = reearth.layers.findById(layerId);
-  // reearth.ui.postMessage({
-  //   action,
-  //   locationNames: getLocationNamesFromFeatureProperties({
-  //     ...(layer.computed?.features[0] || {}),
-  //   }),
-  // });
-  // }
 
   // ************************************************
   // for infobox
@@ -698,6 +636,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers:
         format === "mvt" ? dataset.config?.data?.[0].layers?.[0] ?? dataset.layers?.[0] : undefined,
+      ...(overrides?.data || {}),
     },
     visible: true,
     infobox:
@@ -722,7 +661,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
           }
         : null,
     ...(overrides !== undefined
-      ? overrides
+      ? omit(overrides, "data")
       : format === "geojson"
       ? {
           marker: {},

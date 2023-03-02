@@ -58,12 +58,8 @@ type ActionType =
   | "findTileset"
   | "update3dtilesShadow"
   | "reset3dtilesShadow"
-  | "updateInterval"
   | "infoboxFieldsFetch"
-  | "infoboxFieldsSaved"
-  | "updateTimeBasedDisplay"
-  | "updatePointCSV"
-  | "resetPointCSV";
+  | "infoboxFieldsSaved";
 // FIXME(@keiya01): support auto csv field complement
 // | "getLocationNamesFromCSVFeatureProperty"
 

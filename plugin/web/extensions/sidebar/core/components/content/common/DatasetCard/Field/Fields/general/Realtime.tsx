@@ -1,11 +1,10 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon, Switch } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpdate, dataID }) => {
+const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpdate }) => {
   const [intervalInSecond, setIntervalValue] = useState<number>(value.updateInterval ?? 30);
   const [timer, setTimer] = useState<string>("00:00:00");
   const [enableUpdate, changeUpdateState] = useState<boolean>(true);
@@ -52,34 +51,38 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
   const handleChangeUpdateTime = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setIntervalValue(parseInt(e.currentTarget.value));
-      onUpdate({
-        ...value,
-        updateInterval: parseInt(e.currentTarget.value),
-      });
       startTimer(intervalInSecond);
     },
-    [intervalInSecond, onUpdate, startTimer, value],
+    [intervalInSecond, startTimer],
   );
 
   const propagateRealTimeToLayer = useCallback(() => {
+    if (value.updateInterval === intervalInSecond) {
+      return;
+    }
+
     if (enableUpdate) {
-      postMsg({
-        action: "updateInterval",
-        payload: {
-          dataID,
-          interval: intervalInSecond * 1000, // to ms
+      onUpdate({
+        ...value,
+        updateInterval: intervalInSecond,
+        override: {
+          data: {
+            updateInterval: intervalInSecond * 1000, // to ms
+          },
         },
       });
     } else {
-      postMsg({
-        action: "updateInterval",
-        payload: {
-          dataID,
-          interval: undefined, // to ms
+      onUpdate({
+        ...value,
+        updateInterval: intervalInSecond,
+        override: {
+          data: {
+            updateInterval: undefined, // to ms
+          },
         },
       });
     }
-  }, [intervalInSecond, dataID, enableUpdate]);
+  }, [intervalInSecond, enableUpdate, onUpdate, value]);
 
   useEffect(() => {
     if (enableUpdate) {

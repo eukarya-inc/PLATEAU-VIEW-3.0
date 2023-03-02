@@ -3,8 +3,9 @@ import {
   TextInput,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { postMsg } from "@web/extensions/sidebar/utils";
 import debounce from "lodash/debounce";
+import isEqual from "lodash/isEqual";
+import pick from "lodash/pick";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../types";
@@ -15,7 +16,7 @@ type LocationNameField = {
   height?: string;
 };
 
-const PointCSV: React.FC<BaseFieldProps<"pointCSV">> = ({ value, editMode, dataID, onUpdate }) => {
+const PointCSV: React.FC<BaseFieldProps<"pointCSV">> = ({ value, editMode, onUpdate }) => {
   const [locationNames, setLocationNames] = useState<LocationNameField>({
     lat: value?.lat,
     lng: value?.lng,
@@ -28,28 +29,33 @@ const PointCSV: React.FC<BaseFieldProps<"pointCSV">> = ({ value, editMode, dataI
   );
 
   const handleUpdate = useCallback(() => {
-    postMsg({
-      action: "updatePointCSV",
-      payload: {
-        dataID: dataID,
-        ...locationNames,
+    if (isEqual(pick(value, "lng", "lat", "height"), locationNames)) {
+      return;
+    }
+    onUpdate({
+      ...value,
+      ...locationNames,
+      override: {
+        data: {
+          csv: {
+            lngColumn: locationNames.lng,
+            latColumn: locationNames.lat,
+            heightColumn: locationNames.height,
+          },
+        },
       },
     });
-  }, [dataID, locationNames]);
+  }, [value, locationNames, onUpdate]);
 
   const handleChange = useCallback(
     (prop: keyof LocationNameField) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const text = e.currentTarget.value;
       setLocationNames(v => {
         const next = { ...v, [prop]: text };
-        onUpdate({
-          ...(value ?? {}),
-          ...next,
-        });
         return next;
       });
     },
-    [value, onUpdate],
+    [],
   );
 
   useEffect(() => {
