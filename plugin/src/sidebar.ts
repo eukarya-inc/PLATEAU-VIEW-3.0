@@ -682,8 +682,15 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
             pointSize: 10,
             pointColor: "white",
           },
-          polygon: {},
-          polyline: {},
+          polygon: {
+            fill: false,
+            stroke: true,
+            strokeWidth: 5,
+            heightReference: "clamp",
+          },
+          polyline: {
+            clampToGround: true,
+          },
         }
       : format === "gtfs"
       ? proxyGTFS(overrides)
