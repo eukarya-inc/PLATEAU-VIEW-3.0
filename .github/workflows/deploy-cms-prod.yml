@@ -38,6 +38,7 @@ jobs:
           name: reearth-cms-web
           check_artifacts: true
           search_artifacts: true
+          run_id: ${{ github.event.inputs.web_run_id }}
       - name: Extract
         run: tar -xvf reearth-cms-web.tar.gz
       - name: Deploy
