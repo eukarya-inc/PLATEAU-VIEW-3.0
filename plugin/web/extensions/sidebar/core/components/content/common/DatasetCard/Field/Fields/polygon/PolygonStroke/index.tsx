@@ -3,13 +3,7 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import {
-  generateID,
-  moveItemDown,
-  moveItemUp,
-  removeItem,
-  postMsg,
-} from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
@@ -21,40 +15,23 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
   dataID,
   value,
   editMode,
-  isActive,
   onUpdate,
 }) => {
   const [items, updateItems] = useState(value.items);
 
-  const handleMoveUp = useCallback(
-    (idx: number) => {
-      if (idx === 0) return;
-      updateItems(c => {
-        const newItems = moveItemUp(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleMoveUp = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = moveItemUp(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
-  const handleMoveDown = useCallback(
-    (idx: number) => {
-      if (items && idx >= items.length - 1) return;
-      updateItems(c => {
-        const newItems = moveItemDown(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [items, onUpdate, value],
-  );
+  const handleMoveDown = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = moveItemDown(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleAdd = useCallback(() => {
     updateItems(c => {
@@ -64,7 +41,7 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
         condition: Cond<any>;
       } = {
         strokeColor: "",
-        strokeWidth: 0,
+        strokeWidth: 5,
         condition: {
           key: generateID(),
           operator: "===",
@@ -72,27 +49,17 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
           value: true,
         },
       };
-      onUpdate({
-        ...value,
-        items: value.items ? [...value.items, newItem] : [newItem],
-      });
+
       return c ? [...c, newItem] : [newItem];
     });
-  }, [value, onUpdate]);
+  }, []);
 
-  const handleRemove = useCallback(
-    (idx: number) => {
-      updateItems(c => {
-        const newItems = removeItem(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleRemove = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = removeItem(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleItemUpdate = (
     item: { condition: Cond<string | number>; strokeColor: string; strokeWidth: number },
@@ -101,16 +68,13 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
     updateItems(c => {
       const newItems = [...(c ?? [])];
       newItems.splice(index, 1, item);
-      onUpdate({
-        ...value,
-        items: newItems,
-      });
       return newItems;
     });
   };
 
   useEffect(() => {
-    if (!isActive || !dataID) return;
+    if (!dataID || value.items === items) return;
+
     const timer = setTimeout(() => {
       const strokeConditions: [string, string][] = [["true", "true"]];
       const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
@@ -122,27 +86,24 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
         strokeColorConditions.unshift([cond, resStrokeColor]);
         strokeWidthConditions.unshift([cond, resStrokeWidth]);
         strokeConditions.unshift([cond, cond]);
-
-        postMsg({
-          action: "updateDatasetInScene",
-          payload: {
-            dataID,
-            update: {
-              polygon: {
-                stroke: {
-                  expression: {
-                    conditions: strokeConditions,
-                  },
+        onUpdate({
+          ...value,
+          items,
+          override: {
+            polygon: {
+              stroke: {
+                expression: {
+                  conditions: strokeConditions,
                 },
-                strokeColor: {
-                  expression: {
-                    conditions: strokeColorConditions,
-                  },
+              },
+              strokeColor: {
+                expression: {
+                  conditions: strokeColorConditions,
                 },
-                strokeWidth: {
-                  expression: {
-                    conditions: strokeColorConditions,
-                  },
+              },
+              strokeWidth: {
+                expression: {
+                  conditions: strokeWidthConditions,
                 },
               },
             },
@@ -152,15 +113,8 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
     }, 500);
     return () => {
       clearTimeout(timer);
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: { polygon: undefined },
-        },
-      });
     };
-  }, [dataID, isActive, items]);
+  }, [dataID, items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

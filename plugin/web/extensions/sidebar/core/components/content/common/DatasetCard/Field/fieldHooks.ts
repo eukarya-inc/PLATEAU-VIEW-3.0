@@ -211,7 +211,7 @@ export default ({
         name: "ポイント",
         fields: pointFields,
       },
-      polygone: { name: "ポリゴン", fields: polygonFields },
+      polygon: { name: "ポリゴン", fields: polygonFields },
       polyline: { name: "ポリライン", fields: polylineFields },
       // "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
       "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
@@ -242,6 +242,28 @@ export const cleanseOverrides: { [key: string]: any } = {
     marker: {
       pointOutlineColor: undefined,
       pointOutlineWidth: undefined,
+    },
+  },
+  polylineColor: {
+    polyline: {
+      strokeColor: "white",
+    },
+  },
+  polylineStroke: {
+    polyline: {
+      strokeWidth: 5,
+    },
+  },
+  polygonColor: {
+    polygon: {
+      fill: false,
+    },
+  },
+  polygonStroke: {
+    polygon: {
+      stroke: true,
+      strokeColor: "white",
+      strokeWidth: 5,
     },
   },
 };

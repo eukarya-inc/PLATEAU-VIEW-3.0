@@ -3,13 +3,7 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import {
-  generateID,
-  moveItemDown,
-  moveItemUp,
-  removeItem,
-  postMsg,
-} from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
@@ -21,38 +15,23 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
   dataID,
   value,
   editMode,
-  isActive,
   onUpdate,
 }) => {
   const [items, updateItems] = useState(value.items);
 
-  const handleMoveUp = useCallback(
-    (idx: number) => {
-      updateItems(c => {
-        const newItems = moveItemUp(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleMoveUp = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = moveItemUp(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
-  const handleMoveDown = useCallback(
-    (idx: number) => {
-      updateItems(c => {
-        const newItems = moveItemDown(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [onUpdate, value],
-  );
+  const handleMoveDown = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = moveItemDown(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleAdd = useCallback(() => {
     updateItems(c => {
@@ -65,58 +44,42 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
         },
         color: "",
       };
-      onUpdate({
-        ...value,
-        items: value.items ? [...value.items, newItem] : [newItem],
-      });
       return c ? [...c, newItem] : [newItem];
     });
-  }, [value, onUpdate]);
+  }, []);
 
-  const handleRemove = useCallback(
-    (idx: number) => {
-      updateItems(c => {
-        const newItems = removeItem(idx, c) ?? c;
-        onUpdate({
-          ...value,
-          items: newItems,
-        });
-        return newItems;
-      });
-    },
-    [value, onUpdate],
-  );
+  const handleRemove = useCallback((idx: number) => {
+    updateItems(c => {
+      const newItems = removeItem(idx, c) ?? c;
+      return newItems;
+    });
+  }, []);
 
   const handleItemUpdate = (item: { condition: Cond<number>; color: string }, index: number) => {
     updateItems(c => {
       const newItems = [...(c ?? [])];
       newItems.splice(index, 1, item);
-      onUpdate({
-        ...value,
-        items: newItems,
-      });
       return newItems;
     });
   };
 
   useEffect(() => {
-    if (!isActive || !dataID) return;
+    if (!dataID || value.items === items) return;
+
     const timer = setTimeout(() => {
       const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
       items?.forEach(item => {
         const resStrokeColor = "color" + `("${item.color}")`;
         const cond = stringifyCondition(item.condition);
         strokeColorConditions.unshift([cond, resStrokeColor]);
-        postMsg({
-          action: "updateDatasetInScene",
-          payload: {
-            dataID,
-            update: {
-              polyline: {
-                strokeColor: {
-                  expression: {
-                    conditions: strokeColorConditions,
-                  },
+        onUpdate({
+          ...value,
+          items,
+          override: {
+            polyline: {
+              strokeColor: {
+                expression: {
+                  conditions: strokeColorConditions,
                 },
               },
             },
@@ -126,15 +89,8 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
     }, 500);
     return () => {
       clearTimeout(timer);
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: {
-          dataID,
-          update: { polyline: undefined },
-        },
-      });
     };
-  }, [dataID, isActive, items]);
+  }, [dataID, items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>
