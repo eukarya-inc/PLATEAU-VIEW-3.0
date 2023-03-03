@@ -184,10 +184,16 @@ export default () => {
       updateProject(project => {
         if (!dataset.components?.length) {
           const defaultTemplate = fieldTemplates.find(
-            ft => ft.name === dataset.type || ft.name === dataset.type2,
+            ft => ft.name === dataset.type2 || ft.name === dataset.type,
           );
-          if (defaultTemplate) {
-            datasetToAdd.components = defaultTemplate.components;
+          if (defaultTemplate && !datasetToAdd.components) {
+            datasetToAdd.components = [
+              {
+                id: generateID(),
+                type: "template",
+                templateID: defaultTemplate.id,
+              },
+            ];
           }
         }
 
