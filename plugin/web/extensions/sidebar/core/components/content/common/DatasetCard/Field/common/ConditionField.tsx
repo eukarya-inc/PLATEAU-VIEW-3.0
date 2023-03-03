@@ -61,6 +61,7 @@ const ConditionField: React.FC<Props> = ({ title, fieldGap, condition, onChange 
       </FieldValue>
       <FieldValue noBorder>
         <Select
+          defaultValue={"="}
           options={operatorOptions}
           style={{ width: "100%" }}
           value={cond.operator}

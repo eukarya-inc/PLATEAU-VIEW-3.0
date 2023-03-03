@@ -364,7 +364,7 @@ export type Expression<T extends string | number | boolean = string | number | b
 
 export type Cond<T> = {
   key: string;
-  operator: "===" | ">=" | "<=" | ">" | "<" | "!==" | "";
+  operator: "===" | ">=" | "<=" | ">" | "<" | "!==";
   operand: T;
   value: T;
 };

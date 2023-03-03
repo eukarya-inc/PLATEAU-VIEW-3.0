@@ -59,9 +59,9 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
       const newItem: { condition: Cond<any>; color: string } = {
         condition: {
           key: generateID(),
-          operator: "",
-          operand: "",
-          value: "",
+          operator: "===",
+          operand: true,
+          value: true,
         },
         color: "",
       };

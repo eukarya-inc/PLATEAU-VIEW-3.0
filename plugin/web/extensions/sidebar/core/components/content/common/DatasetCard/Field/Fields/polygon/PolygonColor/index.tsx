@@ -59,9 +59,9 @@ const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({
       const newItem: { condition: Cond<any>; color: string } = {
         condition: {
           key: generateID(),
-          operator: "",
-          operand: "",
-          value: "",
+          operator: "===",
+          operand: true,
+          value: true,
         },
         color: "",
       };

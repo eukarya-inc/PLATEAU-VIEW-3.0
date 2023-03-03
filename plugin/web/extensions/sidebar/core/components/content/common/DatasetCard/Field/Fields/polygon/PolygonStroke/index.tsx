@@ -61,15 +61,15 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
       const newItem: {
         strokeColor: string;
         strokeWidth: number;
-        condition: Cond<string | number>;
+        condition: Cond<any>;
       } = {
         strokeColor: "",
         strokeWidth: 0,
         condition: {
           key: generateID(),
-          operator: "",
-          operand: "",
-          value: "",
+          operator: "===",
+          operand: true,
+          value: true,
         },
       };
       onUpdate({
