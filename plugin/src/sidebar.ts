@@ -1,5 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
+import omit from "lodash/omit";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -61,7 +62,7 @@ const reearth = (globalThis as any).reearth;
 
 let welcomePageIsOpen = false;
 let mobileDropdownIsOpen = false;
-let buildingSearchIsOpen = false;
+let openedBuildingSearchDataID: string | null = null;
 
 // this is used for infobox
 let currentSelected: string | undefined = undefined;
@@ -196,7 +197,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       addedDatasets[idx][1] = "showing";
       reearth.layers.show(addedDatasets[idx][2]);
     } else {
-      const data = createLayer(payload.dataset, payload.updates);
+      const data = createLayer(payload.dataset, payload.overrides);
+      console.log("DATA to add", data);
       const layerID = reearth.layers.add(data);
       const idx = addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
       if (!payload.dataset.visible) {
@@ -209,7 +211,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const layer = reearth.layers.findById(layerId);
     reearth.layers.override(
       layerId,
-      layer.data.type === "gtfs" ? proxyGTFS(payload.update) : payload.update,
+      layer.data.type === "gtfs" ? proxyGTFS(payload.overrides) : payload.overrides,
     );
   } else if (action === "updateDatasetVisibility") {
     const idx = addedDatasets.findIndex(ad => ad[0] === payload.dataID);
@@ -224,9 +226,15 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.layers.delete(addedDatasets.find(ad => ad[0] === payload)?.[2]);
     const idx = addedDatasets.findIndex(ad => ad[0] === payload);
     addedDatasets.splice(idx, 1);
+    if (openedBuildingSearchDataID && openedBuildingSearchDataID === payload) {
+      reearth.popup.close();
+    }
   } else if (action === "removeAllDatasetsFromScene") {
     reearth.layers.delete(...addedDatasets.map(ad => ad[2]));
     addedDatasets = [];
+    if (openedBuildingSearchDataID) {
+      reearth.popup.close();
+    }
   } else if (action === "updateDataset") {
     reearth.ui.postMessage({ action, payload });
   } else if (
@@ -248,6 +256,9 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "catalogModalOpen") {
     reearth.modal.show(dataCatalogHtml, { background: "transparent" });
+    if (payload) {
+      reearth.modal.postMessage({ action, payload });
+    }
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "triggerHelpOpen") {
@@ -307,7 +318,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         data: payload,
       },
     });
-    buildingSearchIsOpen = true;
+    openedBuildingSearchDataID = payload.dataID;
   } else if (action === "cameraFlyTo") {
     if (Array.isArray(payload)) {
       reearth.camera.flyTo(...payload);
@@ -326,33 +337,19 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       height: reearth.viewport.height - 68,
       width: reearth.viewport.width - 12,
     });
-  } else if (action === "updateInterval") {
-    const { dataID, interval } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        updateInterval: interval,
+  } else if (action === "findLayerByDataID") {
+    const { dataID } = payload;
+    const layerID = addedDatasets.find(a => a[0] === dataID)?.[2];
+    const layer = reearth.layers.findById(layerID);
+    reearth.ui.postMessage({
+      action,
+      payload: {
+        layer: {
+          id: layer.id,
+          data: layer.data,
+        },
       },
     });
-  } else if (action === "updateTimeBasedDisplay") {
-    const { dataID, timeBasedDisplay, timeFieldName } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    if (timeBasedDisplay) {
-      reearth.layers.override(layerId, {
-        data: {
-          time: {
-            property: timeFieldName,
-            interval: 86400000,
-          },
-        },
-      });
-    } else {
-      reearth.layers.override(layerId, {
-        data: {
-          time: undefined,
-        },
-      });
-    }
   }
 
   // ************************************************
@@ -372,42 +369,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload,
     });
   }
-
-  // ************************************************
-  // CSV
-  if (action === "updatePointCSV") {
-    const { dataID, lng, lat, height } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        csv: {
-          lngColumn: lng,
-          latColumn: lat,
-          heightColumn: height,
-        },
-      },
-    });
-  } else if (action === "resetPointCSV") {
-    const { dataID } = payload;
-    const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-    reearth.layers.override(layerId, {
-      data: {
-        csv: undefined,
-      },
-    });
-  }
-  // FIXME(@keiya01): support auto csv field complement
-  // else if (action === "getLocationNamesFromCSVFeatureProperty") {
-  // const { dataID } = payload;
-  // const layerId = addedDatasets.find(ad => ad[0] === dataID)?.[2];
-  // const layer = reearth.layers.findById(layerId);
-  // reearth.ui.postMessage({
-  //   action,
-  //   locationNames: getLocationNamesFromFeatureProperties({
-  //     ...(layer.computed?.features[0] || {}),
-  //   }),
-  // });
-  // }
 
   // ************************************************
   // for infobox
@@ -555,7 +516,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         }),
       },
     };
-    override3dtiles(dataID, { color: expression });
+    override3dtiles(dataID, { color: expression, colorBlendMode: "replace" });
   } else if (action === "reset3dtilesColor") {
     const { dataID } = payload;
     const storedObj = colorStoreFor3dtiles[dataID];
@@ -588,7 +549,7 @@ reearth.on("resize", () => {
     });
   }
 
-  if (buildingSearchIsOpen) {
+  if (openedBuildingSearchDataID) {
     reearth.popup.postMessage({
       type: "resize",
       payload: reearth.viewport,
@@ -619,12 +580,66 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   }
 });
 
+let currentClickedFeatureId: string;
+
 reearth.on("select", (selected: string | undefined) => {
   // this is used for infobox
   currentSelected = selected;
+
+  const feature = reearth.layers.selectedFeature;
+  currentClickedFeatureId = feature
+    ? feature?.properties?.gml_id // For 3dtiles
+    : undefined;
+
+  let nextConditions: any[] | undefined;
+  let shouldUpdateTilesetColor = true;
+
+  // Reset previous select color for 3dtiles
+  const prevOverriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
+  const prevCondition = prevOverriddenLayer?.["3dtiles"].color?.expression?.conditions;
+  if (
+    currentClickedFeatureId &&
+    prevOverriddenLayer &&
+    prevOverriddenLayer.data.type === "3dtiles"
+  ) {
+    shouldUpdateTilesetColor = !prevCondition?.find(
+      (c: [string, string]) => c[0] === `\${gml_id} === "${currentClickedFeatureId}"`,
+    );
+    nextConditions =
+      prevCondition?.filter((c: [string, string]) => !c[0].startsWith('${gml_id} === "')) ?? [];
+  }
+
+  // Handle select color for 3dtiles
+  const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
+  if (
+    !feature ||
+    overriddenLayer?.data?.type !== "3dtiles" ||
+    !currentClickedFeatureId ||
+    !shouldUpdateTilesetColor
+  ) {
+    return;
+  } else {
+    reearth.layers.override(selected, {
+      "3dtiles": {
+        color: {
+          expression: {
+            conditions: [
+              [`\${gml_id} === "${currentClickedFeatureId}"`, "color('red')"],
+              ...(nextConditions ??
+                (overriddenLayer?.["3dtiles"]?.color?.expression?.conditions || [])),
+            ],
+          },
+        },
+      },
+    });
+  }
 });
 
-function createLayer(dataset: DataCatalogItem, options?: any) {
+reearth.on("popupclose", () => {
+  openedBuildingSearchDataID = null;
+});
+
+function createLayer(dataset: DataCatalogItem, overrides?: any) {
   const format = dataset.format?.toLowerCase();
   return {
     type: "simple",
@@ -632,8 +647,8 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
     data: {
       type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
-      layers:
-        format === "mvt" ? dataset.config?.data?.[0].layers?.[0] ?? dataset.layers?.[0] : undefined,
+      layers: dataset.config?.data?.[0].layers ?? dataset.layers,
+      ...(overrides?.data || {}),
     },
     visible: true,
     infobox:
@@ -657,22 +672,26 @@ function createLayer(dataset: DataCatalogItem, options?: any) {
             },
           }
         : null,
-    ...(options
-      ? options
+    ...(overrides !== undefined
+      ? omit(overrides, "data")
       : format === "geojson"
       ? {
-          marker: {},
+          marker: {
+            style: "point",
+            pointSize: 10,
+            pointColor: "white",
+          },
           polygon: {},
           polyline: {},
         }
       : format === "gtfs"
-      ? proxyGTFS(options)
+      ? proxyGTFS(overrides)
       : format === "mvt"
       ? {
           polygon: {},
         }
       : format === "czml"
       ? { resource: {} }
-      : { ...(options ?? {}) }),
+      : { ...(overrides ?? {}) }),
   };
 }

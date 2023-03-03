@@ -1,8 +1,8 @@
-import { Group } from "@web/extensions/sidebar/core/types";
+import { Group, Template } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -13,19 +13,43 @@ import {
 } from "react-accessible-accordion";
 
 import fields from "./Fields";
-import { ConfigData, FieldComponent as FieldComponentType, fieldName } from "./Fields/types";
+import {
+  ConfigData,
+  FieldComponent as FieldComponentType,
+  fieldName,
+  generalFieldName,
+  pointFieldName,
+  polygonFieldName,
+  polylineFieldName,
+  threeDFieldName,
+} from "./Fields/types";
 
 export type Props = {
   field: FieldComponentType;
   dataID?: string;
   isActive: boolean;
   editMode?: boolean;
+  templates?: Template[];
   selectGroups?: Group[];
   configData?: ConfigData[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove?: (id: string) => void;
   onGroupsUpdate?: (groups: Group[], selectedGroup?: string) => void;
-  onCurrentGroupChange?: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate?: (fieldGroupID: string) => void;
+};
+
+const getFieldGroup = (field: string) => {
+  if (field in generalFieldName) {
+    return "一般";
+  } else if (field in pointFieldName) {
+    return "ポイント";
+  } else if (field in polygonFieldName) {
+    return "ポリゴン";
+  } else if (field in threeDFieldName) {
+    return "3Dタイル";
+  } else if (field in polylineFieldName) {
+    return "ポリライン";
+  }
 };
 
 const FieldComponent: React.FC<Props> = ({
@@ -33,14 +57,15 @@ const FieldComponent: React.FC<Props> = ({
   dataID,
   isActive,
   editMode,
+  templates,
   selectGroups,
   configData,
   onUpdate,
   onRemove,
   onGroupsUpdate,
-  onCurrentGroupChange,
+  onCurrentGroupUpdate,
 }) => {
-  const Field = field.type === "template" ? null : fields[field.type];
+  const Field = fields[field.type];
   const [groupPopupOpen, setGroupPopup] = useState(false);
 
   const handleGroupSelectOpen = useCallback(
@@ -81,6 +106,8 @@ const FieldComponent: React.FC<Props> = ({
     };
   }, [groupPopupOpen, onGroupsUpdate]);
 
+  const title = useMemo(() => `${fieldName[field.type]}(${getFieldGroup(field.type)})`, [field]);
+
   return !editMode && !isActive ? null : (
     <StyledAccordionComponent
       allowZeroExpanded
@@ -89,14 +116,14 @@ const FieldComponent: React.FC<Props> = ({
       <AccordionItem uuid={field.id}>
         <AccordionItemState>
           {({ expanded }) => (
-            <Header showBorder={expanded && field.type !== "template"}>
+            <Header showBorder={expanded}>
               {editMode ? (
                 <HeaderContents>
                   <LeftContents>
                     {Field && (
                       <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
                     )}
-                    <Title>{field.type === "template" ? field.name : fieldName[field.type]}</Title>
+                    <Title>{title}</Title>
                   </LeftContents>
                   <RightContents>
                     <StyledIcon
@@ -110,7 +137,7 @@ const FieldComponent: React.FC<Props> = ({
                 </HeaderContents>
               ) : (
                 <HeaderContents>
-                  <Title>{fieldName[field.type]}</Title>
+                  <Title>{title}</Title>
                   <ArrowIcon icon="arrowDown" size={16} direction="left" expanded={expanded} />
                 </HeaderContents>
               )}
@@ -123,11 +150,12 @@ const FieldComponent: React.FC<Props> = ({
               value={{ ...field }}
               editMode={editMode}
               isActive={isActive}
+              templates={templates}
               fieldGroups={selectGroups}
               configData={configData}
               dataID={dataID}
               onUpdate={onUpdate?.(field.id)}
-              onCurrentGroupChange={onCurrentGroupChange}
+              onCurrentGroupUpdate={onCurrentGroupUpdate}
             />
           </BodyWrapper>
         )}
@@ -152,7 +180,7 @@ const Header = styled(AccordionItemHeading)<{ showBorder?: boolean }>`
   border-bottom-color: transparent;
   ${({ showBorder }) => showBorder && "border-bottom-color: #e0e0e0;"}
   display: flex;
-  height: 30px;
+  height: auto;
 `;
 
 const HeaderContents = styled(AccordionItemButton)`
@@ -160,12 +188,13 @@ const HeaderContents = styled(AccordionItemButton)`
   justify-content: space-between;
   align-items: center;
   flex: 1;
-  padding: 0 12px;
+  padding: 12px;
   outline: none;
   cursor: pointer;
 `;
 
 const BodyWrapper = styled(AccordionItemPanel)`
+  position: relative;
   border-radius: 0px 0px 4px 4px;
   padding: 12px;
 `;
@@ -173,6 +202,8 @@ const BodyWrapper = styled(AccordionItemPanel)`
 const Title = styled.p`
   margin: 0;
   user-select: none;
+  width: 200px;
+  overflow-wrap: break-word;
 `;
 
 const StyledIcon = styled(Icon)`

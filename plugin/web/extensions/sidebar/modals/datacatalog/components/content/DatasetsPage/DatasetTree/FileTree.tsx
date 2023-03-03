@@ -24,6 +24,7 @@ const FileTree: React.FC<Props> = ({
   onOpenDetails,
 }) => {
   const [selectedID, select] = useState<string>();
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
 
   const handleSelect = useCallback((dataID?: string) => {
     select(dataID);
@@ -39,10 +40,13 @@ const FileTree: React.FC<Props> = ({
           expandAll={expandAll}
           selectedID={selectedID}
           nestLevel={0}
+          nodeKey="0"
+          expandedKeys={expandedKeys}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
           onOpenDetails={onOpenDetails}
           onSelect={handleSelect}
+          setExpandedKeys={setExpandedKeys}
         />
       </Tree>
     </TreeWrapper>

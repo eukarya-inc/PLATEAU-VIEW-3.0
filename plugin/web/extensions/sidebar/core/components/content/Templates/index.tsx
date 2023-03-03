@@ -16,6 +16,7 @@ import TemplateCard from "./TemplateCard";
 
 export type Props = {
   templates: Template[];
+  savingTemplate: boolean;
   onTemplateAdd: () => Promise<Template | undefined>;
   onTemplateSave: (template: Template) => Promise<void>;
   onTemplateRemove: (id: string) => Promise<void>;
@@ -23,6 +24,7 @@ export type Props = {
 
 const Templates: React.FC<Props> = ({
   templates,
+  savingTemplate,
   onTemplateAdd,
   onTemplateSave,
   onTemplateRemove,
@@ -43,6 +45,7 @@ const Templates: React.FC<Props> = ({
   }, []);
 
   const handleTemplateUpdate = useCallback((updatedTemplate: Template) => {
+    console.log("updatedTemplate", updatedTemplate);
     changeSelectedTemplate(updatedTemplate);
   }, []);
 
@@ -56,6 +59,7 @@ const Templates: React.FC<Props> = ({
             </div>
             <TemplateCard
               template={selectedTemplate}
+              savingTemplate={savingTemplate}
               onTemplateSave={onTemplateSave}
               onTemplateUpdate={handleTemplateUpdate}
             />

@@ -24,16 +24,20 @@ resource "google_cloud_run_service" "reearth_api" {
     spec {
       service_account_name = google_service_account.reearth_api.email
       containers {
-        #MEMO: 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
-        # 　　　　　　　　　　そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
+        # 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
+        # そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
         image = "gcr.io/cloudrun/hello"
         resources {
           limits = {
             cpu    = "1000m"
             memory = "512Mi"
           }
-
         }
+        ports {
+          container_port = 8080
+          name           = "h2c"
+        }
+
         dynamic "env" {
           for_each = { for i in local.reearth_api_secret : i => i }
           content {

@@ -10,12 +10,14 @@ export type Props = {
   inEditor?: boolean;
   selectedDatasets?: DataCatalogItem[];
   templates?: Template[];
+  savingDataset: boolean;
   onDatasetSave: (dataID: string) => void;
-  onDatasetUpdate: (dataset: DataCatalogItem) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onDatasetRemove: (dataID: string) => void;
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
   onThreeDTilesSearch: (id: string) => void;
+  onOverride?: (dataID: string, activeIDs?: string[]) => void;
 };
 
 const Selection: React.FC<Props> = ({
@@ -23,12 +25,14 @@ const Selection: React.FC<Props> = ({
   inEditor,
   selectedDatasets,
   templates,
+  savingDataset,
   onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
   onModalOpen,
   onThreeDTilesSearch,
+  onOverride,
 }) => {
   return (
     <Wrapper className={className}>
@@ -45,11 +49,13 @@ const Selection: React.FC<Props> = ({
               key={d.id}
               dataset={d}
               templates={templates}
+              savingDataset={savingDataset}
               inEditor={inEditor}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}
               onDatasetRemove={onDatasetRemove}
               onThreeDTilesSearch={onThreeDTilesSearch}
+              onOverride={onOverride}
             />
           ))
           .reverse()}

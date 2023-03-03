@@ -1,4 +1,3 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { Checkbox } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { debounce } from "lodash";
@@ -8,19 +7,40 @@ import { Field } from "../../common";
 import { TextInput } from "../../commonComponents";
 import { BaseFieldProps } from "../types";
 
-const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpdate, dataID }) => {
+const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpdate }) => {
   const [timeFieldName, setTimeFieldName] = useState(value.timeFieldName);
   const updaterRef = useRef<() => void>();
   const debouncedUpdater = useMemo(
     () => debounce(() => updaterRef.current?.(), 500, { maxWait: 1000 }),
     [],
   );
+  const shouldUpdate = useRef(false);
 
   const handleUpdate = useCallback(() => {
-    onUpdate({
-      ...(value ?? {}),
-      timeFieldName,
-    });
+    if (value.timeBasedDisplay) {
+      onUpdate({
+        ...value,
+        timeFieldName,
+        override: {
+          data: {
+            time: {
+              property: timeFieldName,
+              interval: 86400000,
+            },
+          },
+        },
+      });
+    } else {
+      onUpdate({
+        ...value,
+        timeFieldName,
+        override: {
+          data: {
+            time: undefined,
+          },
+        },
+      });
+    }
   }, [timeFieldName, onUpdate, value]);
 
   const handleTimeFieldName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,25 +50,16 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
 
   useEffect(() => {
     updaterRef.current = handleUpdate;
-    if (timeFieldName !== value.timeFieldName) {
+    if (timeFieldName !== value.timeFieldName || shouldUpdate.current) {
       debouncedUpdater();
+      shouldUpdate.current = false;
     }
   }, [handleUpdate, debouncedUpdater, timeFieldName, value.timeFieldName]);
 
   const handleTimeBasedDisplay = useCallback(() => {
     onUpdate({ ...value, timeBasedDisplay: !value.timeBasedDisplay });
+    shouldUpdate.current = true;
   }, [value, onUpdate]);
-
-  useEffect(() => {
-    postMsg({
-      action: "updateTimeBasedDisplay",
-      payload: {
-        dataID,
-        timeBasedDisplay: value.timeBasedDisplay,
-        timeFieldName: value.timeFieldName,
-      },
-    });
-  }, [dataID, value.timeBasedDisplay, value.timeFieldName]);
 
   return editMode ? (
     <Field

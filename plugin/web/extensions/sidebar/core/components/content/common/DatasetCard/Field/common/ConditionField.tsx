@@ -65,6 +65,7 @@ const ConditionField: React.FC<Props> = ({ title, fieldGap, condition, onChange 
           style={{ width: "100%" }}
           value={cond.operator}
           onChange={handleOperatorChange}
+          getPopupContainer={trigger => trigger.parentElement ?? document.body}
         />
       </FieldValue>
       <FieldValue>

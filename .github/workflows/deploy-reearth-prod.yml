@@ -10,6 +10,7 @@ env:
   GCS_DEST: gs://plateau-prod-reearth-app-bucket
   IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/reearth-plateauview/reearth:latest
   IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth:latest
+  IMAGE_NAME_HUB: eukarya/plateauview2-reearth:latest
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
   GCP_REGION: asia-northeast1
@@ -73,3 +74,23 @@ jobs:
             --region $GCP_REGION \
             --platform managed \
             --quiet
+  push_hub:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull image
+        run: docker pull $IMAGE_NAME_GHCR
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Push image
+        run: docker tag $IMAGE_NAME_GHCR $IMAGE_NAME_HUB && docker push $IMAGE_NAME_HUB

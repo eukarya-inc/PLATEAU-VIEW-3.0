@@ -1,11 +1,12 @@
-# Terradform
+# Terraform
 
-PLATEAU VIEW 2.0（CMS・エディタ・ビューワ）を構築するTerraformです。
+PLATEAU VIEW 2.0（CMS・エディタ・ビューワ）を構築するためのTerraform用ファイルです。システム構築手順は「実証環境構築マニュアル」も併せて参照してください。
 
+PLATEAU VIEW 2.0のホスティングはGoogle Cloud Platform（GCP）のみ対応しています。AWSやオンプレミスのみでのホスティングはできません。
 
 ## セットアップ手順
 
-### GCP のセットアップ
+### GCPのセットアップ
 
 プロジェクトを作成
 
@@ -24,6 +25,8 @@ Auth0テナントを作成した後、[公式のQuick Start](https://github.com/
 ```bash
 export AUTH0_CLIENT_SECRET=""
 ```
+
+※2度目以降の `terraform apply` でもこの変数の設定が必要です。
 
 ### コマンドラインツールのインストール
 
@@ -120,18 +123,24 @@ Apply complete! Resources: * added, * changed, * destroyed.
 
 Outputs:
 
+plateauview_cms_url = "********"
 plateauview_cms_webhook_secret = "********"
 plateauview_cms_webhook_url = "********"
+plateauview_reearth_url = "********"
 plateauview_sdk_token = "********"
 plateauview_sidebar_token = "********"
+plateauview_sidecar_url = "********"
 ```
 
 これらの outputs は後で使う。なおもう一度 outputs を表示したいときは `terraform output` コマンドで表示可能。
 
-なお、outputs内の以下の値は、ここでは説明しないが、別のセットアップで使用するので留意する。
-
-- plateauview_sdk_token: PLATEAU SDK用のトークン。SDKのUIで設定する。
-- plateauview_sidebar_token: ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する。
+- `plateauview_cms_url`: CMS（Re:Earth CMS）のURL
+- `plateauview_cms_webhook_secret`: 下記「CMS インテグレーション設定」で使用
+- `plateauview_cms_webhook_url`: 下記「CMS インテグレーション設定」で使用
+- `plateauview_reearth_url`: エディタ（Re:Earth）のURL
+- `plateauview_sdk_token`: PLATEAU SDK用のトークン。SDKのUIで設定する（詳しくは実証環境構築マニュアルを参照）。
+- `plateauview_sidebar_token`: ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する（詳しくは実証環境構築マニュアルを参照）。
+- `plateauview_sidecar_url`: サイドカーサーバーのURL。エディタ上でサイドバーウィジェットの設定から設定する（詳しくは実証環境構築マニュアルを参照）。
 
 ### シークレットの設定
 
@@ -162,34 +171,34 @@ echo -n "${REEARTH_MARKETPLACE_SECRET}" | gcloud secrets versions add reearth-ap
 
 ```bash
 gcloud run deploy reearth-api \
-            --image reearth/reearth:nightly \
-            --region asia-northeast1 \
-            --platform managed \
-            --quiet
+  --image eukarya/plateauview2-reearth:latest \
+  --region asia-northeast1 \
+  --platform managed \
+  --quiet
 ```
 
 ```bash
 gcloud run deploy reearth-cms-api \
-            --image reearth/reearth-cms:nightly \
-            --region asia-northeast1 \
-            --platform managed \
-            --quiet
+  --image eukarya/plateauview2-reearth-cms:latest \
+  --region asia-northeast1 \
+  --platform managed \
+  --quiet
 ```
 
 ```bash
 gcloud run deploy reearth-cms-worker \
-            --image reearth/reearth-cms-worker:nightly \
-            --region asia-northeast1 \
-            --platform managed \
-            --quiet
+  --image eukarya/plateauview2-reearth-cms-worker:latest \
+  --region asia-northeast1 \
+  --platform managed \
+  --quiet
 ```
 
 ```bash
 gcloud run deploy plateauview-api \
-            --image eukarya/plateauview-api:latest \
-            --region asia-northeast1 \
-            --platform managed \
-            --quiet
+  --image eukarya/plateauview2-sidecar:latest \
+  --region asia-northeast1 \
+  --platform managed \
+  --quiet
 ```
 
 ### DNS・ロードバランサ・証明書のデプロイ完了まで待機
@@ -209,9 +218,7 @@ curl https://api.${DOMAIN}/ping
 
 ### CMS インテグレーション設定
 
-CMSにログインする。
-
-https://cms.${DOMAIN}
+Terraformのoutputsの `plateauview_cms_url` のURL（`https://reearth.${DOMAIN}`）から、CMSにログインする。
 
 ログイン後、ワークスペース・Myインテグレーションを作成する。
 
@@ -233,15 +240,15 @@ echo -n "${REEARTH_PLATEAUVIEW_CMS_TOKEN}" | gcloud secrets versions add reearth
 
 ```bash
 gcloud run deploy plateauview-api \
-            --image eukarya/plateauview-api:latest \
-            --region asia-northeast1 \
-            --platform managed \
-            --quiet
+  --image eukarya/plateauview2-sidecar:latest \
+  --region asia-northeast1 \
+  --platform managed \
+  --quiet
 ```
 
 ### 完了
 
 以下のアプリケーションにログインし、正常に使用できることを確認する。 `${DOMAIN}` はドメイン。
 
-- Re:Earth: `https://reearth.${DOMAIN}`
-- CMS: `https://cms.${DOMAIN}`
+- Re:Earth: Terraformのoutputsの `plateauview_reearth_url` の値（`https://reearth.${DOMAIN}`）
+- CMS: Terraformのoutputsの `plateauview_cms_url` の値（`https://cms.${DOMAIN}`）

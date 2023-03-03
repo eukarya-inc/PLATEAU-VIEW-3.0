@@ -34,12 +34,14 @@ const Condition: React.FC<Props> = ({ indexItem, setConditions }) => {
         listHeight={200}
         onChange={handleChange}
         options={options}
+        getPopupContainer={trigger => trigger.parentElement ?? document.body}
       />
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;

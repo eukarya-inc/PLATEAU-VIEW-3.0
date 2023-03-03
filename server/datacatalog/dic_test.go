@@ -10,8 +10,8 @@ func TestDir(t *testing.T) {
 	d := Dic{
 		"admin": []DicEntry{
 			{
-				Code: "11111",
-				Name: "A県 A市",
+				Code:        "11111",
+				Description: "A県 A市",
 			},
 		},
 		"fld": []DicEntry{

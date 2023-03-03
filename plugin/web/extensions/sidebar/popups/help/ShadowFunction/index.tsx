@@ -1,7 +1,5 @@
-import shadow from "@web/extensions/sidebar/core/assets/shadow.png";
+import shadow from "@web/extensions/sidebar/core/assets/shadowImg.png";
 import { styled } from "@web/theme";
-
-import { NumberingWrapper, ParagraphItem } from "../sharedComponent";
 
 const ShadowFunction: React.FC = () => {
   return (
@@ -10,27 +8,19 @@ const ShadowFunction: React.FC = () => {
 
       <ContentWrapper>
         <Paragraph>
-          PLATEAUVIEWでは建物モデルなどが見やすいように、デフォルトでは日影の効果を「なし」に設定しています。
+          PLATEAU
+          VIEWでは建物モデルなどが見やすいように、デフォルトでは日影の効果を「なし」に設定しています。
           日影の効果をONにするための手順は以下の通りです。
         </Paragraph>
-        <ParagraphItem>
-          <NumberingWrapper number={1} />
-          <Paragraph>
-            建物モデルをVIEWに追加した時に、左側の一覧に表示される「影」というメニューのプルダウンから「投影のみ」、「受光のみ」、「投影と受光」のいずれかを選択します。
-          </Paragraph>
-        </ParagraphItem>
+
+        <Paragraph>
+          建物モデルをVIEWに追加した時に、左側の一覧に表示される「影」というメニューのプルダウンから「投影のみ」、「受光のみ」、「投影と受光」のいずれかを選択します。
+        </Paragraph>
+
         <ImgWrapper>
           <img src={shadow} />
         </ImgWrapper>
-        <ParagraphItem>
-          <NumberingWrapper number={2} />
-          <Paragraph>
-            この効果と合わせて、マップ右上の「Map
-            Settings」の中にある「タイムライン」の「常に表示」にチェックを入れると画面下部に時間をコントロールするスケールが表示されます（③）。
-            初期状態では、現在時刻で日影が表示されます。左側の再生ボタンを押すことで時間を進めることができます。
-            また、つまみを動かせば任意の時間で日影を表示することもできます。
-          </Paragraph>
-        </ParagraphItem>
+
         <Paragraph>
           PLATEAU
           VIEWではSimonら（1994）の手法で推定された太陽の位置を用いて日影を計算し、表現しています。タイムバーが出ていないときは、地図が見やすいように仮想の光源から光を当てて表示しています。
@@ -52,7 +42,7 @@ const Wrapper = styled.div`
   padding: 0px 16px;
   gap: 24px;
   width: 333px;
-  height: 954px;
+  height: 781px;
 `;
 
 const Title = styled.p`

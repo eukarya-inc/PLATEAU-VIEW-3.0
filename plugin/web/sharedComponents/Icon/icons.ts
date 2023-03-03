@@ -69,6 +69,9 @@ import { ReactComponent as CircledPlay } from "./Icons/circledPlay.svg";
 import { ReactComponent as FileDotted } from "./Icons/fileDotted.svg";
 import { ReactComponent as EditStop } from "./Icons/editStop.svg";
 import { ReactComponent as EditUnderline } from "./Icons/editUnderline.svg";
+import { ReactComponent as MouseMiddleButton } from "./Icons/mouseMiddleButton.svg";
+import { ReactComponent as MouseLeftButton } from "./Icons/mouseLeftButton.svg";
+import { ReactComponent as MouseRightButton } from "./Icons/mouseRightButton.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -142,4 +145,7 @@ export default {
   fileDotted: FileDotted,
   editStop: EditStop,
   editUnderline: EditUnderline,
+  mouseMiddleButton: MouseMiddleButton,
+  mouseLeftButton: MouseLeftButton,
+  mouseRightButton: MouseRightButton,
 };

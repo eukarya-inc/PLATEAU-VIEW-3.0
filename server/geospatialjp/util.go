@@ -5,9 +5,11 @@ import (
 	"net/url"
 	"path"
 	"regexp"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp/ckan"
 	"github.com/pkg/errors"
+	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 	"github.com/vincent-petithory/dataurl"
 )
@@ -22,6 +24,11 @@ const (
 	LicenseOL           = "独自利用規約"
 	licenseOLID         = "ol"
 )
+
+// 仕様書バージョンと年度
+var specNendoYearMap = map[string]int{
+	"第2.3版": 2022, // 2022年度
+}
 
 var reFileName = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
 
@@ -106,4 +113,14 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 		ThumbnailURL:     thumbnailURL,
 		// unused: URL: c.URL (empty), 組織: c.Organization (no field)
 	}
+}
+
+func nendo(s string) int {
+	if y, ok := specNendoYearMap[s]; ok {
+		return y
+	}
+
+	// Asia/Tokyo: UTC+09:00
+	jptime := util.Now().UTC().Add(time.Hour * 9)
+	return jptime.AddDate(0, -3, 0).Year()
 }

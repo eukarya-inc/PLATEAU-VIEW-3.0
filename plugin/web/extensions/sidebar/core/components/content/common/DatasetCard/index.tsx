@@ -1,8 +1,8 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { Dropdown, Icon, Menu } from "@web/sharedComponents";
+import { Dropdown, Icon, Menu, Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -23,64 +23,138 @@ type BaseFieldType = Partial<DataCatalogItem> & {
   title?: string;
   icon?: string;
   value?: string | number;
-  onClick?: () => void;
+  onClick?: () => Promise<void> | void;
 };
 
 export type Props = {
   dataset: DataCatalogItem;
   templates?: Template[];
   inEditor?: boolean;
+  savingDataset: boolean;
   onDatasetSave: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
-  onDatasetUpdate: (dataset: DataCatalogItem) => void;
-  onUpdateField?: (id: string) => void;
+  onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onThreeDTilesSearch: (id: string) => void;
+  onOverride?: (dataID: string, activeIDs?: string[]) => void;
 };
 const DatasetCard: React.FC<Props> = ({
   dataset,
   templates,
   inEditor,
+  savingDataset,
   onDatasetSave,
   onDatasetRemove,
   onDatasetUpdate,
-  // onUpdateField,
   onThreeDTilesSearch,
+  onOverride,
 }) => {
   const [currentTab, changeTab] = useState<Tabs>("default");
 
   const {
-    defaultTemplate,
     activeComponentIDs,
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
-    handleCurrentGroupChange,
+    handleCurrentGroupUpdate,
     handleGroupsUpdate,
   } = useHooks({
     dataset,
-    templates,
     inEditor,
+    templates,
     onDatasetUpdate,
+    onOverride,
   });
+  const readyMVTPosition = useRef<
+    Promise<
+      | {
+          lng?: number;
+          lat?: number;
+          height?: number;
+          heading?: number;
+          pitch?: number;
+          roll?: number;
+        }
+      | undefined
+    >
+  >();
+
+  // Fetch mvt position
+  useEffect(() => {
+    const fetchMetadataJSONForMVT = async () => {
+      const layer = await (() =>
+        new Promise<any>(resolve => {
+          const handleMessage = (e: any) => {
+            if (e.source !== parent) return;
+            if (e.data.action !== "findLayerByDataID") {
+              resolve(undefined);
+              return;
+            }
+            removeEventListener("message", handleMessage);
+            resolve(e.data.payload.layer);
+          };
+          addEventListener("message", handleMessage);
+          postMsg({
+            action: "findLayerByDataID",
+            payload: {
+              dataID: dataset.dataID,
+            },
+          });
+        }))();
+
+      if (layer?.data?.type !== "mvt") return;
+
+      const mvtBaseURL = layer?.data?.url?.match(/(.+)(\/{z}\/{x}\/{y}.mvt)/)?.[1];
+      if (!mvtBaseURL) return;
+
+      const json = await fetch(`${mvtBaseURL}/metadata.json`).then(d => d.json());
+      const center = json.center.split(",").map((s: string) => Number(s));
+      if (center < 2) {
+        return;
+      }
+      return {
+        lng: center[0],
+        lat: center[1],
+        height: 30000,
+        pitch: -(Math.PI / 2),
+        heading: 0,
+        roll: 0,
+      };
+    };
+
+    readyMVTPosition.current = fetchMetadataJSONForMVT();
+  }, [dataset.dataID]);
 
   const baseFields: BaseFieldType[] = useMemo(() => {
-    const fields = [
+    const fields: BaseFieldType[] = [
       {
         id: "zoom",
         title: "カメラ",
         icon: "mapPin",
         value: 1,
-        onClick: () => {
+        onClick: async () => {
           const idealZoomField = dataset.components?.find(c => c.type === "idealZoom");
+          const mvtPosition = await readyMVTPosition.current;
           postMsg({
             action: "cameraFlyTo",
             payload: idealZoomField
               ? [(idealZoomField as IdealZoom).position, { duration: 2 }]
+              : mvtPosition
+              ? [mvtPosition, { duration: 2 }]
               : dataset.dataID,
           });
         },
       },
-      { id: "about", title: "About Data", icon: "about", value: "www.plateau.org/data-url" },
+      {
+        id: "about",
+        title: "About Data",
+        icon: "about",
+        onClick: () => {
+          postMsg({
+            action: "catalogModalOpen",
+            payload: { dataset },
+          });
+        },
+      },
       {
         id: "remove",
         icon: "trash",
@@ -137,7 +211,8 @@ const DatasetCard: React.FC<Props> = ({
               <Dropdown
                 overlay={menuGenerator(menuItems[i].fields)}
                 placement="bottom"
-                trigger={["click"]}>
+                trigger={["click"]}
+                getPopupContainer={trigger => trigger.parentElement ?? document.body}>
                 <div onClick={e => e.stopPropagation()}>
                   <p style={{ margin: 0 }}>{menuItems[i].name}</p>
                 </div>
@@ -204,77 +279,71 @@ const DatasetCard: React.FC<Props> = ({
                 <Text>オープンデータを入手</Text>
               </OpenDataButton>
             )}
-            {defaultTemplate?.components?.map((tc, idx) => {
-              if (currentTab === "edit") return;
-              return (
-                <Field
-                  key={idx}
-                  field={tc}
-                  isActive={!!activeComponentIDs?.find(id => id === tc.id)}
-                  dataID={dataset.dataID}
-                  selectGroups={dataset.fieldGroups}
-                  configData={dataset.config?.data}
-                  onUpdate={handleFieldUpdate}
-                />
-              );
-            }) ??
-              dataset.components?.map((c, idx) => {
-                if (c.type === "template") {
-                  const template = templates?.find(t => t.id === c.templateID);
-                  return inEditor && currentTab === "edit" ? (
-                    <Field
-                      key={idx}
-                      field={c}
-                      isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                      dataID={dataset.dataID}
-                      editMode={inEditor && currentTab === "edit"}
-                      selectGroups={dataset.fieldGroups}
-                      configData={dataset.config?.data}
-                      onUpdate={handleFieldUpdate}
-                      onRemove={handleFieldRemove}
-                      onGroupsUpdate={handleGroupsUpdate(c.id)}
-                      onCurrentGroupChange={handleCurrentGroupChange}
-                    />
-                  ) : (
-                    template?.components?.map((tc, idx2) => (
-                      <Field
-                        key={idx2}
-                        field={tc}
-                        isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                        dataID={dataset.dataID}
-                        selectGroups={dataset.fieldGroups}
-                        configData={dataset.config?.data}
-                        onUpdate={handleFieldUpdate}
-                        onRemove={handleFieldRemove}
-                        onCurrentGroupChange={handleCurrentGroupChange}
-                      />
-                    ))
-                  );
-                }
-                return (
+            {dataset.components?.map((c, idx) => {
+              if (c.type === "template") {
+                const template = templates?.find(t => t.id === c.templateID);
+                return inEditor && currentTab === "edit" ? (
                   <Field
                     key={idx}
                     field={c}
                     isActive={!!activeComponentIDs?.find(id => id === c.id)}
                     dataID={dataset.dataID}
                     editMode={inEditor && currentTab === "edit"}
+                    templates={templates}
                     selectGroups={dataset.fieldGroups}
                     configData={dataset.config?.data}
                     onUpdate={handleFieldUpdate}
                     onRemove={handleFieldRemove}
                     onGroupsUpdate={handleGroupsUpdate(c.id)}
-                    onCurrentGroupChange={handleCurrentGroupChange}
+                    onCurrentGroupUpdate={handleCurrentGroupUpdate}
                   />
+                ) : (
+                  template?.components?.map((tc, idx2) => (
+                    <Field
+                      key={idx2}
+                      field={tc}
+                      isActive={!!activeComponentIDs?.find(id => id === c.id)}
+                      dataID={dataset.dataID}
+                      selectGroups={dataset.fieldGroups}
+                      templates={templates}
+                      configData={dataset.config?.data}
+                      onUpdate={handleFieldUpdate}
+                      onRemove={handleFieldRemove}
+                      onCurrentGroupUpdate={handleCurrentGroupUpdate}
+                    />
+                  ))
                 );
-              })}
+              }
+              return (
+                <Field
+                  key={idx}
+                  field={c}
+                  isActive={!!activeComponentIDs?.find(id => id === c.id)}
+                  dataID={dataset.dataID}
+                  editMode={inEditor && currentTab === "edit"}
+                  templates={templates}
+                  selectGroups={dataset.fieldGroups}
+                  configData={dataset.config?.data}
+                  onUpdate={handleFieldUpdate}
+                  onRemove={handleFieldRemove}
+                  onGroupsUpdate={handleGroupsUpdate(c.id)}
+                  onCurrentGroupUpdate={handleCurrentGroupUpdate}
+                />
+              );
+            })}
           </Content>
           {inEditor && currentTab === "edit" && (
             <>
               <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldComponentsList)} />
-              <SaveButton onClick={handleFieldSave}>
+              <SaveButton onClick={handleFieldSave} disabled={savingDataset}>
                 <Icon icon="save" size={14} />
                 <Text>保存</Text>
               </SaveButton>
+              {savingDataset && (
+                <Loading>
+                  <Spin />
+                </Loading>
+              )}
             </>
           )}
         </BodyWrapper>
@@ -308,13 +377,15 @@ const StyledAccordionItemButton = styled(AccordionItemButton)`
 const HeaderContents = styled.div`
   display: flex;
   align-items: center;
-  height: 46px;
-  padding: 0 12px;
+  height: auto;
+  padding: 12px;
+  gap: 12px;
   outline: none;
   cursor: pointer;
 `;
 
 const BodyWrapper = styled(AccordionItemPanel)<{ noTransition?: boolean }>`
+  position: relative;
   width: 100%;
   border-radius: 0px 0px 4px 4px;
   background: #fafafa;
@@ -326,16 +397,15 @@ const LeftMain = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 `;
 
 const Title = styled.p`
   margin: 0;
   font-size: 16px;
-  text-overflow: ellipsis;
-  overflow: hidden;
   width: 250px;
-  white-space: nowrap;
   user-select: none;
+  overflow-wrap: break-word;
 `;
 
 const Content = styled.div`
@@ -394,7 +464,7 @@ const StyledAddButton = styled(AddButton)`
   margin-top: 12px;
 `;
 
-const SaveButton = styled.div`
+const SaveButton = styled.div<{ disabled: boolean }>`
   margin-top: 12px;
   display: flex;
   justify-content: center;
@@ -410,6 +480,12 @@ const SaveButton = styled.div`
   :hover {
     background: #f4f4f4;
   }
+  ${({ disabled }) =>
+    disabled &&
+    `
+      color: rgb(209, 209, 209);
+      pointer-events: none;
+    `}
 `;
 
 const Text = styled.p`
@@ -428,4 +504,15 @@ const OpenDataButton = styled.div`
   border: 1px solid #e6e6e6;
   border-radius: 4px;
   cursor: pointer;
+`;
+const Loading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

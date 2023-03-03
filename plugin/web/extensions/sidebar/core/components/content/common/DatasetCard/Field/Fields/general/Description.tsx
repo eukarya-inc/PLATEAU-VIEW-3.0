@@ -48,7 +48,7 @@ const Description: React.FC<BaseFieldProps<"description">> = ({ value, editMode,
       </SwitchWrapper>
     </div>
   ) : isMarkdown && description ? (
-    <div dangerouslySetInnerHTML={{ __html: description }} />
+    <Markdown dangerouslySetInnerHTML={{ __html: description }} />
   ) : (
     <div>{description}</div>
   );
@@ -69,4 +69,10 @@ const SwitchWrapper = styled.div`
   align-items: center;
   gap: 10px;
   margin-top: 12px;
+`;
+
+const Markdown = styled.div`
+  img {
+    max-width: 100%;
+  }
 `;

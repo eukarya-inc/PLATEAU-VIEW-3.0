@@ -7,6 +7,8 @@ type Props = {
   className?: string;
   icon: string;
   size?: string | number;
+  width?: string | number;
+  height?: string | number;
   color?: string;
   wide?: boolean;
   onClick?: (e?: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
@@ -14,25 +16,50 @@ type Props = {
 
 type Icons = keyof typeof icons;
 
-const Icon: React.FC<Props> = ({ className, icon, size = 24, color, wide, onClick }) => {
+const Icon: React.FC<Props> = ({
+  className,
+  icon,
+  size = 24,
+  width,
+  height,
+  color,
+  wide,
+  onClick,
+}) => {
   const sizeStr = typeof size === "number" ? `${size}px` : size;
+  const widthStr = typeof width === "number" ? `${width}px` : width;
+  const heightStr = typeof height === "number" ? `${height}px` : height;
   const IconComponent = icons[icon as Icons];
 
   return (
-    <Wrapper className={className} size={sizeStr} color={color} wide={wide} onClick={onClick}>
+    <Wrapper
+      className={className}
+      size={sizeStr}
+      width={widthStr}
+      height={heightStr}
+      color={color}
+      wide={wide}
+      onClick={onClick}>
       <IconComponent />
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div<{ size: string; color?: string; wide?: boolean }>`
+const Wrapper = styled.div<{
+  size: string;
+  width?: string;
+  height?: string;
+  color?: string;
+  wide?: boolean;
+}>`
   box-sizing: content-box;
-  width: ${({ size }) => size};
-  ${({ wide, size }) => !wide && `height: ${size};`}
+  width: ${({ size, width }) => (width ? width : size)};
+  ${({ wide, size, height }) => !wide && `height: ${height ? height : size};`}
 
   svg {
-    width: ${({ size }) => size};
-    ${({ wide, size }) => !wide && `height: ${size};`}
+    width: ${({ size, width }) => (width ? width : size)};
+
+    ${({ wide, size, height }) => !wide && `height:  ${height ? height : size};`}
     color: ${({ color }) => color};
   }
 `;

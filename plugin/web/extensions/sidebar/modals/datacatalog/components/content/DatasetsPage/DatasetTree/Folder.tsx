@@ -1,25 +1,55 @@
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 export type Props = {
   name: string;
   isMobile?: boolean;
   expandAll?: boolean;
   nestLevel: number;
+  nodeKey: string;
+  expandedKeys: string[];
+  setExpandedKeys: React.Dispatch<React.SetStateAction<string[]>>;
   children?: React.ReactNode;
 };
 
-const Folder: React.FC<Props> = ({ name, isMobile, expandAll, nestLevel, children }) => {
+const Folder: React.FC<Props> = ({
+  name,
+  isMobile,
+  expandAll,
+  nestLevel,
+  nodeKey,
+  expandedKeys,
+  setExpandedKeys,
+  children,
+}) => {
   const [isOpen, open] = useState(false);
 
   useEffect(() => {
-    expandAll ? open(true) : open(false);
-  }, [expandAll]);
+    if (expandAll || expandedKeys.includes(nodeKey)) open(true);
+  }, [expandAll, expandedKeys, nodeKey]);
+
+  const handleExpand = useCallback(
+    (key: string) => {
+      setExpandedKeys((prevState: string[]) => {
+        const newExpandedKeys = [...prevState];
+        if (prevState.includes(key)) {
+          const index = prevState.findIndex(item => item === key);
+          newExpandedKeys.splice(index, 1);
+          open(false);
+        } else {
+          newExpandedKeys.push(key);
+          open(true);
+        }
+        return newExpandedKeys;
+      });
+    },
+    [setExpandedKeys],
+  );
 
   return (
     <Wrapper key={name} isOpen={isOpen}>
-      <FolderItem nestLevel={nestLevel} onClick={() => open(!isOpen)}>
+      <FolderItem nestLevel={nestLevel} onClick={() => handleExpand(nodeKey)}>
         <NameWrapper isMobile={isMobile}>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
           <Name>{name}</Name>

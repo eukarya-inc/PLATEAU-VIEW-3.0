@@ -23,6 +23,7 @@ const BuildingShadow: React.FC<BaseFieldProps<"buildingShadow">> = ({
       style={{ width: "100%" }}
       value={options.shadow}
       onChange={handleUpdateSelect("shadow")}
+      getPopupContainer={trigger => trigger.parentElement ?? document.body}
       options={[
         {
           value: "disabled",

@@ -23,7 +23,7 @@ const HEIGHT_CONDITIONS: Condition[] = [
   [compareRange(conditionalHeight, [120, 180]), "rgba(255, 205, 0, 1)"],
   [compareRange(conditionalHeight, [60, 120]), "rgba(240, 211, 123, 1)"],
   [compareRange(conditionalHeight, [31, 60]), "rgba(225, 206, 232, 1)"],
-  [compareRange(conditionalHeight, [12, 31]), "rgba(247, 255, 0, 1)"],
+  [compareRange(conditionalHeight, [12, 31]), "rgba(90, 34, 200, 1)"],
   [compareRange(conditionalHeight, [0, 12]), "rgba(56, 42, 84, 1)"],
   DEFAULT_CONDITION,
 ];

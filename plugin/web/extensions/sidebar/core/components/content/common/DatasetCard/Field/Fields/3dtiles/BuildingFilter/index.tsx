@@ -1,11 +1,10 @@
 import { Slider } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { CSSProperties } from "react";
+import { CSSProperties, useMemo } from "react";
 
 import { BaseFieldProps } from "../../types";
 
 import useHooks from "./hooks";
-import { MAX_ABOVEGROUND_FLOOR, MAX_BASEMENT_FLOOR, MAX_HEIGHT } from "./useBuildingFilter";
 
 const rangeToText = (range: [from: number, to: number]) => range.join(" ~ ");
 
@@ -36,52 +35,32 @@ const BuildingFilter: React.FC<BaseFieldProps<"buildingFilter">> = ({
     dataID,
     onUpdate,
   });
+  const fields = useMemo(
+    () =>
+      Object.entries(options)
+        .map(([, v]) => v)
+        .sort((a, b) => a.order - b.order),
+    [options],
+  );
 
   return editMode ? null : (
     <div>
-      <FieldWrapper>
-        <LabelWrapper>
-          <Label>高さで絞り込み</Label>
-          <Range>{rangeToText(options.height)}</Range>
-        </LabelWrapper>
-        <Slider
-          range={true}
-          value={options.height}
-          defaultValue={[0, MAX_HEIGHT]}
-          max={MAX_HEIGHT}
-          onChange={handleUpdateRange("height")}
-          {...styleProps}
-        />
-      </FieldWrapper>
-      <FieldWrapper>
-        <LabelWrapper>
-          <Label>地上階数で絞り込み</Label>
-          <Range>{rangeToText(options.abovegroundFloor)}</Range>
-        </LabelWrapper>
-        <Slider
-          range={true}
-          value={options.abovegroundFloor}
-          defaultValue={[1, MAX_ABOVEGROUND_FLOOR]}
-          min={1}
-          max={MAX_ABOVEGROUND_FLOOR}
-          onChange={handleUpdateRange("abovegroundFloor")}
-          {...styleProps}
-        />
-      </FieldWrapper>
-      <FieldWrapper>
-        <LabelWrapper>
-          <Label>地下階数で絞り込み</Label>
-          <Range>{rangeToText(options.basementFloor)}</Range>
-        </LabelWrapper>
-        <Slider
-          range={true}
-          value={options.basementFloor}
-          defaultValue={[0, MAX_BASEMENT_FLOOR]}
-          max={MAX_BASEMENT_FLOOR}
-          onChange={handleUpdateRange("basementFloor")}
-          {...styleProps}
-        />
-      </FieldWrapper>
+      {fields.map(f => (
+        <FieldWrapper key={f.id}>
+          <LabelWrapper>
+            <Label>{f.label}</Label>
+            <Range>{rangeToText(f.value)}</Range>
+          </LabelWrapper>
+          <Slider
+            range={true}
+            value={f.value}
+            max={f.max}
+            min={f.min}
+            onChange={handleUpdateRange(f.id)}
+            {...styleProps}
+          />
+        </FieldWrapper>
+      ))}
     </div>
   );
 };

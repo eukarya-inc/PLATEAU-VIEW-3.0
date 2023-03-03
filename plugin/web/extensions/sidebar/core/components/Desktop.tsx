@@ -26,6 +26,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     backendProjectName,
     templates,
     currentPage,
+    loading,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,
@@ -37,6 +38,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     handleProjectSceneUpdate,
     handleModalOpen,
     handleThreeDTilesSearch,
+    handleOverride,
   } = useHooks();
 
   const [minimized, setMinimize] = useState(false);
@@ -81,12 +83,14 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   inEditor={inEditor}
                   selectedDatasets={selectedDatasets}
                   templates={templates}
+                  savingDataset={loading}
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
                   onDatasetRemoveAll={handleProjectDatasetRemoveAll}
                   onModalOpen={handleModalOpen}
                   onThreeDTilesSearch={handleThreeDTilesSearch}
+                  onOverride={handleOverride}
                 />
               ),
               map: (
@@ -108,6 +112,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
               template: (
                 <Templates
                   templates={templates}
+                  savingTemplate={loading}
                   onTemplateAdd={handleTemplateAdd}
                   onTemplateSave={handleTemplateSave}
                   onTemplateRemove={handleTemplateRemove}

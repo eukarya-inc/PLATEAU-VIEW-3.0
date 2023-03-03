@@ -1,8 +1,9 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Icon } from "@web/sharedComponents";
+import Popconfirm, { PopconfirmProps } from "@web/sharedComponents/Popconfirm";
 import { styled } from "@web/theme";
-import { ComponentType, useCallback } from "react";
+import { ComponentType, useCallback, useMemo } from "react";
 
 export type Props = {
   dataset: DataCatalogItem | UserDataItem;
@@ -25,6 +26,8 @@ const DatasetDetails: React.FC<Props> = ({
   onDatasetAdd,
   onDatasetPublish,
 }) => {
+  const published = useMemo(() => (dataset as DataCatalogItem).public, [dataset]);
+
   const handleDatasetPublish = useCallback(() => {
     if (!("dataID" in dataset)) return;
     const datasetToUpdate = dataset as DataCatalogItem;
@@ -36,23 +39,55 @@ const DatasetDetails: React.FC<Props> = ({
     onDatasetAdd(dataset);
   }, [dataset, addDisabled, onDatasetAdd]);
 
+  const popConfirmProps: PopconfirmProps = {
+    title: (
+      <>
+        <PopConfirmText>Are you sure you want to publish</PopConfirmText>
+        <PopConfirmText>this dataset?</PopConfirmText>
+      </>
+    ),
+    placement: "topRight",
+    onConfirm: handleDatasetPublish,
+    okText: "Yes",
+    cancelText: "Cancel",
+    okButtonProps: {
+      style: {
+        backgroundColor: "#00BEBE",
+        width: "48%",
+        border: "none",
+      },
+    },
+    cancelButtonProps: {
+      type: "primary",
+      style: {
+        color: "#000000d9",
+        backgroundColor: "#FFFFFF",
+        width: "48%",
+        border: "1px solid #D9D9D9",
+      },
+    },
+  };
+
   return (
     <>
       <TopWrapper>
         <HeaderWrapper>
           <Title>{dataset.name}</Title>
-          {"dataID" in dataset && inEditor && (
-            <PublishButton
-              published={(dataset as DataCatalogItem).public}
-              onClick={handleDatasetPublish}>
-              <HoverText published={(dataset as DataCatalogItem).public}>
-                {(dataset as DataCatalogItem).public ? "未公開" : "公開"}
-              </HoverText>
-              <Text published={(dataset as DataCatalogItem).public}>
-                {(dataset as DataCatalogItem).public ? "公開済み" : "未公開"}
-              </Text>
-            </PublishButton>
-          )}
+          {"dataID" in dataset &&
+            inEditor &&
+            (!published ? (
+              <Popconfirm {...popConfirmProps}>
+                <PublishButton published={published}>
+                  <HoverText published={published}>公開</HoverText>
+                  <Text published={published}>未公開</Text>
+                </PublishButton>
+              </Popconfirm>
+            ) : (
+              <PublishButton published={published} onClick={handleDatasetPublish}>
+                <HoverText published={published}>未公開</HoverText>
+                <Text published={published}>公開済み</Text>
+              </PublishButton>
+            ))}
         </HeaderWrapper>
         <ButtonWrapper>
           <AddButton disabled={addDisabled} onClick={handleDatasetAdd}>
@@ -159,4 +194,8 @@ const Text = styled.p<{ published?: boolean }>`
   ${PublishButton}:hover & {
     display: none;
   }
+`;
+
+const PopConfirmText = styled.p`
+  margin-bottom: 0;
 `;

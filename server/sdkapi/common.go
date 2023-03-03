@@ -58,6 +58,11 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 	prefs := []*DatasetPref{}
 	prefm := map[string]*DatasetPref{}
 	for _, i := range i {
+		ft := i.FeatureTypes()
+		if len(ft) == 0 {
+			continue
+		}
+
 		if _, ok := prefm[i.Prefecture]; !ok {
 			pd := &DatasetPref{
 				ID:    i.Prefecture,
@@ -71,7 +76,7 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 			ID:           i.ID,
 			Title:        i.CityName,
 			Description:  i.Description,
-			FeatureTypes: i.FeatureTypes(),
+			FeatureTypes: ft,
 		}
 		pd := prefm[i.Prefecture]
 		pd.Data = append(pd.Data, d)

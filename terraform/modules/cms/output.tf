@@ -13,3 +13,15 @@ output "plateauview_sidebar_token" {
 output "auth0_action_singup" {
   value = module.auth0.action_singup
 }
+
+output "plateauview_cms_url" {
+  value = local.cms_domain
+}
+
+output "plateauview_cms_api_url" {
+  value = local.api_cms_domain
+}
+
+output "plateauview_api_url" {
+  value = local.api_domain
+}

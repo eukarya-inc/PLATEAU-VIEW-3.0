@@ -23,14 +23,18 @@ resource "google_cloud_run_service" "reearth_cms_api" {
       container_concurrency = 80
       timeout_seconds       = 1800
       containers {
-        #MEMO: 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
-        # 　　　　　　　　　　そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
+        # 初回作成時にreearth/reearthを指定すると、環境変数の設定不足で立ち上がらない。
+        # そのため、一時的にサンプルアプリケーションでで作成し、セットアップ完了後にgcloudでdeployを行う。
         image = "gcr.io/cloudrun/hello"
         resources {
           limits = {
             cpu    = "1000m"
             memory = "512Mi"
           }
+        }
+        ports {
+          container_port = 8080
+          name           = "h2c"
         }
 
         dynamic "env" {

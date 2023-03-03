@@ -1,6 +1,6 @@
-import { Group } from "@web/extensions/sidebar/core/types";
+import { Group, Template as TemplateType } from "@web/extensions/sidebar/core/types";
 
-export const fieldName = {
+export const generalFieldName = {
   idealZoom: "カメラ",
   legend: "凡例",
   realtime: "リアルタイム",
@@ -12,6 +12,10 @@ export const fieldName = {
   switchDataset: "スイッチデータセット",
   point: "ポイント",
   description: "説明",
+  template: "テンプレート",
+};
+
+export const pointFieldName = {
   pointColor: "色",
   pointColorGradient: "色（Gradient）",
   pointSize: "サイズ",
@@ -20,22 +24,37 @@ export const fieldName = {
   pointModel: "モデル",
   pointStroke: "ストロック",
   pointCSV: "ポイントに変換（CSV）",
-  search: "データを検索",
+};
+
+export const polygonFieldName = {
   polygonColor: "ポリゴン色",
   polygonColorGradient: "ポリゴン色（Gradient）",
   polygonStroke: "ポリゴンストロック",
+};
+
+export const threeDFieldName = {
+  search: "データを検索",
   clipping: "クリッピング",
   buildingFilter: "建物フィルター",
   buildingTransparency: "透明度",
   buildingColor: "色分け",
   buildingShadow: "影",
+};
+
+export const polylineFieldName = {
   polylineColor: "ポリライン色",
   polylineColorGradient: "ポリライン色（Gradient）",
   polylineStrokeWeight: "ポリラインストロック",
-  template: "テンプレート",
 };
 
-// type Component = Camera | Legend | Realtime | Point | Polyline | Polygon | Model | Description;
+export const fieldName = {
+  ...generalFieldName,
+  ...pointFieldName,
+  ...polygonFieldName,
+  ...threeDFieldName,
+  ...polylineFieldName,
+};
+
 export type FieldComponent =
   | IdealZoom
   | Legend
@@ -48,6 +67,7 @@ export type FieldComponent =
   | Realtime
   | Timeline
   | SwitchDataset
+  | Template
   | PointColor
   | PointColorGradient
   | PointSize
@@ -67,18 +87,14 @@ export type FieldComponent =
   | BuildingFilter
   | BuildingTransparency
   | BuildingColor
-  | BuildingShadow
-  | Template;
+  | BuildingShadow;
 
 type FieldBase<T extends keyof typeof fieldName> = {
   id: string;
   type: T;
   group?: string;
-};
-
-type Template = FieldBase<"template"> & {
-  templateID: string;
-  name: string;
+  override?: any;
+  cleanseOverride?: any;
 };
 
 type CameraPosition = {
@@ -144,6 +160,7 @@ export type ButtonLink = FieldBase<"buttonLink"> & {
   title?: string;
   link?: string;
 };
+
 export type StoryItem = {
   id: string;
   title?: string;
@@ -154,17 +171,9 @@ export type Story = FieldBase<"story"> & {
   stories?: StoryItem[];
 };
 
-// MAYBE POINT TYPE IS JUST TO CONCEPTUALIZE THE JSONNNN
-// type Point = {
-//   type: "point";
-//   group?: string;
-//   visible?: Expression;
-//   pointColor?: Expression[];
-//   // pointSize?: Expression;
-//   pointSize?: number;
-//   image?: Expression;
-//   modelUrl?: string;
-// };
+type Template = FieldBase<"template"> & {
+  templateID?: string;
+};
 
 type PointColor = FieldBase<"pointColor"> & {
   pointColors?: {
@@ -250,9 +259,9 @@ type Clipping = FieldBase<"clipping"> & {
 };
 
 type BuildingFilter = FieldBase<"buildingFilter"> & {
-  height: [from: number, to: number];
-  abovegroundFloor: [from: number, to: number];
-  basementFloor: [from: number, to: number];
+  height?: [from: number, to: number];
+  abovegroundFloor?: [from: number, to: number];
+  basementFloor?: [from: number, to: number];
 };
 
 type BuildingShadow = FieldBase<"buildingShadow"> & {
@@ -322,6 +331,8 @@ export type Fields = {
   buildingTransparency: BuildingTransparency;
   buildingColor: BuildingColor;
   buildingShadow: BuildingShadow;
+  // template
+  template: Template;
 };
 
 export type BaseFieldProps<T extends keyof Fields> = {
@@ -329,10 +340,11 @@ export type BaseFieldProps<T extends keyof Fields> = {
   dataID?: string;
   editMode?: boolean;
   isActive?: boolean;
+  templates?: TemplateType[];
   fieldGroups?: Group[];
   configData?: ConfigData[];
   onUpdate: (property: Fields[T]) => void;
-  onCurrentGroupChange: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate: (fieldGroupID: string) => void;
 };
 
 export type ConfigData = { name: string; type: string; url: string; layers?: string[] };
