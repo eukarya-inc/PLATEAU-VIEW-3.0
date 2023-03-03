@@ -57,7 +57,7 @@ type Catalog struct {
 	ThumbnailFileName string `json:"-"`
 	// 価格情報
 	Fee string `json:"fee,omitempty"`
-	// 使用許諾
+	// 使用許諾: 実際はライセンスは指定のものになるべきなため使用しない
 	LicenseAgreement string `json:"licenseAgreement,omitempty"`
 	// カスタムフィールド
 	CustomFields map[string]any `json:"customFields,omitempty"`

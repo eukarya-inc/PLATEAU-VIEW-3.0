@@ -21,8 +21,6 @@ const (
 	licenseDefaultID    = "plateau"
 	licenseDefaultTitle = "PLATEAU Site Policy 「３．著作権について」に拠る"
 	licenseDefaultURL   = "https://www.mlit.go.jp/plateau/site-policy/"
-	LicenseOL           = "独自利用規約"
-	licenseOLID         = "ol"
 )
 
 // 仕様書バージョンと年度
@@ -73,16 +71,6 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 		thumbnailURL = dataurl.New(c.Thumbnail, http.DetectContentType(c.Thumbnail)).String()
 	}
 
-	var licenseID, licenseURL, licenseTitle string
-	if c.License != LicenseOL {
-		licenseID = licenseOLID
-		licenseTitle = LicenseOL
-	} else {
-		licenseID = licenseDefaultID
-		licenseURL = licenseDefaultURL
-		licenseTitle = licenseDefaultTitle
-	}
-
 	return ckan.Package{
 		Name:            pkgName,
 		Title:           c.Title,
@@ -101,9 +89,9 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 		Charge:           c.Charge,
 		RegisterdDate:    c.RegisteredDate,
 		LicenseAgreement: c.LicenseAgreement,
-		LicenseTitle:     licenseTitle,
-		LicenseURL:       licenseURL,
-		LicenseID:        licenseID,
+		LicenseTitle:     licenseDefaultTitle,
+		LicenseURL:       licenseDefaultURL,
+		LicenseID:        licenseDefaultID,
 		Fee:              c.Fee,
 		Area:             c.Area,
 		Quality:          c.Quality,
