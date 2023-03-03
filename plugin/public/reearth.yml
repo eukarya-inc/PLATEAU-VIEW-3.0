@@ -12,19 +12,23 @@ extensions:
           fields:
             - id: plateauURL
               type: string
-              title: PLATEAU Backend Base URL
+              title: Backend URL
             - id: projectName
               type: string
               title: Project Name
             - id: plateauAccessToken
               type: string
-              title: PLATEAU Backend Access Token
+              title: Backend Access Token
+              private: true
             - id: catalogURL
               type: string
-              title: PLATEAU Data Catalog URL
+              title: Data Catalog URL
+            - id: catalogProjectName
+              type: string
+              title: Data Catalog Project Name
             - id: reearthURL
               type: string
-              title: Re:Earth Base URL
+              title: Re:Earth Project Public URL
     widgetLayout:
       defaultLocation:
         zone: outer

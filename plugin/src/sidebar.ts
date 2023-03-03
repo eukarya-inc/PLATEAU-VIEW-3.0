@@ -154,6 +154,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           projectID: reearth.viewport.query.projectID,
           inEditor: reearth.scene.inEditor,
           catalogURL: reearth.widget.property.default?.catalogURL ?? "",
+          catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
           reearthURL: reearth.widget.property.default?.reearthURL ?? "",
           backendURL: reearth.widget.property.default?.plateauURL ?? "",
           backendProjectName: reearth.widget.property.default?.projectName ?? "",

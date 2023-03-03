@@ -47,8 +47,11 @@ export type RawDataCatalogItem = {
 
 export type GroupBy = "city" | "type" | "tag"; // Tag not implemented yet
 
-export async function getDataCatalog(base: string): Promise<RawDataCatalogItem[]> {
-  const res = await fetch(base + "/datacatalog");
+export async function getDataCatalog(
+  base: string,
+  project?: string,
+): Promise<RawDataCatalogItem[]> {
+  const res = await fetch(`${base}/datacatalog${project ? `/${project}` : ""}`);
   if (!res.ok) {
     throw new Error("failed to fetch data catalog");
   }

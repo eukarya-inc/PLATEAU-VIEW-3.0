@@ -56,6 +56,7 @@ export default () => {
   const [inEditor, setInEditor] = useState(true);
 
   const [catalogURL, setCatalogURL] = useState<string>();
+  const [catalogProjectName, setCatalogProjectName] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
@@ -90,12 +91,13 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    if (catalogURL) {
-      getDataCatalog(catalogURL).then(res => {
+    const catalogBaseUrl = catalogURL || backendURL;
+    if (catalogBaseUrl) {
+      getDataCatalog(catalogBaseUrl, catalogProjectName).then(res => {
         setCatalog(res);
       });
     }
-  }, [catalogURL]);
+  }, [backendURL, catalogProjectName, catalogURL]);
 
   useEffect(() => {
     if (backendURL) {
@@ -574,6 +576,7 @@ export default () => {
         setProjectID(e.data.payload.projectID);
         setInEditor(e.data.payload.inEditor);
         setCatalogURL(e.data.payload.catalogURL);
+        setCatalogProjectName(e.data.payload.catalogProjectName);
         setReearthURL(`${e.data.payload.reearthURL}`);
         setBackendURL(e.data.payload.backendURL);
         setBackendProjectName(e.data.payload.backendProjectName);
