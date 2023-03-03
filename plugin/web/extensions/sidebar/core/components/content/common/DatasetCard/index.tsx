@@ -59,8 +59,8 @@ const DatasetCard: React.FC<Props> = ({
     handleGroupsUpdate,
   } = useHooks({
     dataset,
-    templates,
     inEditor,
+    templates,
     onDatasetUpdate,
     onOverride,
   });
@@ -289,6 +289,7 @@ const DatasetCard: React.FC<Props> = ({
                     isActive={!!activeComponentIDs?.find(id => id === c.id)}
                     dataID={dataset.dataID}
                     editMode={inEditor && currentTab === "edit"}
+                    templates={templates}
                     selectGroups={dataset.fieldGroups}
                     configData={dataset.config?.data}
                     onUpdate={handleFieldUpdate}
@@ -304,6 +305,7 @@ const DatasetCard: React.FC<Props> = ({
                       isActive={!!activeComponentIDs?.find(id => id === c.id)}
                       dataID={dataset.dataID}
                       selectGroups={dataset.fieldGroups}
+                      templates={templates}
                       configData={dataset.config?.data}
                       onUpdate={handleFieldUpdate}
                       onRemove={handleFieldRemove}
@@ -319,6 +321,7 @@ const DatasetCard: React.FC<Props> = ({
                   isActive={!!activeComponentIDs?.find(id => id === c.id)}
                   dataID={dataset.dataID}
                   editMode={inEditor && currentTab === "edit"}
+                  templates={templates}
                   selectGroups={dataset.fieldGroups}
                   configData={dataset.config?.data}
                   onUpdate={handleFieldUpdate}

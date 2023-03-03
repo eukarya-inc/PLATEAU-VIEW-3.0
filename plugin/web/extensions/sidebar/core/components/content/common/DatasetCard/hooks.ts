@@ -2,18 +2,20 @@ import { DataCatalogItem, Group, Template } from "@web/extensions/sidebar/core/t
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
+import { mergeOverrides } from "../../../hooks";
+
 import generateFieldComponentsList, { cleanseOverrides } from "./Field/fieldHooks";
 
 export default ({
   dataset,
-  templates,
   inEditor,
+  templates,
   onDatasetUpdate,
   onOverride,
 }: {
   dataset: DataCatalogItem;
-  templates?: Template[];
   inEditor?: boolean;
+  templates?: Template[];
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
 }) => {
@@ -53,7 +55,7 @@ export default ({
       if (!inEditor) return;
       const newField = {
         id: generateID(),
-        type: key.includes("template") ? "template" : key,
+        type: key,
         ...property,
       };
 
@@ -94,15 +96,25 @@ export default ({
         handleCurrentGroupUpdate(undefined);
       }
 
+      let cleanseOverride: any = undefined;
+      if (removedComponent.type === "template") {
+        cleanseOverride = mergeOverrides(
+          "cleanse",
+          templates?.find(t => t.id === removedComponent.templateID)?.components,
+        );
+      } else {
+        cleanseOverride = cleanseOverrides[removedComponent.type] ?? undefined;
+      }
+
       onDatasetUpdate?.(
         {
           ...dataset,
           components: newDatasetComponents,
         },
-        cleanseOverrides[removedComponent.type] ?? undefined,
+        cleanseOverride,
       );
     },
-    [dataset, inEditor, onDatasetUpdate, handleCurrentGroupUpdate],
+    [dataset, inEditor, templates, onDatasetUpdate, handleCurrentGroupUpdate],
   );
 
   const handleGroupsUpdate = useCallback(
@@ -127,7 +139,6 @@ export default ({
 
   const fieldComponentsList = generateFieldComponentsList({
     fieldGroups: dataset.fieldGroups,
-    templates,
     onFieldAdd: handleFieldAdd,
   });
 

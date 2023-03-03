@@ -11,7 +11,6 @@ import { ChangeEvent, useCallback, useState, useEffect } from "react";
 import { BaseFieldProps, Fields } from "../types";
 
 const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({
-  dataID,
   value,
   editMode,
   isActive,
@@ -79,7 +78,7 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({
   );
 
   useEffect(() => {
-    if (!isActive || !dataID || isEqual(value, pointLabel)) return;
+    if (!isActive || isEqual(value, pointLabel)) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...pointLabel,
@@ -103,7 +102,7 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, isActive, pointLabel, value, onUpdate]);
+  }, [isActive, pointLabel, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

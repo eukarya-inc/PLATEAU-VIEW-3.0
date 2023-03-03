@@ -8,7 +8,6 @@ import { useCallback, useEffect, useState } from "react";
 import { BaseFieldProps } from "../types";
 
 const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
-  dataID,
   value,
   editMode,
   isActive,
@@ -27,7 +26,7 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
   }, []);
 
   useEffect(() => {
-    if (!isActive || !dataID || (value.scale === scale && value.modelURL === modelURL)) return;
+    if (!isActive || (value.scale === scale && value.modelURL === modelURL)) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
@@ -39,7 +38,7 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, isActive, modelURL, scale, value, onUpdate]);
+  }, [isActive, modelURL, scale, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

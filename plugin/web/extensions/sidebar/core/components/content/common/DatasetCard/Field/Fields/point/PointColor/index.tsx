@@ -11,12 +11,7 @@ import { BaseFieldProps, Cond } from "../../types";
 
 import PointColorItem from "./PointColorItem";
 
-const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
-  dataID,
-  value,
-  editMode,
-  onUpdate,
-}) => {
+const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, onUpdate }) => {
   const [pointColors, updatePointColors] = useState(value.pointColors);
 
   const handleMoveUp = useCallback((idx: number) => {
@@ -64,7 +59,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
   };
 
   useEffect(() => {
-    if (!dataID || value.pointColors === pointColors) return;
+    if (value.pointColors === pointColors) return;
 
     const timer = setTimeout(() => {
       const conditions: [string, string][] = [["true", 'color("white")']];
@@ -91,7 +86,7 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, pointColors, value, onUpdate]);
+  }, [pointColors, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

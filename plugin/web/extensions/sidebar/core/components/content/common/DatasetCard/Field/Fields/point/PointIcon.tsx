@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { BaseFieldProps } from "../types";
 
 const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
-  dataID,
   value,
   editMode,
   isActive,
@@ -23,7 +22,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
   }, []);
 
   useEffect(() => {
-    if (!isActive || !dataID || (imageURL === value.url && imageSize === value.size)) return;
+    if (!isActive || (imageURL === value.url && imageSize === value.size)) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
@@ -35,7 +34,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, imageURL, imageSize, isActive, value, onUpdate]);
+  }, [imageURL, imageSize, isActive, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

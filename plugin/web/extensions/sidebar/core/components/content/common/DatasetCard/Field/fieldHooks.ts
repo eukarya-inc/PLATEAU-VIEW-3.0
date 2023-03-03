@@ -1,4 +1,4 @@
-import { Group, Template } from "@web/extensions/sidebar/core/types";
+import { Group } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useMemo } from "react";
 
@@ -10,11 +10,9 @@ type FieldDropdownItem = {
 
 export default ({
   fieldGroups,
-  templates,
   onFieldAdd,
 }: {
   fieldGroups?: Group[];
-  templates?: Template[];
   onFieldAdd: (property: any) => ({ key }: { key: string }) => void;
 }) => {
   const generalFields: FieldDropdownItem = useMemo(() => {
@@ -74,6 +72,10 @@ export default ({
       },
       switchDataset: {
         name: fieldName["switchDataset"],
+        onClick: onFieldAdd({}),
+      },
+      template: {
+        name: fieldName["template"],
         onClick: onFieldAdd({}),
       },
     };
@@ -194,30 +196,6 @@ export default ({
     };
   }, [onFieldAdd]);
 
-  // const ThreeDModelFields: FieldDropdownItem = {};
-
-  const TemplateFields: FieldDropdownItem | undefined = useMemo(
-    () =>
-      templates?.length
-        ? templates
-            .map(t => {
-              return {
-                [`template-${t.id}`]: {
-                  name: t.name,
-                  onClick: onFieldAdd({
-                    templateID: t.id,
-                    name: t.name,
-                  }),
-                },
-              };
-            })
-            .reduce((acc, field) => {
-              return { ...acc, ...field };
-            })
-        : undefined,
-    [templates, onFieldAdd],
-  );
-
   const fieldComponentsList = useMemo(() => {
     const groups: {
       [key: string]: {
@@ -238,11 +216,8 @@ export default ({
       // "3d-model": { name: "3Dモデル", fields: ThreeDModelFields },
       "3d-tile": { name: "3Dタイル", fields: ThreeDTileFields },
     };
-    if (TemplateFields) {
-      groups["templates"] = { name: "テンプレート", fields: TemplateFields };
-    }
     return groups;
-  }, [generalFields, pointFields, polygonFields, polylineFields, ThreeDTileFields, TemplateFields]);
+  }, [generalFields, pointFields, polygonFields, polylineFields, ThreeDTileFields]);
 
   return fieldComponentsList;
 };

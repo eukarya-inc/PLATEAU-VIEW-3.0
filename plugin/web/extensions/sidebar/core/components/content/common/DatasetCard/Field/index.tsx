@@ -1,4 +1,4 @@
-import { Group } from "@web/extensions/sidebar/core/types";
+import { Group, Template } from "@web/extensions/sidebar/core/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
@@ -21,7 +21,6 @@ import {
   pointFieldName,
   polygonFieldName,
   polylineFieldName,
-  templateFieldName,
   threeDFieldName,
 } from "./Fields/types";
 
@@ -30,6 +29,7 @@ export type Props = {
   dataID?: string;
   isActive: boolean;
   editMode?: boolean;
+  templates?: Template[];
   selectGroups?: Group[];
   configData?: ConfigData[];
   onUpdate?: (id: string) => (property: any) => void;
@@ -49,8 +49,6 @@ const getFieldGroup = (field: string) => {
     return "3Dタイル";
   } else if (field in polylineFieldName) {
     return "ポリライン";
-  } else if (field in templateFieldName) {
-    return "テンプレート";
   }
 };
 
@@ -59,6 +57,7 @@ const FieldComponent: React.FC<Props> = ({
   dataID,
   isActive,
   editMode,
+  templates,
   selectGroups,
   configData,
   onUpdate,
@@ -66,7 +65,7 @@ const FieldComponent: React.FC<Props> = ({
   onGroupsUpdate,
   onCurrentGroupUpdate,
 }) => {
-  const Field = field.type === "template" ? null : fields[field.type];
+  const Field = fields[field.type];
   const [groupPopupOpen, setGroupPopup] = useState(false);
 
   const handleGroupSelectOpen = useCallback(
@@ -107,13 +106,7 @@ const FieldComponent: React.FC<Props> = ({
     };
   }, [groupPopupOpen, onGroupsUpdate]);
 
-  const title = useMemo(
-    () =>
-      editMode && field.type === "template"
-        ? `${field.name}(${getFieldGroup(field.type)})`
-        : `${fieldName[field.type]}(${getFieldGroup(field.type)})`,
-    [editMode, field],
-  );
+  const title = useMemo(() => `${fieldName[field.type]}(${getFieldGroup(field.type)})`, [field]);
 
   return !editMode && !isActive ? null : (
     <StyledAccordionComponent
@@ -123,7 +116,7 @@ const FieldComponent: React.FC<Props> = ({
       <AccordionItem uuid={field.id}>
         <AccordionItemState>
           {({ expanded }) => (
-            <Header showBorder={expanded && field.type !== "template"}>
+            <Header showBorder={expanded}>
               {editMode ? (
                 <HeaderContents>
                   <LeftContents>
@@ -157,6 +150,7 @@ const FieldComponent: React.FC<Props> = ({
               value={{ ...field }}
               editMode={editMode}
               isActive={isActive}
+              templates={templates}
               fieldGroups={selectGroups}
               configData={configData}
               dataID={dataID}
