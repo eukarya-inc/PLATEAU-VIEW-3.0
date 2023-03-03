@@ -189,10 +189,6 @@ export default ({
           direction: "inside",
         }),
       },
-      search: {
-        name: fieldName["search"],
-        onClick: onFieldAdd({}),
-      },
     };
   }, [onFieldAdd]);
 

@@ -5,7 +5,6 @@ import BuildingFilter from "./3dtiles/BuildingFilter";
 import BuildingShadow from "./3dtiles/BuildingShadow";
 import BuildingTransparency from "./3dtiles/BuildingTransparency";
 import Clipping from "./3dtiles/Clipping";
-import Search from "./3dtiles/Search";
 import ButtonLink from "./general/ButtonLink";
 import Description from "./general/Description";
 import IdealZoom from "./general/IdealZoom";
@@ -72,7 +71,6 @@ const fields: Fields<FieldComponent> = {
   buildingTransparency: { Component: BuildingTransparency, hasUI: true },
   buildingColor: { Component: BuildingColor, hasUI: true },
   buildingShadow: { Component: BuildingShadow, hasUI: true },
-  search: { Component: Search, hasUI: false },
   // 3d-model
   template: { Component: Template, hasUI: true },
 };

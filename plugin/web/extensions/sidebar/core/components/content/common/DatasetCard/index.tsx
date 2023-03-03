@@ -124,8 +124,8 @@ const DatasetCard: React.FC<Props> = ({
     readyMVTPosition.current = fetchMetadataJSONForMVT();
   }, [dataset.dataID]);
 
-  const baseFields: BaseFieldType[] = useMemo(() => {
-    const fields: BaseFieldType[] = [
+  const baseFields: BaseFieldType[] = useMemo(
+    () => [
       {
         id: "zoom",
         title: "カメラ",
@@ -160,24 +160,22 @@ const DatasetCard: React.FC<Props> = ({
         icon: "trash",
         onClick: () => onDatasetRemove?.(dataset.dataID),
       },
-    ];
-    if (
-      currentTab === "default" &&
-      (dataset.components?.find(c => c.type === "search") ||
-        templates?.find(t => t.components?.find(c => c.type === "search")))
-    ) {
-      fields.push({
-        id: "search",
-        title: "データを検索",
-        icon: "search",
-        value: 1,
-        onClick: () => {
-          onThreeDTilesSearch(dataset.dataID);
-        },
-      });
-    }
-    return fields;
-  }, [currentTab, dataset, templates, onDatasetRemove, onThreeDTilesSearch]);
+      ...(currentTab === "default" && dataset.type === "建築物モデル"
+        ? [
+            {
+              id: "search",
+              title: "データを検索",
+              icon: "search",
+              value: 1,
+              onClick: () => {
+                onThreeDTilesSearch(dataset.dataID);
+              },
+            },
+          ]
+        : []),
+    ],
+    [currentTab, dataset, onDatasetRemove, onThreeDTilesSearch],
+  );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
     e.stopPropagation();
