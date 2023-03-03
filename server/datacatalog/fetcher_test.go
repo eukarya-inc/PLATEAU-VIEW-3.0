@@ -39,7 +39,7 @@ func TestFetcher_Do(t *testing.T) {
 	})))
 
 	ctx := context.Background()
-	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).Do(ctx)
+	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).Do(ctx, "")
 	assert.Equal(t, ResponseAll{
 		Plateau: []PlateauItem{{ID: "x"}},
 		Usecase: []UsecaseItem{{ID: "y", Type: "ユースケース"}, {ID: "z"}},
@@ -61,7 +61,7 @@ func TestFetcher_all(t *testing.T) {
 	})))
 
 	ctx := context.Background()
-	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).all(ctx, "plateau")
+	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).all(ctx, "", "plateau")
 	assert.Equal(t, ResponseAll{
 		Plateau: []PlateauItem{
 			{ID: "x"}, {ID: "y"},
@@ -80,7 +80,7 @@ func TestFetcher_get(t *testing.T) {
 	})))
 
 	ctx := context.Background()
-	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).get(ctx, "plateau", 1, 2)
+	r, err := (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).get(ctx, "", "plateau", 1, 2)
 	assert.Equal(t, response{
 		Plateau:    []PlateauItem{{ID: "x"}},
 		Page:       1,
@@ -91,7 +91,7 @@ func TestFetcher_get(t *testing.T) {
 }
 
 func TestFetcher_url(t *testing.T) {
-	assert.Equal(t, "https://example.com/a?page=1&per_page=2", (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).url("a", 1, 2))
+	assert.Equal(t, "https://example.com/b/a?page=1&per_page=2", (&Fetcher{base: lo.Must(url.Parse("https://example.com"))}).url("b", "a", 1, 2))
 }
 
 func TestResponse_UnmarshalJSON(t *testing.T) {

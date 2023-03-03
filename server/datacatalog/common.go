@@ -8,6 +8,11 @@ import (
 	"github.com/eukarya-inc/jpareacode"
 )
 
+type Config struct {
+	CMSBase    string
+	CMSProject string
+}
+
 func assetURLFromFormat(u, f string) string {
 	u2, err := url.Parse(u)
 	if err != nil {

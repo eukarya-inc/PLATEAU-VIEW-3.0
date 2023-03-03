@@ -3,13 +3,16 @@ package datacatalog
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"strconv"
+	"time"
 
 	"github.com/reearth/reearthx/log"
+	"github.com/reearth/reearthx/rerror"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
@@ -18,23 +21,18 @@ const ModelPlateau = "plateau"
 const ModelUsecase = "usecase"
 const ModelDataset = "dataset"
 
-type Config struct {
-	CMSBase    string
-	CMSProject string
-}
-
 type Fetcher struct {
 	c    *http.Client
 	base *url.URL
 }
 
-func NewFetcher(c *http.Client, config Config) (*Fetcher, error) {
-	u, err := url.Parse(config.CMSBase)
+func NewFetcher(c *http.Client, cmabse string) (*Fetcher, error) {
+	u, err := url.Parse(cmabse)
 	if err != nil {
 		return nil, err
 	}
 
-	u.Path = path.Join(u.Path, "api", "p", config.CMSProject)
+	u.Path = path.Join(u.Path, "api", "p")
 
 	if c == nil {
 		c = http.DefaultClient
@@ -56,57 +54,64 @@ func (f *Fetcher) Clone() *Fetcher {
 	}
 }
 
-func (f *Fetcher) Do(ctx context.Context) (ResponseAll, error) {
-	resultPlateau := make(chan ResponseAll)
-	resultUsecase := make(chan ResponseAll)
-	resultDataset := make(chan ResponseAll)
-	errPlateau := make(chan error)
-	errUsecase := make(chan error)
-	errDataset := make(chan error)
+func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	f1, f2, f3 := f.Clone(), f.Clone(), f.Clone()
 
-	go func() {
-		r, err := f1.all(ctx, ModelPlateau)
-		errPlateau <- err
-		resultPlateau <- r
-	}()
+	res1 := lo.Async2(func() (ResponseAll, error) {
+		return f1.all(ctx, project, ModelPlateau)
+	})
+	res2 := lo.Async2(func() (ResponseAll, error) {
+		return f2.all(ctx, project, ModelUsecase)
+	})
+	res3 := lo.Async2(func() (ResponseAll, error) {
+		return f3.all(ctx, project, ModelDataset)
+	})
 
-	go func() {
-		r, err := f2.all(ctx, ModelUsecase)
-		errUsecase <- err
-		resultUsecase <- r
-	}()
+	notFound := 0
+	r := ResponseAll{}
 
-	go func() {
-		r, err := f3.all(ctx, ModelDataset)
-		errDataset <- err
-		resultDataset <- r
-	}()
-
-	if err := <-errPlateau; err != nil {
-		return ResponseAll{}, err
+	if res := <-res1; res.B != nil {
+		if errors.Is(res.B, rerror.ErrNotFound) {
+			notFound++
+		} else {
+			return ResponseAll{}, res.B
+		}
+	} else {
+		r.Plateau = append(r.Plateau, res.A.Plateau...)
+		r.Usecase = append(r.Usecase, res.A.Usecase...)
 	}
 
-	if err := <-errUsecase; err != nil {
-		return ResponseAll{}, err
+	if res := <-res2; res.B != nil {
+		if errors.Is(res.B, rerror.ErrNotFound) {
+			notFound++
+		} else {
+			return ResponseAll{}, res.B
+		}
+	} else {
+		r.Plateau = append(r.Plateau, res.A.Plateau...)
+		r.Usecase = append(r.Usecase, res.A.Usecase...)
 	}
 
-	if err := <-errDataset; err != nil {
-		return ResponseAll{}, err
+	if res := <-res3; res.B != nil {
+		if errors.Is(res.B, rerror.ErrNotFound) {
+			notFound++
+		} else {
+			return ResponseAll{}, res.B
+		}
+	} else {
+		r.Plateau = append(r.Plateau, res.A.Plateau...)
+		r.Usecase = append(r.Usecase, res.A.Usecase...)
 	}
 
-	resPlateau := <-resultPlateau
-	resUsecase := <-resultUsecase
-	resDataset := <-resultDataset
-	return ResponseAll{
-		Plateau: append(append(resPlateau.Plateau, resUsecase.Plateau...), resDataset.Plateau...),
-		Usecase: append(append(resPlateau.Usecase, resUsecase.Usecase...), resDataset.Usecase...),
-	}, nil
+	if notFound == 3 {
+		return r, rerror.ErrNotFound
+	}
+	return r, nil
 }
 
-func (f *Fetcher) all(ctx context.Context, model string) (resp ResponseAll, err error) {
+func (f *Fetcher) all(ctx context.Context, project, model string) (resp ResponseAll, err error) {
 	for p := 1; ; p++ {
-		r, err := f.get(ctx, model, p, 0)
+		r, err := f.get(ctx, project, model, p, 0)
 		if err != nil {
 			return ResponseAll{}, err
 		}
@@ -120,7 +125,7 @@ func (f *Fetcher) all(ctx context.Context, model string) (resp ResponseAll, err 
 	return
 }
 
-func (f *Fetcher) get(ctx context.Context, model string, page, perPage int) (r response, err error) {
+func (f *Fetcher) get(ctx context.Context, project, model string, page, perPage int) (r response, err error) {
 	if f.c == nil {
 		f.c = http.DefaultClient
 	}
@@ -130,9 +135,13 @@ func (f *Fetcher) get(ctx context.Context, model string, page, perPage int) (r r
 		perPage = 100
 	}
 
-	u := f.url(model, page, perPage)
+	u := f.url(project, model, page, perPage)
 	log.Infof("datacatalog: get: %s", u)
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+
+	ctx2, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx2, "GET", u, nil)
 	if err != nil {
 		return
 	}
@@ -147,7 +156,11 @@ func (f *Fetcher) get(ctx context.Context, model string, page, perPage int) (r r
 	}()
 
 	if res.StatusCode != http.StatusOK {
-		err = fmt.Errorf("status code: %d", res.StatusCode)
+		if res.StatusCode == http.StatusNotFound {
+			err = rerror.ErrNotFound
+		} else {
+			err = fmt.Errorf("status code: %d", res.StatusCode)
+		}
 		return
 	}
 
@@ -157,9 +170,9 @@ func (f *Fetcher) get(ctx context.Context, model string, page, perPage int) (r r
 	return
 }
 
-func (f *Fetcher) url(model string, page, perPage int) string {
+func (f *Fetcher) url(project, model string, page, perPage int) string {
 	u := util.CloneRef(f.base)
-	u.Path = path.Join(u.Path, model)
+	u.Path = path.Join(u.Path, project, model)
 	u.RawQuery = url.Values{
 		"page":     []string{strconv.Itoa(page)},
 		"per_page": []string{strconv.Itoa(perPage)},
