@@ -1,4 +1,5 @@
 import { Group, Template as TemplateType } from "@web/extensions/sidebar/core/types";
+import { ReearthApi } from "@web/extensions/sidebar/types";
 
 export const generalFieldName = {
   idealZoom: "カメラ",
@@ -6,6 +7,7 @@ export const generalFieldName = {
   realtime: "リアルタイム",
   story: "ストーリー",
   timeline: "タイムラインデータ",
+  currentTime: "現在時刻",
   switchGroup: "スイッチグループ",
   buttonLink: "リンクボタン",
   styleCode: "スタイルコード",
@@ -65,6 +67,7 @@ export type FieldComponent =
   | Story
   | Realtime
   | Timeline
+  | CurrentTime
   | SwitchDataset
   | Template
   | PointColor
@@ -120,6 +123,11 @@ export type LegendItem = {
 export type Legend = FieldBase<"legend"> & {
   style: LegendStyleType;
   items?: LegendItem[];
+};
+
+type CurrentTime = FieldBase<"currentTime"> & {
+  date: string;
+  time: string;
 };
 
 type Realtime = FieldBase<"realtime"> & {
@@ -300,6 +308,7 @@ export type Fields = {
   switchGroup: SwitchGroup;
   buttonLink: ButtonLink;
   story: Story;
+  currentTime: CurrentTime;
   realtime: Realtime;
   timeline: Timeline;
   switchDataset: SwitchDataset;
@@ -341,6 +350,7 @@ export type BaseFieldProps<T extends keyof Fields> = {
   configData?: ConfigData[];
   onUpdate: (property: Fields[T]) => void;
   onCurrentGroupUpdate: (fieldGroupID: string) => void;
+  onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
 export type ConfigData = { name: string; type: string; url: string; layers?: string[] };

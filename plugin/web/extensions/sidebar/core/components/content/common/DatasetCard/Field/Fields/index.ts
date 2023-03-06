@@ -6,6 +6,7 @@ import BuildingShadow from "./3dtiles/BuildingShadow";
 import BuildingTransparency from "./3dtiles/BuildingTransparency";
 import Clipping from "./3dtiles/Clipping";
 import ButtonLink from "./general/ButtonLink";
+import CurrentTime from "./general/CurrentTime";
 import Description from "./general/Description";
 import IdealZoom from "./general/IdealZoom";
 import Legend from "./general/Legend";
@@ -47,6 +48,7 @@ const fields: Fields<FieldComponent> = {
   styleCode: { Component: StyleCode, hasUI: false },
   realtime: { Component: Realtime, hasUI: true },
   timeline: { Component: Timeline, hasUI: true },
+  currentTime: { Component: CurrentTime, hasUI: false },
   switchDataset: { Component: SwitchDataset, hasUI: true },
   // point
   pointColor: { Component: PointColor, hasUI: false },

@@ -91,6 +91,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   onModalOpen={handleModalOpen}
                   onThreeDTilesSearch={handleThreeDTilesSearch}
                   onOverride={handleOverride}
+                  onSceneUpdate={handleProjectSceneUpdate}
                 />
               ),
               map: (

@@ -49,6 +49,10 @@ export default ({
         name: fieldName["timeline"],
         onClick: onFieldAdd({ timeBasedDisplay: true, timeFieldName: "" }),
       },
+      currentTime: {
+        name: fieldName["currentTime"],
+        onClick: onFieldAdd({ date: "", time: "" }),
+      },
       styleCode: {
         name: fieldName["styleCode"],
         onClick: onFieldAdd({ src: " " }),
