@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -16,30 +16,30 @@ const useHooks = ({
   });
 
   const handleUpdate = useCallback(
+    (property: any) => {
+      onUpdate({ ...value, ...options, updatedAt: new Date(), override: { "3dtiles": property } });
+    },
+    [onUpdate, value, options],
+  );
+
+  const handleUpdateOptions = useCallback(
     <P extends keyof OptionsState>(prop: P, v?: OptionsState[P]) => {
       setOptions(o => {
         const next = { ...o, [prop]: v };
-        onUpdate({ id: value.id, type: value.type, group: value.group, ...next });
         return next;
       });
     },
-    [onUpdate, value],
+    [],
   );
 
   const handleUpdateNumber = useCallback(
     (prop: keyof OptionsState) => (value: number) => {
-      handleUpdate(prop, value);
+      handleUpdateOptions(prop, value);
     },
-    [handleUpdate],
+    [handleUpdateOptions],
   );
 
-  useEffect(() => {
-    if (options.transparency !== value.transparency) {
-      setOptions({ ...value });
-    }
-  }, [value, onUpdate, options]);
-
-  useBuildingTransparency({ options, dataID });
+  useBuildingTransparency({ options, dataID, onUpdate: handleUpdate });
 
   return {
     options,

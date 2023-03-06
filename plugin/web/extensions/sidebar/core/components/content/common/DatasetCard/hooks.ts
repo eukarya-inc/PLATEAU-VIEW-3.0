@@ -72,7 +72,7 @@ export default ({
 
       if (!newDatasetComponents || componentIndex === undefined) return;
 
-      newDatasetComponents[componentIndex] = property;
+      newDatasetComponents[componentIndex] = { ...property };
 
       onDatasetUpdate?.({
         ...dataset,

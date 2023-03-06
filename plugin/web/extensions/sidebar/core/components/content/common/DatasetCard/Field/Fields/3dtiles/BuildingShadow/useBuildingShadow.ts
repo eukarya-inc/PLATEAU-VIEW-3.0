@@ -1,5 +1,4 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useRef } from "react";
+import { RefObject, useCallback, useEffect, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -10,37 +9,29 @@ export const MAX_BASEMENT_FLOOR = 5;
 export const useBuildingShadow = ({
   options,
   dataID,
+  onUpdate,
 }: Pick<BaseFieldProps<"buildingShadow">, "dataID"> & {
   options: Omit<BaseFieldProps<"buildingShadow">["value"], "id" | "group" | "type">;
+  onUpdate: (property: any) => void;
 }) => {
-  const renderer = useRef<Renderer>();
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
 
   const render = useCallback(async () => {
-    if (!renderer.current) {
-      renderer.current = mountTileset({
+    renderTileset(
+      {
         dataID,
         shadow: options.shadow,
-      });
-    }
-    if (renderer.current) {
-      renderer.current.update({
-        dataID,
-        shadow: options.shadow,
-      });
-    }
+      },
+      onUpdateRef,
+    );
   }, [options.shadow, dataID]);
 
   useEffect(() => {
     render();
   }, [render]);
-
-  useEffect(
-    () => () => {
-      renderer.current?.unmount();
-      renderer.current = undefined;
-    },
-    [],
-  );
 };
 
 export type State = {
@@ -48,44 +39,11 @@ export type State = {
   shadow: BaseFieldProps<"buildingShadow">["value"]["shadow"];
 };
 
-type Renderer = {
-  update: (state: State) => void;
-  unmount: () => void;
-};
-
-const mountTileset = (initialState: State): Renderer => {
-  const state: Partial<State> = {};
-  const updateState = (next: State) => {
-    Object.entries(next).forEach(([k, v]) => {
-      state[k as keyof State] = v as any;
-    });
-  };
-
+const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
   const updateTileset = () => {
-    postMsg({
-      action: "update3dtilesShadow",
-      payload: {
-        dataID: state.dataID,
-        shadows: state.shadow,
-      },
+    onUpdateRef.current?.({
+      shadows: state.shadow,
     });
   };
-
-  // Initialize
-  updateState(initialState);
   updateTileset();
-
-  const update = (next: State) => {
-    updateState(next);
-    updateTileset();
-  };
-  const unmount = () => {
-    postMsg({
-      action: "reset3dtilesShadow",
-      payload: {
-        dataID: state.dataID,
-      },
-    });
-  };
-  return { update, unmount };
 };

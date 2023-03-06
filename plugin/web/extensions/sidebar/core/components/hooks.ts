@@ -775,12 +775,26 @@ export const mergeOverrides = (
     }
     return;
   }
+
   const overrides = cloneDeep(startingOverride ?? {});
+
+  const needOrderComponents = components
+    .filter(c => c.updatedAt)
+    .sort((a, b) => (a.updatedAt?.getTime() ?? 0) - (b.updatedAt?.getTime() ?? 0));
+  for (const component of needOrderComponents) {
+    merge(overrides, action === "cleanse" ? cleanseOverrides[component.type] : component.override);
+  }
+
   for (let i = 0; i < components.length; i++) {
+    if (components[i].updatedAt) {
+      continue;
+    }
+
     merge(
       overrides,
       action === "cleanse" ? cleanseOverrides[components[i].type] : components[i].override,
     );
   }
+
   return overrides;
 };

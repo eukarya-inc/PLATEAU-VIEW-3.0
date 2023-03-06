@@ -1,6 +1,5 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import debounce from "lodash/debounce";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -9,43 +8,36 @@ import { OptionsState } from "./constants";
 export const useBuildingFilter = ({
   options,
   dataID,
+  onUpdate,
 }: Pick<BaseFieldProps<"buildingFilter">, "dataID"> & {
   options: OptionsState;
+  onUpdate: (property: any) => void;
 }) => {
-  const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
     () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
   const render = useCallback(async () => {
-    if (!renderer.current) {
-      renderer.current = mountTileset({
+    renderTileset(
+      {
         dataID,
         options,
-      });
-    }
-    if (renderer.current) {
-      renderer.current.update({
-        dataID,
-        options,
-      });
-    }
+      },
+      onUpdateRef,
+    );
   }, [options, dataID]);
 
   useEffect(() => {
     renderRef.current = render;
     debouncedRender();
   }, [render, debouncedRender]);
-
-  useEffect(
-    () => () => {
-      renderer.current?.unmount();
-      renderer.current = undefined;
-    },
-    [],
-  );
 };
 
 export type State = {
@@ -53,20 +45,12 @@ export type State = {
   options: OptionsState;
 };
 
-type Renderer = {
-  update: (state: State) => void;
-  unmount: () => void;
-};
-
-const mountTileset = (initialState: State): Renderer => {
-  const state: Partial<State> = {};
-  const updateState = (next: State) => {
-    Object.entries(next).forEach(([k, v]) => {
-      state[k as keyof State] = v as any;
-    });
-  };
-
+const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
   const updateTileset = () => {
+    if (!Object.keys(state.options || {}).length) {
+      return;
+    }
+
     const defaultConditionalValue = (prop: string) =>
       `((\${${prop}} === "" || \${${prop}} === null || isNaN(Number(\${${prop}}))) ? 1 : Number(\${${prop}}))`;
     const condition = (
@@ -82,34 +66,14 @@ const mountTileset = (initialState: State): Renderer => {
       const conditionDef = condition(v.max, v.value, conditionalValue);
       return `${res ? `${res} && ` : ""}${conditionDef}`;
     }, "");
-    postMsg({
-      action: "update3dtilesShow",
-      payload: {
-        dataID: state.dataID,
-        show: {
-          expression: {
-            conditions: [...(conditions ? [[conditions, "true"]] : []), ["true", "false"]],
-          },
+    onUpdateRef.current?.({
+      show: {
+        expression: {
+          conditions: [...(conditions ? [[conditions, "true"]] : []), ["true", "false"]],
         },
       },
     });
   };
 
-  // Initialize
-  updateState(initialState);
   updateTileset();
-
-  const update = (next: State) => {
-    updateState(next);
-    updateTileset();
-  };
-  const unmount = () => {
-    postMsg({
-      action: "reset3dtilesShow",
-      payload: {
-        dataID: state.dataID,
-      },
-    });
-  };
-  return { update, unmount };
 };

@@ -1,49 +1,43 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
+import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
 import debounce from "lodash/debounce";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
 export const useBuildingTransparency = ({
   options,
   dataID,
+  onUpdate,
 }: Pick<BaseFieldProps<"buildingTransparency">, "dataID"> & {
   options: Omit<BaseFieldProps<"buildingTransparency">["value"], "id" | "group" | "type">;
+  onUpdate: (property: any) => void;
 }) => {
-  const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
     () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
-  const render = useCallback(async () => {
-    if (!renderer.current) {
-      renderer.current = mountTileset({
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
+  const render = useCallback(() => {
+    renderTileset(
+      {
         dataID,
         transparency: options.transparency,
-      });
-    }
-    if (renderer.current) {
-      renderer.current.update({
-        dataID,
-        transparency: options.transparency,
-      });
-    }
+      },
+      onUpdateRef,
+    );
   }, [options.transparency, dataID]);
 
   useEffect(() => {
     renderRef.current = render;
     debouncedRender();
   }, [render, debouncedRender]);
-
-  useEffect(
-    () => () => {
-      renderer.current?.unmount();
-      renderer.current = undefined;
-    },
-    [],
-  );
 };
 
 export type State = {
@@ -51,44 +45,41 @@ export type State = {
   transparency: number;
 };
 
-type Renderer = {
-  update: (state: State) => void;
-  unmount: () => void;
-};
+const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
+  const updateTileset = async () => {
+    const overriddenLayer = await getOverriddenLayerByDataID(state.dataID);
 
-const mountTileset = (initialState: State): Renderer => {
-  const state: Partial<State> = {};
-  const updateState = (next: State) => {
-    Object.entries(next).forEach(([k, v]) => {
-      state[k as keyof State] = v as any;
+    const transparency = (state.transparency ?? 100) / 100;
+
+    // We can get transparency from RGBA. Because the color is defined as RGBA.
+    const overriddenColor = overriddenLayer?.["3dtiles"]?.color;
+    const defaultRGBA = rgbaToString([255, 255, 255, transparency]);
+    const expression = (() => {
+      if (!overriddenColor) {
+        return defaultRGBA;
+      }
+      if (typeof overriddenColor === "string") {
+        const rgba = getRGBAFromString(overriddenColor);
+        return rgba ? rgbaToString([...rgba.slice(0, -1), transparency] as RGBA) : defaultRGBA;
+      }
+      return {
+        expression: {
+          conditions: overriddenColor.expression.conditions.map(([k, v]: [string, string]) => {
+            const rgba = getRGBAFromString(v);
+            if (!rgba) {
+              return [k, defaultRGBA];
+            }
+            const composedRGBA = [...rgba.slice(0, -1), transparency] as RGBA;
+            return [k, rgbaToString(composedRGBA)];
+          }),
+        },
+      };
+    })();
+
+    onUpdateRef.current?.({
+      color: expression,
     });
   };
 
-  const updateTileset = () => {
-    postMsg({
-      action: "update3dtilesTransparency",
-      payload: {
-        dataID: state.dataID,
-        transparency: (state.transparency ?? 100) / 100,
-      },
-    });
-  };
-
-  // Initialize
-  updateState(initialState);
   updateTileset();
-
-  const update = (next: State) => {
-    updateState(next);
-    updateTileset();
-  };
-  const unmount = () => {
-    postMsg({
-      action: "reset3dtilesTransparency",
-      payload: {
-        dataID: state.dataID,
-      },
-    });
-  };
-  return { update, unmount };
 };

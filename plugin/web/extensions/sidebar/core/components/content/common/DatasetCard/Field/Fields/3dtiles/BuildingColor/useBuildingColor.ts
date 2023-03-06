@@ -1,6 +1,7 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
+import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
 import debounce from "lodash/debounce";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -12,33 +13,33 @@ export const useBuildingColor = ({
   initialized,
   floods,
   dataID,
+  onUpdate,
 }: Pick<BaseFieldProps<"buildingColor">, "dataID"> & {
   initialized: boolean;
   options: Omit<BaseFieldProps<"buildingColor">["value"], "id" | "group" | "type">;
   floods: { id: string; label: string; featurePropertyName: string }[];
+  onUpdate: (property: any) => void;
 }) => {
-  const renderer = useRef<Renderer>();
   const renderRef = useRef<() => void>();
   const debouncedRender = useMemo(
     () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
 
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
+
   const render = useCallback(async () => {
-    if (!renderer.current) {
-      renderer.current = mountTileset({
+    renderTileset(
+      {
         dataID,
         floods,
         colorType: options.colorType,
-      });
-    }
-    if (renderer.current) {
-      renderer.current.update({
-        dataID,
-        floods,
-        colorType: options.colorType,
-      });
-    }
+      },
+      onUpdateRef,
+    );
   }, [options.colorType, dataID, floods]);
 
   useEffect(() => {
@@ -48,14 +49,6 @@ export const useBuildingColor = ({
     renderRef.current = render;
     debouncedRender();
   }, [render, debouncedRender, initialized]);
-
-  useEffect(
-    () => () => {
-      renderer.current?.unmount();
-      renderer.current = undefined;
-    },
-    [],
-  );
 };
 
 export type State = {
@@ -64,54 +57,43 @@ export type State = {
   colorType: string;
 };
 
-type Renderer = {
-  update: (state: State) => void;
-  unmount: () => void;
-};
+const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
+  const updateTileset = async () => {
+    const overriddenLayer = await getOverriddenLayerByDataID(state.dataID);
 
-const mountTileset = (initialState: State): Renderer => {
-  const state: Partial<State> = {};
-  const updateState = (next: State) => {
-    Object.entries(next).forEach(([k, v]) => {
-      state[k as keyof State] = v as any;
-    });
-  };
+    // We can get transparency from RGBA. Because the color is defined as RGBA.
+    const overriddenColor = overriddenLayer?.["3dtiles"]?.color;
+    const transparency =
+      getRGBAFromString(
+        typeof overriddenColor === "string"
+          ? overriddenColor
+          : overriddenColor?.expression?.conditions?.[0]?.[1],
+      )?.[3] || 1;
 
-  const updateTileset = () => {
-    postMsg({
-      action: "update3dtilesColor",
-      payload: {
-        dataID: state.dataID,
-        color: {
-          expression: {
-            conditions:
-              COLOR_TYPE_CONDITIONS[
-                (state.colorType as keyof typeof INDEPENDENT_COLOR_TYPE) || "none"
-              ] ??
-              makeSelectedFloodCondition(
-                state.floods?.find(f => f.id === state.colorType)?.featurePropertyName,
-              ),
-          },
-        },
+    const expression = {
+      expression: {
+        conditions: (
+          COLOR_TYPE_CONDITIONS[
+            (state.colorType as keyof typeof INDEPENDENT_COLOR_TYPE) || "none"
+          ] ??
+          makeSelectedFloodCondition(
+            state.floods?.find(f => f.id === state.colorType)?.featurePropertyName,
+          )
+        ).map(([k, v]: [string, string]) => {
+          const rgba = getRGBAFromString(v);
+          if (!rgba) {
+            return [k, v];
+          }
+          const composedRGBA = [...rgba.slice(0, -1), transparency || rgba[3]] as RGBA;
+          return [k, rgbaToString(composedRGBA)];
+        }),
       },
+    };
+
+    onUpdateRef.current?.({
+      color: expression,
     });
   };
 
-  // Initialize
-  updateState(initialState);
   updateTileset();
-
-  const update = (next: State) => {
-    updateState(next);
-    updateTileset();
-  };
-  const unmount = () => {
-    postMsg({
-      action: "reset3dtilesColor",
-      payload: {
-        dataID: state.dataID,
-      },
-    });
-  };
-  return { update, unmount };
 };

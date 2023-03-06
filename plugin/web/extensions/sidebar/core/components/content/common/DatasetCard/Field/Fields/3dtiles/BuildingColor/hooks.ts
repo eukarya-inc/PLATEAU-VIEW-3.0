@@ -24,29 +24,34 @@ const useHooks = ({
   const [initialized, setInitialized] = useState(false);
 
   const handleUpdate = useCallback(
+    (property: any) => {
+      onUpdate({
+        ...value,
+        ...options,
+        updatedAt: new Date(),
+        override: { "3dtiles": property },
+      });
+    },
+    [onUpdate, options, value],
+  );
+
+  const handleUpdateOptions = useCallback(
     <P extends keyof OptionsState>(prop: P, v?: OptionsState[P]) => {
       setOptions(o => {
         const next = { ...o, [prop]: v };
-        onUpdate({ id: value.id, type: value.type, group: value.group, ...next });
         return next;
       });
     },
-    [onUpdate, value],
+    [],
   );
 
   const handleUpdateColorType: Exclude<ComponentProps<typeof Radio>["onChange"], undefined> =
     useCallback(
       e => {
-        handleUpdate("colorType", e.target.value);
+        handleUpdateOptions("colorType", e.target.value);
       },
-      [handleUpdate],
+      [handleUpdateOptions],
     );
-
-  useEffect(() => {
-    if (options.colorType !== value.colorType) {
-      setOptions({ ...value });
-    }
-  }, [value, options]);
 
   useEffect(() => {
     const handleIndependentColorTypes = (data: any) => {
@@ -104,7 +109,7 @@ const useHooks = ({
     });
   }, [dataID]);
 
-  useBuildingColor({ options, dataID, floods, initialized });
+  useBuildingColor({ options, dataID, floods, initialized, onUpdate: handleUpdate });
 
   return {
     options,

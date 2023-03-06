@@ -1,38 +1,32 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
 export const useClippingBox = ({
   options,
   dataID,
+  onUpdate,
 }: Pick<BaseFieldProps<"clipping">, "dataID"> & {
   options: Omit<BaseFieldProps<"clipping">["value"], "id" | "group" | "type">;
+  onUpdate: (tilesetProperty: any, boxProperty: any) => void;
 }) => {
-  const renderer = useRef<ClippingBoxRenderer>();
+  const onUpdateRef = useRef(onUpdate);
+  useEffect(() => {
+    onUpdateRef.current = onUpdate;
+  }, [onUpdate]);
 
   useEffect(() => {
     const render = async () => {
-      if (options.enabled && !renderer.current) {
-        renderer.current = await mountClippingBox({
+      await renderTileset(
+        {
           dataID,
           keepBoxAboveGround: options.aboveGroundOnly,
           show: options.show,
           direction: options.direction,
-        });
-      }
-      if (renderer.current) {
-        renderer.current.update({
-          dataID,
-          keepBoxAboveGround: options.aboveGroundOnly,
-          show: options.show,
-          direction: options.direction,
-        });
-      }
-      if (!options.enabled && renderer.current) {
-        renderer.current.unmount();
-        renderer.current = undefined;
-      }
+          enabled: options.enabled,
+        },
+        onUpdateRef,
+      );
     };
     render();
   }, [options.aboveGroundOnly, options.direction, options.enabled, options.show, dataID]);
@@ -60,14 +54,13 @@ type ClippingBoxState = {
   keepBoxAboveGround: boolean;
   direction: "inside" | "outside";
   show: boolean;
+  enabled: boolean;
 };
 
-type ClippingBoxRenderer = {
-  update: (state: ClippingBoxState) => void;
-  unmount: () => void;
-};
-
-const mountClippingBox = async (initialState: ClippingBoxState): Promise<ClippingBoxRenderer> => {
+const renderTileset = async (
+  state: ClippingBoxState,
+  onUpdateRef: RefObject<(tilesetProperty: any, boxProperty: any) => void>,
+) => {
   const viewport = reearth.viewport;
   const centerOnScreen = reearth.scene.getLocationFromScreen(
     viewport.width / 2,
@@ -100,13 +93,6 @@ const mountClippingBox = async (initialState: ClippingBoxState): Promise<Clippin
     pointOutlineWidth: 1,
   };
 
-  const state = {
-    keepBoxAboveGround: !!initialState.keepBoxAboveGround,
-    dataID: initialState.dataID,
-    isVisible: !!initialState.show,
-    direction: initialState.direction,
-  };
-
   const boxProperties: any = {
     ...dimensions,
     ...box,
@@ -122,45 +108,31 @@ const mountClippingBox = async (initialState: ClippingBoxState): Promise<Clippin
   };
 
   const updateBox = () => {
-    postMsg({
-      action: "updateClippingBox",
-      payload: {
-        dataID: state.dataID,
-        box: {
-          ...boxProperties,
-          cursor: boxState.cursor,
-          activeBox: boxState.activeBox,
-          activeScalePointIndex: boxState.activeScalePointIndex,
-          activeEdgeIndex: boxState.activeEdgeIndex,
-          allowEnterGround: !state.keepBoxAboveGround,
-        },
-        clipping: {
-          ...boxProperties,
-          coordinates: [location.lng, location.lat, location.height],
-          visible: state.isVisible,
-          direction: state.direction,
-          allowEnterGround: !state.keepBoxAboveGround,
-        },
+    onUpdateRef.current?.(
+      {
+        experimental_clipping: state.enabled
+          ? {
+              ...boxProperties,
+              coordinates: [location.lng, location.lat, location.height],
+              visible: state.show,
+              direction: state.direction,
+              allowEnterGround: !state.keepBoxAboveGround,
+              useBuiltinBox: true,
+            }
+          : undefined,
       },
-    });
+      state.enabled
+        ? {
+            ...boxProperties,
+            cursor: boxState.cursor,
+            activeBox: boxState.activeBox,
+            activeScalePointIndex: boxState.activeScalePointIndex,
+            activeEdgeIndex: boxState.activeEdgeIndex,
+            allowEnterGround: !state.keepBoxAboveGround,
+          }
+        : undefined,
+    );
   };
 
   updateBox();
-
-  const update = (next: ClippingBoxState) => {
-    state.dataID = next.dataID;
-    state.isVisible = next.show;
-    state.keepBoxAboveGround = next.keepBoxAboveGround;
-    state.direction = next.direction;
-    updateBox();
-  };
-  const unmount = () => {
-    postMsg({
-      action: "removeClippingBox",
-      payload: {
-        dataID: state.dataID,
-      },
-    });
-  };
-  return { update, unmount };
 };

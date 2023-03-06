@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -16,30 +16,28 @@ const useHooks = ({
   });
 
   const handleUpdate = useCallback(
+    (property: any) => {
+      onUpdate({ ...value, ...options, override: { ["3dtiles"]: property } });
+    },
+    [onUpdate, value, options],
+  );
+
+  const handleUpdateOptions = useCallback(
     <P extends keyof OptionsState>(prop: P, v?: OptionsState[P]) => {
       setOptions(o => {
         const next = { ...o, [prop]: v };
-        onUpdate({ id: value.id, type: value.type, group: value.group, ...next });
         return next;
       });
     },
-    [onUpdate, value],
+    [],
   );
 
   const handleUpdateSelect = useCallback(
     (prop: keyof OptionsState) => (value: any) => {
-      handleUpdate(prop, value as OptionsState["shadow"]);
+      handleUpdateOptions(prop, value as OptionsState["shadow"]);
     },
-    [handleUpdate],
+    [handleUpdateOptions],
   );
-
-  const initialized = useRef(false);
-  useEffect(() => {
-    if (!initialized.current) return;
-    if (options.shadow !== value.shadow) {
-      setOptions({ ...value });
-    }
-  }, [value, options]);
 
   // This is workaround.
   // Initializing shadow with "disabled" makes tileset shadow to keep "enabled",
@@ -48,11 +46,10 @@ const useHooks = ({
     setOptions({ shadow: "enabled" });
     setTimeout(() => {
       setOptions({ shadow: "disabled" });
-      initialized.current = true;
     }, 10);
   }, []);
 
-  useBuildingShadow({ options, dataID });
+  useBuildingShadow({ options, dataID, onUpdate: handleUpdate });
 
   return {
     options,
