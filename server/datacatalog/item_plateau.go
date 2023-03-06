@@ -262,6 +262,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 
 	return &DataCatalogItem{
 		ID:          id,
+		DataID:      i.ID,
 		Type:        t,
 		TypeEn:      an.Feature,
 		Type2:       t2,

@@ -58,7 +58,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		var err error
 		var act string
 		if w.Type == cmswebhook.EventItemPublish {
-			if conf.DisablePublication {
+			if conf.DisablePublication || !conf.EnablePulicationOnWebhook {
 				// skip
 				return nil
 			}

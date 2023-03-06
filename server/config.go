@@ -156,6 +156,7 @@ func (c *Config) Geospatialjp() geospatialjp.Config {
 		CMSIntegration:      c.CMS_IntegrationID,
 		DisablePublication:  c.Geospatialjp_Publication_Disable,
 		DisableCatalogCheck: c.Geospatialjp_CatalocCheck_Disable,
+		// EnablePulicationOnWebhook: c.Geospatialjp_EnablePulicationOnWebhook,
 	}
 }
 

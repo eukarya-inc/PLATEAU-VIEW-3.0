@@ -6,6 +6,7 @@ import (
 
 type DataCatalogItem struct {
 	ID                string   `json:"id,omitempty"`
+	DataID            string   `json:"dataId,omitempty"`
 	Name              string   `json:"name,omitempty"`
 	Pref              string   `json:"pref,omitempty"`
 	PrefCode          string   `json:"pref_code,omitempty"`

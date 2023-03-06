@@ -82,6 +82,11 @@ func Geospatialjp(conf *Config) (*Service, error) {
 		return nil, nil
 	}
 
+	e, err := geospatialjp.Handler(c)
+	if err != nil {
+		return nil, err
+	}
+
 	w, err := geospatialjp.WebhookHandler(c)
 	if err != nil {
 		return nil, err
@@ -91,7 +96,11 @@ func Geospatialjp(conf *Config) (*Service, error) {
 	}
 
 	return &Service{
-		Name:    "geospatialjp",
+		Name: "geospatialjp",
+		Echo: func(g *echo.Group) error {
+			g.POST("/publish_to_geospatialjp", e)
+			return nil
+		},
 		Webhook: w,
 	}, nil
 }
