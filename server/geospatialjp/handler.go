@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/rerror"
@@ -16,11 +17,23 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 	}
 
 	return func(c echo.Context) error {
-		if conf.DisablePublication {
+		if conf.DisablePublication || conf.PublicationToken == "" {
 			return rerror.ErrNotFound
 		}
 
-		itemID := c.Param("id")
+		token := strings.TrimPrefix(c.Request().Header.Get("Authorization"), "Bearer ")
+		if conf.PublicationToken != token {
+			return c.JSON(http.StatusUnauthorized, "unauthorized")
+		}
+
+		b := struct {
+			ID string `json:"id"`
+		}{}
+		if err := c.Bind(&b); err != nil {
+			return c.JSON(http.StatusBadRequest, "invalid body")
+		}
+
+		itemID := b.ID
 		if itemID == "" {
 			return rerror.ErrNotFound
 		}

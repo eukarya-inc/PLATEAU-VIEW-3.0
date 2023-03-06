@@ -18,6 +18,7 @@ type Config struct {
 	DisablePublication        bool
 	DisableCatalogCheck       bool
 	EnablePulicationOnWebhook bool
+	PublicationToken          string
 }
 
 type Services struct {
