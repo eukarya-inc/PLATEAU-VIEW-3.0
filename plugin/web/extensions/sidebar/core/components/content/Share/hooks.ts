@@ -75,16 +75,14 @@ export default ({
         if (resp.status !== 200) {
           messageApi.open({
             type: "error",
-            content: "サバーの問題です。しばらくお待ちしてもう一回して下さい",
+            content: "サーバーに問題が発生しました。しばらく待ってからもう一回試して下さい。",
           });
           if (timer.current) {
             clearTimeout(timer.current);
           }
         } else {
           const project = await resp.json();
-          setPublishedUrl(
-            `${reearthURL}${reearthURL.includes("?") ? "&" : "?"}projectID=${project}`,
-          );
+          setPublishedUrl(`${reearthURL}${reearthURL.includes("?") ? "&" : "?"}share=${project}`);
         }
       }
     }

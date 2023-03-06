@@ -140,7 +140,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.clientStorage.getAsync("isMobile").then((isMobile: boolean) => {
       reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
         const outBoundPayload = {
-          projectID: reearth.viewport.query.projectID,
+          projectID: reearth.viewport.query.share || reearth.viewport.query.projectID,
           inEditor: reearth.scene.inEditor,
           catalogURL: reearth.widget.property.default?.catalogURL ?? "",
           catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
