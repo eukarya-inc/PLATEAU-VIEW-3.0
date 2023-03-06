@@ -29,6 +29,7 @@ export type Props = {
   field: FieldComponentType;
   dataID?: string;
   isActive: boolean;
+  isEditing?: boolean;
   editMode?: boolean;
   templates?: Template[];
   selectGroups?: Group[];
@@ -58,6 +59,7 @@ const FieldComponent: React.FC<Props> = ({
   field,
   dataID,
   isActive,
+  isEditing,
   editMode,
   templates,
   selectGroups,
@@ -111,7 +113,21 @@ const FieldComponent: React.FC<Props> = ({
 
   const title = useMemo(() => `${fieldName[field.type]}(${getFieldGroup(field.type)})`, [field]);
 
-  return !editMode && !isActive ? null : (
+  return !editMode && !isActive ? null : field.type === "template" &&
+    Field?.Component &&
+    !isEditing ? (
+    <Field.Component
+      value={{ ...field }}
+      editMode={editMode}
+      isActive={isActive}
+      templates={templates}
+      fieldGroups={selectGroups}
+      configData={configData}
+      dataID={dataID}
+      onUpdate={onUpdate?.(field.id)}
+      onCurrentGroupUpdate={onCurrentGroupUpdate}
+    />
+  ) : (
     <StyledAccordionComponent
       allowZeroExpanded
       preExpanded={[field.id]}

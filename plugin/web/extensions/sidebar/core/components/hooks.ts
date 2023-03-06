@@ -144,7 +144,12 @@ export default () => {
         ?.filter(c => !!activeIDs.find(id => id === c.id))
         .map(c2 => {
           if (c2.type === "template") {
-            return [c2, ...(fieldTemplates.find(ft => ft.id === c2.templateID)?.components ?? [])];
+            return [
+              c2,
+              ...(c2.components?.length
+                ? c2.components
+                : fieldTemplates.find(ft => ft.id === c2.templateID)?.components ?? []),
+            ];
           }
           return c2;
         })
@@ -192,6 +197,7 @@ export default () => {
                 id: generateID(),
                 type: "template",
                 templateID: defaultTemplate.id,
+                components: defaultTemplate.components,
               },
             ];
           }
@@ -279,10 +285,12 @@ export default () => {
           updatedDatasets[datasetIndex] = updatedDataset;
         }
         updateProject(project => {
-          return {
+          const updatedProject = {
             ...project,
             datasets: updatedDatasets.map(ud => convertToData(ud)),
           };
+          postMsg({ action: "updateProject", payload: updatedProject });
+          return updatedProject;
         });
         return updatedDatasets;
       });
@@ -622,26 +630,28 @@ export default () => {
         if (res.status !== 200) return;
         const data = await res.json();
         if (data) {
-          updateProject(data);
-          postMsg({ action: "updateProject", payload: data });
           (data.datasets as Data[]).forEach(d => {
             const dataset = processedCatalog.find(item => item.dataID === d.dataID);
-            if (dataset) {
-              setSelectedDatasets(sds => [...sds, dataset]);
-              postMsg({
-                action: "addDatasetToScene",
-                payload: { dataset, overrides: mergeOverrides("update", dataset.components) },
-              });
+            const mergedDataset: DataCatalogItem = merge(dataset, d, {});
+            if (mergedDataset) {
+              handleProjectDatasetAdd(mergedDataset);
             }
           });
-          if (data.userStory) {
+          if (data.userStory.length > 0) {
             handleInitUserStory(data.userStory);
           }
         }
         fetchedSharedProject.current = true;
       })();
     }
-  }, [projectID, backendURL, backendProjectName, processedCatalog, handleInitUserStory]);
+  }, [
+    projectID,
+    backendURL,
+    backendProjectName,
+    processedCatalog,
+    handleProjectDatasetAdd,
+    handleInitUserStory,
+  ]);
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 

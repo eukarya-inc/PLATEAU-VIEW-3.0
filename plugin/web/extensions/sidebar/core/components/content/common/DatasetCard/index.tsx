@@ -280,61 +280,24 @@ const DatasetCard: React.FC<Props> = ({
                 <Text>オープンデータを入手</Text>
               </OpenDataButton>
             )}
-            {dataset.components?.map((c, idx) => {
-              if (c.type === "template") {
-                const template = templates?.find(t => t.id === c.templateID);
-                return inEditor && currentTab === "edit" ? (
-                  <Field
-                    key={idx}
-                    field={c}
-                    isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                    dataID={dataset.dataID}
-                    editMode={inEditor && currentTab === "edit"}
-                    templates={templates}
-                    selectGroups={dataset.fieldGroups}
-                    configData={dataset.config?.data}
-                    onUpdate={handleFieldUpdate}
-                    onRemove={handleFieldRemove}
-                    onGroupsUpdate={handleGroupsUpdate(c.id)}
-                    onCurrentGroupUpdate={handleCurrentGroupUpdate}
-                    onSceneUpdate={onSceneUpdate}
-                  />
-                ) : (
-                  template?.components?.map((tc, idx2) => (
-                    <Field
-                      key={idx2}
-                      field={tc}
-                      isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                      dataID={dataset.dataID}
-                      selectGroups={dataset.fieldGroups}
-                      templates={templates}
-                      configData={dataset.config?.data}
-                      onUpdate={handleFieldUpdate}
-                      onRemove={handleFieldRemove}
-                      onCurrentGroupUpdate={handleCurrentGroupUpdate}
-                      onSceneUpdate={onSceneUpdate}
-                    />
-                  ))
-                );
-              }
-              return (
-                <Field
-                  key={idx}
-                  field={c}
-                  isActive={!!activeComponentIDs?.find(id => id === c.id)}
-                  dataID={dataset.dataID}
-                  editMode={inEditor && currentTab === "edit"}
-                  templates={templates}
-                  selectGroups={dataset.fieldGroups}
-                  configData={dataset.config?.data}
-                  onUpdate={handleFieldUpdate}
-                  onRemove={handleFieldRemove}
-                  onGroupsUpdate={handleGroupsUpdate(c.id)}
-                  onCurrentGroupUpdate={handleCurrentGroupUpdate}
-                  onSceneUpdate={onSceneUpdate}
-                />
-              );
-            })}
+            {dataset.components?.map((c, idx) => (
+              <Field
+                key={idx}
+                field={c}
+                isActive={!!activeComponentIDs?.find(id => id === c.id)}
+                isEditing={currentTab === "edit"}
+                dataID={dataset.dataID}
+                editMode={inEditor && currentTab === "edit"}
+                templates={templates}
+                selectGroups={dataset.fieldGroups}
+                configData={dataset.config?.data}
+                onUpdate={handleFieldUpdate}
+                onRemove={handleFieldRemove}
+                onGroupsUpdate={handleGroupsUpdate(c.id)}
+                onCurrentGroupUpdate={handleCurrentGroupUpdate}
+                onSceneUpdate={onSceneUpdate}
+              />
+            ))}
           </Content>
           {inEditor && currentTab === "edit" && (
             <>

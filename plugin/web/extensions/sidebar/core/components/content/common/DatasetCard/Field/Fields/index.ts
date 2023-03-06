@@ -15,6 +15,7 @@ import Story from "./general/Story";
 import StyleCode from "./general/StyleCode";
 import SwitchDataset from "./general/SwitchDataset";
 import SwitchGroup from "./general/SwitchGroup";
+import Template from "./general/Template";
 import Timeline from "./general/Timeline";
 import PointColor from "./point/PointColor";
 import PointColorGradient from "./point/PointColorGradient";
@@ -30,7 +31,6 @@ import PolygonStroke from "./polygon/PolygonStroke";
 import PolylineColor from "./polyline/PolylineColor";
 import PolylineColorGradient from "./polyline/PolylineColorGradient";
 import PolylineStrokeWeight from "./polyline/PolylineStrokeWeight";
-import Template from "./Template";
 import { FieldComponent } from "./types";
 
 export type Fields<FC extends FieldComponent> = {

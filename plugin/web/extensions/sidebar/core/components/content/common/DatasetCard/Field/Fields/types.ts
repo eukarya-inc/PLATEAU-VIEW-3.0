@@ -180,6 +180,7 @@ export type Story = FieldBase<"story"> & {
 
 type Template = FieldBase<"template"> & {
   templateID?: string;
+  components?: FieldComponent[];
 };
 
 type PointColor = FieldBase<"pointColor"> & {
