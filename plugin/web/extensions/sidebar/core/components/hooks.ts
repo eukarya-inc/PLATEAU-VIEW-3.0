@@ -780,7 +780,7 @@ export const mergeOverrides = (
 
   const needOrderComponents = components
     .filter(c => c.updatedAt)
-    .sort((a, b) => (a.updatedAt?.getTime() ?? 0) - (b.updatedAt?.getTime() ?? 0));
+    .sort((a, b) => (a.updatedAt?.getTime?.() ?? 0) - (b.updatedAt?.getTime?.() ?? 0));
   for (const component of needOrderComponents) {
     merge(overrides, action === "cleanse" ? cleanseOverrides[component.type] : component.override);
   }
