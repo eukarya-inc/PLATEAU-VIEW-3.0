@@ -45,6 +45,13 @@ type Items struct {
 	TotalCount int    `json:"totalCount"`
 }
 
+func (r Items) HasNext() bool {
+	if r.PerPage == 0 {
+		return false
+	}
+	return r.TotalCount > r.Page*r.PerPage
+}
+
 type Item struct {
 	ID      string  `json:"id"`
 	ModelID string  `json:"modelId"`

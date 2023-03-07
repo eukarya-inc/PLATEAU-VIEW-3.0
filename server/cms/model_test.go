@@ -153,3 +153,10 @@ func TestField_ValueJSON(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, map[string]any{"foo": "bar"}, r)
 }
+
+func TestItems_HasNext(t *testing.T) {
+	assert.True(t, Items{Page: 1, PerPage: 50, TotalCount: 100}.HasNext())
+	assert.False(t, Items{Page: 2, PerPage: 50, TotalCount: 100}.HasNext())
+	assert.True(t, Items{Page: 1, PerPage: 10, TotalCount: 11}.HasNext())
+	assert.False(t, Items{Page: 2, PerPage: 10, TotalCount: 11}.HasNext())
+}

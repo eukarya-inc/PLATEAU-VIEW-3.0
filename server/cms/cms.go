@@ -160,8 +160,7 @@ func (c *CMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlia
 			items.Items = append(items.Items, i.Items...)
 		}
 
-		allPageCount := i.TotalCount / i.PerPage
-		if i.Page >= allPageCount {
+		if !i.HasNext() {
 			break
 		}
 	}
