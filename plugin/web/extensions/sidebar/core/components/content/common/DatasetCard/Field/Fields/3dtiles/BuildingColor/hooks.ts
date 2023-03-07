@@ -71,7 +71,7 @@ const useHooks = ({
         if (k.endsWith("_浸水ランク") && v && typeof v === "object" && Object.keys(v).length > 0) {
           tempFloods.push({
             id: `floods-${tempFloods.length}`,
-            label: k,
+            label: k.replaceAll("_", " "),
             featurePropertyName: k,
           });
         }

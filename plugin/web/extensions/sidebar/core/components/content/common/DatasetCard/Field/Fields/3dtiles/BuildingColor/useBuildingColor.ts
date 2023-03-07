@@ -75,7 +75,7 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
         conditions: (
           COLOR_TYPE_CONDITIONS[
             (state.colorType as keyof typeof INDEPENDENT_COLOR_TYPE) || "none"
-          ] ??
+          ]?.map((cond): [string, string] => [cond.condition, cond.color]) ??
           makeSelectedFloodCondition(
             state.floods?.find(f => f.id === state.colorType)?.featurePropertyName,
           )
