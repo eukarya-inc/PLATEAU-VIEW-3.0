@@ -576,6 +576,25 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
               },
             },
           }
+        : format === "czml"
+        ? {
+            blocks: [
+              {
+                pluginId: "reearth",
+                extensionId: "htmlblock",
+                property: {
+                  default: {
+                    html: dataset.desc,
+                  },
+                },
+              },
+            ],
+            property: {
+              default: {
+                showTitle: true,
+              },
+            },
+          }
         : null,
     ...(overrides !== undefined
       ? omit(overrides, "data")
