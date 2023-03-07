@@ -1,21 +1,17 @@
+import { BuildingColor } from "../types";
+import {
+  compareGreaterThan,
+  compareRange,
+  defaultConditionalNumber,
+  equalNumber,
+  equalString,
+} from "../utils";
+
 import { INDEPENDENT_COLOR_TYPE } from "./constants";
-
-const defaultConditionalNumber = (prop: string, defaultValue?: number) =>
-  `((\${${prop}} === "" || \${${prop}} === null || isNaN(Number(\${${prop}}))) ? ${
-    defaultValue || 1
-  } : Number(\${${prop}}))`;
-const compareRange = (conditionalValue: string, range: [from: number, to: number]) =>
-  `(${conditionalValue} >= ${range?.[0]} && ${conditionalValue} <= ${range?.[1]})`;
-
-const compareGreaterThan = (conditionalValue: string, num: number) =>
-  `(${conditionalValue} >= ${num})`;
-
-const equalString = (prop: string, value: string) => `(\${${prop}} === "${value}")`;
-const equalNumber = (prop: string, value: number) => `(\${${prop}} === ${value})`;
 
 type Condition = {
   condition: string;
-  color: `rgba(${number}, ${number}, ${number}, ${number})`;
+  color: BuildingColor;
   label: string;
   default?: boolean;
 };

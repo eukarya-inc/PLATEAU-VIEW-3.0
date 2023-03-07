@@ -193,6 +193,14 @@ export default ({
           direction: "inside",
         }),
       },
+      floodColor: {
+        name: fieldName["floodColor"],
+        onClick: onFieldAdd({}),
+      },
+      floodFilter: {
+        name: fieldName["floodFilter"],
+        onClick: onFieldAdd({}),
+      },
     };
   }, [onFieldAdd]);
 

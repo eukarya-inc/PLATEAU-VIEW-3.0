@@ -40,6 +40,8 @@ export const threeDFieldName = {
   buildingTransparency: "透明度",
   buildingColor: "色分け",
   buildingShadow: "影",
+  floodColor: "色分け（浸水想定区域）",
+  floodFilter: "浸水想定区域フィルター",
 };
 
 export const polylineFieldName = {
@@ -88,7 +90,9 @@ export type FieldComponent =
   | BuildingFilter
   | BuildingTransparency
   | BuildingColor
-  | BuildingShadow;
+  | BuildingShadow
+  | FloodColor
+  | FloodFilter;
 
 type FieldBase<T extends keyof typeof fieldName> = {
   id: string;
@@ -282,6 +286,10 @@ type BuildingColor = FieldBase<"buildingColor"> & {
   colorType: string;
 };
 
+type FloodColor = FieldBase<"floodColor">;
+
+type FloodFilter = FieldBase<"floodFilter"> & { rank?: [from: number, to: number] };
+
 type PolylineColor = FieldBase<"polylineColor"> & {
   items?: {
     condition: Cond<number>;
@@ -337,6 +345,8 @@ export type Fields = {
   buildingTransparency: BuildingTransparency;
   buildingColor: BuildingColor;
   buildingShadow: BuildingShadow;
+  floodColor: FloodColor;
+  floodFilter: FloodFilter;
   // template
   template: Template;
 };

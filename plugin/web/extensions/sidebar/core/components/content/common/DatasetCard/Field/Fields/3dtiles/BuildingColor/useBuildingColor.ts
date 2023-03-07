@@ -91,6 +91,7 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
     };
 
     onUpdateRef.current?.({
+      colorBlendMode: "replace",
       color: expression,
     });
   };

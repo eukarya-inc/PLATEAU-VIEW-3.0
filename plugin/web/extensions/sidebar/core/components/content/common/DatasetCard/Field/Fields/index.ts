@@ -5,6 +5,8 @@ import BuildingFilter from "./3dtiles/BuildingFilter";
 import BuildingShadow from "./3dtiles/BuildingShadow";
 import BuildingTransparency from "./3dtiles/BuildingTransparency";
 import Clipping from "./3dtiles/Clipping";
+import FloodColor from "./3dtiles/FloodColor";
+import FloodFilter from "./3dtiles/FloodFilter";
 import ButtonLink from "./general/ButtonLink";
 import CurrentTime from "./general/CurrentTime";
 import Description from "./general/Description";
@@ -73,6 +75,8 @@ const fields: Fields<FieldComponent> = {
   buildingTransparency: { Component: BuildingTransparency, hasUI: true },
   buildingColor: { Component: BuildingColor, hasUI: true },
   buildingShadow: { Component: BuildingShadow, hasUI: true },
+  floodColor: { Component: FloodColor, hasUI: false },
+  floodFilter: { Component: FloodFilter, hasUI: true },
   // 3d-model
   template: { Component: Template, hasUI: true },
 };
