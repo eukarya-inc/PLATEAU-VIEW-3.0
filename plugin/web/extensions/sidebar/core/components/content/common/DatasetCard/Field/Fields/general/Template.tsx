@@ -1,4 +1,4 @@
-import { mergeOverrides } from "@web/extensions/sidebar/core/components/hooks";
+import { mergeOverrides } from "@web/extensions/sidebar/core/components/hooks/utils";
 import { Select } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useMemo } from "react";

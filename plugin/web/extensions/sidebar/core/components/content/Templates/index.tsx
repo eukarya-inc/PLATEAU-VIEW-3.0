@@ -38,7 +38,6 @@ const Templates: React.FC<Props> = ({
   }, []);
 
   const handleTemplateUpdate = useCallback((updatedTemplate: Template) => {
-    console.log("updatedTemplate", updatedTemplate);
     changeSelectedTemplate(updatedTemplate);
   }, []);
 

@@ -1,5 +1,5 @@
 import { StoryItem } from "./core/components/content/common/DatasetCard/Field/Fields/types";
-import { Data } from "./core/types";
+import { DataCatalogItem } from "./core/types";
 
 type ActionType =
   | "init"
@@ -69,7 +69,7 @@ export type PostMessageProps = { action: ActionType; payload?: any };
 
 export type Project = {
   sceneOverrides: ReearthApi;
-  datasets: Data[];
+  datasets: DataCatalogItem[];
   userStory?: Omit<StoryItem, "id">;
 };
 

@@ -2,7 +2,7 @@ import { DataCatalogItem, Group, Template } from "@web/extensions/sidebar/core/t
 import { generateID } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
-import { mergeOverrides } from "../../../hooks";
+import { mergeOverrides } from "../../../hooks/utils";
 
 import generateFieldComponentsList, { cleanseOverrides } from "./Field/fieldHooks";
 
