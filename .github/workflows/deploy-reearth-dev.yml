@@ -38,12 +38,14 @@ jobs:
         env:
           PLATEAU_FAVICON: https://www.mlit.go.jp/plateau/assets/img/icons/favicon.svg
           APP_PATH: reearth-web/index.html
+          PUBLISH_PATH: reearth-web/published.html
           APP_NAME: PLATEAU VIEW(Ver2.0)
         run: |
           SOURCE=$(cat $APP_PATH)
           SOURCE=${SOURCE/\/static\/favicon*.ico/$PLATEAU_FAVICON}
           SOURCE=${SOURCE/\<title\>*\<\/title\>/<title>$APP_NAME</title>}
           echo $SOURCE > $APP_PATH
+          echo $SOURCE > $PUBLISH_PATH
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-web/ ${{ env.GCS_DEST }}
       - name: Pack web
