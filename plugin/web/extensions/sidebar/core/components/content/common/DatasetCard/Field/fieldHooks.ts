@@ -275,4 +275,40 @@ export const cleanseOverrides: { [key: string]: any } = {
       strokeWidth: 5,
     },
   },
+  buildingColor: {
+    "3dtiles": {
+      color: "white",
+    },
+  },
+  buildingTransparency: {
+    "3dtiles": {
+      color: undefined,
+    },
+  },
+  buildingFilter: {
+    "3dtiles": {
+      show: true,
+    },
+  },
+  buildingShadow: {
+    "3dtiles": {
+      shadows: "enabled",
+    },
+  },
+  clipping: {
+    box: undefined,
+    "3dtiles": {
+      experimental_clipping: undefined,
+    },
+  },
+  floodColor: {
+    "3dtiles": {
+      color: "white",
+    },
+  },
+  floodFilter: {
+    "3dtiles": {
+      show: true,
+    },
+  },
 };
