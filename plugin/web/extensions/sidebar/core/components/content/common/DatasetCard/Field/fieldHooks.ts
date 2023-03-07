@@ -231,6 +231,7 @@ export default ({
 };
 
 export const cleanseOverrides: { [key: string]: any } = {
+  switchDataset: { data: { url: undefined } },
   pointSize: { marker: { pointSize: 10 } },
   pointColor: { marker: { pointColor: "white" } },
   pointIcon: { marker: { style: "point", image: undefined, imageSize: undefined } },

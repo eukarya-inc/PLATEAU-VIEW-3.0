@@ -165,6 +165,7 @@ export type SwitchGroup = FieldBase<"switchGroup"> & {
 
 export type SwitchDataset = FieldBase<"switchDataset"> & {
   uiStyle?: "dropdown" | "radio";
+  selected?: ConfigData;
 };
 
 export type ButtonLink = FieldBase<"buttonLink"> & {

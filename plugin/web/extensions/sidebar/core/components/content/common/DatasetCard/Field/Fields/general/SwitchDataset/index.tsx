@@ -1,4 +1,3 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
@@ -14,13 +13,12 @@ const uiStyles: { [key: string]: string } = {
 
 const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   value,
-  dataID,
   editMode,
   configData,
   onUpdate,
 }) => {
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
-  const [selectedDataset, selectDataset] = useState(configData?.[0]);
+  const [selectedDataset, selectDataset] = useState(value.selected ?? configData?.[0]);
 
   const styleOptions = (
     <Menu
@@ -63,12 +61,9 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   const handleDatasetSelect = useCallback(
     (dataset: ConfigData) => {
       selectDataset(dataset);
-      postMsg({
-        action: "updateDatasetInScene",
-        payload: { dataID, update: { data: { url: dataset.url } } },
-      });
+      onUpdate({ ...value, selected: dataset, override: { data: { url: dataset.url } } });
     },
-    [dataID],
+    [value, onUpdate],
   );
 
   return editMode ? (
