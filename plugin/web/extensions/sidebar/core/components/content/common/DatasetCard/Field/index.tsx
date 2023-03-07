@@ -111,7 +111,11 @@ const FieldComponent: React.FC<Props> = ({
     };
   }, [groupPopupOpen, onGroupsUpdate]);
 
-  const title = useMemo(() => `${fieldName[field.type]}(${getFieldGroup(field.type)})`, [field]);
+  const title = useMemo(() => fieldName[field.type], [field]);
+  const editModeTitle = useMemo(
+    () => `${title}(${getFieldGroup(field.type)})`,
+    [field.type, title],
+  );
 
   return !editMode && !isActive ? null : field.type === "template" &&
     Field?.Component &&
@@ -142,7 +146,7 @@ const FieldComponent: React.FC<Props> = ({
                     {Field && (
                       <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
                     )}
-                    <Title>{title}</Title>
+                    <Title>{editModeTitle}</Title>
                   </LeftContents>
                   <RightContents>
                     <StyledIcon
