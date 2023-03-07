@@ -464,53 +464,74 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   }
 });
 
-let currentClickedFeatureId: string;
+let currentSelectedFeatureId: string;
 
 reearth.on("select", (selected: string | undefined) => {
+  const prevSelected = currentSelected ?? selected;
   // this is used for infobox
   currentSelected = selected;
 
-  const feature = reearth.layers.selectedFeature;
-  currentClickedFeatureId = feature
-    ? feature?.properties?.gml_id // For 3dtiles
-    : undefined;
+  const featureId = reearth.layers.selectedFeature?.properties?.gml_id; // For 3dtiles
+  const prevSelectedFeatureId = currentSelectedFeatureId ?? featureId;
+  currentSelectedFeatureId = featureId;
 
   let nextConditions: any[] | undefined;
-  let shouldUpdateTilesetColor = true;
+  let shouldUpdateTilesetColor = false;
 
   // Reset previous select color for 3dtiles
-  const prevOverriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
-  const prevCondition = prevOverriddenLayer?.["3dtiles"].color?.expression?.conditions;
+  const prevOverriddenLayer = reearth.layers.overridden.find((l: any) => l.id === prevSelected);
+  const prevCondition = prevOverriddenLayer?.["3dtiles"]?.color?.expression?.conditions;
   if (
-    currentClickedFeatureId &&
+    currentSelectedFeatureId &&
     prevOverriddenLayer &&
     prevOverriddenLayer.data.type === "3dtiles"
   ) {
     shouldUpdateTilesetColor = !prevCondition?.find(
-      (c: [string, string]) => c[0] === `\${gml_id} === "${currentClickedFeatureId}"`,
+      (c: [string, string]) => c[0] === `\${gml_id} === "${currentSelectedFeatureId}"`,
     );
-    nextConditions =
-      prevCondition?.filter((c: [string, string]) => !c[0].startsWith('${gml_id} === "')) ?? [];
+    nextConditions = prevCondition?.filter(
+      (c: [string, string]) => !c[0].startsWith('${gml_id} === "'),
+    );
+  }
+
+  if (
+    !currentSelected &&
+    !currentSelectedFeatureId &&
+    prevOverriddenLayer.data.type === "3dtiles" &&
+    prevSelectedFeatureId &&
+    prevCondition?.find(
+      (c: [string, string]) => c[0] === `\${gml_id} === "${prevSelectedFeatureId}"`,
+    )
+  ) {
+    reearth.layers.override(prevSelected, {
+      "3dtiles": {
+        color: {
+          expression: {
+            conditions: nextConditions?.length ? nextConditions : [["true", "color('white')"]],
+          },
+        },
+      },
+    });
+    return;
   }
 
   // Handle select color for 3dtiles
-  const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === selected);
+  const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === currentSelected);
   if (
-    !feature ||
-    overriddenLayer?.data?.type !== "3dtiles" ||
-    !currentClickedFeatureId ||
-    !shouldUpdateTilesetColor
+    overriddenLayer?.data?.type === "3dtiles" &&
+    currentSelectedFeatureId &&
+    shouldUpdateTilesetColor
   ) {
-    return;
-  } else {
-    reearth.layers.override(selected, {
+    reearth.layers.override(currentSelected, {
       "3dtiles": {
         color: {
           expression: {
             conditions: [
-              [`\${gml_id} === "${currentClickedFeatureId}"`, "color('red')"],
+              [`\${gml_id} === "${currentSelectedFeatureId}"`, "color('red')"],
               ...(nextConditions ??
-                (overriddenLayer?.["3dtiles"]?.color?.expression?.conditions || [])),
+                overriddenLayer?.["3dtiles"]?.color?.expression?.conditions ?? [
+                  ["true", "color('white')"],
+                ]),
             ],
           },
         },
