@@ -1,5 +1,4 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
-import isEqual from "lodash/isEqual";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -16,9 +15,15 @@ const useHooks = ({
 
   const handleUpdate = useCallback(
     (property: any) => {
-      onUpdate({ ...value, override: { ["3dtiles"]: property } });
+      onUpdate({
+        ...value,
+        height: options.height?.value,
+        abovegroundFloor: options.abovegroundFloor?.value,
+        basementFloor: options.basementFloor?.value,
+        override: { ["3dtiles"]: property },
+      });
     },
-    [onUpdate, value],
+    [onUpdate, value, options],
   );
 
   const handleUpdateOptions = useCallback(
@@ -32,9 +37,8 @@ const useHooks = ({
           },
         };
       });
-      onUpdate({ ...value, [prop]: v });
     },
-    [onUpdate, value],
+    [],
   );
 
   const handleUpdateRange = useCallback(
@@ -45,29 +49,6 @@ const useHooks = ({
     },
     [handleUpdateOptions],
   );
-
-  useEffect(() => {
-    const entries = Object.entries(options);
-    if (
-      !entries.every(
-        ([k, v]) =>
-          !value[k as keyof OptionsState] || isEqual(value[k as keyof OptionsState], v.value),
-      )
-    ) {
-      setOptions(o => {
-        entries.forEach(([k_, v]) => {
-          const k = k_ as keyof OptionsState;
-          if (o[k]) {
-            o[k] = {
-              ...v,
-              value: value[k],
-            } as OptionsState[typeof k];
-          }
-        });
-        return { ...o };
-      });
-    }
-  }, [options, value]);
 
   useEffect(() => {
     const handleFilteringFields = (data: any) => {
