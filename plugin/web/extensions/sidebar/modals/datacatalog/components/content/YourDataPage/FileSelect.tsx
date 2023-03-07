@@ -7,7 +7,7 @@ import LocalDataTab from "./LocalDataTab";
 import WebDataTab from "./WebDataTab";
 
 export type Props = {
-  onOpenDetails?: (data?: UserDataItem) => void;
+  onOpenDetails?: (data?: UserDataItem, needLayerName?: boolean) => void;
 };
 
 const FileSelectPane: React.FC<Props> = ({ onOpenDetails }) => {

@@ -1,15 +1,16 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
-import { Icon } from "@web/sharedComponents";
+import { Icon, Input } from "@web/sharedComponents";
 import Popconfirm, { PopconfirmProps } from "@web/sharedComponents/Popconfirm";
 import { styled } from "@web/theme";
-import { ComponentType, useCallback, useMemo } from "react";
+import { ComponentType, useCallback, useMemo, ChangeEvent, useState } from "react";
 
 export type Props = {
   dataset: DataCatalogItem | UserDataItem;
   isShareable?: boolean;
   addDisabled: boolean;
   inEditor?: boolean;
+  requireLayerName?: boolean;
   contentSection?: ComponentType;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
   onDatasetPublish?: (dataID: string, publish: boolean) => void;
@@ -22,11 +23,13 @@ const DatasetDetails: React.FC<Props> = ({
   isShareable,
   addDisabled,
   inEditor,
+  requireLayerName,
   contentSection: ContentSection,
   onDatasetAdd,
   onDatasetPublish,
 }) => {
   const published = useMemo(() => (dataset as DataCatalogItem).public, [dataset]);
+  const [layers, setLayers] = useState<string[]>([]);
 
   const handleDatasetPublish = useCallback(() => {
     if (!("dataID" in dataset)) return;
@@ -36,8 +39,20 @@ const DatasetDetails: React.FC<Props> = ({
 
   const handleDatasetAdd = useCallback(() => {
     if (!dataset || addDisabled) return;
-    onDatasetAdd(dataset);
-  }, [dataset, addDisabled, onDatasetAdd]);
+    const terminalDataset = dataset;
+    if (layers.length) terminalDataset.layers = layers;
+    onDatasetAdd(terminalDataset);
+  }, [dataset, addDisabled, layers, onDatasetAdd]);
+
+  const handleLayersAddOnDataset = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      if (!dataset || addDisabled) return;
+      const newValue = event.target.value;
+      const newLayersArray = newValue.split(",");
+      setLayers(newLayersArray);
+    },
+    [addDisabled, dataset],
+  );
 
   const popConfirmProps: PopconfirmProps = {
     title: (
@@ -101,6 +116,12 @@ const DatasetDetails: React.FC<Props> = ({
             </ShareButton>
           )}
         </ButtonWrapper>
+        {requireLayerName && (
+          <LayerNamesWrapper>
+            <Text>Type the layers name you want to display: </Text>
+            <Input placeholder={"Layers Name"} onChange={handleLayersAddOnDataset} />
+          </LayerNamesWrapper>
+        )}
       </TopWrapper>
       {ContentSection && (
         <Wrapper>
@@ -140,6 +161,10 @@ const ButtonWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 12px;
+`;
+
+const LayerNamesWrapper = styled.div`
+  marginbottom: 16px;
 `;
 
 const BaseButton = styled.button<{ disabled?: boolean }>`

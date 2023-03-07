@@ -5,11 +5,17 @@ import { useCallback } from "react";
 
 export type Props = {
   isShareable?: boolean;
+  requireLayerName?: boolean;
   dataset?: UserDataItem;
   onDatasetAdd: (dataset: UserDataItem) => void;
 };
 
-const DatasetDetails: React.FC<Props> = ({ dataset, isShareable, onDatasetAdd }) => {
+const DatasetDetails: React.FC<Props> = ({
+  dataset,
+  isShareable,
+  requireLayerName,
+  onDatasetAdd,
+}) => {
   const handleDatasetAdd = useCallback(() => {
     if (!dataset) return;
     onDatasetAdd(dataset);
@@ -27,6 +33,7 @@ const DatasetDetails: React.FC<Props> = ({ dataset, isShareable, onDatasetAdd })
     <DetailsComponent
       dataset={dataset}
       isShareable={isShareable}
+      requireLayerName={requireLayerName}
       addDisabled={false}
       onDatasetAdd={handleDatasetAdd}
       contentSection={ContentComponent}

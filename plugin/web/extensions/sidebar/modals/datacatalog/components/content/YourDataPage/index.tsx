@@ -12,15 +12,24 @@ export type Props = {
 
 const YourDataPage: React.FC<Props> = ({ onDatasetAdd }) => {
   const [selectedDataset, setDataset] = useState<UserDataItem>();
+  const [requireLayerName, setRequireLayerName] = useState<boolean>(false);
 
-  const handleOpenDetails = useCallback((data?: UserDataItem) => {
+  const handleOpenDetails = useCallback((data?: UserDataItem, needLayerName?: boolean) => {
     setDataset(data);
+    setRequireLayerName(!!needLayerName);
   }, []);
 
   return (
     <PageLayout
       left={<FileSelectPane onOpenDetails={handleOpenDetails} />}
-      right={<Details isShareable={false} dataset={selectedDataset} onDatasetAdd={onDatasetAdd} />}
+      right={
+        <Details
+          isShareable={false}
+          requireLayerName={requireLayerName}
+          dataset={selectedDataset}
+          onDatasetAdd={onDatasetAdd}
+        />
+      }
     />
   );
 };
