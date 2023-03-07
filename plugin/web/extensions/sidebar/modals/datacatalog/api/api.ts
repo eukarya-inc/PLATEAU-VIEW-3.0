@@ -63,6 +63,7 @@ export async function getDataCatalog(
 export function modifyDataCatalog(d: RawDataCatalogItem): RawDataCatalogItem {
   return {
     ...d,
+    name: d.name.split("/").slice(-1)[0], // "xxx/yyy/zzz" -> "zzz"
     pref: d.pref === "全国" || d.pref === "全球" ? zenkyu : d.pref,
     pref_code: d.pref === "全国" || d.pref === "全球" || d.pref === zenkyu ? "0" : d.pref_code,
     tags: [
