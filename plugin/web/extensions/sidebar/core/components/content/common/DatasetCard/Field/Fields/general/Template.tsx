@@ -17,7 +17,10 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
 
   const currentTempComponents = useMemo(
-    () => (hasTemplates ? templates?.find(t => t.id === value.templateID)?.components : undefined),
+    () =>
+      hasTemplates
+        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
+        : undefined,
     [value.templateID, templates, hasTemplates],
   );
 
