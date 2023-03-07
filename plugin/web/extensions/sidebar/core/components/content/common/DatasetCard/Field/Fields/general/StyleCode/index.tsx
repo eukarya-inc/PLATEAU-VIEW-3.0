@@ -4,13 +4,8 @@ import { BaseFieldProps } from "../../types";
 
 import useHooks from "./hooks";
 
-const StyleCode: React.FC<BaseFieldProps<"styleCode">> = ({
-  value,
-  dataID,
-  editMode,
-  onUpdate,
-}) => {
-  const { code, onEdit, onApply } = useHooks({ value, dataID, onUpdate });
+const StyleCode: React.FC<BaseFieldProps<"styleCode">> = ({ value, editMode, onUpdate }) => {
+  const { code, onEdit, onApply } = useHooks({ value, onUpdate });
 
   return editMode ? (
     <Wrapper>
