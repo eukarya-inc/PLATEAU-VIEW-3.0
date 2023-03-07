@@ -1,6 +1,7 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
+import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Dropdown, Icon, Menu, Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -231,6 +232,8 @@ const DatasetCard: React.FC<Props> = ({
     </Menu>
   );
 
+  const title = useMemo(() => getNameFromPath(dataset.name), [dataset.name]);
+
   return (
     <StyledAccordionComponent allowZeroExpanded preExpanded={["datasetcard"]}>
       <AccordionItem uuid="datasetcard">
@@ -248,7 +251,7 @@ const DatasetCard: React.FC<Props> = ({
                         onDatasetUpdate({ ...dataset, visible: !dataset.visible });
                       }}
                     />
-                    <Title>{dataset.name}</Title>
+                    <Title>{title}</Title>
                   </LeftMain>
                   <ArrowIcon icon="arrowDown" size={16} expanded={expanded} />
                 </HeaderContents>

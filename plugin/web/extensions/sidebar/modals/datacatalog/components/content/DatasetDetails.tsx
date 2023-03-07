@@ -1,5 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
+import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Icon, Input } from "@web/sharedComponents";
 import Popconfirm, { PopconfirmProps } from "@web/sharedComponents/Popconfirm";
 import { styled } from "@web/theme";
@@ -83,11 +84,13 @@ const DatasetDetails: React.FC<Props> = ({
     },
   };
 
+  const title = useMemo(() => getNameFromPath(dataset.name), [dataset.name]);
+
   return (
     <>
       <TopWrapper>
         <HeaderWrapper>
-          <Title>{dataset.name}</Title>
+          <Title>{title}</Title>
           {"dataID" in dataset &&
             inEditor &&
             (!published ? (

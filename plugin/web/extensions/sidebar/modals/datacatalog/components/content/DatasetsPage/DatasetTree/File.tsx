@@ -1,4 +1,5 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
+import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo } from "react";
@@ -70,12 +71,14 @@ const File: React.FC<Props> = ({
     }
   }, [expandAllParentKeys, nodeKey, onOpenDetails, onSelect, selected]);
 
+  const name = useMemo(() => getNameFromPath(item.name), [item.name]);
+
   return (
     <Wrapper nestLevel={nestLevel} selected={selected}>
       <NameWrapper isMobile={isMobile} onClick={handleOpenDetails}>
         <Icon icon="file" size={20} />
         {!item.public && <UnpublishedIndicator />}
-        <Name>{item.name}</Name>
+        <Name>{name}</Name>
       </NameWrapper>
       <StyledButton
         type="link"
