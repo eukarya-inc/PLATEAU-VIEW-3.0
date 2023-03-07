@@ -27,7 +27,7 @@ export default ({
       ? (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
           ? dataset.components
           : dataset.components.filter(
-              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup",
+              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup" || !c.group,
             )
         )
           ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
