@@ -239,7 +239,7 @@ export const cleanseOverrides: { [key: string]: any } = {
       style: "point",
       image: undefined,
       imageSize: undefined,
-      imageSizeInMeters: undefined,
+      sizeInMeters: undefined,
     },
   },
   pointLabel: {

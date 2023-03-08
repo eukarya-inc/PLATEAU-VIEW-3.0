@@ -21,6 +21,7 @@ const PolylineStrokeWeight: React.FC<BaseFieldProps<"polylineStrokeWeight">> = (
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
+        strokeWidth,
         override: {
           polyline: {
             strokeWidth,
