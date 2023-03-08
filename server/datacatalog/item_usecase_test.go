@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,6 +27,7 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		Year:        2021,
 		Config:      map[string]any{"a": "b"},
 		OpenDataURL: "https://example.com",
+		Order:       lo.ToPtr(100),
 	}}, UsecaseItem{
 		ID:          "id",
 		Name:        "name",
@@ -39,6 +41,7 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		DataLayers:  "layers, layers2",
 		DataURL:     "https://example.com/aaaaa.zip",
 		Config:      `{"a":"b"}`,
+		Order:       lo.ToPtr(100),
 	}.DataCatalogs())
 	assert.Equal(t, []DataCatalogItem{{
 		ID:   "id",

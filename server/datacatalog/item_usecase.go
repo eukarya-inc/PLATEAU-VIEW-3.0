@@ -39,6 +39,7 @@ type UsecaseItem struct {
 	DataURL     string           `json:"data_url,omitempty"`
 	DataLayers  string           `json:"data_layer,omitempty"`
 	Config      string           `json:"config,omitempty"`
+	Order       *int             `json:"order,omitempty"`
 }
 
 var reReiwa = regexp.MustCompile(`令和([0-9]+?)年度`)
@@ -112,6 +113,7 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		Layers:      layers,
 		Year:        y,
 		OpenDataURL: i.OpenDataURL,
+		Order:       i.Order,
 	}}
 }
 

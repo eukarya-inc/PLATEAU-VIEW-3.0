@@ -30,6 +30,7 @@ type DataCatalogItem struct {
 	Year              int      `json:"year,omitempty"`
 	OpenDataURL       string   `json:"openDataUrl,omitempty"`
 	Config            any      `json:"config,omitempty"`
+	Order             *int     `json:"order,omitempty"`
 }
 
 type DataCatalogGroup struct {
