@@ -551,6 +551,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers: dataset.config?.data?.[0].layers ?? dataset.layers,
+      ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
       ...(overrides?.data || {}),
     },
     visible: true,
