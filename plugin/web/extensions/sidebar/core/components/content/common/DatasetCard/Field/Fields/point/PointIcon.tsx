@@ -1,3 +1,4 @@
+import { Checkbox } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
 
@@ -11,6 +12,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
 }) => {
   const [imageURL, setImageURL] = useState(value.url ?? "");
   const [imageSize, setImageSize] = useState(value.size);
+  const [imageSizeInMeters, setImageSizeInMeters] = useState(value.sizeInMeters ?? false);
 
   const handleURLUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setImageURL(e.currentTarget.value);
@@ -21,20 +23,38 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
     setImageSize(size);
   }, []);
 
+  const handleChangeSizesInMeters = useCallback(() => {
+    setImageSizeInMeters(!imageSizeInMeters);
+  }, [imageSizeInMeters]);
+
   useEffect(() => {
-    if (!isActive || (imageURL === value.url && imageSize === value.size)) return;
+    if (
+      !isActive ||
+      (imageURL === value.url &&
+        imageSize === value.size &&
+        imageSizeInMeters === value.sizeInMeters)
+    )
+      return;
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
         url: imageURL,
         size: imageSize,
-        override: { marker: { style: "image", image: imageURL, imageSize } },
+        sizeInMeters: imageSizeInMeters,
+        override: {
+          marker: {
+            style: "image",
+            image: imageURL,
+            imageSize,
+            sizeInMeters: imageSizeInMeters,
+          },
+        },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [imageURL, imageSize, isActive, value, onUpdate]);
+  }, [imageURL, imageSize, isActive, value, onUpdate, imageSizeInMeters]);
 
   return editMode ? (
     <Wrapper>
@@ -50,6 +70,14 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
         <FieldValue>
           <TextInput defaultValue={imageSize} onChange={handleSizeUpdate} />
         </FieldValue>
+      </Field>
+      <Field>
+        <Checkbox
+          style={{ margin: 0 }}
+          checked={!!imageSizeInMeters}
+          onChange={handleChangeSizesInMeters}>
+          <Text>Enable SizeInMeters</Text>
+        </Checkbox>
       </Field>
     </Wrapper>
   ) : null;
