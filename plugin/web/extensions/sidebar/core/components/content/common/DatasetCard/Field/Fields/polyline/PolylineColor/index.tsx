@@ -12,7 +12,6 @@ import { BaseFieldProps, Cond } from "../../types";
 import PolylineColorItem from "./PolylineColorItem";
 
 const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
-  dataID,
   value,
   editMode,
   onUpdate,
@@ -64,33 +63,32 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
   };
 
   useEffect(() => {
-    if (!dataID || value.items === items) return;
-
+    if (value.items === items) return;
     const timer = setTimeout(() => {
       const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
       items?.forEach(item => {
         const resStrokeColor = "color" + `("${item.color}")`;
         const cond = stringifyCondition(item.condition);
         strokeColorConditions.unshift([cond, resStrokeColor]);
-        onUpdate({
-          ...value,
-          items,
-          override: {
-            polyline: {
-              strokeColor: {
-                expression: {
-                  conditions: strokeColorConditions,
-                },
+      });
+      onUpdate({
+        ...value,
+        items,
+        override: {
+          polyline: {
+            strokeColor: {
+              expression: {
+                conditions: strokeColorConditions,
               },
             },
           },
-        });
+        },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, items, value, onUpdate]);
+  }, [items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>
