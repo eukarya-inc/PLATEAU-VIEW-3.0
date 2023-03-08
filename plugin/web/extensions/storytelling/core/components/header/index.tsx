@@ -24,7 +24,7 @@ const Header: React.FC<Props> = ({
 }) => {
   return (
     <StyledHeader isMobile={isMobile}>
-      <HeaderMain>
+      <HeaderMain isMobile={isMobile}>
         <WidgetTitle isMobile={isMobile}>ストーリー</WidgetTitle>
         {!isMobile && (
           <>
@@ -74,10 +74,11 @@ const StyledHeader = styled.div<{ isMobile: boolean }>`
   flex-shrink: 0;
 `;
 
-const HeaderMain = styled.div`
+const HeaderMain = styled.div<{ isMobile: boolean }>`
   display: flex;
   gap: 10px;
   height: 100%;
+  min-width: ${({ isMobile }) => (isMobile ? "110px" : "362px")};
 `;
 const HeaderBtns = styled.div<{ isMobile: boolean }>`
   display: flex;

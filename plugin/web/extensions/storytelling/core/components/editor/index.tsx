@@ -40,21 +40,24 @@ const Editor: React.FC<Props> = ({
       <DndProvider backend={HTML5Backend}>
         <Content>
           {scenes?.map((scene, index) => (
-            <Scene
-              key={scene.id}
-              index={index}
-              sceneView={sceneView}
-              sceneRecapture={sceneRecapture}
-              sceneDelete={sceneDelete}
-              sceneEdit={sceneEdit}
-              sceneMove={sceneMove}
-              {...scene}
-            />
+            <ItemWrapper key={scene.id}>
+              <Scene
+                index={index}
+                sceneView={sceneView}
+                sceneRecapture={sceneRecapture}
+                sceneDelete={sceneDelete}
+                sceneEdit={sceneEdit}
+                sceneMove={sceneMove}
+                {...scene}
+              />
+            </ItemWrapper>
           ))}
-          <CreateStory onClick={sceneCapture}>
-            <Icon icon="cornersOut" size={24} />
-            <CreateText>キャプチャ</CreateText>
-          </CreateStory>
+          <CreateStoryWrapper>
+            <CreateStory onClick={sceneCapture}>
+              <Icon icon="cornersOut" size={24} />
+              <CreateText>キャプチャ</CreateText>
+            </CreateStory>
+          </CreateStoryWrapper>
         </Content>
       </DndProvider>
     </Wrapper>
@@ -65,21 +68,26 @@ const Wrapper = styled.div`
   height: 100%;
   flex: 1;
   overflow-x: auto;
-  padding: 12px;
+  overflow-y: hidden;
+  padding: 12px 6px;
   scrollbar-width: thin;
 `;
 
 const Content = styled.div`
   display: flex;
   height: 100%;
-  gap: 12px;
-  float: left;
+`;
+
+const ItemWrapper = styled.div`
+  padding: 0 6px;
+`;
+const CreateStoryWrapper = styled.div`
+  padding: 0 12px 0 6px;
 `;
 
 const CreateStory = styled.div`
   width: 170px;
   height: 114px;
-  flex-shrink: 0;
   background: #fff;
   border-radius: 8px;
   border: 1px solid var(--theme-color);

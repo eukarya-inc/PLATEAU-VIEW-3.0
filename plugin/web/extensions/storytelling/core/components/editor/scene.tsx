@@ -112,32 +112,30 @@ const Scene: React.FC<Props> = ({
   drag(drop(ref));
 
   return (
-    <StyledStory ref={ref} style={{ opacity }} data-handler-id={handlerId}>
+    <StyledScene ref={ref} style={{ opacity }} data-handler-id={handlerId}>
       <Header>
         <Title>{title}</Title>
         <ActionsBtn>
           <Dropdown
             trigger={["click"]}
             overlay={menu}
-            placement={"topRight"}
+            placement={"bottomRight"}
             getPopupContainer={trigger => trigger.parentElement ?? document.body}>
             <Icon icon="dotsThreeVertical" size={24} color={"var(--theme-color)"} />
           </Dropdown>
         </ActionsBtn>
       </Header>
       <Description>{description}</Description>
-    </StyledStory>
+    </StyledScene>
   );
 };
 
-const StyledStory = styled.div`
+const StyledScene = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
   width: 170px;
   height: 114px;
-  flex-shrink: 0;
   background: #f8f8f8;
   border-radius: 8px;
   border: 1px solid #c7c5c5;
@@ -168,6 +166,11 @@ const ActionsBtn = styled.a`
   position: relative;
   display: flex;
   flex-shrink: 0;
+
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    line-height: 18px;
+  }
 `;
 
 const Description = styled.div`
