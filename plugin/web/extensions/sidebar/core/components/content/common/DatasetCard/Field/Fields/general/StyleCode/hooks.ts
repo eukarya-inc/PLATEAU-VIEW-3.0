@@ -1,5 +1,5 @@
 import JSON5 from "json5";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -14,14 +14,6 @@ export default ({ value, onUpdate }: Pick<BaseFieldProps<"styleCode">, "value" |
       override: styleObject,
     });
   }, [onUpdate, code, value]);
-
-  useEffect(() => {
-    onUpdate({
-      ...value,
-      src: code,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const onEdit = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
