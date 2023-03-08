@@ -12,7 +12,6 @@ import { BaseFieldProps, Cond } from "../../types";
 import PolygonStrokeItem from "./PolygonStrokeItem";
 
 const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
-  dataID,
   value,
   editMode,
   onUpdate,
@@ -73,7 +72,7 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
   };
 
   useEffect(() => {
-    if (!dataID || value.items === items) return;
+    if (value.items === items) return;
 
     const timer = setTimeout(() => {
       const strokeConditions: [string, string][] = [["true", "true"]];
@@ -86,35 +85,35 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
         strokeColorConditions.unshift([cond, resStrokeColor]);
         strokeWidthConditions.unshift([cond, resStrokeWidth]);
         strokeConditions.unshift([cond, cond]);
-        onUpdate({
-          ...value,
-          items,
-          override: {
-            polygon: {
-              stroke: {
-                expression: {
-                  conditions: strokeConditions,
-                },
+      });
+      onUpdate({
+        ...value,
+        items,
+        override: {
+          polygon: {
+            stroke: {
+              expression: {
+                conditions: strokeConditions,
               },
-              strokeColor: {
-                expression: {
-                  conditions: strokeColorConditions,
-                },
+            },
+            strokeColor: {
+              expression: {
+                conditions: strokeColorConditions,
               },
-              strokeWidth: {
-                expression: {
-                  conditions: strokeWidthConditions,
-                },
+            },
+            strokeWidth: {
+              expression: {
+                conditions: strokeWidthConditions,
               },
             },
           },
-        });
+        },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, items, value, onUpdate]);
+  }, [items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

@@ -11,12 +11,7 @@ import { BaseFieldProps, Cond } from "../../types";
 
 import PolygonColorItem from "./PolygonColorItem";
 
-const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({
-  dataID,
-  value,
-  editMode,
-  onUpdate,
-}) => {
+const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({ value, editMode, onUpdate }) => {
   const [items, updateItems] = useState(value.items);
 
   const handleMoveUp = useCallback((idx: number) => {
@@ -64,7 +59,7 @@ const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({
   };
 
   useEffect(() => {
-    if (!dataID || value.items === items) return;
+    if (value.items === items) return;
 
     const timer = setTimeout(() => {
       const fillColorConditions: [string, string][] = [["true", 'color("white")']];
@@ -74,22 +69,24 @@ const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({
         const cond = stringifyCondition(item.condition);
         fillColorConditions.unshift([cond, resFillColor]);
         fillConditions.unshift([cond, cond]);
-        onUpdate({
-          ...value,
-          items,
-          override: {
-            polygon: {
-              fill: { expression: { conditions: fillConditions } },
-              fillColor: { expression: { conditions: fillColorConditions } },
+      });
+      onUpdate({
+        ...value,
+        items,
+        override: {
+          polygon: {
+            fill: {
+              expression: { conditions: fillConditions },
             },
+            fillColor: { expression: { conditions: fillColorConditions } },
           },
-        });
+        },
       });
     }, 500);
     return () => {
       clearTimeout(timer);
     };
-  }, [dataID, items, value, onUpdate]);
+  }, [items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

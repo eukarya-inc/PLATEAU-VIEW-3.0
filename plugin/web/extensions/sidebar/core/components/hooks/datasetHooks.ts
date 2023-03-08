@@ -87,7 +87,7 @@ export default ({
         return updatedProject;
       });
     },
-    [],
+    [updateProject, setCleanseOverride],
   );
   const handleDatasetSave = useCallback(
     (dataID: string) => {
