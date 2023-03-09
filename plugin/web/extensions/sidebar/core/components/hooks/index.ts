@@ -19,6 +19,7 @@ export default () => {
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
+  const [publishToGeospatial, setPublishToGeospatial] = useState(false);
 
   const [data, setData] = useState<Data[]>();
 
@@ -85,6 +86,7 @@ export default () => {
     backendURL,
     backendProjectName,
     backendAccessToken,
+    publishToGeospatial,
     inEditor,
     processedCatalog,
     setCleanseOverride,
@@ -137,6 +139,7 @@ export default () => {
         setBackendURL(e.data.payload.backendURL);
         setBackendProjectName(e.data.payload.backendProjectName);
         setBackendAccessToken(e.data.payload.backendAccessToken);
+        setPublishToGeospatial(e.data.payload.enableGeoPub);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }

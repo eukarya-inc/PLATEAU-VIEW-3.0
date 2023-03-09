@@ -6,7 +6,7 @@ import type {
 
 import { omit, makeTree, mapTree } from "./utils";
 
-// TODO: REACTOR: VERY CONFUSING REEXPORT
+// TODO: REFACTOR: VERY CONFUSING REEXPORT
 export type { DataCatalogItem, DataCatalogGroup, DataCatalogTreeItem };
 
 export type RawDataCatalogTreeItem = RawDataCatalogGroup | RawDataCatalogItem;
@@ -18,6 +18,7 @@ export type RawDataCatalogGroup = {
 
 export type RawDataCatalogItem = {
   id: string;
+  itemId?: string;
   name: string;
   pref: string;
   pref_code?: string;

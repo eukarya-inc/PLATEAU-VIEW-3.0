@@ -148,6 +148,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           backendURL: reearth.widget.property.default?.plateauURL ?? "",
           backendProjectName: reearth.widget.property.default?.projectName ?? "",
           backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
+          enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
           draftProject,
         };
         if (isMobile) {

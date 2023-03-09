@@ -12,23 +12,26 @@ extensions:
           fields:
             - id: plateauURL
               type: string
-              title: Backend URL
+              title: バックエンドURL
             - id: projectName
               type: string
-              title: Project Name
+              title: プロジェクト名
             - id: plateauAccessToken
               type: string
-              title: Backend Access Token
+              title: バックエンドアクセストークン
               private: true
             - id: catalogURL
               type: string
-              title: Data Catalog URL
+              title: データカタログURL
             - id: catalogProjectName
               type: string
-              title: Data Catalog Project Name
+              title: データカタログのプロジェクト名
             - id: reearthURL
               type: string
-              title: Re:Earth Project Public URL
+              title: Re:Earthプロジェクトの公開URL
+            - id: enableGeoPub
+              type: bool
+              title: G空間情報センターに公開
     widgetLayout:
       defaultLocation:
         zone: outer
