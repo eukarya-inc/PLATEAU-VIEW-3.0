@@ -1,6 +1,6 @@
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps, ConfigData } from "../../types";
 
@@ -15,6 +15,7 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   value,
   editMode,
   configData,
+  isActive,
   onUpdate,
 }) => {
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
@@ -50,21 +51,23 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
     />
   );
 
-  const handleStyleChange = useCallback(
-    (style: UIStyles) => {
-      selectStyle(style);
-      onUpdate({ ...value, uiStyle: style });
-    },
-    [value, onUpdate],
-  );
+  const handleStyleChange = useCallback((style: UIStyles) => {
+    selectStyle(style);
+  }, []);
 
-  const handleDatasetSelect = useCallback(
-    (dataset: ConfigData) => {
-      selectDataset(dataset);
-      onUpdate({ ...value, selected: dataset, override: { data: { url: dataset.url } } });
-    },
-    [value, onUpdate],
-  );
+  const handleDatasetSelect = useCallback((dataset: ConfigData) => {
+    selectDataset(dataset);
+  }, []);
+
+  useEffect(() => {
+    if (!isActive || selectedDataset === value.selected) return;
+    onUpdate({
+      ...value,
+      uiStyle: selectedStyle,
+      selected: selectedDataset,
+      override: { data: { url: selectedDataset?.url } },
+    });
+  }, [isActive, selectedDataset, selectedStyle, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

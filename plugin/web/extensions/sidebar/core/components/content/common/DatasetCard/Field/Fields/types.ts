@@ -12,6 +12,7 @@ export const generalFieldName = {
   buttonLink: "リンクボタン",
   styleCode: "スタイルコード",
   switchDataset: "スイッチデータセット",
+  switchField: "スイッチフィルド",
   point: "ポイント",
   description: "説明",
   template: "テンプレート",
@@ -72,6 +73,7 @@ export type FieldComponent =
   | Timeline
   | CurrentTime
   | SwitchDataset
+  | SwitchField
   | EventField
   | Template
   | PointColor
@@ -168,6 +170,12 @@ export type SwitchGroup = FieldBase<"switchGroup"> & {
 export type SwitchDataset = FieldBase<"switchDataset"> & {
   uiStyle?: "dropdown" | "radio";
   selected?: ConfigData;
+};
+
+export type SwitchField = FieldBase<"switchField"> & {
+  field?: string;
+  selected?: string;
+  uiStyle?: "dropdown" | "radio";
 };
 
 export type ButtonLink = FieldBase<"buttonLink"> & {
@@ -333,6 +341,7 @@ export type Fields = {
   realtime: Realtime;
   timeline: Timeline;
   switchDataset: SwitchDataset;
+  switchField: SwitchField;
   eventField: EventField;
   // point
   pointColor: PointColor;
