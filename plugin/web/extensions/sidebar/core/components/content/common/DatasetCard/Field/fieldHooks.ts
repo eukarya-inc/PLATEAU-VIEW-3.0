@@ -82,6 +82,14 @@ export default ({
         name: fieldName["template"],
         onClick: onFieldAdd({}),
       },
+      eventField: {
+        name: fieldName["eventField"],
+        onClick: onFieldAdd({
+          eventType: "select",
+          triggerEvent: "openUrl",
+          urlType: "manual",
+        }),
+      },
     };
   }, [fieldGroups, onFieldAdd]);
 
@@ -234,6 +242,7 @@ export default ({
 
 export const cleanseOverrides: { [key: string]: any } = {
   switchDataset: { data: { url: undefined } },
+  eventField: { events: undefined },
   pointSize: { marker: { pointSize: 10 } },
   pointColor: { marker: { pointColor: "white" } },
   pointIcon: {
