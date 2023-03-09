@@ -182,7 +182,7 @@ export default () => {
       action: "updateDatasetInScene",
       payload: {
         dataID: dataset.dataID,
-        update: styles,
+        overrides: styles,
       },
     });
   }, [selected, resultStyleCondition, dataset?.dataID, highlightAll, showMatchingOnly]);
