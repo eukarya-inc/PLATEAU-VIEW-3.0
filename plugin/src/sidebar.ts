@@ -552,30 +552,44 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers: dataset.config?.data?.[0].layers ?? dataset.layers,
       ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
+      ...(["luse", "lsld", "urf"].includes(dataset.type_en)
+        ? { jsonProperties: ["attributes"] }
+        : {}),
       ...(overrides?.data || {}),
     },
     visible: true,
-    infobox:
-      format === "3dtiles"
-        ? {
-            blocks: [
-              {
-                pluginId: reearth.plugins.instances.find(
-                  (i: PluginExtensionInstance) => i.name === "plateau-plugin",
-                ).pluginId,
-                extensionId: "infobox",
-              },
-            ],
-            property: {
-              default: {
-                bgcolor: "#d9d9d9ff",
-                heightType: "auto",
-                showTitle: false,
-                size: "medium",
-              },
+    infobox: [
+      "bldg",
+      "tran",
+      "frn",
+      "veg",
+      "luse",
+      "lsld",
+      "urf",
+      "fld",
+      "htd",
+      "tnm",
+      "ifld",
+    ].includes(dataset.type_en)
+      ? {
+          blocks: [
+            {
+              pluginId: reearth.plugins.instances.find(
+                (i: PluginExtensionInstance) => i.name === "plateau-plugin",
+              ).pluginId,
+              extensionId: "infobox",
             },
-          }
-        : null,
+          ],
+          property: {
+            default: {
+              bgcolor: "#d9d9d9ff",
+              heightType: "auto",
+              showTitle: false,
+              size: "medium",
+            },
+          },
+        }
+      : null,
     ...(overrides !== undefined
       ? omit(overrides, "data")
       : format === "geojson"
