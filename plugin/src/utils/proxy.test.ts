@@ -11,7 +11,7 @@ test("proxyGTFS", () => {
     }),
   ).toEqual({
     data: { url: "data.example.com" },
-    marker: { imageColor: "red", near: 1000 },
+    marker: { imageColor: "red", near: 1000, clampToGround: true },
     model: { url: "example.com" },
   });
   expect(

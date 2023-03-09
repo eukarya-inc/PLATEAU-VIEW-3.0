@@ -25,6 +25,7 @@ export const proxyGTFS = (layer: any) => {
     result[k] = {
       ...layerByAppearance[k],
       near: 1000,
+      clampToGround: true,
     };
   });
 

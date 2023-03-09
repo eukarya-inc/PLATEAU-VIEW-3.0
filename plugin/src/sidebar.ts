@@ -584,12 +584,14 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
             style: "point",
             pointSize: 10,
             pointColor: "white",
+            heightReference: "clamp",
           },
           polygon: {
             fill: false,
             stroke: true,
             strokeWidth: 5,
             heightReference: "clamp",
+            clampToGround: true,
           },
           polyline: {
             clampToGround: true,
@@ -602,7 +604,12 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
           polygon: {},
         }
       : format === "czml"
-      ? { resource: {} }
+      ? {
+          resource: {},
+          marker: { heightReference: "clamp" },
+          polyline: { clampToGround: true },
+          polygon: { clampToGround: true },
+        }
       : { ...(overrides ?? {}) }),
   };
 }
