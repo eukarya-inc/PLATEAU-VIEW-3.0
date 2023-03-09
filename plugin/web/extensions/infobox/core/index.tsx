@@ -1,40 +1,54 @@
 import { Spin } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import Editor from "./components/editor";
-import Viewer from "./components/viewer";
+import EditPanel from "./components/editPanel";
+import ViewPanel from "./components/viewPanel";
 import useHooks from "./hooks";
 
 const Infobox: React.FC = () => {
-  const { mode, dataState, feature, fields, wrapperRef, isSaving, saveFields, updateSize } =
-    useHooks();
+  const {
+    inEditor,
+    dataState,
+    properties,
+    fields,
+    template,
+    wrapperRef,
+    isSaving,
+    editorTab,
+    handleEditorTab,
+    onFieldCheckChange,
+    onFieldTitleChange,
+    onFieldMove,
+    saveTemplate,
+  } = useHooks();
 
   return (
     <Wrapper ref={wrapperRef}>
+      {dataState !== "empty" && (
+        <ContentPanel ready={dataState === "ready"}>
+          {template &&
+            (inEditor ? (
+              <EditPanel
+                template={template}
+                fields={fields}
+                properties={properties}
+                isSaving={isSaving}
+                editorTab={editorTab}
+                handleEditorTab={handleEditorTab}
+                saveTemplate={saveTemplate}
+                onFieldCheckChange={onFieldCheckChange}
+                onFieldTitleChange={onFieldTitleChange}
+                onFieldMove={onFieldMove}
+              />
+            ) : (
+              <ViewPanel fields={fields} properties={properties} />
+            ))}
+        </ContentPanel>
+      )}
       {dataState === "empty" && <SimplePane>NO DATA</SimplePane>}
-      {dataState !== "empty" && mode === "edit" && fields && (
-        <Editor
-          fields={fields}
-          feature={feature}
-          isSaving={isSaving}
-          ready={dataState === "ready"}
-          saveFields={saveFields}
-          updateSize={updateSize}
-        />
-      )}
-      {dataState !== "empty" && mode === "view" && (
-        <Viewer
-          fields={fields}
-          feature={feature}
-          ready={dataState === "ready"}
-          updateSize={updateSize}
-        />
-      )}
-      {dataState === "loading" && (
-        <Loading>
-          <Spin />
-        </Loading>
-      )}
+      <Loading active={dataState === "loading"}>
+        <Spin />
+      </Loading>
     </Wrapper>
   );
 };
@@ -44,16 +58,28 @@ const Wrapper = styled.div`
   padding: 0 12px;
 `;
 
-const Loading = styled.div`
+const ContentPanel = styled.div<{ ready: boolean }>`
+  background: #f4f4f4;
+  margin-bottom: 6px;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 4px !important;
+  overflow: hidden;
+  opacity: ${({ ready }) => (ready ? 1 : 0.2)};
+  transition: all 0.25s ease;
+`;
+
+const Loading = styled.div<{ active: boolean }>`
   position: absolute;
   width: 100%;
-  height: 100%;
-  min-height: 200px;
+  height: 200px;
   left: 0;
   top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${({ active }) => (active ? 1 : 0)};
+  pointer-events: none;
+  z-index: 10;
 `;
 
 const SimplePane = styled.div`

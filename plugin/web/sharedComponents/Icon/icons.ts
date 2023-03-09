@@ -72,6 +72,7 @@ import { ReactComponent as EditUnderline } from "./Icons/editUnderline.svg";
 import { ReactComponent as MouseMiddleButton } from "./Icons/mouseMiddleButton.svg";
 import { ReactComponent as MouseLeftButton } from "./Icons/mouseLeftButton.svg";
 import { ReactComponent as MouseRightButton } from "./Icons/mouseRightButton.svg";
+import { ReactComponent as GearWheel } from "./Icons/gearWheel.svg";
 
 // Ant Design Icons
 export { InboxOutlined } from "@ant-design/icons";
@@ -148,4 +149,5 @@ export default {
   mouseMiddleButton: MouseMiddleButton,
   mouseLeftButton: MouseLeftButton,
   mouseRightButton: MouseRightButton,
+  gearWheel: GearWheel,
 };

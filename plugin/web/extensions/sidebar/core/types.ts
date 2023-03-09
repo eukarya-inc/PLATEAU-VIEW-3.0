@@ -36,11 +36,11 @@ export type Template = {
   id: string;
   type: "field" | "infobox";
   name: string;
-  fields?: Field[];
+  fields?: InfoboxField[];
   components?: FieldComponent[];
 };
 
-export type Field = {
+export type InfoboxField = {
   title: string;
   path: string;
   visible: boolean;

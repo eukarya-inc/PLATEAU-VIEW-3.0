@@ -34,7 +34,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload: reearth.scene.inEditor,
     });
     infoboxFieldsFetch();
-  } else if (action === "saveFields") {
+  } else if (action === "saveTemplate") {
     getSidebarId();
     if (!sidebarId) return;
     reearth.plugins.postMessage(sidebarId, {
@@ -47,22 +47,11 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   if (pluginMessage.data.action === "infoboxFieldsFetch") {
     if (reearth.layers.selectedFeature) {
-      const properties: { key: string; value?: any }[] = [];
-      Object.entries(reearth.layers.selectedFeature.properties).forEach(([key, value]) => {
-        if (typeof value !== "object") {
-          properties.push({
-            key,
-            value,
-          });
-        }
-      });
       reearth.ui.postMessage({
         action: "fillData",
         payload: {
-          feature: {
-            properties,
-          },
-          fields: pluginMessage.data.payload,
+          properties: reearth.layers.selectedFeature.properties,
+          template: pluginMessage.data.payload,
         },
       });
     } else {

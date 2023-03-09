@@ -113,6 +113,7 @@
     "react-dnd": "16.0.1",
     "react-dnd-html5-backend": "16.0.1",
     "react-dom": "18.2.0",
+    "react-json-view": "1.21.3",
     "remarkable": "2.0.1"
   },
   "msw": {

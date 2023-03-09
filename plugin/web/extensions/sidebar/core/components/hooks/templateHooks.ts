@@ -1,5 +1,5 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { DataCatalogItem, Template } from "../../types";
 
@@ -99,7 +99,7 @@ export default ({
 
   const handleInfoboxTemplateSave = useCallback(
     async (template: Template) => {
-      if (!backendURL || backendProjectName || !backendAccessToken) return;
+      if (!backendURL || !backendProjectName || !backendAccessToken) return;
       const res = await fetch(
         `${backendURL}/sidebar/${backendProjectName}/templates/${template.id}`,
         {
@@ -143,8 +143,6 @@ export default ({
     },
     [processedCatalog, infoboxTemplates],
   );
-  const handleInfoboxFieldsFetchRef = useRef<any>();
-  handleInfoboxFieldsFetchRef.current = handleInfoboxFieldsFetch;
 
   const handleInfoboxFieldsSave = useCallback(
     async (template: Template) => {
@@ -159,17 +157,15 @@ export default ({
     [handleInfoboxTemplateAdd, handleInfoboxTemplateSave],
   );
 
-  const handleInfoboxFieldsSaveRef = useRef<any>();
-  handleInfoboxFieldsSaveRef.current = handleInfoboxFieldsSave;
-
   return {
     fieldTemplates,
-    handleInfoboxFieldsFetchRef,
-    handleInfoboxFieldsSaveRef,
+    infoboxTemplates,
     setFieldTemplates,
     setInfoboxTemplates,
     handleTemplateAdd,
     handleTemplateSave,
     handleTemplateRemove,
+    handleInfoboxFieldsFetch,
+    handleInfoboxFieldsSave,
   };
 };

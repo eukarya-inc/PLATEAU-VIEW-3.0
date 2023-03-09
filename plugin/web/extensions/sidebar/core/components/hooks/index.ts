@@ -33,8 +33,8 @@ export default () => {
 
   const {
     fieldTemplates,
-    handleInfoboxFieldsFetchRef,
-    handleInfoboxFieldsSaveRef,
+    handleInfoboxFieldsFetch,
+    handleInfoboxFieldsSave,
     setFieldTemplates,
     setInfoboxTemplates,
     handleTemplateAdd,
@@ -151,16 +151,16 @@ export default () => {
       } else if (e.data.action === "storySaveData") {
         handleStorySaveData(e.data.payload);
       } else if (e.data.action === "infoboxFieldsFetch") {
-        handleInfoboxFieldsFetchRef.current(e.data.payload);
+        handleInfoboxFieldsFetch(e.data.payload);
       } else if (e.data.action === "infoboxFieldsSave") {
-        handleInfoboxFieldsSaveRef.current(e.data.payload);
+        handleInfoboxFieldsSave(e.data.payload);
       }
     };
     addEventListener("message", eventListenerCallback);
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [handleDatasetPublish]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleDatasetPublish, handleInfoboxFieldsFetch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 

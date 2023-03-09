@@ -88,7 +88,7 @@ const FieldItem: React.FC<Props> = ({
   drop(preview(previewRef));
 
   return (
-    <StyledPropertyItem
+    <StyledFieldItem
       disabled={!field.visible}
       ref={previewRef}
       data-handler-id={handlerId}
@@ -97,7 +97,7 @@ const FieldItem: React.FC<Props> = ({
         <DragHandle ref={dragRef}>
           <Icon icon="dotsSixVertical" size={16} />
         </DragHandle>
-        <StyledCheckbox onChange={onCheckChange} data-path={field.path} checked={field.visible} />
+        <Checkbox onChange={onCheckChange} data-path={field.path} checked={field.visible} />
       </IconsWrapper>
       <ContentWrapper>
         <JsonPath>{field.path}</JsonPath>
@@ -109,21 +109,28 @@ const FieldItem: React.FC<Props> = ({
             value={field.title}
           />
         </Title>
-        <Value>{field.value}</Value>
       </ContentWrapper>
-    </StyledPropertyItem>
+    </StyledFieldItem>
   );
 };
 
-const StyledPropertyItem = styled.div<{ disabled?: boolean }>`
+const StyledFieldItem = styled.div<{ disabled?: boolean }>`
   display: flex;
   align-items: flex-start;
   min-height: 32px;
-  padding: 4px 0;
+  padding: 10px 0 4px;
   gap: 12px;
   border-bottom: 1px solid #d9d9d9;
   font-size: 14px;
   color: ${({ disabled }) => (disabled ? "rgba(0, 0, 0, 0.25)" : "#000")};
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .ant-checkbox-inner {
+    border-color: ${({ disabled }) => (disabled ? "#d9d9d9 !important" : "transparent !important")};
+  }
 `;
 
 const IconsWrapper = styled.div`
@@ -144,12 +151,6 @@ const DragHandle = styled.div`
   cursor: pointer;
 `;
 
-const StyledCheckbox = styled(Checkbox)`
-  .ant-checkbox-inner {
-    border-color: transparent !important;
-  }
-`;
-
 const TitleInput = styled.input`
   width: 100%;
   height: 24px;
@@ -160,16 +161,11 @@ const TitleInput = styled.input`
 `;
 
 const JsonPath = styled.div`
-  width: 33%;
+  width: 50%;
 `;
 
 const Title = styled.div`
-  width: 33%;
-`;
-
-const Value = styled.div`
-  width: 33%;
-  word-break: break-all;
+  width: 50%;
 `;
 
 export default FieldItem;
