@@ -288,7 +288,7 @@ type BuildingColor = FieldBase<"buildingColor"> & {
   colorType: string;
 };
 
-type FloodColor = FieldBase<"floodColor">;
+type FloodColor = FieldBase<"floodColor"> & { colorType: "water" | "rank" };
 
 type FloodFilter = FieldBase<"floodFilter"> & { rank?: [from: number, to: number] };
 

@@ -195,7 +195,9 @@ export default ({
       },
       floodColor: {
         name: fieldName["floodColor"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({
+          colorType: "water",
+        }),
       },
       floodFilter: {
         name: fieldName["floodFilter"],

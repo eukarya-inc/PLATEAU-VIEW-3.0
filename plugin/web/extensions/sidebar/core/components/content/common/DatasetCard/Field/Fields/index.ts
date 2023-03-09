@@ -75,7 +75,7 @@ const fields: Fields<FieldComponent> = {
   buildingTransparency: { Component: BuildingTransparency, hasUI: true },
   buildingColor: { Component: BuildingColor, hasUI: true },
   buildingShadow: { Component: BuildingShadow, hasUI: true },
-  floodColor: { Component: FloodColor, hasUI: false },
+  floodColor: { Component: FloodColor, hasUI: true },
   floodFilter: { Component: FloodFilter, hasUI: true },
   // 3d-model
   template: { Component: Template, hasUI: true },

@@ -261,12 +261,12 @@ export const makeSelectedFloodCondition = (
     ? [
         [`\${${propertyName}} === null`, "rgba(135, 206, 235, 1)"],
         [`isNaN(\${${propertyName}})`, "rgba(135, 206, 235, 1)"],
-        [equalNumber(propertyName, 2), "rgba(243, 240, 122, 1)"],
-        [equalNumber(propertyName, 3), "rgba(255, 184, 141, 1)"],
-        [equalNumber(propertyName, 4), "rgba(255, 132, 132, 1)"],
-        [equalNumber(propertyName, 5), "rgba(255, 94, 94, 1)"],
-        [equalNumber(propertyName, 6), "rgba(237, 87, 181, 1)"],
-        [compareGreaterThan(defaultConditionalNumber(propertyName, 0), 7), "rgba(209, 82, 209, 1)"],
+        [equalNumber(propertyName, 0), "rgba(243, 240, 122, 1)"],
+        [equalNumber(propertyName, 1), "rgba(243, 240, 122, 1)"],
+        [equalNumber(propertyName, 2), "rgba(255, 184, 141, 1)"],
+        [equalNumber(propertyName, 3), "rgba(255, 132, 132, 1)"],
+        [equalNumber(propertyName, 4), "rgba(255, 94, 94, 1)"],
+        [equalNumber(propertyName, 5), "rgba(237, 87, 181, 1)"],
         [DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color],
       ]
     : [[DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color]];

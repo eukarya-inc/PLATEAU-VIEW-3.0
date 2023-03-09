@@ -39,7 +39,18 @@ const useHooks = ({
     [handleUpdateOptions],
   );
 
-  useBuildingTransparency({ options, dataID, onUpdate: handleUpdate });
+  const handleChangeTransparency = useCallback((transparency: number) => {
+    setOptions({
+      transparency,
+    });
+  }, []);
+
+  useBuildingTransparency({
+    options,
+    dataID,
+    onUpdate: handleUpdate,
+    onChangeTransparency: handleChangeTransparency,
+  });
 
   return {
     options,
