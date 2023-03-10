@@ -14,17 +14,6 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
   const [dataUrl, setDataUrl] = useState("");
   const [fileType, setFileType] = useState<FileType>("auto");
 
-  const fetchDataFromUrl = useCallback(async (url: string) => {
-    try {
-      const result = await fetch(url);
-      if (result.ok) {
-        return result;
-      }
-    } catch (error) {
-      return undefined;
-    }
-  }, []);
-
   const setDataFormat = useCallback((type: FileType, filename: string) => {
     if (type === "auto") {
       let extension = getSupportedType(filename);
@@ -46,34 +35,23 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
   }, []);
 
   const handleClick = useCallback(async () => {
-    const result = await fetchDataFromUrl(dataUrl);
-    if (result) {
-      // Catalog Item
-      const filename = dataUrl.substring(dataUrl.lastIndexOf("/") + 1);
-      const id = "id" + Math.random().toString(16).slice(2);
-      const item: UserDataItem = {
-        type: "item",
-        id: id,
-        dataID: id,
-        description:
-          "Please contact the provider of this data for more information, including information about usage rights and constraints.",
-        name: filename,
-        url: dataUrl,
-        format: setDataFormat(fileType, filename),
-      };
-      const requireLayerName = needsLayerName(dataUrl);
-      if (onOpenDetails) onOpenDetails(item, requireLayerName);
-      if (setSelectedWebItem) setSelectedWebItem(item);
-    }
-  }, [
-    dataUrl,
-    fetchDataFromUrl,
-    fileType,
-    needsLayerName,
-    onOpenDetails,
-    setDataFormat,
-    setSelectedWebItem,
-  ]);
+    // Catalog Item
+    const filename = dataUrl.substring(dataUrl.lastIndexOf("/") + 1);
+    const id = "id" + Math.random().toString(16).slice(2);
+    const item: UserDataItem = {
+      type: "item",
+      id: id,
+      dataID: id,
+      description:
+        "Please contact the provider of this data for more information, including information about usage rights and constraints.",
+      name: filename,
+      url: dataUrl,
+      format: setDataFormat(fileType, filename),
+    };
+    const requireLayerName = needsLayerName(dataUrl);
+    if (onOpenDetails) onOpenDetails(item, requireLayerName);
+    if (setSelectedWebItem) setSelectedWebItem(item);
+  }, [dataUrl, fileType, needsLayerName, onOpenDetails, setDataFormat, setSelectedWebItem]);
 
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);

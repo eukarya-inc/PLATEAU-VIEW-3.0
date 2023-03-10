@@ -80,6 +80,10 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
       value: "shapefile",
       label: "ShapeFile (zip)",
     },
+    {
+      value: "mvt",
+      label: "Mapbox Vector Tile (MVT)",
+    },
   ];
 
   return (
