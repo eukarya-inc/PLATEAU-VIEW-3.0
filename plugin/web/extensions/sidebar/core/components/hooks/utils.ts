@@ -10,8 +10,6 @@ export const convertToData = (item: DataCatalogItem): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
-    visible: item.visible ?? true,
-    template: item.template,
     components: item.components,
     fieldGroups: item.fieldGroups,
   };
@@ -40,6 +38,10 @@ export const mergeOverrides = (
 
   for (let i = 0; i < components.length; i++) {
     if (components[i].updatedAt) {
+      continue;
+    }
+    if (components[i].type === "switchDataset" && action === "cleanse") {
+      merge(overrides, components[i].cleanseOverride);
       continue;
     }
 
@@ -90,6 +92,7 @@ export const handleDataCatalogProcessing = (
       return {
         ...item,
         ...savedData2,
+        visible: true,
       };
     } else {
       return newItem(item);

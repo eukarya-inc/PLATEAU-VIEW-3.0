@@ -20,7 +20,6 @@ export type Data = {
   dataID: string;
   public?: boolean;
   visible?: boolean;
-  template?: string;
   components?: FieldComponent[];
   fieldGroups: Group[];
 };
