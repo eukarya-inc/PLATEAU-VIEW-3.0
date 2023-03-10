@@ -14,7 +14,7 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
     const seconds = Math.floor(interval % 60);
     const minutes = Math.floor((interval / 60) % 60);
     const hours = Math.floor((interval / 60 / 60) % 24);
-    if (interval > 0) {
+    if (interval >= 0) {
       setTimer(
         (hours > 9 ? hours : "0" + hours) +
           ":" +
@@ -50,10 +50,12 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
 
   const handleChangeUpdateTime = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIntervalValue(parseInt(e.currentTarget.value));
-      startTimer(intervalInSecond);
+      const inputValue = parseFloat(e.currentTarget.value);
+      if (isNaN(inputValue)) setTimer("00:00:00");
+      setIntervalValue(inputValue);
+      startTimer(inputValue);
     },
-    [intervalInSecond, startTimer],
+    [startTimer],
   );
 
   const isInitializedRef = useRef(false);
@@ -103,6 +105,7 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
         <FieldTitle>Update time</FieldTitle>
         <FieldValue>
           <TextInput
+            type={"number"}
             readOnly={!enableUpdate}
             value={intervalInSecond}
             onChange={handleChangeUpdateTime}
@@ -159,7 +162,7 @@ const FieldValue = styled.div`
   width: 100%;
 `;
 
-const TextInput = styled.input.attrs({ type: "text" })`
+const TextInput = styled.input`
   height: 100%;
   width: 100%;
   flex: 1;
