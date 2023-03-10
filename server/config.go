@@ -178,10 +178,9 @@ func (c *Config) DataCatalog() datacatalog.Config {
 
 func (c *Config) DataConv() dataconv.Config {
 	return dataconv.Config{
-		Disable:    c.DataConv_Disable,
-		CMSBase:    c.CMS_BaseURL,
-		CMSToken:   c.CMS_Token,
-		CMSProject: c.CMS_PlateauProject,
+		Disable:  c.DataConv_Disable,
+		CMSBase:  c.CMS_BaseURL,
+		CMSToken: c.CMS_Token,
 		// CMSModel: ,
 	}
 }

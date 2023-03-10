@@ -221,7 +221,7 @@ func DataCatalog(conf *Config) (*Service, error) {
 
 func DataConv(conf *Config) (*Service, error) {
 	c := conf.DataConv()
-	if c.CMSBase == "" || c.CMSToken == "" || c.CMSProject == "" {
+	if c.CMSBase == "" || c.CMSToken == "" {
 		return nil, nil
 	}
 

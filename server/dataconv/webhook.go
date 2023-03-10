@@ -19,10 +19,9 @@ import (
 const defaultCMSModel = "dataset"
 
 type Config struct {
-	Disable    bool
-	CMSBase    string
-	CMSToken   string
-	CMSProject string
+	Disable  bool
+	CMSBase  string
+	CMSToken string
 	// optional
 	CMSModel string
 }
@@ -60,12 +59,19 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 		conf.CMSModel = defaultCMSModel
 	}
 
+	pid := w.ProjectID()
 	if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate ||
+		pid == "" ||
 		w.ItemData.Item == nil ||
 		w.ItemData.Model == nil ||
 		w.ItemData.Model.Key != conf.CMSModel ||
 		w.Operator.User == nil {
+		var key string
+		if w.ItemData.Model != nil {
+			key = w.ItemData.Model.Key
+		}
 		// skipped
+		log.Debugf("dataconv: skipped: invalid webhook: type=%s, projectid=%s, model=%s", w.Type, pid, key)
 		return nil
 	}
 
@@ -116,7 +122,7 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 		return nil
 	}
 
-	aid, err := c.UploadAssetDirectly(ctx, conf.CMSProject, id+".czml", bytes.NewReader(b))
+	aid, err := c.UploadAssetDirectly(ctx, pid, id+".czml", bytes.NewReader(b))
 	if err != nil {
 		log.Errorf("dataconv: failed to upload asset (%s): %v", id, err)
 		return nil
