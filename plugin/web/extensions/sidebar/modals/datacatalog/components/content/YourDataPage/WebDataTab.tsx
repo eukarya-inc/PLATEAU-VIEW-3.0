@@ -3,7 +3,7 @@ import { getExtension } from "@web/extensions/sidebar/utils/file";
 import { Input, Form, Button } from "@web/sharedComponents";
 import { useCallback, useState } from "react";
 
-import WebFileTypeSelect, { FileType } from "./WebFileTypeSelect";
+import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
   onOpenDetails?: (data?: UserDataItem, needLayerName?: boolean) => void;
@@ -26,22 +26,11 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
   }, []);
 
   const setDataFormat = useCallback((type: FileType, filename: string) => {
-    const extension = getExtension(filename);
     if (type === "auto") {
-      // more exceptions will be added in the future
-      switch (extension) {
-        // georss
-        case "rss":
-          return "rss";
-        // georss
-        case "xml":
-          return "xml";
-        // shapefile
-        case "zip":
-          return "zip";
-        default:
-          return extension;
-      }
+      let extension = getSupportedType(filename);
+      // Remove this in future
+      if (!extension) extension = getExtension(filename);
+      return extension;
     }
     return type;
   }, []);
