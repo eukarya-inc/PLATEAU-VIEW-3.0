@@ -28,7 +28,7 @@ const DataCatalog: React.FC = () => {
           </Tab>
           <Tab selected={currentTab === "your-data"} onClick={() => handleTabChange("your-data")}>
             <Icon icon="user" />
-            <TabName>自己データ</TabName>
+            <TabName>Myデータ</TabName>
           </Tab>
         </TabsWrapper>
         <CloseButton>

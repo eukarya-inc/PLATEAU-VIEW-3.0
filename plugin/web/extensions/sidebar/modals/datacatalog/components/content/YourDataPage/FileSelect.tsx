@@ -28,10 +28,10 @@ const FileSelectPane: React.FC<Props> = ({ onOpenDetails }) => {
   return (
     <Wrapper>
       <StyledTabs defaultActiveKey="local" onChange={handleTabChange}>
-        <Tabs.TabPane tab="Add Local Data" key="local">
+        <Tabs.TabPane tab="ローカルのデータを追加" key="local">
           <LocalDataTab onOpenDetails={onOpenDetails} setSelectedLocalItem={setSelectedLocalItem} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Add Web Data" key="web">
+        <Tabs.TabPane tab="Webからデータを追加" key="web">
           <WebDataTab onOpenDetails={onOpenDetails} setSelectedWebItem={setSelectedWebItem} />
         </Tabs.TabPane>
       </StyledTabs>

@@ -103,19 +103,17 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
 
   return (
     <Form layout="vertical">
-      <Form.Item name="file-type" label="Select file type">
+      <Form.Item name="file-type" label="ファイルタイプを選択">
         <FileTypeSelect onFileTypeSelect={handleFileTypeSelect} />
       </Form.Item>
-      <Form.Item label="Upload File">
+      <Form.Item label="ファイルを選択">
         <Form.Item name="upload-file" style={{ height: 300, overflowY: "scroll" }}>
           <Upload.Dragger {...props}>
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
             </p>
-            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload. Strictly prohibit from uploading company data or
-              other band files
+            <p className="ant-upload-text">
+              ここをクリックしてファイルを選択するか、ファイルをここにドラッグ&amp;ドロップしてください。
             </p>
           </Upload.Dragger>
         </Form.Item>

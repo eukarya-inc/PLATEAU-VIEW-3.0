@@ -8,7 +8,6 @@ export type FileType =
   | "csv"
   | "czml"
   | "gpx"
-  // | "json"
   | "georss"
   | "shapefile";
 
@@ -20,11 +19,11 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
   const options = [
     {
       value: "auto",
-      label: "Auto-detect (Recommended)",
+      label: "自動検出",
     },
     {
       value: "wms",
-      label: "Web Map Service(WMS)",
+      label: "Web Map Service (WMS)",
     },
     {
       value: "geojson",
@@ -32,7 +31,7 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
     },
     {
       value: "kml",
-      label: "KML or KMZ",
+      label: "KML・KMZ",
     },
     {
       value: "csv",
@@ -50,10 +49,6 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
       value: "3dtiles",
       label: "3D Tiles",
     },
-    // {
-    //   value: "json",
-    //   label: "JSON",
-    // },
     {
       value: "georss",
       label: "GeoRSS",

@@ -6,50 +6,50 @@ export const generalFieldName = {
   legend: "凡例",
   realtime: "リアルタイム",
   story: "ストーリー",
-  timeline: "タイムラインデータ",
+  timeline: "タイムライン",
   currentTime: "現在時刻",
-  switchGroup: "スイッチグループ",
-  buttonLink: "リンクボタン",
+  switchGroup: "グループの切り替え",
+  buttonLink: "リンク",
   styleCode: "スタイルコード",
-  switchDataset: "スイッチデータセット",
-  switchField: "スイッチフィルド",
+  switchDataset: "データセットの切り替え",
+  switchField: "フィールドの切り替え",
   point: "ポイント",
   description: "説明",
   template: "テンプレート",
-  eventField: "エベント",
+  eventField: "イベント",
 };
 
 export const pointFieldName = {
   pointColor: "色",
-  pointColorGradient: "色（Gradient）",
+  pointColorGradient: "色（グラデーション）",
   pointSize: "サイズ",
   pointIcon: "アイコン",
   pointLabel: "ラベル",
   pointModel: "モデル",
-  pointStroke: "ストロック",
+  pointStroke: "ストローク",
   pointCSV: "ポイントに変換（CSV）",
 };
 
 export const polygonFieldName = {
   polygonColor: "ポリゴン色",
-  polygonColorGradient: "ポリゴン色（Gradient）",
-  polygonStroke: "ポリゴンストロック",
+  polygonColorGradient: "ポリゴン色（グラデーション）",
+  polygonStroke: "ポリゴンストローク",
 };
 
 export const threeDFieldName = {
   clipping: "クリッピング",
-  buildingFilter: "建物フィルター",
+  buildingFilter: "フィルター（建築物）",
   buildingTransparency: "透明度",
-  buildingColor: "色分け",
+  buildingColor: "色分け（建築物）",
   buildingShadow: "影",
   floodColor: "色分け（浸水想定区域）",
-  floodFilter: "浸水想定区域フィルター",
+  floodFilter: "フィルター（浸水想定区域）",
 };
 
 export const polylineFieldName = {
   polylineColor: "ポリライン色",
-  polylineColorGradient: "ポリライン色（Gradient）",
-  polylineStrokeWeight: "ポリラインストロック",
+  polylineColorGradient: "ポリライン色（グラデーション）",
+  polylineStrokeWeight: "ポリラインストローク",
 };
 
 export const fieldName = {

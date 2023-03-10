@@ -92,25 +92,25 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
 
   return (
     <Form layout="vertical">
-      <Form.Item name="file-type" label="Select file type">
+      <Form.Item name="file-type" label="ファイルタイプを選択">
         <WebFileTypeSelect onFileTypeSelect={handleFileTypeSelect} />
       </Form.Item>
       <Form.Item
         name="url"
-        label="File URL"
+        label="データのURLを入力"
         rules={[
           { required: true },
-          { message: "Please input the URL of the asset!" },
+          { message: "データファイルまたはWebサービスのURLを入力してください。" },
           { type: "url", warningOnly: true },
         ]}>
         <Input
-          placeholder={"Please input a valid URL"}
+          placeholder={"正しいURLを入力してください。"}
           onChange={e => setDataUrl(e.target.value)}
         />
       </Form.Item>
       <Form.Item style={{ textAlign: "right" }}>
         <Button type="primary" htmlType="submit" onClick={handleClick}>
-          Upload
+          データの閲覧
         </Button>
       </Form.Item>
     </Form>
