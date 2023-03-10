@@ -28,10 +28,12 @@ const PointCSV: React.FC<BaseFieldProps<"pointCSV">> = ({ value, editMode, onUpd
     [],
   );
 
+  const isInitializedRef = useRef(false);
   const handleUpdate = useCallback(() => {
-    if (isEqual(pick(value, "lng", "lat", "height"), locationNames)) {
+    if (isEqual(pick(value, "lng", "lat", "height"), locationNames) && isInitializedRef.current) {
       return;
     }
+    isInitializedRef.current = true;
     onUpdate({
       ...value,
       ...locationNames,

@@ -25,10 +25,12 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
     [],
   );
 
+  const isInitialized = useRef(false);
   const handleUpdate = useCallback(() => {
-    if (isEqual(options, pick(value, "date", "time"))) {
+    if (isInitialized.current && isEqual(options, pick(value, "date", "time"))) {
       return;
     }
+    isInitialized.current = true;
 
     onUpdate({
       ...value,
@@ -70,11 +72,16 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
 
   useEffect(
     () => () => {
-      const current = new Date().toISOString();
+      // TODO: Use undefined to reset time.
+      // But currently we can not override scene property with undefined.
+      const now = Date.now();
+      const start = new Date(now - 86400000).toISOString();
+      const stop = new Date(now).toISOString();
       onSceneUpdate({
         timeline: {
-          current: current,
-          start: current,
+          current: start,
+          start,
+          stop,
         },
       });
     },

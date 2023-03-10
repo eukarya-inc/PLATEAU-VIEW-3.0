@@ -14,7 +14,7 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
     () => debounce(() => updaterRef.current?.(), 500, { maxWait: 1000 }),
     [],
   );
-  const shouldUpdate = useRef(false);
+  const shouldUpdate = useRef(true);
 
   const handleUpdate = useCallback(() => {
     if (value.timeBasedDisplay) {
