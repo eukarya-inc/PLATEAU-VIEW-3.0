@@ -18,7 +18,7 @@ const DatasetDetails: React.FC<Props> = ({
 }) => {
   const handleDatasetAdd = useCallback(() => {
     if (!dataset) return;
-    onDatasetAdd(dataset);
+    onDatasetAdd({ ...dataset, visible: true });
   }, [dataset, onDatasetAdd]);
 
   const ContentComponent: React.FC = () => (
