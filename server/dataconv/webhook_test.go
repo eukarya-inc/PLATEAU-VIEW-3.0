@@ -32,6 +32,9 @@ func TestWebhook(t *testing.T) {
 				}.Fields(),
 			},
 			Model: &cms.Model{Key: "dataset"},
+			Schema: &cms.Schema{
+				ProjectID: "project",
+			},
 		},
 		Operator: cmswebhook.Operator{User: &cmswebhook.User{}},
 	}, Config{}, c)
