@@ -14,6 +14,7 @@ type Props = {
   template: InfoboxTemplate;
   isSaving: boolean;
   editorTab: string;
+  commonProperties: string[];
   handleEditorTab: (tab: EditorTab) => void;
   onFieldCheckChange: (e: any) => void;
   onFieldTitleChange: (e: any) => void;
@@ -27,6 +28,7 @@ const EditPanel: React.FC<Props> = ({
   properties,
   isSaving,
   editorTab,
+  commonProperties,
   handleEditorTab,
   onFieldCheckChange,
   onFieldTitleChange,
@@ -50,7 +52,13 @@ const EditPanel: React.FC<Props> = ({
           <Icon icon="gearWheel" size={16} />
         </Tab>
       </Header>
-      {editorTab === "view" && <PropertyBrowser properties={properties} fields={fields} />}
+      {editorTab === "view" && (
+        <PropertyBrowser
+          properties={properties}
+          fields={fields}
+          commonProperties={commonProperties}
+        />
+      )}
       {editorTab === "edit" && (
         <FieldsEditor
           fields={fields}

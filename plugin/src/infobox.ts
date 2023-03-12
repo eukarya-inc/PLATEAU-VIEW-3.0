@@ -46,7 +46,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 
 reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   if (pluginMessage.data.action === "infoboxFieldsFetch") {
-    if (reearth.layers.selectedFeature) {
+    if (reearth.layers.selectedFeature && pluginMessage.data.payload) {
       reearth.ui.postMessage({
         action: "fillData",
         payload: {

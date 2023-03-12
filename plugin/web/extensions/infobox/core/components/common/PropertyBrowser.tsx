@@ -1,4 +1,4 @@
-import { commonProperties, cesium3DTilesAppearanceKeys } from "@web/extensions/infobox/core/utils";
+import { cesium3DTilesAppearanceKeys } from "@web/extensions/infobox/core/utils";
 import type { Properties, Field } from "@web/extensions/infobox/types";
 import { styled } from "@web/theme";
 import { useState, useEffect } from "react";
@@ -13,9 +13,10 @@ type DisplayItem = {
 type Props = {
   properties?: Properties;
   fields: Field[];
+  commonProperties: string[];
 };
 
-const PropertyBrowser: React.FC<Props> = ({ properties, fields }) => {
+const PropertyBrowser: React.FC<Props> = ({ properties, fields, commonProperties }) => {
   const [displayList, setDisplayList] = useState<DisplayItem[]>([]);
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const PropertyBrowser: React.FC<Props> = ({ properties, fields }) => {
       return;
     }
 
-    // Part I: fixed properties
+    // Part I: common properties
     // ------------------------------
     fields.forEach(f => {
       if (f.visible && properties?.[f.path] !== undefined) {
@@ -38,11 +39,11 @@ const PropertyBrowser: React.FC<Props> = ({ properties, fields }) => {
       }
     });
 
-    // Part II: flood properties
+    // Part II: individual properties
     // ------------------------------
     // !NOTE: currently appearance override properties
     // are mixed with original properties
-    const floorProperties = Object.keys(properties)
+    const individualProperties = Object.keys(properties)
       .filter(
         k =>
           !commonProperties.includes(k) &&
@@ -56,7 +57,7 @@ const PropertyBrowser: React.FC<Props> = ({ properties, fields }) => {
         };
       }, {});
 
-    Object.entries(floorProperties).forEach(([key, value]) => {
+    Object.entries(individualProperties).forEach(([key, value]) => {
       items.push({
         path: key,
         title: key,
@@ -65,7 +66,7 @@ const PropertyBrowser: React.FC<Props> = ({ properties, fields }) => {
     });
 
     setDisplayList(items);
-  }, [fields, properties]);
+  }, [fields, properties, commonProperties]);
 
   return (
     <Wrapper>

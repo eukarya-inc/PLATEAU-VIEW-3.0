@@ -35,6 +35,7 @@ export type Template = {
   id: string;
   type: "field" | "infobox";
   name: string;
+  dataType?: string; // 'bldg' 'urf' etc.
   fields?: InfoboxField[];
   components?: FieldComponent[];
 };

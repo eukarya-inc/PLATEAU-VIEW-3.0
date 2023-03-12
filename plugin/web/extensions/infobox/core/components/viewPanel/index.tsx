@@ -4,17 +4,23 @@ import { styled } from "@web/theme";
 import PropertyBrowser from "../common/PropertyBrowser";
 
 type Props = {
+  name: string;
   properties?: Properties;
   fields: Field[];
+  commonProperties: string[];
 };
 
-const ViewPanel: React.FC<Props> = ({ properties, fields }) => {
+const ViewPanel: React.FC<Props> = ({ name, properties, fields, commonProperties }) => {
   return (
     <>
       <Header>
-        <Title>建物情報</Title>
+        <Title>{name}</Title>
       </Header>
-      <PropertyBrowser properties={properties} fields={fields} />
+      <PropertyBrowser
+        properties={properties}
+        fields={fields}
+        commonProperties={commonProperties}
+      />
     </>
   );
 };

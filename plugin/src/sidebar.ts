@@ -553,7 +553,8 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers: dataset.config?.data?.[0].layers ?? dataset.layers,
       ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
-      ...(["luse", "lsld", "urf"].includes(dataset.type_en)
+      ...(["luse", "lsld", "urf"].includes(dataset.type_en) ||
+      (dataset.type_en === "tran" && format === "mvt")
         ? { jsonProperties: ["attributes"] }
         : {}),
       ...(overrides?.data || {}),

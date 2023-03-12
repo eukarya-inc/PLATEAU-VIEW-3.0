@@ -1,7 +1,7 @@
 import update from "immutability-helper";
 import { useCallback, useEffect, useState, useRef } from "react";
 
-import { postMsg, commonProperties } from "../core/utils";
+import { postMsg, commonPropertiesMap } from "../core/utils";
 import { InfoboxTemplate, Properties, Field } from "../types";
 
 export type EditorTab = "view" | "edit";
@@ -15,6 +15,7 @@ export default () => {
   const [dataState, setDataState] = useState<"loading" | "empty" | "ready">("loading");
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [inEditor, setInEditor] = useState(false);
+  const [commonProperties, setCommonProperties] = useState<string[]>([]);
 
   const handleEditorTab = useCallback((tab: EditorTab) => {
     setEditorTab(tab);
@@ -22,6 +23,8 @@ export default () => {
 
   useEffect(() => {
     const fieldItems: Field[] = [];
+    const commonProperties = template?.dataType ? commonPropertiesMap[template.dataType] : [];
+    setCommonProperties(commonProperties);
 
     // show fields with default order if no settings
     if (!template?.fields || template.fields?.length === 0) {
@@ -171,6 +174,7 @@ export default () => {
     wrapperRef,
     isSaving,
     editorTab,
+    commonProperties,
     handleEditorTab,
     onFieldCheckChange,
     onFieldTitleChange,

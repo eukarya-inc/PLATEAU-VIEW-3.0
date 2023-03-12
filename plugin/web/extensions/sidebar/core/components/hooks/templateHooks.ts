@@ -92,6 +92,9 @@ export default ({
       if (res.status !== 200) return;
       const newTemplate = await res.json();
       setInfoboxTemplates(t => [...t, newTemplate]);
+      postMsg({
+        action: "infoboxFieldsSaved",
+      });
       return newTemplate as Template;
     },
     [backendURL, backendProjectName, backendAccessToken],
@@ -129,13 +132,20 @@ export default ({
 
   const handleInfoboxFieldsFetch = useCallback(
     (dataID: string) => {
-      const name = processedCatalog?.find(d => d.dataID === dataID)?.type ?? "";
-      const fields = infoboxTemplates.find(ft => ft.type === "infobox" && ft.name === name) ?? {
-        id: "",
-        type: "infobox",
-        name,
-        fields: [],
-      };
+      let fields;
+      const catalogItem = processedCatalog?.find(d => d.dataID === dataID);
+      if (catalogItem) {
+        const name = catalogItem?.type;
+        const dataType = catalogItem?.type_en;
+        fields = infoboxTemplates.find(ft => ft.type === "infobox" && ft.dataType === dataType) ?? {
+          id: "",
+          type: "infobox",
+          name,
+          dataType,
+          fields: [],
+        };
+      }
+
       postMsg({
         action: "infoboxFieldsFetch",
         payload: fields,

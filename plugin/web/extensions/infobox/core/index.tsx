@@ -15,6 +15,7 @@ const Infobox: React.FC = () => {
     wrapperRef,
     isSaving,
     editorTab,
+    commonProperties,
     handleEditorTab,
     onFieldCheckChange,
     onFieldTitleChange,
@@ -34,6 +35,7 @@ const Infobox: React.FC = () => {
                 properties={properties}
                 isSaving={isSaving}
                 editorTab={editorTab}
+                commonProperties={commonProperties}
                 handleEditorTab={handleEditorTab}
                 saveTemplate={saveTemplate}
                 onFieldCheckChange={onFieldCheckChange}
@@ -41,7 +43,12 @@ const Infobox: React.FC = () => {
                 onFieldMove={onFieldMove}
               />
             ) : (
-              <ViewPanel fields={fields} properties={properties} />
+              <ViewPanel
+                name={template.name}
+                fields={fields}
+                properties={properties}
+                commonProperties={commonProperties}
+              />
             ))}
         </ContentPanel>
       )}
