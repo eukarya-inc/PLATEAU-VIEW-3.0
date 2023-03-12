@@ -59,6 +59,8 @@ const DatasetCard: React.FC<Props> = ({
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
+    handleMoveUp,
+    handleMoveDown,
     handleCurrentGroupUpdate,
     handleGroupsUpdate,
   } = useHooks({
@@ -285,7 +287,8 @@ const DatasetCard: React.FC<Props> = ({
             )}
             {dataset.components?.map((c, idx) => (
               <Field
-                key={idx}
+                key={c.id}
+                index={idx}
                 field={c}
                 isActive={!!activeComponentIDs?.find(id => id === c.id)}
                 isEditing={currentTab === "edit"}
@@ -296,6 +299,8 @@ const DatasetCard: React.FC<Props> = ({
                 configData={dataset.config?.data}
                 onUpdate={handleFieldUpdate}
                 onRemove={handleFieldRemove}
+                onMoveUp={handleMoveUp}
+                onMoveDown={handleMoveDown}
                 onGroupsUpdate={handleGroupsUpdate(c.id)}
                 onCurrentGroupUpdate={handleCurrentGroupUpdate}
                 onSceneUpdate={onSceneUpdate}

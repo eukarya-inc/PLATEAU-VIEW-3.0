@@ -1,5 +1,5 @@
 import { Template } from "@web/extensions/sidebar/core/types";
-import { generateID } from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
 import generateFieldComponentsList from "../common/DatasetCard/Field/fieldHooks";
@@ -45,6 +45,22 @@ export default ({
     [template, onTemplateUpdate],
   );
 
+  const handleMoveFieldUp = useCallback(
+    (idx: number) => {
+      const newComponents = moveItemUp(idx, template.components);
+      if (newComponents) onTemplateUpdate?.({ ...template, components: newComponents });
+    },
+    [onTemplateUpdate, template],
+  );
+
+  const handleMoveFieldDown = useCallback(
+    (idx: number) => {
+      const newComponents = moveItemDown(idx, template.components);
+      if (newComponents) onTemplateUpdate?.({ ...template, components: newComponents });
+    },
+    [template, onTemplateUpdate],
+  );
+
   // const handleGroupsUpdate = useCallback(
   //   (fieldID: string) => (groups: Group[], selectedGroupID?: string) => {
   //     const newDatasetComponents = template.components ? [...template.components] : [];
@@ -85,6 +101,8 @@ export default ({
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
+    handleMoveFieldUp,
+    handleMoveFieldDown,
     // handleGroupsUpdate,
   };
 };
