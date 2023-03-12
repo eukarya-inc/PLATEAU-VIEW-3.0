@@ -1,6 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
-import omit from "lodash/omit";
+import { merge, omit } from "lodash";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -593,7 +593,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
         }
       : null,
     ...(overrides !== undefined
-      ? omit(overrides, "data")
+      ? merge({}, defaultOverrides, omit(overrides, "data"))
       : format === "geojson"
       ? {
           marker: {
@@ -629,3 +629,9 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       : { ...(overrides ?? {}) }),
   };
 }
+const defaultOverrides = {
+  resource: {},
+  marker: { heightReference: "clamp" },
+  polyline: { clampToGround: true },
+  polygon: { clampToGround: true },
+};
