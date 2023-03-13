@@ -10,7 +10,6 @@ type Props = {
   addedDatasetDataIDs?: string[];
   selectedID?: string;
   nestLevel: number;
-  nodeKey: string;
   expandedKeys: string[];
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem) => void;
@@ -26,7 +25,6 @@ const TreeBuilder: React.FC<Props> = ({
   addedDatasetDataIDs,
   selectedID,
   nestLevel,
-  nodeKey,
   expandedKeys,
   addDisabled,
   onDatasetAdd,
@@ -37,13 +35,12 @@ const TreeBuilder: React.FC<Props> = ({
   return (
     <>
       {Array.isArray(catalogItem) ? (
-        catalogItem.map((item, index) =>
+        catalogItem.map(item =>
           "children" in item ? (
             <Folder
               key={item.name}
               name={item.name}
               nestLevel={nestLevel + 1}
-              nodeKey={nodeKey + "-" + index}
               expandedKeys={expandedKeys}
               isMobile={isMobile}
               expandAll={expandAll}
@@ -53,7 +50,6 @@ const TreeBuilder: React.FC<Props> = ({
                 addedDatasetDataIDs={addedDatasetDataIDs}
                 selectedID={selectedID}
                 nestLevel={nestLevel + 1}
-                nodeKey={nodeKey + "-" + index}
                 expandedKeys={expandedKeys}
                 addDisabled={addDisabled}
                 onDatasetAdd={onDatasetAdd}
@@ -68,7 +64,6 @@ const TreeBuilder: React.FC<Props> = ({
               addedDatasetDataIDs={addedDatasetDataIDs}
               selectedID={selectedID}
               nestLevel={nestLevel + 1}
-              nodeKey={nodeKey + "-" + index}
               expandedKeys={expandedKeys}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
@@ -83,7 +78,6 @@ const TreeBuilder: React.FC<Props> = ({
           key={catalogItem.name}
           name={catalogItem.name}
           nestLevel={nestLevel + 1}
-          nodeKey={nodeKey}
           expandedKeys={expandedKeys}
           isMobile={isMobile}
           expandAll={expandAll}
@@ -93,7 +87,6 @@ const TreeBuilder: React.FC<Props> = ({
             addedDatasetDataIDs={addedDatasetDataIDs}
             selectedID={selectedID}
             nestLevel={nestLevel + 1}
-            nodeKey={nodeKey}
             expandedKeys={expandedKeys}
             addDisabled={addDisabled}
             onDatasetAdd={onDatasetAdd}
@@ -108,7 +101,6 @@ const TreeBuilder: React.FC<Props> = ({
           isMobile={isMobile}
           nestLevel={nestLevel}
           selectedID={selectedID}
-          nodeKey={nodeKey}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
           onOpenDetails={onOpenDetails}

@@ -7,7 +7,6 @@ export type Props = {
   isMobile?: boolean;
   expandAll?: boolean;
   nestLevel: number;
-  nodeKey: string;
   expandedKeys: string[];
   setExpandedKeys: React.Dispatch<React.SetStateAction<string[]>>;
   children?: React.ReactNode;
@@ -18,7 +17,6 @@ const Folder: React.FC<Props> = ({
   isMobile,
   expandAll,
   nestLevel,
-  nodeKey,
   expandedKeys,
   setExpandedKeys,
   children,
@@ -26,8 +24,8 @@ const Folder: React.FC<Props> = ({
   const [isOpen, open] = useState(false);
 
   useEffect(() => {
-    if (expandAll || expandedKeys.includes(nodeKey)) open(true);
-  }, [expandAll, expandedKeys, nodeKey]);
+    if (expandAll || expandedKeys.includes(name)) open(true);
+  }, [expandAll, expandedKeys, name]);
 
   const handleExpand = useCallback(
     (key: string) => {
@@ -49,7 +47,7 @@ const Folder: React.FC<Props> = ({
 
   return (
     <Wrapper key={name} isOpen={isOpen}>
-      <FolderItem nestLevel={nestLevel} onClick={() => handleExpand(nodeKey)}>
+      <FolderItem nestLevel={nestLevel} onClick={() => handleExpand(name)}>
         <NameWrapper isMobile={isMobile}>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
           <Name>{name}</Name>

@@ -40,6 +40,7 @@ export type RawDataCatalogItem = {
   tags?: { type: "type" | "location"; value: string }[];
   openDataUrl?: string;
   config?: { data?: { name: string; type: string; url: string; layers?: string[] }[] };
+  path?: string[];
   // bldg only fields
   bldg_low_texture_url?: string;
   bldg_no_texture_url?: string;
@@ -107,7 +108,7 @@ export function getRawDataCatalogTree(
 
   return mapTree(makeTree(allItems), (item): RawDataCatalogGroup | RawDataCatalogItem =>
     item.item
-      ? omit(item.item, "path", "code")
+      ? omit(item.item, "code")
       : {
           name: item.name,
           children: [],

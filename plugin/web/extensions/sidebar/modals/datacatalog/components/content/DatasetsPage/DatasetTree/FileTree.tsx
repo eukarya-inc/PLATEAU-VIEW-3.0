@@ -40,7 +40,6 @@ const FileTree: React.FC<Props> = ({
           expandAll={expandAll}
           selectedID={selectedID}
           nestLevel={0}
-          nodeKey="0"
           expandedKeys={expandedKeys}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
