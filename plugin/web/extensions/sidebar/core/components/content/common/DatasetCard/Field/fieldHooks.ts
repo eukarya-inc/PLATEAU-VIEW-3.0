@@ -313,7 +313,7 @@ export const cleanseOverrides: { [key: string]: any } = {
   },
   floodColor: {
     "3dtiles": {
-      color: "white",
+      color: undefined,
     },
   },
   floodFilter: {
