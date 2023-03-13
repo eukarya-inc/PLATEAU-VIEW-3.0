@@ -21,7 +21,6 @@ export type Data = {
   public?: boolean;
   visible?: boolean;
   components?: FieldComponent[];
-  fieldGroups: Group[];
 };
 
 export type Group = {

@@ -61,25 +61,24 @@ export default ({
     [template, onTemplateUpdate],
   );
 
-  // const handleGroupsUpdate = useCallback(
-  //   (fieldID: string) => (groups: Group[], selectedGroupID?: string) => {
-  //     const newDatasetComponents = template.components ? [...template.components] : [];
-  //     const componentIndex = newDatasetComponents.findIndex(c => c.id === fieldID);
+  const handleGroupsUpdate = useCallback(
+    (fieldID: string) => (selectedGroupID?: string) => {
+      const newDatasetComponents = template.components ? [...template.components] : [];
+      const componentIndex = newDatasetComponents.findIndex(c => c.id === fieldID);
 
-  //     if (newDatasetComponents.length > 0 && componentIndex !== undefined) {
-  //       newDatasetComponents[componentIndex].group = selectedGroupID;
-  //     }
+      if (newDatasetComponents.length > 0 && componentIndex !== undefined) {
+        newDatasetComponents[componentIndex].group = selectedGroupID;
+      }
 
-  //     onTemplateUpdate?.({
-  //       ...template,
-  //       components: newDatasetComponents,
-  //     });
-  //   },
-  //   [template, onTemplateUpdate],
-  // );
+      onTemplateUpdate?.({
+        ...template,
+        components: newDatasetComponents,
+      });
+    },
+    [template, onTemplateUpdate],
+  );
 
   const fieldComponentsList = generateFieldComponentsList({
-    // fieldGroups: dataset.fieldGroups,
     onFieldAdd:
       (property: any) =>
       ({ key }: { key: string }) => {
@@ -103,6 +102,6 @@ export default ({
     handleFieldRemove,
     handleMoveFieldUp,
     handleMoveFieldDown,
-    // handleGroupsUpdate,
+    handleGroupsUpdate,
   };
 };

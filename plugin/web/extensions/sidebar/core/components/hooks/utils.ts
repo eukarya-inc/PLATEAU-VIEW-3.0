@@ -1,5 +1,4 @@
 import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
-import { generateID } from "@web/extensions/sidebar/utils";
 import { cloneDeep, merge } from "lodash";
 
 import { Data, DataCatalogItem } from "../../types";
@@ -11,7 +10,6 @@ export const convertToData = (item: DataCatalogItem): Data => {
     dataID: item.dataID,
     public: item.public,
     components: item.components,
-    fieldGroups: item.fieldGroups,
   };
 };
 
@@ -76,7 +74,6 @@ export const newItem = (ri: RawDataCatalogItem): DataCatalogItem => {
     dataID: ri.id,
     public: false,
     visible: true,
-    fieldGroups: [{ id: generateID(), name: "グループ1" }],
   };
 };
 

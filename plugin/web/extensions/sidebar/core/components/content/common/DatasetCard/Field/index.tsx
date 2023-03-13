@@ -1,4 +1,4 @@
-import { Group, Template } from "@web/extensions/sidebar/core/types";
+import { Template } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -20,17 +20,17 @@ export type Props = {
   index?: number;
   field: FieldComponentType;
   dataID?: string;
+  activeIDs?: string[];
   isActive: boolean;
   isEditing?: boolean;
   editMode?: boolean;
   templates?: Template[];
-  selectGroups?: Group[];
   configData?: ConfigData[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove?: (id: string) => void;
   onMoveUp?: (index: number) => void;
   onMoveDown?: (index: number) => void;
-  onGroupsUpdate?: (groups: Group[], selectedGroup?: string) => void;
+  onGroupsUpdate?: (fieldID: string) => (selectedGroupID?: string | undefined) => void;
   onCurrentGroupUpdate?: (fieldGroupID: string) => void;
   onSceneUpdate?: (updatedProperties: Partial<ReearthApi>) => void;
 };
@@ -53,11 +53,11 @@ const FieldComponent: React.FC<Props> = ({
   index,
   field,
   dataID,
+  activeIDs,
   isActive,
   isEditing,
   editMode,
   templates,
-  selectGroups,
   configData,
   onUpdate,
   onRemove,
@@ -75,11 +75,11 @@ const FieldComponent: React.FC<Props> = ({
       e?.stopPropagation();
       postMsg({
         action: "groupSelectOpen",
-        payload: { groups: selectGroups, selected: field.group },
+        payload: { selected: field.group },
       });
       setGroupPopup(true);
     },
-    [field.group, selectGroups],
+    [field.group],
   );
 
   const handleRemove = useCallback(
@@ -111,7 +111,7 @@ const FieldComponent: React.FC<Props> = ({
       if (e.source !== parent) return;
       if (groupPopupOpen) {
         if (e.data.action === "saveGroups") {
-          onGroupsUpdate?.(e.data.payload.groups, e.data.payload.selected);
+          onGroupsUpdate?.(field.id)(e.data.payload.selected);
           setGroupPopup(false);
         } else if (e.data.action === "popupClose") {
           setGroupPopup(false);
@@ -122,7 +122,7 @@ const FieldComponent: React.FC<Props> = ({
     return () => {
       (globalThis as any).removeEventListener("message", eventListenerCallback);
     };
-  }, [groupPopupOpen, onGroupsUpdate]);
+  }, [field.id, groupPopupOpen, onGroupsUpdate]);
 
   const title = useMemo(() => fieldName[field.type], [field]);
   const editModeTitle = useMemo(
@@ -136,9 +136,9 @@ const FieldComponent: React.FC<Props> = ({
     <Field.Component
       value={{ ...field }}
       editMode={editMode}
+      activeIDs={activeIDs}
       isActive={isActive}
       templates={templates}
-      fieldGroups={selectGroups}
       configData={configData}
       dataID={dataID}
       onUpdate={onUpdate?.(field.id)}
@@ -150,6 +150,7 @@ const FieldComponent: React.FC<Props> = ({
       hasGroup={!!field.group}
       editMode={editMode}
       hasUI={Field?.hasUI}
+      showGroupIcon={field.type !== "switchGroup"}
       showArrowIcon={!!Field}
       title={title}
       editModeTitle={editModeTitle}
@@ -163,7 +164,6 @@ const FieldComponent: React.FC<Props> = ({
           editMode={editMode}
           isActive={isActive}
           templates={templates}
-          fieldGroups={selectGroups}
           configData={configData}
           dataID={dataID}
           onUpdate={onUpdate?.(field.id)}

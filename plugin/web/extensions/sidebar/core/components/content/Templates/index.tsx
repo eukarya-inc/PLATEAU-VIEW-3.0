@@ -51,6 +51,7 @@ const Templates: React.FC<Props> = ({
             </div>
             <TemplateCard
               template={selectedTemplate}
+              templates={templates}
               savingTemplate={savingTemplate}
               onTemplateSave={onTemplateSave}
               onTemplateUpdate={handleTemplateUpdate}
@@ -63,8 +64,8 @@ const Templates: React.FC<Props> = ({
               <Icon icon="plus" size={16} /> New Template
             </TemplateAddButton>
             {templates.length > 0 &&
-              templates.map((t, idx) => (
-                <TemplateComponent key={idx} onClick={() => handleTemplateSelect(t)}>
+              templates.map(t => (
+                <TemplateComponent key={t.id} onClick={() => handleTemplateSelect(t)}>
                   {t.name}
                   <StyledIcon
                     icon="trash"

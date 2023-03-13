@@ -193,19 +193,6 @@ const DatasetCard: React.FC<Props> = ({
     onDatasetSave(dataset.dataID);
   }, [dataset.dataID, inEditor, onDatasetSave]);
 
-  useEffect(() => {
-    const eventListenerCallback = (e: any) => {
-      if (e.source !== parent) return;
-      if (e.data.action === "fieldGroups") {
-        postMsg({ action: "msgToPopup", payload: { groups: dataset.fieldGroups } });
-      }
-    };
-    (globalThis as any).addEventListener("message", eventListenerCallback);
-    return () => {
-      (globalThis as any).removeEventListener("message", eventListenerCallback);
-    };
-  });
-
   const menuGenerator = (menuItems: { [key: string]: any }) => (
     <Menu>
       {Object.keys(menuItems).map(i => {
@@ -290,18 +277,18 @@ const DatasetCard: React.FC<Props> = ({
                 key={c.id}
                 index={idx}
                 field={c}
+                activeIDs={activeComponentIDs}
                 isActive={!!activeComponentIDs?.find(id => id === c.id)}
                 isEditing={currentTab === "edit"}
                 dataID={dataset.dataID}
                 editMode={inEditor && currentTab === "edit"}
                 templates={templates}
-                selectGroups={dataset.fieldGroups}
                 configData={dataset.config?.data}
                 onUpdate={handleFieldUpdate}
                 onRemove={handleFieldRemove}
                 onMoveUp={handleMoveUp}
                 onMoveDown={handleMoveDown}
-                onGroupsUpdate={handleGroupsUpdate(c.id)}
+                onGroupsUpdate={handleGroupsUpdate}
                 onCurrentGroupUpdate={handleCurrentGroupUpdate}
                 onSceneUpdate={onSceneUpdate}
               />

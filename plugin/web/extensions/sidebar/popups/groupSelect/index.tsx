@@ -1,31 +1,20 @@
-import { generateID, postMsg } from "@web/extensions/sidebar/utils";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useState } from "react";
 
-import { Group } from "../../core/types";
+import { fieldGroups } from "../../utils/fieldGroups";
 
 const GroupSelect: React.FC = () => {
   const [selectedGroup, selectGroup] = useState<string>();
-  const [draftGroups, updateDraftGroups] = useState<Group[]>([]);
 
   const handleSave = useCallback(() => {
-    postMsg({ action: "saveGroups", payload: { groups: draftGroups, selected: selectedGroup } });
-  }, [draftGroups, selectedGroup]);
+    postMsg({ action: "saveGroups", payload: { selected: selectedGroup } });
+  }, [selectedGroup]);
 
   const handleCancel = useCallback(() => {
     postMsg({ action: "popupClose" });
   }, []);
-
-  const handleGroupAdd = useCallback(() => {
-    updateDraftGroups(dgs => {
-      const newGroup = {
-        id: generateID(),
-        name: `グループ${draftGroups.length ? draftGroups.length + 1 : 1}`,
-      };
-      return dgs ? [...dgs, newGroup] : [newGroup];
-    });
-  }, [draftGroups]);
 
   const handleGroupSelect = useCallback(
     (id: string) => {
@@ -38,22 +27,13 @@ const GroupSelect: React.FC = () => {
     [selectedGroup],
   );
 
-  const handleGroupRemove = useCallback(() => {
-    updateDraftGroups(dgs => dgs.filter(dg => dg.id !== selectedGroup));
-    selectGroup(undefined);
-  }, [selectedGroup]);
-
   useEffect(() => {
     if ((window as any).groupSelectInit) {
       const init = (window as any).groupSelectInit;
-      if (init.groups) {
-        updateDraftGroups(init.groups);
-      }
       if (init.selected) {
         selectGroup(init.selected);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -64,16 +44,8 @@ const GroupSelect: React.FC = () => {
       </Header>
       <Content>
         <Text>グループリスト</Text>
-        <Actions>
-          <Action>
-            <StyledIcon icon="plus" size={16} onClick={handleGroupAdd} />
-          </Action>
-          <Action>
-            <StyledIcon icon="trash" size={16} onClick={handleGroupRemove} />
-          </Action>
-        </Actions>
         <List>
-          {draftGroups?.map(g => (
+          {fieldGroups.map(g => (
             <ListItem
               key={g.id}
               selected={selectedGroup === g.id}
@@ -127,15 +99,6 @@ const Content = styled.div`
   gap: 8px;
   padding: 24px;
 `;
-
-const Actions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-`;
-
-const Action = styled.div``;
 
 const List = styled.div`
   height: 90px;

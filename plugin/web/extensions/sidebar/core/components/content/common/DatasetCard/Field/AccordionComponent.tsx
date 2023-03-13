@@ -1,6 +1,5 @@
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -15,6 +14,7 @@ type Props = {
   hasGroup?: boolean;
   editMode?: boolean;
   hasUI?: boolean;
+  showGroupIcon?: boolean;
   showArrowIcon?: boolean;
   title: string;
   editModeTitle: string;
@@ -30,6 +30,7 @@ const AccordionComponent: React.FC<Props> = ({
   hasGroup,
   editMode,
   hasUI,
+  showGroupIcon,
   showArrowIcon,
   title,
   editModeTitle,
@@ -39,17 +40,15 @@ const AccordionComponent: React.FC<Props> = ({
   onDownClick,
   children,
 }) => {
-  const [isExpanded, toggleExpanded] = useState(true);
-
   return (
     <StyledAccordionComponent allowZeroExpanded preExpanded={[id]} hide={!editMode && !hasUI}>
-      <AccordionItem uuid={id} dangerouslySetExpanded={isExpanded}>
+      <AccordionItem uuid={id}>
         <AccordionItemState>
           {({ expanded }) => (
             <Header showBorder={expanded}>
               {editMode ? (
                 <HeaderContents>
-                  <LeftContents onClick={() => toggleExpanded(v => !v)}>
+                  <LeftContents>
                     {showArrowIcon && (
                       <ArrowIcon icon="arrowDown" size={16} direction="right" expanded={expanded} />
                     )}
@@ -58,12 +57,14 @@ const AccordionComponent: React.FC<Props> = ({
                   <RightContents>
                     <StyledIcon icon="arrowUpThin" size={16} onClick={onUpClick} />
                     <StyledIcon icon="arrowDownThin" size={16} onClick={onDownClick} />
-                    <StyledIcon
-                      icon="group"
-                      color={hasGroup ? "#00BEBE" : "inherit"}
-                      size={16}
-                      onClick={onGroupSelectOpen}
-                    />
+                    {showGroupIcon && (
+                      <StyledIcon
+                        icon="group"
+                        color={hasGroup ? "#00BEBE" : "inherit"}
+                        size={16}
+                        onClick={onGroupSelectOpen}
+                      />
+                    )}
                     <StyledIcon icon="trash" size={16} onClick={onRemove} />
                   </RightContents>
                 </HeaderContents>

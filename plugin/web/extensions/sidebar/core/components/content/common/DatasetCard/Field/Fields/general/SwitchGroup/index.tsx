@@ -9,7 +9,6 @@ import useHooks from "./hooks";
 const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
   value,
   editMode,
-  fieldGroups,
   onUpdate,
   onCurrentGroupUpdate,
 }) => {
@@ -17,6 +16,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
     title,
     groupItems,
     selectedGroup,
+    fieldGroups,
     handleTitleChange,
     handleGroupChoose,
     handleItemGroupChange,
@@ -27,7 +27,6 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
     handleItemMoveDown,
   } = useHooks({
     value,
-    fieldGroups,
     onUpdate,
     onCurrentGroupUpdate,
   });
@@ -49,7 +48,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
 
   const editGroupMenu = (groupItemIndex: number) => (
     <Menu
-      items={fieldGroups?.map((fg, idx) => {
+      items={fieldGroups.map((fg, idx) => {
         return {
           key: idx,
           label: (

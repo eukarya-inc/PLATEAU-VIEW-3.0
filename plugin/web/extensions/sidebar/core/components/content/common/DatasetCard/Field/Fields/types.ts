@@ -1,4 +1,4 @@
-import { Group, Template as TemplateType } from "@web/extensions/sidebar/core/types";
+import { Template as TemplateType } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 
 export const generalFieldName = {
@@ -378,12 +378,12 @@ export type BaseFieldProps<T extends keyof Fields> = {
   dataID?: string;
   editMode?: boolean;
   isActive?: boolean;
+  activeIDs?: string[];
   templates?: TemplateType[];
-  fieldGroups?: Group[];
   configData?: ConfigData[];
   onUpdate: (property: Fields[T]) => void;
-  onCurrentGroupUpdate: (fieldGroupID: string) => void;
   onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
+  onCurrentGroupUpdate?: (fieldGroupID: string) => void;
 };
 
 export type ConfigData = { name: string; type: string; url: string; layers?: string[] };

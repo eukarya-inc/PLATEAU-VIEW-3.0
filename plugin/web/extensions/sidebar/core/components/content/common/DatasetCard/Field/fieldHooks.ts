@@ -1,5 +1,5 @@
-import { Group } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
+import { fieldGroups } from "@web/extensions/sidebar/utils/fieldGroups";
 import { useMemo } from "react";
 
 import { fieldName } from "./Fields/types";
@@ -9,10 +9,8 @@ type FieldDropdownItem = {
 };
 
 export default ({
-  fieldGroups,
   onFieldAdd,
 }: {
-  fieldGroups?: Group[];
   onFieldAdd: (property: any) => ({ key }: { key: string }) => void;
 }) => {
   const generalFields: FieldDropdownItem = useMemo(() => {
@@ -69,9 +67,7 @@ export default ({
         name: fieldName["switchGroup"],
         onClick: onFieldAdd({
           title: "Switch Group",
-          groups: fieldGroups?.[0]
-            ? [{ id: generateID(), title: "新グループ1", fieldGroupID: fieldGroups[0].id }]
-            : [],
+          groups: [{ id: generateID(), title: "新グループ1", fieldGroupID: fieldGroups[0].id }],
         }),
       },
       switchDataset: {
@@ -95,7 +91,7 @@ export default ({
         }),
       },
     };
-  }, [fieldGroups, onFieldAdd]);
+  }, [onFieldAdd]);
 
   const pointFields: FieldDropdownItem = useMemo(() => {
     return {

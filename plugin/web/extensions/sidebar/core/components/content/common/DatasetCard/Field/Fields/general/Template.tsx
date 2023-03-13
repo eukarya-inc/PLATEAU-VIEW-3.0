@@ -10,23 +10,28 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   value,
   dataID,
   editMode,
+  activeIDs,
   templates,
   configData,
   onUpdate,
+  onCurrentGroupUpdate,
 }) => {
   const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
 
-  const currentTempComponents = useMemo(
+  const fieldComponents = useMemo(
     () =>
-      hasTemplates
+      (value.components?.length
+        ? value.components
+        : hasTemplates
         ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
-        : undefined,
-    [value.templateID, templates, hasTemplates],
+        : undefined
+      )?.filter(t => activeIDs?.includes(t.id)),
+    [value.templateID, activeIDs, value.components, templates, hasTemplates],
   );
 
   const handleTemplateChange = useCallback(
     (id: string) => {
-      const cleanseOverride = mergeOverrides("cleanse", currentTempComponents);
+      const cleanseOverride = mergeOverrides("cleanse", fieldComponents);
 
       onUpdate({
         ...value,
@@ -35,14 +40,13 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
         override: cleanseOverride,
       });
     },
-    [value, currentTempComponents, templates, onUpdate],
+    [value, fieldComponents, templates, onUpdate],
   );
 
   const handleFieldUpdate = useCallback(
     (id: string) => (property: any) => {
-      const newComponents = value.components
-        ? [...(value.components.length ? value.components : currentTempComponents ?? [])]
-        : [];
+      const newComponents = [...(fieldComponents ?? [])];
+
       const componentIndex = newComponents?.findIndex(c => c.id === id);
 
       if (!newComponents || componentIndex === undefined) return;
@@ -54,7 +58,7 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
         components: newComponents,
       });
     },
-    [value, currentTempComponents, onUpdate],
+    [value, fieldComponents, onUpdate],
   );
 
   const templateOptions = useMemo(
@@ -88,16 +92,18 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
           )}
         </div>
       ) : (
-        (value.components?.length ? value.components : currentTempComponents)?.map((tc, idx) => (
+        fieldComponents?.map(tc => (
           <FieldComponent
-            key={idx}
+            key={tc.id}
             field={tc}
             editMode={editMode}
             dataID={dataID}
-            isActive
+            activeIDs={activeIDs}
+            isActive={!!activeIDs?.find(id => id === tc.id)}
             templates={templates}
             configData={configData}
             onUpdate={handleFieldUpdate}
+            onCurrentGroupUpdate={onCurrentGroupUpdate}
           />
         ))
       )}

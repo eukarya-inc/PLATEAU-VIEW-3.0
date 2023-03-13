@@ -1,5 +1,6 @@
-import { DataCatalogItem, Group, Template } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
+import { getActiveFieldIDs, getDefaultGroup } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useState } from "react";
 
 import { mergeOverrides } from "../../../hooks/utils";
@@ -23,19 +24,14 @@ export default ({
   const [activeComponentIDs, setActiveIDs] = useState<string[] | undefined>();
 
   useEffect(() => {
-    const newActiveIDs = selectedGroup
-      ? (!dataset.components?.find(c => c.type === "switchGroup") || !dataset.fieldGroups
-          ? dataset.components
-          : dataset.components.filter(
-              c => (c.group && c.group === selectedGroup) || c.type === "switchGroup" || !c.group,
-            )
-        )
-          ?.filter(c => !(!dataset.config?.data && c.type === "switchDataset"))
-          ?.map(c => c.id)
-      : dataset.components?.map(c => c.id);
+    const newActiveIDs = getActiveFieldIDs(dataset.components, selectedGroup, dataset.config?.data);
 
     if (newActiveIDs !== activeComponentIDs) {
       setActiveIDs(newActiveIDs);
+
+      if (!selectedGroup) {
+        setGroup(getDefaultGroup(dataset.components?.filter(c => newActiveIDs?.includes(c.id))));
+      }
     }
   }, [selectedGroup, dataset.components]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -45,9 +41,13 @@ export default ({
     }
   }, [activeComponentIDs]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleCurrentGroupUpdate = useCallback((fieldGroupID?: string) => {
-    setGroup(fieldGroupID);
-  }, []);
+  const handleCurrentGroupUpdate = useCallback(
+    (fieldGroupID?: string) => {
+      if (fieldGroupID === selectedGroup) return;
+      setGroup(fieldGroupID);
+    },
+    [selectedGroup],
+  );
 
   const handleFieldAdd =
     (property: any) =>
@@ -118,7 +118,7 @@ export default ({
   );
 
   const handleGroupsUpdate = useCallback(
-    (fieldID: string) => (groups: Group[], selectedGroupID?: string) => {
+    (fieldID: string) => (selectedGroupID?: string) => {
       if (!inEditor) return;
 
       const newDatasetComponents = dataset.components ? [...dataset.components] : [];
@@ -131,14 +131,12 @@ export default ({
       onDatasetUpdate?.({
         ...dataset,
         components: newDatasetComponents,
-        fieldGroups: groups,
       });
     },
     [dataset, inEditor, onDatasetUpdate],
   );
 
   const fieldComponentsList = generateFieldComponentsList({
-    fieldGroups: dataset.fieldGroups,
     onFieldAdd: handleFieldAdd,
   });
 

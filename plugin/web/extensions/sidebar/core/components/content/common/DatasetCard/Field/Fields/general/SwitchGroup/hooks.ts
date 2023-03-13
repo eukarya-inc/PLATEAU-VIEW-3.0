@@ -1,27 +1,21 @@
-import { Group } from "@web/extensions/sidebar/core/types";
 import { array_move, generateID } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useState } from "react";
+import { fieldGroups } from "@web/extensions/sidebar/utils/fieldGroups";
+import { useCallback, useState } from "react";
 
 import { GroupItem, SwitchGroup } from "../../types";
 
 export default ({
   value,
-  fieldGroups,
   onUpdate,
   onCurrentGroupUpdate,
 }: {
   value: SwitchGroup;
-  fieldGroups?: Group[];
   onUpdate: (property: SwitchGroup) => void;
-  onCurrentGroupUpdate: (fieldGroupID: string) => void;
+  onCurrentGroupUpdate?: (fieldGroupID: string) => void;
 }) => {
   const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
   const [title, setTitle] = useState(value.title);
   const [selectedGroup, selectGroup] = useState(value.groups[0]);
-
-  useEffect(() => {
-    onCurrentGroupUpdate(selectedGroup.fieldGroupID);
-  }, [selectedGroup.fieldGroupID, onCurrentGroupUpdate]);
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,12 +30,12 @@ export default ({
       const selected = groupItems?.find(gi => gi.id === id);
       if (!selected) return;
       selectGroup(selected);
+      onCurrentGroupUpdate?.(selected.fieldGroupID);
     },
-    [groupItems],
+    [groupItems, onCurrentGroupUpdate],
   );
 
   const handleItemAdd = useCallback(() => {
-    if (!fieldGroups) return;
     const newItem: GroupItem = {
       id: generateID(),
       title: `新グループ${value.groups.length ? value.groups.length + 1 : 1}`,
@@ -49,7 +43,7 @@ export default ({
     };
     updateGroupItems(gi => (gi ? [...gi, newItem] : [newItem]));
     onUpdate({ ...value, groups: value.groups ? [...value.groups, newItem] : [newItem] });
-  }, [value, fieldGroups, onUpdate]);
+  }, [value, onUpdate]);
 
   const handleItemRemove = useCallback(
     (id: string) => {
@@ -106,6 +100,7 @@ export default ({
     title,
     groupItems,
     selectedGroup,
+    fieldGroups,
     handleTitleChange,
     handleGroupChoose,
     handleItemGroupChange,

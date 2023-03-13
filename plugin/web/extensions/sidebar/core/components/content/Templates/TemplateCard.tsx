@@ -27,12 +27,14 @@ type Tabs = "default" | "edit";
 
 export type Props = {
   template: Template;
+  templates: Template[];
   savingTemplate: boolean;
   onTemplateSave: (template: Template) => Promise<void>;
   onTemplateUpdate?: (template: Template) => void;
 };
 const TemplateCard: React.FC<Props> = ({
   template,
+  templates,
   savingTemplate,
   onTemplateSave,
   onTemplateUpdate,
@@ -48,6 +50,7 @@ const TemplateCard: React.FC<Props> = ({
     handleFieldRemove,
     handleMoveFieldUp,
     handleMoveFieldDown,
+    handleGroupsUpdate,
   } = useHooks({
     template,
     onTemplateUpdate,
@@ -186,11 +189,12 @@ const TemplateCard: React.FC<Props> = ({
                 field={c}
                 isActive={true}
                 editMode={currentTab === "edit"}
-                // templates={templates}
+                templates={templates}
                 onUpdate={handleFieldUpdate}
                 onRemove={handleFieldRemove}
                 onMoveUp={handleMoveFieldUp}
                 onMoveDown={handleMoveFieldDown}
+                onGroupsUpdate={handleGroupsUpdate}
               />
             ))}
           </Content>
