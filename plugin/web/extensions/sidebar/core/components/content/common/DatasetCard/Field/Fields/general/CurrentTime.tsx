@@ -39,7 +39,20 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
     });
 
     const currentTimeStr = (() => {
-      const dateStr = [options.date, options.time].filter(s => !!s).join("T");
+      const formattedDate = options.date
+        ? options.date
+            .split(/-|\//)
+            .map(s => s.padStart(2, "0"))
+            .join("-")
+        : undefined;
+      const formattedTime = options.time
+        ? options.time
+            .split(/:/)
+            .map(s => s.padStart(2, "0"))
+            .join(":")
+        : undefined;
+      const dateStr = [formattedDate, formattedTime].filter(s => !!s).join("T");
+
       try {
         return new Date(dateStr).toISOString();
       } catch {
