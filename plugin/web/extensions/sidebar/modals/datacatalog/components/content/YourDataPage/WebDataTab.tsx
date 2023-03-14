@@ -43,7 +43,7 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
       id: id,
       dataID: id,
       description:
-        "Please contact the provider of this data for more information, including information about usage rights and constraints.",
+        "著作権や制約に関する情報などの詳細については、このデータの提供者にお問い合わせください。",
       name: filename,
       url: dataUrl,
       format: setDataFormat(fileType, filename),

@@ -58,14 +58,14 @@ const DatasetDetails: React.FC<Props> = ({
   const popConfirmProps: PopconfirmProps = {
     title: (
       <>
-        <PopConfirmText>Are you sure you want to publish</PopConfirmText>
-        <PopConfirmText>this dataset?</PopConfirmText>
+        <PopConfirmText>本当に公開してもよろしいですか？</PopConfirmText>
+        <PopConfirmText>PLATEAUデータの場合はG空間情報センターにも公開されます。</PopConfirmText>
       </>
     ),
     placement: "topRight",
     onConfirm: handleDatasetPublish,
-    okText: "Yes",
-    cancelText: "Cancel",
+    okText: "OK",
+    cancelText: "キャンセル",
     okButtonProps: {
       style: {
         backgroundColor: "#00BEBE",
@@ -121,8 +121,8 @@ const DatasetDetails: React.FC<Props> = ({
         </ButtonWrapper>
         {requireLayerName && (
           <LayerNamesWrapper>
-            <Text>Type the layers name you want to display: </Text>
-            <Input placeholder={"Layers Name"} onChange={handleLayersAddOnDataset} />
+            <Text>表示したいレイヤー名を入力してください。</Text>
+            <Input placeholder="レイヤー名" onChange={handleLayersAddOnDataset} />
           </LayerNamesWrapper>
         )}
       </TopWrapper>
