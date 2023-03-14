@@ -12,12 +12,12 @@ const displayStyleOptions = [
 ];
 
 const InfoboxStyle: React.FC<BaseFieldProps<"infoboxStyle">> = ({ value, editMode, onUpdate }) => {
-  const [displayStyleValue, setDisplayStyleValue] = useState<"attributes" | "description">(
+  const [displayStyleValue, setDisplayStyleValue] = useState<"attributes" | "description" | null>(
     value.displayStyle,
   );
 
   const handleEventTypeChange = useCallback(
-    (selectedProperty: "attributes" | "description") => {
+    (selectedProperty: "attributes" | "description" | null) => {
       setDisplayStyleValue(selectedProperty);
       onUpdate({
         ...value,
