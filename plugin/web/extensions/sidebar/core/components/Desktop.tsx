@@ -26,6 +26,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     templates,
     currentPage,
     loading,
+    buildingSearch,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,
@@ -36,7 +37,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
-    handleThreeDTilesSearch,
+    handleBuildingSearch,
     handleOverride,
   } = useHooks();
 
@@ -82,13 +83,14 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   inEditor={inEditor}
                   selectedDatasets={project.datasets}
                   templates={templates}
+                  buildingSearch={buildingSearch}
                   savingDataset={loading}
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
                   onDatasetRemoveAll={handleProjectDatasetRemoveAll}
                   onModalOpen={handleModalOpen}
-                  onThreeDTilesSearch={handleThreeDTilesSearch}
+                  onBuildingSearch={handleBuildingSearch}
                   onOverride={handleOverride}
                   onSceneUpdate={handleProjectSceneUpdate}
                 />

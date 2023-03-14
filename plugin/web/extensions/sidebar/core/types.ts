@@ -44,3 +44,20 @@ export type InfoboxField = {
   path: string;
   visible: boolean;
 };
+
+// ****** Building Search ******
+export type BuildingSearch = {
+  dataID?: string;
+  active?: boolean;
+  field?: {
+    id: string;
+    type: string;
+    override?: any;
+    updatedAt?: Date;
+  };
+  cleanseField?: {
+    id: string;
+    type: string;
+    updatedAt?: Date;
+  };
+}[];

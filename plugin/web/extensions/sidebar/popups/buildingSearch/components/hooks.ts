@@ -103,6 +103,7 @@ export default () => {
   const [showMatchingOnly, setShowMatchingOnly] = useState<boolean>(false);
   const [selected, setSelected] = useState<Result[]>([]);
   const [isSearching, setIsSearching] = useState<boolean>(false);
+  const isInitialize = useRef(true);
 
   const searchIndexes = useRef<SearchIndex[]>();
   const searchResults = useRef<SearchResults[]>();
@@ -132,60 +133,70 @@ export default () => {
 
   useEffect(() => {
     if (!dataset?.dataID) return;
-
-    const colorConditions: [string, string][] = [];
-
-    if (highlightAll && resultStyleCondition) {
-      colorConditions.push([resultStyleCondition, "color('red')"]);
+    if (isInitialize.current) {
+      isInitialize.current = false;
     } else {
-      if (selected) {
-        let selectedConditon = "";
-        selected.forEach(bldg => {
-          if (selectedConditon) selectedConditon += " || ";
-          selectedConditon += "${gml_id} === '" + bldg.gml_id + "'";
-        });
-        if (selectedConditon) {
-          colorConditions.push([selectedConditon, "color('red')"]);
+      const colorConditions: [string, string][] = [];
+
+      if (highlightAll && resultStyleCondition) {
+        colorConditions.push([resultStyleCondition, "color('red')"]);
+      } else {
+        if (selected) {
+          let selectedConditon = "";
+          selected.forEach(bldg => {
+            if (selectedConditon) selectedConditon += " || ";
+            selectedConditon += "${gml_id} === '" + bldg.gml_id + "'";
+          });
+          if (selectedConditon) {
+            colorConditions.push([selectedConditon, "color('red')"]);
+          }
         }
       }
-    }
 
-    colorConditions.push(["true", "color()"]);
+      colorConditions.push(["true", "color()"]);
 
-    const showConditions: [string, string][] = [];
+      const showConditions: [string, string][] = [];
 
-    if (showMatchingOnly) {
-      if (resultStyleCondition) {
-        showConditions.push([resultStyleCondition, "true"]);
+      if (showMatchingOnly) {
+        if (resultStyleCondition) {
+          showConditions.push([resultStyleCondition, "true"]);
+        }
+        showConditions.push(["true", "false"]);
+      } else {
+        showConditions.push(["true", "true"]);
       }
-      showConditions.push(["true", "false"]);
-    } else {
-      showConditions.push(["true", "true"]);
+
+      const styles = {
+        "3dtiles": {
+          color: {
+            expression: {
+              conditions: colorConditions,
+            },
+          },
+          show: {
+            expression: {
+              conditions: showConditions,
+            },
+          },
+        },
+      };
+
+      postMsg({
+        action: "buildingSearchOverride",
+        payload: {
+          dataID: dataset.dataID,
+          overrides: styles,
+        },
+      });
     }
-
-    const styles = {
-      "3dtiles": {
-        color: {
-          expression: {
-            conditions: colorConditions,
-          },
-        },
-        show: {
-          expression: {
-            conditions: showConditions,
-          },
-        },
-      },
-    };
-
-    postMsg({
-      action: "updateDatasetInScene",
-      payload: {
-        dataID: dataset.dataID,
-        overrides: styles,
-      },
-    });
-  }, [selected, resultStyleCondition, dataset?.dataID, highlightAll, showMatchingOnly]);
+  }, [
+    isInitialize,
+    selected,
+    resultStyleCondition,
+    dataset?.dataID,
+    highlightAll,
+    showMatchingOnly,
+  ]);
 
   const conditionApply = useCallback(() => {
     searchResults.current = [];
@@ -303,6 +314,7 @@ export default () => {
       setSelected([]);
       setActiveTab("condition");
       setConditionsState("loading");
+      isInitialize.current = true;
 
       if (!rawDatasetData.searchIndex) {
         setConditionsState("empty");

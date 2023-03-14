@@ -1,4 +1,4 @@
-import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
+import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
 import { getActiveFieldIDs, getDefaultGroup } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useState } from "react";
@@ -11,12 +11,14 @@ export default ({
   dataset,
   inEditor,
   templates,
+  buildingSearch,
   onDatasetUpdate,
   onOverride,
 }: {
   dataset: DataCatalogItem;
   inEditor?: boolean;
   templates?: Template[];
+  buildingSearch?: BuildingSearch;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
 }) => {
@@ -36,10 +38,11 @@ export default ({
   }, [selectedGroup, dataset.components]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (activeComponentIDs) {
-      onOverride?.(dataset.dataID, activeComponentIDs);
+    const buildingSearchActive = buildingSearch?.find(b => b.dataID === dataset.dataID)?.active;
+    if (activeComponentIDs || buildingSearchActive) {
+      onOverride?.(dataset.dataID, [...(activeComponentIDs ?? [])]);
     }
-  }, [activeComponentIDs]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeComponentIDs, buildingSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCurrentGroupUpdate = useCallback(
     (fieldGroupID?: string) => {

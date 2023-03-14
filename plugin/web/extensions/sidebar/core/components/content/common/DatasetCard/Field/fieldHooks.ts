@@ -332,4 +332,10 @@ export const cleanseOverrides: { [key: string]: any } = {
       show: true,
     },
   },
+  search: {
+    "3dtiles": {
+      show: true,
+      color: "white",
+    },
+  },
 };

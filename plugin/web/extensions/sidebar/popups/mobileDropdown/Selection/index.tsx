@@ -1,5 +1,5 @@
 import SelectionComponent from "@web/extensions/sidebar/core/components/content/Selection";
-import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, BuildingSearch } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
@@ -10,22 +10,24 @@ import PopupItem from "../sharedComponents/PopupItem";
 type Props = {
   selectedDatasets: DataCatalogItem[];
   savingDataset: boolean;
+  buildingSearch?: BuildingSearch;
   onDatasetSave: (datasetId: string) => void;
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
-  onThreeDTilesSearch: (id: string) => void;
+  onBuildingSearch: (id: string) => void;
   onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
 const Selection: React.FC<Props> = ({
   selectedDatasets,
   savingDataset,
+  buildingSearch,
   onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
-  onThreeDTilesSearch,
+  onBuildingSearch,
   onSceneUpdate,
 }) => {
   useEffect(() => {
@@ -40,11 +42,12 @@ const Selection: React.FC<Props> = ({
       <SelectionComponent
         selectedDatasets={selectedDatasets}
         savingDataset={savingDataset}
+        buildingSearch={buildingSearch}
         onDatasetSave={onDatasetSave}
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}
-        onThreeDTilesSearch={onThreeDTilesSearch}
+        onBuildingSearch={onBuildingSearch}
         onSceneUpdate={onSceneUpdate}
       />
     </Wrapper>

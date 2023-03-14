@@ -18,6 +18,7 @@ const MobileDropdown: React.FC = () => {
     catalog,
     project,
     loading,
+    buildingSearch,
     reearthURL,
     backendURL,
     backendProjectName,
@@ -27,7 +28,7 @@ const MobileDropdown: React.FC = () => {
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
-    handleThreeDTilesSearch,
+    handleBuildingSearch,
   } = useHooks();
 
   const changeTab = useCallback(
@@ -86,11 +87,12 @@ const MobileDropdown: React.FC = () => {
             <Selection
               selectedDatasets={project.datasets}
               savingDataset={loading}
+              buildingSearch={buildingSearch}
               onDatasetSave={handleDatasetSave}
               onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
               onDatasetRemoveAll={handleProjectDatasetRemoveAll}
-              onThreeDTilesSearch={handleThreeDTilesSearch}
+              onBuildingSearch={handleBuildingSearch}
               onSceneUpdate={handleProjectSceneUpdate}
             />
           ),

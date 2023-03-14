@@ -1,4 +1,4 @@
-import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
+import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
@@ -31,24 +31,26 @@ type BaseFieldType = Partial<DataCatalogItem> & {
 export type Props = {
   dataset: DataCatalogItem;
   templates?: Template[];
+  buildingSearch?: BuildingSearch;
   inEditor?: boolean;
   savingDataset: boolean;
   onDatasetSave: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
-  onThreeDTilesSearch: (id: string) => void;
+  onBuildingSearch: (id: string) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
   onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 const DatasetCard: React.FC<Props> = ({
   dataset,
   templates,
+  buildingSearch,
   inEditor,
   savingDataset,
   onDatasetSave,
   onDatasetRemove,
   onDatasetUpdate,
-  onThreeDTilesSearch,
+  onBuildingSearch,
   onOverride,
   onSceneUpdate,
 }) => {
@@ -67,6 +69,7 @@ const DatasetCard: React.FC<Props> = ({
     dataset,
     inEditor,
     templates,
+    buildingSearch,
     onDatasetUpdate,
     onOverride,
   });
@@ -174,13 +177,13 @@ const DatasetCard: React.FC<Props> = ({
               icon: "search",
               value: 1,
               onClick: () => {
-                onThreeDTilesSearch(dataset.dataID);
+                onBuildingSearch(dataset.dataID);
               },
             },
           ]
         : []),
     ],
-    [currentTab, dataset, onDatasetRemove, onThreeDTilesSearch],
+    [currentTab, dataset, onDatasetRemove, onBuildingSearch],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {

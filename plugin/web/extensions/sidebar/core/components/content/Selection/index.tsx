@@ -3,7 +3,7 @@ import { ReearthApi } from "@web/extensions/sidebar/types";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
-import { DataCatalogItem, Template } from "../../../types";
+import { BuildingSearch, DataCatalogItem, Template } from "../../../types";
 import DatasetCard from "../common/DatasetCard";
 
 export type Props = {
@@ -11,13 +11,14 @@ export type Props = {
   inEditor?: boolean;
   selectedDatasets?: DataCatalogItem[];
   templates?: Template[];
+  buildingSearch?: BuildingSearch;
   savingDataset: boolean;
   onDatasetSave: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onDatasetRemove: (dataID: string) => void;
   onDatasetRemoveAll: () => void;
   onModalOpen?: () => void;
-  onThreeDTilesSearch: (id: string) => void;
+  onBuildingSearch: (id: string) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
   onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
@@ -27,13 +28,14 @@ const Selection: React.FC<Props> = ({
   inEditor,
   selectedDatasets,
   templates,
+  buildingSearch,
   savingDataset,
   onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
   onModalOpen,
-  onThreeDTilesSearch,
+  onBuildingSearch,
   onOverride,
   onSceneUpdate,
 }) => {
@@ -52,12 +54,13 @@ const Selection: React.FC<Props> = ({
               key={d.id}
               dataset={d}
               templates={templates}
+              buildingSearch={buildingSearch}
               savingDataset={savingDataset}
               inEditor={inEditor}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}
               onDatasetRemove={onDatasetRemove}
-              onThreeDTilesSearch={onThreeDTilesSearch}
+              onBuildingSearch={onBuildingSearch}
               onOverride={onOverride}
               onSceneUpdate={onSceneUpdate}
             />

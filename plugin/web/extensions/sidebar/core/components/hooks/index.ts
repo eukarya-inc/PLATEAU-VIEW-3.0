@@ -1,11 +1,11 @@
 import useDatasetHooks from "@web/extensions/sidebar/core/components/hooks/datasetHooks";
 import useProjectHooks from "@web/extensions/sidebar/core/components/hooks/projectHooks";
 import useTemplateHooks from "@web/extensions/sidebar/core/components/hooks/templateHooks";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { postMsg, generateID } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getDataCatalog, RawDataCatalogItem } from "../../../modals/datacatalog/api/api";
-import { Data, Template } from "../../types";
+import { BuildingSearch, Data, Template } from "../../types";
 import { Pages } from "../Header";
 
 import { handleDataCatalogProcessing, updateExtended } from "./utils";
@@ -20,6 +20,7 @@ export default () => {
   const [backendProjectName, setBackendProjectName] = useState<string>();
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
   const [publishToGeospatial, setPublishToGeospatial] = useState(false);
+  const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
 
   const [data, setData] = useState<Data[]>();
 
@@ -78,6 +79,7 @@ export default () => {
     backendURL,
     backendProjectName,
     processedCatalog,
+    buildingSearch,
   });
 
   const { handleDatasetUpdate, handleDatasetSave, handleDatasetPublish } = useDatasetHooks({
@@ -157,6 +159,10 @@ export default () => {
         handleInfoboxFieldsFetch(e.data.payload);
       } else if (e.data.action === "infoboxFieldsSave") {
         handleInfoboxFieldsSave(e.data.payload);
+      } else if (e.data.action === "buildingSearchOverride") {
+        handleBuildingSearchOverride(e.data.payload);
+      } else if (e.data.action === "buildingSearchClose") {
+        handleBuildingSearchClose(e.data.paylaod);
       }
     };
     addEventListener("message", eventListenerCallback);
@@ -171,12 +177,12 @@ export default () => {
     setCurrentPage(p);
   }, []);
 
-  // ThreeDTilesSearch
-  const handleThreeDTilesSearch = useCallback(
+  // ****************************************
+  // Building Search
+  const handleBuildingSearch = useCallback(
     (dataID: string) => {
       const plateauItem = catalogData.find(pd => pd.id === dataID);
       const searchIndex = plateauItem?.["search_index"];
-
       postMsg({
         action: "buildingSearchOpen",
         payload: {
@@ -188,6 +194,49 @@ export default () => {
     },
     [catalogData],
   );
+
+  const handleBuildingSearchOverride = useCallback(
+    ({ dataID, overrides }: { dataID: string; overrides: any }) => {
+      setBuildingSearch(bs => {
+        const id = generateID();
+        const fieldItem = {
+          dataID,
+          active: true,
+          field: {
+            id,
+            type: "search",
+            updatedAt: new Date(),
+            override: overrides,
+          },
+          cleanseField: {
+            id,
+            type: "search",
+            updatedAt: new Date(),
+          },
+        };
+        const target = bs.find(b => b.dataID === dataID);
+        if (target) {
+          target.active = true;
+          target.field = fieldItem.field;
+          target.cleanseField = fieldItem.cleanseField;
+        } else {
+          bs.push(fieldItem);
+        }
+        return [...bs];
+      });
+    },
+    [],
+  );
+
+  const handleBuildingSearchClose = useCallback(({ dataID }: { dataID: string }) => {
+    setBuildingSearch(bs => {
+      const target = bs.find(b => b.dataID === dataID);
+      if (target) {
+        target.active = false;
+      }
+      return [...bs];
+    });
+  }, []);
 
   const handleModalOpen = useCallback(() => {
     postMsg({
@@ -205,6 +254,7 @@ export default () => {
     templates: fieldTemplates,
     currentPage,
     loading,
+    buildingSearch,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,
@@ -216,7 +266,7 @@ export default () => {
     handleProjectDatasetRemoveAll,
     handleProjectSceneUpdate,
     handleModalOpen,
-    handleThreeDTilesSearch,
+    handleBuildingSearch,
     handleOverride,
   };
 };
