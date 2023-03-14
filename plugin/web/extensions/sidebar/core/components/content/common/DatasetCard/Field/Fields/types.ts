@@ -17,6 +17,7 @@ export const generalFieldName = {
   description: "説明",
   template: "テンプレート",
   eventField: "イベント",
+  infoboxStyle: "インフォボックス スタイル",
 };
 
 export const pointFieldName = {
@@ -75,6 +76,7 @@ export type FieldComponent =
   | SwitchDataset
   | SwitchField
   | EventField
+  | InfoboxStyle
   | Template
   | PointColor
   | PointColorGradient
@@ -204,6 +206,10 @@ type EventField = FieldBase<"eventField"> & {
   urlType: "manual" | "fromData";
   url?: string;
   field?: string;
+};
+
+type InfoboxStyle = FieldBase<"infoboxStyle"> & {
+  displayStyle: "attributes" | "description";
 };
 
 type PointColor = FieldBase<"pointColor"> & {
@@ -343,6 +349,7 @@ export type Fields = {
   switchDataset: SwitchDataset;
   switchField: SwitchField;
   eventField: EventField;
+  infoboxStyle: InfoboxStyle;
   // point
   pointColor: PointColor;
   pointColorGradient: PointColorGradient;

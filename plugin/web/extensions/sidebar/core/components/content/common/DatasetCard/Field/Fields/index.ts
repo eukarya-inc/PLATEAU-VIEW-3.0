@@ -12,6 +12,7 @@ import CurrentTime from "./general/CurrentTime";
 import Description from "./general/Description";
 import EventField from "./general/EventField";
 import IdealZoom from "./general/IdealZoom";
+import InfoboxStyle from "./general/InfoboxStyle";
 import Legend from "./general/Legend";
 import Realtime from "./general/Realtime";
 import Story from "./general/Story";
@@ -56,6 +57,7 @@ const fields: Fields<FieldComponent> = {
   switchDataset: { Component: SwitchDataset, hasUI: true },
   switchField: { Component: SwitchField, hasUI: true },
   eventField: { Component: EventField, hasUI: false },
+  infoboxStyle: { Component: InfoboxStyle, hasUI: false },
   // point
   pointColor: { Component: PointColor, hasUI: false },
   pointColorGradient: { Component: PointColorGradient, hasUI: false },
