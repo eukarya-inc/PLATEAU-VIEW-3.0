@@ -26,6 +26,21 @@ export const INDEPENDENT_COLOR_TYPE = {
   },
 };
 
+export const LAND_SLIDE_RISK_FIELD = {
+  steepSlope: {
+    id: "steepSlope",
+    label: "急傾斜による塗分け",
+  },
+  mudflow: {
+    id: "mudflow",
+    label: "土石流による塗分け",
+  },
+  landslide: {
+    id: "landslide",
+    label: "地すべりによる塗分け",
+  },
+};
+
 export const LEGEND_IMAGES: Record<"floods", string> = {
   floods: "https://d2jfi34fqvxlsc.cloudfront.net/main/legends/waterfloodrank/2.png",
 };

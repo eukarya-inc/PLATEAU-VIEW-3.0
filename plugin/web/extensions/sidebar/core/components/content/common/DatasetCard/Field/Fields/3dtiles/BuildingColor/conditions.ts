@@ -5,9 +5,10 @@ import {
   defaultConditionalNumber,
   equalNumber,
   equalString,
+  variable,
 } from "../utils";
 
-import { INDEPENDENT_COLOR_TYPE } from "./constants";
+import { INDEPENDENT_COLOR_TYPE, LAND_SLIDE_RISK_FIELD } from "./constants";
 
 type Condition = {
   condition: string;
@@ -254,6 +255,95 @@ const FIREPROOF_CONDITIONS: Condition[] = [
   DEFAULT_CONDITION,
 ];
 
+const LAND_SLIDE_RISK_CODES = [
+  "1", // 急傾斜地の崩壊
+  "2", // 土石流
+  "3", // 地すべり
+];
+const LAND_SLIDE_RISK_TYPE_CODES = [
+  "1", // 警戒区域
+  "2", // 特別警戒区域
+  "3", // 警戒区域(指定前)
+  "4", // 特別警戒区域(指定前)
+];
+
+// The code of land slide risk has 3 types, and `BuildingLandSlideRiskAttribute` property has array, so we need to check 3 items.
+const makeLandSlideRiskCondition = (
+  propertyKey: string,
+  riskCode: string,
+  riskTypeCodes: string[],
+) =>
+  LAND_SLIDE_RISK_CODES.reduce((res, _code, i) => {
+    const next = res ? `(${res}) || ` : "";
+    return `${next}${variable(propertyKey)} !== undefined && ${variable(
+      `${propertyKey}[${i}]`,
+    )} !== undefined && ${equalString(
+      `${propertyKey}[${i}]["uro:description_code"]`,
+      riskCode,
+    )} && (${riskTypeCodes
+      .map(code => equalString(`${propertyKey}[${i}]["uro:areaType_code"]`, code))
+      .join("||")})`;
+  }, "");
+
+const conditionalLandSlideRisk = "attributes['uro:BuildingLandSlideRiskAttribute']";
+const STEEP_SLOPE_RISK_CONDITIONS: Condition[] = [
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[0], [
+      LAND_SLIDE_RISK_TYPE_CODES[0],
+      LAND_SLIDE_RISK_TYPE_CODES[2],
+    ]),
+    color: "rgba(251, 104, 76, 1)",
+    label: "急傾斜地の崩落: 特別警戒区域",
+  },
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[0], [
+      LAND_SLIDE_RISK_TYPE_CODES[1],
+      LAND_SLIDE_RISK_TYPE_CODES[3],
+    ]),
+    color: "rgba(255, 237, 76, 1)",
+    label: "急傾斜地の崩落: 警戒区域",
+  },
+  DEFAULT_CONDITION,
+];
+const MUDFLOW_RISK_CONDITIONS: Condition[] = [
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[1], [
+      LAND_SLIDE_RISK_TYPE_CODES[0],
+      LAND_SLIDE_RISK_TYPE_CODES[2],
+    ]),
+    color: "rgba(192, 76, 99, 1)",
+    label: "土石流: 特別警戒区域",
+  },
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[1], [
+      LAND_SLIDE_RISK_TYPE_CODES[1],
+      LAND_SLIDE_RISK_TYPE_CODES[3],
+    ]),
+    color: "rgba(237, 216, 111, 1)",
+    label: "土石流: 警戒区域",
+  },
+  DEFAULT_CONDITION,
+];
+const LANDSLIDE_RISK_CONDITIONS: Condition[] = [
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[2], [
+      LAND_SLIDE_RISK_TYPE_CODES[0],
+      LAND_SLIDE_RISK_TYPE_CODES[2],
+    ]),
+    color: "rgba(202, 76, 149, 1)",
+    label: "地すべり: 特別警戒区域",
+  },
+  {
+    condition: makeLandSlideRiskCondition(conditionalLandSlideRisk, LAND_SLIDE_RISK_CODES[2], [
+      LAND_SLIDE_RISK_TYPE_CODES[1],
+      LAND_SLIDE_RISK_TYPE_CODES[3],
+    ]),
+    color: "rgba(255, 183, 76, 1)",
+    label: "地すべり: 警戒区域",
+  },
+  DEFAULT_CONDITION,
+];
+
 export const makeSelectedFloodCondition = (
   propertyName: string | undefined,
 ): [condition: string, color: string][] | undefined =>
@@ -272,7 +362,10 @@ export const makeSelectedFloodCondition = (
     : [[DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color]];
 
 export const COLOR_TYPE_CONDITIONS: {
-  [K in keyof typeof INDEPENDENT_COLOR_TYPE | "none"]: Condition[];
+  [K in
+    | keyof typeof INDEPENDENT_COLOR_TYPE
+    | "none"
+    | keyof typeof LAND_SLIDE_RISK_FIELD]: Condition[];
 } = {
   none: [DEFAULT_CONDITION],
   height: HEIGHT_CONDITIONS,
@@ -280,4 +373,7 @@ export const COLOR_TYPE_CONDITIONS: {
   structure: STRUCTURE_CONDITIONS,
   structureType: STRUCTURE_TYPE_CONDITIONS,
   fireproof: FIREPROOF_CONDITIONS,
+  steepSlope: STEEP_SLOPE_RISK_CONDITIONS,
+  mudflow: MUDFLOW_RISK_CONDITIONS,
+  landslide: LANDSLIDE_RISK_CONDITIONS,
 };

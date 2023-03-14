@@ -1,12 +1,14 @@
 export const defaultConditionalNumber = (prop: string, defaultValue?: number) =>
-  `((\${${prop}} === "" || \${${prop}} === null || isNaN(Number(\${${prop}}))) ? ${
-    defaultValue || 1
-  } : Number(\${${prop}}))`;
+  `((${variable(prop)} === "" || ${variable(prop)} === null || isNaN(Number(${variable(
+    prop,
+  )}))) ? ${defaultValue || 1} : Number(${variable(prop)}))`;
 export const compareRange = (conditionalValue: string, range: [from: number, to: number]) =>
   `(${conditionalValue} >= ${range?.[0]} && ${conditionalValue} <= ${range?.[1]})`;
 
 export const compareGreaterThan = (conditionalValue: string, num: number) =>
   `(${conditionalValue} >= ${num})`;
 
-export const equalString = (prop: string, value: string) => `(\${${prop}} === "${value}")`;
-export const equalNumber = (prop: string, value: number) => `(\${${prop}} === ${value})`;
+export const equalString = (prop: string, value: string) => `(${variable(prop)} === "${value}")`;
+export const equalNumber = (prop: string, value: number) => `(${variable(prop)} === ${value})`;
+
+export const variable = (prop: string) => `\${${prop}}`;

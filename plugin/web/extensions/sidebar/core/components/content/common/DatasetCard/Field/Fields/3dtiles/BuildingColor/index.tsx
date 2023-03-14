@@ -4,7 +4,7 @@ import { styled } from "@web/theme";
 import { BaseFieldProps } from "../../types";
 
 import { COLOR_TYPE_CONDITIONS } from "./conditions";
-import { LEGEND_IMAGES } from "./constants";
+import { LAND_SLIDE_RISK_FIELD, LEGEND_IMAGES } from "./constants";
 import useHooks from "./hooks";
 
 const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
@@ -13,7 +13,7 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
   editMode,
   onUpdate,
 }) => {
-  const { options, floods, independentColorTypes, handleUpdateColorType } = useHooks({
+  const { options, floods, initialized, independentColorTypes, handleUpdateColorType } = useHooks({
     value,
     dataID,
     onUpdate,
@@ -25,37 +25,48 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
         <StyledRadio value="none">
           <Label>色分けなし</Label>
         </StyledRadio>
-        {independentColorTypes.map(type => (
-          <StyledRadio key={type.id} value={type.id}>
-            <Label>{type.label}</Label>
-          </StyledRadio>
-        ))}
-        {floods.map(flood => (
-          <StyledRadio key={flood.id} value={flood.id}>
-            <Label>{flood.label}</Label>
-          </StyledRadio>
-        ))}
-      </Radio.Group>
-      <LegendContainer>
-        {options.colorType.startsWith("floods") ? (
-          <LegendImage src={LEGEND_IMAGES.floods} />
-        ) : options.colorType && options.colorType !== "none" ? (
+        {initialized && (
           <>
-            <LegendLabel>凡例</LegendLabel>
-            <LegendList>
-              {COLOR_TYPE_CONDITIONS[options.colorType as keyof typeof COLOR_TYPE_CONDITIONS].map(
-                cond =>
-                  !cond.default && (
-                    <LegendItem key={cond.condition}>
-                      <ColorBlock color={cond.color} />
-                      <LegendText>{cond.label}</LegendText>
-                    </LegendItem>
-                  ),
-              )}
-            </LegendList>
+            {independentColorTypes.map(type => (
+              <StyledRadio key={type.id} value={type.id}>
+                <Label>{type.label}</Label>
+              </StyledRadio>
+            ))}
+            {floods.map(flood => (
+              <StyledRadio key={flood.id} value={flood.id}>
+                <Label>{flood.label}</Label>
+              </StyledRadio>
+            ))}
+            {Object.entries(LAND_SLIDE_RISK_FIELD).map(([, val]) => (
+              <StyledRadio key={value.id} value={val.id}>
+                <Label>{val.label}</Label>
+              </StyledRadio>
+            ))}
           </>
-        ) : undefined}
-      </LegendContainer>
+        )}
+      </Radio.Group>
+      {initialized && (
+        <LegendContainer>
+          {options.colorType.startsWith("floods") ? (
+            <LegendImage src={LEGEND_IMAGES.floods} />
+          ) : options.colorType && options.colorType !== "none" ? (
+            <>
+              <LegendLabel>凡例</LegendLabel>
+              <LegendList>
+                {COLOR_TYPE_CONDITIONS[options.colorType as keyof typeof COLOR_TYPE_CONDITIONS].map(
+                  cond =>
+                    !cond.default && (
+                      <LegendItem key={cond.condition}>
+                        <ColorBlock color={cond.color} />
+                        <LegendText>{cond.label}</LegendText>
+                      </LegendItem>
+                    ),
+                )}
+              </LegendList>
+            </>
+          ) : undefined}
+        </LegendContainer>
+      )}
     </>
   );
 };

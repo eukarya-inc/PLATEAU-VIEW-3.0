@@ -112,6 +112,7 @@ const useHooks = ({
   useBuildingColor({ options, dataID, floods, initialized, onUpdate: handleUpdate });
 
   return {
+    initialized,
     options,
     independentColorTypes,
     floods,
