@@ -20,7 +20,10 @@ const FLOOD_RANK_CONDITIONS: Condition[] = [
   DEFAULT_CONDITION,
 ];
 
-export const CONDITIONS: Record<BaseFieldProps<"floodColor">["value"]["colorType"], Condition[]> = {
+export const CONDITIONS: Record<
+  BaseFieldProps<"floodColor">["value"]["userSettings"]["colorType"],
+  Condition[]
+> = {
   water: [["true", `rgba(135, 206, 235, ${DEFAULT_TRANSPARENCY})`]],
   rank: FLOOD_RANK_CONDITIONS,
 };

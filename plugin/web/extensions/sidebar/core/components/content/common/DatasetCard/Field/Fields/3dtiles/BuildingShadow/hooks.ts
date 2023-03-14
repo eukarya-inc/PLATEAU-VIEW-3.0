@@ -4,7 +4,7 @@ import { BaseFieldProps } from "../../types";
 
 import { useBuildingShadow } from "./useBuildingShadow";
 
-type OptionsState = Omit<BaseFieldProps<"buildingShadow">["value"], "id" | "group" | "type">;
+type OptionsState = BaseFieldProps<"buildingShadow">["value"]["userSettings"];
 
 const useHooks = ({
   value,
@@ -12,7 +12,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingShadow">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    shadow: value.shadow,
+    shadow: value.userSettings.shadow,
   });
 
   const handleUpdate = useCallback(

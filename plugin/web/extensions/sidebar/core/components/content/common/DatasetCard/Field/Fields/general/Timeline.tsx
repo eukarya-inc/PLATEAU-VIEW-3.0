@@ -17,7 +17,7 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
   const shouldUpdate = useRef(true);
 
   const handleUpdate = useCallback(() => {
-    if (value.timeBasedDisplay) {
+    if (value.userSettings.timeBasedDisplay) {
       onUpdate({
         ...value,
         timeFieldName,
@@ -57,7 +57,12 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
   }, [handleUpdate, debouncedUpdater, timeFieldName, value.timeFieldName]);
 
   const handleTimeBasedDisplay = useCallback(() => {
-    onUpdate({ ...value, timeBasedDisplay: !value.timeBasedDisplay });
+    onUpdate({
+      ...value,
+      userSettings: {
+        timeBasedDisplay: !value.userSettings.timeBasedDisplay,
+      },
+    });
     shouldUpdate.current = true;
   }, [value, onUpdate]);
 
@@ -68,20 +73,18 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
       value={<TextInput value={timeFieldName} onChange={handleTimeFieldName} />}
     />
   ) : (
-    <FieldWrapper>
+    <div>
       <Checkbox
         style={{ margin: 0 }}
-        checked={value.timeBasedDisplay}
+        checked={value.userSettings.timeBasedDisplay}
         onChange={handleTimeBasedDisplay}>
         <Text>時刻ベースのデータを表示</Text>
       </Checkbox>
-    </FieldWrapper>
+    </div>
   );
 };
 
 export default Timeline;
-
-const FieldWrapper = styled.div``;
 
 const Text = styled.p`
   margin: 0;

@@ -20,12 +20,8 @@ const SwitchField: React.FC<BaseFieldProps<"switchField">> = ({
 }) => {
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
   const [targetProperty, setTargetProperty] = useState(value.field); // ie 種類
-  const [selectedProperty, selectProperty] = useState(value.selected); // ie 病院
+  const [selectedProperty, selectProperty] = useState(value.userSettings.selected); // ie 病院
   const [properties, setProperties] = useState<{ [key: string]: any }>();
-
-  useEffect(() => {
-    console.log("properties", properties);
-  }, [properties]);
 
   useEffect(() => {
     (async () => {
@@ -111,7 +107,9 @@ const SwitchField: React.FC<BaseFieldProps<"switchField">> = ({
       selectProperty(propertyKey);
       onUpdate({
         ...value,
-        selected: propertyKey,
+        userSettings: {
+          selected: propertyKey,
+        },
         override: {
           ["3dtiles"]: {
             show: {

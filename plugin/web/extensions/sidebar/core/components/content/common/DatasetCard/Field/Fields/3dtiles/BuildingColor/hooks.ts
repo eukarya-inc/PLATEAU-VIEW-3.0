@@ -7,7 +7,7 @@ import { BaseFieldProps } from "../../types";
 import { INDEPENDENT_COLOR_TYPE } from "./constants";
 import { useBuildingColor } from "./useBuildingColor";
 
-type OptionsState = Omit<BaseFieldProps<"buildingColor">["value"], "id" | "group" | "type">;
+type OptionsState = BaseFieldProps<"buildingColor">["value"]["userSettings"];
 
 type RadioItem = { id: string; label: string; featurePropertyName: string };
 
@@ -17,7 +17,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingColor">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    colorType: value.colorType,
+    colorType: value.userSettings.colorType,
   });
   const [independentColorTypes, setIndependentColorTypes] = useState<RadioItem[]>([]);
   const [floods, setFloods] = useState<RadioItem[]>([]);

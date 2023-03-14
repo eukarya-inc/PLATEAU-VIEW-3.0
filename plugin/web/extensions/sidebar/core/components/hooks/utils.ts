@@ -9,7 +9,15 @@ export const convertToData = (item: DataCatalogItem): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
-    components: item.components,
+    components: item.components?.map((c: any) => {
+      const newComp = Object.assign({}, c);
+      if (newComp.type === "template" && newComp.components) {
+        delete newComp.components;
+      } else if (newComp.userSettings) {
+        delete newComp.userSettings;
+      }
+      return newComp;
+    }),
   };
 };
 

@@ -16,7 +16,7 @@ export const useBuildingColor = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingColor">, "dataID"> & {
   initialized: boolean;
-  options: Omit<BaseFieldProps<"buildingColor">["value"], "id" | "group" | "type">;
+  options: BaseFieldProps<"buildingColor">["value"]["userSettings"];
   floods: { id: string; label: string; featurePropertyName: string }[];
   onUpdate: (property: any) => void;
 }) => {

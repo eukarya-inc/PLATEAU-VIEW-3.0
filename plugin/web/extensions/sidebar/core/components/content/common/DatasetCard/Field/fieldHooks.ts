@@ -41,11 +41,11 @@ export default ({
       },
       realtime: {
         name: fieldName["realtime"],
-        onClick: onFieldAdd({ updateInterval: 30 }),
+        onClick: onFieldAdd({ updateInterval: 30, userSettings: {} }),
       },
       timeline: {
         name: fieldName["timeline"],
-        onClick: onFieldAdd({ timeBasedDisplay: true, timeFieldName: "" }),
+        onClick: onFieldAdd({ timeFieldName: "", userSettings: { timeBasedDisplay: true } }),
       },
       currentTime: {
         name: fieldName["currentTime"],
@@ -67,16 +67,23 @@ export default ({
         name: fieldName["switchGroup"],
         onClick: onFieldAdd({
           title: "Switch Group",
-          groups: [{ id: generateID(), title: "新グループ1", fieldGroupID: fieldGroups[0].id }],
+          groups: [
+            {
+              id: generateID(),
+              title: "新グループ1",
+              fieldGroupID: fieldGroups[0].id,
+              userSettings: {},
+            },
+          ],
         }),
       },
       switchDataset: {
         name: fieldName["switchDataset"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({ userSettings: {} }),
       },
       switchField: {
         name: fieldName["switchField"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({ userSettings: {} }),
       },
       template: {
         name: fieldName["template"],
@@ -178,44 +185,38 @@ export default ({
     return {
       buildingColor: {
         name: fieldName["buildingColor"],
-        onClick: onFieldAdd({
-          colorType: "none",
-        }),
+        onClick: onFieldAdd({ userSettings: { colorType: "none" } }),
       },
       buildingFilter: {
         name: fieldName["buildingFilter"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({ userSettings: {} }),
       },
       buildingShadow: {
         name: fieldName["buildingShadow"],
-        onClick: onFieldAdd({
-          shadow: "disabled",
-        }),
+        onClick: onFieldAdd({ userSettings: { shadow: "disabled" } }),
       },
       buildingTransparency: {
         name: fieldName["buildingTransparency"],
-        onClick: onFieldAdd({
-          transparency: 100,
-        }),
+        onClick: onFieldAdd({ userSettings: { transparency: 100 } }),
       },
       clipping: {
         name: fieldName["clipping"],
         onClick: onFieldAdd({
-          enabled: false,
-          show: false,
-          aboveGroundOnly: false,
-          direction: "inside",
+          userSettings: {
+            enabled: false,
+            show: false,
+            aboveGroundOnly: false,
+            direction: "inside",
+          },
         }),
       },
       floodColor: {
         name: fieldName["floodColor"],
-        onClick: onFieldAdd({
-          colorType: "water",
-        }),
+        onClick: onFieldAdd({ userSettings: { colorType: "water" } }),
       },
       floodFilter: {
         name: fieldName["floodFilter"],
-        onClick: onFieldAdd({}),
+        onClick: onFieldAdd({ userSettings: {} }),
       },
     };
   }, [onFieldAdd]);
@@ -237,6 +238,8 @@ export default ({
 
 export const cleanseOverrides: { [key: string]: any } = {
   eventField: { events: undefined },
+  realtime: { data: { updateInterval: undefined } },
+  timeline: { data: { time: undefined } },
   infoboxStyle: {
     infobox: {
       property: {

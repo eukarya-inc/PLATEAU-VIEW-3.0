@@ -7,7 +7,7 @@ export const useClippingBox = ({
   dataID,
   onUpdate,
 }: Pick<BaseFieldProps<"clipping">, "dataID"> & {
-  options: Omit<BaseFieldProps<"clipping">["value"], "id" | "group" | "type">;
+  options: Omit<BaseFieldProps<"clipping">["value"], "id" | "group" | "type">["userSettings"];
   onUpdate: (tilesetProperty: any, boxProperty: any) => void;
 }) => {
   const onUpdateRef = useRef(onUpdate);
@@ -20,16 +20,18 @@ export const useClippingBox = ({
       await renderTileset(
         {
           dataID,
-          keepBoxAboveGround: options.aboveGroundOnly,
-          show: options.show,
-          direction: options.direction,
-          enabled: options.enabled,
+          userSettings: {
+            keepBoxAboveGround: options.aboveGroundOnly,
+            show: options.show,
+            direction: options.direction,
+            enabled: options.enabled,
+          },
         },
         onUpdateRef,
       );
     };
     render();
-  }, [options.aboveGroundOnly, options.direction, options.enabled, options.show, dataID]);
+  }, [options.aboveGroundOnly, options.show, options.direction, options.enabled, dataID]);
 };
 
 const reearth = (globalThis.parent as any).reearth;
@@ -51,10 +53,12 @@ type BoxState = {
 
 type ClippingBoxState = {
   dataID: string | undefined;
-  keepBoxAboveGround: boolean;
-  direction: "inside" | "outside";
-  show: boolean;
-  enabled: boolean;
+  userSettings: {
+    keepBoxAboveGround: boolean;
+    direction: "inside" | "outside";
+    show: boolean;
+    enabled: boolean;
+  };
 };
 
 const renderTileset = async (
@@ -110,25 +114,25 @@ const renderTileset = async (
   const updateBox = () => {
     onUpdateRef.current?.(
       {
-        experimental_clipping: state.enabled
+        experimental_clipping: state.userSettings.enabled
           ? {
               ...boxProperties,
               coordinates: [location.lng, location.lat, location.height],
-              visible: state.show,
-              direction: state.direction,
-              allowEnterGround: !state.keepBoxAboveGround,
+              visible: state.userSettings.show,
+              direction: state.userSettings.direction,
+              allowEnterGround: !state.userSettings.keepBoxAboveGround,
               useBuiltinBox: true,
             }
           : undefined,
       },
-      state.enabled
+      state.userSettings.enabled
         ? {
             ...boxProperties,
             cursor: boxState.cursor,
             activeBox: boxState.activeBox,
             activeScalePointIndex: boxState.activeScalePointIndex,
             activeEdgeIndex: boxState.activeEdgeIndex,
-            allowEnterGround: !state.keepBoxAboveGround,
+            allowEnterGround: !state.userSettings.keepBoxAboveGround,
           }
         : undefined,
     );

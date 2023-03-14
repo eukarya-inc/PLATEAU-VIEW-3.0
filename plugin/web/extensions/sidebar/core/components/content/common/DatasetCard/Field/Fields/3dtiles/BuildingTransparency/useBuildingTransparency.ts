@@ -11,7 +11,7 @@ export const useBuildingTransparency = ({
   onUpdate,
   onChangeTransparency,
 }: Pick<BaseFieldProps<"buildingTransparency">, "dataID"> & {
-  options: Omit<BaseFieldProps<"buildingTransparency">["value"], "id" | "group" | "type">;
+  options: BaseFieldProps<"buildingTransparency">["value"]["userSettings"];
   onUpdate: (property: any) => void;
   onChangeTransparency: (transparency: number) => void;
 }) => {

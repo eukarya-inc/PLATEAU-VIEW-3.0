@@ -11,7 +11,7 @@ export const useBuildingShadow = ({
   dataID,
   onUpdate,
 }: Pick<BaseFieldProps<"buildingShadow">, "dataID"> & {
-  options: Omit<BaseFieldProps<"buildingShadow">["value"], "id" | "group" | "type">;
+  options: BaseFieldProps<"buildingShadow">["value"]["userSettings"];
   onUpdate: (property: any) => void;
 }) => {
   const onUpdateRef = useRef(onUpdate);
@@ -36,7 +36,7 @@ export const useBuildingShadow = ({
 
 export type State = {
   dataID: string | undefined;
-  shadow: BaseFieldProps<"buildingShadow">["value"]["shadow"];
+  shadow: BaseFieldProps<"buildingShadow">["value"]["userSettings"]["shadow"];
 };
 
 const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {

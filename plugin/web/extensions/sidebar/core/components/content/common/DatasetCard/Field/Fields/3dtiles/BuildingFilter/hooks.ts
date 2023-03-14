@@ -17,9 +17,11 @@ const useHooks = ({
     (property: any) => {
       onUpdate({
         ...value,
-        height: options.height?.value,
-        abovegroundFloor: options.abovegroundFloor?.value,
-        basementFloor: options.basementFloor?.value,
+        userSettings: {
+          height: options.height?.value,
+          abovegroundFloor: options.abovegroundFloor?.value,
+          basementFloor: options.basementFloor?.value,
+        },
         override: { ["3dtiles"]: property },
       });
     },

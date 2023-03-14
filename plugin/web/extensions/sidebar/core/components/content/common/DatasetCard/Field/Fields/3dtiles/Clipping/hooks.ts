@@ -11,11 +11,11 @@ const useHooks = ({
   dataID,
   onUpdate,
 }: Pick<BaseFieldProps<"clipping">, "value" | "dataID" | "onUpdate">) => {
-  const [options, setOptions] = useState<OptionsState>({
-    enabled: value.enabled,
-    show: value.show,
-    aboveGroundOnly: value.aboveGroundOnly,
-    direction: value.direction,
+  const [options, setOptions] = useState<OptionsState["userSettings"]>({
+    enabled: value.userSettings.enabled,
+    show: value.userSettings.show,
+    aboveGroundOnly: value.userSettings.aboveGroundOnly,
+    direction: value.userSettings.direction,
   });
 
   const handleUpdate = useCallback(
@@ -30,7 +30,10 @@ const useHooks = ({
   );
 
   const handleUpdateOptions = useCallback(
-    <P extends keyof OptionsState>(prop: P, v?: OptionsState[P]) => {
+    <P extends keyof OptionsState["userSettings"]>(
+      prop: P,
+      v?: OptionsState["userSettings"][P],
+    ) => {
       setOptions(o => {
         const next = { ...o, [prop]: v ?? !o[prop] };
         return next;
@@ -40,15 +43,15 @@ const useHooks = ({
   );
 
   const handleUpdateBool = useCallback(
-    (prop: keyof OptionsState) => () => {
+    (prop: keyof OptionsState["userSettings"]) => () => {
       handleUpdateOptions(prop);
     },
     [handleUpdateOptions],
   );
 
   const handleUpdateSelect = useCallback(
-    (prop: keyof OptionsState) => (value: unknown) => {
-      handleUpdateOptions(prop, value as OptionsState["direction"]);
+    (prop: keyof OptionsState["userSettings"]) => (value: unknown) => {
+      handleUpdateOptions(prop, value as OptionsState["userSettings"]["direction"]);
     },
     [handleUpdateOptions],
   );

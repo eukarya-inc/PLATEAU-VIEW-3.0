@@ -15,7 +15,7 @@ export default ({
 }) => {
   const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
   const [title, setTitle] = useState(value.title);
-  const [selectedGroup, selectGroup] = useState(value.groups[0]);
+  const [selectedGroup, selectGroup] = useState(value.userSettings?.selected ?? value.groups[0]);
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,9 +30,10 @@ export default ({
       const selected = groupItems?.find(gi => gi.id === id);
       if (!selected) return;
       selectGroup(selected);
+      onUpdate({ ...value, userSettings: { selected } });
       onCurrentGroupUpdate?.(selected.fieldGroupID);
     },
-    [groupItems, onCurrentGroupUpdate],
+    [groupItems, value, onUpdate, onCurrentGroupUpdate],
   );
 
   const handleItemAdd = useCallback(() => {

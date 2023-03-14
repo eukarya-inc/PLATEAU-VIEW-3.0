@@ -4,7 +4,7 @@ import { BaseFieldProps } from "../../types";
 
 import { useBuildingTransparency } from "./useBuildingTransparency";
 
-type OptionsState = Omit<BaseFieldProps<"buildingTransparency">["value"], "id" | "group" | "type">;
+type OptionsState = BaseFieldProps<"buildingTransparency">["value"]["userSettings"];
 
 const useHooks = ({
   value,
@@ -12,7 +12,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingTransparency">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    transparency: value.transparency,
+    transparency: value.userSettings.transparency,
   });
 
   const handleUpdate = useCallback(
