@@ -2933,6 +2933,11 @@ globby@^13.1.2:
     merge2 "^1.4.1"
     slash "^4.0.0"
 
+globrex@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/globrex/-/globrex-0.1.2.tgz#dd5d9ec826232730cd6793a5e33a9302985e6098"
+  integrity sha512-uHJgbwAMwNFf5mLst7IWLNg14x1CkeqglJb/K3doi4dw6q2IvAAmM/Y81kevy83wP+Sst+nutFTYOGg3d1lsxg==
+
 gopd@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/gopd/-/gopd-1.0.1.tgz#29ff76de69dac7489b7c0918a5788e56477c332c"
@@ -5677,6 +5682,11 @@ ts-morph@^16.0.0:
     "@ts-morph/common" "~0.17.0"
     code-block-writer "^11.0.3"
 
+tsconfck@^2.0.1:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/tsconfck/-/tsconfck-2.1.0.tgz#18fec442fcc11d439f9a4cb0f48af042079e9492"
+  integrity sha512-lztI9ohwclQHISVWrM/hlcgsRpphsii94DV9AQtAw2XJSVNiv+3ppdEsrL5J+xc5oTeHXe1qDqlOAGw8VSa9+Q==
+
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
@@ -5936,6 +5946,15 @@ vite-plugin-svgr@2.4.0:
   dependencies:
     "@rollup/pluginutils" "^5.0.2"
     "@svgr/core" "^6.5.1"
+
+vite-tsconfig-paths@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/vite-tsconfig-paths/-/vite-tsconfig-paths-4.0.5.tgz#c7c54e2cf7ccc5e600db565cecd7b368a1fa8889"
+  integrity sha512-/L/eHwySFYjwxoYt1WRJniuK/jPv+WGwgRGBYx3leciR5wBeqntQpUE6Js6+TJemChc+ter7fDBKieyEWDx4yQ==
+  dependencies:
+    debug "^4.1.1"
+    globrex "^0.1.2"
+    tsconfck "^2.0.1"
 
 vite@4.0.4, "vite@^3.0.0 || ^4.0.0":
   version "4.0.4"

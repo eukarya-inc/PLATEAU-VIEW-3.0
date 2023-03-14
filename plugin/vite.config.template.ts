@@ -1,13 +1,12 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 
-import { resolve } from "path";
-
 import react from "@vitejs/plugin-react";
 import type { UserConfigExport, Plugin } from "vite";
 import importToCDN, { autoComplete } from "vite-plugin-cdn-import";
 import { viteSingleFile } from "vite-plugin-singlefile";
 import svgr from "vite-plugin-svgr";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export const plugin = (name: string): UserConfigExport => ({
   build: {
@@ -45,6 +44,7 @@ export const web =
 
     return {
       plugins: [
+        tsconfigPaths(),
         react(),
         serverHeaders(),
         viteSingleFile(),
@@ -95,9 +95,6 @@ export const web =
         globals: true,
         environment: "jsdom",
         setupFiles: "./web/test/setup.ts",
-      },
-      resolve: {
-        alias: [{ find: "@web", replacement: resolve(__dirname, "web") }],
       },
     };
   };
