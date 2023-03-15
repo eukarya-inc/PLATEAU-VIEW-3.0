@@ -20,13 +20,14 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
 
   const fieldComponents = useMemo(
     () =>
-      (value.components?.length
+      value.components?.length
         ? value.components
-        : hasTemplates
-        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
-        : undefined
-      )?.filter(t => activeIDs?.includes(t.id)),
-    [value.templateID, activeIDs, value.components, templates, hasTemplates],
+        : (hasTemplates
+            ? templates?.find(t => t.id === value.templateID)?.components ??
+              templates?.[0].components
+            : undefined
+          )?.filter(t => activeIDs?.includes(t.id)),
+    [value.templateID, activeIDs, templates, hasTemplates, value.components],
   );
 
   const handleTemplateChange = useCallback(
