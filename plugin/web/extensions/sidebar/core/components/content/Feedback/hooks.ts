@@ -29,7 +29,8 @@ export default ({
       formData.append("email", values.email);
       formData.append("content", values.comment);
       if (screenshot) {
-        formData.append("file", screenshot);
+        const file = dataURItoBlob(screenshot);
+        formData.append("file", file);
       }
 
       const resp = await fetch(`${backendURL}/opinion`, {
@@ -67,7 +68,7 @@ export default ({
   useEffect(() => {
     const eventListenerCallback = (e: MessageEvent<any>) => {
       if (e.source !== parent) return;
-      if (e.data.type === "screenshot") {
+      if (e.data.action === "screenshot") {
         setScreenshot(e.data.payload);
       }
     };
@@ -82,4 +83,15 @@ export default ({
     handleSend,
     handleCancel,
   };
+};
+
+export const dataURItoBlob = (dataURI: string) => {
+  const byteString = atob(dataURI.split(",")[1]);
+  const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: mimeString });
 };
