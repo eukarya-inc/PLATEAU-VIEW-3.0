@@ -4,9 +4,9 @@ import type {
   DataCatalogTreeItem,
 } from "@web/extensions/sidebar/core/types";
 
-import { omit, makeTree, mapTree } from "./utils";
+import { makeTree, mapTree } from "./utils";
 
-// TODO: REFACTOR: VERY CONFUSING REEXPORT
+// TODO: REFACTOR: CONFUSING REEXPORT
 export type { DataCatalogItem, DataCatalogGroup, DataCatalogTreeItem };
 
 export type RawDataCatalogTreeItem = RawDataCatalogGroup | RawDataCatalogItem;
@@ -22,12 +22,15 @@ export type RawDataCatalogItem = {
   name: string;
   pref: string;
   pref_code?: string;
+  pref_code_i: number;
   city?: string;
   city_en?: string;
   city_code?: string;
+  city_code_i: number;
   ward?: string;
   ward_en?: string;
   ward_code?: string;
+  ward_code_i: number;
   type: string;
   type_en: string;
   type2?: string;
@@ -40,11 +43,14 @@ export type RawDataCatalogItem = {
   tags?: { type: "type" | "location"; value: string }[];
   openDataUrl?: string;
   config?: { data?: { name: string; type: string; url: string; layers?: string[] }[] };
-  path?: string[];
+  order?: number;
   // bldg only fields
   bldg_low_texture_url?: string;
   bldg_no_texture_url?: string;
   search_index?: string;
+  // internal
+  path?: string[];
+  code: number;
 };
 
 export type GroupBy = "city" | "type" | "tag"; // Tag not implemented yet
@@ -62,11 +68,30 @@ export async function getDataCatalog(
   return data.map(modifyDataCatalog);
 }
 
-export function modifyDataCatalog(d: RawDataCatalogItem): RawDataCatalogItem {
+export function modifyDataCatalog(
+  d: Omit<RawDataCatalogItem, "pref_code_i" | "city_code_i" | "ward_code_i" | "tags" | "code">,
+): RawDataCatalogItem {
+  const pref = d.pref === "全国" || d.pref === "全球" ? zenkyu : d.pref;
+  const pref_code = d.pref === "全国" || d.pref === "全球" || d.pref === zenkyu ? "0" : d.pref_code;
+  const pref_code_i = parseInt(pref_code ?? "");
+  const city_code_i = parseInt(d.city_code ?? "");
+  const ward_code_i = parseInt(d.ward_code ?? "");
   return {
     ...d,
-    pref: d.pref === "全国" || d.pref === "全球" ? zenkyu : d.pref,
-    pref_code: d.pref === "全国" || d.pref === "全球" || d.pref === zenkyu ? "0" : d.pref_code,
+    pref,
+    pref_code,
+    pref_code_i,
+    city_code_i,
+    ward_code_i,
+    code: !isNaN(ward_code_i)
+      ? ward_code_i
+      : !isNaN(city_code_i)
+      ? city_code_i
+      : !isNaN(pref_code_i)
+      ? pref_code_i * 1000
+      : pref === zenkyu
+      ? 0
+      : 99999,
     tags: [
       { type: "type", value: d.type },
       ...(d.type2 ? [{ type: "type", value: d.type2 } as const] : []),
@@ -76,7 +101,7 @@ export function modifyDataCatalog(d: RawDataCatalogItem): RawDataCatalogItem {
   };
 }
 
-// TODO: REFACTOR: very confusing typing
+// TODO: REFACTOR: confusing typing
 export function getDataCatalogTree(
   items: DataCatalogItem[],
   groupBy: GroupBy,
@@ -90,30 +115,33 @@ export function getRawDataCatalogTree(
   groupBy: GroupBy,
   q?: string | undefined,
 ): (RawDataCatalogGroup | RawDataCatalogItem)[] {
-  const allItems = filter(q, items)
-    .map(i => ({
-      ...i,
-      path: path(i, groupBy),
-      code: i.ward_code
-        ? parseInt(i.ward_code)
-        : i.city_code
-        ? parseInt(i.city_code)
-        : i.pref_code
-        ? parseInt(i.pref_code)
-        : i.pref === zenkyu
-        ? 0
-        : 99999,
-    }))
-    .sort((a, b) => sortBy(a, b, groupBy));
-
-  return mapTree(makeTree(allItems), (item): RawDataCatalogGroup | RawDataCatalogItem =>
-    item.item
-      ? omit(item.item, "code")
-      : {
-          name: item.name,
-          children: [],
-        },
+  return mapTree(
+    makeTree(sortInternal(items, groupBy, q)),
+    (item): RawDataCatalogGroup | RawDataCatalogItem =>
+      item.item ?? {
+        name: item.name,
+        children: [],
+      },
   );
+}
+
+type InternalDataCatalogItem = RawDataCatalogItem & {
+  path: string[];
+};
+
+function sortInternal(
+  items: RawDataCatalogItem[],
+  groupBy: GroupBy,
+  q?: string | undefined,
+): InternalDataCatalogItem[] {
+  return filter(q, items)
+    .map(
+      (i): InternalDataCatalogItem => ({
+        ...i,
+        path: path(i, groupBy),
+      }),
+    )
+    .sort((a, b) => sortBy(a, b, groupBy));
 }
 
 function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
@@ -123,36 +151,43 @@ function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
         i.pref,
         ...(i.city ? [i.city] : []),
         ...(i.ward ? [i.ward] : []),
-        ...(i.type2 || (i.type === "ユースケース" && i.pref !== zenkyu) ? [i.type] : []),
+        ...(i.type2 ||
+        ((i.type_en === "usecase" ||
+          i.type_en === "fld" ||
+          i.type_en === "htd" ||
+          i.type_en === "tnm" ||
+          i.type_en === "ifld") &&
+          i.pref !== zenkyu)
+          ? [i.type]
+          : []),
         ...i.name.split("/"),
       ];
 }
 
-function sortBy(
-  a: RawDataCatalogItem & { code: number },
-  b: RawDataCatalogItem & { code: number },
-  sort: GroupBy,
-): number {
+function sortBy(a: InternalDataCatalogItem, b: InternalDataCatalogItem, sort: GroupBy): number {
   return sort === "type"
-    ? sortByType(a, b) || sortByCity(a, b)
-    : sortByCity(a, b) || sortByType(a, b);
+    ? sortByType(a, b) || sortByCity(a, b) || sortByOrder(a.order, b.order)
+    : sortByCity(a, b) || sortByType(a, b) || sortByOrder(a.order, b.order);
 }
 
-function sortByCity(
-  a: RawDataCatalogItem & { code: number },
-  b: RawDataCatalogItem & { code: number },
-): number {
-  return (
-    (b.pref === zenkyu ? 1 : 0) - (a.pref === zenkyu ? 1 : 0) ||
-    (b.pref === tokyo ? 1 : 0) - (a.pref === tokyo ? 1 : 0) ||
-    (!a.city ? 1 : 0) - (!b.city ? 1 : 0) ||
-    (!a.ward ? 1 : 0) - (!b.ward ? 1 : 0) ||
-    a.code - b.code ||
-    types.indexOf(a.type_en) - types.indexOf(b.type_en)
+function sortByCity(a: InternalDataCatalogItem, b: InternalDataCatalogItem): number {
+  return clamp(
+    (a.pref === zenkyu ? 0 : 1) - (b.pref === zenkyu ? 0 : 1) || // items whose prefecture is zenkyu is upper
+      (a.pref === tokyo ? 0 : 1) - (b.pref === tokyo ? 0 : 1) || // items whose prefecture is tokyo is upper
+      a.pref_code_i - b.pref_code_i ||
+      (a.ward ? 0 : 1) - (b.ward ? 0 : 1) || // items that have a ward is upper
+      (a.city ? 0 : 1) - (b.city ? 0 : 1) || // items that have a city is upper
+      a.code - b.code ||
+      types.indexOf(a.type_en) - types.indexOf(b.type_en),
   );
 }
+
 function sortByType(a: RawDataCatalogItem, b: RawDataCatalogItem): number {
-  return types.indexOf(a.type_en) - types.indexOf(b.type_en);
+  return clamp(types.indexOf(a.type_en) - types.indexOf(b.type_en));
+}
+
+function sortByOrder(a: number | undefined, b: number | undefined): number {
+  return clamp(Math.min(0, a ?? 0) - Math.min(0, b ?? 0));
 }
 
 function filter(q: string | undefined, items: RawDataCatalogItem[]): RawDataCatalogItem[] {
@@ -160,6 +195,10 @@ function filter(q: string | undefined, items: RawDataCatalogItem[]): RawDataCata
   return items.filter(
     i => i.name.includes(q) || i.pref.includes(q) || i.city?.includes(q) || i.ward?.includes(q),
   );
+}
+
+function clamp(n: number): number {
+  return Math.max(-1, Math.min(1, n));
 }
 
 const zenkyu = "全球データ";
