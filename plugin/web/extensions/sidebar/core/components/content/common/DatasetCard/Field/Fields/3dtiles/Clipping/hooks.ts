@@ -22,8 +22,10 @@ const useHooks = ({
     (tilesetProperty: any, boxProperty: any) => {
       onUpdate({
         ...value,
-        ...options,
-        override: { ["3dtiles"]: tilesetProperty, box: boxProperty },
+        userSettings: {
+          ...options,
+          override: { ["3dtiles"]: tilesetProperty, box: boxProperty },
+        },
       });
     },
     [onUpdate, value, options],

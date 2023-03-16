@@ -9,6 +9,9 @@ import { BaseFieldProps } from "../types";
 
 const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpdate }) => {
   const [timeFieldName, setTimeFieldName] = useState(value.timeFieldName);
+  const [timeBasedDisplay, setTimeBasedDisplay] = useState(
+    value.userSettings?.timeBasedDisplay ?? true,
+  );
   const updaterRef = useRef<() => void>();
   const debouncedUpdater = useMemo(
     () => debounce(() => updaterRef.current?.(), 500, { maxWait: 1000 }),
@@ -17,7 +20,7 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
   const shouldUpdate = useRef(true);
 
   const handleUpdate = useCallback(() => {
-    if (value.userSettings.timeBasedDisplay) {
+    if (timeBasedDisplay) {
       onUpdate({
         ...value,
         timeFieldName,
@@ -41,7 +44,7 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
         },
       });
     }
-  }, [timeFieldName, onUpdate, value]);
+  }, [timeFieldName, timeBasedDisplay, onUpdate, value]);
 
   const handleTimeFieldName = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.currentTarget.value;
@@ -57,14 +60,15 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
   }, [handleUpdate, debouncedUpdater, timeFieldName, value.timeFieldName]);
 
   const handleTimeBasedDisplay = useCallback(() => {
+    setTimeBasedDisplay(!timeBasedDisplay);
     onUpdate({
       ...value,
       userSettings: {
-        timeBasedDisplay: !value.userSettings.timeBasedDisplay,
+        timeBasedDisplay: !timeBasedDisplay,
       },
     });
     shouldUpdate.current = true;
-  }, [value, onUpdate]);
+  }, [value, timeBasedDisplay, onUpdate]);
 
   return editMode ? (
     <Field
@@ -74,10 +78,7 @@ const Timeline: React.FC<BaseFieldProps<"timeline">> = ({ value, editMode, onUpd
     />
   ) : (
     <div>
-      <Checkbox
-        style={{ margin: 0 }}
-        checked={value.userSettings.timeBasedDisplay}
-        onChange={handleTimeBasedDisplay}>
+      <Checkbox style={{ margin: 0 }} checked={timeBasedDisplay} onChange={handleTimeBasedDisplay}>
         <Text>時刻ベースのデータを表示</Text>
       </Checkbox>
     </div>

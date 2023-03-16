@@ -21,8 +21,8 @@ const useHooks = ({
           height: options.height?.value,
           abovegroundFloor: options.abovegroundFloor?.value,
           basementFloor: options.basementFloor?.value,
+          override: { ["3dtiles"]: property },
         },
-        override: { ["3dtiles"]: property },
       });
     },
     [onUpdate, value, options],

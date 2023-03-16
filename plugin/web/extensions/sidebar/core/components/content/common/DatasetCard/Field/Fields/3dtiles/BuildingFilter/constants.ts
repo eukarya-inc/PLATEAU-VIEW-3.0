@@ -18,7 +18,10 @@ export type OptionsState = {
   [K in keyof BaseFieldProps<"buildingFilter">["value"]["userSettings"]]?: FilteringField;
 };
 
-export const FILTERING_FIELD_DEFINITION: Record<keyof OptionsState, FilteringField> = {
+export const FILTERING_FIELD_DEFINITION: Record<
+  keyof Omit<OptionsState, "override">,
+  FilteringField
+> = {
   height: {
     id: "height",
     label: "高さで絞り込み",

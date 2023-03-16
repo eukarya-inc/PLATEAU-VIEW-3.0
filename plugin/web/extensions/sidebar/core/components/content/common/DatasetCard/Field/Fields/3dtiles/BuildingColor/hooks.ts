@@ -17,7 +17,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingColor">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    colorType: value.userSettings.colorType,
+    colorType: value.userSettings?.colorType ?? "none",
   });
   const [independentColorTypes, setIndependentColorTypes] = useState<RadioItem[]>([]);
   const [floods, setFloods] = useState<RadioItem[]>([]);
@@ -27,9 +27,7 @@ const useHooks = ({
     (property: any) => {
       onUpdate({
         ...value,
-        ...options,
-        updatedAt: new Date(),
-        override: { "3dtiles": property },
+        userSettings: { ...options, updatedAt: new Date(), override: { "3dtiles": property } },
       });
     },
     [onUpdate, options, value],

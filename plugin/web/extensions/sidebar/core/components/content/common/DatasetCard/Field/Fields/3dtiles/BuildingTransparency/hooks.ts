@@ -12,12 +12,15 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingTransparency">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    transparency: value.userSettings.transparency,
+    transparency: value.userSettings.transparency ?? 100,
   });
 
   const handleUpdate = useCallback(
     (property: any) => {
-      onUpdate({ ...value, ...options, updatedAt: new Date(), override: { "3dtiles": property } });
+      onUpdate({
+        ...value,
+        userSettings: { ...options, updatedAt: new Date(), override: { "3dtiles": property } },
+      });
     },
     [onUpdate, value, options],
   );

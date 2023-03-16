@@ -5,7 +5,8 @@ import { useCallback, useEffect, useState } from "react";
 
 import { mergeOverrides } from "../../../hooks/utils";
 
-import generateFieldComponentsList, { cleanseOverrides } from "./Field/fieldHooks";
+import { cleanseOverrides } from "./Field/fieldConstants";
+import generateFieldComponentsList from "./Field/fieldHooks";
 
 export default ({
   dataset,
@@ -37,7 +38,12 @@ export default ({
       setActiveIDs(newActiveIDs);
 
       if (!selectedGroup) {
-        setGroup(getDefaultGroup(dataset.components?.filter(c => newActiveIDs?.includes(c.id))));
+        setGroup(
+          getDefaultGroup(
+            dataset.components?.filter(c => newActiveIDs?.includes(c.id)),
+            templates,
+          ),
+        );
       }
     }
   }, [selectedGroup, dataset.components, templates]); // eslint-disable-line react-hooks/exhaustive-deps

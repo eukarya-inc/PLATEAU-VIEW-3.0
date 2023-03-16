@@ -85,6 +85,7 @@ export default () => {
 
   const { handleDatasetUpdate, handleDatasetSave, handleDatasetPublish } = useDatasetHooks({
     data,
+    templates: fieldTemplates,
     project,
     backendURL,
     backendProjectName,

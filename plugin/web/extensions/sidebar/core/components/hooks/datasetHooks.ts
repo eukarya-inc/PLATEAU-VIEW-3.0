@@ -2,12 +2,13 @@ import { Project } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
-import { Data, DataCatalogItem } from "../../types";
+import { Data, DataCatalogItem, Template } from "../../types";
 
 import { convertToData } from "./utils";
 
 export default ({
   data,
+  templates,
   project,
   backendURL,
   backendProjectName,
@@ -21,6 +22,7 @@ export default ({
   handleBackendFetch,
 }: {
   data?: Data[];
+  templates?: Template[];
   project?: Project;
   backendURL?: string;
   backendProjectName?: string;
@@ -36,7 +38,7 @@ export default ({
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
       if (!backendURL || !backendAccessToken || !dataset) return;
-      const datasetToSave = convertToData(dataset);
+      const datasetToSave = convertToData(dataset, templates);
 
       const isNew = !data?.find(d => d.dataID === dataset.dataID);
 
@@ -61,7 +63,7 @@ export default ({
       console.log("DATA JUST SAVED: ", data2);
       handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
     },
-    [data, backendAccessToken, backendURL, backendProjectName, handleBackendFetch],
+    [data, templates, backendAccessToken, backendURL, backendProjectName, handleBackendFetch],
   );
 
   const handleDatasetUpdate = useCallback(

@@ -1,20 +1,18 @@
 import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
-import { cloneDeep, merge } from "lodash";
+import { cloneDeep, isEqual, merge } from "lodash";
 
-import { Data, DataCatalogItem } from "../../types";
-import { cleanseOverrides } from "../content/common/DatasetCard/Field/fieldHooks";
+import { Data, DataCatalogItem, Template } from "../../types";
+import { cleanseOverrides } from "../content/common/DatasetCard/Field/fieldConstants";
 import { FieldComponent } from "../content/common/DatasetCard/Field/Fields/types";
 
-export const convertToData = (item: DataCatalogItem): Data => {
+export const convertToData = (item: DataCatalogItem, templates?: Template[]): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
     components: item.components?.map((c: any) => {
       const newComp = Object.assign({}, c);
       if (newComp.type === "template" && newComp.components) {
-        delete newComp.components;
-      } else if (newComp.userSettings) {
-        delete newComp.userSettings;
+        newComp.components = templates?.find(t => t.id === newComp.templateID)?.components ?? [];
       }
       return newComp;
     }),
@@ -36,14 +34,23 @@ export const mergeOverrides = (
   const overrides = cloneDeep(startingOverride ?? {});
 
   const needOrderComponents = components
-    .filter(c => c.updatedAt)
-    .sort((a, b) => (a.updatedAt?.getTime?.() ?? 0) - (b.updatedAt?.getTime?.() ?? 0));
+    .filter(c => (c as any).userSettings?.updatedAt)
+    .sort(
+      (a, b) =>
+        ((a as any).userSettings?.updatedAt?.getTime?.() ?? 0) -
+        ((b as any).userSettings?.updatedAt?.getTime?.() ?? 0),
+    );
   for (const component of needOrderComponents) {
-    merge(overrides, action === "cleanse" ? cleanseOverrides[component.type] : component.override);
+    merge(
+      overrides,
+      action === "cleanse"
+        ? cleanseOverrides[component.type]
+        : (component as any).userSettings?.override ?? component.override,
+    );
   }
 
   for (let i = 0; i < components.length; i++) {
-    if (components[i].updatedAt) {
+    if ((components[i] as any).userSettings?.updatedAt) {
       continue;
     }
     if (components[i].type === "switchDataset" && action === "cleanse") {
@@ -53,11 +60,13 @@ export const mergeOverrides = (
 
     merge(
       overrides,
-      action === "cleanse" ? cleanseOverrides[components[i].type] : components[i].override,
+      action === "cleanse"
+        ? cleanseOverrides[components[i].type]
+        : (components[i] as any).userSettings?.override ?? components[i].override,
     );
   }
 
-  return overrides;
+  return isEqual(overrides, {}) ? undefined : overrides;
 };
 
 export const updateExtended = (e: { vertically: boolean }) => {

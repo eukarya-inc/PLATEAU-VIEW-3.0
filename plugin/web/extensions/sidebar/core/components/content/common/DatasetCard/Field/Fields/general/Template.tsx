@@ -1,10 +1,12 @@
 import { mergeOverrides } from "@web/extensions/sidebar/core/components/hooks/utils";
+import { Template } from "@web/extensions/sidebar/core/types";
 import { Select } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useMemo } from "react";
+import { isEqual } from "lodash";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import FieldComponent from "../..";
-import { BaseFieldProps } from "../types";
+import { BaseFieldProps, FieldComponent as FieldComponentType } from "../types";
 
 const Template: React.FC<BaseFieldProps<"template">> = ({
   value,
@@ -16,19 +18,47 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   onUpdate,
   onCurrentGroupUpdate,
 }) => {
-  const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
+  const [fieldComponents, setFieldComponents] = useState<FieldComponentType[] | undefined>();
 
-  const fieldComponents = useMemo(
-    () =>
-      value.components?.length
-        ? value.components
-        : (hasTemplates
-            ? templates?.find(t => t.id === value.templateID)?.components ??
-              templates?.[0].components
-            : undefined
-          )?.filter(t => activeIDs?.includes(t.id)),
-    [value.templateID, activeIDs, templates, hasTemplates, value.components],
-  );
+  const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
+  const currentTemplates = useRef<Template[] | undefined>();
+
+  useEffect(() => {
+    if (currentTemplates.current !== templates) {
+      currentTemplates.current = templates;
+
+      const newFieldComponents = hasTemplates
+        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
+        : undefined;
+      setFieldComponents(newFieldComponents);
+
+      const cleanseOverride = mergeOverrides("cleanse", fieldComponents);
+      onUpdate({
+        ...value,
+        userSettings: {
+          components: newFieldComponents,
+          override: cleanseOverride,
+        },
+      });
+    } else {
+      const newFieldComponents = value.userSettings?.components?.length
+        ? value.userSettings?.components
+        : hasTemplates
+        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
+        : undefined;
+
+      if (newFieldComponents && !isEqual(newFieldComponents, fieldComponents)) {
+        setFieldComponents(newFieldComponents);
+
+        onUpdate({
+          ...value,
+          userSettings: {
+            components: newFieldComponents,
+          },
+        });
+      }
+    }
+  }, [activeIDs, fieldComponents, templates, hasTemplates, value.templateID, value, onUpdate]);
 
   const handleTemplateChange = useCallback(
     (id: string) => {
@@ -37,8 +67,10 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
       onUpdate({
         ...value,
         templateID: id,
-        components: templates?.find(t => t.id === id)?.components ?? [],
-        override: cleanseOverride,
+        userSettings: {
+          components: templates?.find(t => t.id === id)?.components ?? [],
+          override: cleanseOverride,
+        },
       });
     },
     [value, fieldComponents, templates, onUpdate],
@@ -56,7 +88,10 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
 
       onUpdate({
         ...value,
-        components: newComponents,
+        userSettings: {
+          components: newComponents,
+          override: fieldComponents?.[componentIndex].cleanseOverride,
+        },
       });
     },
     [value, fieldComponents, onUpdate],
@@ -93,20 +128,22 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
           )}
         </div>
       ) : (
-        fieldComponents?.map(tc => (
-          <FieldComponent
-            key={tc.id}
-            field={tc}
-            editMode={editMode}
-            dataID={dataID}
-            activeIDs={activeIDs}
-            isActive={!!activeIDs?.find(id => id === tc.id)}
-            templates={templates}
-            configData={configData}
-            onUpdate={handleFieldUpdate}
-            onCurrentGroupUpdate={onCurrentGroupUpdate}
-          />
-        ))
+        fieldComponents
+          ?.filter(t => activeIDs?.includes(t.id))
+          ?.map(tc => (
+            <FieldComponent
+              key={tc.id}
+              field={tc}
+              editMode={editMode}
+              dataID={dataID}
+              activeIDs={activeIDs}
+              isActive={!!activeIDs?.find(id => id === tc.id)}
+              templates={templates}
+              configData={configData}
+              onUpdate={handleFieldUpdate}
+              onCurrentGroupUpdate={onCurrentGroupUpdate}
+            />
+          ))
       )}
     </>
   );

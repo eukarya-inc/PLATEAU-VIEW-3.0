@@ -29,17 +29,19 @@ export const flattenComponents = (components?: FieldComponent[], baseTemplates?:
       return [
         ...a,
         c,
-        ...((baseTemplates?.find(t => t.id === c.templateID) ?? c)?.components ?? []),
+        ...((c as any).userSettings?.components ??
+          baseTemplates?.find(t => t.id === c.templateID)?.components ??
+          []),
       ];
     } else {
       return [...a, c];
     }
   }, []);
 
-export const getDefaultGroup = (components?: FieldComponent[]) => {
+export const getDefaultGroup = (components?: FieldComponent[], baseTemplates?: Template[]) => {
   if (!components) return;
 
-  const switchGroupComponents = flattenComponents(components)?.filter(
+  const switchGroupComponents = flattenComponents(components, baseTemplates)?.filter(
     c => c.type === "switchGroup",
   ) as SwitchGroup[] | undefined;
 

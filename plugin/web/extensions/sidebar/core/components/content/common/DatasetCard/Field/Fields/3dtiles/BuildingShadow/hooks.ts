@@ -12,12 +12,18 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingShadow">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    shadow: value.userSettings.shadow,
+    shadow: value.userSettings.shadow ?? "disabled",
   });
 
   const handleUpdate = useCallback(
     (property: any) => {
-      onUpdate({ ...value, ...options, override: { ["3dtiles"]: property } });
+      onUpdate({
+        ...value,
+        userSettings: {
+          ...options,
+          override: { ["3dtiles"]: property },
+        },
+      });
     },
     [onUpdate, value, options],
   );

@@ -16,7 +16,7 @@ const FloodColor: React.FC<BaseFieldProps<"floodColor">> = ({
 }) => {
   const [colorType, setColorType] = useState<
     BaseFieldProps<"floodColor">["value"]["userSettings"]["colorType"]
-  >(value.userSettings?.colorType);
+  >(value.userSettings?.colorType ?? "water");
 
   const handleUpdateColorType: Exclude<ComponentProps<typeof Radio>["onChange"], undefined> =
     useCallback(e => {
@@ -29,9 +29,9 @@ const FloodColor: React.FC<BaseFieldProps<"floodColor">> = ({
         ...value,
         userSettings: {
           colorType,
+          updatedAt: new Date(),
+          override: { "3dtiles": property },
         },
-        updatedAt: new Date(),
-        override: { "3dtiles": property },
       });
     },
     [onUpdate, value, colorType],

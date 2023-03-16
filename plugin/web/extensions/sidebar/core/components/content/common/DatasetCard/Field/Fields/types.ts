@@ -106,7 +106,6 @@ type FieldBase<T extends keyof typeof fieldName> = {
   group?: string;
   override?: any;
   cleanseOverride?: any;
-  updatedAt?: Date;
 };
 
 type CameraPosition = {
@@ -181,6 +180,7 @@ export type SwitchDataset = FieldBase<"switchDataset"> & {
   uiStyle?: "dropdown" | "radio";
   userSettings: {
     selected?: ConfigData;
+    override?: any;
   };
 };
 
@@ -209,7 +209,10 @@ export type Story = FieldBase<"story"> & {
 
 type Template = FieldBase<"template"> & {
   templateID?: string;
-  components?: FieldComponent[];
+  userSettings: {
+    components?: FieldComponent[];
+    override?: any;
+  };
 };
 
 type EventField = FieldBase<"eventField"> & {
@@ -323,6 +326,7 @@ type Clipping = FieldBase<"clipping"> & {
     show: boolean;
     aboveGroundOnly: boolean;
     direction: "inside" | "outside";
+    override?: any;
   };
 };
 
@@ -331,36 +335,45 @@ type BuildingFilter = FieldBase<"buildingFilter"> & {
     height?: [from: number, to: number];
     abovegroundFloor?: [from: number, to: number];
     basementFloor?: [from: number, to: number];
+    override?: any;
   };
 };
 
 type BuildingShadow = FieldBase<"buildingShadow"> & {
   userSettings: {
     shadow: "disabled" | "enabled" | "cast_only" | "receive_only";
+    override?: any;
   };
 };
 
 type BuildingTransparency = FieldBase<"buildingTransparency"> & {
   userSettings: {
     transparency: number;
+    updatedAt?: Date;
+    override?: any;
   };
 };
 
 type BuildingColor = FieldBase<"buildingColor"> & {
   userSettings: {
     colorType: string;
+    updatedAt?: Date;
+    override?: any;
   };
 };
 
 type FloodColor = FieldBase<"floodColor"> & {
   userSettings: {
     colorType: "water" | "rank";
+    updatedAt?: Date;
+    override?: any;
   };
 };
 
 type FloodFilter = FieldBase<"floodFilter"> & {
   userSettings: {
     rank?: [from: number, to: number];
+    override?: any;
   };
 };
 
