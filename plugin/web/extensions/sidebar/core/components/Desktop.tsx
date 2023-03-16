@@ -35,6 +35,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     handleProjectDatasetRemove,
     handleDatasetUpdate,
     handleProjectDatasetRemoveAll,
+    handleProjectDatasetsUpdate,
     handleProjectSceneUpdate,
     handleModalOpen,
     handleBuildingSearch,
@@ -89,6 +90,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
                   onDatasetRemoveAll={handleProjectDatasetRemoveAll}
+                  onProjectDatasetsUpdate={handleProjectDatasetsUpdate}
                   onModalOpen={handleModalOpen}
                   onBuildingSearch={handleBuildingSearch}
                   onOverride={handleOverride}

@@ -193,6 +193,17 @@ export default ({
     postMsg({ action: "removeAllDatasetsFromScene" });
   }, []);
 
+  const handleProjectDatasetsUpdate = useCallback((datasets: DataCatalogItem[]) => {
+    updateProject(({ sceneOverrides }) => {
+      const updatedProject = {
+        sceneOverrides,
+        datasets,
+      };
+      postMsg({ action: "updateProject", payload: updatedProject });
+      return updatedProject;
+    });
+  }, []);
+
   const handleOverride = useCallback(
     (dataID: string, activeIDs?: string[]) => {
       const dataset = project.datasets.find(d => d.dataID === dataID);
@@ -288,6 +299,7 @@ export default ({
     handleProjectDatasetAdd,
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
+    handleProjectDatasetsUpdate,
     handleStorySaveData,
     handleOverride,
   };

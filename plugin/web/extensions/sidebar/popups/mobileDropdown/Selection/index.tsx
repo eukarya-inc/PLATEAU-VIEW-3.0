@@ -15,6 +15,7 @@ type Props = {
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
+  onProjectDatasetsUpdate: (datasets: DataCatalogItem[]) => void;
   onBuildingSearch: (id: string) => void;
   onSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
@@ -27,6 +28,7 @@ const Selection: React.FC<Props> = ({
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
+  onProjectDatasetsUpdate,
   onBuildingSearch,
   onSceneUpdate,
 }) => {
@@ -47,6 +49,7 @@ const Selection: React.FC<Props> = ({
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}
+        onProjectDatasetsUpdate={onProjectDatasetsUpdate}
         onBuildingSearch={onBuildingSearch}
         onSceneUpdate={onSceneUpdate}
       />

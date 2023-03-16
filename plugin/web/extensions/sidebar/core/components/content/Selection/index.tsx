@@ -1,7 +1,11 @@
 import Footer from "@web/extensions/sidebar/core/components/Footer";
 import { ReearthApi } from "@web/extensions/sidebar/types";
+import { swap } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+import { useCallback } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { BuildingSearch, DataCatalogItem, Template } from "../../../types";
 import DatasetCard from "../common/DatasetCard";
@@ -17,6 +21,7 @@ export type Props = {
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onDatasetRemove: (dataID: string) => void;
   onDatasetRemoveAll: () => void;
+  onProjectDatasetsUpdate: (datasets: DataCatalogItem[]) => void;
   onModalOpen?: () => void;
   onBuildingSearch: (id: string) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
@@ -34,11 +39,23 @@ const Selection: React.FC<Props> = ({
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
+  onProjectDatasetsUpdate,
   onModalOpen,
   onBuildingSearch,
   onOverride,
   onSceneUpdate,
 }) => {
+  const moveCard = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      if (selectedDatasets) {
+        const updatedDatasets = [...selectedDatasets];
+        swap(updatedDatasets, dragIndex, hoverIndex);
+        onProjectDatasetsUpdate(updatedDatasets);
+      }
+    },
+    [onProjectDatasetsUpdate, selectedDatasets],
+  );
+
   return (
     <Wrapper className={className}>
       <InnerWrapper>
@@ -48,15 +65,18 @@ const Selection: React.FC<Props> = ({
             <ButtonText>カタログから検索する</ButtonText>
           </StyledButton>
         )}
-        {selectedDatasets
-          ?.map(d => (
+        <DndProvider backend={HTML5Backend}>
+          {selectedDatasets?.map((d, i) => (
             <DatasetCard
               key={d.id}
+              index={i}
+              id={d.id}
               dataset={d}
               templates={templates}
               buildingSearch={buildingSearch}
               savingDataset={savingDataset}
               inEditor={inEditor}
+              moveCard={moveCard}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}
               onDatasetRemove={onDatasetRemove}
@@ -64,8 +84,8 @@ const Selection: React.FC<Props> = ({
               onOverride={onOverride}
               onSceneUpdate={onSceneUpdate}
             />
-          ))
-          .reverse()}
+          ))}
+        </DndProvider>
       </InnerWrapper>
       <Footer datasetQuantity={selectedDatasets?.length} onRemoveAll={onDatasetRemoveAll} />
     </Wrapper>
