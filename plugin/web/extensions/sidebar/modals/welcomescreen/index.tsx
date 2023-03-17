@@ -21,7 +21,7 @@ const WelcomeScreen: React.FC = () => {
     <Wrapper>
       {!showVideo ? (
         <InnerWrapper isMobile={isMobile}>
-          <CloseButton size={40} icon="close" onClick={handleClose} isMobile={isMobile} />
+          <WelcomeCloseButton size={40} icon="close" onClick={handleClose} isMobile={isMobile} />
           <TextWrapper isMobile={isMobile}>
             <Title weight={700} size={isMobile ? 24 : 48}>
               ようこそ
@@ -61,7 +61,7 @@ const WelcomeScreen: React.FC = () => {
         </InnerWrapper>
       ) : (
         <CloseBtnWrapper isMobile={isMobile}>
-          <CloseButton size={40} icon="close" onClick={handleCloseVideo} isMobile={isMobile} />
+          <VideoCloseButton size={40} icon="close" onClick={handleCloseVideo} isMobile={isMobile} />
           <VideoWrapper>
             <Video width=" 1142" height="543" src="https://www.youtube.com/embed/pY2dM-eG5mA" />
           </VideoWrapper>
@@ -107,7 +107,7 @@ const TextWrapper = styled.div<{ isMobile?: boolean }>`
   flex-direction: column;
   align-items: ${({ isMobile }) => (isMobile ? "center" : "flex-start")};
   justify-content: flex-end;
-  margin-bottom: 24px;
+  margin-bottom: ${({ isMobile }) => (isMobile ? "60px" : "24px")};
 `;
 
 const ContentWrapper = styled.div<{ isMobile?: boolean }>`
@@ -136,17 +136,21 @@ const ImgWrapper = styled.div`
 `;
 
 const CloseButton = styled(Icon)<{ isMobile?: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  right: 0;
-  top: 0;
   width: ${({ isMobile }) => (isMobile ? "48px" : "40px")};
   height: ${({ isMobile }) => (isMobile ? "48px" : "40px")};
   border: none;
   color: white;
   cursor: pointer;
+`;
+
+const WelcomeCloseButton = styled(CloseButton)`
+  position: absolute;
+  right: ${({ isMobile }) => (isMobile ? "-48px" : "-40px")};
+  top: ${({ isMobile }) => (isMobile ? "-48px" : "-40px")};
+`;
+
+const VideoCloseButton = styled(CloseButton)`
+  align-self: end;
 `;
 
 const ButtonWrapper = styled.div<{ selected?: boolean }>`
