@@ -18,8 +18,8 @@ import Realtime from "./general/Realtime";
 import Story from "./general/Story";
 import StyleCode from "./general/StyleCode";
 import SwitchDataset from "./general/SwitchDataset";
-import SwitchField from "./general/SwitchField";
 import SwitchGroup from "./general/SwitchGroup";
+import SwitchVisibility from "./general/SwitchVisibility";
 import Template from "./general/Template";
 import Timeline from "./general/Timeline";
 import PointColor from "./point/PointColor";
@@ -55,7 +55,7 @@ const fields: Fields<FieldComponent> = {
   currentTime: { Component: CurrentTime, hasUI: false },
   switchGroup: { Component: SwitchGroup, hasUI: true },
   switchDataset: { Component: SwitchDataset, hasUI: true },
-  switchField: { Component: SwitchField, hasUI: true },
+  switchVisibility: { Component: SwitchVisibility, hasUI: true },
   eventField: { Component: EventField, hasUI: false },
   infoboxStyle: { Component: InfoboxStyle, hasUI: false },
   // point

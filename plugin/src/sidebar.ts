@@ -334,6 +334,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         overriddenLayer,
       },
     });
+  } else if (action === "unselect") {
+    reearth.layers.select();
   }
 
   // ************************************************

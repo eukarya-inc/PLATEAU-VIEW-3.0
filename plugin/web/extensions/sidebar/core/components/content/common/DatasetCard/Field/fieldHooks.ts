@@ -81,8 +81,8 @@ export default ({
         name: fieldName["switchDataset"],
         onClick: onFieldAdd({ userSettings: {} }),
       },
-      switchField: {
-        name: fieldName["switchField"],
+      switchVisibility: {
+        name: fieldName["switchVisibility"],
         onClick: onFieldAdd({ userSettings: {} }),
       },
       template: {
