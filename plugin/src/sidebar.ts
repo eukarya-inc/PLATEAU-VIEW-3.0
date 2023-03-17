@@ -1,6 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
-import omit from "lodash/omit";
+import { isObject, mergeWith, omit, cloneDeep } from "lodash";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -569,6 +569,16 @@ reearth.on("popupclose", () => {
 
 function createLayer(dataset: DataCatalogItem, overrides?: any) {
   const format = dataset.format?.toLowerCase();
+  const merge = (obj1: any, obj2: any): any => {
+    const merged = cloneDeep(obj1);
+    mergeWith(merged, obj2, (mergedValue, obj2Value) => {
+      if (isObject(mergedValue)) {
+        return merge(mergedValue, obj2Value);
+      }
+      return obj2Value !== undefined ? obj2Value : mergedValue;
+    });
+    return merged;
+  };
   return {
     type: "simple",
     title: dataset.name,
@@ -617,37 +627,14 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
         }
       : null,
     ...(overrides !== undefined
-      ? omit(overrides, "data")
-      : format === "geojson"
-      ? {
-          marker: {
-            style: "point",
-            pointSize: 10,
-            pointColor: "white",
-            heightReference: "clamp",
-          },
-          polygon: {
-            fill: false,
-            stroke: true,
-            strokeWidth: 5,
-            heightReference: "clamp",
-          },
-          polyline: {
-            clampToGround: true,
-          },
-        }
+      ? merge(defaultOverrides, omit(overrides, "data"))
+      : format === ("geojson" || "czml")
+      ? defaultOverrides
       : format === "gtfs"
       ? proxyGTFS(overrides)
       : format === "mvt"
       ? {
           polygon: {},
-        }
-      : format === "czml"
-      ? {
-          resource: {},
-          marker: { heightReference: "clamp" },
-          polyline: { clampToGround: true },
-          polygon: { clampToGround: true },
         }
       : format === "wms"
       ? {
@@ -658,3 +645,16 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       : { ...(overrides ?? {}) }),
   };
 }
+
+const defaultOverrides = {
+  resource: {},
+  marker: {
+    heightReference: "clamp",
+  },
+  polygon: {
+    heightReference: "clamp",
+  },
+  polyline: {
+    clampToGround: true,
+  },
+};
