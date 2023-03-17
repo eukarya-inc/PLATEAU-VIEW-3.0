@@ -27,6 +27,8 @@ const SUPPORTED_TYPES: Record<string, string> = {
   gtfs: "gtfs",
   csv: "csv",
   "tileset.json": "3dtiles",
+  glb: "gltf",
+  gltf: "gltf",
 };
 
 export const getSupportedType = (url: string): string | undefined => {
@@ -83,6 +85,10 @@ const FileTypeSelect: React.FC<Props> = ({ onFileTypeSelect }) => {
     {
       value: "mvt",
       label: "Mapbox Vector Tile (MVT)",
+    },
+    {
+      value: "gltf",
+      label: "GLTF/GLB",
     },
   ];
 
