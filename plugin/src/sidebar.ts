@@ -648,6 +648,12 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
           polyline: { clampToGround: true },
           polygon: { clampToGround: true },
         }
+      : format === "wms"
+      ? {
+          raster: {
+            alpha: 0.8,
+          },
+        }
       : { ...(overrides ?? {}) }),
   };
 }
