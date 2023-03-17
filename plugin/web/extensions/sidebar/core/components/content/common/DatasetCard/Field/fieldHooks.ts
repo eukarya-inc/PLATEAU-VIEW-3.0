@@ -112,10 +112,14 @@ export default ({
         name: fieldName["pointColor"],
         onClick: onFieldAdd({}),
       },
-      // pointColorGradient: {
-      //   name: fieldName["pointColorGradient"],
-      //   onClick: ({ key }) => console.log("do something: ", key),
-      // },
+      pointColorGradient: {
+        name: fieldName["pointColorGradient"],
+        onClick: onFieldAdd({
+          min: 0,
+          max: 0,
+          step: 0,
+        }),
+      },
       pointSize: {
         name: fieldName["pointSize"],
         onClick: onFieldAdd({}),
