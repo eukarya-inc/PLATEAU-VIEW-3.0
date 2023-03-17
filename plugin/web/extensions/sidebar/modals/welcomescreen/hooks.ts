@@ -55,6 +55,18 @@ export default () => {
     postMsg({ action: "triggerCatalogOpen" });
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleClose]);
+
   return {
     isMobile,
     showVideo,
