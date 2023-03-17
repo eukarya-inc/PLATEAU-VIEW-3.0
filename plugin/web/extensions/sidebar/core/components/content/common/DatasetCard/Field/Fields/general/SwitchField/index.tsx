@@ -20,7 +20,7 @@ const SwitchField: React.FC<BaseFieldProps<"switchField">> = ({
 }) => {
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
   const [targetProperty, setTargetProperty] = useState(value.field); // ie 種類
-  const [selectedProperty, selectProperty] = useState(value.userSettings.selected); // ie 病院
+  const [selectedProperty, selectProperty] = useState(value.userSettings?.selected); // ie 病院
   const [properties, setProperties] = useState<{ [key: string]: any }>();
 
   useEffect(() => {

@@ -114,25 +114,25 @@ const renderTileset = async (
   const updateBox = () => {
     onUpdateRef.current?.(
       {
-        experimental_clipping: state.userSettings.enabled
+        experimental_clipping: state.userSettings?.enabled
           ? {
               ...boxProperties,
               coordinates: [location.lng, location.lat, location.height],
-              visible: state.userSettings.show,
-              direction: state.userSettings.direction,
-              allowEnterGround: !state.userSettings.keepBoxAboveGround,
+              visible: state.userSettings?.show,
+              direction: state.userSettings?.direction,
+              allowEnterGround: !state.userSettings?.keepBoxAboveGround,
               useBuiltinBox: true,
             }
           : undefined,
       },
-      state.userSettings.enabled
+      state.userSettings?.enabled
         ? {
             ...boxProperties,
             cursor: boxState.cursor,
             activeBox: boxState.activeBox,
             activeScalePointIndex: boxState.activeScalePointIndex,
             activeEdgeIndex: boxState.activeEdgeIndex,
-            allowEnterGround: !state.userSettings.keepBoxAboveGround,
+            allowEnterGround: !state.userSettings?.keepBoxAboveGround,
           }
         : undefined,
     );
