@@ -1,6 +1,7 @@
 package datacatalog
 
 import (
+	"fmt"
 	"net/url"
 	"path"
 	"strings"
@@ -19,10 +20,15 @@ func assetURLFromFormat(u, f string) string {
 		return u
 	}
 
-	isCMS := path.Ext(u2.Path) == ".zip" || path.Ext(u2.Path) == ".7z"
+	dir := path.Dir(u2.Path)
+	ext := path.Ext(u2.Path)
+	base := path.Base(u2.Path)
+	name := strings.TrimSuffix(base, ext)
+	isArchive := ext == ".zip" || ext == ".7z"
+
 	u2.Path = assetRootPath(u2.Path)
 	if f == "3dtiles" {
-		if !isCMS {
+		if !isArchive {
 			// not CMS asset
 			return u
 		}
@@ -31,7 +37,7 @@ func assetURLFromFormat(u, f string) string {
 		return u2.String()
 	} else if f == "mvt" {
 		us := ""
-		if !isCMS {
+		if !isArchive {
 			// not CMS asset
 			us = u
 		} else {
@@ -40,6 +46,9 @@ func assetURLFromFormat(u, f string) string {
 		}
 
 		return strings.ReplaceAll(strings.ReplaceAll(us, "%7B", "{"), "%7D", "}")
+	} else if (f == "czml" || f == "kml") && isArchive {
+		u2.Path = path.Join(dir, name, fmt.Sprintf("%s.%s", name, f))
+		return u2.String()
 	}
 	return u
 }
