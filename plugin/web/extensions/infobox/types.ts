@@ -37,7 +37,7 @@ export type FixedProperties = {
   "建物利用現況（小分類）"?: string;
   "建物利用現況（詳細分類）"?: string;
   構造種別?: string;
-  "構造種別（独自）"?: string;
+  "構造種別（自治体独自）"?: string;
   耐火構造種別?: string;
 };
 

@@ -8,9 +8,18 @@ type Props = {
   properties?: Properties;
   fields: Field[];
   commonProperties: string[];
+  attributesKey?: string;
+  attributesName?: string;
 };
 
-const ViewPanel: React.FC<Props> = ({ name, properties, fields, commonProperties }) => {
+const ViewPanel: React.FC<Props> = ({
+  name,
+  properties,
+  fields,
+  commonProperties,
+  attributesKey,
+  attributesName,
+}) => {
   return (
     <>
       <Header>
@@ -20,6 +29,8 @@ const ViewPanel: React.FC<Props> = ({ name, properties, fields, commonProperties
         properties={properties}
         fields={fields}
         commonProperties={commonProperties}
+        attributesKey={attributesKey}
+        attributesName={attributesName}
       />
     </>
   );

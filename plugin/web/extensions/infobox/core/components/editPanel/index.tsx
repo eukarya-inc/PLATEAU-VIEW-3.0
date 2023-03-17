@@ -15,6 +15,8 @@ type Props = {
   isSaving: boolean;
   editorTab: string;
   commonProperties: string[];
+  attributesKey?: string;
+  attributesName?: string;
   handleEditorTab: (tab: EditorTab) => void;
   onFieldCheckChange: (e: any) => void;
   onFieldTitleChange: (e: any) => void;
@@ -29,6 +31,8 @@ const EditPanel: React.FC<Props> = ({
   isSaving,
   editorTab,
   commonProperties,
+  attributesKey,
+  attributesName,
   handleEditorTab,
   onFieldCheckChange,
   onFieldTitleChange,
@@ -57,6 +61,8 @@ const EditPanel: React.FC<Props> = ({
           properties={properties}
           fields={fields}
           commonProperties={commonProperties}
+          attributesKey={attributesKey}
+          attributesName={attributesName}
         />
       )}
       {editorTab === "edit" && (
