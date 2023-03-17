@@ -11,12 +11,7 @@ import { BaseFieldProps, Cond } from "../../types";
 
 import PointStrokeItem from "./PointStrokeItem";
 
-const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
-  value,
-  editMode,
-  isActive,
-  onUpdate,
-}) => {
+const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode, onUpdate }) => {
   const [items, updateItems] = useState(value.items);
 
   const handleMoveUp = useCallback((idx: number) => {
@@ -77,7 +72,7 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
   };
 
   useEffect(() => {
-    if (!isActive || value.items === items) return;
+    if (value.items === items) return;
     const timer = setTimeout(() => {
       const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
       const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
@@ -111,7 +106,7 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isActive, items, value, onUpdate]);
+  }, [items, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

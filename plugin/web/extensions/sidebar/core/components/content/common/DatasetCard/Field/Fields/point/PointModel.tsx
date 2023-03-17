@@ -7,12 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
-  value,
-  editMode,
-  isActive,
-  onUpdate,
-}) => {
+const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({ value, editMode, onUpdate }) => {
   const [modelURL, setModelURL] = useState(value.modelURL ?? "");
   const [scale, setImageSize] = useState(value.scale);
 
@@ -26,7 +21,7 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
   }, []);
 
   useEffect(() => {
-    if (!isActive || (value.scale === scale && value.modelURL === modelURL)) return;
+    if (value.scale === scale && value.modelURL === modelURL) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
@@ -38,7 +33,7 @@ const PointModel: React.FC<BaseFieldProps<"pointModel">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isActive, modelURL, scale, value, onUpdate]);
+  }, [modelURL, scale, value, onUpdate]);
 
   return editMode ? (
     <Wrapper>

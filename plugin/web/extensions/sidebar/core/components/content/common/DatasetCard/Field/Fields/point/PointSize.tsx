@@ -4,12 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const PointSize: React.FC<BaseFieldProps<"pointSize">> = ({
-  value,
-  editMode,
-  isActive,
-  onUpdate,
-}) => {
+const PointSize: React.FC<BaseFieldProps<"pointSize">> = ({ value, editMode, onUpdate }) => {
   const [size, setSize] = useState(value.pointSize);
 
   const handleSizeUpdate = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +13,7 @@ const PointSize: React.FC<BaseFieldProps<"pointSize">> = ({
   }, []);
 
   useEffect(() => {
-    if (!isActive || size === value.pointSize) return;
+    if (size === value.pointSize) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...value,
@@ -29,7 +24,7 @@ const PointSize: React.FC<BaseFieldProps<"pointSize">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isActive, size, value, onUpdate]);
+  }, [size, value, onUpdate]);
 
   return editMode ? (
     <Field

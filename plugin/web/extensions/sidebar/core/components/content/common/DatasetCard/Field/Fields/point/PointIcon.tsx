@@ -4,12 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../types";
 
-const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
-  value,
-  editMode,
-  isActive,
-  onUpdate,
-}) => {
+const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({ value, editMode, onUpdate }) => {
   const [imageURL, setImageURL] = useState(value.url ?? "");
   const [imageSize, setImageSize] = useState(value.size);
   const [imageSizeInMeters, setImageSizeInMeters] = useState(value.sizeInMeters ?? false);
@@ -29,10 +24,9 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
 
   useEffect(() => {
     if (
-      !isActive ||
-      (imageURL === value.url &&
-        imageSize === value.size &&
-        imageSizeInMeters === value.sizeInMeters)
+      imageURL === value.url &&
+      imageSize === value.size &&
+      imageSizeInMeters === value.sizeInMeters
     )
       return;
     const timer = setTimeout(() => {
@@ -54,7 +48,7 @@ const PointIcon: React.FC<BaseFieldProps<"pointIcon">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [imageURL, imageSize, isActive, value, onUpdate, imageSizeInMeters]);
+  }, [imageURL, imageSize, value, onUpdate, imageSizeInMeters]);
 
   return editMode ? (
     <Wrapper>

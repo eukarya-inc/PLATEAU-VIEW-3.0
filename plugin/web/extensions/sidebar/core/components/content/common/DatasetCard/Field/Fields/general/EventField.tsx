@@ -18,12 +18,7 @@ const urlTypeOptions = [
   { value: "fromData", label: "From Data" },
 ];
 
-const EventField: React.FC<BaseFieldProps<"eventField">> = ({
-  value,
-  editMode,
-  isActive,
-  onUpdate,
-}) => {
+const EventField: React.FC<BaseFieldProps<"eventField">> = ({ value, editMode, onUpdate }) => {
   const [eventValue, setEventValue] = useState(value);
 
   const showURL = useMemo(() => eventValue.urlType === "manual", [eventValue.urlType]);
@@ -65,7 +60,7 @@ const EventField: React.FC<BaseFieldProps<"eventField">> = ({
   );
 
   useEffect(() => {
-    if (!isActive || isEqual(eventValue, value)) return;
+    if (isEqual(eventValue, value)) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...eventValue,
@@ -84,7 +79,7 @@ const EventField: React.FC<BaseFieldProps<"eventField">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isActive, value, onUpdate, eventValue]);
+  }, [value, onUpdate, eventValue]);
 
   return editMode ? (
     <Wrapper>
