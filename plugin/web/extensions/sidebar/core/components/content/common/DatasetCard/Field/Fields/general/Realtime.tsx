@@ -60,7 +60,11 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
 
   const isInitializedRef = useRef(false);
   const propagateRealTimeToLayer = useCallback(() => {
-    if (value.updateInterval === intervalInSecond && isInitializedRef.current) {
+    if (
+      value.updateInterval === intervalInSecond &&
+      value.userSettings.enabled === enableUpdate &&
+      isInitializedRef.current
+    ) {
       return;
     }
 
