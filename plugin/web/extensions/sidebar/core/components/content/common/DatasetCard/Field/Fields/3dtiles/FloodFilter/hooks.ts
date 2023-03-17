@@ -12,7 +12,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"floodFilter">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<FilteringField>({
-    value: value.userSettings.rank,
+    value: value.userSettings?.rank,
   });
 
   const handleUpdate = useCallback(

@@ -12,7 +12,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingShadow">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    shadow: value.userSettings.shadow ?? "disabled",
+    shadow: value.userSettings?.shadow ?? "disabled",
   });
 
   const handleUpdate = useCallback(

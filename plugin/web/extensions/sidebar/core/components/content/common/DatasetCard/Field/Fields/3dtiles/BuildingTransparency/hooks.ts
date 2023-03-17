@@ -12,7 +12,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"buildingTransparency">, "value" | "dataID" | "onUpdate">) => {
   const [options, setOptions] = useState<OptionsState>({
-    transparency: value.userSettings.transparency ?? 100,
+    transparency: value.userSettings?.transparency ?? 100,
   });
 
   const handleUpdate = useCallback(
