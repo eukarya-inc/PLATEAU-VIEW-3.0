@@ -127,12 +127,12 @@ const Realtime: React.FC<BaseFieldProps<"realtime">> = ({ value, editMode, onUpd
     <Wrapper>
       <Field gap={10}>
         <Icon icon="clock" size={24} />
-        <Text>Next data update in {timer}</Text>
+        <Text>次のデータ更新まであと {timer}</Text>
       </Field>
       <Field gap={10}>
         <SwitchWrapper>
           <Switch checked={enableUpdate} size="small" onChange={handleChangeupdateState} />
-          <Text>Enable Realtime Update</Text>
+          <Text>リアルタイム更新を有効にする</Text>
         </SwitchWrapper>
       </Field>
     </Wrapper>

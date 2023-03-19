@@ -61,7 +61,7 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
             id: id,
             dataID: id,
             description:
-              "This file only exists in your browser. To share it, you must load it onto a public web server.",
+              "このファイルは今お使いのWebブラウザでのみ閲覧可能です。共有URLを用いて共有するには、公開Webサーバー上のデータを読み込む必要があります。",
             name: filename,
             url: url,
             format: setDataFormat(fileType, filename),
