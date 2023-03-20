@@ -55,7 +55,13 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
           // Catalog Item
           const filename = file.name;
           const id = "id" + Math.random().toString(16).slice(2);
-          const url = reader.result?.toString();
+          const url = (() => {
+            const content = reader.result?.toString();
+            if (!content) {
+              return;
+            }
+            return "data:text/plain;charset=UTF-8," + encodeURIComponent(content);
+          })();
           const item: UserDataItem = {
             type: "item",
             id: id,
@@ -73,7 +79,7 @@ const LocalDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedLocalItem }) 
       );
 
       if (file) {
-        reader.readAsDataURL(file);
+        reader.readAsText(file, "UTF-8");
       }
 
       setFileList([...files]);
