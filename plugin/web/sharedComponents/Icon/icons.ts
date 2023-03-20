@@ -76,6 +76,7 @@ import { ReactComponent as GearWheel } from "./Icons/gearWheel.svg";
 
 // Ant Design Icons
 import { HolderOutlined } from "@ant-design/icons";
+import { PlayCircleFilled } from "@ant-design/icons";
 
 export { InboxOutlined } from "@ant-design/icons";
 
@@ -153,4 +154,5 @@ export default {
   mouseRightButton: MouseRightButton,
   gearWheel: GearWheel,
   holder: HolderOutlined,
+  playCircle: PlayCircleFilled,
 };
