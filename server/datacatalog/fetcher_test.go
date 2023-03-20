@@ -13,12 +13,9 @@ import (
 )
 
 func TestFetcher(t *testing.T) {
-	// res := lo.Must(lo.Must(NewFetcher(nil, Config{
-	// 	CMSBase:    "",
-	// 	CMSProject: "",
-	// })).Do(context.Background()))
-	// j := res.usecase()
-	// t.Log(string(lo.Must(json.MarshalIndent(j, "", "  "))))
+	// f := lo.Must(NewFetcher(nil, ""))
+	// res := lo.Must(f.Do(context.Background(), "")).All()
+	// t.Log(string(lo.Must(json.MarshalIndent(res, "", "  "))))
 }
 
 func TestFetcher_Do(t *testing.T) {

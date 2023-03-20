@@ -47,6 +47,7 @@ type PlateauItem struct {
 	DescriptionHtd  []string           `json:"description_htd"`
 	DescriptionLfld []string           `json:"description_lfld"`
 	DescriptionTnm  []string           `json:"description_tnm"`
+	DescriptionBrid string             `json:"description_brid"`
 	Bldg            []*cms.PublicAsset `json:"bldg"`
 	Tran            []*cms.PublicAsset `json:"tran"`
 	Frn             []*cms.PublicAsset `json:"frn"`
@@ -58,6 +59,7 @@ type PlateauItem struct {
 	Htd             []*cms.PublicAsset `json:"htd"`
 	Ifld            []*cms.PublicAsset `json:"ifld"`
 	Tnm             []*cms.PublicAsset `json:"tnm"`
+	Brid            []*cms.PublicAsset `json:"brid"`
 	Dictionary      *cms.PublicAsset   `json:"dictionary"`
 	Dic             string             `json:"dic"`
 	SearchIndex     []*cms.PublicAsset `json:"search_index"`
@@ -163,6 +165,15 @@ func (i PlateauItem) TnmItems(c PlateauIntermediateItem) []*DataCatalogItem {
 	})
 }
 
+func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
+	if len(i.Brid) == 0 {
+		return nil
+	}
+
+	a := i.Brid[0]
+	return c.DataCatalogItem("橋梁モデル", AssetNameFrom(a.URL), a.URL, i.DescriptionBrid, nil)
+}
+
 func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 	c := i.IntermediateItem()
 	if c.ID == "" {
@@ -170,7 +181,7 @@ func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 	}
 
 	return util.DerefSlice(lo.Filter(
-		append(append(append(append(append(append(
+		append(append(append(append(append(append(append(
 			i.BldgItems(c),
 			i.TranItem(c),
 			i.FrnItem(c),
@@ -181,7 +192,8 @@ func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 			i.FldItems(c)...),
 			i.TnmItems(c)...),
 			i.HtdItems(c)...),
-			i.IfldItems(c)...,
+			i.IfldItems(c)...),
+			i.BridItem(c),
 		),
 		func(i *DataCatalogItem, _ int) bool {
 			return i != nil

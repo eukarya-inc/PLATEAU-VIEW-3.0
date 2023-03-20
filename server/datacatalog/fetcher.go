@@ -138,7 +138,7 @@ func (f *Fetcher) get(ctx context.Context, project, model string, page, perPage 
 	u := f.url(project, model, page, perPage)
 	log.Infof("datacatalog: get: %s", u)
 
-	ctx2, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx2, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx2, "GET", u, nil)
