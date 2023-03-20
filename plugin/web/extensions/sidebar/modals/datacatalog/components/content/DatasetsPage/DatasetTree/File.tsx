@@ -13,7 +13,7 @@ export type Props = {
   onDatasetAdd: (dataset: DataCatalogItem) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
   onSelect?: (dataID: string) => void;
-  setExpandedKeys: React.Dispatch<React.SetStateAction<string[]>>;
+  setExpandedFolders: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
 };
 
 const File: React.FC<Props> = ({
@@ -25,7 +25,7 @@ const File: React.FC<Props> = ({
   onDatasetAdd,
   onOpenDetails,
   onSelect,
-  setExpandedKeys,
+  setExpandedFolders,
 }) => {
   const handleClick = useCallback(() => {
     onDatasetAdd(item);
@@ -46,12 +46,13 @@ const File: React.FC<Props> = ({
     if (selectedDataset) {
       onOpenDetails?.(selectedDataset);
       onSelect?.(selectedDataset.dataID);
-      if (selected && item.path) setExpandedKeys([...item.path]);
+      const newExpandedFolders = item.path?.map(item => ({ name: item }));
+      if (selected && newExpandedFolders) setExpandedFolders(newExpandedFolders);
       setTimeout(() => {
         (window as any).selectedDataset = undefined;
       }, 500);
     }
-  }, [item.path, onOpenDetails, onSelect, selected, setExpandedKeys]);
+  }, [item.path, onOpenDetails, onSelect, selected, setExpandedFolders]);
 
   const name = useMemo(() => getNameFromPath(item.name), [item.name]);
 

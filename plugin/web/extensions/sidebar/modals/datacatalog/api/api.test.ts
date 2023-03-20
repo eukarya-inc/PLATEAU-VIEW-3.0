@@ -58,20 +58,25 @@ test("modifyDataCatalog", () => {
 test("getRawDataCatalogTree by cities", () => {
   expect(getRawDataCatalogTree(dataCatalog, "city", "")).toEqual([
     {
+      id: "node-0",
       name: "全球データ",
       children: [zenkyuData],
     },
     {
+      id: "node-2",
       name: "東京都",
       children: [
         {
+          id: "node-3",
           name: "東京都23区",
           children: [
             {
+              id: "node-4",
               name: "千代田区",
               children: [chiyodakuBldg, chiyodakuShelter],
             },
             {
+              id: "node-7",
               name: "世田谷区",
               children: [setagayakuBldg, setagayakuShelter],
             },
@@ -79,23 +84,31 @@ test("getRawDataCatalogTree by cities", () => {
           ],
         },
         {
+          id: "node-11",
           name: "八王子市",
           children: [hachiojiBldg, hachiojiLandmark],
         },
         {
+          id: "node-14",
           name: "ユースケース",
           children: [tokyoUsecase],
         },
       ],
     },
     {
+      id: "node-16",
       name: "栃木県",
       children: [
         {
+          id: "node-17",
           name: "宇都宮市",
           children: [
             utsunomiyashiBldg,
-            { name: "都市計画決定情報モデル", children: [utsunomiyashiUseDictrict] },
+            {
+              id: "node-19",
+              name: "都市計画決定情報モデル",
+              children: [utsunomiyashiUseDictrict],
+            },
           ],
         },
       ],
@@ -106,12 +119,15 @@ test("getRawDataCatalogTree by cities", () => {
 test("getRawDataCatalogTree by types", () => {
   expect(getRawDataCatalogTree(dataCatalog, "type", "")).toEqual([
     {
+      id: "node-0",
       name: "建築物モデル",
       children: [
         {
+          id: "node-1",
           name: "東京都",
           children: [
             {
+              id: "node-2",
               name: "東京都23区",
               children: [chiyodakuBldgByType, setagayakuBldgByType],
             },
@@ -119,18 +135,22 @@ test("getRawDataCatalogTree by types", () => {
           ],
         },
         {
+          id: "node-6",
           name: "栃木県",
           children: [utsunomiyashiBldgByType],
         },
       ],
     },
     {
+      id: "node-8",
       name: "都市計画決定情報モデル",
       children: [
         {
+          id: "node-9",
           name: "栃木県",
           children: [
             {
+              id: "node-10",
               name: "宇都宮市",
               children: [utsunomiyashiUseDictrictByType],
             },
@@ -139,12 +159,15 @@ test("getRawDataCatalogTree by types", () => {
       ],
     },
     {
+      id: "node-12",
       name: "避難施設情報",
       children: [
         {
+          id: "node-13",
           name: "東京都",
           children: [
             {
+              id: "node-14",
               name: "東京都23区",
               children: [chiyodakuShelterByType, setagayakuShelterByType],
             },
@@ -153,31 +176,38 @@ test("getRawDataCatalogTree by types", () => {
       ],
     },
     {
+      id: "node-17",
       name: "ランドマーク情報",
       children: [
         {
+          id: "node-18",
           name: "東京都",
           children: [hachiojiLandmarkByType],
         },
       ],
     },
     {
+      id: "node-20",
       name: "公園情報",
       children: [
         {
+          id: "node-21",
           name: "東京都",
           children: [tokyo23kuParkByType],
         },
       ],
     },
     {
+      id: "node-23",
       name: "ユースケース",
       children: [
         {
+          id: "node-24",
           name: "全球データ",
           children: [zenkyuDataByType],
         },
         {
+          id: "node-26",
           name: "東京都",
           children: [tokyoUsecaseByType],
         },
@@ -189,12 +219,15 @@ test("getRawDataCatalogTree by types", () => {
 test("getRawDataCatalogTree filter", () => {
   expect(getRawDataCatalogTree(dataCatalog, "type", "世田谷")).toEqual([
     {
+      id: "node-0",
       name: "建築物モデル",
       children: [
         {
+          id: "node-1",
           name: "東京都",
           children: [
             {
+              id: "node-2",
               name: "東京都23区",
               children: [setagayakuBldgByType],
             },
@@ -203,12 +236,15 @@ test("getRawDataCatalogTree filter", () => {
       ],
     },
     {
+      id: "node-4",
       name: "避難施設情報",
       children: [
         {
+          id: "node-5",
           name: "東京都",
           children: [
             {
+              id: "node-6",
               name: "東京都23区",
               children: [setagayakuShelterByType],
             },

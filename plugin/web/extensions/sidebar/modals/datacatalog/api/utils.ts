@@ -1,9 +1,11 @@
-export type Tree<T> = { name: string; children?: Tree<T>[]; item?: T };
+export type Tree<T> = { id: string; name: string; children?: Tree<T>[]; item?: T };
 
 export function makeTree<T extends { path: string[] }>(items: T[]): Tree<T>[] {
   type R = { result: Tree<T>[]; map: Record<string, R> };
   const result: Tree<T>[] = [];
   const level: R = { result, map: {} };
+
+  let idCounter = 0;
 
   items.forEach(item => {
     item.path.reduce<R>((r, name, i, a) => {
@@ -11,7 +13,9 @@ export function makeTree<T extends { path: string[] }>(items: T[]): Tree<T>[] {
       if (!r.map[name]) {
         const list: R = { result: [], map: {} };
         r.map[name] = list;
-        r.result.push({ name, ...(last ? { item } : { children: list.result }) });
+
+        const id = `node-${idCounter++}`;
+        r.result.push({ id, name, ...(last ? { item } : { children: list.result }) });
       }
       return r.map[name];
     }, level);

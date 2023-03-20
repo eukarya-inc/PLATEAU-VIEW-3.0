@@ -8,6 +8,7 @@ export type Root = {
 };
 
 export type DataCatalogGroup = {
+  id: string;
   name: string;
   children: DataCatalogTreeItem[];
 };
