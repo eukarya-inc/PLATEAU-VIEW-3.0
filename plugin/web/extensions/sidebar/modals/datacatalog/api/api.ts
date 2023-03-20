@@ -208,6 +208,7 @@ const tokyo = "東京都";
 const types = [
   "bldg",
   "tran",
+  "brid",
   "veg",
   "frn",
   "luse",
