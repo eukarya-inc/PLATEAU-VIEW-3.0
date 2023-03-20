@@ -27,11 +27,15 @@ const FileSelectPane: React.FC<Props> = ({ onOpenDetails }) => {
 
   return (
     <Wrapper>
-      <StyledTabs defaultActiveKey="local" onChange={handleTabChange}>
-        <Tabs.TabPane tab="ローカルのデータを追加" key="local">
+      <StyledTabs defaultActiveKey="local" onChange={handleTabChange} tabBarGutter={0}>
+        <Tabs.TabPane
+          tab={<span style={{ marginRight: "2px" }}>ローカルのデータを追加 </span>}
+          key="local">
           <LocalDataTab onOpenDetails={onOpenDetails} setSelectedLocalItem={setSelectedLocalItem} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Webからデータを追加" key="web">
+        <Tabs.TabPane
+          tab={<span style={{ marginLeft: "2px" }}> Webからデータを追加 </span>}
+          key="web">
           <WebDataTab onOpenDetails={onOpenDetails} setSelectedWebItem={setSelectedWebItem} />
         </Tabs.TabPane>
       </StyledTabs>
@@ -47,4 +51,7 @@ const Wrapper = styled.div`
 
 const StyledTabs = styled(Tabs)`
   margin-bottom: 12px;
+  .ant-tabs-nav .ant-tabs-nav-more {
+    display: none;
+  }
 `;
