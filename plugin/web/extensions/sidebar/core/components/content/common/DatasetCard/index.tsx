@@ -70,7 +70,8 @@ const DatasetCard: React.FC<Props> = ({
 }) => {
   const [currentTab, changeTab] = useState<Tabs>("default");
 
-  const ref = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const {
     activeComponentIDs,
@@ -250,7 +251,7 @@ const DatasetCard: React.FC<Props> = ({
       };
     },
     hover(item: DragItem, monitor) {
-      if (!ref.current) {
+      if (!previewRef.current) {
         return;
       }
       const dragIndex = item.index;
@@ -258,7 +259,7 @@ const DatasetCard: React.FC<Props> = ({
       if (dragIndex === hoverIndex) {
         return;
       }
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      const hoverBoundingRect = previewRef.current?.getBoundingClientRect();
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       const clientOffset = monitor.getClientOffset();
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
@@ -273,7 +274,7 @@ const DatasetCard: React.FC<Props> = ({
     },
   });
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: "card",
     item: () => {
       return { id, index };
@@ -285,10 +286,11 @@ const DatasetCard: React.FC<Props> = ({
 
   const opacity = useMemo(() => (isDragging ? 0 : 1), [isDragging]);
 
-  drag(drop(ref));
+  drag(dragRef);
+  drop(preview(previewRef));
 
   return (
-    <div ref={ref} style={{ opacity }} data-handler-id={handlerId}>
+    <div ref={previewRef} style={{ opacity }} data-handler-id={handlerId}>
       <StyledAccordionComponent allowZeroExpanded preExpanded={["datasetcard"]}>
         <AccordionItem uuid="datasetcard">
           <AccordionItemState>
@@ -297,7 +299,9 @@ const DatasetCard: React.FC<Props> = ({
                 <StyledAccordionItemButton>
                   <HeaderContents>
                     <LeftMain>
-                      <Icon icon="holder" cursor="move" size={20} />
+                      <div ref={dragRef}>
+                        <Icon icon="holder" cursor="move" size={20} />
+                      </div>
                       <Icon
                         icon={!dataset.visible ? "hidden" : "visible"}
                         size={20}
