@@ -1,5 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
+import { checkKeyPress } from "@web/extensions/sidebar/utils";
 import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Icon, Input } from "@web/sharedComponents";
 import Popconfirm, { PopconfirmProps } from "@web/sharedComponents/Popconfirm";
@@ -13,7 +14,7 @@ export type Props = {
   inEditor?: boolean;
   requireLayerName?: boolean;
   contentSection?: ComponentType;
-  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
   onDatasetPublish?: (dataID: string, publish: boolean) => void;
 };
 
@@ -38,12 +39,17 @@ const DatasetDetails: React.FC<Props> = ({
     onDatasetPublish?.(datasetToUpdate.dataID, !datasetToUpdate.public);
   }, [dataset, onDatasetPublish]);
 
-  const handleDatasetAdd = useCallback(() => {
-    if (!dataset || addDisabled) return;
-    const terminalDataset = dataset;
-    if (layers.length) terminalDataset.layers = layers;
-    onDatasetAdd(terminalDataset);
-  }, [dataset, addDisabled, layers, onDatasetAdd]);
+  const handleDatasetAdd = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!dataset || addDisabled) return;
+      const terminalDataset = dataset;
+      if (layers.length) terminalDataset.layers = layers;
+
+      const keyPressed = checkKeyPress(e, ["shift", "meta", "ctrl"]);
+      onDatasetAdd(terminalDataset, keyPressed);
+    },
+    [dataset, addDisabled, layers, onDatasetAdd],
+  );
 
   const handleLayersAddOnDataset = useCallback(
     (event: ChangeEvent<HTMLInputElement>) => {
@@ -167,7 +173,7 @@ const ButtonWrapper = styled.div`
 `;
 
 const LayerNamesWrapper = styled.div`
-  marginbottom: 16px;
+  margin-bottom: 16px;
 `;
 
 const BaseButton = styled.button<{ disabled?: boolean }>`

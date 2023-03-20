@@ -20,7 +20,7 @@ export type Props = {
   addDisabled: (dataID: string) => boolean;
   onFilter: (filter: GroupBy) => void;
   onTagSelect?: (tag: Tag) => void;
-  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 

@@ -12,7 +12,7 @@ type Props = {
   addedDatasetDataIDs?: string[];
   isMobile?: boolean;
   catalogData?: DataCatalogItem[];
-  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
 };
 
 const Catalog: React.FC<Props> = ({ addedDatasetDataIDs, isMobile, catalogData, onDatasetAdd }) => {

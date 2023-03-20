@@ -10,7 +10,7 @@ export type Props = {
   isMobile?: boolean;
   expandAll?: boolean;
   addDisabled: (dataID: string) => boolean;
-  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 

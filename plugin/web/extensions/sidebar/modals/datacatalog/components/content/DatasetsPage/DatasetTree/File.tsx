@@ -1,4 +1,5 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
+import { checkKeyPress } from "@web/extensions/sidebar/utils";
 import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
@@ -10,7 +11,7 @@ export type Props = {
   nestLevel: number;
   selectedID?: string;
   addDisabled: (dataID: string) => boolean;
-  onDatasetAdd: (dataset: DataCatalogItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
   onSelect?: (dataID: string) => void;
   setExpandedFolders: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
@@ -27,9 +28,13 @@ const File: React.FC<Props> = ({
   onSelect,
   setExpandedFolders,
 }) => {
-  const handleClick = useCallback(() => {
-    onDatasetAdd(item);
-  }, [item, onDatasetAdd]);
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const keyPressed = checkKeyPress(e, ["shift", "meta", "ctrl"]);
+      onDatasetAdd(item, keyPressed);
+    },
+    [item, onDatasetAdd],
+  );
 
   const handleOpenDetails = useCallback(() => {
     onOpenDetails?.(item);

@@ -10,7 +10,7 @@ type ActionType =
   | "storageFetch"
   | "storageKeys"
   | "storageDelete"
-  | "updateCatalog"
+  | "updateDataCatalog"
   | "updateProject"
   | "screenshot"
   | "screenshotPreview"

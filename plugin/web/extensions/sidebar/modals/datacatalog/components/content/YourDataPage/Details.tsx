@@ -1,13 +1,12 @@
 import DetailsComponent from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetDetails";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { styled } from "@web/theme";
-import { useCallback } from "react";
 
 export type Props = {
   isShareable?: boolean;
   requireLayerName?: boolean;
   dataset?: UserDataItem;
-  onDatasetAdd: (dataset: UserDataItem) => void;
+  onDatasetAdd: (dataset: UserDataItem, keepModalOpen?: boolean) => void;
 };
 
 const DatasetDetails: React.FC<Props> = ({
@@ -16,11 +15,6 @@ const DatasetDetails: React.FC<Props> = ({
   requireLayerName,
   onDatasetAdd,
 }) => {
-  const handleDatasetAdd = useCallback(() => {
-    if (!dataset) return;
-    onDatasetAdd({ ...dataset, visible: true });
-  }, [dataset, onDatasetAdd]);
-
   const ContentComponent: React.FC = () => (
     <Content
       dangerouslySetInnerHTML={{
@@ -35,7 +29,7 @@ const DatasetDetails: React.FC<Props> = ({
       isShareable={isShareable}
       requireLayerName={requireLayerName}
       addDisabled={false}
-      onDatasetAdd={handleDatasetAdd}
+      onDatasetAdd={onDatasetAdd}
       contentSection={ContentComponent}
     />
   ) : (

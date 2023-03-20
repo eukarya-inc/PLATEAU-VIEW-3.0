@@ -122,7 +122,7 @@ export default () => {
   }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    postMsg({ action: "updateCatalog", payload: processedCatalog });
+    postMsg({ action: "updateDataCatalog", payload: processedCatalog });
   }, [processedCatalog]);
 
   // ****************************************

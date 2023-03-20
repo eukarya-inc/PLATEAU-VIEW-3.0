@@ -7,7 +7,7 @@ import Details from "./Details";
 import FileSelectPane from "./FileSelect";
 
 export type Props = {
-  onDatasetAdd: (dataset: UserDataItem) => void;
+  onDatasetAdd: (dataset: UserDataItem, keepModalOpen?: boolean) => void;
 };
 
 const YourDataPage: React.FC<Props> = ({ onDatasetAdd }) => {

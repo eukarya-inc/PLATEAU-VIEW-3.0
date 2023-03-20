@@ -12,7 +12,7 @@ export type Props = {
   catalog?: DataCatalogItem[];
   addedDatasetDataIDs?: string[];
   inEditor?: boolean;
-  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
   onDatasetPublish: (dataID: string, publish: boolean) => void;
 };
 

@@ -18,7 +18,7 @@ export type Props = {
   inEditor?: boolean;
   addDisabled: (dataID: string) => boolean;
   onTagSelect?: (tag: TagType) => void;
-  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem) => void;
+  onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
   onDatasetPublish?: (dataID: string, publish: boolean) => void;
 };
 
