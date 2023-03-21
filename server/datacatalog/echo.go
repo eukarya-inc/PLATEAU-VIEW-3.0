@@ -31,7 +31,7 @@ func Echo(cfg Config, e *echo.Group) error {
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	}, middleware.CORS())
+	}, middleware.CORS(), c)
 
 	e.GET("/:project", func(c echo.Context) error {
 		res, err := f.Do(c.Request().Context(), c.Param("project"))

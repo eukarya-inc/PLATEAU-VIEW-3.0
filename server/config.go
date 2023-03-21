@@ -56,9 +56,10 @@ type Config struct {
 	Geospatialjp_CatalocCheck_Disable bool
 	DataConv_Disable                  bool
 	Indexer_Delegate                  bool
-	DataCatalog_Cache                 bool
+	DataCatalog_DisableCache          bool
 	DataCatalog_CacheTTL              int
 	DataCatalog_CacheSize             string
+	DataCatalog_CacheGCParcent        int
 }
 
 func NewConfig() (*Config, error) {
@@ -174,11 +175,12 @@ func (c *Config) Sidebar() sidebar.Config {
 
 func (c *Config) DataCatalog() datacatalog.Config {
 	return datacatalog.Config{
-		CMSBase:    c.CMS_BaseURL,
-		CMSProject: c.CMS_PlateauProject,
-		Cache:      c.DataCatalog_Cache,
-		CacheTTL:   c.DataCatalog_CacheTTL,
-		CacheSize:  c.DataCatalog_CacheSize,
+		CMSBase:        c.CMS_BaseURL,
+		CMSProject:     c.CMS_PlateauProject,
+		DisableCache:   c.DataCatalog_DisableCache,
+		CacheTTL:       c.DataCatalog_CacheTTL,
+		CacheSize:      c.DataCatalog_CacheSize,
+		CacheGCParcent: c.DataCatalog_CacheGCParcent,
 	}
 }
 

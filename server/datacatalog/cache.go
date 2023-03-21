@@ -1,6 +1,7 @@
 package datacatalog
 
 import (
+	"runtime/debug"
 	"time"
 
 	cache "github.com/SporkHubr/echo-http-cache"
@@ -14,7 +15,7 @@ var defaultCacheSize = datasize.MustParseString("20 mb")
 var defaultCacheTTL = 3 * 60
 
 func cacheMiddleware(cfg Config) (echo.MiddlewareFunc, error) {
-	if cfg.Cache {
+	if cfg.DisableCache {
 		return func(next echo.HandlerFunc) echo.HandlerFunc {
 			return next
 		}, nil
@@ -50,7 +51,13 @@ func cacheMiddleware(cfg Config) (echo.MiddlewareFunc, error) {
 		return nil, err
 	}
 
-	log.Infof("datacatalog: cache enabled: size=%s, ttl=%ds", size.HumanReadable(), cfg.CacheTTL)
+	if cfg.CacheGCParcent > 0 {
+		debug.SetGCPercent(cfg.CacheGCParcent)
+	} else {
+		cfg.CacheGCParcent = 100
+	}
+
+	log.Infof("datacatalog: cache enabled: size=%s, ttl=%ds, gcparcent=%d", size.HumanReadable(), cfg.CacheTTL, cfg.CacheGCParcent)
 
 	return cacheClient.Middleware(), nil
 }
