@@ -231,7 +231,7 @@ type InfoboxStyle = FieldBase<"infoboxStyle"> & {
   displayStyle: "attributes" | "description" | null;
 };
 
-type PointColor = FieldBase<"pointColor"> & {
+export type PointColor = FieldBase<"pointColor"> & {
   pointColors?: {
     condition: Cond<number>;
     color: string;
@@ -272,7 +272,7 @@ type PointModel = FieldBase<"pointModel"> & {
   scale?: number;
 };
 
-type PointStroke = FieldBase<"pointStroke"> & {
+export type PointStroke = FieldBase<"pointStroke"> & {
   items?: {
     strokeColor: string;
     strokeWidth: number;
@@ -286,7 +286,7 @@ type PointCSV = FieldBase<"pointCSV"> & {
   height?: string;
 };
 
-type PolylineColor = FieldBase<"polylineColor"> & {
+export type PolylineColor = FieldBase<"polylineColor"> & {
   items?: {
     condition: Cond<number>;
     color: string;
@@ -304,7 +304,7 @@ type PolylineStrokeWeight = FieldBase<"polylineStrokeWeight"> & {
   strokeWidth: number;
 };
 
-type PolygonColor = FieldBase<"polygonColor"> & {
+export type PolygonColor = FieldBase<"polygonColor"> & {
   items?: {
     condition: Cond<number>;
     color: string;
@@ -318,7 +318,7 @@ type PolygonColorGradient = FieldBase<"polygonColorGradient"> & {
   step?: number;
 };
 
-type PolygonStroke = FieldBase<"polygonStroke"> & {
+export type PolygonStroke = FieldBase<"polygonStroke"> & {
   items?: {
     strokeColor: string;
     strokeWidth: number;

@@ -4,10 +4,11 @@ import {
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useState } from "react";
+import { styled, commonStyles } from "@web/theme";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { stringifyCondition } from "../../../utils";
-import { BaseFieldProps, Cond } from "../../types";
+import { BaseFieldProps, Cond, PointColor as PointColorType } from "../../types";
 
 import PointColorItem from "./PointColorItem";
 
@@ -58,35 +59,44 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
     });
   };
 
-  useEffect(() => {
-    if (value.pointColors === pointColors) return;
-
-    const timer = setTimeout(() => {
-      const conditions: [string, string][] = [["true", 'color("white")']];
-      pointColors?.forEach(item => {
-        const res = "color" + `("${item.color}")`;
-        const cond = stringifyCondition(item.condition);
-        conditions.unshift([cond, res]);
-      });
-      onUpdate({
-        ...value,
-        pointColors,
-        override: {
-          marker: {
-            style: "point",
-            pointColor: {
-              expression: {
-                conditions,
-              },
-            },
+  const generateOverride = useCallback((pointColors: PointColorType["pointColors"]) => {
+    const conditions: [string, string][] = [["true", 'color("white")']];
+    pointColors?.forEach(item => {
+      const res = "color" + `("${item.color}")`;
+      const cond = stringifyCondition(item.condition);
+      conditions.unshift([cond, res]);
+    });
+    return {
+      marker: {
+        style: "point",
+        pointColor: {
+          expression: {
+            conditions,
           },
         },
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
+      },
     };
-  }, [pointColors, value, onUpdate]);
+  }, []);
+
+  const [override, updateOverride] = useState<{ marker: any }>(generateOverride(value.pointColors));
+  const valueRef = useRef(value);
+  const itemsRef = useRef(pointColors);
+  const onUpdateRef = useRef(onUpdate);
+  valueRef.current = value;
+  itemsRef.current = pointColors;
+  onUpdateRef.current = onUpdate;
+
+  const handleApply = useCallback(() => {
+    updateOverride(generateOverride(pointColors));
+  }, [generateOverride, pointColors]);
+
+  useEffect(() => {
+    onUpdateRef.current({
+      ...valueRef.current,
+      pointColors: itemsRef.current,
+      override,
+    });
+  }, [override]);
 
   return editMode ? (
     <Wrapper>
@@ -104,8 +114,13 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />
       </ButtonWrapper>
+      <Button onClick={handleApply}>Apply</Button>
     </Wrapper>
   ) : null;
 };
+
+const Button = styled.div`
+  ${commonStyles.simpleButton}
+`;
 
 export default PointColor;

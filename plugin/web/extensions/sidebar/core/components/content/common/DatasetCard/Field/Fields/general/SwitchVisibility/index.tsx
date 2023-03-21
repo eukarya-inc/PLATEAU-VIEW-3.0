@@ -11,16 +11,16 @@ import {
   postMsg,
 } from "@web/extensions/sidebar/utils";
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
-import { styled } from "@web/theme";
+import { styled, commonStyles } from "@web/theme";
 import { useState, useCallback, useEffect, useRef } from "react";
 
 import { stringifyCondition } from "../../../utils";
-import { BaseFieldProps, SwitchVisibility } from "../../types";
+import { BaseFieldProps, SwitchVisibility as SwitchVisibilityType } from "../../types";
 
 import ConditionItem from "./ConditionItem";
 
 type UIStyles = "dropdown" | "radio";
-export type ConditionItemType = SwitchVisibility["conditions"][0];
+export type ConditionItemType = SwitchVisibilityType["conditions"][0];
 
 const uiStyles: { [key: string]: string } = {
   dropdown: "ドロップダウン",
@@ -53,7 +53,7 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
     />
   );
 
-  const [conditions, setConditions] = useState<SwitchVisibility["conditions"]>(
+  const [conditions, setConditions] = useState<SwitchVisibilityType["conditions"]>(
     value.conditions ?? [],
   );
 
@@ -94,7 +94,6 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
     });
   };
 
-  //
   const [selectedVisibility, setSelectedVisibility] = useState<string | undefined>(
     value.userSettings?.selected ?? value.conditions?.[0]?.id,
   );
@@ -121,13 +120,8 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
     />
   );
 
-  const valueRef = useRef(value);
-  const onUpdateRef = useRef<any>();
-  valueRef.current = value;
-  onUpdateRef.current = onUpdate;
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
+  const generateOverride = useCallback(
+    (conditions: SwitchVisibilityType["conditions"], selectedVisibility?: string) => {
       const showConditions: [string, string][] = [["true", "false"]];
 
       const selectedCondition = conditions.find(c => c.id === selectedVisibility)?.condition;
@@ -142,26 +136,47 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
           },
         },
       };
+      return {
+        marker: appearanceOverride,
+        polyline: appearanceOverride,
+        polygon: appearanceOverride,
+        "3dtiles": appearanceOverride,
+      };
+    },
+    [],
+  );
 
-      onUpdateRef.current({
-        ...valueRef.current,
-        uiStyle: selectedStyle,
-        conditions,
-        userSettings: {
-          selected: selectedVisibility,
-        },
-        override: {
-          marker: appearanceOverride,
-          polyline: appearanceOverride,
-          polygon: appearanceOverride,
-          "3dtiles": appearanceOverride,
-        },
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [conditions, selectedStyle, selectedVisibility]);
+  const [override, updateOverride] = useState<{ polygon: any }>(
+    generateOverride(conditions, selectedVisibility),
+  );
+  const valueRef = useRef(value);
+  const conditionsRef = useRef(conditions);
+  const selectedVisibilityRef = useRef(selectedVisibility);
+  const onUpdateRef = useRef<any>();
+  valueRef.current = value;
+  conditionsRef.current = conditions;
+  selectedVisibilityRef.current = selectedVisibility;
+  onUpdateRef.current = onUpdate;
+
+  const handleApply = useCallback(() => {
+    updateOverride(generateOverride(conditions, selectedVisibility));
+  }, [generateOverride, conditions, selectedVisibility]);
+
+  useEffect(() => {
+    onUpdateRef.current({
+      ...valueRef.current,
+      uiStyle: selectedStyle,
+      conditions: conditionsRef.current,
+      userSettings: {
+        selected: selectedVisibilityRef.current,
+      },
+      override,
+    });
+  }, [selectedStyle, override]);
+
+  useEffect(() => {
+    updateOverride(generateOverride(conditionsRef.current, selectedVisibility));
+  }, [selectedVisibility, generateOverride]);
 
   useEffect(() => {
     if (
@@ -203,6 +218,7 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />
       </ButtonWrapper>
+      <Button onClick={handleApply}>Apply</Button>
     </Wrapper>
   ) : (
     <Wrapper>
@@ -287,6 +303,10 @@ const StyledRadio = styled(Radio)`
 
 const Label = styled.span`
   font-size: 14px;
+`;
+
+const Button = styled.div`
+  ${commonStyles.simpleButton}
 `;
 
 export default SwitchVisibility;

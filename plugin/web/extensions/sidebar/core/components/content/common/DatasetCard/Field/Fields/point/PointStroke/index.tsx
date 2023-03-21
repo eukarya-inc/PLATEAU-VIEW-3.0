@@ -4,10 +4,11 @@ import {
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useState } from "react";
+import { styled, commonStyles } from "@web/theme";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { stringifyCondition } from "../../../utils";
-import { BaseFieldProps, Cond } from "../../types";
+import { BaseFieldProps, Cond, PointStroke as PointStrokeType } from "../../types";
 
 import PointStrokeItem from "./PointStrokeItem";
 
@@ -71,42 +72,52 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode,
     });
   };
 
-  useEffect(() => {
-    if (value.items === items) return;
-    const timer = setTimeout(() => {
-      const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
-      const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
-      items?.forEach(item => {
-        const resStrokeColor = "color" + `("${item.strokeColor}")`;
-        const resStrokeWidth = String(item.strokeWidth);
-        const cond = stringifyCondition(item.condition);
-        pointOutlineColorConditions.unshift([cond, resStrokeColor]);
-        pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
-        onUpdate({
-          ...value,
-          items,
-          override: {
-            marker: {
-              style: "point",
-              pointOutlineColor: {
-                expression: {
-                  conditions: pointOutlineColorConditions,
-                },
-              },
-              pointOutlineWidth: {
-                expression: {
-                  conditions: pointOutlineWidthConditions,
-                },
-              },
-            },
+  const generateOverride = useCallback((items: PointStrokeType["items"]) => {
+    const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
+    const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
+    items?.forEach(item => {
+      const resStrokeColor = "color" + `("${item.strokeColor}")`;
+      const resStrokeWidth = String(item.strokeWidth);
+      const cond = stringifyCondition(item.condition);
+      pointOutlineColorConditions.unshift([cond, resStrokeColor]);
+      pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
+    });
+    return {
+      marker: {
+        style: "point",
+        pointOutlineColor: {
+          expression: {
+            conditions: pointOutlineColorConditions,
           },
-        });
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
+        },
+        pointOutlineWidth: {
+          expression: {
+            conditions: pointOutlineWidthConditions,
+          },
+        },
+      },
     };
-  }, [items, value, onUpdate]);
+  }, []);
+
+  const [override, updateOverride] = useState<{ marker: any }>(generateOverride(value.items));
+  const valueRef = useRef(value);
+  const itemsRef = useRef(items);
+  const onUpdateRef = useRef(onUpdate);
+  valueRef.current = value;
+  itemsRef.current = items;
+  onUpdateRef.current = onUpdate;
+
+  const handleApply = useCallback(() => {
+    updateOverride(generateOverride(items));
+  }, [generateOverride, items]);
+
+  useEffect(() => {
+    onUpdateRef.current({
+      ...valueRef.current,
+      items: itemsRef.current,
+      override,
+    });
+  }, [override]);
 
   return editMode ? (
     <Wrapper>
@@ -124,8 +135,13 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode,
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />
       </ButtonWrapper>
+      <Button onClick={handleApply}>Apply</Button>
     </Wrapper>
   ) : null;
 };
+
+const Button = styled.div`
+  ${commonStyles.simpleButton}
+`;
 
 export default PointStroke;

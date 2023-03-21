@@ -4,10 +4,11 @@ import {
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useState } from "react";
+import { styled, commonStyles } from "@web/theme";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { stringifyCondition } from "../../../utils";
-import { BaseFieldProps, Cond } from "../../types";
+import { BaseFieldProps, Cond, PolylineColor as PolylineColorType } from "../../types";
 
 import PolylineColorItem from "./PolylineColorItem";
 
@@ -62,33 +63,43 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
     });
   };
 
-  useEffect(() => {
-    if (value.items === items) return;
-    const timer = setTimeout(() => {
-      const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
-      items?.forEach(item => {
-        const resStrokeColor = "color" + `("${item.color}")`;
-        const cond = stringifyCondition(item.condition);
-        strokeColorConditions.unshift([cond, resStrokeColor]);
-      });
-      onUpdate({
-        ...value,
-        items,
-        override: {
-          polyline: {
-            strokeColor: {
-              expression: {
-                conditions: strokeColorConditions,
-              },
-            },
+  const generateOverride = useCallback((items: PolylineColorType["items"]) => {
+    const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
+    items?.forEach(item => {
+      const resStrokeColor = "color" + `("${item.color}")`;
+      const cond = stringifyCondition(item.condition);
+      strokeColorConditions.unshift([cond, resStrokeColor]);
+    });
+    return {
+      polyline: {
+        strokeColor: {
+          expression: {
+            conditions: strokeColorConditions,
           },
         },
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
+      },
     };
-  }, [items, value, onUpdate]);
+  }, []);
+
+  const [override, updateOverride] = useState<{ polyline: any }>(generateOverride(value.items));
+  const valueRef = useRef(value);
+  const itemsRef = useRef(items);
+  const onUpdateRef = useRef(onUpdate);
+  valueRef.current = value;
+  itemsRef.current = items;
+  onUpdateRef.current = onUpdate;
+
+  const handleApply = useCallback(() => {
+    updateOverride(generateOverride(items));
+  }, [generateOverride, items]);
+
+  useEffect(() => {
+    onUpdateRef.current({
+      ...valueRef.current,
+      items: itemsRef.current,
+      override,
+    });
+  }, [override]);
 
   return editMode ? (
     <Wrapper>
@@ -106,8 +117,13 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />
       </ButtonWrapper>
+      <Button onClick={handleApply}>Apply</Button>
     </Wrapper>
   ) : null;
 };
+
+const Button = styled.div`
+  ${commonStyles.simpleButton}
+`;
 
 export default PolylineColor;

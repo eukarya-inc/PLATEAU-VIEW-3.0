@@ -34,13 +34,13 @@ const AddButton: React.FC<Props> = ({
       trigger={["click"]}
       getPopupContainer={trigger => trigger.parentElement ?? document.body}>
       <StyledButton className={className} height={height}>
-        <Icon icon="plus" size={14} />
+        <StyledIcon icon="plus" size={14} />
         <Text>{text}</Text>
       </StyledButton>
     </Dropdown>
   ) : (
     <StyledButton className={className} onClick={onClick} height={height}>
-      <Icon icon="plus" size={14} />
+      <StyledIcon icon="plus" size={14} />
       <Text>{text}</Text>
     </StyledButton>
   );
@@ -63,6 +63,10 @@ const StyledButton = styled.div<{ height?: number }>`
   :hover {
     background: #f4f4f4;
   }
+`;
+
+const StyledIcon = styled(Icon)`
+  font-size: 0;
 `;
 
 const Text = styled.p`

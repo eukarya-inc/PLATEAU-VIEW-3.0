@@ -4,10 +4,11 @@ import {
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useState } from "react";
+import { styled, commonStyles } from "@web/theme";
+import { useCallback, useEffect, useState, useRef } from "react";
 
 import { stringifyCondition } from "../../../utils";
-import { BaseFieldProps, Cond } from "../../types";
+import { BaseFieldProps, Cond, PolygonStroke as PolygonStrokeType } from "../../types";
 
 import PolygonStrokeItem from "./PolygonStrokeItem";
 
@@ -71,49 +72,58 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
     });
   };
 
-  useEffect(() => {
-    if (value.items === items) return;
-
-    const timer = setTimeout(() => {
-      const strokeConditions: [string, string][] = [["true", "true"]];
-      const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
-      const strokeWidthConditions: [string, string][] = [["true", "1"]];
-      items?.forEach(item => {
-        const resStrokeColor = "color" + `("${item.strokeColor}")`;
-        const resStrokeWidth = String(item.strokeWidth);
-        const cond = stringifyCondition(item.condition);
-        strokeColorConditions.unshift([cond, resStrokeColor]);
-        strokeWidthConditions.unshift([cond, resStrokeWidth]);
-        strokeConditions.unshift([cond, cond]);
-      });
-      onUpdate({
-        ...value,
-        items,
-        override: {
-          polygon: {
-            stroke: {
-              expression: {
-                conditions: strokeConditions,
-              },
-            },
-            strokeColor: {
-              expression: {
-                conditions: strokeColorConditions,
-              },
-            },
-            strokeWidth: {
-              expression: {
-                conditions: strokeWidthConditions,
-              },
-            },
+  const generateOverride = useCallback((items: PolygonStrokeType["items"]) => {
+    const strokeConditions: [string, string][] = [["true", "true"]];
+    const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
+    const strokeWidthConditions: [string, string][] = [["true", "1"]];
+    items?.forEach(item => {
+      const resStrokeColor = "color" + `("${item.strokeColor}")`;
+      const resStrokeWidth = String(item.strokeWidth);
+      const cond = stringifyCondition(item.condition);
+      strokeColorConditions.unshift([cond, resStrokeColor]);
+      strokeWidthConditions.unshift([cond, resStrokeWidth]);
+      strokeConditions.unshift([cond, cond]);
+    });
+    return {
+      polygon: {
+        stroke: {
+          expression: {
+            conditions: strokeConditions,
           },
         },
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
+        strokeColor: {
+          expression: {
+            conditions: strokeColorConditions,
+          },
+        },
+        strokeWidth: {
+          expression: {
+            conditions: strokeWidthConditions,
+          },
+        },
+      },
     };
-  }, [items, value, onUpdate]);
+  }, []);
+
+  const [override, updateOverride] = useState<{ polygon: any }>(generateOverride(value.items));
+  const valueRef = useRef(value);
+  const itemsRef = useRef(items);
+  const onUpdateRef = useRef(onUpdate);
+  valueRef.current = value;
+  itemsRef.current = items;
+  onUpdateRef.current = onUpdate;
+
+  const handleApply = useCallback(() => {
+    updateOverride(generateOverride(items));
+  }, [generateOverride, items]);
+
+  useEffect(() => {
+    onUpdateRef.current({
+      ...valueRef.current,
+      items: itemsRef.current,
+      override,
+    });
+  }, [override]);
 
   return editMode ? (
     <Wrapper>
@@ -131,8 +141,13 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
       <ButtonWrapper>
         <AddButton text="Add Condition" height={24} onClick={handleAdd} />
       </ButtonWrapper>
+      <Button onClick={handleApply}>Apply</Button>
     </Wrapper>
   ) : null;
 };
+
+const Button = styled.div`
+  ${commonStyles.simpleButton}
+`;
 
 export default PolygonStroke;
