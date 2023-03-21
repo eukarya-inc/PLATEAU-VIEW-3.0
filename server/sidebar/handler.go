@@ -34,7 +34,7 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
-		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey)
+		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -42,7 +42,7 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 			return err
 		}
 
-		templates, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey)
+		templates, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey, false)
 		if err != nil {
 			return err
 		}
@@ -60,7 +60,7 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
-		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey)
+		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -81,7 +81,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 			return c.JSON(http.StatusNotFound, nil)
 		}
 
-		item, err := h.CMS.GetItem(ctx, itemID)
+		item, err := h.CMS.GetItem(ctx, itemID, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -192,7 +192,7 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
-		res, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey)
+		res, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -210,7 +210,7 @@ func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 		ctx := c.Request().Context()
 
 		templateID := c.Param("tid")
-		template, err := h.CMS.GetItem(ctx, templateID)
+		template, err := h.CMS.GetItem(ctx, templateID, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")

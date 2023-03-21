@@ -17,11 +17,11 @@ import (
 )
 
 type Interface interface {
-	GetItem(ctx context.Context, itemID string) (*Item, error)
-	GetItemsPartially(ctx context.Context, modelID string, page, perPage int) (*Items, error)
-	GetItems(ctx context.Context, modelID string) (*Items, error)
-	GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, page, perPage int) (*Items, error)
-	GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string) (*Items, error)
+	GetItem(ctx context.Context, itemID string, asset bool) (*Item, error)
+	GetItemsPartially(ctx context.Context, modelID string, page, perPage int, asset bool) (*Items, error)
+	GetItems(ctx context.Context, modelID string, asset bool) (*Items, error)
+	GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, page, perPage int, asset bool) (*Items, error)
+	GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, asset bool) (*Items, error)
 	CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error)
 	CreateItemByKey(ctx context.Context, projectID, modelID string, fields []Field) (*Item, error)
 	UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error)
@@ -52,8 +52,17 @@ func New(base, token string) (*CMS, error) {
 	}, nil
 }
 
-func (c *CMS) GetItem(ctx context.Context, itemID string) (*Item, error) {
-	b, err := c.send(ctx, http.MethodGet, []string{"api", "items", itemID}, "", nil)
+func (c *CMS) assetParam(asset bool) map[string][]string {
+	if !asset {
+		return make(map[string][]string)
+	}
+	return map[string][]string{
+		"asset": {"true"},
+	}
+}
+
+func (c *CMS) GetItem(ctx context.Context, itemID string, asset bool) (*Item, error) {
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "items", itemID}, "", c.assetParam(asset))
 	if err != nil {
 		return nil, fmt.Errorf("failed to get an item: %w", err)
 	}
@@ -67,8 +76,8 @@ func (c *CMS) GetItem(ctx context.Context, itemID string) (*Item, error) {
 	return item, nil
 }
 
-func (c *CMS) GetItemsPartially(ctx context.Context, modelID string, page, perPage int) (*Items, error) {
-	q := map[string][]string{}
+func (c *CMS) GetItemsPartially(ctx context.Context, modelID string, page, perPage int, asset bool) (*Items, error) {
+	q := c.assetParam(asset)
 	if page >= 1 {
 		q["page"] = []string{strconv.Itoa(page)}
 	}
@@ -90,11 +99,11 @@ func (c *CMS) GetItemsPartially(ctx context.Context, modelID string, page, perPa
 	return items, nil
 }
 
-func (c *CMS) GetItems(ctx context.Context, modelID string) (*Items, error) {
+func (c *CMS) GetItems(ctx context.Context, modelID string, asset bool) (*Items, error) {
 	var items *Items
 	const perPage = 100
 	for p := 1; ; p++ {
-		i, err := c.GetItemsPartially(ctx, modelID, p, perPage)
+		i, err := c.GetItemsPartially(ctx, modelID, p, perPage, asset)
 		if err != nil {
 			return nil, err
 		}
@@ -118,8 +127,8 @@ func (c *CMS) GetItems(ctx context.Context, modelID string) (*Items, error) {
 	return items, nil
 }
 
-func (c *CMS) GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, page, perPage int) (*Items, error) {
-	q := map[string][]string{}
+func (c *CMS) GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, page, perPage int, asset bool) (*Items, error) {
+	q := c.assetParam(asset)
 	if page >= 1 {
 		q["page"] = []string{strconv.Itoa(page)}
 	}
@@ -141,11 +150,11 @@ func (c *CMS) GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, mode
 	return items, nil
 }
 
-func (c *CMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string) (*Items, error) {
+func (c *CMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, asset bool) (*Items, error) {
 	var items *Items
 	const perPage = 100
 	for p := 1; ; p++ {
-		i, err := c.GetItemsPartiallyByKey(ctx, projectIDOrAlias, modelIDOrAlias, p, perPage)
+		i, err := c.GetItemsPartiallyByKey(ctx, projectIDOrAlias, modelIDOrAlias, p, perPage, asset)
 		if err != nil {
 			return nil, err
 		}

@@ -15,10 +15,34 @@ const (
 )
 
 type Asset struct {
-	ID                      string `json:"id"`
-	ProjectID               string `json:"projectId"`
-	URL                     string `json:"url"`
-	ArchiveExtractionStatus string `json:"archiveExtractionStatus"`
+	ID                      string `json:"id,omitempty"`
+	ProjectID               string `json:"projectId,omitempty"`
+	URL                     string `json:"url,omitempty"`
+	ContentType             string `json:"contentType,omitempty"`
+	ArchiveExtractionStatus string `json:"archiveExtractionStatus,omitempty"`
+	File                    *File  `json:"file,omitempty"`
+}
+
+type File struct {
+	Name        string `json:"name"`
+	Size        int    `json:"size"`
+	ContentType string `json:"contentType"`
+	Path        string `json:"path"`
+	Children    []File `json:"children"`
+}
+
+func (f File) Paths() []string {
+	return filePaths(f)
+}
+
+func filePaths(f File) (p []string) {
+	if len(f.Children) == 0 {
+		p = append(p, f.Path)
+	}
+	p = append(p, lo.FlatMap(f.Children, func(f File, _ int) []string {
+		return filePaths(f)
+	})...)
+	return p
 }
 
 func (a *Asset) Clone() *Asset {
@@ -30,6 +54,19 @@ func (a *Asset) Clone() *Asset {
 		ProjectID:               a.ProjectID,
 		URL:                     a.URL,
 		ArchiveExtractionStatus: a.ArchiveExtractionStatus,
+	}
+}
+
+func (a *Asset) ToPublic() *PublicAsset {
+	if a == nil {
+		return nil
+	}
+	return &PublicAsset{
+		Type:        "asset",
+		ID:          a.ID,
+		URL:         a.URL,
+		ContentType: a.ContentType,
+		// Files: ,
 	}
 }
 
@@ -140,6 +177,8 @@ func (d Item) Unmarshal(i any) {
 					}
 					vf.Set(s)
 				}
+			} else if itf.Value != nil && reflect.TypeOf(itf.Value).AssignableTo(vf.Type()) {
+				vf.Set(reflect.ValueOf(itf.Value))
 			}
 		}
 	}

@@ -56,7 +56,7 @@ func Echo(g *echo.Group, conf Config) error {
 			return c.JSON(http.StatusNotFound, "not found")
 		}
 
-		res, err := cmsapi.GetItem(c.Request().Context(), c.Param("id"))
+		res, err := cmsapi.GetItem(c.Request().Context(), c.Param("id"), false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")

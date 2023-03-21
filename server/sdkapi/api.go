@@ -6,35 +6,49 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"path"
 	"strconv"
 	"strings"
 	"unicode"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
-	"github.com/reearth/reearthx/rerror"
-	"github.com/samber/lo"
 )
 
 func Handler(conf Config, g *echo.Group) error {
 	conf.Default()
-	cl, err := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
+
+	icl, err := cms.New(conf.CMSBaseURL, conf.CMSToken)
+	if err != nil {
+		return err
+	}
+
+	// cl, err := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
+	// if err != nil {
+	// 	return err
+	// }
+
+	cms := NewCMS(icl, nil, conf.Project, false)
+	return handler(conf, g, cms)
+}
+
+func handler(conf Config, g *echo.Group, cms *CMS) error {
+	conf.Default()
+
+	c, err := cacheMiddleware(conf)
 	if err != nil {
 		return err
 	}
 
 	g.GET("/datasets", func(c echo.Context) error {
-		data, err := Datasets(c.Request().Context(), cl, conf.Model)
+		data, err := cms.Datasets(c.Request().Context(), conf.Model)
 		if err != nil {
 			return err
 		}
 		return c.JSON(http.StatusOK, data)
-	}, auth(conf.Token))
+	}, auth(conf.Token), c)
 
 	g.GET("/datasets/:id/files", func(c echo.Context) error {
-		data, err := Files(c.Request().Context(), cl, conf.Model, c.Param("id"))
+		data, err := cms.Files(c.Request().Context(), conf.Model, c.Param("id"))
 		if err != nil {
 			return err
 		}
@@ -42,42 +56,6 @@ func Handler(conf Config, g *echo.Group) error {
 	}, auth(conf.Token))
 
 	return nil
-}
-
-func Datasets(ctx context.Context, c *cms.PublicAPIClient[Item], model string) (*DatasetResponse, error) {
-	items, err := c.GetAllItems(ctx, model)
-	if err != nil {
-		return nil, rerror.ErrInternalBy(err)
-	}
-
-	return Items(items).DatasetResponse(), nil
-}
-
-func Files(ctx context.Context, c *cms.PublicAPIClient[Item], model, id string) (any, error) {
-	item, err := c.GetItem(ctx, model, id)
-	if err != nil {
-		return nil, rerror.ErrInternalBy(err)
-	}
-	if item.CityGML == nil || item.MaxLOD == nil {
-		return nil, rerror.ErrNotFound
-	}
-
-	asset, err := c.GetAsset(ctx, item.CityGML.ID)
-	if err != nil {
-		return nil, rerror.ErrInternalBy(err)
-	}
-
-	maxlod, err := getMaxLOD(ctx, item.MaxLOD.URL)
-	if err != nil {
-		return nil, rerror.ErrInternalBy(err)
-	}
-
-	files := lo.FilterMap(asset.Files, func(u string, _ int) (*url.URL, bool) {
-		res, err := url.Parse(u)
-		return res, err == nil && path.Ext(res.Path) == ".gml"
-	})
-
-	return maxlod.Map().Files(files), nil
 }
 
 func auth(expected string) echo.MiddlewareFunc {

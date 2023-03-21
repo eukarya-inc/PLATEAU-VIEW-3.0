@@ -25,7 +25,7 @@ func TestCMS(t *testing.T) {
 	call := mockCMS(t, "http://cms.example.com", "TOKEN")
 	c := lo.Must(New("http://cms.example.com", "TOKEN"))
 
-	item, err := c.GetItem(ctx, "a")
+	item, err := c.GetItem(ctx, "a", false)
 	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Item{
@@ -84,27 +84,27 @@ func TestCMS(t *testing.T) {
 	call = mockCMS(t, "http://cms.example.com", "TOKEN")
 	c = lo.Must(New("http://cms.example.com", "TOKEN2"))
 
-	item, err = c.GetItem(ctx, "a")
+	item, err = c.GetItem(ctx, "a", false)
 	assert.Equal(t, 1, call("GET /api/items/a"))
 	assert.Nil(t, item)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1)
+	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1, false)
 	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1)
+	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1, false)
 	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err = c.GetItems(ctx, "mmm")
+	items, err = c.GetItems(ctx, "mmm", false)
 	assert.Equal(t, 2, call("GET /api/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
 
-	items, err = c.GetItemsByKey(ctx, "ppp", "mmm")
+	items, err = c.GetItemsByKey(ctx, "ppp", "mmm", false)
 	assert.Equal(t, 2, call("GET /api/projects/ppp/models/mmm/items"))
 	assert.Nil(t, items)
 	assert.ErrorContains(t, err, "failed to request: code=401")
@@ -155,7 +155,7 @@ func TestCMS_GetItems(t *testing.T) {
 	call := mockCMS(t, "http://cms.example.com", "TOKEN")
 	c := lo.Must(New("http://cms.example.com", "TOKEN"))
 
-	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1)
+	items, err := c.GetItemsPartially(ctx, "mmm", 1, 1, false)
 	assert.Equal(t, 1, call("GET /api/models/mmm/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Items{
@@ -165,7 +165,7 @@ func TestCMS_GetItems(t *testing.T) {
 		TotalCount: len(testItems),
 	}, items)
 
-	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1)
+	items, err = c.GetItemsPartiallyByKey(ctx, "ppp", "mmm", 1, 1, false)
 	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Items{
@@ -175,7 +175,7 @@ func TestCMS_GetItems(t *testing.T) {
 		TotalCount: len(testItems),
 	}, items)
 
-	items, err = c.GetItems(ctx, "mmm")
+	items, err = c.GetItems(ctx, "mmm", false)
 	assert.Equal(t, 6, call("GET /api/models/mmm/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Items{
@@ -185,7 +185,7 @@ func TestCMS_GetItems(t *testing.T) {
 		TotalCount: len(testItems),
 	}, items)
 
-	items, err = c.GetItemsByKey(ctx, "ppp", "mmm")
+	items, err = c.GetItemsByKey(ctx, "ppp", "mmm", false)
 	assert.Equal(t, 6, call("GET /api/projects/ppp/models/mmm/items"))
 	assert.NoError(t, err)
 	assert.Equal(t, &Items{

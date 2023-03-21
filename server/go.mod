@@ -12,6 +12,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.10.0
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/paulmach/go.geojson v1.4.0
 	github.com/reearth/go3dtiles v0.0.0-20221207041852-493e7e51cca9
 	github.com/reearth/reearthx v0.0.0-20230203210115-d04054013125

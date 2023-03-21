@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/mitchellh/mapstructure"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 )
@@ -14,10 +15,14 @@ import (
 const modelKey = "plateau"
 
 type Config struct {
-	CMSBaseURL string
-	Project    string
-	Model      string
-	Token      string
+	CMSBaseURL   string
+	CMSToken     string
+	Project      string
+	Model        string
+	Token        string
+	DisableCache bool
+	CacheTTL     int
+	CacheSize    string
 }
 
 func (c *Config) Default() {
@@ -87,16 +92,21 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 }
 
 type Item struct {
-	ID          string            `json:"id"`
-	Prefecture  string            `json:"prefecture"`
-	CityName    string            `json:"city_name"`
-	CityGML     *cms.PublicAsset  `json:"citygml"`
-	Description string            `json:"description_bldg"`
-	MaxLOD      *cms.PublicAsset  `json:"max_lod"`
-	Bldg        []cms.PublicAsset `json:"bldg"`
-	Tran        []cms.PublicAsset `json:"tran"`
-	Frn         []cms.PublicAsset `json:"frn"`
-	Veg         []cms.PublicAsset `json:"veg"`
+	ID             string            `json:"id"`
+	Prefecture     string            `json:"prefecture"`
+	CityName       string            `json:"city_name"`
+	CityGML        *cms.PublicAsset  `json:"citygml"`
+	Description    string            `json:"description_bldg"`
+	MaxLOD         *cms.PublicAsset  `json:"max_lod"`
+	Bldg           []cms.PublicAsset `json:"bldg"`
+	Tran           []cms.PublicAsset `json:"tran"`
+	Frn            []cms.PublicAsset `json:"frn"`
+	Veg            []cms.PublicAsset `json:"veg"`
+	SDKPublication string            `json:"sdk_publication"`
+}
+
+func (i Item) IsPublic() bool {
+	return i.SDKPublication == "公開する"
 }
 
 func (i Item) FeatureTypes() (t []string) {
@@ -163,4 +173,78 @@ func (mm MaxLODMap) Files(urls []*url.URL) (r FilesResponse) {
 		})
 	}
 	return
+}
+
+type IItem struct {
+	ID             string           `json:"id" cms:"id,text"`
+	Prefecture     string           `json:"prefecture" cms:"prefecture,text"`
+	CityName       string           `json:"city_name" cms:"city_name,text"`
+	CityGML        map[string]any   `json:"citygml" cms:"citygml,asset"`
+	Description    string           `json:"description_bldg" cms:"description_bldg,textarea"`
+	MaxLOD         map[string]any   `json:"max_lod" cms:"max_lod,asset"`
+	Bldg           []map[string]any `json:"bldg" cms:"bldg,asset"`
+	Tran           []map[string]any `json:"tran" cms:"tran,asset"`
+	Frn            []map[string]any `json:"frn" cms:"frn,asset"`
+	Veg            []map[string]any `json:"veg" cms:"veg,asset"`
+	SDKPublication string           `json:"sdk_publication" cms:"sdk_publication,select"`
+}
+
+func (i IItem) Item() Item {
+	return Item{
+		ID:             i.ID,
+		Prefecture:     i.Prefecture,
+		CityName:       i.CityName,
+		CityGML:        integrationAssetToAsset(i.CityGML).ToPublic(),
+		Description:    i.Description,
+		MaxLOD:         integrationAssetToAsset(i.MaxLOD).ToPublic(),
+		Bldg:           assetsToPublic(integrationAssetToAssets(i.Bldg)),
+		Tran:           assetsToPublic(integrationAssetToAssets(i.Tran)),
+		Frn:            assetsToPublic(integrationAssetToAssets(i.Frn)),
+		Veg:            assetsToPublic(integrationAssetToAssets(i.Veg)),
+		SDKPublication: i.SDKPublication,
+	}
+}
+
+func ItemsFromIntegration(items []cms.Item) Items {
+	return lo.FilterMap(items, func(i cms.Item, _ int) (Item, bool) {
+		item := ItemFromIntegration(&i)
+		return item, item.IsPublic()
+	})
+}
+
+func ItemFromIntegration(ci *cms.Item) Item {
+	i := IItem{}
+	ci.Unmarshal(&i)
+	return i.Item()
+}
+
+func assetsToPublic(a []cms.Asset) []cms.PublicAsset {
+	return lo.FilterMap(a, func(a cms.Asset, _ int) (cms.PublicAsset, bool) {
+		p := a.ToPublic()
+		if p == nil {
+			return cms.PublicAsset{}, false
+		}
+		return *p, true
+	})
+}
+
+func integrationAssetToAssets(a []map[string]any) []cms.Asset {
+	return lo.FilterMap(a, func(a map[string]any, _ int) (cms.Asset, bool) {
+		pa := integrationAssetToAsset(a)
+		if pa == nil {
+			return cms.Asset{}, false
+		}
+		return *pa, true
+	})
+}
+
+func integrationAssetToAsset(a map[string]any) *cms.Asset {
+	if a == nil {
+		return nil
+	}
+	pa := &cms.Asset{}
+	if err := mapstructure.Decode(a, pa); err != nil {
+		return nil
+	}
+	return pa
 }

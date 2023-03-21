@@ -8,10 +8,11 @@ import (
 )
 
 var item = Item{
-	ID:           "xxx",
-	CityGML:      "citygml_assetid",
-	MaxLOD:       "maxlod_assetid",
-	MaxLODStatus: "未実行",
+	ID:             "xxx",
+	CityGML:        "citygml_assetid",
+	MaxLOD:         "maxlod_assetid",
+	MaxLODStatus:   "未実行",
+	SDKPublication: "公開する",
 }
 
 var cmsitem = cms.Item{
@@ -20,6 +21,7 @@ var cmsitem = cms.Item{
 		{Key: "citygml", Type: "asset", Value: "citygml_assetid"},
 		{Key: "max_lod", Type: "asset", Value: "maxlod_assetid"},
 		{Key: "max_lod_status", Type: "select", Value: "未実行"},
+		{Key: "sdk_publication", Type: "select", Value: "公開する"},
 	},
 }
 

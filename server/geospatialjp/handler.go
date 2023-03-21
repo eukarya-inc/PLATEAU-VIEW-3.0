@@ -39,7 +39,7 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 		}
 
 		ctx := c.Request().Context()
-		item, err := s.CMS.GetItem(ctx, itemID)
+		item, err := s.CMS.GetItem(ctx, itemID, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "見つかりませんでした。")

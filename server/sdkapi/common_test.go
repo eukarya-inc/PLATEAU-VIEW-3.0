@@ -86,3 +86,105 @@ func TestMaxLODMap_Files(t *testing.T) {
 		lo.Must(url.Parse("https://example.com/1_veg_zzz.gml")),
 	}))
 }
+
+func TestItemsFromIntegration(t *testing.T) {
+	cmsitems := []cms.Item{
+		{
+			ID: "xxx",
+			Fields: []cms.Field{
+				{
+					Key:   "prefecture",
+					Value: "pref",
+				},
+				{
+					Key:   "city_name",
+					Value: "city",
+				},
+				{
+					Key: "citygml",
+					Value: map[string]any{
+						"archiveExtractionStatus": "done",
+						"contentType":             "application/octet-stream",
+						"createdAt":               "2023-03-01T00:00:00.00Z",
+						"file": map[string]any{
+							"contentType": "application/octet-stream",
+							"name":        "c.zip",
+							"path":        "/c.zip",
+							"size":        1000,
+						},
+						"id":          "assetc",
+						"name":        "b.zip",
+						"previewType": "geo",
+						"projectId":   "prj",
+						"totalSize":   1000,
+						"url":         "https://example.com/c.zip",
+					},
+				},
+				{
+					Key:   "description_bldg",
+					Value: "desc",
+				},
+				{
+					Key: "bldg",
+					Value: []map[string]any{
+						{
+							"archiveExtractionStatus": "done",
+							"contentType":             "application/octet-stream",
+							"createdAt":               "2023-03-01T00:00:00.00Z",
+							"file": map[string]any{
+								"contentType": "application/octet-stream",
+								"name":        "b.zip",
+								"path":        "/b.zip",
+								"size":        1000,
+							},
+							"id":          "asset",
+							"name":        "b.zip",
+							"previewType": "geo",
+							"projectId":   "prj",
+							"totalSize":   1000,
+							"url":         "https://example.com/b.zip",
+						},
+					},
+				},
+				{
+					Key:   "max_lod",
+					Value: nil,
+				},
+				{
+					Key:   "sdk_publication",
+					Value: "公開する",
+				},
+			},
+		},
+	}
+
+	items := ItemsFromIntegration(cmsitems)
+	assert.Equal(t, Items{
+		{
+			ID:          "xxx",
+			Prefecture:  "pref",
+			CityName:    "city",
+			Description: "desc",
+			CityGML: &cms.PublicAsset{
+				Type:        "asset",
+				ID:          "assetc",
+				URL:         "https://example.com/c.zip",
+				ContentType: "application/octet-stream",
+			},
+			MaxLOD: nil,
+			Bldg: []cms.PublicAsset{
+				{
+					Type:        "asset",
+					ID:          "asset",
+					URL:         "https://example.com/b.zip",
+					ContentType: "application/octet-stream",
+				},
+			},
+			Tran:           []cms.PublicAsset{},
+			Frn:            []cms.PublicAsset{},
+			Veg:            []cms.PublicAsset{},
+			SDKPublication: "公開する",
+		},
+	}, items)
+
+}

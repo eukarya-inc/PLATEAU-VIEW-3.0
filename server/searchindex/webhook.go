@@ -209,7 +209,7 @@ func (wc *webhookContext) GetItem(ctx context.Context) (item Item, si StorageIte
 			return
 		}
 
-		if witem, err = wc.CMS.GetItem(ctx, si.Item); err != nil {
+		if witem, err = wc.CMS.GetItem(ctx, si.Item, false); err != nil {
 			err = fmt.Errorf("cannot get item %s: %v", si.Item, err)
 			return
 		}

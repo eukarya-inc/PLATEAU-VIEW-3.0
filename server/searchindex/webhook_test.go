@@ -406,7 +406,7 @@ func newMockedCMS(t *testing.T, itemsprojectkey, itemskey, storageprojectkey, st
 	}
 }
 
-func (c *mockedCMS) GetItem(ctx context.Context, itemID string) (*cms.Item, error) {
+func (c *mockedCMS) GetItem(ctx context.Context, itemID string, asset bool) (*cms.Item, error) {
 	i, _ := c.l(itemID)
 	if i == nil {
 		return nil, rerror.ErrNotFound
@@ -414,7 +414,7 @@ func (c *mockedCMS) GetItem(ctx context.Context, itemID string) (*cms.Item, erro
 	return i, nil
 }
 
-func (c *mockedCMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string) (*cms.Items, error) {
+func (c *mockedCMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, asset bool) (*cms.Items, error) {
 	m := c.m(projectIDOrAlias, modelIDOrKey)
 	if m == nil {
 		return nil, rerror.ErrNotFound

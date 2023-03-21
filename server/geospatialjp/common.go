@@ -225,6 +225,16 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 		log.Infof("geospatialjp: catalog is not registerd so uploading is skipped")
 	}
 
+	// update item
+	if i.ID != "" {
+		if _, err := s.CMS.UpdateItem(ctx, i.ID, Item{
+			ID:             i.ID,
+			SDKPublication: "公開する",
+		}.Fields()); err != nil {
+			log.Errorf("geospatialjp: failed to update an item: %v", err)
+		}
+	}
+
 	return nil
 }
 

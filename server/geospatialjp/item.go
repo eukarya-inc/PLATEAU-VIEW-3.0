@@ -27,6 +27,8 @@ type Item struct {
 	All                 string `json:"all,omitempty" cms:"all,asset"`
 	ConversionStatus    Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
 	CatalogStatus       Status `json:"catalog_status,omitempty" cms:"catalog_status,select"`
+	// 公開する・公開しない
+	SDKPublication string `json:"sdk_publication,omitempty" cms:"sdk_publication,select"`
 }
 
 func ItemFrom(item cms.Item) (i Item) {
@@ -47,4 +49,8 @@ func (i Item) SpecVersion() float64 {
 		return 0
 	}
 	return v
+}
+
+func (i Item) IsPublicOnSDK() bool {
+	return i.SDKPublication == "公開する"
 }

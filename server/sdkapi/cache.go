@@ -1,4 +1,4 @@
-package datacatalog
+package sdkapi
 
 import (
 	"time"

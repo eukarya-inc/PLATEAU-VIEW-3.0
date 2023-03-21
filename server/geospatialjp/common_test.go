@@ -84,10 +84,10 @@ func TestService_RegisterCkanResources(t *testing.T) {
 	httpmock.RegisterResponder("GET", "https://example.com/catalog.xlsx", httpmock.NewBytesResponder(http.StatusOK, catalogData))
 	httpmock.RegisterResponder("GET", "https://example.com/catalog2.xlsx", httpmock.NewBytesResponder(http.StatusOK, catalogData2))
 
-	cms := &mockCMS{}
+	cmsm := &mockCMS{}
 	ckanm := ckan.NewMock("org", nil, nil)
 	s := &Services{
-		CMS:         cms,
+		CMS:         cmsm,
 		Ckan:        ckanm,
 		CkanOrg:     "org",
 		CkanPrivate: true,
@@ -95,6 +95,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 
 	// case1: upload all files of 第2.3版
 	assert.NoError(t, s.RegisterCkanResources(ctx, Item{
+		ID:            "item",
 		Specification: "第2.3版",
 		CityGML:       "citygml",
 		Catalog:       "catalog",
@@ -113,6 +114,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 	assert.Equal(t, "CityGML（v2）", pkg.Resources[1].Name)
 	assert.Equal(t, "https://example.com/12210_mobara-shi_2022_citygml_1_lsld.zip", pkg.Resources[1].URL)
 	assert.Equal(t, "データ目録（v2）", pkg.Resources[2].Name)
+	assert.Equal(t, cms.Item{ID: "item", Fields: []cms.Field{{Key: "sdk_publication", Type: "select", Value: "公開する"}}}, cmsm.item)
 
 	// case2: upload citygml and catalog of 第1版
 	assert.ErrorContains(t, s.RegisterCkanResources(ctx, Item{
@@ -138,7 +140,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 		},
 	})
 	s = &Services{
-		CMS:         cms,
+		CMS:         cmsm,
 		Ckan:        ckanm,
 		CkanOrg:     "org",
 		CkanPrivate: false,

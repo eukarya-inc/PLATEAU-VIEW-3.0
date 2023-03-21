@@ -17,6 +17,7 @@ var item = Item{
 	All:                 "all_assetid",
 	ConversionStatus:    "実行中",
 	CatalogStatus:       "完了",
+	SDKPublication:      "公開する",
 }
 
 var cmsitem = cms.Item{
@@ -30,6 +31,7 @@ var cmsitem = cms.Item{
 		{Key: "all", Type: "asset", Value: "all_assetid"},
 		{Key: "conversion_status", Type: "select", Value: "実行中"},
 		{Key: "catalog_status", Type: "select", Value: "完了"},
+		{Key: "sdk_publication", Type: "select", Value: "公開する"},
 	},
 }
 

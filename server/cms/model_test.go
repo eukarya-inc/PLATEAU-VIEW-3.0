@@ -11,10 +11,11 @@ func TestItem_Unmarshal(t *testing.T) {
 	type str string
 
 	type S struct {
-		ID  string   `cms:"id"`
-		AAA str      `cms:"aaa,"`
-		BBB []string `cms:"bbb"`
-		CCC []str    `cms:"ccc"`
+		ID  string         `cms:"id"`
+		AAA str            `cms:"aaa,"`
+		BBB []string       `cms:"bbb"`
+		CCC []str          `cms:"ccc"`
+		DDD map[string]any `cms:"ddd"`
 	}
 	s := S{}
 
@@ -24,6 +25,7 @@ func TestItem_Unmarshal(t *testing.T) {
 			{Key: "aaa", Value: "bbb"},
 			{Key: "bbb", Value: []string{"ccc", "bbb"}},
 			{Key: "ccc", Value: []string{"a", "b"}},
+			{Key: "ddd", Value: map[string]any{"a": "b"}},
 		},
 	}.Unmarshal(&s)
 	assert.Equal(t, S{
@@ -31,6 +33,7 @@ func TestItem_Unmarshal(t *testing.T) {
 		AAA: "bbb",
 		BBB: []string{"ccc", "bbb"},
 		CCC: []str{"a", "b"},
+		DDD: map[string]any{"a": "b"},
 	}, s)
 
 	// no panic
@@ -159,4 +162,15 @@ func TestItems_HasNext(t *testing.T) {
 	assert.False(t, Items{Page: 2, PerPage: 50, TotalCount: 100}.HasNext())
 	assert.True(t, Items{Page: 1, PerPage: 10, TotalCount: 11}.HasNext())
 	assert.False(t, Items{Page: 2, PerPage: 10, TotalCount: 11}.HasNext())
+}
+
+func TestFile_Paths(t *testing.T) {
+	assert.Equal(t, []string{"a", "b", "c"}, File{
+		Path: "_",
+		Children: []File{
+			{Path: "a"},
+			{Path: "_", Children: []File{{Path: "b"}}},
+			{Path: "c"},
+		},
+	}.Paths())
 }

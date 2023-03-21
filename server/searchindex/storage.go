@@ -60,7 +60,7 @@ func NewStorage(c cms.Interface, pid, mid string) *Storage {
 }
 
 func (s *Storage) All(ctx context.Context) (r StorageItems, err error) {
-	items, err := s.c.GetItemsByKey(ctx, s.pid, s.mid)
+	items, err := s.c.GetItemsByKey(ctx, s.pid, s.mid, false)
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
@@ -23,6 +24,10 @@ func main() {
 
 	conf := lo.Must(NewConfig())
 	log.Infof("config: %s", conf.Print())
+
+	if conf.GCParcent > 0 {
+		debug.SetGCPercent(conf.GCParcent)
+	}
 
 	logger := log.NewEcho()
 	e := echo.New()
