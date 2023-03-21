@@ -39,3 +39,10 @@ func TestItem(t *testing.T) {
 	assert.Equal(t, cmsitem.Fields, item.Fields())
 	assert.Equal(t, []cms.Field(nil), Item{}.Fields())
 }
+
+func TestItem_SpecVersion(t *testing.T) {
+	assert.Equal(t, 2.3, Item{Specification: "第2.3版"}.SpecVersion())
+	assert.Equal(t, 2.0, Item{Specification: "第2版"}.SpecVersion())
+	assert.Equal(t, 1.0, Item{Specification: "第1版"}.SpecVersion())
+	assert.Equal(t, 0.0, Item{Specification: ""}.SpecVersion())
+}

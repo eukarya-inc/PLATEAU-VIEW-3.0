@@ -1,6 +1,9 @@
 package geospatialjp
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 )
 
@@ -14,25 +17,21 @@ const (
 )
 
 type Item struct {
-	ID string `json:"id,omitempty" cms:"id"`
-	// select: specification
-	Specification string `json:"specification,omitempty" cms:"specification,select"`
-	// select: prefecture
-	Prefecture string `json:"prefecture,omitempty" cms:"prefecture,select"`
-	// text: city_name
-	CityName string `json:"city_name,omitempty" cms:"city_name,text"`
-	// asset: citygml
-	CityGML string `json:"citygml,omitempty" cms:"citygml,asset"`
-	// asset: citygml_geospatialjp
+	ID                  string `json:"id,omitempty" cms:"id"`
+	Specification       string `json:"specification,omitempty" cms:"specification,select"`
+	Prefecture          string `json:"prefecture,omitempty" cms:"prefecture,select"`
+	CityName            string `json:"city_name,omitempty" cms:"city_name,text"`
+	CityGML             string `json:"citygml,omitempty" cms:"citygml,asset"`
 	CityGMLGeoSpatialJP string `json:"citygml_geospatialjp,omitempty" cms:"citygml_geospatialjp,asset"`
-	// asset: catalog
-	Catalog string `json:"catalog,omitempty" cms:"catalog,asset"`
-	// asset: all
-	All string `json:"all,omitempty" cms:"all,asset"`
-	// select: conversion_status: 未実行, 実行中, 完了, エラー
-	ConversionStatus Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
-	// select: catalog_status: 未実行, 実行中, 完了, エラー
-	CatalogStatus Status `json:"catalog_status,omitempty" cms:"catalog_status,select"`
+	Catalog             string `json:"catalog,omitempty" cms:"catalog,asset"`
+	All                 string `json:"all,omitempty" cms:"all,asset"`
+	ConversionStatus    Status `json:"conversion_status,omitempty" cms:"conversion_status,select"`
+	CatalogStatus       Status `json:"catalog_status,omitempty" cms:"catalog_status,select"`
+}
+
+func ItemFrom(item cms.Item) (i Item) {
+	item.Unmarshal(&i)
+	return
 }
 
 func (i Item) Fields() (fields []cms.Field) {
@@ -41,7 +40,11 @@ func (i Item) Fields() (fields []cms.Field) {
 	return item.Fields
 }
 
-func ItemFrom(item cms.Item) (i Item) {
-	item.Unmarshal(&i)
-	return
+func (i Item) SpecVersion() float64 {
+	d := strings.TrimSuffix(strings.TrimPrefix(i.Specification, "第"), "版")
+	v, err := strconv.ParseFloat(d, 64)
+	if err != nil {
+		return 0
+	}
+	return v
 }

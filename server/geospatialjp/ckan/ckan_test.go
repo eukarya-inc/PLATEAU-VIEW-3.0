@@ -13,6 +13,8 @@ import (
 	"github.com/vincent-petithory/dataurl"
 )
 
+var _ Interface = (*Ckan)(nil)
+
 func TestCkan(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()

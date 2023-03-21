@@ -1,34 +1,29 @@
 package geospatialjp
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"regexp"
-	"time"
+	"strconv"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp/ckan"
 	"github.com/pkg/errors"
-	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 	"github.com/vincent-petithory/dataurl"
 )
 
 const (
-	ResourceNameCityGML = "CityGML（v2）"
-	ResourceNameAll     = "3D Tiles, MVT（v2）"
-	ResourceNameCatalog = "データ目録（v2）"
+	ResourceNameCityGML = "CityGML"
+	ResourceNameAll     = "3D Tiles, MVT"
+	ResourceNameCatalog = "データ目録"
 	licenseDefaultID    = "plateau"
 	licenseDefaultTitle = "PLATEAU Site Policy 「３．著作権について」に拠る"
 	licenseDefaultURL   = "https://www.mlit.go.jp/plateau/site-policy/"
 )
 
-// 仕様書バージョンと年度
-var specNendoYearMap = map[string]int{
-	"第2.3版": 2022, // 2022年度
-}
-
-var reFileName = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
+var reFileName = regexp.MustCompile(`^([0-9]+?)_(.+?)_([0-9]+?)_`)
 
 func findResource(pkg *ckan.Package, name, format, desc, url string) (_ ckan.Resource, needUpdate bool) {
 	r, found := lo.Find(pkg.Resources, func(r ckan.Resource) bool {
@@ -50,22 +45,24 @@ func findResource(pkg *ckan.Package, name, format, desc, url string) (_ ckan.Res
 	return r, needUpdate
 }
 
-func extractCityName(fn string) (string, string, error) {
+func extractCityName(fn string) (string, string, int, error) {
 	u, err := url.Parse(fn)
 	if err != nil {
-		return "", "", err
+		return "", "", 0, err
 	}
 
 	base := path.Base(u.Path)
 	s := reFileName.FindStringSubmatch(base)
 	if s == nil {
-		return "", "", errors.New("invalid file name")
+		return "", "", 0, errors.New("invalid file name")
 	}
 
-	return s[1], s[2], nil
+	y, _ := strconv.Atoi(s[3])
+
+	return s[1], s[2], y, nil
 }
 
-func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Package {
+func packageFromCatalog(c *Catalog, org, pkgName string, private bool) ckan.Package {
 	var thumbnailURL string
 	if c.Thumbnail != nil {
 		thumbnailURL = dataurl.New(c.Thumbnail, http.DetectContentType(c.Thumbnail)).String()
@@ -103,12 +100,25 @@ func packageFromCatalog(c Catalog, org, pkgName string, private bool) ckan.Packa
 	}
 }
 
-func nendo(s string) int {
-	if y, ok := specNendoYearMap[s]; ok {
-		return y
+func suffixFromSpec(s float64) string {
+	vi := int(s)
+	if vi <= 1 {
+		return ""
 	}
 
-	// Asia/Tokyo: UTC+09:00
-	jptime := util.Now().UTC().Add(time.Hour * 9)
-	return jptime.AddDate(0, -3, 0).Year()
+	return fmt.Sprintf("（v%d）", vi)
+}
+
+func datasetName(cityCode, cityName string, year int) string {
+	datasetName := ""
+	if cityName == tokyo23ku {
+		if year <= 2020 {
+			datasetName = fmt.Sprintf("plateau-%s", cityName)
+		} else {
+			datasetName = fmt.Sprintf("plateau-%s-%d", cityName, year)
+		}
+	} else {
+		datasetName = fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, year)
+	}
+	return datasetName
 }

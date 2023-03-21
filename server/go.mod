@@ -20,6 +20,7 @@ require (
 	github.com/spkg/bom v1.0.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tdewolff/canvas v0.0.0-20221230020303-9eb6d3934367
+	github.com/thanhpk/randstr v1.0.4
 	github.com/vincent-petithory/dataurl v1.0.0
 	golang.org/x/net v0.4.0
 	gonum.org/v1/gonum v0.12.0

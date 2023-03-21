@@ -63,7 +63,7 @@ type Catalog struct {
 	CustomFields map[string]any `json:"customFields,omitempty"`
 }
 
-func (c Catalog) Validate() error {
+func (c *Catalog) Validate() error {
 	var errs []string
 	var missingkeys []string
 
@@ -97,14 +97,14 @@ func NewCatalogFile(file *excelize.File) *CatalogFile {
 	}
 }
 
-func (c *CatalogFile) Parse() (res Catalog, err error) {
-	sheet, err := c.getSheet()
-	if err != nil {
-		return res, err
+func (c *CatalogFile) Parse() (res *Catalog, err error) {
+	sheet := c.getSheet()
+	if sheet == "" {
+		return nil, nil
 	}
 
 	errs := []error{}
-
+	res = &Catalog{}
 	res.Title, errs = c.getCellValue(sheet, "タイトル", "D2", errs)
 	res.URL, errs = c.getCellValue(sheet, "URL", "D3", errs)
 	res.Notes, errs = c.getCellValue(sheet, "説明", "D4", errs)
@@ -128,8 +128,7 @@ func (c *CatalogFile) Parse() (res Catalog, err error) {
 	res.ThumbnailFileName, res.Thumbnail, errs = c.getPicture(sheet, "サムネイル画像", "D22", errs)
 	res.Fee, errs = c.getCellValue(sheet, "価格情報", "D23", errs)
 	res.LicenseAgreement, errs = c.getCellValue(sheet, "使用許諾", "D24", errs)
-
-	// メタデータ is not implemented yet
+	// メタデータ is not implemented
 
 	if len(errs) > 0 {
 		return res, fmt.Errorf("目録の読み込みに失敗しました。%w", errorsJoin(errs))
@@ -137,27 +136,35 @@ func (c *CatalogFile) Parse() (res Catalog, err error) {
 	return res, nil
 }
 
-func (c *CatalogFile) DeleteSheet() error {
-	sheet, err := c.getSheet()
-	if err != nil {
-		return err
+func (c *CatalogFile) MustDeleteSheet() error {
+	sheet := c.getSheet()
+	if sheet == "" {
+		return errors.New("シート「G空間登録用メタデータ」が見つかりませんでした。")
 	}
 	c.file.DeleteSheet(sheet)
 	return nil
+}
+
+func (c *CatalogFile) DeleteSheet() {
+	sheet := c.getSheet()
+	if sheet == "" {
+		return
+	}
+	c.file.DeleteSheet(sheet)
 }
 
 func (c *CatalogFile) File() *excelize.File {
 	return c.file
 }
 
-func (c *CatalogFile) getSheet() (string, error) {
+func (c *CatalogFile) getSheet() string {
 	if i := c.file.GetSheetIndex("G空間登録用メタデータ "); i < 0 {
 		if i = c.file.GetSheetIndex("G空間登録用メタデータ"); i < 0 {
-			return "", errors.New("シート「G空間登録用メタデータ」が見つかりませんでした。")
+			return ""
 		}
-		return "G空間登録用メタデータ", nil
+		return "G空間登録用メタデータ"
 	}
-	return "G空間登録用メタデータ ", nil
+	return "G空間登録用メタデータ "
 }
 
 func (c *CatalogFile) getCellValue(sheet, name, _axis string, errs []error) (string, []error) {

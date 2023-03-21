@@ -16,6 +16,18 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+type Interface interface {
+	ShowPackage(ctx context.Context, id string) (Package, error)
+	SearchPackageByName(ctx context.Context, name string) (List[Package], error)
+	CreatePackage(ctx context.Context, pkg Package) (Package, error)
+	PatchPackage(ctx context.Context, pkg Package) (Package, error)
+	SavePackage(ctx context.Context, pkg Package) (Package, error)
+	CreateResource(ctx context.Context, resource Resource) (Resource, error)
+	PatchResource(ctx context.Context, resource Resource) (Resource, error)
+	UploadResource(ctx context.Context, resource Resource, filename string, data []byte) (Resource, error)
+	SaveResource(ctx context.Context, resource Resource) (Resource, error)
+}
+
 type Ckan struct {
 	base   *url.URL
 	token  string

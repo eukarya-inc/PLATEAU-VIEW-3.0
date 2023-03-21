@@ -23,7 +23,7 @@ func TestCatalogFile(t *testing.T) {
 
 	cc, err := c.Parse()
 	assert.NoError(t, err)
-	assert.Equal(t, Catalog{
+	assert.Equal(t, &Catalog{
 		Title:             "TITLE",
 		URL:               "URL",
 		Notes:             "DESC\nDesc",
@@ -52,7 +52,7 @@ func TestCatalogFile(t *testing.T) {
 	}, cc)
 
 	// delete sheet
-	assert.NoError(t, c.DeleteSheet())
+	assert.NoError(t, c.MustDeleteSheet())
 	buf, err := c.File().WriteToBuffer()
 	assert.NoError(t, err)
 
@@ -60,8 +60,8 @@ func TestCatalogFile(t *testing.T) {
 	assert.NoError(t, err)
 	c2 := NewCatalogFile(xf2)
 
-	_, err = c2.getSheet()
-	assert.Error(t, err)
+	sheet := c2.getSheet()
+	assert.Empty(t, sheet)
 }
 
 func TestMinXPos(t *testing.T) {
