@@ -30,7 +30,7 @@ func Echo(cfg Config, e *echo.Group) error {
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	}, middleware.CORS())
+	}, middleware.CORS(), cacheMiddleware(cfg))
 
 	return nil
 }
