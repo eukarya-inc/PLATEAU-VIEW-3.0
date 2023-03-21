@@ -105,6 +105,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "plateau-12210-mobara-shi-2022", pkg.Name)
 	assert.Equal(t, "TITLE", pkg.Title)
+	assert.True(t, pkg.Private)
 	assert.Greater(t, len(pkg.ThumbnailURL), 100)
 	assert.Equal(t, 3, len(pkg.Resources))
 	assert.Equal(t, "3D Tiles, MVT（v2）", pkg.Resources[0].Name)
@@ -140,7 +141,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 		CMS:         cms,
 		Ckan:        ckanm,
 		CkanOrg:     "org",
-		CkanPrivate: true,
+		CkanPrivate: false,
 	}
 
 	assert.NoError(t, s.RegisterCkanResources(ctx, Item{
@@ -153,6 +154,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "plateau-12210-mobara-shi-2020", pkg.Name)
 	assert.Equal(t, "TITLE?", pkg.Title)
+	assert.False(t, pkg.Private)
 	assert.Equal(t, 2, len(pkg.Resources))
 	assert.Equal(t, "CityGML（v2） PATCHED", pkg.Resources[0].Name)
 	assert.Equal(t, "https://example.com/12210_mobara-shi_2020_citygml_1_lsld.zip", pkg.Resources[0].URL)

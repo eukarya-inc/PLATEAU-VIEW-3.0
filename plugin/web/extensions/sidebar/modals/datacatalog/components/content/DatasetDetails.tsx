@@ -10,6 +10,7 @@ import { ComponentType, useCallback, useMemo, ChangeEvent, useState } from "reac
 export type Props = {
   dataset: DataCatalogItem | UserDataItem;
   isShareable?: boolean;
+  isPublishable?: boolean;
   addDisabled: boolean;
   inEditor?: boolean;
   requireLayerName?: boolean;
@@ -23,6 +24,7 @@ const showShareButton = false; // This code can be removed when decision about s
 const DatasetDetails: React.FC<Props> = ({
   dataset,
   isShareable,
+  isPublishable,
   addDisabled,
   inEditor,
   requireLayerName,
@@ -65,7 +67,11 @@ const DatasetDetails: React.FC<Props> = ({
     title: (
       <>
         <PopConfirmText>本当に公開してもよろしいですか？</PopConfirmText>
-        <PopConfirmText>PLATEAUデータの場合はG空間情報センターにも公開されます。</PopConfirmText>
+        {isPublishable && (
+          <PopConfirmText>
+            この都市のCityGMLなどのPLATEAUデータがG空間情報センターにも公開されます。
+          </PopConfirmText>
+        )}
       </>
     ),
     placement: "topRight",

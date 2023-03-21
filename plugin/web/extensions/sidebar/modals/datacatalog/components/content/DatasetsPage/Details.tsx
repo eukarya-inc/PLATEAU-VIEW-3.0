@@ -48,6 +48,7 @@ const DatasetDetails: React.FC<Props> = ({
       dataset={dataset}
       addDisabled={addDisabled(dataset.dataID)}
       inEditor={inEditor}
+      isPublishable={!!dataset.itemId}
       contentSection={ContentComponent}
       onDatasetAdd={onDatasetAdd}
       onDatasetPublish={onDatasetPublish}

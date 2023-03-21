@@ -27,6 +27,7 @@ const DatasetDetails: React.FC<Props> = ({
     <DetailsComponent
       dataset={dataset}
       isShareable={isShareable}
+      isPublishable={!!dataset.itemId}
       requireLayerName={requireLayerName}
       addDisabled={false}
       onDatasetAdd={onDatasetAdd}

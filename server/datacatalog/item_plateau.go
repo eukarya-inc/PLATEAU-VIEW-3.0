@@ -272,9 +272,14 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 	y, _ := strconv.Atoi(an.Year)
 	pref, prefCode := normalizePref(i.Prefecture)
 
+	var itemID string
+	if an.Feature == "bldg" {
+		itemID = i.ID
+	}
+
 	return &DataCatalogItem{
 		ID:          id,
-		ItemID:      i.ID,
+		ItemID:      itemID,
 		Type:        t,
 		TypeEn:      an.Feature,
 		Type2:       t2,
