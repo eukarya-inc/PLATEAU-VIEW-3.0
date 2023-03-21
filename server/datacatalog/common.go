@@ -10,12 +10,11 @@ import (
 )
 
 type Config struct {
-	CMSBase       string
-	CMSProject    string
-	Cache         bool
-	CacheTTL      int
-	CacheSize     string
-	CacheGCPacent int
+	CMSBase    string
+	CMSProject string
+	Cache      bool
+	CacheTTL   int
+	CacheSize  string
 }
 
 func assetURLFromFormat(u, f string) string {

@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/reearth/reearthx/log"
+	"github.com/reearth/reearthx/rerror"
 )
 
 func Echo(cfg Config, e *echo.Group) error {
@@ -14,7 +15,16 @@ func Echo(cfg Config, e *echo.Group) error {
 		return err
 	}
 
+	c, err := cacheMiddleware(cfg)
+	if err != nil {
+		return err
+	}
+
 	e.GET("", func(c echo.Context) error {
+		if cfg.CMSProject == "" {
+			return rerror.ErrNotFound
+		}
+
 		res, err := f.Do(c.Request().Context(), cfg.CMSProject)
 		if err != nil {
 			log.Errorf("datacatalog: %v", err)
@@ -30,7 +40,7 @@ func Echo(cfg Config, e *echo.Group) error {
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	}, middleware.CORS(), cacheMiddleware(cfg))
+	}, middleware.CORS(), c)
 
 	return nil
 }

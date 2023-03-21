@@ -3,6 +3,8 @@ module github.com/eukarya-inc/reearth-plateauview/server
 go 1.19
 
 require (
+	github.com/SporkHubr/echo-http-cache v0.0.0-20200706100054-1d7ae9f38029
+	github.com/c2h5oh/datasize v0.0.0-20220606134207-859f65c6625b
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eukarya-inc/jpareacode v1.0.0
 	github.com/go-playground/validator/v10 v10.11.1
@@ -30,17 +32,12 @@ require (
 	github.com/adrg/xdg v0.4.0 // indirect
 	github.com/benoitkugler/textlayout v0.1.3 // indirect
 	github.com/benoitkugler/textprocessing v0.0.2 // indirect
-	github.com/c2h5oh/datasize v0.0.0-20220606134207-859f65c6625b // indirect
-	github.com/cespare/xxhash v1.1.0 // indirect
-	github.com/coocood/freecache v1.1.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/gitsight/go-echo-cache v1.0.1 // indirect
 	github.com/go-fonts/latin-modern v0.2.0 // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/goccy/go-yaml v1.9.8 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/mcuadros/go-defaults v1.2.0 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.2.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect

@@ -17,6 +17,7 @@ import (
 	"github.com/samber/lo"
 )
 
+const timeoutSecond int64 = 20
 const ModelPlateau = "plateau"
 const ModelUsecase = "usecase"
 const ModelDataset = "dataset"
@@ -138,7 +139,7 @@ func (f *Fetcher) get(ctx context.Context, project, model string, page, perPage 
 	u := f.url(project, model, page, perPage)
 	log.Infof("datacatalog: get: %s", u)
 
-	ctx2, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx2, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutSecond)*time.Second)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx2, "GET", u, nil)

@@ -59,7 +59,6 @@ type Config struct {
 	DataCatalog_Cache                 bool
 	DataCatalog_CacheTTL              int
 	DataCatalog_CacheSize             string
-	DataCatalog_CacheGCPacent         int
 }
 
 func NewConfig() (*Config, error) {
@@ -175,12 +174,11 @@ func (c *Config) Sidebar() sidebar.Config {
 
 func (c *Config) DataCatalog() datacatalog.Config {
 	return datacatalog.Config{
-		CMSBase:       c.CMS_BaseURL,
-		CMSProject:    c.CMS_PlateauProject,
-		Cache:         c.DataCatalog_Cache,
-		CacheTTL:      c.DataCatalog_CacheTTL,
-		CacheSize:     c.DataCatalog_CacheSize,
-		CacheGCPacent: c.DataCatalog_CacheGCPacent,
+		CMSBase:    c.CMS_BaseURL,
+		CMSProject: c.CMS_PlateauProject,
+		Cache:      c.DataCatalog_Cache,
+		CacheTTL:   c.DataCatalog_CacheTTL,
+		CacheSize:  c.DataCatalog_CacheSize,
 	}
 }
 

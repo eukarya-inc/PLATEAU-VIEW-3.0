@@ -207,7 +207,7 @@ func Sidebar(conf *Config) (*Service, error) {
 
 func DataCatalog(conf *Config) (*Service, error) {
 	c := conf.DataCatalog()
-	if c.CMSBase == "" || c.CMSProject == "" {
+	if c.CMSBase == "" {
 		return nil, nil
 	}
 
