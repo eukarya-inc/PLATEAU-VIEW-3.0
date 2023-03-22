@@ -46,6 +46,7 @@ const WebDataTab: React.FC<Props> = ({ onOpenDetails, setSelectedWebItem }) => {
         "著作権や制約に関する情報などの詳細については、このデータの提供者にお問い合わせください。",
       name: filename,
       url: dataUrl,
+      visible: true,
       format: setDataFormat(fileType, filename),
     };
     const requireLayerName = needsLayerName(dataUrl);
