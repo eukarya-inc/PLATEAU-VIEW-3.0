@@ -12,6 +12,8 @@ export type Props = {
   catalog?: DataCatalogItem[];
   addedDatasetDataIDs?: string[];
   inEditor?: boolean;
+  searchTerm: string;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
   onDatasetPublish: (dataID: string, publish: boolean) => void;
 };
@@ -20,6 +22,8 @@ const DatasetsPage: React.FC<Props> = ({
   catalog,
   addedDatasetDataIDs,
   inEditor,
+  searchTerm,
+  onSearch,
   onDatasetAdd,
   onDatasetPublish,
 }) => {
@@ -66,6 +70,8 @@ const DatasetsPage: React.FC<Props> = ({
           catalog={catalog}
           selectedTags={selectedTags}
           filter={filter}
+          searchTerm={searchTerm}
+          onSearch={onSearch}
           addDisabled={addDisabled}
           onFilter={handleFilter}
           onTagSelect={handleTagSelect}

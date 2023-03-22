@@ -27,6 +27,12 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = useCallback(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(value);
+    postMsg({ action: "saveSearchTerm", payload: { searchTerm: value } });
+  }, []);
 
   const processedCatalog = useMemo(() => {
     const c = handleDataCatalogProcessing(catalogData, data);
@@ -144,6 +150,7 @@ export default () => {
         setBackendProjectName(e.data.payload.backendProjectName);
         setBackendAccessToken(e.data.payload.backendAccessToken);
         setPublishToGeospatial(e.data.payload.enableGeoPub);
+        if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }
@@ -257,6 +264,8 @@ export default () => {
     currentPage,
     loading,
     buildingSearch,
+    searchTerm,
+    handleSearch,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,

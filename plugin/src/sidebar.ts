@@ -74,6 +74,7 @@ let catalog: DataCatalogItem[] = [];
 
 let addedDatasets: [dataID: string, status: "showing" | "hidden", layerID?: string][] = [];
 
+let searchTerm = "";
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
   (i: PluginExtensionInstance) => i.id === reearth.widget.id,
 );
@@ -149,6 +150,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
           enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
           draftProject,
+          searchTerm,
         };
         if (isMobile) {
           reearth.popup.postMessage({ action, payload: outBoundPayload });
@@ -255,6 +257,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
+  } else if (action === "saveSearchTerm") {
+    searchTerm = payload.searchTerm;
   } else if (action === "triggerHelpOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "modalClose") {
@@ -267,6 +271,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         catalog,
         addedDatasets: addedDatasets.map(d => d[0]),
         inEditor: reearth.scene.inEditor,
+        searchTerm,
       },
     });
   } else if (action === "helpPopupOpen") {

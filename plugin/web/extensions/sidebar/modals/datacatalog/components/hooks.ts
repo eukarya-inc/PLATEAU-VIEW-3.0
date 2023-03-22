@@ -10,6 +10,12 @@ export default () => {
   const [addedDatasetDataIDs, setAddedDatasetDataIDs] = useState<string[]>();
   const [catalog, setCatalog] = useState<DataCatalogItem[]>([]);
   const [inEditor, setEditorState] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = useCallback(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(value);
+    postMsg({ action: "saveSearchTerm", payload: { searchTerm: value } });
+  }, []);
 
   const handleClose = useCallback(() => {
     postMsg({ action: "modalClose" });
@@ -43,6 +49,7 @@ export default () => {
         setAddedDatasetDataIDs(e.data.payload.addedDatasets);
         setCatalog(e.data.payload.catalog);
         setEditorState(e.data.payload.inEditor);
+        if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
       } else if (e.data.action === "updateDataCatalog") {
         if (e.data.payload.updatedCatalog) {
           setCatalog(e.data.payload.updatedCatalog);
@@ -63,6 +70,8 @@ export default () => {
     catalog,
     addedDatasetDataIDs,
     inEditor,
+    searchTerm,
+    handleSearch,
     handleClose,
     handleTabChange: changeTabs,
     handleDatasetAdd,

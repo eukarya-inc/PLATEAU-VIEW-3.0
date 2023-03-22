@@ -23,6 +23,8 @@ const MobileDropdown: React.FC = () => {
     reearthURL,
     backendURL,
     backendProjectName,
+    searchTerm,
+    handleSearch,
     handleDatasetSave,
     handleDatasetUpdate,
     handleProjectDatasetAdd,
@@ -82,6 +84,8 @@ const MobileDropdown: React.FC = () => {
               addedDatasetDataIDs={addedDatasetDataIDs}
               isMobile
               catalogData={catalog}
+              searchTerm={searchTerm}
+              onSearch={handleSearch}
               onDatasetAdd={handleDatasetAdd}
             />
           ),
