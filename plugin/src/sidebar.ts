@@ -685,7 +685,4 @@ const defaultOverrides = {
   polyline: {
     clampToGround: true,
   },
-  model: {
-    heightReference: "clamp",
-  },
 };
