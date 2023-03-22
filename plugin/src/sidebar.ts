@@ -75,6 +75,8 @@ let catalog: DataCatalogItem[] = [];
 let addedDatasets: [dataID: string, status: "showing" | "hidden", layerID?: string][] = [];
 
 let searchTerm = "";
+let expandedFolders: { id?: string; name?: string }[] = [];
+let dataset: DataCatalogItem | undefined = undefined;
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
   (i: PluginExtensionInstance) => i.id === reearth.widget.id,
 );
@@ -259,6 +261,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.ui.postMessage({ action });
   } else if (action === "saveSearchTerm") {
     searchTerm = payload.searchTerm;
+  } else if (action === "saveExpandedFolders") {
+    expandedFolders = [...payload.expandedFolders];
+  } else if (action === "saveDataset") {
+    dataset = { ...payload.dataset };
   } else if (action === "triggerHelpOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "modalClose") {
@@ -272,6 +278,8 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         addedDatasets: addedDatasets.map(d => d[0]),
         inEditor: reearth.scene.inEditor,
         searchTerm,
+        expandedFolders,
+        dataset,
       },
     });
   } else if (action === "helpPopupOpen") {

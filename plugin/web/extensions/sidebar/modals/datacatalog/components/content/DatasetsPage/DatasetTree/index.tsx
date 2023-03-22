@@ -17,8 +17,12 @@ export type Props = {
   catalog?: DataCatalogItem[];
   selectedTags?: Tag[];
   filter: GroupBy;
+  selectedItem?: DataCatalogItem;
+  expandedFolders?: { id?: string; name?: string }[];
   searchTerm: string;
+  setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelect?: (item?: DataCatalogItem) => void;
   addDisabled: (dataID: string) => boolean;
   onFilter: (filter: GroupBy) => void;
   onTagSelect?: (tag: Tag) => void;
@@ -60,8 +64,12 @@ const DatasetTree: React.FC<Props> = ({
   catalog,
   selectedTags,
   filter,
+  selectedItem,
+  expandedFolders,
   searchTerm,
+  setExpandedFolders,
   onSearch,
+  onSelect,
   addDisabled,
   onFilter,
   onTagSelect,
@@ -119,6 +127,10 @@ const DatasetTree: React.FC<Props> = ({
               catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
+              selectedItem={selectedItem}
+              expandedFolders={expandedFolders}
+              setExpandedFolders={setExpandedFolders}
+              onSelect={onSelect}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}
@@ -132,6 +144,10 @@ const DatasetTree: React.FC<Props> = ({
               catalog={dataCatalogTree}
               isMobile={isMobile}
               expandAll={expandAll}
+              selectedItem={selectedItem}
+              expandedFolders={expandedFolders}
+              setExpandedFolders={setExpandedFolders}
+              onSelect={onSelect}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}

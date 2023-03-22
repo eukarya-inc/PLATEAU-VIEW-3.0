@@ -1,3 +1,4 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useState, useEffect, useCallback } from "react";
@@ -8,8 +9,8 @@ export type Props = {
   isMobile?: boolean;
   expandAll?: boolean;
   nestLevel: number;
-  expandedFolders: { id?: string; name?: string }[];
-  setExpandedFolders: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
+  expandedFolders?: { id?: string; name?: string }[];
+  setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   children?: React.ReactNode;
 };
 
@@ -26,13 +27,13 @@ const Folder: React.FC<Props> = ({
   const [isOpen, open] = useState(false);
 
   useEffect(() => {
-    if (expandAll || expandedFolders.find(item => (item.id ? item.id === id : item.name === name)))
+    if (expandAll || expandedFolders?.find(item => (item.id ? item.id === id : item.name === name)))
       open(true);
   }, [expandAll, expandedFolders, id, name]);
 
   const handleExpand = useCallback(
     (folder: { id?: string; name?: string }) => {
-      setExpandedFolders((prevState: { id?: string; name?: string }[]) => {
+      setExpandedFolders?.((prevState: { id?: string; name?: string }[]) => {
         const newExpandedFolders = [...prevState];
         if (prevState.find(folder => (folder.id ? folder.id === id : folder.name === name))) {
           const index = prevState.findIndex(folder =>
@@ -44,6 +45,10 @@ const Folder: React.FC<Props> = ({
           newExpandedFolders.push(folder);
           open(true);
         }
+        postMsg({
+          action: "saveExpandedFolders",
+          payload: { expandedFolders: newExpandedFolders },
+        });
         return newExpandedFolders;
       });
     },

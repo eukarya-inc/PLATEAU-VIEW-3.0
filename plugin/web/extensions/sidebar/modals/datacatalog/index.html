@@ -19,11 +19,3 @@
     <div class="root" id="root"></div>
 </body>
 <script type="module" src="./main.tsx"></script>
-<script>
-window.addEventListener("message", function (e) {
-    if (e.source !== parent) return;
-    if (e.data.action === "catalogModalOpen" && e.data.payload) {
-        if(e.data.payload.dataset) window.selectedDataset = e.data.payload.dataset;
-      }
-  });
-</script>

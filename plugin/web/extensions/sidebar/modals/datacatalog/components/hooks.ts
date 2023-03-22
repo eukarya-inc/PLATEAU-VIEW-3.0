@@ -10,11 +10,22 @@ export default () => {
   const [addedDatasetDataIDs, setAddedDatasetDataIDs] = useState<string[]>();
   const [catalog, setCatalog] = useState<DataCatalogItem[]>([]);
   const [inEditor, setEditorState] = useState(false);
+  const [selectedDatasetID, setDatasetID] = useState<string>();
+  const [selectedItem, selectItem] = useState<DataCatalogItem>();
+  const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = useCallback(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(value);
     postMsg({ action: "saveSearchTerm", payload: { searchTerm: value } });
+  }, []);
+
+  const handleSelect = useCallback((item?: DataCatalogItem) => {
+    selectItem(item);
+  }, []);
+
+  const handleOpenDetails = useCallback((data?: DataCatalogItem) => {
+    setDatasetID(data?.dataID);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -50,6 +61,23 @@ export default () => {
         setCatalog(e.data.payload.catalog);
         setEditorState(e.data.payload.inEditor);
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
+        if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
+        if (e.data.payload.dataset) {
+          const item = e.data.payload.dataset;
+          handleOpenDetails(item);
+          handleSelect(item);
+          if (item.path) {
+            setExpandedFolders(
+              item.path
+                .map((item: string) => ({ name: item }))
+                .filter((folder: { name?: string }) => folder.name !== item.name),
+            );
+          }
+          postMsg({
+            action: "saveDataset",
+            payload: { dataset: undefined },
+          });
+        }
       } else if (e.data.action === "updateDataCatalog") {
         if (e.data.payload.updatedCatalog) {
           setCatalog(e.data.payload.updatedCatalog);
@@ -63,15 +91,21 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, []);
+  }, [handleOpenDetails, handleSelect]);
 
   return {
     currentTab,
     catalog,
     addedDatasetDataIDs,
     inEditor,
+    selectedDatasetID,
+    selectedItem,
+    expandedFolders,
     searchTerm,
+    setExpandedFolders,
     handleSearch,
+    handleSelect,
+    handleOpenDetails,
     handleClose,
     handleTabChange: changeTabs,
     handleDatasetAdd,

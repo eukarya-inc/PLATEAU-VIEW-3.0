@@ -10,12 +10,12 @@ type Props = {
   addedDatasetDataIDs?: string[];
   selectedID?: string;
   nestLevel: number;
-  expandedFolders: { id?: string; name?: string }[];
+  expandedFolders?: { id?: string; name?: string }[];
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
-  onSelect?: (dataID: string) => void;
-  setExpandedFolders: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
+  onSelect?: (item: DataCatalogItem) => void;
+  setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
 };
 
 const TreeBuilder: React.FC<Props> = ({
@@ -107,7 +107,6 @@ const TreeBuilder: React.FC<Props> = ({
           onDatasetAdd={onDatasetAdd}
           onOpenDetails={onOpenDetails}
           onSelect={onSelect}
-          setExpandedFolders={setExpandedFolders}
         />
       )}
     </>

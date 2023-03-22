@@ -1,6 +1,5 @@
 import { DataCatalogItem, DataCatalogGroup } from "@web/extensions/sidebar/core/types";
 import { styled } from "@web/theme";
-import { useCallback, useState } from "react";
 
 import TreeBuilder from "./TreeBuilder";
 
@@ -9,6 +8,10 @@ export type Props = {
   catalog: (DataCatalogItem | DataCatalogGroup)[];
   isMobile?: boolean;
   expandAll?: boolean;
+  selectedItem?: DataCatalogItem;
+  expandedFolders?: { id?: string; name?: string }[];
+  setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
+  onSelect?: (item?: DataCatalogItem) => void;
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (data?: DataCatalogItem) => void;
@@ -19,17 +22,14 @@ const FileTree: React.FC<Props> = ({
   catalog,
   isMobile,
   expandAll,
+  selectedItem,
+  expandedFolders,
+  setExpandedFolders,
+  onSelect,
   addDisabled,
   onDatasetAdd,
   onOpenDetails,
 }) => {
-  const [selectedID, select] = useState<string>();
-  const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
-
-  const handleSelect = useCallback((dataID?: string) => {
-    select(dataID);
-  }, []);
-
   return (
     <TreeWrapper isMobile={isMobile}>
       <Tree>
@@ -38,13 +38,13 @@ const FileTree: React.FC<Props> = ({
           addedDatasetDataIDs={addedDatasetDataIDs}
           isMobile={isMobile}
           expandAll={expandAll}
-          selectedID={selectedID}
+          selectedID={selectedItem?.id}
           nestLevel={0}
           expandedFolders={expandedFolders}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
           onOpenDetails={onOpenDetails}
-          onSelect={handleSelect}
+          onSelect={onSelect}
           setExpandedFolders={setExpandedFolders}
         />
       </Tree>

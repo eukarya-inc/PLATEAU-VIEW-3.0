@@ -3,7 +3,7 @@ import { checkKeyPress } from "@web/extensions/sidebar/utils";
 import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Button, Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export type Props = {
   item: DataCatalogItem;
@@ -13,8 +13,7 @@ export type Props = {
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onOpenDetails?: (item?: DataCatalogItem) => void;
-  onSelect?: (dataID: string) => void;
-  setExpandedFolders: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
+  onSelect?: (item: DataCatalogItem) => void;
 };
 
 const File: React.FC<Props> = ({
@@ -26,7 +25,6 @@ const File: React.FC<Props> = ({
   onDatasetAdd,
   onOpenDetails,
   onSelect,
-  setExpandedFolders,
 }) => {
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -38,26 +36,13 @@ const File: React.FC<Props> = ({
 
   const handleOpenDetails = useCallback(() => {
     onOpenDetails?.(item);
-    onSelect?.(item.dataID);
+    onSelect?.(item);
   }, [item, onOpenDetails, onSelect]);
 
   const selected = useMemo(
     () => (item.type !== "group" ? selectedID === item.id : false),
     [selectedID, item],
   );
-
-  useEffect(() => {
-    const { selectedDataset } = window as any;
-    if (selectedDataset) {
-      onOpenDetails?.(selectedDataset);
-      onSelect?.(selectedDataset.dataID);
-      const newExpandedFolders = item.path?.map(item => ({ name: item }));
-      if (selected && newExpandedFolders) setExpandedFolders(newExpandedFolders);
-      setTimeout(() => {
-        (window as any).selectedDataset = undefined;
-      }, 500);
-    }
-  }, [item.path, onOpenDetails, onSelect, selected, setExpandedFolders]);
 
   const name = useMemo(() => getNameFromPath(item.name), [item.name]);
 
