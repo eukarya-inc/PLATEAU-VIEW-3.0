@@ -56,7 +56,8 @@ const PropertyBrowser: React.FC<Props> = ({
         k =>
           !commonProperties.includes(k) &&
           (!attributesKey || k !== attributesKey) &&
-          !cesium3DTilesAppearanceKeys.includes(k),
+          !cesium3DTilesAppearanceKeys.includes(k) &&
+          typeof properties[k] !== "object",
       )
       .reduce((obj, key) => {
         return {
