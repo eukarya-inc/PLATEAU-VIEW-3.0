@@ -12,9 +12,14 @@ export const convertToData = (item: DataCatalogItem, templates?: Template[]): Da
     components: item.components?.map((c: any) => {
       const newComp = Object.assign({}, c);
       if (newComp.type === "template" && newComp.components) {
-        newComp.components = templates?.find(t => t.id === newComp.templateID)?.components ?? [];
+        newComp.components =
+          templates
+            ?.find(t => t.id === newComp.templateID)
+            ?.components?.map(c => {
+              return { ...c, userSettings: undefined };
+            }) ?? [];
       }
-      return newComp;
+      return { ...newComp, userSettings: undefined };
     }),
   };
 };
