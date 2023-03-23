@@ -1,6 +1,6 @@
 import { Group } from "../core/types";
 
-export const fieldGroupMax = 10; // Lowering this from 10 will break some saved Data. Change only with utmost caution.
+export const fieldGroupMax = 24; // Lowering this from 24 will break some saved Data. Change only with utmost caution.
 
 const generateFieldGroups: () => Group[] = () => {
   const groups = [];

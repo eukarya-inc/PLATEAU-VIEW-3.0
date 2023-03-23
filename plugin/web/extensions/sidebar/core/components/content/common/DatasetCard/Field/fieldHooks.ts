@@ -49,7 +49,14 @@ export default ({
       },
       currentTime: {
         name: fieldName["currentTime"],
-        onClick: onFieldAdd({ date: "", time: "" }),
+        onClick: onFieldAdd({
+          currentDate: "",
+          currentTime: "",
+          startDate: "",
+          startTime: "",
+          stopDate: "",
+          stopTime: "",
+        }),
       },
       styleCode: {
         name: fieldName["styleCode"],

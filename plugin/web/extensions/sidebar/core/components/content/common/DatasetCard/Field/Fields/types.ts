@@ -135,8 +135,12 @@ export type Legend = FieldBase<"legend"> & {
 };
 
 type CurrentTime = FieldBase<"currentTime"> & {
-  date: string;
-  time: string;
+  currentDate: string;
+  currentTime: string;
+  startDate: string;
+  startTime: string;
+  stopDate: string;
+  stopTime: string;
 };
 
 type Realtime = FieldBase<"realtime"> & {
