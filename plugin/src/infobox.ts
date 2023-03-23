@@ -66,10 +66,16 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
   }
 });
 
-reearth.on("select", () => {
-  infoboxFieldsFetch();
+let lastSelectedFeatureId: string | undefined;
 
-  reearth.ui.postMessage({
-    action: "setLoading",
-  });
+reearth.on("select", () => {
+  const featureId = reearth.layers.selectedFeature?.id;
+  if (featureId !== lastSelectedFeatureId) {
+    lastSelectedFeatureId = featureId;
+    infoboxFieldsFetch();
+
+    reearth.ui.postMessage({
+      action: "setLoading",
+    });
+  }
 });
