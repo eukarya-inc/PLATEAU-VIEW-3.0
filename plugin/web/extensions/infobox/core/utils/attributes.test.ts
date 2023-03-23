@@ -114,7 +114,7 @@ test("getRootFields", () => {
           "uro:duration": "継続時間",
         },
       ],
-      "uro:BuildingLandSlideRiskAttribute": "土砂災害警戒区域",
+      "uro:BuildingLandSlideRiskAttribute": ["土砂災害警戒区域"],
     },
   });
 
