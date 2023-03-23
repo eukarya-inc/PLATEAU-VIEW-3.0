@@ -1,5 +1,6 @@
 import { Checkbox } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+import { CheckboxChangeEvent } from "antd/lib/checkbox";
 
 import { BaseFieldProps } from "../../types";
 
@@ -26,37 +27,46 @@ const Clipping: React.FC<BaseFieldProps<"clipping">> = ({ value, dataID, editMod
           onChange={handleUpdateBool("enabled")}
         />
       </FieldWrapper>
-      <FieldWrapper>
-        <Checkbox style={{ margin: 0 }} checked={options.show} onChange={handleUpdateBool("show")}>
-          <Text>クリップボックスを表示する</Text>
-        </Checkbox>
-      </FieldWrapper>
-      <FieldWrapper>
-        <Checkbox
-          style={{ margin: 0 }}
-          checked={options.aboveGroundOnly}
-          onChange={handleUpdateBool("aboveGroundOnly")}>
-          <Text>クリップボックスを地面にスナップする</Text>
-        </Checkbox>
-      </FieldWrapper>
-      <SelectField
-        title="クリップ方法の選択"
-        defaultValue="inside"
-        style={{ width: "100%" }}
-        value={options.direction}
-        onChange={handleUpdateSelect("direction")}
-        getPopupContainer={trigger => trigger.parentElement ?? document.body}
-        options={[
-          {
-            value: "inside",
-            label: "ボックス内をクリップ",
-          },
-          {
-            value: "outside",
-            label: "ボックス外をクリップ",
-          },
-        ]}
-      />
+      {options.enabled && (
+        <>
+          <FieldWrapper>
+            <Checkbox
+              style={{ margin: 0 }}
+              checked={options.show}
+              onChange={(e: CheckboxChangeEvent) => handleUpdateBool("show")(e.target.checked)}>
+              <Text>クリップボックスを表示する</Text>
+            </Checkbox>
+          </FieldWrapper>
+          <FieldWrapper>
+            <Checkbox
+              style={{ margin: 0 }}
+              checked={options.aboveGroundOnly}
+              onChange={(e: CheckboxChangeEvent) =>
+                handleUpdateBool("aboveGroundOnly")(e.target.checked)
+              }>
+              <Text>クリップボックスを地面にスナップする</Text>
+            </Checkbox>
+          </FieldWrapper>
+          <SelectField
+            title="クリップ方法の選択"
+            defaultValue="inside"
+            style={{ width: "100%" }}
+            value={options.direction}
+            onChange={handleUpdateSelect("direction")}
+            getPopupContainer={trigger => trigger.parentElement ?? document.body}
+            options={[
+              {
+                value: "inside",
+                label: "ボックス内をクリップ",
+              },
+              {
+                value: "outside",
+                label: "ボックス外をクリップ",
+              },
+            ]}
+          />
+        </>
+      )}
     </div>
   );
 };
