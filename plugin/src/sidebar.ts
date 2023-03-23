@@ -1,6 +1,6 @@
 import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
-import { isObject, mergeWith, omit, cloneDeep } from "lodash";
+import { isObject, mergeWith, omit, cloneDeep, merge as lodashMerge } from "lodash";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -596,35 +596,25 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     });
     return merged;
   };
-  return merge(
-    {
-      type: "simple",
-      title: dataset.name,
-      data: {
-        type: format,
-        url: dataset.config?.data?.[0].url ?? dataset.url,
-        layers: dataset.config?.data?.[0].layers ?? dataset.layers,
-        ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
-        ...(["luse", "lsld", "urf"].includes(dataset.type_en) ||
-        (dataset.type_en === "tran" && format === "mvt")
-          ? { jsonProperties: ["attributes"] }
-          : {}),
-        ...(overrides?.data || {}),
-      },
-      visible: true,
-      infobox: [
-        "bldg",
-        "tran",
-        "frn",
-        "veg",
-        "luse",
-        "lsld",
-        "urf",
-        "fld",
-        "htd",
-        "tnm",
-        "ifld",
-      ].includes(dataset.type_en)
+  return {
+    type: "simple",
+    title: dataset.name,
+    data: {
+      type: format,
+      url: dataset.config?.data?.[0].url ?? dataset.url,
+      layers: dataset.config?.data?.[0].layers ?? dataset.layers,
+      ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
+      ...(["luse", "lsld", "urf"].includes(dataset.type_en) ||
+      (dataset.type_en === "tran" && format === "mvt")
+        ? { jsonProperties: ["attributes"] }
+        : {}),
+      ...(overrides?.data || {}),
+    },
+    visible: true,
+    infobox: lodashMerge(
+      ["bldg", "tran", "frn", "veg", "luse", "lsld", "urf", "fld", "htd", "tnm", "ifld"].includes(
+        dataset.type_en,
+      )
         ? {
             blocks: [
               {
@@ -643,36 +633,37 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
               },
             },
           }
-        : null,
-      ...(overrides !== undefined
-        ? merge(defaultOverrides, omit(overrides, "data"))
-        : format === ("geojson" || "czml")
-        ? defaultOverrides
-        : format === "gtfs"
-        ? proxyGTFS(overrides)
-        : format === "mvt"
-        ? {
-            polygon: {},
-          }
-        : format === "wms"
-        ? {
-            raster: {
-              alpha: 0.8,
-            },
-          }
-        : { ...(overrides ?? {}) }),
-    },
-    {
-      infobox: {
-        property: {
-          default: {
-            unselectOnClose: true,
+        : {},
+      overrides?.infobox ?? {},
+      infoboxGlobal,
+    ),
+    ...(overrides !== undefined
+      ? merge(defaultOverrides, omit(overrides, ["data", "infobox"]))
+      : format === ("geojson" || "czml")
+      ? defaultOverrides
+      : format === "gtfs"
+      ? proxyGTFS(overrides)
+      : format === "mvt"
+      ? {
+          polygon: {},
+        }
+      : format === "wms"
+      ? {
+          raster: {
+            alpha: 0.8,
           },
-        },
-      },
-    },
-  );
+        }
+      : { ...(omit(overrides, ["data", "infobox"]) ?? {}) }),
+  };
 }
+
+const infoboxGlobal = {
+  property: {
+    default: {
+      unselectOnClose: true,
+    },
+  },
+};
 
 const defaultOverrides = {
   resource: {},
