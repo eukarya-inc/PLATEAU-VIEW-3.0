@@ -21,7 +21,10 @@ const baseMapData: BaseMapData[] = [
     key: "tokyo",
     title: "全国最新写真 (シームレス)",
     icon: bgmap_tokyo,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+    url: [
+      "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+      "https://gic-plateau.s3.ap-northeast-1.amazonaws.com/2020/ortho/tiles/{z}/{x}/{y}.png",
+    ],
   },
   {
     key: "bing",
@@ -33,13 +36,13 @@ const baseMapData: BaseMapData[] = [
     key: "gsi",
     title: "地理院地図 (淡色)",
     icon: bgmap_gsi,
-    url: "https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",
+    url: ["https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png"],
   },
   {
     key: "dark-matter",
     title: "Dark Matter",
     icon: bgmap_darkmatter,
-    url: "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.jpg",
+    url: ["https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.jpg"],
   },
 ];
 
@@ -107,7 +110,13 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
   const handleTileChange = useCallback(
     (tile: BaseMapData) => {
       if (tile.url) {
-        onOverridesUpdate({ tiles: [{ id: tile.key, tile_url: tile.url, tile_type: "url" }] });
+        onOverridesUpdate({
+          tiles: tile.url.map((t, i, a) => ({
+            id: tile.key + (a.length > 1 ? "_" + (i + 1) : ""),
+            tile_url: t,
+            tile_type: "url",
+          })),
+        });
       } else if (tile.tile_type) {
         onOverridesUpdate({ tiles: [{ id: tile.key, tile_type: tile.tile_type }] });
       }
