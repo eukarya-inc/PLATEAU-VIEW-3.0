@@ -6,6 +6,7 @@ import {
   equalNumber,
   equalString,
   variable,
+  stringOrNumber,
 } from "../utils";
 
 import { INDEPENDENT_COLOR_TYPE, LAND_SLIDE_RISK_FIELD } from "./constants";
@@ -344,19 +345,46 @@ const LANDSLIDE_RISK_CONDITIONS: Condition[] = [
   DEFAULT_CONDITION,
 ];
 
-export const makeSelectedFloodCondition = (
-  propertyName: string | undefined,
-): [condition: string, color: string][] | undefined =>
-  propertyName
+const createFloodCondition = (
+  featurePropertyName: string,
+  rank: number,
+  useOwnData: boolean | undefined,
+  color: string,
+): [condition: string, color: string][] => {
+  if (!useOwnData && featurePropertyName) {
+    return [[equalNumber(featurePropertyName, rank), color]];
+  }
+  const createJSONPath = (useCode: boolean, rankAsNumber: boolean) => {
+    const rankProperty = useCode ? `rankOrg_code` : "rankOrg";
+    const convertedRank = rankAsNumber ? rank : rank.toString();
+    return `${variable(
+      `$.attributes["uro:BuildingRiverFloodingRiskAttribute"][?(@["uro:description"]==${stringOrNumber(
+        featurePropertyName,
+      )}&&@["uro:${rankProperty}"]==${stringOrNumber(convertedRank)})]["uro:${rankProperty}"]`,
+    )} === ${stringOrNumber(convertedRank)}`;
+  };
+  return [
+    [createJSONPath(true, false), color],
+    [createJSONPath(true, true), color],
+    [createJSONPath(false, false), color],
+  ];
+};
+
+export const makeSelectedFloodCondition = ({
+  featurePropertyName,
+  useOwnData,
+}: {
+  featurePropertyName?: string;
+  useOwnData?: boolean;
+}): [condition: string, color: string][] | undefined =>
+  featurePropertyName
     ? [
-        [`\${${propertyName}} === null`, "rgba(135, 206, 235, 1)"],
-        [`isNaN(\${${propertyName}})`, "rgba(135, 206, 235, 1)"],
-        [equalNumber(propertyName, 0), "rgba(243, 240, 122, 1)"],
-        [equalNumber(propertyName, 1), "rgba(243, 240, 122, 1)"],
-        [equalNumber(propertyName, 2), "rgba(255, 184, 141, 1)"],
-        [equalNumber(propertyName, 3), "rgba(255, 132, 132, 1)"],
-        [equalNumber(propertyName, 4), "rgba(255, 94, 94, 1)"],
-        [equalNumber(propertyName, 5), "rgba(237, 87, 181, 1)"],
+        ...createFloodCondition(featurePropertyName, 0, useOwnData, "rgba(243, 240, 122, 1)"),
+        ...createFloodCondition(featurePropertyName, 1, useOwnData, "rgba(243, 240, 122, 1)"),
+        ...createFloodCondition(featurePropertyName, 2, useOwnData, "rgba(255, 184, 141, 1)"),
+        ...createFloodCondition(featurePropertyName, 3, useOwnData, "rgba(255, 132, 132, 1)"),
+        ...createFloodCondition(featurePropertyName, 4, useOwnData, "rgba(255, 94, 94, 1)"),
+        ...createFloodCondition(featurePropertyName, 5, useOwnData, "rgba(237, 87, 181, 1)"),
         [DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color],
       ]
     : [[DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color]];

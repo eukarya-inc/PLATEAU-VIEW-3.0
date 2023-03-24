@@ -32,14 +32,14 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
                 <Label>{type.label}</Label>
               </StyledRadio>
             ))}
-            {floods.map(flood => (
-              <StyledRadio key={flood.id} value={flood.id}>
-                <Label>{flood.label}</Label>
-              </StyledRadio>
-            ))}
             {Object.entries(LAND_SLIDE_RISK_FIELD).map(([, val]) => (
               <StyledRadio key={value.id} value={val.id}>
                 <Label>{val.label}</Label>
+              </StyledRadio>
+            ))}
+            {floods.map(flood => (
+              <StyledRadio key={flood.id} value={flood.id}>
+                <Label>{flood.label}</Label>
               </StyledRadio>
             ))}
           </>

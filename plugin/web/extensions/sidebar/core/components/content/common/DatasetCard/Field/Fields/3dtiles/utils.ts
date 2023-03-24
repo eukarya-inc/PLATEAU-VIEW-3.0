@@ -11,4 +11,7 @@ export const compareGreaterThan = (conditionalValue: string, num: number) =>
 export const equalString = (prop: string, value: string) => `(${variable(prop)} === "${value}")`;
 export const equalNumber = (prop: string, value: number) => `(${variable(prop)} === ${value})`;
 
+export const stringOrNumber = (v: string | number) =>
+  typeof v === "number" ? v.toString() : `"${v}"`;
+
 export const variable = (prop: string) => `\${${prop}}`;

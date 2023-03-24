@@ -9,7 +9,7 @@ import { useBuildingColor } from "./useBuildingColor";
 
 type OptionsState = BaseFieldProps<"buildingColor">["value"]["userSettings"];
 
-type RadioItem = { id: string; label: string; featurePropertyName: string };
+type RadioItem = { id: string; label: string; featurePropertyName: string; useOwnData?: boolean };
 
 const useHooks = ({
   value,
@@ -66,11 +66,17 @@ const useHooks = ({
     const handleFloods = (data: any) => {
       const tempFloods: typeof floods = [];
       Object.entries(data?.properties || {}).forEach(([k, v]) => {
-        if (k.endsWith("_浸水ランク") && v && typeof v === "object" && Object.keys(v).length > 0) {
+        if (k.endsWith("_浸水ランク") && v && typeof v === "object") {
+          const useOwnData = !Object.keys(v).length;
+          const featurePropertyName = (() => {
+            if (!useOwnData) return k;
+            return k.split(/[(_（＿]/)[0];
+          })();
           tempFloods.push({
             id: `floods-${tempFloods.length}`,
             label: k.replaceAll("_", " "),
-            featurePropertyName: k,
+            featurePropertyName,
+            useOwnData,
           });
         }
       });

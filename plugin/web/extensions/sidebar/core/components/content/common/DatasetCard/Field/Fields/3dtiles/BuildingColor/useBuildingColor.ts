@@ -1,6 +1,7 @@
 import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
 import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
 import debounce from "lodash/debounce";
+import pick from "lodash/pick";
 import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -17,7 +18,7 @@ export const useBuildingColor = ({
 }: Pick<BaseFieldProps<"buildingColor">, "dataID"> & {
   initialized: boolean;
   options: BaseFieldProps<"buildingColor">["value"]["userSettings"];
-  floods: { id: string; label: string; featurePropertyName: string }[];
+  floods: { id: string; label: string; featurePropertyName: string; useOwnData?: boolean }[];
   onUpdate: (property: any) => void;
 }) => {
   const renderRef = useRef<() => void>();
@@ -53,7 +54,7 @@ export const useBuildingColor = ({
 
 export type State = {
   dataID: string | undefined;
-  floods: { id: string; label: string; featurePropertyName: string }[];
+  floods: { id: string; label: string; featurePropertyName: string; useOwnData?: boolean }[];
   colorType: string;
 };
 
@@ -77,7 +78,11 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
             (state.colorType as keyof typeof INDEPENDENT_COLOR_TYPE) || "none"
           ]?.map((cond): [string, string] => [cond.condition, cond.color]) ??
           makeSelectedFloodCondition(
-            state.floods?.find(f => f.id === state.colorType)?.featurePropertyName,
+            pick(
+              state.floods?.find(f => f.id === state.colorType),
+              "featurePropertyName",
+              "useOwnData",
+            ) as Pick<(typeof state.floods)[number], "featurePropertyName" | "useOwnData">,
           )
         ).map(([k, v]: [string, string]) => {
           const rgba = getRGBAFromString(v);
