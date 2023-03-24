@@ -111,14 +111,18 @@ func suffixFromSpec(s float64) string {
 
 func datasetName(cityCode, cityName string, year int) string {
 	datasetName := ""
-	if cityName == tokyo23ku {
+	if isTokyo23ku(cityName) {
 		if year <= 2020 {
-			datasetName = fmt.Sprintf("plateau-%s", cityName)
+			datasetName = fmt.Sprintf("plateau-%s", gspatialjpTokyo23ku)
 		} else {
-			datasetName = fmt.Sprintf("plateau-%s-%d", cityName, year)
+			datasetName = fmt.Sprintf("plateau-%s-%d", gspatialjpTokyo23ku, year)
 		}
 	} else {
 		datasetName = fmt.Sprintf("plateau-%s-%s-%d", cityCode, cityName, year)
 	}
 	return datasetName
+}
+
+func isTokyo23ku(cityName string) bool {
+	return cityName == citygmlTokyo23ku || cityName == citygmlTokyo23ku2 || cityName == gspatialjpTokyo23ku
 }

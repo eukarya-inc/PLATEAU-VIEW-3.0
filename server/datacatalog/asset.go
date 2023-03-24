@@ -43,7 +43,7 @@ func AssetNameFrom(name string) (a AssetName) {
 	a.CityCode = m[1]
 	a.CityEn = m[2]
 	a.Year = m[3]
-	a.Format = m[4]
+	a.Format = strings.ReplaceAll(strings.ReplaceAll(m[4], " ", ""), "%20", "")
 	a.Op = m[5]
 	if len(m) > 6 {
 		a.Feature = m[6]

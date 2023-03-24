@@ -37,6 +37,8 @@ func TestSuffixFromSpec(t *testing.T) {
 func TestDatasetName(t *testing.T) {
 	assert.Equal(t, "plateau-11111-aaaa-2022", datasetName("11111", "aaaa", 2022))
 	assert.Equal(t, "plateau-tokyo23ku", datasetName("11111", "tokyo23ku", 2020))
+	assert.Equal(t, "plateau-tokyo23ku", datasetName("11111", "tokyo23-ku", 2020))
+	assert.Equal(t, "plateau-tokyo23ku", datasetName("11111", "tokyo-23ku", 2020))
 	assert.Equal(t, "plateau-tokyo23ku-2021", datasetName("11111", "tokyo23ku", 2021))
 	assert.Equal(t, "plateau-tokyo23ku-2022", datasetName("11111", "tokyo23ku", 2022))
 }

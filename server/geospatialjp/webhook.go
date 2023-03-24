@@ -9,8 +9,10 @@ import (
 )
 
 var (
-	modelKey  = "plateau"
-	tokyo23ku = "tokyo23ku"
+	modelKey            = "plateau"
+	gspatialjpTokyo23ku = "tokyo23ku"
+	citygmlTokyo23ku    = "tokyo23-ku"
+	citygmlTokyo23ku2   = "tokyo-23ku"
 )
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {

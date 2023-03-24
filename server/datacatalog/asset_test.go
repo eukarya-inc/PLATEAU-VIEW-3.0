@@ -17,6 +17,21 @@ func TestAssetNameFrom(t *testing.T) {
 	}, AssetNameFrom("https://example.com/12345/13229_nishitokyo-shi_2022_citygml_1_op.zip"))
 
 	assert.Equal(t, AssetName{
+		CityCode:  "13100",
+		CityEn:    "tokyo23-ku",
+		Year:      "2022",
+		Format:    "3dtiles",
+		WardCode:  "13101",
+		WardEn:    "chiyoda-ku",
+		Feature:   "bldg",
+		Ex:        "13101_chiyoda-ku_lod2_no_texture",
+		LOD:       "2",
+		NoTexture: true,
+		Op:        "1_1_op",
+		Ext:       ".zip",
+	}, AssetNameFrom("https://example.com/12345/13100_tokyo23-ku_2022_3dtiles%20_1_1_op_bldg_13101_chiyoda-ku_lod2_no_texture.zip"))
+
+	assert.Equal(t, AssetName{
 		CityCode:    "13229",
 		CityEn:      "nishitokyo-shi",
 		Year:        "2022",
