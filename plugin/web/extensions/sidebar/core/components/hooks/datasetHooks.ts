@@ -130,13 +130,14 @@ export default ({
 
       handleDataRequest(dataset);
 
-      if (publishToGeospatial && dataset.itemId && backendURL && backendAccessToken) {
+      if (publish && publishToGeospatial && dataset.itemId && backendURL && backendAccessToken) {
         fetch(`${backendURL}/publish_to_geospatialjp`, {
           headers: {
             authorization: `Bearer ${backendAccessToken}`,
+            "Content-Type": "application/json",
           },
           method: "POST",
-          body: JSON.stringify(`{"id": ${dataset.itemId}}`),
+          body: JSON.stringify({ id: dataset.itemId }),
         })
           .then(r => {
             if (!r.ok)

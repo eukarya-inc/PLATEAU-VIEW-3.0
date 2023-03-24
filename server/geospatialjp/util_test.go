@@ -21,6 +21,12 @@ func TestExtractCityName(t *testing.T) {
 	assert.Equal(t, "mobara-shi", cityName)
 	assert.Equal(t, 2022, year)
 
+	code, cityName, year, err = extractCityName("30422_taiji-cho_2021_citygml_2_op.zip")
+	assert.NoError(t, err)
+	assert.Equal(t, "30422", code)
+	assert.Equal(t, "taiji-cho", cityName)
+	assert.Equal(t, 2021, year)
+
 	code, cityName, year, err = extractCityName("aaa")
 	assert.EqualError(t, err, "invalid file name")
 	assert.Empty(t, code)
