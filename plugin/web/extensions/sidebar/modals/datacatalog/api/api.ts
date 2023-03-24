@@ -20,7 +20,7 @@ export type RawDataCatalogGroup = {
 export type RawDataCatalogItem = {
   id: string;
   itemId?: string;
-  name: string;
+  name?: string;
   pref: string;
   pref_code?: string;
   pref_code_i: number;
@@ -148,7 +148,12 @@ function sortInternal(
 
 function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
   return groupBy === "type"
-    ? [i.type, i.pref, ...((i.ward || i.type2) && i.city ? [i.city] : []), ...i.name.split("/")]
+    ? [
+        i.type,
+        i.pref,
+        ...((i.ward || i.type2) && i.city ? [i.city] : []),
+        ...(i.name || "（名称未決定）").split("/"),
+      ]
     : [
         i.pref,
         ...(i.city ? [i.city] : []),
@@ -162,7 +167,7 @@ function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
           i.pref !== zenkyu)
           ? [i.type]
           : []),
-        ...i.name.split("/"),
+        ...(i.name || "（名称未決定）").split("/"),
       ];
 }
 
@@ -195,7 +200,7 @@ function sortByOrder(a: number | undefined, b: number | undefined): number {
 function filter(q: string | undefined, items: RawDataCatalogItem[]): RawDataCatalogItem[] {
   if (!q) return items;
   return items.filter(
-    i => i.name.includes(q) || i.pref.includes(q) || i.city?.includes(q) || i.ward?.includes(q),
+    i => i.name?.includes(q) || i.pref.includes(q) || i.city?.includes(q) || i.ward?.includes(q),
   );
 }
 
