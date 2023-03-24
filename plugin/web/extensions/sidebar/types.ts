@@ -66,6 +66,7 @@ type ActionType =
   | "infoboxFieldsSaved"
   | "findLayerByDataID"
   | "getOverriddenLayerByDataID"
+  | "updateMVTRaster"
   | "unselect";
 // FIXME(@keiya01): support auto csv field complement
 // | "getLocationNamesFromCSVFeatureProperty"

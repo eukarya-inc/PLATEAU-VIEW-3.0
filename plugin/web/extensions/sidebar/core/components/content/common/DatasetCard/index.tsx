@@ -137,6 +137,19 @@ const DatasetCard: React.FC<Props> = ({
       if (center < 2) {
         return;
       }
+
+      // TODO: Add minzoom later once it is improved
+      const maxzoom = json?.maxzoom;
+      if (layer?.id && maxzoom) {
+        postMsg({
+          action: "updateMVTRaster",
+          payload: {
+            layerId: layer?.id,
+            maxzoom,
+          },
+        });
+      }
+
       return {
         lng: center[0],
         lat: center[1],

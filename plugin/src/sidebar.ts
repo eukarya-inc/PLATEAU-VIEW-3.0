@@ -357,6 +357,13 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         overriddenLayer,
       },
     });
+  } else if (action === "updateMVTRaster") {
+    const { layerId, maxzoom } = payload;
+    reearth.layers.override(layerId, {
+      raster: {
+        maximumLevel: maxzoom,
+      },
+    });
   } else if (action === "unselect") {
     reearth.layers.select();
   }
