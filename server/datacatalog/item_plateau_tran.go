@@ -17,6 +17,7 @@ func (i PlateauItem) TranItem(c PlateauIntermediateItem) *DataCatalogItem {
 		set.MaxLOD.URL,
 		i.DescriptionTran,
 		tranLayers(set.MaxLODN),
+		false,
 	)
 
 	item.Config = set.Config()

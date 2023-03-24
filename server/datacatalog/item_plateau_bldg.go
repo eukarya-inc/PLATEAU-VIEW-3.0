@@ -13,6 +13,7 @@ func (i PlateauItem) BldgItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		return nil
 	}
 
+	firstWard := false
 	return lo.Filter(lo.MapToSlice(assets, func(k string, v []*cms.PublicAsset) *DataCatalogItem {
 		s := BldgSetFrom(v)
 		if s == nil || s.MaxLOD.Texture == nil {
@@ -25,7 +26,10 @@ func (i PlateauItem) BldgItems(c PlateauIntermediateItem) []*DataCatalogItem {
 			s.MaxLOD.Texture.URL,
 			i.DescriptionBldg,
 			nil,
+			!firstWard,
 		)
+
+		firstWard = true
 
 		if s.MaxLOD.LowTexture != nil {
 			dci.BldgLowTextureURL = assetURLFromFormat(s.MaxLOD.LowTexture.URL, "3dtiles")
