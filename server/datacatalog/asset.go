@@ -68,7 +68,7 @@ func AssetNameFrom(name string) (a AssetName) {
 
 	if a.Feature == "urf" {
 		a.UrfFeatureType = a.Ex
-	} else if a.Feature == "fld" || a.Feature == "htd" || a.Feature == "ifld" || a.Feature == "tnm" {
+	} else if a.Feature == "fld" {
 		fldCategory, fldName, found := strings.Cut(a.Ex, "_")
 		if found {
 			a.FldCategory = fldCategory
@@ -76,6 +76,8 @@ func AssetNameFrom(name string) (a AssetName) {
 		} else {
 			a.FldName = a.Ex
 		}
+	} else if a.Feature == "htd" || a.Feature == "ifld" || a.Feature == "tnm" {
+		a.FldName = a.Ex
 	}
 
 	return
