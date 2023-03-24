@@ -652,7 +652,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     ),
     ...(overrides !== undefined
       ? merge(defaultOverrides, omit(overrides, ["data", "infobox"]))
-      : format === ("geojson" || "czml")
+      : format === "geojson" || format === "czml"
       ? defaultOverrides
       : format === "gtfs"
       ? proxyGTFS(overrides)
@@ -679,7 +679,9 @@ const infoboxGlobal = {
 };
 
 const defaultOverrides = {
-  resource: {},
+  resource: {
+    clampToGround: true,
+  },
   marker: {
     heightReference: "clamp",
   },
