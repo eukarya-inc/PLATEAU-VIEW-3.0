@@ -114,7 +114,14 @@ test("getRootFields", () => {
           "uro:duration": "継続時間",
         },
       ],
-      "uro:BuildingLandSlideRiskAttribute": ["土砂災害警戒区域"],
+      "uro:BuildingLandSlideRiskAttribute": [
+        {
+          "uro:description": "急傾斜地の崩落",
+          "uro:description_code": "1",
+          "uro:areaType": "土砂災害警戒区域（指定済）",
+          "uro:areaType_code": "1",
+        },
+      ],
     },
   });
 
@@ -144,7 +151,7 @@ test("getRootFields", () => {
     "六角川水系武雄川（都道府県管理区間）_L1（計画規模）_浸水ランク": "1",
     "六角川水系武雄川（都道府県管理区間）_L1（計画規模）_浸水深": 0,
     "六角川水系武雄川（都道府県管理区間）_L1（計画規模）_継続時間": "継続時間",
-    土砂災害警戒区域: "土砂災害警戒区域",
+    土砂災害警戒区域: "急傾斜地の崩落",
   });
 
   expect(flatKeys(res)).toEqual([
