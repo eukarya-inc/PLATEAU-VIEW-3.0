@@ -61,7 +61,7 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 
 				return DataCatalogItemConfigItem{
 					Name: name,
-					URL:  rr.a.URL,
+					URL:  assetURLFromFormat(rr.a.URL, rr.an.Format),
 					Type: rr.an.Format,
 				}
 			}),
