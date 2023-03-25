@@ -239,7 +239,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		if urfName == "" {
 			urfName = an.UrfFeatureType
 		}
-		name = fmt.Sprintf("%s（%s）", urfName, cityOrWardName)
+		name = fmt.Sprintf("%sモデル（%s）", urfName, cityOrWardName)
 		t2 = urfName
 		t2en = an.UrfFeatureType
 	} else {
