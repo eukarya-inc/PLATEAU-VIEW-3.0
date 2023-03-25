@@ -9,6 +9,7 @@ import (
 
 func TestTranSetFrom(t *testing.T) {
 	a := TranSetFrom([]*cms.PublicAsset{
+		{URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod0.zip"},
 		{URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod1.zip"},
 		{URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod2.zip"},
 		{URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod3.zip"},
@@ -18,6 +19,9 @@ func TestTranSetFrom(t *testing.T) {
 		MaxLODN: 3,
 		MaxLOD: &cms.PublicAsset{
 			URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod3.zip",
+		},
+		LOD0: &cms.PublicAsset{
+			URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod0.zip",
 		},
 		LOD1: &cms.PublicAsset{
 			URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod1.zip",
@@ -36,6 +40,12 @@ func TestTranSet_Config(t *testing.T) {
 		t,
 		DataCatalogItemConfig{
 			Data: []DataCatalogItemConfigItem{
+				{
+					Name:   "LOD0",
+					URL:    "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod0/{z}/{x}/{y}.mvt",
+					Type:   "mvt",
+					Layers: []string{"Road"},
+				},
 				{
 					Name:   "LOD1",
 					URL:    "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod1/{z}/{x}/{y}.mvt",
@@ -59,6 +69,9 @@ func TestTranSet_Config(t *testing.T) {
 			MaxLODN: 3,
 			MaxLOD: &cms.PublicAsset{
 				URL: "https://example.com/43204_arao-shi_2020_3dtiles_5_op_tran_lod3.zip",
+			},
+			LOD0: &cms.PublicAsset{
+				URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod0.zip",
 			},
 			LOD1: &cms.PublicAsset{
 				URL: "https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod1.zip",

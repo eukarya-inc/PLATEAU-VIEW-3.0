@@ -59,9 +59,11 @@ func (i PlateauItem) BldgItems(c PlateauIntermediateItem) []*DataCatalogItem {
 
 type BldgSet struct {
 	MaxLOD *BldgSetLOD
+	LOD0   *BldgSetLOD
 	LOD1   *BldgSetLOD
 	LOD2   *BldgSetLOD
 	LOD3   *BldgSetLOD
+	LOD4   *BldgSetLOD
 }
 
 type BldgSetLOD struct {
@@ -78,9 +80,11 @@ func BldgSetFrom(a []*cms.PublicAsset) *BldgSet {
 	}
 	return &BldgSet{
 		MaxLOD: bldgSetLODFrom(lods, maxlod),
+		LOD0:   bldgSetLODFrom(lods, 0),
 		LOD1:   bldgSetLODFrom(lods, 1),
 		LOD2:   bldgSetLODFrom(lods, 2),
 		LOD3:   bldgSetLODFrom(lods, 3),
+		LOD4:   bldgSetLODFrom(lods, 4),
 	}
 }
 
@@ -108,6 +112,9 @@ func bldgSetLODFrom(assets []assetWithLOD, lod int) *BldgSetLOD {
 }
 
 func (s BldgSet) Config() (c DataCatalogItemConfig) {
+	if l := s.LOD0.Config(); len(l) > 0 {
+		c.Data = append(c.Data, l...)
+	}
 	if l := s.LOD1.Config(); len(l) > 0 {
 		c.Data = append(c.Data, l...)
 	}
@@ -115,6 +122,9 @@ func (s BldgSet) Config() (c DataCatalogItemConfig) {
 		c.Data = append(c.Data, l...)
 	}
 	if l := s.LOD3.Config(); len(l) > 0 {
+		c.Data = append(c.Data, l...)
+	}
+	if l := s.LOD4.Config(); len(l) > 0 {
 		c.Data = append(c.Data, l...)
 	}
 	return

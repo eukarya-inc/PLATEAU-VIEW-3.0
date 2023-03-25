@@ -28,6 +28,7 @@ func (i PlateauItem) TranItem(c PlateauIntermediateItem) *DataCatalogItem {
 type TranSet struct {
 	MaxLODN int
 	MaxLOD  *cms.PublicAsset
+	LOD0    *cms.PublicAsset
 	LOD1    *cms.PublicAsset
 	LOD2    *cms.PublicAsset
 	LOD3    *cms.PublicAsset
@@ -46,6 +47,7 @@ func TranSetFrom(a []*cms.PublicAsset) TranSet {
 	return TranSet{
 		MaxLODN: maxLOD,
 		MaxLOD:  tranSetLODFrom(lods, maxLOD),
+		LOD0:    tranSetLODFrom(lods, 0),
 		LOD1:    tranSetLODFrom(lods, 1),
 		LOD2:    tranSetLODFrom(lods, 2),
 		LOD3:    tranSetLODFrom(lods, 3),
@@ -60,6 +62,16 @@ func tranSetLODFrom(assets []assetWithLOD, lod int) *cms.PublicAsset {
 }
 
 func (s TranSet) Config() (c DataCatalogItemConfig) {
+	if s.LOD0 != nil {
+		// mvt
+		c.Data = append(c.Data, DataCatalogItemConfigItem{
+			Name:   "LOD0",
+			URL:    assetURLFromFormat(s.LOD0.URL, "mvt"),
+			Type:   "mvt",
+			Layers: tranLayers(0),
+		})
+	}
+
 	if s.LOD1 != nil {
 		// mvt
 		c.Data = append(c.Data, DataCatalogItemConfigItem{
@@ -94,7 +106,7 @@ func (s TranSet) Config() (c DataCatalogItemConfig) {
 }
 
 func tranLayers(lod int) []string {
-	if lod == 1 {
+	if lod <= 1 {
 		return []string{"Road"}
 	}
 

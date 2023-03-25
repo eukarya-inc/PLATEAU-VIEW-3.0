@@ -10,9 +10,15 @@ import (
 func TestBldgSetFrom(t *testing.T) {
 	assert.Equal(t, &BldgSet{
 		MaxLOD: &BldgSetLOD{
-			LOD: 3,
+			LOD: 4,
 			Texture: &cms.PublicAsset{
-				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3.zip",
+				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod4.zip",
+			},
+		},
+		LOD0: &BldgSetLOD{
+			LOD: 0,
+			Texture: &cms.PublicAsset{
+				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod0.zip",
 			},
 		},
 		LOD1: &BldgSetLOD{
@@ -39,6 +45,12 @@ func TestBldgSetFrom(t *testing.T) {
 				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3.zip",
 			},
 		},
+		LOD4: &BldgSetLOD{
+			LOD: 4,
+			Texture: &cms.PublicAsset{
+				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod4.zip",
+			},
+		},
 	}, BldgSetFrom([]*cms.PublicAsset{
 		{
 			URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod1.zip",
@@ -55,12 +67,23 @@ func TestBldgSetFrom(t *testing.T) {
 		{
 			URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3.zip",
 		},
+		{
+			URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod0.zip",
+		},
+		{
+			URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod4.zip",
+		},
 	}))
 }
 
 func TestBldgSet_Config(t *testing.T) {
 	assert.Equal(t, DataCatalogItemConfig{
 		Data: []DataCatalogItemConfigItem{
+			{
+				Name: "LOD0",
+				URL:  "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod0/tileset.json",
+				Type: "3dtiles",
+			},
 			{
 				Name: "LOD1",
 				URL:  "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod1/tileset.json",
@@ -86,6 +109,11 @@ func TestBldgSet_Config(t *testing.T) {
 				URL:  "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3/tileset.json",
 				Type: "3dtiles",
 			},
+			{
+				Name: "LOD4",
+				URL:  "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod4/tileset.json",
+				Type: "3dtiles",
+			},
 		},
 	}, (&BldgSet{
 		MaxLOD: &BldgSetLOD{
@@ -93,6 +121,12 @@ func TestBldgSet_Config(t *testing.T) {
 			Texture: &cms.PublicAsset{
 				URL:  "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3.zip",
 				Type: "3dtiles",
+			},
+		},
+		LOD0: &BldgSetLOD{
+			LOD: 0,
+			Texture: &cms.PublicAsset{
+				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod0.zip",
 			},
 		},
 		LOD1: &BldgSetLOD{
@@ -117,6 +151,12 @@ func TestBldgSet_Config(t *testing.T) {
 			LOD: 3,
 			Texture: &cms.PublicAsset{
 				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod3.zip",
+			},
+		},
+		LOD4: &BldgSetLOD{
+			LOD: 4,
+			Texture: &cms.PublicAsset{
+				URL: "https://example.com/13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13102_chuo-ku_lod4.zip",
 			},
 		},
 	}).Config())
