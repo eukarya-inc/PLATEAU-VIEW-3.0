@@ -109,14 +109,15 @@ const DatasetCard: React.FC<Props> = ({
     const fetchMetadataJSONForMVT = async () => {
       const layer = await (() =>
         new Promise<any>(resolve => {
+          let success = false;
           const handleMessage = (e: any) => {
             if (e.source !== parent) return;
-            if (e.data.action !== "findLayerByDataID") {
-              resolve(undefined);
+            if (e.data.action === "findLayerByDataID" && e.data.payload.dataID === dataset.dataID) {
+              success = true;
+              removeEventListener("message", handleMessage);
+              resolve(e.data.payload.layer);
               return;
             }
-            removeEventListener("message", handleMessage);
-            resolve(e.data.payload.layer);
           };
           addEventListener("message", handleMessage);
           postMsg({
@@ -125,6 +126,12 @@ const DatasetCard: React.FC<Props> = ({
               dataID: dataset.dataID,
             },
           });
+          setTimeout(() => {
+            if (!success) {
+              removeEventListener("message", handleMessage);
+              resolve(undefined);
+            }
+          }, 3000);
         }))();
 
       if (layer?.data?.type !== "mvt") return;

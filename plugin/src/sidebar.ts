@@ -341,6 +341,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.ui.postMessage({
       action,
       payload: {
+        dataID,
         layer: {
           id: layer.id,
           data: layer.data,
