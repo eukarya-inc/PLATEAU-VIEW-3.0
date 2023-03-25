@@ -7,7 +7,6 @@ export type Props = {
   id: string;
   name: string;
   isMobile?: boolean;
-  expandAll?: boolean;
   nestLevel: number;
   expandedFolders?: { id?: string; name?: string }[];
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
@@ -18,7 +17,6 @@ const Folder: React.FC<Props> = ({
   id,
   name,
   isMobile,
-  expandAll,
   nestLevel,
   expandedFolders,
   setExpandedFolders,
@@ -26,25 +24,25 @@ const Folder: React.FC<Props> = ({
 }) => {
   const [isOpen, open] = useState(false);
 
+  const findCb = useCallback(
+    (item: { id?: string; name?: string }) => (item.id ? item.id === id : item.name === name),
+    [id, name],
+  );
+
   useEffect(() => {
-    if (expandAll || expandedFolders?.find(item => (item.id ? item.id === id : item.name === name)))
+    if (!!expandedFolders?.find(findCb) && !isOpen) {
       open(true);
-  }, [expandAll, expandedFolders, id, name]);
+    } else if (!expandedFolders?.find(findCb) && isOpen) {
+      open(false);
+    }
+  }, [expandedFolders, findCb, id, isOpen, name]);
 
   const handleExpand = useCallback(
     (folder: { id?: string; name?: string }) => {
       setExpandedFolders?.((prevState: { id?: string; name?: string }[]) => {
         const newExpandedFolders = [...prevState];
-        if (prevState.find(folder => (folder.id ? folder.id === id : folder.name === name))) {
-          const index = prevState.findIndex(folder =>
-            folder.id ? folder.id === id : folder.name === name,
-          );
-          newExpandedFolders.splice(index, 1);
-          open(false);
-        } else {
-          newExpandedFolders.push(folder);
-          open(true);
-        }
+        const index = prevState.findIndex(findCb);
+        index >= 0 ? newExpandedFolders.splice(index, 1) : newExpandedFolders.push(folder);
         postMsg({
           action: "saveExpandedFolders",
           payload: { expandedFolders: newExpandedFolders },
@@ -52,7 +50,7 @@ const Folder: React.FC<Props> = ({
         return newExpandedFolders;
       });
     },
-    [id, name, setExpandedFolders],
+    [findCb, setExpandedFolders],
   );
 
   return (

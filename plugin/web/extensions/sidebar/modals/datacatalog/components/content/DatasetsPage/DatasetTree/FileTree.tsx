@@ -7,7 +7,6 @@ export type Props = {
   addedDatasetDataIDs?: string[];
   catalog: (DataCatalogItem | DataCatalogGroup)[];
   isMobile?: boolean;
-  expandAll?: boolean;
   selectedItem?: DataCatalogItem;
   expandedFolders?: { id?: string; name?: string }[];
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
@@ -21,7 +20,6 @@ const FileTree: React.FC<Props> = ({
   addedDatasetDataIDs,
   catalog,
   isMobile,
-  expandAll,
   selectedItem,
   expandedFolders,
   setExpandedFolders,
@@ -37,7 +35,6 @@ const FileTree: React.FC<Props> = ({
           catalogItem={catalog}
           addedDatasetDataIDs={addedDatasetDataIDs}
           isMobile={isMobile}
-          expandAll={expandAll}
           selectedID={selectedItem?.id}
           nestLevel={0}
           expandedFolders={expandedFolders}

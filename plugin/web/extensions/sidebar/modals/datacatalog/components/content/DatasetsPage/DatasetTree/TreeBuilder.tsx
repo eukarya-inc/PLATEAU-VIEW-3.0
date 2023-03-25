@@ -6,7 +6,6 @@ import Folder from "./Folder";
 type Props = {
   catalogItem: DataCatalogGroup | DataCatalogItem | (DataCatalogItem | DataCatalogGroup)[];
   isMobile?: boolean;
-  expandAll?: boolean;
   addedDatasetDataIDs?: string[];
   selectedID?: string;
   nestLevel: number;
@@ -21,7 +20,6 @@ type Props = {
 const TreeBuilder: React.FC<Props> = ({
   catalogItem,
   isMobile,
-  expandAll,
   addedDatasetDataIDs,
   selectedID,
   nestLevel,
@@ -44,7 +42,6 @@ const TreeBuilder: React.FC<Props> = ({
               nestLevel={nestLevel + 1}
               expandedFolders={expandedFolders}
               isMobile={isMobile}
-              expandAll={expandAll}
               setExpandedFolders={setExpandedFolders}>
               <TreeBuilder
                 catalogItem={item.children}
@@ -82,7 +79,6 @@ const TreeBuilder: React.FC<Props> = ({
           nestLevel={nestLevel + 1}
           expandedFolders={expandedFolders}
           isMobile={isMobile}
-          expandAll={expandAll}
           setExpandedFolders={setExpandedFolders}>
           <TreeBuilder
             catalogItem={catalogItem.children}
