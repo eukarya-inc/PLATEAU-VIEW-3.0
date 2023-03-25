@@ -5,7 +5,7 @@ import {
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PolygonColor as PolygonColorType } from "../../types";
@@ -59,44 +59,13 @@ const PolygonColor: React.FC<BaseFieldProps<"polygonColor">> = ({ value, editMod
     });
   };
 
-  const generateOverride = useCallback((items: PolygonColorType["items"]) => {
-    const fillColorConditions: [string, string][] = [["true", 'color("white")']];
-    const fillConditions: [string, string][] = [["true", "true"]];
-    items?.forEach(item => {
-      const resFillColor = "color" + `("${item.color}")`;
-      const cond = stringifyCondition(item.condition);
-      fillColorConditions.unshift([cond, resFillColor]);
-      fillConditions.unshift([cond, cond]);
-    });
-    return {
-      polygon: {
-        fill: {
-          expression: { conditions: fillConditions },
-        },
-        fillColor: { expression: { conditions: fillColorConditions } },
-      },
-    };
-  }, []);
-
-  const [override, updateOverride] = useState<{ polygon: any }>(generateOverride(value.items));
-  const valueRef = useRef(value);
-  const itemsRef = useRef(items);
-  const onUpdateRef = useRef(onUpdate);
-  valueRef.current = value;
-  itemsRef.current = items;
-  onUpdateRef.current = onUpdate;
-
   const handleApply = useCallback(() => {
-    updateOverride(generateOverride(items));
-  }, [generateOverride, items]);
-
-  useEffect(() => {
-    onUpdateRef.current({
-      ...valueRef.current,
-      items: itemsRef.current,
-      override,
+    onUpdate({
+      ...value,
+      items,
+      override: generateOverride(items),
     });
-  }, [override]);
+  }, [value, items, onUpdate]);
 
   return editMode ? (
     <Wrapper>
@@ -124,3 +93,22 @@ const Button = styled.div`
 `;
 
 export default PolygonColor;
+
+const generateOverride = (items: PolygonColorType["items"]) => {
+  const fillColorConditions: [string, string][] = [["true", 'color("white")']];
+  const fillConditions: [string, string][] = [["true", "true"]];
+  items?.forEach(item => {
+    const resFillColor = "color" + `("${item.color}")`;
+    const cond = stringifyCondition(item.condition);
+    fillColorConditions.unshift([cond, resFillColor]);
+    fillConditions.unshift([cond, cond]);
+  });
+  return {
+    polygon: {
+      fill: {
+        expression: { conditions: fillConditions },
+      },
+      fillColor: { expression: { conditions: fillColorConditions } },
+    },
+  };
+};

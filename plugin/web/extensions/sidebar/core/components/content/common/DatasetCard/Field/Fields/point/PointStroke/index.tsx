@@ -5,7 +5,7 @@ import {
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PointStroke as PointStrokeType } from "../../types";
@@ -72,52 +72,13 @@ const PointStroke: React.FC<BaseFieldProps<"pointStroke">> = ({ value, editMode,
     });
   };
 
-  const generateOverride = useCallback((items: PointStrokeType["items"]) => {
-    const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
-    const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
-    items?.forEach(item => {
-      const resStrokeColor = "color" + `("${item.strokeColor}")`;
-      const resStrokeWidth = String(item.strokeWidth);
-      const cond = stringifyCondition(item.condition);
-      pointOutlineColorConditions.unshift([cond, resStrokeColor]);
-      pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
-    });
-    return {
-      marker: {
-        style: "point",
-        pointOutlineColor: {
-          expression: {
-            conditions: pointOutlineColorConditions,
-          },
-        },
-        pointOutlineWidth: {
-          expression: {
-            conditions: pointOutlineWidthConditions,
-          },
-        },
-      },
-    };
-  }, []);
-
-  const [override, updateOverride] = useState<{ marker: any }>(generateOverride(value.items));
-  const valueRef = useRef(value);
-  const itemsRef = useRef(items);
-  const onUpdateRef = useRef(onUpdate);
-  valueRef.current = value;
-  itemsRef.current = items;
-  onUpdateRef.current = onUpdate;
-
   const handleApply = useCallback(() => {
-    updateOverride(generateOverride(items));
-  }, [generateOverride, items]);
-
-  useEffect(() => {
-    onUpdateRef.current({
-      ...valueRef.current,
-      items: itemsRef.current,
-      override,
+    onUpdate({
+      ...value,
+      items,
+      override: generateOverride(items),
     });
-  }, [override]);
+  }, [value, items, onUpdate]);
 
   return editMode ? (
     <Wrapper>
@@ -145,3 +106,30 @@ const Button = styled.div`
 `;
 
 export default PointStroke;
+
+const generateOverride = (items: PointStrokeType["items"]) => {
+  const pointOutlineColorConditions: [string, string][] = [["true", 'color("white")']];
+  const pointOutlineWidthConditions: [string, string][] = [["true", "1"]];
+  items?.forEach(item => {
+    const resStrokeColor = "color" + `("${item.strokeColor}")`;
+    const resStrokeWidth = String(item.strokeWidth);
+    const cond = stringifyCondition(item.condition);
+    pointOutlineColorConditions.unshift([cond, resStrokeColor]);
+    pointOutlineWidthConditions.unshift([cond, resStrokeWidth]);
+  });
+  return {
+    marker: {
+      style: "point",
+      pointOutlineColor: {
+        expression: {
+          conditions: pointOutlineColorConditions,
+        },
+      },
+      pointOutlineWidth: {
+        expression: {
+          conditions: pointOutlineWidthConditions,
+        },
+      },
+    },
+  };
+};

@@ -5,7 +5,7 @@ import {
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PolylineColor as PolylineColorType } from "../../types";
@@ -63,43 +63,13 @@ const PolylineColor: React.FC<BaseFieldProps<"polylineColor">> = ({
     });
   };
 
-  const generateOverride = useCallback((items: PolylineColorType["items"]) => {
-    const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
-    items?.forEach(item => {
-      const resStrokeColor = "color" + `("${item.color}")`;
-      const cond = stringifyCondition(item.condition);
-      strokeColorConditions.unshift([cond, resStrokeColor]);
-    });
-    return {
-      polyline: {
-        strokeColor: {
-          expression: {
-            conditions: strokeColorConditions,
-          },
-        },
-      },
-    };
-  }, []);
-
-  const [override, updateOverride] = useState<{ polyline: any }>(generateOverride(value.items));
-  const valueRef = useRef(value);
-  const itemsRef = useRef(items);
-  const onUpdateRef = useRef(onUpdate);
-  valueRef.current = value;
-  itemsRef.current = items;
-  onUpdateRef.current = onUpdate;
-
   const handleApply = useCallback(() => {
-    updateOverride(generateOverride(items));
-  }, [generateOverride, items]);
-
-  useEffect(() => {
-    onUpdateRef.current({
-      ...valueRef.current,
-      items: itemsRef.current,
-      override,
+    onUpdate({
+      ...value,
+      items,
+      override: generateOverride(items),
     });
-  }, [override]);
+  }, [value, items, onUpdate]);
 
   return editMode ? (
     <Wrapper>
@@ -127,3 +97,21 @@ const Button = styled.div`
 `;
 
 export default PolylineColor;
+
+const generateOverride = (items: PolylineColorType["items"]) => {
+  const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
+  items?.forEach(item => {
+    const resStrokeColor = "color" + `("${item.color}")`;
+    const cond = stringifyCondition(item.condition);
+    strokeColorConditions.unshift([cond, resStrokeColor]);
+  });
+  return {
+    polyline: {
+      strokeColor: {
+        expression: {
+          conditions: strokeColorConditions,
+        },
+      },
+    },
+  };
+};

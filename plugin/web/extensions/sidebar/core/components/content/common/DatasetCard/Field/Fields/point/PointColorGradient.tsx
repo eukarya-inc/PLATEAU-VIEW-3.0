@@ -33,7 +33,6 @@ const generateConditions = (
 const PointColorGradient: React.FC<BaseFieldProps<"pointColorGradient">> = ({
   value,
   editMode,
-  isActive,
   onUpdate,
 }) => {
   const [colorGradient, setColorGradient] = useState(value);
@@ -95,7 +94,7 @@ const PointColorGradient: React.FC<BaseFieldProps<"pointColorGradient">> = ({
   }, [colorGradient]);
 
   useEffect(() => {
-    if (!isActive || isEqual(omit(colorGradient, "override"), omit(value, "override"))) return;
+    if (isEqual(omit(colorGradient, "override"), omit(value, "override"))) return;
     const timer = setTimeout(() => {
       onUpdate({
         ...colorGradient,
@@ -114,7 +113,7 @@ const PointColorGradient: React.FC<BaseFieldProps<"pointColorGradient">> = ({
     return () => {
       clearTimeout(timer);
     };
-  }, [isActive, value, onUpdate, colorGradient, conditions]);
+  }, [value, onUpdate, colorGradient, conditions]);
 
   return editMode ? (
     <Wrapper>

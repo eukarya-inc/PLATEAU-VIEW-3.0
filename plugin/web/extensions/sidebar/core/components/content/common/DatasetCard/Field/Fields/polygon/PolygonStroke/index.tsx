@@ -5,7 +5,7 @@ import {
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PolygonStroke as PolygonStrokeType } from "../../types";
@@ -72,58 +72,13 @@ const PolygonStroke: React.FC<BaseFieldProps<"polygonStroke">> = ({
     });
   };
 
-  const generateOverride = useCallback((items: PolygonStrokeType["items"]) => {
-    const strokeConditions: [string, string][] = [["true", "true"]];
-    const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
-    const strokeWidthConditions: [string, string][] = [["true", "1"]];
-    items?.forEach(item => {
-      const resStrokeColor = "color" + `("${item.strokeColor}")`;
-      const resStrokeWidth = String(item.strokeWidth);
-      const cond = stringifyCondition(item.condition);
-      strokeColorConditions.unshift([cond, resStrokeColor]);
-      strokeWidthConditions.unshift([cond, resStrokeWidth]);
-      strokeConditions.unshift([cond, cond]);
-    });
-    return {
-      polygon: {
-        stroke: {
-          expression: {
-            conditions: strokeConditions,
-          },
-        },
-        strokeColor: {
-          expression: {
-            conditions: strokeColorConditions,
-          },
-        },
-        strokeWidth: {
-          expression: {
-            conditions: strokeWidthConditions,
-          },
-        },
-      },
-    };
-  }, []);
-
-  const [override, updateOverride] = useState<{ polygon: any }>(generateOverride(value.items));
-  const valueRef = useRef(value);
-  const itemsRef = useRef(items);
-  const onUpdateRef = useRef(onUpdate);
-  valueRef.current = value;
-  itemsRef.current = items;
-  onUpdateRef.current = onUpdate;
-
   const handleApply = useCallback(() => {
-    updateOverride(generateOverride(items));
-  }, [generateOverride, items]);
-
-  useEffect(() => {
-    onUpdateRef.current({
-      ...valueRef.current,
-      items: itemsRef.current,
-      override,
+    onUpdate({
+      ...value,
+      items,
+      override: generateOverride(items),
     });
-  }, [override]);
+  }, [value, items, onUpdate]);
 
   return editMode ? (
     <Wrapper>
@@ -151,3 +106,36 @@ const Button = styled.div`
 `;
 
 export default PolygonStroke;
+
+const generateOverride = (items: PolygonStrokeType["items"]) => {
+  const strokeConditions: [string, string][] = [["true", "true"]];
+  const strokeColorConditions: [string, string][] = [["true", 'color("white")']];
+  const strokeWidthConditions: [string, string][] = [["true", "1"]];
+  items?.forEach(item => {
+    const resStrokeColor = "color" + `("${item.strokeColor}")`;
+    const resStrokeWidth = String(item.strokeWidth);
+    const cond = stringifyCondition(item.condition);
+    strokeColorConditions.unshift([cond, resStrokeColor]);
+    strokeWidthConditions.unshift([cond, resStrokeWidth]);
+    strokeConditions.unshift([cond, cond]);
+  });
+  return {
+    polygon: {
+      stroke: {
+        expression: {
+          conditions: strokeConditions,
+        },
+      },
+      strokeColor: {
+        expression: {
+          conditions: strokeColorConditions,
+        },
+      },
+      strokeWidth: {
+        expression: {
+          conditions: strokeWidthConditions,
+        },
+      },
+    },
+  };
+};

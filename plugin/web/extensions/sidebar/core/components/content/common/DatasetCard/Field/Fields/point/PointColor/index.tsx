@@ -5,7 +5,7 @@ import {
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
 import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useState } from "react";
 
 import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PointColor as PointColorType } from "../../types";
@@ -59,44 +59,13 @@ const PointColor: React.FC<BaseFieldProps<"pointColor">> = ({ value, editMode, o
     });
   };
 
-  const generateOverride = useCallback((pointColors: PointColorType["pointColors"]) => {
-    const conditions: [string, string][] = [["true", 'color("white")']];
-    pointColors?.forEach(item => {
-      const res = "color" + `("${item.color}")`;
-      const cond = stringifyCondition(item.condition);
-      conditions.unshift([cond, res]);
-    });
-    return {
-      marker: {
-        style: "point",
-        pointColor: {
-          expression: {
-            conditions,
-          },
-        },
-      },
-    };
-  }, []);
-
-  const [override, updateOverride] = useState<{ marker: any }>(generateOverride(value.pointColors));
-  const valueRef = useRef(value);
-  const itemsRef = useRef(pointColors);
-  const onUpdateRef = useRef(onUpdate);
-  valueRef.current = value;
-  itemsRef.current = pointColors;
-  onUpdateRef.current = onUpdate;
-
   const handleApply = useCallback(() => {
-    updateOverride(generateOverride(pointColors));
-  }, [generateOverride, pointColors]);
-
-  useEffect(() => {
-    onUpdateRef.current({
-      ...valueRef.current,
-      pointColors: itemsRef.current,
-      override,
+    onUpdate({
+      ...value,
+      pointColors,
+      override: generateOverride(pointColors),
     });
-  }, [override]);
+  }, [value, pointColors, onUpdate]);
 
   return editMode ? (
     <Wrapper>
@@ -124,3 +93,22 @@ const Button = styled.div`
 `;
 
 export default PointColor;
+
+const generateOverride = (pointColors: PointColorType["pointColors"]) => {
+  const conditions: [string, string][] = [["true", 'color("white")']];
+  pointColors?.forEach(item => {
+    const res = "color" + `("${item.color}")`;
+    const cond = stringifyCondition(item.condition);
+    conditions.unshift([cond, res]);
+  });
+  return {
+    marker: {
+      style: "point",
+      pointColor: {
+        expression: {
+          conditions,
+        },
+      },
+    },
+  };
+};
