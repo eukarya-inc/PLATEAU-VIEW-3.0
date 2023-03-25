@@ -3,7 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
-import { FEATURE_PROPERTY_NAME, FilteringField } from "./constants";
+import {
+  FEATURE_PROPERTY_NAME_RANK_CODE,
+  FEATURE_PROPERTY_NAME_RANK_ORG_CODE,
+  FilteringField,
+} from "./constants";
 import { useFloodFilter } from "./useFloodFilter";
 
 const useHooks = ({
@@ -46,7 +50,9 @@ const useHooks = ({
       let tempOptions: typeof options = {};
       Object.entries(data?.properties || {}).forEach(([propertyKey, propertyValue]) => {
         if (
-          propertyKey === FEATURE_PROPERTY_NAME &&
+          [FEATURE_PROPERTY_NAME_RANK_CODE, FEATURE_PROPERTY_NAME_RANK_ORG_CODE].includes(
+            propertyKey,
+          ) &&
           propertyValue &&
           typeof propertyValue === "object" &&
           Object.keys(propertyValue).length

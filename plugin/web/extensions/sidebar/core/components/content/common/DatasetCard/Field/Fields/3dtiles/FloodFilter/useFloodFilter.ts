@@ -3,7 +3,11 @@ import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
-import { FEATURE_PROPERTY_NAME, FilteringField } from "./constants";
+import {
+  FEATURE_PROPERTY_NAME_RANK_CODE,
+  FEATURE_PROPERTY_NAME_RANK_ORG_CODE,
+  FilteringField,
+} from "./constants";
 
 export const useFloodFilter = ({
   options,
@@ -62,13 +66,17 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
         ? `${conditionalValue} >= ${range?.[0]}`
         : `${conditionalValue} >= ${range?.[0]} && ${conditionalValue} <= ${range?.[1]}`;
     const conditions = (() => {
-      const conditionalValue = defaultConditionalValue(FEATURE_PROPERTY_NAME);
-      return condition(state.options.max, state.options.value, conditionalValue);
+      const conditionalRankCode = defaultConditionalValue(FEATURE_PROPERTY_NAME_RANK_CODE);
+      const conditionalRankOrgCode = defaultConditionalValue(FEATURE_PROPERTY_NAME_RANK_ORG_CODE);
+      return [
+        [condition(state.options.max, state.options.value, conditionalRankCode), "true"],
+        [condition(state.options.max, state.options.value, conditionalRankOrgCode), "true"],
+      ];
     })();
     onUpdateRef.current?.({
       show: {
         expression: {
-          conditions: [...(conditions ? [[conditions, "true"]] : []), ["true", "false"]],
+          conditions: [...(conditions ? conditions : []), ["true", "false"]],
         },
       },
     });

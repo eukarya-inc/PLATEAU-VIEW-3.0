@@ -4,4 +4,5 @@ export type FilteringField = {
   max?: number;
 };
 
-export const FEATURE_PROPERTY_NAME = "rank_code";
+export const FEATURE_PROPERTY_NAME_RANK_CODE = "rank_code";
+export const FEATURE_PROPERTY_NAME_RANK_ORG_CODE = "rank_org_code";
