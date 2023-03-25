@@ -143,6 +143,7 @@ const FieldComponent: React.FC<Props> = ({
       dataID={dataID}
       onUpdate={onUpdate?.(field.id)}
       onCurrentGroupUpdate={onCurrentGroupUpdate}
+      onSceneUpdate={onSceneUpdate}
     />
   ) : (
     <AccordionComponent

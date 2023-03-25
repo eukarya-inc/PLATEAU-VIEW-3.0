@@ -86,7 +86,7 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
       stopTime: options.stopTime,
     });
 
-    onSceneUpdate({
+    onSceneUpdate?.({
       timeline: {
         current: currentTimeStr,
         start: startTimeStr,
@@ -135,7 +135,7 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
       const now = Date.now();
       const start = new Date(now - 86400000).toISOString();
       const stop = new Date(now).toISOString();
-      onSceneUpdate({
+      onSceneUpdate?.({
         timeline: {
           current: start,
           start,
