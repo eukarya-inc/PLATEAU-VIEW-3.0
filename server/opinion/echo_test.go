@@ -43,7 +43,7 @@ func TestEcho(t *testing.T) {
 	assert.NotEmpty(t, strings.TrimSpace(w.Body.String()))
 
 	// application/json
-	rb = `{"email":"from@examle.com","content":"aaaa","name":"name"}`
+	rb = `{"email":"from@examle.com","content":"aaaa","name":"name","category":"カテゴリ","org":"所属組織"}`
 	r = httptest.NewRequest("POST", "/", strings.NewReader(rb))
 	r.Header.Set("Content-Type", "application/json")
 	w = httptest.NewRecorder()
@@ -112,4 +112,12 @@ func (cv *customValidator) Validate(i any) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
+}
+
+func TestReq_MessageContent(t *testing.T) {
+	assert.Equal(t, "カテゴリ：cate\n所属組織：org\n\naaa", req{
+		Content:  "aaa",
+		Category: "cate",
+		Org:      "org",
+	}.MessageContent())
 }

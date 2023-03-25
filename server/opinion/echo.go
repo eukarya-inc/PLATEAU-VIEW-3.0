@@ -29,10 +29,12 @@ type Config struct {
 }
 
 type req struct {
-	Title   string `json:"title" form:"title"`
-	Name    string `json:"name" form:"name" validate:"required"`
-	Email   string `json:"email" form:"email" validate:"required,email"`
-	Content string `json:"content" form:"content" validate:"required"`
+	Title    string `json:"title" form:"title"`
+	Name     string `json:"name" form:"name" validate:"required"`
+	Email    string `json:"email" form:"email" validate:"required,email"`
+	Content  string `json:"content" form:"content" validate:"required"`
+	Category string `json:"category" form:"category"`
+	Org      string `json:"org" form:"org"`
 }
 
 func Echo(g *echo.Group, conf Config) {
@@ -59,7 +61,7 @@ func Echo(g *echo.Group, conf Config) {
 		from := mail.NewEmail(fromName, conf.From)
 		to := mail.NewEmail(toName, conf.To)
 		title := fmt.Sprintf("%s%s", titlePrefix, r.Title)
-		message := mail.NewSingleEmailPlainText(from, title, to, r.Content)
+		message := mail.NewSingleEmailPlainText(from, title, to, r.MessageContent())
 		replyToEmail := mail.NewEmail(r.Name, r.Email)
 		message.SetReplyTo(replyToEmail)
 
@@ -104,4 +106,19 @@ func Echo(g *echo.Group, conf Config) {
 
 		return c.JSON(http.StatusOK, "ok")
 	}, middleware.BodyLimit("10M"), middleware.CORS())
+}
+
+func (r req) MessageContent() string {
+	content := ""
+	if r.Category != "" {
+		content += fmt.Sprintf("カテゴリ：%s\n", r.Category)
+	}
+	if r.Org != "" {
+		content += fmt.Sprintf("所属組織：%s\n", r.Org)
+	}
+	if r.Category != "" || r.Org != "" {
+		content += "\n"
+	}
+	content += r.Content
+	return content
 }
