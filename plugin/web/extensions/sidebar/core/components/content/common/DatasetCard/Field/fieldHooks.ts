@@ -125,6 +125,12 @@ export default ({
           displayStyle: null,
         }),
       },
+      heightReference: {
+        name: fieldName["heightReference"],
+        onClick: onFieldAdd({
+          heightReferenceType: "clamp",
+        }),
+      },
     };
   }, [dataset?.config?.data, onFieldAdd]);
 

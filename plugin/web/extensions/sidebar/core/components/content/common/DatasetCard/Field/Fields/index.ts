@@ -11,6 +11,7 @@ import ButtonLink from "./general/ButtonLink";
 import CurrentTime from "./general/CurrentTime";
 import Description from "./general/Description";
 import EventField from "./general/EventField";
+import HeightReference from "./general/HeightReference";
 import IdealZoom from "./general/IdealZoom";
 import InfoboxStyle from "./general/InfoboxStyle";
 import Legend from "./general/Legend";
@@ -58,6 +59,7 @@ const fields: Fields<FieldComponent> = {
   switchVisibility: { Component: SwitchVisibility, hasUI: true },
   eventField: { Component: EventField, hasUI: false },
   infoboxStyle: { Component: InfoboxStyle, hasUI: false },
+  heightReference: { Component: HeightReference, hasUI: false },
   // point
   pointColor: { Component: PointColor, hasUI: false },
   pointColorGradient: { Component: PointColorGradient, hasUI: false },
