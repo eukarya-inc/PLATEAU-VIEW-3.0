@@ -20,10 +20,12 @@ const MapSettings: React.FC<Props> = ({ overrides, isMobile, onOverridesUpdate }
     currentTiles,
     currentHideUnderground,
     currentAllowEnterGround,
+    currentLightType,
     handleViewChange,
     handleTileChange,
     handleHideUnderGround,
     handleAllowEnterGround,
+    handleUseSunLight,
   } = useHooks({ overrides, onOverridesUpdate });
 
   return (
@@ -42,12 +44,21 @@ const MapSettings: React.FC<Props> = ({ overrides, isMobile, onOverridesUpdate }
               </MapViewButton>
             ))}
           </ViewWrapper>
-          <Checkbox checked={!!currentHideUnderground} onClick={handleHideUnderGround}>
-            <Text>地下を隠す</Text>
-          </Checkbox>
-          <Checkbox checked={!!currentAllowEnterGround} onClick={handleAllowEnterGround}>
-            <Text>地下に入る</Text>
-          </Checkbox>
+          <CheckboxWrapper>
+            <Checkbox checked={!!currentHideUnderground} onClick={handleHideUnderGround}>
+              <Text>地下を隠す</Text>
+            </Checkbox>
+          </CheckboxWrapper>
+          <CheckboxWrapper>
+            <Checkbox checked={!!currentAllowEnterGround} onClick={handleAllowEnterGround}>
+              <Text>地下に入る</Text>
+            </Checkbox>
+          </CheckboxWrapper>
+          <CheckboxWrapper>
+            <Checkbox checked={currentLightType === "sunLight"} onClick={handleUseSunLight}>
+              <Text>太陽光を利用する</Text>
+            </Checkbox>
+          </CheckboxWrapper>
         </Section>
       </>
       <>
@@ -98,6 +109,13 @@ const ViewWrapper = styled.div`
   display: flex;
   gap: 12px;
   width: 100%;
+`;
+
+const CheckboxWrapper = styled.div`
+  width: 100%;
+  p {
+    margin-bottom: 0;
+  }
 `;
 
 const MapViewButton = styled.button<{ selected?: boolean }>`
