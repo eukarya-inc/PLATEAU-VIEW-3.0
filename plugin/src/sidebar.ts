@@ -28,7 +28,7 @@ const defaultProject: Project = {
         height: 2219.7187259974316,
       },
       sceneMode: "3d",
-      depthTestAgainstTerrain: true,
+      depthTestAgainstTerrain: false,
     },
     terrain: {
       terrain: true,
