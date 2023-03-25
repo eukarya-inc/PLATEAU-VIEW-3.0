@@ -111,6 +111,23 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
     debouncedUpdater();
   }, [handleUpdate, debouncedUpdater]);
 
+  const isStopDisabled = useMemo(
+    () => !options.startDate || !options.startTime,
+    [options.startDate, options.startTime],
+  );
+
+  useEffect(() => {
+    if (isStopDisabled && (options.stopDate || options.stopTime)) {
+      setOptions(v => {
+        return {
+          ...v,
+          stopDate: "",
+          stopTime: "",
+        };
+      });
+    }
+  }, [isStopDisabled, options.stopDate, options.stopTime]);
+
   useEffect(
     () => () => {
       // TODO: Use undefined to reset time.
@@ -185,6 +202,7 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
           <TextInput
             value={options.stopDate}
             placeholder="YYYY-MM-DD"
+            disabled={isStopDisabled}
             onChange={handleChange("stopDate")}
           />
         }
@@ -196,6 +214,7 @@ const CurrentTime: React.FC<BaseFieldProps<"currentTime">> = ({
           <TextInput
             value={options.stopTime}
             placeholder="HH:mm:ss.sss"
+            disabled={isStopDisabled}
             onChange={handleChange("stopTime")}
           />
         }
