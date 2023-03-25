@@ -2,7 +2,7 @@ import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/u
 import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
 import debounce from "lodash/debounce";
 import pick from "lodash/pick";
-import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
+import { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -27,6 +27,8 @@ export const useBuildingColor = ({
     [],
   );
 
+  const isInitializedRef = useRef(false);
+
   const onUpdateRef = useRef(onUpdate);
   useEffect(() => {
     onUpdateRef.current = onUpdate;
@@ -38,6 +40,7 @@ export const useBuildingColor = ({
         dataID,
         floods,
         colorType: options.colorType,
+        isInitializedRef,
       },
       onUpdateRef,
     );
@@ -56,6 +59,7 @@ export type State = {
   dataID: string | undefined;
   floods: { id: string; label: string; featurePropertyName: string; useOwnData?: boolean }[];
   colorType: string;
+  isInitializedRef: MutableRefObject<boolean>;
 };
 
 const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
@@ -95,10 +99,14 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
       },
     };
 
-    onUpdateRef.current?.({
-      colorBlendMode: "replace",
-      color: expression,
-    });
+    if (!state.isInitializedRef.current) {
+      state.isInitializedRef.current = true;
+    } else {
+      onUpdateRef.current?.({
+        colorBlendMode: "replace",
+        color: expression,
+      });
+    }
   };
 
   updateTileset();

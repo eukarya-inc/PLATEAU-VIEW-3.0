@@ -106,11 +106,11 @@ const renderTileset = (
     if (!state.isInitializedRef.current) {
       onChangeTransparency(transparency * 100);
       state.isInitializedRef.current = true;
+    } else {
+      onUpdateRef.current?.({
+        color: expression,
+      });
     }
-
-    onUpdateRef.current?.({
-      color: expression,
-    });
   };
 
   updateTileset();
