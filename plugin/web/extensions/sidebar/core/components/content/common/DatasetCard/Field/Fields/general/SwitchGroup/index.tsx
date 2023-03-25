@@ -33,9 +33,11 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
 
   const uiMenu = (
     <Menu
-      items={groupItems?.map((gi, idx) => {
+      selectable
+      selectedKeys={[selectedGroup.id]}
+      items={groupItems?.map(gi => {
         return {
-          key: idx,
+          key: gi.id,
           label: (
             <p style={{ margin: 0 }} onClick={() => handleGroupChoose(gi.id)}>
               {gi.title}
@@ -48,9 +50,11 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
 
   const editGroupMenu = (groupItemIndex: number) => (
     <Menu
-      items={fieldGroups.map((fg, idx) => {
+      selectable
+      selectedKeys={[groupItems[groupItemIndex].fieldGroupID]}
+      items={fieldGroups.map(fg => {
         return {
-          key: idx,
+          key: fg.id,
           label: (
             <p style={{ margin: 0 }} onClick={() => handleItemGroupChange(groupItemIndex, fg.id)}>
               {fg.name}

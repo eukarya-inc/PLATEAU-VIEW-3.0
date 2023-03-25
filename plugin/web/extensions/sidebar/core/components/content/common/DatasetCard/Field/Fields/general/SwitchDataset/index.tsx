@@ -1,6 +1,6 @@
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps, ConfigData } from "../../types";
 
@@ -17,6 +17,7 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   configData,
   onUpdate,
 }) => {
+  const initialized = useRef(false);
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
   const [selectedDataset, selectDataset] = useState(
     value.userSettings?.selected ?? configData?.[0],
@@ -24,6 +25,8 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
 
   const styleOptions = (
     <Menu
+      selectable
+      selectedKeys={[selectedStyle]}
       items={Object.keys(uiStyles).map(key => {
         return {
           key: key,
@@ -39,6 +42,8 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
 
   const datasetOptions = (
     <Menu
+      selectable
+      selectedKeys={selectedDataset ? [selectedDataset.name] : undefined}
       items={configData?.map(d => {
         return {
           key: d.name,
@@ -61,6 +66,11 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   }, []);
 
   useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      return;
+    }
+
     if (selectedDataset === value.userSettings?.selected && selectedStyle === value.uiStyle) return;
     onUpdate({
       ...value,

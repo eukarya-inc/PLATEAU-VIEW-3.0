@@ -58,8 +58,19 @@ export const mergeOverrides = (
     if ((components[i] as any).userSettings?.updatedAt) {
       continue;
     }
-    if (components[i].type === "switchDataset" && action === "cleanse") {
-      merge(overrides, components[i].cleanseOverride);
+    if (components[i].type === "switchDataset") {
+      const switchDatasetOverride =
+        (components[i] as any).userSettings?.override ?? action === "cleanse"
+          ? components[i].cleanseOverride
+          : {
+              data: {
+                url: components[i].cleanseOverride.data.url,
+                time: {
+                  updateClockOnLoad: true,
+                },
+              },
+            };
+      merge(overrides, switchDatasetOverride);
       continue;
     }
 

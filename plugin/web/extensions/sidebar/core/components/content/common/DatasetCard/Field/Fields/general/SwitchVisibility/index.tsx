@@ -40,6 +40,8 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
 
   const styleOptions = (
     <Menu
+      selectable
+      selectedKeys={[selectedStyle]}
       items={Object.keys(uiStyles).map(key => {
         return {
           key: key,
@@ -107,9 +109,11 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
 
   const visibilityOptions = (
     <Menu
-      items={conditions?.map((c, index) => {
+      selectable
+      selectedKeys={selectedVisibility ? [selectedVisibility] : undefined}
+      items={conditions?.map(c => {
         return {
-          key: index,
+          key: c.id,
           label: (
             <p style={{ margin: 0 }} onClick={() => handleSelectVisibility(c.id)}>
               {c.title}
