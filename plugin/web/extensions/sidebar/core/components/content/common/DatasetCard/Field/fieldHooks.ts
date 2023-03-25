@@ -1,3 +1,4 @@
+import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { generateID } from "@web/extensions/sidebar/utils";
 import { fieldGroups } from "@web/extensions/sidebar/utils/fieldGroups";
 import { useMemo } from "react";
@@ -9,8 +10,10 @@ type FieldDropdownItem = {
 };
 
 export default ({
+  dataset,
   onFieldAdd,
 }: {
+  dataset?: DataCatalogItem;
   onFieldAdd: (property: any) => ({ key }: { key: string }) => void;
 }) => {
   const generalFields: FieldDropdownItem = useMemo(() => {
@@ -86,7 +89,19 @@ export default ({
       },
       switchDataset: {
         name: fieldName["switchDataset"],
-        onClick: onFieldAdd({ userSettings: {} }),
+        onClick: onFieldAdd({
+          userSettings: {},
+          cleanseOverride: dataset?.config?.data?.[0].url
+            ? {
+                data: {
+                  url: dataset.config.data[0].url,
+                  time: {
+                    updateClockOnLoad: false,
+                  },
+                },
+              }
+            : undefined,
+        }),
       },
       switchVisibility: {
         name: fieldName["switchVisibility"],
@@ -111,7 +126,7 @@ export default ({
         }),
       },
     };
-  }, [onFieldAdd]);
+  }, [dataset?.config?.data, onFieldAdd]);
 
   const pointFields: FieldDropdownItem = useMemo(() => {
     return {

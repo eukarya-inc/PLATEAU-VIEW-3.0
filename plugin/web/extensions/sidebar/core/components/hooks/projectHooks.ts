@@ -83,8 +83,36 @@ export default ({
       let overrides = undefined;
 
       const flattenedComponents = flattenComponents(dataset.components);
-      const inactiveFields = flattenedComponents?.filter(c => !activeIDs.find(id => id === c.id));
-      const activeFields = flattenedComponents?.filter(c => !!activeIDs.find(id => id === c.id));
+      const inactiveFields = flattenedComponents
+        ?.filter(c => !activeIDs.find(id => id === c.id))
+        .map(c => {
+          if (c.type === "switchDataset" && !c.cleanseOverride) {
+            c.cleanseOverride = {
+              data: {
+                url: dataset.config?.data?.[0].url,
+                time: {
+                  updateClockOnLoad: false,
+                },
+              },
+            };
+          }
+          return c;
+        });
+      const activeFields = flattenedComponents
+        ?.filter(c => !!activeIDs.find(id => id === c.id))
+        .map(c => {
+          if (c.type === "switchDataset" && !c.cleanseOverride) {
+            c.cleanseOverride = {
+              data: {
+                url: dataset.config?.data?.[0].url,
+                time: {
+                  updateClockOnLoad: false,
+                },
+              },
+            };
+          }
+          return c;
+        });
 
       const buildingSearchField = buildingSearch?.find(b => b.dataID === dataset.dataID);
       if (buildingSearchField) {
