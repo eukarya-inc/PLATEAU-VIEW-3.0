@@ -3,6 +3,7 @@ package datacatalog
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/samber/lo"
@@ -49,6 +50,8 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 			return entry{}
 		}
 
+		sortRivers(rivers)
+
 		r := rivers[0]
 		dci := c.DataCatalogItem(fldModelName, r.an, r.a.URL, descFromAsset(r.a, i.DescriptionFld), nil, false)
 		dci.Name = fldName(fldModelName, i.CityName, r.an.FldName, r.dic)
@@ -87,4 +90,16 @@ func fldName(t, cityName, raw string, e *DicEntry) string {
 		return raw
 	}
 	return fmt.Sprintf("%s %s（%s管理区間）（%s）", t, e.Description, e.Admin, cityName)
+}
+
+func sortRivers(rivers []river) {
+	sort.Slice(rivers, func(a, b int) bool {
+		if rivers[a].dic == nil {
+			return false
+		}
+		if rivers[b].dic == nil {
+			return true
+		}
+		return strings.Compare(rivers[a].dic.Scale, rivers[b].dic.Scale) < 0
+	})
 }
