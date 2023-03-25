@@ -71,7 +71,6 @@ const Wrapper = styled.div<{ nestLevel: number; selected?: boolean }>`
   justify-content: space-between;
   box-sizing: border-box;
   gap: 8px;
-  height: 29px;
   ${({ selected }) =>
     selected &&
     `
@@ -100,9 +99,6 @@ const Name = styled.p`
   width: 150px;
   margin: 0;
   user-select: none;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 `;
 
 const StyledButton = styled(Button)<{ disabled: boolean }>`
