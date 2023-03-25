@@ -21,34 +21,25 @@ const useHooks = ({
         ...value,
         userSettings: {
           ...value.userSettings,
+          rank: options.value,
           override: { ["3dtiles"]: property },
         },
       });
     },
-    [onUpdate, value],
+    [onUpdate, value, options.value],
   );
 
-  const handleUpdateRange = useCallback(
-    (v: number | number[]) => {
-      if (v && Array.isArray(v)) {
-        const range = v as [from: number, to: number];
-        setOptions(o => {
-          return {
-            ...o,
-            value: range,
-          };
-        });
-        onUpdate({
-          ...value,
-          userSettings: {
-            ...value.userSettings,
-            rank: range,
-          },
-        });
-      }
-    },
-    [value, onUpdate],
-  );
+  const handleUpdateRange = useCallback((v: number | number[]) => {
+    if (v && Array.isArray(v)) {
+      const range = v as [from: number, to: number];
+      setOptions(o => {
+        return {
+          ...o,
+          value: range,
+        };
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const handleFilteringFields = (data: any) => {
