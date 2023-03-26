@@ -167,7 +167,7 @@ export default () => {
   }, []);
 
   const actualProperties = useMemo((): [any, string | undefined] => {
-    const rootFields = properties ? getRootFields(properties) : {};
+    const rootFields = properties ? getRootFields(properties, template?.dataType) : {};
     return properties
       ? {
           ...(properties.attributes
@@ -178,7 +178,7 @@ export default () => {
           ...omit(properties, [...Object.keys(rootFields), "attributes"]),
         }
       : undefined;
-  }, [properties]);
+  }, [properties, template?.dataType]);
 
   return {
     inEditor,

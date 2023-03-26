@@ -49,10 +49,12 @@ export function getAttributes(attributes: Json, mode?: "both" | "label" | "key")
   }
 }
 
-export function getRootFields(properties: Properties): any {
+export function getRootFields(properties: Properties, dataType?: string): any {
   return filterObjects({
     gml_id: get(properties, ["attributes", "gml:id"]),
-    名称: get(properties, ["attributes", "gml:name"]),
+    ...(dataType && ["fld", "htd", "tnm", "ifld"].includes(dataType)
+      ? { name: get(properties, ["attributes", "gml:name"]) }
+      : { 名称: get(properties, ["attributes", "gml:name"]) }),
     分類: get(properties, ["attributes", "bldg:class"]),
     用途: get(properties, ["attributes", "bldg:usage", 0]),
     住所: get(properties, ["attributes", "bldg:address"]),
