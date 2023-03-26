@@ -330,7 +330,21 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       reearth.camera.flyTo(layerID);
     }
   } else if (action === "cameraLookAt") {
-    reearth.camera.lookAt(...payload);
+    if (reearth.scene?.property?.terrain?.terrain) {
+      reearth.scene
+        .sampleTerrainHeight(payload[0].lng, payload[0].lat)
+        .then((terrainHeight: number | undefined) => {
+          reearth.camera.lookAt(
+            {
+              ...payload[0],
+              height: (payload[0].height ?? 0) + (terrainHeight ?? 0),
+            },
+            payload[1],
+          );
+        });
+    } else {
+      reearth.camera.lookAt(...payload);
+    }
   } else if (action === "getCurrentCamera") {
     reearth.ui.postMessage({ action, payload: reearth.camera.position });
     reearth.popup.postMessage({ action, payload: reearth.camera.position });

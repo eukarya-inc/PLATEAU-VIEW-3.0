@@ -30,13 +30,16 @@ const ConditionPanel: React.FC<Props> = ({
             <DatasetName>{dataset?.title}</DatasetName>
           </DatasetInfo>
           <Conditions>
-            {dataset?.indexes.map(indexItem => (
-              <Condition
-                key={indexItem.field}
-                indexItem={indexItem}
-                setConditions={setConditions}
-              />
-            ))}
+            {dataset?.indexes.map(
+              indexItem =>
+                indexItem.values.length > 0 && (
+                  <Condition
+                    key={indexItem.field}
+                    indexItem={indexItem}
+                    setConditions={setConditions}
+                  />
+                ),
+            )}
           </Conditions>
           <ButtonWrapper>
             <Button onClick={conditionApply}>検索</Button>

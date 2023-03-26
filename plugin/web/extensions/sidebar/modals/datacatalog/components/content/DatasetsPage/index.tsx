@@ -73,7 +73,6 @@ const DatasetsPage: React.FC<Props> = ({
       left={
         <DatasetTree
           addedDatasetDataIDs={addedDatasetDataIDs}
-          selectedDataset={selectedDataset}
           catalog={catalog}
           selectedTags={selectedTags}
           filter={filter}

@@ -282,8 +282,8 @@ export default () => {
           {
             lng: Number(selected[0].Longitude),
             lat: Number(selected[0].Latitude),
-            height: Number(selected[0].Height) + 100,
-            range: 200,
+            height: Number(selected[0].Height),
+            range: 300,
           },
           { duration: 2 },
         ],
@@ -292,15 +292,15 @@ export default () => {
   }, [selected]);
 
   useEffect(() => {
-    if (results.length > 0) {
+    if (results.length === 1) {
       postMsg({
         action: "cameraLookAt",
         payload: [
           {
             lng: Number(results[0].Longitude),
             lat: Number(results[0].Latitude),
-            height: Number(results[0].Height) + 100,
-            range: 200,
+            height: Number(results[0].Height),
+            range: 300,
           },
           { duration: 2 },
         ],
