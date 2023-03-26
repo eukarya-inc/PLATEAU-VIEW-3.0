@@ -231,7 +231,7 @@ const STRUCTURE_TYPE_CONDITIONS: Condition[] = [
   DEFAULT_CONDITION,
 ];
 
-const conditionalFireproof = "建物利用現況_耐火構造種別";
+const conditionalFireproof = "耐火構造種別";
 const FIREPROOF_CONDITIONS: Condition[] = [
   {
     condition: equalString(conditionalFireproof, "耐火"),

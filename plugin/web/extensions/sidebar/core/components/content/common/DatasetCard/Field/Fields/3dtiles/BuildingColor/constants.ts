@@ -22,7 +22,7 @@ export const INDEPENDENT_COLOR_TYPE = {
   fireproof: {
     id: "fireproof",
     label: "耐火構造種別による塗分け",
-    featurePropertyName: "建物利用現況_耐火構造種別",
+    featurePropertyName: "耐火構造種別",
   },
 };
 
