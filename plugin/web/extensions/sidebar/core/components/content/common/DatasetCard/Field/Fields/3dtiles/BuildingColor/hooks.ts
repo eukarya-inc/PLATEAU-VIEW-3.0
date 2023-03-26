@@ -9,7 +9,13 @@ import { useBuildingColor } from "./useBuildingColor";
 
 type OptionsState = BaseFieldProps<"buildingColor">["value"]["userSettings"];
 
-type RadioItem = { id: string; label: string; featurePropertyName: string; useOwnData?: boolean };
+type RadioItem = {
+  id: string;
+  label: string;
+  featurePropertyName: string;
+  useOwnData?: boolean;
+  floodScale?: number;
+};
 
 const useHooks = ({
   value,
@@ -72,11 +78,13 @@ const useHooks = ({
             if (!useOwnData) return k;
             return k.split(/[(_（＿]/)[0];
           })();
+          const scale = k.match(/L([1,2])/)?.[1];
           tempFloods.push({
             id: `floods-${tempFloods.length}`,
             label: k.replaceAll("_", " "),
             featurePropertyName,
             useOwnData,
+            floodScale: scale ? Number(scale) : undefined,
           });
         }
       });

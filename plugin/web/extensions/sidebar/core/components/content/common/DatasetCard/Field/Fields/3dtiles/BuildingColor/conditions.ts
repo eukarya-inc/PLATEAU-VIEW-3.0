@@ -347,7 +347,7 @@ const LANDSLIDE_RISK_CONDITIONS: Condition[] = [
 
 const createFloodCondition = (
   featurePropertyName: string,
-  rank: number,
+  { rank, scale }: { rank: number; scale: number | undefined },
   useOwnData: boolean | undefined,
   color: string,
 ): [condition: string, color: string][] => {
@@ -355,12 +355,15 @@ const createFloodCondition = (
     return [[equalNumber(featurePropertyName, rank), color]];
   }
   const createJSONPath = (useCode: boolean, rankAsNumber: boolean) => {
-    const rankProperty = useCode ? `rankOrg_code` : "rankOrg";
+    const rankProperty = useCode ? `uro:rankOrg_code` : "uro:rankOrg";
+    const scaleProperty = "uro:scale_code";
     const convertedRank = rankAsNumber ? rank : rank.toString();
     return `${variable(
       `$.attributes["uro:BuildingRiverFloodingRiskAttribute"][?(@["uro:description"]==${stringOrNumber(
         featurePropertyName,
-      )}&&@["uro:${rankProperty}"]==${stringOrNumber(convertedRank)})]["uro:${rankProperty}"]`,
+      )}&&@["${rankProperty}"]==${stringOrNumber(convertedRank)}${
+        scale ? `&&@["${scaleProperty}"]==${stringOrNumber(scale.toString())}` : ""
+      })]["${rankProperty}"]`,
     )} === ${stringOrNumber(convertedRank)}`;
   };
   return [
@@ -373,18 +376,50 @@ const createFloodCondition = (
 export const makeSelectedFloodCondition = ({
   featurePropertyName,
   useOwnData,
+  floodScale,
 }: {
   featurePropertyName?: string;
   useOwnData?: boolean;
+  floodScale?: number;
 }): [condition: string, color: string][] | undefined =>
   featurePropertyName
     ? [
-        ...createFloodCondition(featurePropertyName, 0, useOwnData, "rgba(243, 240, 122, 1)"),
-        ...createFloodCondition(featurePropertyName, 1, useOwnData, "rgba(243, 240, 122, 1)"),
-        ...createFloodCondition(featurePropertyName, 2, useOwnData, "rgba(255, 184, 141, 1)"),
-        ...createFloodCondition(featurePropertyName, 3, useOwnData, "rgba(255, 132, 132, 1)"),
-        ...createFloodCondition(featurePropertyName, 4, useOwnData, "rgba(255, 94, 94, 1)"),
-        ...createFloodCondition(featurePropertyName, 5, useOwnData, "rgba(237, 87, 181, 1)"),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 0, scale: floodScale },
+          useOwnData,
+          "rgba(243, 240, 122, 1)",
+        ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 1, scale: floodScale },
+          useOwnData,
+          "rgba(243, 240, 122, 1)",
+        ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 2, scale: floodScale },
+          useOwnData,
+          "rgba(255, 184, 141, 1)",
+        ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 3, scale: floodScale },
+          useOwnData,
+          "rgba(255, 132, 132, 1)",
+        ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 4, scale: floodScale },
+          useOwnData,
+          "rgba(255, 94, 94, 1)",
+        ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 5, scale: floodScale },
+          useOwnData,
+          "rgba(237, 87, 181, 1)",
+        ),
         [DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color],
       ]
     : [[DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color]];
