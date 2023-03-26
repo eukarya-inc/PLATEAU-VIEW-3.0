@@ -524,6 +524,23 @@ reearth.on("pluginmessage", (pluginMessage: PluginMessage) => {
 
 let currentSelectedFeatureId: string;
 
+const findMergedLayer = (id: string | undefined) => {
+  const l = reearth.layers.findById(id);
+  const overridden = reearth.layers.overridden.find((l: any) => l.id === id);
+  return {
+    ...l,
+    ...overridden,
+    data: {
+      ...(l?.data ?? {}),
+      ...(overridden?.data ?? {}),
+    },
+    "3dtiles": {
+      ...(l?.["3dtiles"] ?? {}),
+      ...(overridden?.["3dtiles"] ?? {}),
+    },
+  };
+};
+
 reearth.on("select", (selected: string | undefined) => {
   const prevSelected = currentSelected ?? selected;
   // this is used for infobox
@@ -537,7 +554,7 @@ reearth.on("select", (selected: string | undefined) => {
   let shouldUpdateTilesetColor = false;
 
   // Reset previous select color for 3dtiles
-  const prevOverriddenLayer = reearth.layers.overridden.find((l: any) => l.id === prevSelected);
+  const prevOverriddenLayer = findMergedLayer(prevSelected);
   const prevCondition = prevOverriddenLayer?.["3dtiles"]?.color?.expression?.conditions;
   if (prevOverriddenLayer && prevOverriddenLayer.data.type === "3dtiles") {
     shouldUpdateTilesetColor =
@@ -570,7 +587,7 @@ reearth.on("select", (selected: string | undefined) => {
   }
 
   // Handle select color for 3dtiles
-  const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === currentSelected);
+  const overriddenLayer = findMergedLayer(currentSelected);
   if (
     overriddenLayer?.data?.type === "3dtiles" &&
     currentSelectedFeatureId &&
