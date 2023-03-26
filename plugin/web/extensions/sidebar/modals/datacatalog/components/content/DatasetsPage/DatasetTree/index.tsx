@@ -11,7 +11,6 @@ export type Tag = TagType;
 
 export type Props = {
   addedDatasetDataIDs?: string[];
-  selectedDataset?: DataCatalogItem;
   isMobile?: boolean;
   catalog?: DataCatalogItem[];
   selectedTags?: Tag[];

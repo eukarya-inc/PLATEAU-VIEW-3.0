@@ -401,8 +401,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     if (payload) {
       reearth.popup.postMessage({ action, payload });
     } else {
-      reearth.ui.postMessage({ action, payload });
+      reearth.ui.postMessage({ action });
     }
+  } else if (action === "mobileCatalogOpen") {
+    reearth.popup.postMessage({ action, payload });
   }
 
   // ************************************************
