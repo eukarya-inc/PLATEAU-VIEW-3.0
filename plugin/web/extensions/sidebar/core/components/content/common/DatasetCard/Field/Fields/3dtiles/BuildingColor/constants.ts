@@ -1,28 +1,43 @@
-export const INDEPENDENT_COLOR_TYPE = {
+export const INDEPENDENT_COLOR_TYPE: Record<
+  string,
+  {
+    id: string;
+    label: string;
+    featurePropertyName: string;
+    order: number;
+    always?: boolean;
+  }
+> = {
   height: {
     id: "height",
     label: "高さによる塗分け",
     featurePropertyName: "計測高さ",
+    order: 1,
   },
   purpose: {
     id: "purpose",
     label: "用途による塗分け",
     featurePropertyName: "用途",
+    order: 2,
   },
   structure: {
     id: "structure",
     label: "建物構造による塗分け",
     featurePropertyName: "建物構造",
+    always: true,
+    order: 3,
   },
   structureType: {
     id: "structureType",
     label: "構造種別による塗分け",
     featurePropertyName: "構造種別",
+    order: 4,
   },
   fireproof: {
     id: "fireproof",
     label: "耐火構造種別による塗分け",
     featurePropertyName: "耐火構造種別",
+    order: 5,
   },
 };
 

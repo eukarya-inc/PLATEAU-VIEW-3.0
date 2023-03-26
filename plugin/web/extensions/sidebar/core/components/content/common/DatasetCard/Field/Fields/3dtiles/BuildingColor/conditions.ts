@@ -151,25 +151,32 @@ const PURPOSE_CONDITIONS: Condition[] = [
   DEFAULT_CONDITION,
 ];
 
-const conditionalStructure = "建物構造";
+const createStructureCondition = (value: string) => {
+  return `${variable(
+    `$.attributes["uro:KeyValuePairAttribute"][?(@["uro:key"]=="建物構造コード"&&@["uro:codeValue"]==${stringOrNumber(
+      value,
+    )})]["uro:codeValue"]`,
+  )} === ${stringOrNumber(value)}`;
+};
+
 const STRUCTURE_CONDITIONS: Condition[] = [
   {
-    condition: equalString(conditionalStructure, "耐火構造"),
+    condition: createStructureCondition("耐火構造"),
     color: "rgba(124, 123, 135, 1)",
     label: "耐火構造",
   },
   {
-    condition: equalString(conditionalStructure, "防火造"),
+    condition: createStructureCondition("防火造"),
     color: "rgba(188, 143, 143, 1)",
     label: "防火造",
   },
   {
-    condition: equalString(conditionalStructure, "準防火造"),
+    condition: createStructureCondition("準防火造"),
     color: "rgba(214, 202, 174, 1)",
     label: "準防火造",
   },
   {
-    condition: equalString(conditionalStructure, "木造"),
+    condition: createStructureCondition("木造"),
     color: "rgba(210, 180, 140, 1)",
     label: "木造",
   },

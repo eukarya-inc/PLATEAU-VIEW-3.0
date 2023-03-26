@@ -13,6 +13,7 @@ type RadioItem = {
   id: string;
   label: string;
   featurePropertyName: string;
+  order?: number;
   useOwnData?: boolean;
   floodScale?: number;
 };
@@ -62,11 +63,17 @@ const useHooks = ({
       const tempTypes: typeof independentColorTypes = [];
       Object.entries(data?.properties || {}).forEach(([k]) => {
         Object.entries(INDEPENDENT_COLOR_TYPE).forEach(([, type]) => {
-          if (k === type.featurePropertyName) {
+          if (!type.always && k === type.featurePropertyName) {
             tempTypes.push(type);
           }
         });
       });
+      Object.entries(INDEPENDENT_COLOR_TYPE).forEach(([, type]) => {
+        if (type.always) {
+          tempTypes.push(type);
+        }
+      });
+      tempTypes.sort((a, b) => (a.order && b.order ? a.order - b.order : 0));
       setIndependentColorTypes(tempTypes);
     };
     const handleFloods = (data: any) => {
