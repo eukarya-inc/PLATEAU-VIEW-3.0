@@ -62,6 +62,7 @@ const useHooks = ({
             min: obj.minimum,
             max: obj.maximum,
             value: [obj.minimum, obj.maximum],
+            isOrg: propertyKey.includes(FEATURE_PROPERTY_NAME_RANK_ORG_CODE),
           };
         }
       });

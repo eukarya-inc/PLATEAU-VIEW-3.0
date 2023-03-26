@@ -68,15 +68,14 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
     const conditions = (() => {
       const conditionalRankCode = defaultConditionalValue(FEATURE_PROPERTY_NAME_RANK_CODE);
       const conditionalRankOrgCode = defaultConditionalValue(FEATURE_PROPERTY_NAME_RANK_ORG_CODE);
-      return [
-        [condition(state.options.max, state.options.value, conditionalRankCode), "true"],
-        [condition(state.options.max, state.options.value, conditionalRankOrgCode), "true"],
-      ];
+      return state.options.isOrg
+        ? [condition(state.options.max, state.options.value, conditionalRankOrgCode), "true"]
+        : [condition(state.options.max, state.options.value, conditionalRankCode), "true"];
     })();
     onUpdateRef.current?.({
       show: {
         expression: {
-          conditions: [...(conditions ? conditions : []), ["true", "false"]],
+          conditions: [[...(conditions ? conditions : [])], ["true", "false"]],
         },
       },
     });
