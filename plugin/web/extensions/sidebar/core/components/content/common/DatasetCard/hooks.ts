@@ -1,9 +1,8 @@
+import { mergeOverrides } from "@web/extensions/sidebar/core/components/utils";
 import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
-import { getActiveFieldIDs, getDefaultGroup } from "@web/extensions/sidebar/utils/dataset";
+import { getActiveFieldIDs } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useState } from "react";
-
-import { mergeOverrides } from "../../../hooks/utils";
 
 import { cleanseOverrides } from "./Field/fieldConstants";
 import generateFieldComponentsList from "./Field/fieldHooks";
@@ -23,30 +22,20 @@ export default ({
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
 }) => {
-  const [selectedGroup, setGroup] = useState<string>();
   const [activeComponentIDs, setActiveIDs] = useState<string[] | undefined>();
 
   useEffect(() => {
     const newActiveIDs = getActiveFieldIDs(
       dataset.components,
-      selectedGroup,
+      dataset.selectedGroup,
       dataset.config?.data,
       templates,
     );
 
     if (newActiveIDs !== activeComponentIDs) {
       setActiveIDs(newActiveIDs);
-
-      if (!selectedGroup) {
-        setGroup(
-          getDefaultGroup(
-            dataset.components?.filter(c => newActiveIDs?.includes(c.id)),
-            templates,
-          ),
-        );
-      }
     }
-  }, [selectedGroup, dataset.components, templates]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dataset.components, dataset.selectedGroup, templates]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const buildingSearchActive = buildingSearch?.find(b => b.dataID === dataset.dataID)?.active;
@@ -57,10 +46,13 @@ export default ({
 
   const handleCurrentGroupUpdate = useCallback(
     (fieldGroupID?: string) => {
-      if (fieldGroupID === selectedGroup) return;
-      setGroup(fieldGroupID);
+      if (fieldGroupID === dataset.selectedGroup) return;
+      onDatasetUpdate?.({
+        ...dataset,
+        selectedGroup: fieldGroupID,
+      });
     },
-    [selectedGroup],
+    [dataset, onDatasetUpdate],
   );
 
   const handleFieldAdd =

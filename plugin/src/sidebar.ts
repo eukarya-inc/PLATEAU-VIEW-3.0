@@ -153,27 +153,21 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
 
   // Sidebar
   if (action === "init") {
-    reearth.clientStorage.getAsync("isMobile").then((isMobile: boolean) => {
-      reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
-        const outBoundPayload = {
-          projectID: reearth.viewport.query.share || reearth.viewport.query.projectID,
-          inEditor: reearth.scene.inEditor,
-          catalogURL: reearth.widget.property.default?.catalogURL ?? "",
-          catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
-          reearthURL: reearth.widget.property.default?.reearthURL ?? "",
-          backendURL: reearth.widget.property.default?.plateauURL ?? "",
-          backendProjectName: reearth.widget.property.default?.projectName ?? "",
-          backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
-          enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
-          draftProject,
-          searchTerm,
-        };
-        if (isMobile) {
-          reearth.popup.postMessage({ action, payload: outBoundPayload });
-        } else {
-          reearth.ui.postMessage({ action, payload: outBoundPayload });
-        }
-      });
+    reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
+      const outBoundPayload = {
+        projectID: reearth.viewport.query.share || reearth.viewport.query.projectID,
+        inEditor: reearth.scene.inEditor,
+        catalogURL: reearth.widget.property.default?.catalogURL ?? "",
+        catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
+        reearthURL: reearth.widget.property.default?.reearthURL ?? "",
+        backendURL: reearth.widget.property.default?.plateauURL ?? "",
+        backendProjectName: reearth.widget.property.default?.projectName ?? "",
+        backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
+        enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
+        draftProject,
+        searchTerm,
+      };
+      reearth.ui.postMessage({ action, payload: outBoundPayload });
     });
   } else if (action === "storageSave") {
     reearth.clientStorage.setAsync(payload.key, payload.value);
@@ -258,6 +252,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       action,
       payload: reearth.scene.captureScreen(undefined, 0.01),
     });
+    reearth.popup.postMessage({
+      action,
+      payload: reearth.scene.captureScreen(undefined, 0.01),
+    });
   } else if (action === "msgFromModal") {
     reearth.ui.postMessage({ action, payload });
   } else if (action === "minimize") {
@@ -335,6 +333,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.camera.lookAt(...payload);
   } else if (action === "getCurrentCamera") {
     reearth.ui.postMessage({ action, payload: reearth.camera.position });
+    reearth.popup.postMessage({ action, payload: reearth.camera.position });
   } else if (action === "checkIfMobile") {
     reearth.ui.postMessage({ action, payload: reearth.viewport.isMobile });
   } else if (action === "extendPopup") {
@@ -360,12 +359,21 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const { dataID } = payload;
     const layerID = addedDatasets.find(l => l[0] === dataID)?.[2];
     const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === layerID);
-    reearth.ui.postMessage({
-      action,
-      payload: {
-        overriddenLayer,
-      },
-    });
+    if (reearth.viewport.isMobile) {
+      reearth.popup.postMessage({
+        action,
+        payload: {
+          overriddenLayer,
+        },
+      });
+    } else {
+      reearth.ui.postMessage({
+        action,
+        payload: {
+          overriddenLayer,
+        },
+      });
+    }
   } else if (action === "updateMVTRaster") {
     const { layerId, maxzoom } = payload;
     reearth.layers.override(layerId, {
@@ -375,6 +383,26 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
   } else if (action === "unselect") {
     reearth.layers.select();
+  }
+
+  // ************************************************
+  // Mobile actions
+  else if (
+    action === "mobileDatasetAdd" ||
+    action === "mobileDatasetUpdate" ||
+    action === "mobileDatasetRemove" ||
+    action === "mobileDatasetRemoveAll" ||
+    action === "mobileProjectDatasetsUpdate" ||
+    action === "mobileProjectSceneUpdate" ||
+    action === "mobileBuildingSearch"
+  ) {
+    reearth.ui.postMessage({ action, payload });
+  } else if (action === "initMobileCatalog") {
+    if (payload) {
+      reearth.popup.postMessage({ action, payload });
+    } else {
+      reearth.ui.postMessage({ action, payload });
+    }
   }
 
   // ************************************************
@@ -402,7 +430,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     if (openedBuildingSearchDataID) {
       reearth.ui.postMessage({
         action: "buildingSearchClose",
-        paylaod: {
+        payload: {
           dataID: openedBuildingSearchDataID,
         },
       });
@@ -455,7 +483,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const { dataID } = payload;
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const tilesetLayer = reearth.layers.findById(tilesetLayerID);
-    reearth.ui.postMessage({
+    const postMsgResp = {
       action,
       payload: {
         layer: {
@@ -464,7 +492,9 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           ["3dtiles"]: tilesetLayer?.["3dtiles"],
         },
       },
-    });
+    };
+    reearth.ui.postMessage(postMsgResp);
+    reearth.popup.postMessage(postMsgResp);
   }
 });
 
@@ -615,7 +645,7 @@ reearth.on("popupclose", () => {
   if (openedBuildingSearchDataID) {
     reearth.ui.postMessage({
       action: "buildingSearchClose",
-      paylaod: {
+      payload: {
         dataID: openedBuildingSearchDataID,
       },
     });

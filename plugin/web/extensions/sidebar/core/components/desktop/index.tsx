@@ -5,12 +5,13 @@ import Selection from "@web/extensions/sidebar/core/components/content/Selection
 import Share from "@web/extensions/sidebar/core/components/content/Share";
 import Templates from "@web/extensions/sidebar/core/components/content/Templates";
 import Header from "@web/extensions/sidebar/core/components/Header";
-import useHooks from "@web/extensions/sidebar/core/components/hooks";
 import { Content } from "@web/sharedComponents";
 import { styled, commonStyles } from "@web/theme";
 import { memo, useCallback, useEffect, useState } from "react";
 
-import { postMsg } from "../../utils";
+import { postMsg } from "../../../utils";
+
+import useHooks from "./hooks";
 
 export type Props = {
   className?: string;

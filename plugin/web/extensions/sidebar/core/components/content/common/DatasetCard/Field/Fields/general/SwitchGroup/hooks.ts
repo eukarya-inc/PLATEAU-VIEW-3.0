@@ -1,21 +1,27 @@
 import { array_move, generateID } from "@web/extensions/sidebar/utils";
 import { fieldGroups } from "@web/extensions/sidebar/utils/fieldGroups";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { GroupItem, SwitchGroup } from "../../types";
 
 export default ({
   value,
+  selectedGroup,
   onUpdate,
   onCurrentGroupUpdate,
 }: {
   value: SwitchGroup;
+  selectedGroup?: string;
   onUpdate: (property: SwitchGroup) => void;
   onCurrentGroupUpdate?: (fieldGroupID: string) => void;
 }) => {
   const [groupItems, updateGroupItems] = useState<GroupItem[]>(value.groups);
   const [title, setTitle] = useState(value.title);
-  const [selectedGroup, selectGroup] = useState(value.userSettings?.selected ?? value.groups[0]);
+
+  const currentGroup = useMemo(
+    () => groupItems.find(fg => fg.fieldGroupID === selectedGroup),
+    [groupItems, selectedGroup],
+  );
 
   const handleTitleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,11 +35,9 @@ export default ({
     (id: string) => {
       const selected = groupItems?.find(gi => gi.id === id);
       if (!selected) return;
-      selectGroup(selected);
-      onUpdate({ ...value, userSettings: { selected } });
       onCurrentGroupUpdate?.(selected.fieldGroupID);
     },
-    [groupItems, value, onUpdate, onCurrentGroupUpdate],
+    [groupItems, onCurrentGroupUpdate],
   );
 
   const handleItemAdd = useCallback(() => {
@@ -100,7 +104,7 @@ export default ({
   return {
     title,
     groupItems,
-    selectedGroup,
+    currentGroup,
     fieldGroups,
     handleTitleChange,
     handleGroupChoose,

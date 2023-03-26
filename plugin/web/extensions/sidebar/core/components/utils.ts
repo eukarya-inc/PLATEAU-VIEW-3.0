@@ -1,9 +1,10 @@
 import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import { cloneDeep, isEqual, merge } from "lodash";
 
-import { Data, DataCatalogItem, Template } from "../../types";
-import { cleanseOverrides } from "../content/common/DatasetCard/Field/fieldConstants";
-import { FieldComponent } from "../content/common/DatasetCard/Field/Fields/types";
+import { Data, DataCatalogItem, Template } from "../types";
+
+import { cleanseOverrides } from "./content/common/DatasetCard/Field/fieldConstants";
+import { FieldComponent } from "./content/common/DatasetCard/Field/Fields/types";
 
 export const convertToData = (item: DataCatalogItem, templates?: Template[]): Data => {
   return {
@@ -126,6 +127,8 @@ export const handleDataCatalogProcessing = (
         ...item,
         ...savedData2,
         visible: true,
+        selectedGroup: (savedData2.components?.find(c => c.type === "switchGroup") as any)
+          ?.groups?.[0]?.fieldGroupID,
       };
     } else {
       return newItem(item);

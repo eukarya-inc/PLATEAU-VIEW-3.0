@@ -1,7 +1,7 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 
-import { DataCatalogItem, Template } from "../../types";
+import { DataCatalogItem, Template } from "../../../types";
 
 export default ({
   backendURL,

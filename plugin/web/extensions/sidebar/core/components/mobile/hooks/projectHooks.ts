@@ -9,14 +9,13 @@ import {
 import { merge } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { BuildingSearch, Data, DataCatalogItem, Template } from "../../types";
+import { BuildingSearch, Data, DataCatalogItem, Template } from "../../../types";
 import {
   StoryItem,
   Story as FieldStory,
   FieldComponent,
-} from "../content/common/DatasetCard/Field/Fields/types";
-
-import { mergeOverrides } from "./utils";
+} from "../../content/common/DatasetCard/Field/Fields/types";
+import { mergeOverrides } from "../../utils";
 
 export const defaultProject: Project = {
   sceneOverrides: {
@@ -55,14 +54,6 @@ export const defaultProject: Project = {
       },
     ],
     atmosphere: { shadows: true },
-    light: {
-      lightType: "directionalLight",
-      lightColor: "#e5f5ffff",
-      lightIntensity: 10,
-      lightDirectionX: 0.8,
-      lightDirectionY: -0.7,
-      lightDirectionZ: -0.1,
-    },
   },
   datasets: [],
   userStory: undefined,
@@ -149,6 +140,7 @@ export default ({
           datasets,
         };
         postMsg({ action: "updateProject", payload: updatedProject });
+        postMsg({ action: "msgToPopup", payload: { project: updatedProject } });
         return updatedProject;
       });
     },
@@ -190,6 +182,7 @@ export default ({
         };
 
         postMsg({ action: "updateProject", payload: updatedProject });
+        postMsg({ action: "msgToPopup", payload: { project: updatedProject } });
 
         return updatedProject;
       });
@@ -222,6 +215,7 @@ export default ({
         datasets: datasets.filter(d => d.dataID !== dataID),
       };
       postMsg({ action: "updateProject", payload: updatedProject });
+      postMsg({ action: "msgToPopup", payload: { project: updatedProject } });
       return updatedProject;
     });
     postMsg({ action: "removeDatasetFromScene", payload: dataID });
@@ -234,6 +228,7 @@ export default ({
         datasets: [],
       };
       postMsg({ action: "updateProject", payload: updatedProject });
+      postMsg({ action: "msgToPopup", payload: { project: updatedProject } });
       return updatedProject;
     });
     postMsg({ action: "removeAllDatasetsFromScene" });
@@ -246,23 +241,23 @@ export default ({
         datasets,
       };
       postMsg({ action: "updateProject", payload: updatedProject });
+      postMsg({ action: "msgToPopup", payload: { project: updatedProject } });
       return updatedProject;
     });
   }, []);
 
   const handleOverride = useCallback(
-    (dataID: string, activeIDs?: string[]) => {
-      const dataset = project.datasets.find(d => d.dataID === dataID);
+    (dataset: DataCatalogItem, activeIDs?: string[]) => {
       if (dataset) {
         const overrides = processOverrides(dataset, activeIDs);
 
         postMsg({
           action: "updateDatasetInScene",
-          payload: { dataID, overrides },
+          payload: { dataID: dataset.dataID, overrides },
         });
       }
     },
-    [project.datasets, processOverrides],
+    [processOverrides],
   );
 
   const handleStorySaveData = useCallback(
@@ -305,7 +300,7 @@ export default ({
 
   useEffect(() => {
     if (!backendURL || !backendProjectName || fetchedSharedProject.current) return;
-    if (projectID && processedCatalog.length) {
+    if (projectID && processedCatalog?.length) {
       (async () => {
         const res = await fetch(`${backendURL}/share/${backendProjectName}/${projectID}`);
         if (res.status !== 200) return;
@@ -341,12 +336,12 @@ export default ({
     updateProject,
     setProjectID,
     setCleanseOverride,
+    handleOverride,
     handleProjectSceneUpdate,
     handleProjectDatasetAdd,
     handleProjectDatasetRemove,
     handleProjectDatasetRemoveAll,
     handleProjectDatasetsUpdate,
     handleStorySaveData,
-    handleOverride,
   };
 };

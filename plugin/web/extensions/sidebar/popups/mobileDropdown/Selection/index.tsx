@@ -9,10 +9,9 @@ import PopupItem from "../sharedComponents/PopupItem";
 
 type Props = {
   selectedDatasets: DataCatalogItem[];
-  savingDataset: boolean;
+  savingDataset?: boolean;
   buildingSearch?: BuildingSearch;
   templates?: Template[];
-  onDatasetSave: (datasetId: string) => void;
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
@@ -26,7 +25,6 @@ const Selection: React.FC<Props> = ({
   savingDataset,
   buildingSearch,
   templates,
-  onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
@@ -41,14 +39,14 @@ const Selection: React.FC<Props> = ({
   return (
     <Wrapper>
       <PopupItem>
-        <Title>Data Style Settings</Title>
+        <Title>データスタイル設定</Title>
       </PopupItem>
       <SelectionComponent
         selectedDatasets={selectedDatasets}
         savingDataset={savingDataset}
         buildingSearch={buildingSearch}
         templates={templates}
-        onDatasetSave={onDatasetSave}
+        isMobile
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}

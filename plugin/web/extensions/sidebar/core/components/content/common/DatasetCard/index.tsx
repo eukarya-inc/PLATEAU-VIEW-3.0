@@ -43,9 +43,10 @@ export type Props = {
   templates?: Template[];
   buildingSearch?: BuildingSearch;
   inEditor?: boolean;
-  savingDataset: boolean;
+  savingDataset?: boolean;
+  isMobile?: boolean;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
-  onDatasetSave: (dataID: string) => void;
+  onDatasetSave?: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onBuildingSearch: (id: string) => void;
@@ -60,6 +61,7 @@ const DatasetCard: React.FC<Props> = ({
   buildingSearch,
   inEditor,
   savingDataset,
+  isMobile,
   moveCard,
   onDatasetSave,
   onDatasetRemove,
@@ -186,6 +188,7 @@ const DatasetCard: React.FC<Props> = ({
               ? [mvtPosition, { duration: 2 }]
               : dataset.dataID,
           });
+          if (isMobile) postMsg({ action: "popupClose" });
         },
       },
       {
@@ -216,7 +219,7 @@ const DatasetCard: React.FC<Props> = ({
           ]
         : []),
     ],
-    [currentTab, dataset, onDatasetRemove, onBuildingSearch],
+    [currentTab, dataset, isMobile, onDatasetRemove, onBuildingSearch],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
@@ -226,7 +229,7 @@ const DatasetCard: React.FC<Props> = ({
 
   const handleFieldSave = useCallback(() => {
     if (!inEditor) return;
-    onDatasetSave(dataset.dataID);
+    onDatasetSave?.(dataset.dataID);
   }, [dataset.dataID, inEditor, onDatasetSave]);
 
   const menuGenerator = (menuItems: { [key: string]: any }) => (
@@ -373,6 +376,7 @@ const DatasetCard: React.FC<Props> = ({
                   editMode={inEditor && currentTab === "edit"}
                   templates={templates}
                   configData={dataset.config?.data}
+                  selectedGroup={dataset.selectedGroup}
                   onUpdate={handleFieldUpdate}
                   onRemove={handleFieldRemove}
                   onMoveUp={handleMoveUp}
@@ -386,7 +390,7 @@ const DatasetCard: React.FC<Props> = ({
             {inEditor && currentTab === "edit" && (
               <>
                 <StyledAddButton text="フィルドを追加" items={menuGenerator(fieldComponentsList)} />
-                <SaveButton onClick={handleFieldSave} disabled={savingDataset}>
+                <SaveButton onClick={handleFieldSave} disabled={!!savingDataset}>
                   <Icon icon="save" size={14} />
                   <Text>保存</Text>
                 </SaveButton>

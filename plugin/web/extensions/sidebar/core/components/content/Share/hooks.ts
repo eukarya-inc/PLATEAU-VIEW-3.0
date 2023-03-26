@@ -45,48 +45,55 @@ export default ({
     };
   }, []);
 
-  addEventListener("message", async e => {
-    if (e.source !== parent) return;
-    if (e.data.action) {
-      if (e.data.action === "screenshotPreview") {
-        generatePrintView(e.data.payload);
-      } else if (e.data.action === "screenshotSave") {
-        const link = document.createElement("a");
-        link.download = "screenshot.png";
-        link.href = e.data.payload;
-        link.click();
-        link.remove();
-      } else if (e.data.action === "getCurrentCamera") {
-        if (!backendURL || !backendProjectName || !reearthURL || !project || !e.data.payload)
-          return;
-        const updatedProject: Project = {
-          ...project,
-          sceneOverrides: [project.sceneOverrides, { default: { camera: e.data.payload } }].reduce(
-            (p, v) => mergeProperty(p, v),
-          ),
-        };
-        const resp = await fetch(`${backendURL}/share/${backendProjectName}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify(updatedProject),
-        });
-        if (resp.status !== 200) {
-          messageApi.open({
-            type: "error",
-            content: "サーバーに問題が発生しました。しばらく待ってからもう一回試して下さい。",
+  useEffect(() => {
+    const eventListenerCallback = async (e: any) => {
+      if (e.source !== parent) return;
+      if (e.data.action) {
+        if (e.data.action === "screenshotPreview") {
+          generatePrintView(e.data.payload);
+        } else if (e.data.action === "screenshotSave") {
+          const link = document.createElement("a");
+          link.download = "screenshot.png";
+          link.href = e.data.payload;
+          link.click();
+          link.remove();
+        } else if (e.data.action === "getCurrentCamera") {
+          if (!backendURL || !backendProjectName || !reearthURL || !project || !e.data.payload)
+            return;
+          const updatedProject: Project = {
+            ...project,
+            sceneOverrides: [
+              project.sceneOverrides,
+              { default: { camera: e.data.payload } },
+            ].reduce((p, v) => mergeProperty(p, v)),
+          };
+          const resp = await fetch(`${backendURL}/share/${backendProjectName}`, {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify(updatedProject),
           });
-          if (timer.current) {
-            clearTimeout(timer.current);
+          if (resp.status !== 200) {
+            messageApi.open({
+              type: "error",
+              content: "サーバーに問題が発生しました。しばらく待ってからもう一回試して下さい。",
+            });
+            if (timer.current) {
+              clearTimeout(timer.current);
+            }
+          } else {
+            const project = await resp.json();
+            setPublishedUrl(`${reearthURL}${reearthURL.includes("?") ? "&" : "?"}share=${project}`);
           }
-        } else {
-          const project = await resp.json();
-          setPublishedUrl(`${reearthURL}${reearthURL.includes("?") ? "&" : "?"}share=${project}`);
         }
       }
-    }
-  });
+    };
+    addEventListener("message", e => eventListenerCallback(e));
+    return () => {
+      removeEventListener("message", eventListenerCallback);
+    };
+  }, [project, reearthURL, messageApi, backendProjectName, backendURL]);
 
   return {
     shareDisabled,

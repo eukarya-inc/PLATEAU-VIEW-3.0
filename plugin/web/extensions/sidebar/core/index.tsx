@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 import { postMsg } from "../utils";
 
-import DesktopSidebar from "./components/Desktop";
-import MobileSidebar from "./components/Mobile";
+import DesktopSidebar from "./components/desktop";
+import MobileSidebar from "./components/mobile";
 
 export type Props = {
   className?: string;

@@ -9,14 +9,15 @@ import useHooks from "./hooks";
 const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
   value,
   editMode,
+  selectedGroup,
   onUpdate,
   onCurrentGroupUpdate,
 }) => {
   const {
     title,
     groupItems,
-    selectedGroup,
     fieldGroups,
+    currentGroup,
     handleTitleChange,
     handleGroupChoose,
     handleItemGroupChange,
@@ -27,6 +28,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
     handleItemMoveDown,
   } = useHooks({
     value,
+    selectedGroup,
     onUpdate,
     onCurrentGroupUpdate,
   });
@@ -34,7 +36,6 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
   const uiMenu = (
     <Menu
       selectable
-      selectedKeys={[selectedGroup.id]}
       items={groupItems?.map(gi => {
         return {
           key: gi.id,
@@ -119,7 +120,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
         <FieldValue>
           <Dropdown overlay={uiMenu} placement="bottom" trigger={["click"]}>
             <StyledDropdownButton>
-              <p style={{ margin: 0 }}>{selectedGroup ? selectedGroup.title : "-"}</p>
+              <p style={{ margin: 0 }}>{currentGroup ? currentGroup.title : "-"}</p>
               <Icon icon="arrowDownSimple" size={12} />
             </StyledDropdownButton>
           </Dropdown>

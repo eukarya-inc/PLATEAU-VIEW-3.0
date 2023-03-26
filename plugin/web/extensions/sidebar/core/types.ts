@@ -20,8 +20,9 @@ export type DataCatalogTreeItem = DataCatalogGroup | DataCatalogItem;
 export type Data = {
   dataID: string;
   public?: boolean;
-  visible?: boolean;
   components?: FieldComponent[];
+  visible?: boolean;
+  selectedGroup?: string;
 };
 
 export type Group = {

@@ -25,6 +25,7 @@ export type Props = {
   isEditing?: boolean;
   editMode?: boolean;
   templates?: Template[];
+  selectedGroup?: string;
   configData?: ConfigData[];
   onUpdate?: (id: string) => (property: any) => void;
   onRemove?: (id: string) => void;
@@ -58,6 +59,7 @@ const FieldComponent: React.FC<Props> = ({
   isEditing,
   editMode,
   templates,
+  selectedGroup,
   configData,
   onUpdate,
   onRemove,
@@ -139,6 +141,7 @@ const FieldComponent: React.FC<Props> = ({
       activeIDs={activeIDs}
       isActive={isActive}
       templates={templates}
+      selectedGroup={selectedGroup}
       configData={configData}
       dataID={dataID}
       onUpdate={onUpdate?.(field.id)}
@@ -165,6 +168,7 @@ const FieldComponent: React.FC<Props> = ({
           editMode={editMode}
           isActive={isActive}
           templates={templates}
+          selectedGroup={selectedGroup}
           configData={configData}
           dataID={dataID}
           onUpdate={onUpdate?.(field.id)}

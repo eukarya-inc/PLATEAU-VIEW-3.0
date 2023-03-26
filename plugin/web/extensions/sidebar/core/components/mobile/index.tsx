@@ -1,7 +1,9 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+
+import useHooks from "./hooks";
 
 export type Tab = "catalog" | "selection" | "menu";
 
@@ -10,7 +12,18 @@ export type Props = {
 };
 
 const MobileSidebar: React.FC<Props> = ({ className }) => {
-  const [selected, setSelected] = useState<Tab | undefined>();
+  const {
+    selected,
+    project,
+    catalog,
+    reearthURL,
+    backendURL,
+    backendProjectName,
+    templates,
+    searchTerm,
+    buildingSearch,
+    setSelected,
+  } = useHooks();
 
   const handleTabSelect = useCallback(
     (tab: Tab) => {
@@ -19,25 +32,41 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
         postMsg({ action: "popupClose" });
       } else if (selected) {
         setSelected(tab);
-        postMsg({ action: "msgToPopup", payload: tab });
+        postMsg({ action: "msgToPopup", payload: { selected: tab } });
       } else {
         setSelected(tab);
         postMsg({ action: "mobileDropdownOpen" });
       }
     },
-    [selected],
+    [selected, setSelected],
   );
 
   useEffect(() => {
     const eventListenerCallback = (e: any) => {
       if (e.source !== parent) return;
       if (e.data.action === "initPopup") {
-        postMsg({ action: "msgToPopup", payload: selected });
+        postMsg({
+          action: "msgToPopup",
+          payload: {
+            selected,
+            templates,
+            project,
+            buildingSearch,
+            searchTerm,
+            reearthURL,
+            backendURL,
+            backendProjectName,
+          },
+        });
+      } else if (e.data.action === "initMobileCatalog") {
+        postMsg({ action: "initMobileCatalog", payload: catalog });
       } else if (e.data.action === "triggerCatalogOpen") {
         postMsg({ action: "modalClose" });
         handleTabSelect("catalog");
       } else if (e.data.action === "msgFromPopup") {
         setSelected(e.data.payload);
+      } else if (e.data.action === "popupClose") {
+        setSelected(undefined);
       }
     };
     (globalThis as any).addEventListener("message", eventListenerCallback);

@@ -11,8 +11,20 @@ import PopupItem from "../sharedComponents/PopupItem";
 type Props = {
   addedDatasetDataIDs?: string[];
   isMobile?: boolean;
-  catalogData?: DataCatalogItem[];
   searchTerm: string;
+  expandedFolders?: {
+    id?: string | undefined;
+    name?: string | undefined;
+  }[];
+  catalog?: DataCatalogItem[];
+  setExpandedFolders?: React.Dispatch<
+    React.SetStateAction<
+      {
+        id?: string | undefined;
+        name?: string | undefined;
+      }[]
+    >
+  >;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
 };
@@ -20,8 +32,10 @@ type Props = {
 const Catalog: React.FC<Props> = ({
   addedDatasetDataIDs,
   isMobile,
-  catalogData,
   searchTerm,
+  expandedFolders,
+  catalog,
+  setExpandedFolders,
   onSearch,
   onDatasetAdd,
 }) => {
@@ -60,10 +74,12 @@ const Catalog: React.FC<Props> = ({
             addedDatasetDataIDs={addedDatasetDataIDs}
             selectedDataset={selectedDataset}
             isMobile={isMobile}
-            catalog={catalogData}
+            catalog={catalog}
             filter={filter}
-            addDisabled={addDisabled}
             searchTerm={searchTerm}
+            expandedFolders={expandedFolders}
+            setExpandedFolders={setExpandedFolders}
+            addDisabled={addDisabled}
             onSearch={onSearch}
             onFilter={handleFilter}
             onOpenDetails={handleOpenDetails}
