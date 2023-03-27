@@ -3,6 +3,11 @@ import { BaseFieldProps } from "../../types";
 export const MAX_HEIGHT = 200;
 export const MAX_ABOVEGROUND_FLOOR = 50;
 export const MAX_BASEMENT_FLOOR = 5;
+export const MAX_BUILDING_AGE = new Date().getFullYear();
+
+export const USE_MIN_FIELD_PROPERTIES: (keyof typeof FILTERING_FIELD_DEFINITION)[] = [
+  "buildingAge",
+];
 
 export type FilteringField = {
   id: keyof OptionsState;
@@ -15,7 +20,10 @@ export type FilteringField = {
 };
 
 export type OptionsState = {
-  [K in keyof BaseFieldProps<"buildingFilter">["value"]["userSettings"]]?: FilteringField;
+  [K in keyof Omit<
+    BaseFieldProps<"buildingFilter">["value"]["userSettings"],
+    "override"
+  >]?: FilteringField;
 };
 
 export const FILTERING_FIELD_DEFINITION: Record<
@@ -46,5 +54,14 @@ export const FILTERING_FIELD_DEFINITION: Record<
     order: 3,
     value: [0, MAX_BASEMENT_FLOOR],
     max: MAX_BASEMENT_FLOOR,
+  },
+  buildingAge: {
+    id: "buildingAge",
+    label: "建築年で絞り込み",
+    featurePropertyName: "建築年",
+    order: 4,
+    value: [1850, MAX_BUILDING_AGE],
+    max: MAX_BUILDING_AGE,
+    min: 1850,
   },
 };

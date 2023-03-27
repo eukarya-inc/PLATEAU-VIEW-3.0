@@ -348,6 +348,7 @@ type BuildingFilter = FieldBase<"buildingFilter"> & {
     height?: [from: number, to: number];
     abovegroundFloor?: [from: number, to: number];
     basementFloor?: [from: number, to: number];
+    buildingAge?: [from: number, to: number];
     override?: any;
   };
 };
