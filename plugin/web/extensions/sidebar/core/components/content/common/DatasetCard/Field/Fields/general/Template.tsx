@@ -18,6 +18,7 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   configData,
   onUpdate,
   onCurrentGroupUpdate,
+  onCurrentDatasetUpdate,
   onSceneUpdate,
 }) => {
   const [fieldComponents, setFieldComponents] = useState<FieldComponentType[] | undefined>();
@@ -145,6 +146,7 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
               configData={configData}
               onUpdate={handleFieldUpdate}
               onCurrentGroupUpdate={onCurrentGroupUpdate}
+              onCurrentDatasetUpdate={onCurrentDatasetUpdate}
               onSceneUpdate={onSceneUpdate}
             />
           ))

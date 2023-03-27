@@ -41,7 +41,7 @@ export default () => {
 
   const {
     fieldTemplates,
-    handleInfoboxFieldsFetch,
+    infoboxTemplates,
     handleInfoboxFieldsSave,
     setFieldTemplates,
     setInfoboxTemplates,
@@ -52,7 +52,6 @@ export default () => {
     backendURL,
     backendProjectName,
     backendAccessToken,
-    processedCatalog,
     setLoading,
   });
 
@@ -80,9 +79,11 @@ export default () => {
     handleProjectDatasetRemoveAll,
     handleProjectDatasetsUpdate,
     handleStorySaveData,
+    handleInfoboxFieldsFetch,
     handleOverride,
   } = useProjectHooks({
     fieldTemplates,
+    infoboxTemplates,
     backendURL,
     backendProjectName,
     processedCatalog,

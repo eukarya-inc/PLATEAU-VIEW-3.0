@@ -16,6 +16,7 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   editMode,
   configData,
   onUpdate,
+  onCurrentDatasetUpdate,
 }) => {
   const initialized = useRef(false);
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
@@ -95,7 +96,8 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
         },
       },
     });
-  }, [selectedDataset, selectedStyle, configData, value, onUpdate]);
+    onCurrentDatasetUpdate?.(selectedDataset);
+  }, [selectedDataset, selectedStyle, configData, value, onUpdate, onCurrentDatasetUpdate]);
 
   return editMode ? (
     <Wrapper>

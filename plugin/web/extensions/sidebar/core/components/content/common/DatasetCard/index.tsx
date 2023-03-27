@@ -83,6 +83,7 @@ const DatasetCard: React.FC<Props> = ({
     handleMoveUp,
     handleMoveDown,
     handleCurrentGroupUpdate,
+    handleCurrentDatasetUpdate,
     handleGroupsUpdate,
   } = useHooks({
     dataset,
@@ -387,6 +388,7 @@ const DatasetCard: React.FC<Props> = ({
                   onMoveDown={handleMoveDown}
                   onGroupsUpdate={handleGroupsUpdate}
                   onCurrentGroupUpdate={handleCurrentGroupUpdate}
+                  onCurrentDatasetUpdate={handleCurrentDatasetUpdate}
                   onSceneUpdate={onSceneUpdate}
                 />
               ))}

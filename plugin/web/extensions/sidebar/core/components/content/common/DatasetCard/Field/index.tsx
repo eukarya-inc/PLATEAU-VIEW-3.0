@@ -33,6 +33,7 @@ export type Props = {
   onMoveDown?: (index: number) => void;
   onGroupsUpdate?: (fieldID: string) => (selectedGroupID?: string | undefined) => void;
   onCurrentGroupUpdate?: (fieldGroupID: string) => void;
+  onCurrentDatasetUpdate?: (selectedDataset?: ConfigData) => void;
   onSceneUpdate?: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
@@ -67,6 +68,7 @@ const FieldComponent: React.FC<Props> = ({
   onMoveDown,
   onGroupsUpdate,
   onCurrentGroupUpdate,
+  onCurrentDatasetUpdate,
   onSceneUpdate,
 }) => {
   const Field = fields[field.type];
@@ -146,6 +148,7 @@ const FieldComponent: React.FC<Props> = ({
       dataID={dataID}
       onUpdate={onUpdate?.(field.id)}
       onCurrentGroupUpdate={onCurrentGroupUpdate}
+      onCurrentDatasetUpdate={onCurrentDatasetUpdate}
       onSceneUpdate={onSceneUpdate}
     />
   ) : (
@@ -173,6 +176,7 @@ const FieldComponent: React.FC<Props> = ({
           dataID={dataID}
           onUpdate={onUpdate?.(field.id)}
           onCurrentGroupUpdate={onCurrentGroupUpdate}
+          onCurrentDatasetUpdate={onCurrentDatasetUpdate}
           onSceneUpdate={onSceneUpdate}
         />
       )}

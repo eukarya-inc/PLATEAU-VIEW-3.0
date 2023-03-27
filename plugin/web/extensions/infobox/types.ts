@@ -47,6 +47,6 @@ export type Properties = FixedProperties & {
 };
 
 export type FldInfo = {
-  title: string;
-  scale?: string;
+  name?: string;
+  datasetName?: string;
 };

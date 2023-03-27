@@ -8,7 +8,7 @@ import {
   getDataCatalog,
   RawDataCatalogItem,
 } from "../../../../modals/datacatalog/api/api";
-import { BuildingSearch, Data, Template } from "../../../types";
+import { BuildingSearch, Data, FldInfo, Template } from "../../../types";
 import { handleDataCatalogProcessing, updateExtended } from "../../utils";
 
 import useProjectHooks from "./projectHooks";
@@ -139,7 +139,7 @@ export default () => {
 
   const handleInfoboxFieldsFetch = useCallback(
     (dataID: string) => {
-      let fields;
+      let fields: (Template & { fldInfo?: FldInfo }) | undefined;
       const catalogItem = processedCatalog?.find(d => d.dataID === dataID);
       if (catalogItem) {
         const name = catalogItem?.type;
@@ -150,6 +150,11 @@ export default () => {
           name,
           dataType,
           fields: [],
+        };
+
+        fields.fldInfo = {
+          name: catalogItem.name,
+          datasetName: catalogItem.selectedDataset?.name,
         };
       }
 

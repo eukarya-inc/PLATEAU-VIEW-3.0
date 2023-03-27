@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { cleanseOverrides } from "./Field/fieldConstants";
 import generateFieldComponentsList from "./Field/fieldHooks";
+import { ConfigData } from "./Field/Fields/types";
 
 export default ({
   dataset,
@@ -50,6 +51,17 @@ export default ({
       onDatasetUpdate?.({
         ...dataset,
         selectedGroup: fieldGroupID,
+      });
+    },
+    [dataset, onDatasetUpdate],
+  );
+
+  const handleCurrentDatasetUpdate = useCallback(
+    (selectedDataset?: ConfigData) => {
+      if (selectedDataset === dataset.selectedDataset) return;
+      onDatasetUpdate?.({
+        ...dataset,
+        selectedDataset,
       });
     },
     [dataset, onDatasetUpdate],
@@ -171,6 +183,7 @@ export default ({
     handleMoveUp,
     handleMoveDown,
     handleCurrentGroupUpdate,
+    handleCurrentDatasetUpdate,
     handleGroupsUpdate,
   };
 };

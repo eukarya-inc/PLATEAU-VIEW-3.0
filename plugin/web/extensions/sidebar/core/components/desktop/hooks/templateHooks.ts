@@ -1,19 +1,17 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 
-import { DataCatalogItem, Template } from "../../../types";
+import { Template } from "../../../types";
 
 export default ({
   backendURL,
   backendProjectName,
   backendAccessToken,
-  processedCatalog,
   setLoading,
 }: {
   backendURL?: string;
   backendProjectName?: string;
   backendAccessToken?: string;
-  processedCatalog: DataCatalogItem[];
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
@@ -130,30 +128,6 @@ export default ({
     [backendURL, backendProjectName, backendAccessToken],
   );
 
-  const handleInfoboxFieldsFetch = useCallback(
-    (dataID: string) => {
-      let fields;
-      const catalogItem = processedCatalog?.find(d => d.dataID === dataID);
-      if (catalogItem) {
-        const name = catalogItem?.type;
-        const dataType = catalogItem?.type_en;
-        fields = infoboxTemplates.find(ft => ft.type === "infobox" && ft.dataType === dataType) ?? {
-          id: "",
-          type: "infobox",
-          name,
-          dataType,
-          fields: [],
-        };
-      }
-
-      postMsg({
-        action: "infoboxFieldsFetch",
-        payload: fields,
-      });
-    },
-    [processedCatalog, infoboxTemplates],
-  );
-
   const handleInfoboxFieldsSave = useCallback(
     async (template: Template) => {
       if (template.id) {
@@ -175,7 +149,6 @@ export default ({
     handleTemplateAdd,
     handleTemplateSave,
     handleTemplateRemove,
-    handleInfoboxFieldsFetch,
     handleInfoboxFieldsSave,
   };
 };
