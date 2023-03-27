@@ -93,6 +93,7 @@ test("getRootFields", () => {
           "uro:areaClassificationType": "区域区分",
           "uro:districtsAndZonesType": ["地域地区"],
           "uro:buildingRoofEdgeArea": 6399.9406,
+          "uro:totalFloorArea": 1000,
         },
       ],
       "uro:BuildingRiverFloodingRiskAttribute": [
@@ -137,6 +138,7 @@ test("getRootFields", () => {
     地上階数: 12,
     地下階数: 0,
     敷地面積: 100,
+    延床面積: 1000,
     構造種別: "鉄筋コンクリート造",
     "構造種別（独自）": "鉄筋コンクリート造",
     耐火構造種別: "不明",
@@ -170,6 +172,7 @@ test("getRootFields", () => {
     "地上階数",
     "地下階数",
     "敷地面積",
+    "延床面積",
     "構造種別",
     "構造種別（独自）",
     "耐火構造種別",

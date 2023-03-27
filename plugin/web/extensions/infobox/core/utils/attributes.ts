@@ -61,6 +61,12 @@ export function getRootFields(properties: Properties, dataType?: string, fld?: F
     地上階数: get(properties, ["attributes", "bldg:storeysAboveGround"]),
     地下階数: get(properties, ["attributes", "bldg:storeysBelowGround"]),
     敷地面積: get(properties, ["attributes", "uro:BuildingDetailAttribute", 0, "uro:siteArea"]),
+    延床面積: get(properties, [
+      "attributes",
+      "uro:BuildingDetailAttribute",
+      0,
+      "uro:totalFloorArea",
+    ]),
     構造種別: get(properties, [
       "attributes",
       "uro:BuildingDetailAttribute",
@@ -116,6 +122,7 @@ export function getRootFields(properties: Properties, dataType?: string, fld?: F
       0,
       "uro:lod1HeightType",
     ]),
+
     ...floodFields(properties),
     土砂災害警戒区域: get(properties, [
       "attributes",
