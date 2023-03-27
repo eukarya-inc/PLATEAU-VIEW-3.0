@@ -20,12 +20,10 @@ const MapSettings: React.FC<Props> = ({ overrides, isMobile, onOverridesUpdate }
     currentTiles,
     currentHideUnderground,
     currentAllowEnterGround,
-    currentLightType,
     handleViewChange,
     handleTileChange,
     handleHideUnderGround,
     handleAllowEnterGround,
-    handleUseSunLight,
   } = useHooks({ overrides, onOverridesUpdate });
 
   return (
@@ -52,11 +50,6 @@ const MapSettings: React.FC<Props> = ({ overrides, isMobile, onOverridesUpdate }
           <CheckboxWrapper>
             <Checkbox checked={!!currentAllowEnterGround} onClick={handleAllowEnterGround}>
               <Text>地下に入る</Text>
-            </Checkbox>
-          </CheckboxWrapper>
-          <CheckboxWrapper>
-            <Checkbox checked={currentLightType === "sunLight"} onClick={handleUseSunLight}>
-              <Text>太陽光を利用する</Text>
             </Checkbox>
           </CheckboxWrapper>
         </Section>
