@@ -6,6 +6,8 @@ import {
 
 import html from "../dist/web/infobox/core/index.html?raw";
 
+import { inEditor } from "./utils/ineditor";
+
 const reearth = (globalThis as any).reearth;
 
 reearth.ui.show(html);
@@ -31,7 +33,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
   if (action === "init") {
     reearth.ui.postMessage({
       action: "getInEditor",
-      payload: reearth.scene.inEditor,
+      payload: inEditor(),
     });
     infoboxFieldsFetch();
   } else if (action === "saveTemplate") {

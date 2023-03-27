@@ -12,6 +12,7 @@ import groupSelectPopupHtml from "../dist/web/sidebar/popups/groupSelect/index.h
 import helpPopupHtml from "../dist/web/sidebar/popups/help/index.html?raw";
 import mobileDropdownHtml from "../dist/web/sidebar/popups/mobileDropdown/index.html?raw";
 
+import { inEditor } from "./utils/ineditor";
 import { proxyGTFS } from "./utils/proxy";
 
 const defaultProject: Project = {
@@ -106,7 +107,7 @@ if (
     reearth.clientStorage.setAsync("isMobile", false);
   }
   reearth.clientStorage.getAsync("doNotShowWelcome").then((value: any) => {
-    if (!value && !reearth.scene.inEditor) {
+    if (!value && !inEditor()) {
       reearth.modal.show(welcomeScreenHtml, {
         width: reearth.viewport.width,
         height: reearth.viewport.height,
@@ -148,7 +149,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.clientStorage.getAsync("draftProject").then((draftProject: Project) => {
       const outBoundPayload = {
         projectID: reearth.viewport.query.share || reearth.viewport.query.projectID,
-        inEditor: reearth.scene.inEditor,
+        inEditor: inEditor(),
         catalogURL: reearth.widget.property.default?.catalogURL ?? "",
         catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
         reearthURL: reearth.widget.property.default?.reearthURL ?? "",
@@ -280,7 +281,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       payload: {
         catalog,
         addedDatasets: addedDatasets.map(d => d[0]),
-        inEditor: reearth.scene.inEditor,
+        inEditor: inEditor(),
         searchTerm,
         expandedFolders,
         dataset,
