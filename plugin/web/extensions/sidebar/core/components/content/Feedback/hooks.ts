@@ -40,7 +40,8 @@ export default ({
       if (resp.status !== 200) {
         messageApi.open({
           type: "error",
-          content: "サバーの問題です。しばらくお待ちしてもう一回して下さい。",
+          content:
+            "フィードバックの送信に失敗しました。しばらく時間を空けてからもう一度お試しください。",
         });
       } else {
         messageApi.open({
