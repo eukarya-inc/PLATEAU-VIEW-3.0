@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 
-import { attributesMap, getAttributes, getRootFields } from "./attributes";
+import { attributesMap, getAttributes, getRootFields, name, fldName } from "./attributes";
 import type { Json } from "./json";
 
 test("getAttributes", () => {
@@ -92,6 +92,7 @@ test("getRootFields", () => {
           "uro:urbanPlanType": "都市計画区域",
           "uro:areaClassificationType": "区域区分",
           "uro:districtsAndZonesType": ["地域地区"],
+          "uro:buildingRoofEdgeArea": 6399.9406,
         },
       ],
       "uro:BuildingRiverFloodingRiskAttribute": [
@@ -122,6 +123,8 @@ test("getRootFields", () => {
           "uro:areaType_code": "1",
         },
       ],
+      "uro:BuildingIDAttribute": [{ "uro:buildingID": "22213-bldg-26889" }],
+      "uro:BuildingDataQualityAttribute": [{ "uro:lod1HeightType": "航空写真図化_最高高さ" }],
     },
   });
 
@@ -145,6 +148,9 @@ test("getRootFields", () => {
     "建物利用現況（中分類）": "建物利用現況（中分類）",
     "建物利用現況（小分類）": "建物利用現況（小分類）",
     "建物利用現況（詳細分類）": "建物利用現況（詳細分類）",
+    建物ID: "22213-bldg-26889",
+    図上面積: 6399.9406,
+    LOD1立ち上げに使用する高さ: "航空写真図化_最高高さ",
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_浸水ランク": "1",
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_浸水深": 0.618,
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_継続時間": "継続時間",
@@ -175,6 +181,9 @@ test("getRootFields", () => {
     "建物利用現況（中分類）",
     "建物利用現況（小分類）",
     "建物利用現況（詳細分類）",
+    "建物ID",
+    "図上面積",
+    "LOD1立ち上げに使用する高さ",
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_浸水ランク",
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_浸水深",
     "六角川水系武雄川（国管理区間）_L2（想定最大規模）_継続時間",
@@ -187,6 +196,47 @@ test("getRootFields", () => {
 
 test("attributesMap", () => {
   expect(attributesMap.get("ddd")).toBe("DDD");
+});
+
+test("name", () => {
+  expect(name({ attributes: { "gml:name": "aaaaaa" } }, "htd", "bbbbbb")).toEqual({
+    name: "aaaaaa",
+  });
+  expect(name({ attributes: { "gml:name": "01" } }, "bldg", "bbbbbb")).toEqual({ 名称: "01" });
+  expect(
+    name(
+      { attributes: { "gml:name": "01" } },
+      "htd",
+      "高潮浸水想定区域モデル 有明海沿岸（小城市）",
+    ),
+  ).toEqual({ name: "有明海沿岸高潮浸水想定区域図" });
+  expect(
+    name(
+      { attributes: { "gml:name": "" } },
+      "tnm",
+      "津波浸水想定区域モデル 宮城県津波浸水想定図（仙台市）",
+    ),
+  ).toBe(undefined);
+});
+
+test("fldName", () => {
+  expect(
+    fldName(
+      "洪水浸水想定区域モデル 芦田川水系芦田川（国管理区間）（福山市）",
+      "fld",
+      "想定最大規模",
+    ),
+  ).toBe("芦田川水系芦田川洪水浸水想定区域図【想定最大規模】");
+
+  expect(fldName("高潮浸水想定区域モデル 有明海沿岸（小城市）", "htd")).toBe(
+    "有明海沿岸高潮浸水想定区域図",
+  );
+
+  expect(fldName("津波浸水想定区域モデル 宮城県津波浸水想定図（仙台市）", "tnm")).toBe(
+    "宮城県津波浸水想定図",
+  );
+
+  expect(fldName("津波浸水想定区域モデル 津波浸水想定（福山市）", "tnm")).toBe("津波浸水想定");
 });
 
 function flatKeys(obj: Json, parentKey?: string): string[] {

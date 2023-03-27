@@ -3,12 +3,13 @@ import { omit } from "lodash";
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
 import { postMsg, commonPropertiesMap, getAttributes, getRootFields } from "../core/utils";
-import { InfoboxTemplate, Properties, Field } from "../types";
+import { InfoboxTemplate, Properties, Field, FldInfo } from "../types";
 
 export type EditorTab = "view" | "edit";
 
 export default () => {
   const [template, setTemplate] = useState<InfoboxTemplate | undefined>();
+  const [fldInfo, setFldInfo] = useState<FldInfo | undefined>();
   const [properties, setProperties] = useState<Properties>();
 
   const [fields, setFields] = useState<Field[]>([]);
@@ -111,7 +112,9 @@ export default () => {
         break;
       case "fillData":
         setTemplate(e.data.payload.template);
+        setFldInfo(e.data.payload.fldInfo);
         setProperties(e.data.payload.properties);
+        setFldInfo(e.data.payload.fldInfo);
         setDataState("ready");
         setEditorTab("view");
         break;
@@ -167,7 +170,7 @@ export default () => {
   }, []);
 
   const actualProperties = useMemo((): [any, string | undefined] => {
-    const rootFields = properties ? getRootFields(properties, template?.dataType) : {};
+    const rootFields = properties ? getRootFields(properties, template?.dataType, fldInfo) : {};
     return properties
       ? {
           ...(properties.attributes
@@ -178,7 +181,7 @@ export default () => {
           ...omit(properties, [...Object.keys(rootFields), "attributes"]),
         }
       : undefined;
-  }, [properties, template?.dataType]);
+  }, [fldInfo, properties, template?.dataType]);
 
   return {
     inEditor,
