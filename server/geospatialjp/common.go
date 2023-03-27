@@ -191,6 +191,16 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 		log.Infof("geospatialjp: find or create package: %+v", pkg2)
 	}
 
+	// save catalog resource
+	if cbuf != nil && catalogFileName != "" {
+		catalogResource, _ := findResource(pkg, ResourceNameCatalog+suffix, "XLSX", "", "")
+		if _, err = s.Ckan.UploadResource(ctx, catalogResource, catalogFileName, cbuf); err != nil {
+			return fmt.Errorf("G空間情報センターへの目録リソースの登録に失敗しました。: %w", err)
+		}
+	} else {
+		log.Infof("geospatialjp: catalog is not registerd so uploading is skipped")
+	}
+
 	// save citygml resoruce
 	citygmlResource, needUpdate := findResource(pkg, ResourceNameCityGML+suffix, "ZIP", "", citygmlAsset.URL)
 	if needUpdate {
@@ -213,16 +223,6 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 		}
 	} else {
 		log.Infof("geospatialjp: all is not registerd so uploading is skipped")
-	}
-
-	// save catalog resource
-	if cbuf != nil && catalogFileName != "" {
-		catalogResource, _ := findResource(pkg, ResourceNameCatalog+suffix, "XLSX", "", "")
-		if _, err = s.Ckan.UploadResource(ctx, catalogResource, catalogFileName, cbuf); err != nil {
-			return fmt.Errorf("G空間情報センターへの目録リソースの登録に失敗しました。: %w", err)
-		}
-	} else {
-		log.Infof("geospatialjp: catalog is not registerd so uploading is skipped")
 	}
 
 	// update item
