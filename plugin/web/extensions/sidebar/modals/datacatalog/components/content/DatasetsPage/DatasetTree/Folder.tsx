@@ -61,7 +61,7 @@ const Folder: React.FC<Props> = ({
           <Name>{name}</Name>
         </NameWrapper>
       </FolderItem>
-      {children}
+      {isOpen ? children : null}
     </Wrapper>
   );
 };
