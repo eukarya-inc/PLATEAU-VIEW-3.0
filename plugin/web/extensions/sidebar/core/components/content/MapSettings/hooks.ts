@@ -60,6 +60,7 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
     } = {},
     terrain: { terrain: currentTerrain } = {},
     tiles: currentTiles,
+    light: { lightType: currentLightType } = {},
   } = overrides;
 
   const currentView: ViewSelection = useMemo(
@@ -132,6 +133,28 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
     onOverridesUpdate({ default: { allowEnterGround: !currentAllowEnterGround } });
   }, [currentAllowEnterGround, onOverridesUpdate]);
 
+  const handleUseSunLight = useCallback(() => {
+    onOverridesUpdate(
+      currentLightType === "sunLight"
+        ? {
+            light: {
+              lightType: "directionalLight",
+              lightColor: "#ffffffff",
+              lightIntensity: 2,
+              lightDirectionX: 0.7650124487710819,
+              lightDirectionY: -0.6418383470612292,
+              lightDirectionZ: -0.05291020191779678,
+            },
+          }
+        : {
+            light: {
+              lightType: "sunLight",
+              lightIntensity: 2,
+            },
+          },
+    );
+  }, [currentLightType, onOverridesUpdate]);
+
   return {
     mapViewData,
     baseMapData,
@@ -139,9 +162,11 @@ export default ({ overrides, onOverridesUpdate }: Props) => {
     currentTiles,
     currentHideUnderground,
     currentAllowEnterGround,
+    currentLightType,
     handleViewChange,
     handleTileChange,
     handleHideUnderGround,
     handleAllowEnterGround,
+    handleUseSunLight,
   };
 };

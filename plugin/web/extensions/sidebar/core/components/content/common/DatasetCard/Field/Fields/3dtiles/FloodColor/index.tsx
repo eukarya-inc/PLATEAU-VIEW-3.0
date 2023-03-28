@@ -70,7 +70,10 @@ const FloodColor: React.FC<BaseFieldProps<"floodColor">> = ({
         },
       };
 
-      onUpdateRef.current({ color: expression, colorBlendMode: "replace" });
+      onUpdateRef.current({
+        color: expression,
+        colorBlendMode: colorType === "water" ? "highlight" : "replace",
+      });
     };
     updateTileset();
   }, [dataID, colorType]);
