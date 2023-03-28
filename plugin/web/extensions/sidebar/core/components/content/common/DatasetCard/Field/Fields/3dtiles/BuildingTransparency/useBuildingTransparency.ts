@@ -1,4 +1,4 @@
-import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
+import { getTransparencyExpression } from "@web/extensions/sidebar/utils/color";
 import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
 import debounce from "lodash/debounce";
 import { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef } from "react";
@@ -51,18 +51,6 @@ export type State = {
   isInitializedRef: MutableRefObject<boolean>;
 };
 
-const selectTransparency = (
-  rgba: RGBA | undefined,
-  transparency: number,
-  shouldUseRGBA: boolean,
-) => {
-  if (shouldUseRGBA) {
-    return rgba?.[3] ?? transparency;
-  } else {
-    return transparency;
-  }
-};
-
 const renderTileset = (
   state: State,
   onUpdateRef: RefObject<(property: any) => void>,
@@ -70,41 +58,15 @@ const renderTileset = (
 ) => {
   const updateTileset = async () => {
     const overriddenLayer = await getOverriddenLayerByDataID(state.dataID);
-
-    let transparency = (state.transparency ?? 100) / 100;
-
-    // We can get transparency from RGBA. Because the color is defined as RGBA.
-    const overriddenColor = overriddenLayer?.["3dtiles"]?.color;
-    const defaultRGBA = rgbaToString([255, 255, 255, transparency]);
-    const expression = (() => {
-      if (!overriddenColor) {
-        return defaultRGBA;
-      }
-      if (typeof overriddenColor === "string") {
-        const rgba = getRGBAFromString(overriddenColor);
-        transparency = selectTransparency(rgba, transparency, !state.isInitializedRef.current);
-        return rgba ? rgbaToString([...rgba.slice(0, -1), transparency] as RGBA) : defaultRGBA;
-      }
-
-      const conditions = overriddenColor.expression.conditions.map(([k, v]: [string, string]) => {
-        const rgba = getRGBAFromString(v);
-        if (!rgba) {
-          return [k, defaultRGBA];
-        }
-        transparency = selectTransparency(rgba, transparency, !state.isInitializedRef.current);
-        const composedRGBA = [...rgba.slice(0, -1), transparency] as RGBA;
-        return [k, rgbaToString(composedRGBA)];
-      });
-
-      return {
-        expression: {
-          conditions,
-        },
-      };
-    })();
+    const transparency = (state.transparency ?? 100) / 100;
+    const { expression, updatedTransparency } = getTransparencyExpression(
+      overriddenLayer,
+      transparency,
+      !state.isInitializedRef.current,
+    );
 
     if (!state.isInitializedRef.current) {
-      onChangeTransparency(transparency * 100);
+      onChangeTransparency(updatedTransparency * 100);
       state.isInitializedRef.current = true;
     } else {
       onUpdateRef.current?.({

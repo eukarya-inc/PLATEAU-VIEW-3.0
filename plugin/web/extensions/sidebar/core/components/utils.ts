@@ -1,6 +1,7 @@
 import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import { cloneDeep, isEqual, merge } from "lodash";
 
+import { getTransparencyExpression } from "../../utils/color";
 import { getDefaultGroup } from "../../utils/dataset";
 import { Data, DataCatalogItem, Template } from "../types";
 
@@ -44,7 +45,6 @@ export const mergeOverrides = (
   }
 
   const overrides = cloneDeep(startingOverride ?? {});
-
   const needOrderComponents = components
     .filter(c => (c as any).userSettings?.updatedAt)
     .sort(
@@ -52,9 +52,21 @@ export const mergeOverrides = (
         ((a as any).userSettings?.updatedAt?.getTime?.() ?? 0) -
         ((b as any).userSettings?.updatedAt?.getTime?.() ?? 0),
     );
+  for (const component of needOrderComponents) {
+    merge(
+      overrides,
+      action === "cleanse"
+        ? cleanseOverrides[component.type]
+        : (component as any).userSettings?.override ?? component.override,
+    );
+  }
+
+  let transparency = 100;
+  let switchGroupExist = false;
 
   for (let i = 0; i < components.length; i++) {
     if ((components[i] as any).userSettings?.updatedAt) {
+      transparency = (components[i] as any)?.userSettings?.transparency ?? 100;
       continue;
     }
     if (components[i].type === "switchDataset") {
@@ -76,6 +88,10 @@ export const mergeOverrides = (
       continue;
     }
 
+    if (components[i].type === "switchGroup") {
+      switchGroupExist = true;
+    }
+
     merge(
       overrides,
       action === "cleanse"
@@ -84,13 +100,14 @@ export const mergeOverrides = (
     );
   }
 
-  for (const component of needOrderComponents) {
-    merge(
-      overrides,
-      action === "cleanse"
-        ? cleanseOverrides[component.type]
-        : (component as any).userSettings?.override ?? component.override,
-    );
+  // This is a temporary solution for switch groups and transparency to work together: @pyshx
+  if (switchGroupExist && transparency != 100) {
+    const { expression } = getTransparencyExpression(overrides, transparency / 100, false);
+    merge(overrides, {
+      "3dtiles": {
+        color: expression,
+      },
+    });
   }
 
   return isEqual(overrides, {}) ? undefined : overrides;

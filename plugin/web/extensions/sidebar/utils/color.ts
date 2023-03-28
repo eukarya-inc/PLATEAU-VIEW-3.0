@@ -34,3 +34,55 @@ export const generateColorGradient = (
 
   return gradientColors;
 };
+
+const selectTransparency = (
+  rgba: RGBA | undefined,
+  transparency: number,
+  shouldUseRGBA: boolean,
+) => {
+  if (shouldUseRGBA) {
+    return rgba?.[3] ?? transparency;
+  } else {
+    return transparency;
+  }
+};
+
+export const getTransparencyExpression = (
+  layer: any,
+  transparency: number,
+  shouldUseRGBA: boolean,
+) => {
+  // We can get transparency from RGBA. Because the color is defined as RGBA.
+  const overriddenColor = layer?.["3dtiles"]?.color;
+  const defaultRGBA = rgbaToString([255, 255, 255, transparency]);
+  let updatedTransparency = transparency;
+
+  const expression = (() => {
+    if (!overriddenColor) {
+      return defaultRGBA;
+    }
+    if (typeof overriddenColor === "string") {
+      const rgba = getRGBAFromString(overriddenColor);
+      updatedTransparency = selectTransparency(rgba, transparency, shouldUseRGBA);
+      return rgba ? rgbaToString([...rgba.slice(0, -1), updatedTransparency] as RGBA) : defaultRGBA;
+    }
+
+    const conditions = overriddenColor.expression.conditions.map(([k, v]: [string, string]) => {
+      const rgba = getRGBAFromString(v);
+      if (!rgba) {
+        return [k, defaultRGBA];
+      }
+      updatedTransparency = selectTransparency(rgba, transparency, shouldUseRGBA);
+      const composedRGBA = [...rgba.slice(0, -1), updatedTransparency] as RGBA;
+      return [k, rgbaToString(composedRGBA)];
+    });
+
+    return {
+      expression: {
+        conditions,
+      },
+    };
+  })();
+
+  return { expression, updatedTransparency };
+};
