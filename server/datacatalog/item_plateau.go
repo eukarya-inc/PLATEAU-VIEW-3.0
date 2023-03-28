@@ -256,6 +256,10 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		an.FldNameAndCategory(),
 	}, func(s string, _ int) bool { return s != "" }), "_")
 
+	if id == "" {
+		return nil
+	}
+
 	y, _ := strconv.Atoi(an.Year)
 	pref, prefCode := normalizePref(i.Prefecture)
 

@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 )
 
-var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_(.+?_op.*?)(?:_(.+?)(?:_(.+))?)?$`)
+var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_(.*?op.*?)(?:_(.+?)(?:_(.+))?)?$`)
 var reLod = regexp.MustCompile(`(?:^|_)lod([0-9]+?)`)
 var reWard = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
 
@@ -54,7 +54,7 @@ func AssetNameFrom(name string) (a AssetName) {
 	a.CityCode = m[1]
 	a.CityEn = m[2]
 	a.Year = m[3]
-	a.Format = strings.ReplaceAll(strings.ReplaceAll(m[4], " ", ""), "%20", "")
+	a.Format = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(m[4], " ", ""), "%20", ""), "+", "")
 	a.Op = m[5]
 	if len(m) > 6 {
 		a.Feature = m[6]
