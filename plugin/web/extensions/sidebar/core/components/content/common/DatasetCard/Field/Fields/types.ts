@@ -453,7 +453,7 @@ export type BaseFieldProps<T extends keyof Fields> = {
   onCurrentDatasetUpdate?: (data?: ConfigData) => void;
 };
 
-export type ConfigData = { name: string; type: string; url: string; layers?: string[] };
+export type ConfigData = { name: string; type: string; url: string; layer?: string[] };
 
 export type Expression<T extends string | number | boolean = string | number | boolean> =
   | T
