@@ -94,7 +94,7 @@ func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 			"position": map[string]any{
 				"cartographicDegrees": lo.Map(f.Geometry.Point, func(p float64, _ int) any { return p }),
 			},
-			"properties": f.Properties,
+			"properties": processProperties(f.Properties),
 		})
 	}
 
@@ -177,7 +177,7 @@ func ConvertBorder(fc *geojson.FeatureCollection, id string) (any, error) {
 						"cartographicDegrees": lo.Map(positions, func(p float64, _ int) any { return p }),
 					},
 				},
-				"properties": f.Properties,
+				"properties": processProperties(f.Properties),
 			})
 		}
 	}
@@ -196,4 +196,14 @@ func czml(name string, packets ...any) any {
 		},
 		packets...,
 	)
+}
+
+func processProperties(p map[string]any) map[string]any {
+	m := make(map[string]any, len(p))
+	for k, v := range p {
+		if v != nil {
+			m[k] = v
+		}
+	}
+	return m
 }

@@ -99,3 +99,9 @@ func TestGenerateLandmarkImage(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile("test.png", image, 0666))
 }
+
+func TestProcessProperties(t *testing.T) {
+	var m map[string]any
+	_ = json.Unmarshal([]byte(`{"名称":"a","高さ":null}`), &m)
+	assert.Equal(t, map[string]any{"名称": "a"}, processProperties(m))
+}
