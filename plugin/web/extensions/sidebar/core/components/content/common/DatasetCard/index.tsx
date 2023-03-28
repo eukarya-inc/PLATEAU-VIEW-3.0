@@ -168,8 +168,11 @@ const DatasetCard: React.FC<Props> = ({
       };
     };
 
-    readyMVTPosition.current = fetchMetadataJSONForMVT();
-  }, [dataset.dataID]);
+    // Wait until reearth layer is overridden with updated dataset
+    readyMVTPosition.current = new Promise(resolve =>
+      setTimeout(() => fetchMetadataJSONForMVT().then(resolve), 100),
+    );
+  }, [dataset]);
 
   const baseFields: BaseFieldType[] = useMemo(
     () => [

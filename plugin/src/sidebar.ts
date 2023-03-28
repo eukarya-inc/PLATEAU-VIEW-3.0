@@ -360,13 +360,14 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const { dataID } = payload;
     const layerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const layer = reearth.layers.findById(layerID);
+    const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === layerID);
     reearth.ui.postMessage({
       action,
       payload: {
         dataID,
         layer: {
           id: layer.id,
-          data: layer.data,
+          data: { ...layer.data, ...overriddenLayer.data },
         },
       },
     });
