@@ -52,14 +52,6 @@ export const mergeOverrides = (
         ((a as any).userSettings?.updatedAt?.getTime?.() ?? 0) -
         ((b as any).userSettings?.updatedAt?.getTime?.() ?? 0),
     );
-  for (const component of needOrderComponents) {
-    merge(
-      overrides,
-      action === "cleanse"
-        ? cleanseOverrides[component.type]
-        : (component as any).userSettings?.override ?? component.override,
-    );
-  }
 
   for (let i = 0; i < components.length; i++) {
     if ((components[i] as any).userSettings?.updatedAt) {
@@ -89,6 +81,15 @@ export const mergeOverrides = (
       action === "cleanse"
         ? cleanseOverrides[components[i].type]
         : (components[i] as any).userSettings?.override ?? components[i].override,
+    );
+  }
+
+  for (const component of needOrderComponents) {
+    merge(
+      overrides,
+      action === "cleanse"
+        ? cleanseOverrides[component.type]
+        : (component as any).userSettings?.override ?? component.override,
     );
   }
 
