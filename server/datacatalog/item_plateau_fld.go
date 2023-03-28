@@ -28,7 +28,7 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		return river{
 			a:   a,
 			an:  an,
-			dic: c.Dic.Fld(an.FldName),
+			dic: c.Dic.Fld(an.FldName, an.FldCategory),
 			i:   i,
 		}
 	})
@@ -37,7 +37,8 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		if r.dic == nil {
 			return ""
 		}
-		return fmt.Sprintf("%s_%s", r.dic.Description, r.dic.Admin)
+		key := fmt.Sprintf("%s_%s", r.dic.Description, r.dic.Admin)
+		return key
 	})
 
 	type entry struct {

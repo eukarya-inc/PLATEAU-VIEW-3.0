@@ -30,8 +30,17 @@ func (d Dic) WardName(code string) string {
 	return e.Description
 }
 
-func (d Dic) Fld(name string) *DicEntry {
-	return d.findByName("fld", name)
+var fldCatJa = map[string]string{
+	"natl": "国",
+	"pref": "都道府県",
+}
+
+func (d Dic) Fld(name, cat string) *DicEntry {
+	catja := fldCatJa[cat]
+	if catja == "" {
+		return d.findByName("fld", name)
+	}
+	return d.findByNameAndScale("fld", name, catja)
 }
 
 func (d Dic) Tnm(name string) *DicEntry {
@@ -54,6 +63,21 @@ func (d Dic) findByName(key, name string) *DicEntry {
 
 	e, ok := lo.Find(entries, func(e DicEntry) bool {
 		return e.Name == name
+	})
+	if !ok {
+		return nil
+	}
+	return &e
+}
+
+func (d Dic) findByNameAndScale(key, name, admin string) *DicEntry {
+	entries, ok := d[key]
+	if !ok {
+		return nil
+	}
+
+	e, ok := lo.Find(entries, func(e DicEntry) bool {
+		return e.Name == name && e.Admin == admin
 	})
 	if !ok {
 		return nil

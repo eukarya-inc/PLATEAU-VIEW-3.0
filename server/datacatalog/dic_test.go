@@ -17,6 +17,12 @@ func TestDir(t *testing.T) {
 		"fld": []DicEntry{
 			{
 				Name:        "aaa",
+				Admin:       "都道府県",
+				Description: "xxx",
+			},
+			{
+				Name:        "aaa",
+				Admin:       "国",
 				Description: "xxx",
 			},
 		},
@@ -47,10 +53,24 @@ func TestDir(t *testing.T) {
 		Code:        "",
 		Name:        "aaa",
 		Description: "xxx",
-		Admin:       "",
+		Admin:       "都道府県",
 		Scale:       "",
-	}, d.Fld("aaa"))
-	assert.Nil(t, d.Fld("bbb"))
+	}, d.Fld("aaa", "aedrqe"))
+	assert.Equal(t, &DicEntry{
+		Code:        "",
+		Name:        "aaa",
+		Description: "xxx",
+		Admin:       "国",
+		Scale:       "",
+	}, d.Fld("aaa", "natl"))
+	assert.Equal(t, &DicEntry{
+		Code:        "",
+		Name:        "aaa",
+		Description: "xxx",
+		Admin:       "都道府県",
+		Scale:       "",
+	}, d.Fld("aaa", "pref"))
+	assert.Nil(t, d.Fld("bbb", ""))
 
 	assert.Equal(t, &DicEntry{
 		Code:        "",
