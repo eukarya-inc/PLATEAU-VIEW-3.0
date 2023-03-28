@@ -171,6 +171,7 @@ export default ({
               },
             },
           ];
+          datasetToAdd.selectedGroup = getDefaultGroup(defaultTemplate.components);
         }
       }
 

@@ -1,6 +1,7 @@
 import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import { cloneDeep, isEqual, merge } from "lodash";
 
+import { getDefaultGroup } from "../../utils/dataset";
 import { Data, DataCatalogItem, Template } from "../types";
 
 import { cleanseOverrides } from "./content/common/DatasetCard/Field/fieldConstants";
@@ -127,8 +128,7 @@ export const handleDataCatalogProcessing = (
         ...item,
         ...savedData2,
         visible: true,
-        selectedGroup: (savedData2.components?.find(c => c.type === "switchGroup") as any)
-          ?.groups?.[0]?.fieldGroupID,
+        selectedGroup: getDefaultGroup(savedData2.components),
       };
     } else {
       return newItem(item);
