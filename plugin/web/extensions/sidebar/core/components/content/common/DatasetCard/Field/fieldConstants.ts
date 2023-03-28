@@ -25,6 +25,7 @@ export const cleanseOverrides: { [key: string]: any } = {
       clampToGround: true,
     },
   },
+  pointColorGradient: { marker: { pointColor: "white" } },
   pointSize: { marker: { pointSize: 10 } },
   pointColor: { marker: { pointColor: "white" } },
   pointIcon: {

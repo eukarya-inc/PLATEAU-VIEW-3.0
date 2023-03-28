@@ -97,7 +97,13 @@ const PointColorGradient: React.FC<BaseFieldProps<"pointColorGradient">> = ({
     if (isEqual(omit(colorGradient, "override"), omit(value, "override"))) return;
     const timer = setTimeout(() => {
       onUpdate({
-        ...colorGradient,
+        ...value,
+        field: colorGradient.field,
+        min: colorGradient.min,
+        max: colorGradient.max,
+        step: colorGradient.step,
+        startColor: colorGradient.startColor,
+        endColor: colorGradient.endColor,
         override: {
           marker: {
             style: "point",
