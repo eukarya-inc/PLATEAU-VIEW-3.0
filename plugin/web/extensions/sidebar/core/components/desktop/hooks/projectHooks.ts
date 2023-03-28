@@ -160,6 +160,8 @@ export default ({
     (dataset: DataCatalogItem | UserDataItem) => {
       const datasetToAdd = { ...dataset } as DataCatalogItem;
 
+      datasetToAdd.selectedGroup = getDefaultGroup(datasetToAdd.components, fieldTemplates);
+
       if (!dataset.components?.length) {
         const defaultTemplate = fieldTemplates?.find(ft =>
           dataset.type2
@@ -196,12 +198,11 @@ export default ({
         return updatedProject;
       });
 
-      const selectedGroup = getDefaultGroup(datasetToAdd.components);
-
       const activeIDs = getActiveFieldIDs(
         datasetToAdd.components,
-        selectedGroup,
+        datasetToAdd.selectedGroup,
         datasetToAdd.config?.data,
+        fieldTemplates,
       );
 
       const overrides = processOverrides(datasetToAdd, activeIDs);
