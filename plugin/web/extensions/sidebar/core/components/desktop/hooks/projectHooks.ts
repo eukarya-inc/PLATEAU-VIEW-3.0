@@ -91,7 +91,7 @@ export default ({
       if (!activeIDs) return undefined;
       let overrides = undefined;
 
-      const flattenedComponents = flattenComponents(dataset.components);
+      const flattenedComponents = flattenComponents(dataset.components, fieldTemplates);
       const inactiveFields = flattenedComponents
         ?.filter(c => !activeIDs.find(id => id === c.id))
         .map(c => {
@@ -139,7 +139,7 @@ export default ({
 
       return overrides;
     },
-    [cleanseOverride, buildingSearch],
+    [cleanseOverride, fieldTemplates, buildingSearch],
   );
 
   const handleProjectSceneUpdate = useCallback(
