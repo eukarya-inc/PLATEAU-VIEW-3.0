@@ -1,7 +1,7 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
+import { useObservingDataURL } from "../hooks";
 
 import {
   FEATURE_PROPERTY_NAME_RANK_CODE,
@@ -14,10 +14,11 @@ const useHooks = ({
   value,
   dataID,
   onUpdate,
-}: Pick<BaseFieldProps<"floodFilter">, "value" | "dataID" | "onUpdate">) => {
+}: Pick<BaseFieldProps<"floodFilter">, "value" | "dataID" | "onUpdate" | "configData">) => {
   const [options, setOptions] = useState<FilteringField>({
     value: value.userSettings?.rank,
   });
+  const url = useObservingDataURL(dataID);
 
   const handleUpdate = useCallback(
     (property: any) => {
@@ -68,34 +69,21 @@ const useHooks = ({
       });
       setOptions(tempOptions);
     };
-    const waitReturnedPostMsg = async (e: MessageEvent<any>) => {
-      if (e.source !== parent) return;
-      if (e.data.action === "findTileset") {
-        const layer = e.data.payload.layer;
-        const url = layer?.data?.url;
-        if (!url) {
-          return;
-        }
-        const data = await (async () => {
-          try {
-            return await fetch(url).then(r => r.json());
-          } catch (e) {
-            console.error(e);
-          }
-        })();
-        handleFilteringFields(data);
-
-        removeEventListener("message", waitReturnedPostMsg);
+    const fetchTileset = async () => {
+      if (!url) {
+        return;
       }
+      const data = await (async () => {
+        try {
+          return await fetch(url).then(r => r.json());
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+      handleFilteringFields(data);
     };
-    addEventListener("message", waitReturnedPostMsg);
-    postMsg({
-      action: "findTileset",
-      payload: {
-        dataID,
-      },
-    });
-  }, [dataID]);
+    fetchTileset();
+  }, [dataID, url]);
 
   useFloodFilter({ options, dataID, onUpdate: handleUpdate });
 

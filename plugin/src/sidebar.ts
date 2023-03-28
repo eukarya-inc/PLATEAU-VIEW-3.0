@@ -501,13 +501,23 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const { dataID } = payload;
     const tilesetLayerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const tilesetLayer = reearth.layers.findById(tilesetLayerID);
+    const overriddenTilesetLayer = reearth.layers.overridden.find(
+      (l: any) => l.id === tilesetLayerID,
+    );
     const postMsgResp = {
       action,
       payload: {
+        dataID,
         layer: {
           id: tilesetLayer.id,
-          data: tilesetLayer.data,
-          ["3dtiles"]: tilesetLayer?.["3dtiles"],
+          data: {
+            ...(tilesetLayer?.data ?? {}),
+            ...(overriddenTilesetLayer?.data ?? {}),
+          },
+          ["3dtiles"]: {
+            ...(tilesetLayer?.["3dtiles"] ?? {}),
+            ...(overriddenTilesetLayer?.["3dtiles"] ?? {}),
+          },
         },
       },
     };

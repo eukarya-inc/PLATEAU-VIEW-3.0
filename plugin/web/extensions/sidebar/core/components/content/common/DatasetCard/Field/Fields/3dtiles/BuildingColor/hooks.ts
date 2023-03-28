@@ -1,8 +1,8 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
 import { Radio } from "@web/sharedComponents";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
+import { useObservingDataURL } from "../hooks";
 
 import { INDEPENDENT_COLOR_TYPE } from "./constants";
 import { useBuildingColor } from "./useBuildingColor";
@@ -29,15 +29,17 @@ const useHooks = ({
   const [independentColorTypes, setIndependentColorTypes] = useState<RadioItem[]>([]);
   const [floods, setFloods] = useState<RadioItem[]>([]);
   const [initialized, setInitialized] = useState(false);
+  const url = useObservingDataURL(dataID);
 
   const handleUpdate = useCallback(
     (property: any) => {
+      if (!initialized) return;
       onUpdate({
         ...value,
         userSettings: { ...options, updatedAt: new Date(), override: { "3dtiles": property } },
       });
     },
-    [onUpdate, options, value],
+    [onUpdate, options, value, initialized],
   );
 
   const handleUpdateOptions = useCallback(
@@ -97,36 +99,26 @@ const useHooks = ({
       });
       setFloods(tempFloods);
     };
-    const waitReturnedPostMsg = async (e: MessageEvent<any>) => {
-      if (e.source !== parent) return;
-      if (e.data.action === "findTileset") {
-        const layer = e.data.payload.layer;
-        const url = layer?.data?.url;
-        if (!url) {
-          return;
-        }
-        const data = await (async () => {
-          try {
-            return await fetch(url).then(r => r.json());
-          } catch (e) {
-            console.error(e);
-          }
-        })();
-        handleIndependentColorTypes(data);
-        handleFloods(data);
+    const fetchTileset = async () => {
+      setInitialized(true);
 
-        removeEventListener("message", waitReturnedPostMsg);
-        setInitialized(true);
+      if (!url) {
+        return;
       }
+      const data = await (async () => {
+        try {
+          return await fetch(url).then(r => r.json());
+        } catch (e) {
+          console.error(e);
+        }
+      })();
+      handleIndependentColorTypes(data);
+      handleFloods(data);
+
+      setInitialized(true);
     };
-    addEventListener("message", waitReturnedPostMsg);
-    postMsg({
-      action: "findTileset",
-      payload: {
-        dataID,
-      },
-    });
-  }, [dataID]);
+    fetchTileset();
+  }, [dataID, url]);
 
   useBuildingColor({ options, dataID, floods, initialized, onUpdate: handleUpdate });
 
