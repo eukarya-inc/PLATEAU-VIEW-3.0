@@ -45,4 +45,4 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           name: built-plugin
-          path: ./dist/plateau-plugin-*.zip
+          path: dist/plateau-plugin-*.zip
