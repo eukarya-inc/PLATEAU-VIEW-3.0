@@ -100,6 +100,16 @@ func sortRivers(rivers []river) {
 		if rivers[b].dic == nil {
 			return true
 		}
+		s1, s2 := rivers[a].dic.Scale, rivers[b].dic.Scale
+		if s1 == keikakukibo && s2 == souteisaidaikibo {
+			return true
+		}
+		if s1 == souteisaidaikibo && s2 == keikakukibo {
+			return false
+		}
 		return strings.Compare(rivers[a].dic.Scale, rivers[b].dic.Scale) < 0
 	})
 }
+
+const keikakukibo = "計画規模"
+const souteisaidaikibo = "想定最大規模"
