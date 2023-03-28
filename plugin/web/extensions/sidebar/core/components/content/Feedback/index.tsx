@@ -7,7 +7,12 @@ import useHooks from "./hooks";
 
 const plateauWebsiteUrl = "https://www.mlit.go.jp/plateau/";
 
-const Feedback: React.FC<{ backendURL?: string }> = ({ backendURL }) => {
+type Props = {
+  backendURL?: string;
+  isMobile?: boolean;
+};
+
+const Feedback: React.FC<Props> = ({ backendURL, isMobile }) => {
   const [form] = Form.useForm();
   const addScreenshot: boolean = Form.useWatch("screenshot", form);
   const [messageApi, contextHolder] = message.useMessage();
@@ -20,7 +25,7 @@ const Feedback: React.FC<{ backendURL?: string }> = ({ backendURL }) => {
   });
 
   return (
-    <CommonPage>
+    <CommonPage isMobile={isMobile}>
       <>
         {contextHolder}
         <Paragraph>
