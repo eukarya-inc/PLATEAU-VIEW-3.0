@@ -7,22 +7,27 @@ import { Data, DataCatalogItem, Template } from "../types";
 import { cleanseOverrides } from "./content/common/DatasetCard/Field/fieldConstants";
 import { FieldComponent } from "./content/common/DatasetCard/Field/Fields/types";
 
+export const prepareComponentsToSave = (components?: FieldComponent[], templates?: Template[]) => {
+  if (!components) return;
+  return components?.map((c: any) => {
+    const newComp = Object.assign({}, c);
+    if (newComp.type === "template" && newComp.components) {
+      newComp.components =
+        templates
+          ?.find(t => t.id === newComp.templateID)
+          ?.components?.map(c => {
+            return { ...c, userSettings: undefined };
+          }) ?? [];
+    }
+    return { ...newComp, userSettings: undefined };
+  });
+};
+
 export const convertToData = (item: DataCatalogItem, templates?: Template[]): Data => {
   return {
     dataID: item.dataID,
     public: item.public,
-    components: item.components?.map((c: any) => {
-      const newComp = Object.assign({}, c);
-      if (newComp.type === "template" && newComp.components) {
-        newComp.components =
-          templates
-            ?.find(t => t.id === newComp.templateID)
-            ?.components?.map(c => {
-              return { ...c, userSettings: undefined };
-            }) ?? [];
-      }
-      return { ...newComp, userSettings: undefined };
-    }),
+    components: prepareComponentsToSave(item.components, templates),
   };
 };
 
