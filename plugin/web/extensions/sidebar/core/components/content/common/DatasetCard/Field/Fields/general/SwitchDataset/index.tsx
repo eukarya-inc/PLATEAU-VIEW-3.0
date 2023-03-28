@@ -81,6 +81,8 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
         override: {
           data: {
             url: selectedDataset?.url,
+            type: selectedDataset?.type,
+            layers: selectedDataset?.layer,
             time: {
               updateClockOnLoad: true,
             },
