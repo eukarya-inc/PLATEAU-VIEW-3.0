@@ -68,6 +68,9 @@ export const getTransparencyExpression = (
     }
 
     const conditions = overriddenColor.expression.conditions.map(([k, v]: [string, string]) => {
+      if (k.includes("${id}")) {
+        return [k, "rgba(255, 0, 0, 1)"];
+      }
       const rgba = getRGBAFromString(v);
       if (!rgba) {
         return [k, defaultRGBA];
