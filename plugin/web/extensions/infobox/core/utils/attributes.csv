@@ -77,6 +77,7 @@ uro:buildingHeight,建築物の高さ
 uro:eaveHeight,軒の高さ
 uro:note,備考
 uro:surveyYear,調査年
+uro:surfeyYear,調査年
 uro:LargeCustomerFacilityAttribute,大規模小売店舗等の立地状況
 uro:class,分類
 uro:name,施設名称
