@@ -427,6 +427,12 @@ export const makeSelectedFloodCondition = ({
           useOwnData,
           "rgba(237, 87, 181, 1)",
         ),
+        ...createFloodCondition(
+          featurePropertyName,
+          { rank: 6, scale: floodScale },
+          useOwnData,
+          "rgba(209, 82, 209, 1)",
+        ),
         [DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color],
       ]
     : [[DEFAULT_CONDITION.condition, DEFAULT_CONDITION.color]];
