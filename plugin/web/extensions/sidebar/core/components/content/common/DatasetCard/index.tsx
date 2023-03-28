@@ -198,7 +198,7 @@ const DatasetCard: React.FC<Props> = ({
         icon: "about",
         onClick: () => {
           if (isMobile) {
-            postMsg({ action: "mobileCatalogOpen", payload: dataset.dataID });
+            postMsg({ action: "mobileCatalogOpen", payload: dataset });
           } else {
             postMsg({ action: "catalogModalOpen" });
           }

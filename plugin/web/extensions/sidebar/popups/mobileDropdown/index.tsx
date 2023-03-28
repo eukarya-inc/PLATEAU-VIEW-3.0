@@ -1,6 +1,6 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Tab } from "../../core/components/mobile";
 import { defaultProject } from "../../core/components/mobile/hooks/projectHooks";
@@ -22,7 +22,7 @@ const MobileDropdown: React.FC = () => {
   const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
 
   const [catalog, setCatalog] = useState<DataCatalogItem[]>();
-  const selectedDataID = useRef<string>();
+  const [selectedDataset, setSelectedDataset] = useState<DataCatalogItem>();
 
   const [reearthURL, setReearthURL] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
@@ -102,7 +102,7 @@ const MobileDropdown: React.FC = () => {
         } else if (e.data.action === "initMobileCatalog") {
           if (e.data.payload) setCatalog(e.data.payload);
         } else if (e.data.action === "mobileCatalogOpen") {
-          selectedDataID.current = e.data.payload;
+          setSelectedDataset(e.data.payload);
           changeTab("catalog");
         }
       }
@@ -129,7 +129,8 @@ const MobileDropdown: React.FC = () => {
               searchTerm={searchTerm}
               expandedFolders={expandedFolders}
               catalog={catalog}
-              selectedDataID={selectedDataID}
+              selectedDataset={selectedDataset}
+              setSelectedDataset={setSelectedDataset}
               setExpandedFolders={setExpandedFolders}
               onSearch={handleSearch}
               onDatasetAdd={handleDatasetAdd}

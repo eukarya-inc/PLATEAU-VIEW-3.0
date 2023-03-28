@@ -17,7 +17,8 @@ type Props = {
     name?: string | undefined;
   }[];
   catalog?: DataCatalogItem[];
-  selectedDataID?: React.MutableRefObject<string | undefined>;
+  selectedDataset?: DataCatalogItem;
+  setSelectedDataset: React.Dispatch<React.SetStateAction<DataCatalogItem | undefined>>;
   setExpandedFolders?: React.Dispatch<
     React.SetStateAction<
       {
@@ -36,19 +37,22 @@ const Catalog: React.FC<Props> = ({
   searchTerm,
   expandedFolders,
   catalog,
-  selectedDataID,
+  selectedDataset,
+  setSelectedDataset,
   setExpandedFolders,
   onSearch,
   onDatasetAdd,
 }) => {
-  const [selectedDataset, setDataset] = useState<DataCatalogItem>();
   const [filter, setFilter] = useState<GroupBy>("city");
   const [page, setPage] = useState<"catalog" | "details">("catalog");
 
-  const handleOpenDetails = useCallback((data?: DataCatalogItem) => {
-    setDataset(data);
-    setPage("details");
-  }, []);
+  const handleOpenDetails = useCallback(
+    (data?: DataCatalogItem) => {
+      setSelectedDataset(data);
+      setPage("details");
+    },
+    [setSelectedDataset],
+  );
 
   const handleFilter = useCallback((filter: GroupBy) => {
     setFilter(filter);
@@ -61,21 +65,20 @@ const Catalog: React.FC<Props> = ({
     [addedDatasetDataIDs],
   );
 
+  const handleBack = useCallback(() => {
+    setPage("catalog");
+    setSelectedDataset(undefined);
+  }, [setPage, setSelectedDataset]);
+
   useEffect(() => {
     postMsg({ action: "extendPopup" });
   }, []);
 
   useEffect(() => {
-    if (selectedDataID?.current) {
-      const selectedDataset = catalog?.find(c => c.dataID === selectedDataID.current);
-      handleOpenDetails(selectedDataset);
-      selectedDataID.current = undefined;
+    if (selectedDataset && page !== "details") {
+      setPage("details");
     }
-  }, [selectedDataID, catalog, handleOpenDetails]);
-
-  useEffect(() => {
-    console.log("SD", selectedDataset);
-  }, [selectedDataset]);
+  }, [selectedDataset, page, setPage, setSelectedDataset]);
 
   return (
     <Wrapper>
@@ -103,7 +106,7 @@ const Catalog: React.FC<Props> = ({
       )}
       {page === "details" && (
         <>
-          <PopupItem onBack={() => setPage("catalog")}>
+          <PopupItem onBack={handleBack}>
             <Title>データ詳細</Title>
           </PopupItem>
           <DatasetDetails
