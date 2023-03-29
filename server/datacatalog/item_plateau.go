@@ -153,15 +153,6 @@ func (i PlateauItem) TnmItems(c PlateauIntermediateItem) []*DataCatalogItem {
 	})
 }
 
-func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
-	if len(i.Brid) == 0 {
-		return nil
-	}
-
-	a := i.Brid[0]
-	return c.DataCatalogItem("橋梁モデル", AssetNameFrom(a.URL), a.URL, i.DescriptionBrid, nil, false)
-}
-
 func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 	c := i.IntermediateItem()
 	if c.ID == "" {
