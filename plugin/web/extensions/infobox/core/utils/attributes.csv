@@ -16,7 +16,8 @@ bldg:roofType,屋根の種別
 bldg:measuredHeight,計測高さ
 bldg:storeysAboveGround,地上階数
 bldg:storeysBelowGround,地下階数
-bldg:storeyHeightsAboveGround,地下階高さリスト
+bldg:storeyHeightsAboveGround,地上階高さ
+bldg:storeyHeightsBelowGround,地下階高さ
 bldg:lod0FootPrint,lod0接地面
 bldg:lod0RoofEdge,lod0屋根面
 bldg:lod1Solid,lod1立体
