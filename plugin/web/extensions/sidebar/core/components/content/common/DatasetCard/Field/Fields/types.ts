@@ -4,6 +4,7 @@ import { ReearthApi } from "@web/extensions/sidebar/types";
 export const generalFieldName = {
   idealZoom: "カメラ",
   legend: "凡例",
+  legendGradient: "凡例（グラデーション)",
   realtime: "リアルタイム",
   story: "ストーリー",
   timeline: "タイムライン",
@@ -65,6 +66,7 @@ export const fieldName = {
 export type FieldComponent =
   | IdealZoom
   | Legend
+  | LegendGradient
   | StyleCode
   | ButtonLink
   | Description
@@ -134,6 +136,15 @@ export type LegendItem = {
 export type Legend = FieldBase<"legend"> & {
   style: LegendStyleType;
   items?: LegendItem[];
+};
+
+type LegendGradient = FieldBase<"legendGradient"> & {
+  style: Omit<LegendStyleType, "icon">;
+  min?: number;
+  max?: number;
+  startColor?: string;
+  endColor?: string;
+  step?: number;
 };
 
 type CurrentTime = FieldBase<"currentTime"> & {
@@ -395,6 +406,7 @@ export type Fields = {
   // general
   idealZoom: IdealZoom;
   legend: Legend;
+  legendGradient: LegendGradient;
   description: Description;
   styleCode: StyleCode;
   switchGroup: SwitchGroup;

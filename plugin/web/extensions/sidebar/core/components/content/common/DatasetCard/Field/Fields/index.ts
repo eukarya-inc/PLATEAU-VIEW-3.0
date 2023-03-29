@@ -15,6 +15,7 @@ import HeightReference from "./general/HeightReference";
 import IdealZoom from "./general/IdealZoom";
 import InfoboxStyle from "./general/InfoboxStyle";
 import Legend from "./general/Legend";
+import LegendGradient from "./general/LegendGradient";
 import Realtime from "./general/Realtime";
 import Story from "./general/Story";
 import StyleCode from "./general/StyleCode";
@@ -47,6 +48,7 @@ const fields: Fields<FieldComponent> = {
   // general
   idealZoom: { Component: IdealZoom, hasUI: false },
   legend: { Component: Legend, hasUI: true },
+  legendGradient: { Component: LegendGradient, hasUI: true },
   description: { Component: Description, hasUI: true },
   buttonLink: { Component: ButtonLink, hasUI: true },
   story: { Component: Story, hasUI: true },
