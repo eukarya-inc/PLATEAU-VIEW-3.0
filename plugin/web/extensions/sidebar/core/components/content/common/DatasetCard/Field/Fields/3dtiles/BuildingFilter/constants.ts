@@ -43,8 +43,8 @@ export const FILTERING_FIELD_DEFINITION: Record<
     label: "地上階数で絞り込み",
     featurePropertyName: "地上階数",
     order: 2,
-    value: [1, MAX_ABOVEGROUND_FLOOR],
-    min: 1,
+    value: [0, MAX_ABOVEGROUND_FLOOR],
+    min: 0,
     max: MAX_ABOVEGROUND_FLOOR,
   },
   basementFloor: {
