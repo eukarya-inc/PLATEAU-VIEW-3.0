@@ -20,7 +20,32 @@ func TestWebhook(t *testing.T) {
 	httpmock.RegisterResponder("GET", borderURL, httpmock.NewStringResponder(http.StatusOK, border))
 	c := &cmsMock{}
 
+	// case1: skip conv
 	err := webhookHandler(context.Background(), &cmswebhook.Payload{
+		Type: cmswebhook.EventItemUpdate,
+		ItemData: &cmswebhook.ItemData{
+			Item: &cms.Item{
+				ID: "xxx",
+				Fields: Item{
+					Type:       "行政界",
+					DataFormat: "GeoJSON",
+					Data:       "aaa",
+					DataConv:   "変換しない",
+				}.Fields(),
+			},
+			Model: &cms.Model{Key: "dataset"},
+			Schema: &cms.Schema{
+				ProjectID: "project",
+			},
+		},
+		Operator: cmswebhook.Operator{User: &cmswebhook.User{}},
+	}, Config{}, c)
+
+	assert.NoError(t, err)
+	assert.Nil(t, c.i)
+
+	// case2: normal
+	err = webhookHandler(context.Background(), &cmswebhook.Payload{
 		Type: cmswebhook.EventItemUpdate,
 		ItemData: &cmswebhook.ItemData{
 			Item: &cms.Item{

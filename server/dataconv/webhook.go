@@ -31,6 +31,7 @@ type Item struct {
 	Type       string `json:"type" cms:"type"`
 	DataFormat string `json:"data_format" cms:"data_format,select"`
 	Data       string `json:"data" cms:"data,asset"`
+	DataConv   string `json:"data_conv" cms:"data_conv,select"`
 }
 
 func (i Item) Fields() []cms.Field {
@@ -79,7 +80,7 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 	w.ItemData.Item.Unmarshal(&i)
 	landmark := strings.Contains(i.Type, "ランドマーク") || strings.Contains(i.Type, "鉄道駅")
 	border := strings.Contains(i.Type, "行政界")
-	if i.DataFormat != "GeoJSON" || i.Data == "" || (!landmark && !border) {
+	if i.DataConv == "変換しない" || i.Data == "" || (!landmark && !border) {
 		log.Debugf("dataconv: skipped: invalid item: %#v", i)
 		return nil
 	}
