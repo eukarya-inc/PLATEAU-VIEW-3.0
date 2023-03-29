@@ -361,16 +361,29 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     const layerID = addedDatasets.find(a => a[0] === dataID)?.[2];
     const layer = reearth.layers.findById(layerID);
     const overriddenLayer = reearth.layers.overridden.find((l: any) => l.id === layerID);
-    reearth.ui.postMessage({
-      action,
-      payload: {
-        dataID,
-        layer: {
-          id: layer.id,
-          data: { ...layer.data, ...overriddenLayer.data },
+    if (reearth.viewport.isMobile) {
+      reearth.popup.postMessage({
+        action,
+        payload: {
+          dataID,
+          layer: {
+            id: layer?.id,
+            data: { ...layer?.data, ...overriddenLayer?.data },
+          },
         },
-      },
-    });
+      });
+    } else {
+      reearth.ui.postMessage({
+        action,
+        payload: {
+          dataID,
+          layer: {
+            id: layer?.id,
+            data: { ...layer?.data, ...overriddenLayer?.data },
+          },
+        },
+      });
+    }
   } else if (action === "getOverriddenLayerByDataID") {
     const { dataID } = payload;
     const layerID = addedDatasets.find(l => l[0] === dataID)?.[2];
