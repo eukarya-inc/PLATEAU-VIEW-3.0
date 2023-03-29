@@ -1,3 +1,5 @@
+import floodsImage from "./floods.webp";
+
 export const INDEPENDENT_COLOR_TYPE: Record<
   string,
   {
@@ -57,5 +59,5 @@ export const LAND_SLIDE_RISK_FIELD = {
 };
 
 export const LEGEND_IMAGES: Record<"floods", string> = {
-  floods: "https://d2jfi34fqvxlsc.cloudfront.net/main/legends/waterfloodrank/2.png",
+  floods: floodsImage,
 };
