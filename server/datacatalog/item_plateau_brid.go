@@ -9,18 +9,22 @@ import (
 	"github.com/samber/lo"
 )
 
+const bridModelName = "橋梁モデル"
+
 func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
 	if len(i.Brid) == 0 {
 		return nil
 	}
 
-	data := lo.Map(i.Brid, func(a *cms.PublicAsset, i int) DataCatalogItemConfigItem {
+	data := lo.Map(i.Brid, func(a *cms.PublicAsset, j int) DataCatalogItemConfigItem {
 		an := AssetNameFrom(a.URL)
 		name := ""
 		if an.LOD != "" {
 			name = fmt.Sprintf("LOD%s", an.LOD)
+		} else if len(i.Brid) == 1 {
+			name = bridModelName
 		} else {
-			name = fmt.Sprintf("橋梁%d", i)
+			name = fmt.Sprintf("%s%d", bridModelName, j+1)
 		}
 
 		return DataCatalogItemConfigItem{
@@ -34,7 +38,7 @@ func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
 	})
 
 	an := AssetNameFrom(i.Brid[0].URL)
-	dci := c.DataCatalogItem("橋梁モデル", an, i.Brid[0].URL, i.DescriptionBrid, nil, false)
+	dci := c.DataCatalogItem(bridModelName, an, i.Brid[0].URL, i.DescriptionBrid, nil, false)
 	dci.Config = DataCatalogItemConfig{
 		Data: data,
 	}
