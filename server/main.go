@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"reflect"
 	"runtime"
 	"runtime/debug"
@@ -47,6 +49,8 @@ func main() {
 	e.GET("/ping", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "pong")
 	})
+
+	e.GET("/proxy/*", proxyHandlerFunc)
 
 	services := lo.Must(Services(conf))
 	serviceNames := lo.Map(services, func(s *Service, _ int) string { return s.Name })
@@ -116,6 +120,59 @@ func errorMessage(err error, log func(string, ...interface{})) (int, string) {
 
 	return code, msg
 }
+
+func proxyHandlerFunc(c echo.Context) error {
+    // Extract the target URL from the request path
+    targetPath := c.Param("*")
+    targetURL, err := url.Parse(targetPath)
+    if err != nil {
+        return c.JSON(http.StatusBadRequest, map[string]string{
+            "error": "Invalid target URL",
+        })
+    }
+
+    // Create a new middleware.ProxyConfig with the target URL
+    proxyConfig := middleware.ProxyConfig{
+        Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
+            {
+                URL: targetURL,
+            },
+        }),
+        ModifyResponse: func(resp *http.Response) error {
+            // Copy the response headers from the target URL to the client response
+            for k, vv := range resp.Header {
+                for _, v := range vv {
+                    c.Response().Header().Add(k, v)
+                }
+            }
+
+            // Set the response status code
+            c.Response().WriteHeader(resp.StatusCode)
+
+            // Copy the response body from the target URL to the client response
+            _, err := io.Copy(c.Response().Writer, resp.Body)
+            if err != nil {
+                return err
+            }
+
+            return nil
+        },
+    }
+
+    // Create a new middleware.ProxyWithConfig() middleware with the target URL
+    proxyMiddleware := middleware.ProxyWithConfig(proxyConfig)(func(c echo.Context) error {
+        return nil
+    })
+
+    // Invoke the proxy middleware to handle the request and return the response
+    err = proxyMiddleware(c)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
 
 type customValidator struct {
 	validator *validator.Validate
