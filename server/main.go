@@ -131,13 +131,23 @@ func proxyHandlerFunc(c echo.Context) error {
         })
     }
 
-    // Create a new middleware.ProxyConfig with the target URL
+    // Create a new http.Request object with the target URL and Host header
+    req, err := http.NewRequest(c.Request().Method, targetURL.String(), c.Request().Body)
+    if err != nil {
+        return err
+    }
+    req.Header.Set("Host", targetURL.Host)
+
+    // Define the ProxyConfig object with custom Rewrite rules and ModifyResponse function
     proxyConfig := middleware.ProxyConfig{
         Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
             {
-                URL: targetURL,
+                URL: req.URL,
             },
         }),
+        Rewrite: map[string]string{
+            "^/proxy/.*": "/$1",
+        },
         ModifyResponse: func(resp *http.Response) error {
             // Copy the response headers from the target URL to the client response
             for k, vv := range resp.Header {
@@ -165,14 +175,12 @@ func proxyHandlerFunc(c echo.Context) error {
     })
 
     // Invoke the proxy middleware to handle the request and return the response
-    err = proxyMiddleware(c)
-    if err != nil {
+    if err := proxyMiddleware(c); err != nil {
         return err
     }
 
     return nil
 }
-
 
 type customValidator struct {
 	validator *validator.Validate
