@@ -13,6 +13,9 @@ import (
 	"github.com/samber/lo"
 )
 
+const folder = "フォルダ"
+const folderEn = "folder"
+
 var usecaseTypes = map[string]string{
 	"公園":     "park",
 	"避難施設":   "shelter",
@@ -45,6 +48,36 @@ type UsecaseItem struct {
 var reReiwa = regexp.MustCompile(`令和([0-9]+?)年度`)
 
 func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
+	pref, prefCodeInt := normalizePref(i.Prefecture)
+	prefCode := jpareacode.FormatPrefectureCode(prefCodeInt)
+
+	var city, ward string
+	if i.WardName != "" {
+		city = i.CityName
+		ward = i.WardName
+	} else {
+		city, ward, _ = strings.Cut(i.CityName, "/")
+	}
+
+	cCode := cityCode("", city, prefCodeInt)
+	wCode := cityCode("", ward, prefCodeInt)
+
+	if i.DataFormat == folder {
+		return []DataCatalogItem{{
+			ID:          i.ID,
+			Name:        i.Name,
+			Type:        folder,
+			TypeEn:      folderEn,
+			Pref:        pref,
+			PrefCode:    prefCode,
+			City:        city,
+			CityCode:    cCode,
+			Ward:        ward,
+			WardCode:    wCode,
+			Description: i.Description,
+		}}
+	}
+
 	var c any
 	_ = json.Unmarshal([]byte(i.Config), &c)
 
@@ -76,14 +109,6 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		layers = lo.Filter(util.Map(strings.Split(i.DataLayers, ","), strings.TrimSpace), func(s string, _ int) bool { return s != "" })
 	}
 
-	var city, ward string
-	if i.WardName != "" {
-		city = i.CityName
-		ward = i.WardName
-	} else {
-		city, ward, _ = strings.Cut(i.CityName, "/")
-	}
-
 	name := i.Name
 	if t != "" && t != "ユースケース" {
 		cityOrWard := city
@@ -93,19 +118,17 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		name = fmt.Sprintf("%s（%s）", t, cityOrWard)
 	}
 
-	pref, prefCode := normalizePref(i.Prefecture)
-
 	return []DataCatalogItem{{
 		ID:          i.ID,
 		Name:        name,
 		Type:        t,
 		TypeEn:      usecaseTypes[i.Type],
 		Pref:        pref,
-		PrefCode:    jpareacode.FormatPrefectureCode(prefCode),
+		PrefCode:    prefCode,
 		City:        city,
-		CityCode:    cityCode("", city, prefCode),
+		CityCode:    cCode,
 		Ward:        ward,
-		WardCode:    cityCode("", ward, prefCode),
+		WardCode:    wCode,
 		Format:      f,
 		URL:         assetURLFromFormat(u, f),
 		Description: i.Description,

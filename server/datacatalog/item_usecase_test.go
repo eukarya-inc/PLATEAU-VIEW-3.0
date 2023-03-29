@@ -43,6 +43,7 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		Config:      `{"a":"b"}`,
 		Order:       lo.ToPtr(100),
 	}.DataCatalogs())
+
 	assert.Equal(t, []DataCatalogItem{{
 		ID:   "id",
 		URL:  "url",
@@ -58,5 +59,25 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 			URL: "url",
 		},
 		Year: "令和4年度",
+	}.DataCatalogs())
+
+	assert.Equal(t, []DataCatalogItem{{
+		ID:       "id",
+		Type:     "フォルダ",
+		TypeEn:   "folder",
+		Name:     "name",
+		Pref:     "大阪府",
+		PrefCode: "27",
+		City:     "大阪市",
+		CityCode: "27100",
+		Ward:     "北区",
+		WardCode: "27146",
+		Year:     0,
+	}}, UsecaseItem{
+		ID:         "id",
+		Name:       "name",
+		Prefecture: "大阪府",
+		CityName:   "大阪市/北区",
+		DataFormat: "フォルダ",
 	}.DataCatalogs())
 }
