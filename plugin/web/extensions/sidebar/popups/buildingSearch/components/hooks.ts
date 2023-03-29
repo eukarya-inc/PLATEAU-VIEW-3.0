@@ -9,7 +9,6 @@ import type {
   Condition,
   Result,
   Viewport,
-  RawDatasetData,
   IndexData,
   SearchIndex,
   SearchResults,
@@ -308,8 +307,16 @@ export default () => {
     }
   }, [results]);
 
-  const initDatasetData = useCallback(
-    (rawDatasetData: RawDatasetData) => {
+  const handleFillData = useCallback(
+    ({ viewport, data: rawDatasetData }: InitData) => {
+      setIsMobile(viewport.isMobile);
+      setSizes({
+        ...sizes,
+        ...(viewport.isMobile
+          ? { mobile: { width: viewport.width * 0.9, height: sizes.mobile.height } }
+          : {}),
+      });
+      setMinimized(false);
       setResults([]);
       setSelected([]);
       setActiveTab("condition");
@@ -383,51 +390,28 @@ export default () => {
         })();
       }
     },
-    [loadResultsData],
+    [loadResultsData, sizes],
   );
 
   const popupClose = useCallback(() => {
     postMsg({ action: "popupClose" });
   }, []);
 
-  const onInit = useCallback(
-    (initData: InitData | undefined) => {
-      if (!initData) return;
-      if (initData.viewport.isMobile) {
-        setIsMobile(true);
-        setSizes({
-          ...sizes,
-          mobile: { width: initData.viewport.width * 0.9, height: sizes.mobile.height },
-        });
-      }
-      setMinimized(false);
-      initDatasetData((window as any).buildingSearchInit?.data);
-    },
-    [initDatasetData, sizes],
-  );
-
   useEffect(() => {
     document.documentElement.style.setProperty("--theme-color", "#00BEBE");
-    onInit((window as any).buildingSearchInit);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    postMsg({ action: "initPopup", payload: { type: "buildingSearch" } });
   }, []);
 
   const onMessage = useCallback(
     (e: MessageEvent<any>) => {
       if (e.source !== parent) return;
-      switch (e.data.type) {
-        case "resize":
-          handleResize(e.data.payload);
-          break;
-        case "buildingSearchInit":
-          onInit(e.data.payload);
-          break;
-        default:
-          break;
+      if (e.data.payload?.type === "buildingSearchData") {
+        handleFillData(e.data.payload);
+      } else if (e.data.payload?.type === "resize") {
+        handleResize(e.data.payload);
       }
     },
-    [handleResize, onInit],
+    [handleFillData, handleResize],
   );
 
   useEffect(() => {

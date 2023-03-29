@@ -20,11 +20,3 @@
   <div class="root" id="root"></div>
 </body>
 <script type="module" src="./main.tsx"></script>
-<script>
-  window.addEventListener("message", function (e) {
-    if (e.source !== parent) return;
-    if (e.data.type === 'buildingSearchInit'){
-      window.buildingSearchInit = e.data.payload;
-    }
-  });
-</script>
