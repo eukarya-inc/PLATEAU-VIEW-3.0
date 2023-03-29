@@ -109,7 +109,7 @@ func (i PlateauItem) UrfItems(c PlateauIntermediateItem) []*DataCatalogItem {
 
 	return lo.Map(i.Urf, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
 		an := AssetNameFrom(a.URL)
-		return c.DataCatalogItem("都市計画決定情報モデル", an, a.URL, descFromAsset(a, i.DescriptionUrf), []string{an.UrfFeatureType}, false)
+		return c.DataCatalogItem("都市計画決定情報モデル", an, a.URL, descFromAsset(a, i.DescriptionUrf), urfLayers(an.UrfFeatureType), false)
 	})
 }
 
@@ -393,4 +393,11 @@ func htdTnmIfldName(t, cityName, raw string, e *DicEntry) string {
 		return raw
 	}
 	return fmt.Sprintf("%s %s（%s）", t, e.Description, cityName)
+}
+
+func urfLayers(ty string) []string {
+	if ty == "WaterWay" {
+		ty = "Waterway"
+	}
+	return []string{ty}
 }
