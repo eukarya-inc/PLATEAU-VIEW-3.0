@@ -45,7 +45,7 @@ type PlateauItem struct {
 	DescriptionUrf  []string           `json:"description_urf"`
 	DescriptionFld  []string           `json:"description_fld"`
 	DescriptionHtd  []string           `json:"description_htd"`
-	DescriptionLfld []string           `json:"description_lfld"`
+	DescriptionIfld []string           `json:"description_ifld"`
 	DescriptionTnm  []string           `json:"description_tnm"`
 	DescriptionBrid string             `json:"description_brid"`
 	Bldg            []*cms.PublicAsset `json:"bldg"`
@@ -131,9 +131,10 @@ func (i PlateauItem) IfldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		return nil
 	}
 
-	return lo.Map(i.Htd, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
+	return lo.Map(i.Ifld, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
 		an := AssetNameFrom(a.URL)
-		dci := c.DataCatalogItem("内水浸水想定区域モデル", an, a.URL, descFromAsset(a, i.DescriptionHtd), nil, false)
+		desc := descFromAsset(a, i.DescriptionIfld)
+		dci := c.DataCatalogItem("内水浸水想定区域モデル", an, a.URL, desc, nil, false)
 		dci.Name = htdTnmIfldName("内水浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Ifld(an.FldName))
 		return dci
 	})
