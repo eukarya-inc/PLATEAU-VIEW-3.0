@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp/ckan"
@@ -331,12 +332,23 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c *Catalog,
 }
 
 func (s *Services) findPackage(ctx context.Context, cityCode, cityName string, year int) (_ *ckan.Package, n string, err error) {
-	datasetName := datasetName(cityCode, cityName, year)
-	p, _ := s.Ckan.ShowPackage(ctx, datasetName)
+	// pattern1 -shi
+	name := datasetName(cityCode, cityName, year)
+	p, _ := s.Ckan.ShowPackage(ctx, name)
 	if p.Name != "" {
 		return &p, p.Name, nil
 	}
-	return nil, datasetName, nil
+
+	// pattern2 -city
+	name2 := datasetName(cityCode, strings.Replace(cityName, "-shi", "-city", 1), year)
+	if name != name2 {
+		p, _ = s.Ckan.ShowPackage(ctx, name2)
+		if p.Name != "" {
+			return &p, p.Name, nil
+		}
+	}
+
+	return nil, name, nil
 }
 
 func (s *Services) commentToItem(ctx context.Context, itemID, comment string) {
