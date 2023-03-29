@@ -25,7 +25,7 @@ func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
 
 		return DataCatalogItemConfigItem{
 			Name: name,
-			URL:  a.URL,
+			URL:  assetURLFromFormat(a.URL, an.Format),
 			Type: an.Format,
 		}
 	})
