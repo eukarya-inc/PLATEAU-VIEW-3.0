@@ -74,7 +74,7 @@ func (i PlateauItem) RailItem(c PlateauIntermediateItem) *DataCatalogItem {
 	})
 
 	an := AssetNameFrom(i.Rail[0].URL)
-	dci := c.DataCatalogItem(railModelName, an, i.Rail[0].URL, i.DescriptionRail, nil, false)
+	dci := c.DataCatalogItem(railModelName, an, i.Rail[0].URL, i.DescriptionRail, []string{"rail"}, false)
 	dci.Config = DataCatalogItemConfig{
 		Data: data,
 	}
