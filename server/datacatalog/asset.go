@@ -9,7 +9,7 @@ import (
 	"github.com/samber/lo"
 )
 
-var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_((?:[0-9]+?_)*op[0-9]*(?:_[0-9]+?)*)(?:_(.+?)(?:_(.+))?)?$`)
+var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_((?:[0-9]+?_)*op[0-9]*(?:_[0-9(?:nodem)]+?)*)(?:_(.+?)(?:_(.+))?)?$`)
 var reLod = regexp.MustCompile(`(?:^|_)lod([0-9]+?)`)
 var reWard = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
 
