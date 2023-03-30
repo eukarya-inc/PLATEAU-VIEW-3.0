@@ -42,6 +42,8 @@ export default () => {
   const {
     fieldTemplates,
     infoboxTemplates,
+    updatedTemplateIDs,
+    setUpdatedTemplateIDs,
     handleInfoboxFieldsSave,
     setFieldTemplates,
     setInfoboxTemplates,
@@ -84,10 +86,12 @@ export default () => {
   } = useProjectHooks({
     fieldTemplates,
     infoboxTemplates,
+    updatedTemplateIDs,
     backendURL,
     backendProjectName,
     processedCatalog,
     buildingSearch,
+    setUpdatedTemplateIDs,
   });
 
   const { handleDatasetUpdate, handleDatasetSave, handleDatasetPublish } = useDatasetHooks({

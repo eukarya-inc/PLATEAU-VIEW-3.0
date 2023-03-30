@@ -3,7 +3,7 @@ import { Template } from "@web/extensions/sidebar/core/types";
 import { Select } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { isEqual } from "lodash";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import FieldComponent from "../..";
 import { BaseFieldProps, FieldComponent as FieldComponentType } from "../types";
@@ -24,42 +24,16 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   const [fieldComponents, setFieldComponents] = useState<FieldComponentType[] | undefined>();
 
   const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
-  const currentTemplates = useRef<Template[] | undefined>();
 
   useEffect(() => {
-    if (currentTemplates.current !== templates) {
-      currentTemplates.current = templates;
+    const newFieldComponents = value.userSettings?.components?.length
+      ? value.userSettings?.components
+      : hasTemplates
+      ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
+      : undefined;
 
-      const newFieldComponents = hasTemplates
-        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
-        : undefined;
+    if (newFieldComponents && !isEqual(newFieldComponents, fieldComponents)) {
       setFieldComponents(newFieldComponents);
-
-      const cleanseOverride = mergeOverrides("cleanse", fieldComponents);
-      onUpdate({
-        ...value,
-        userSettings: {
-          components: newFieldComponents,
-          override: cleanseOverride,
-        },
-      });
-    } else {
-      const newFieldComponents = value.userSettings?.components?.length
-        ? value.userSettings?.components
-        : hasTemplates
-        ? templates?.find(t => t.id === value.templateID)?.components ?? templates?.[0].components
-        : undefined;
-
-      if (newFieldComponents && !isEqual(newFieldComponents, fieldComponents)) {
-        setFieldComponents(newFieldComponents);
-
-        onUpdate({
-          ...value,
-          userSettings: {
-            components: newFieldComponents,
-          },
-        });
-      }
     }
   }, [activeIDs, fieldComponents, templates, hasTemplates, value.templateID, value, onUpdate]);
 

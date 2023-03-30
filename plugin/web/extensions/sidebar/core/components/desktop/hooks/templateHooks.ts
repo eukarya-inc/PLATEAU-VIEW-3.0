@@ -17,6 +17,8 @@ export default ({
 }) => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
 
+  const [updatedTemplateIDs, setUpdatedTemplateIDs] = useState<string[]>();
+
   const handleTemplateAdd = useCallback(async () => {
     if (!backendURL || !backendProjectName || !backendAccessToken) return;
     const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`, {
@@ -51,6 +53,7 @@ export default ({
       );
       if (res.status !== 200) return;
       const updatedTemplate = await res.json();
+      setUpdatedTemplateIDs(ids => [...(ids ?? []), updatedTemplate.id]);
       setFieldTemplates(t => {
         return t.map(t2 => {
           if (t2.id === updatedTemplate.id) {
@@ -148,6 +151,8 @@ export default ({
   return {
     fieldTemplates,
     infoboxTemplates,
+    updatedTemplateIDs,
+    setUpdatedTemplateIDs,
     setFieldTemplates,
     setInfoboxTemplates,
     handleTemplateAdd,

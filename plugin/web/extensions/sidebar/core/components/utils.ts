@@ -45,6 +45,7 @@ export const mergeOverrides = (
   }
 
   const overrides = cloneDeep(startingOverride ?? {});
+
   const needOrderComponents = components
     .filter(c => (c as any).userSettings?.updatedAt)
     .sort(

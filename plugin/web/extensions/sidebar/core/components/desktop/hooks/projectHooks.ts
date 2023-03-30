@@ -70,17 +70,21 @@ export const defaultProject: Project = {
 export default ({
   fieldTemplates,
   infoboxTemplates,
+  updatedTemplateIDs,
   backendURL,
   backendProjectName,
   processedCatalog,
   buildingSearch,
+  setUpdatedTemplateIDs,
 }: {
   fieldTemplates?: Template[];
   infoboxTemplates?: Template[];
+  updatedTemplateIDs?: string[];
   backendURL?: string;
   backendProjectName?: string;
   processedCatalog: DataCatalogItem[];
   buildingSearch?: BuildingSearch;
+  setUpdatedTemplateIDs?: React.Dispatch<React.SetStateAction<string[] | undefined>>;
 }) => {
   const [projectID, setProjectID] = useState<string>();
   const [project, updateProject] = useState<Project>(defaultProject);
@@ -252,6 +256,38 @@ export default ({
       return updatedProject;
     });
   }, []);
+
+  useEffect(() => {
+    if (project.datasets.length > 0 && updatedTemplateIDs && updatedTemplateIDs.length > 0) {
+      if (
+        project.datasets.find(d =>
+          d.components?.find(c =>
+            updatedTemplateIDs?.find(id => c.type === "template" && id === c.templateID),
+          ),
+        )
+      ) {
+        const updatedDatasets = project.datasets.map(d => {
+          return {
+            ...d,
+            components: d.components?.map(c => {
+              const updatedTemplate = updatedTemplateIDs?.find(
+                id => c.type === "template" && c.templateID === id,
+              );
+              if (updatedTemplate) {
+                return {
+                  ...c,
+                  userSettings: undefined,
+                };
+              }
+              return c;
+            }) as FieldComponent[],
+          };
+        });
+        handleProjectDatasetsUpdate(updatedDatasets);
+      }
+      setUpdatedTemplateIDs?.(undefined);
+    }
+  }, [project.datasets, updatedTemplateIDs, handleProjectDatasetsUpdate, setUpdatedTemplateIDs]);
 
   const handleOverride = useCallback(
     (dataID: string, activeIDs?: string[]) => {
