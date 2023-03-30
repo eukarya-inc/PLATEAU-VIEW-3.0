@@ -64,9 +64,10 @@ func (i PlateauItem) RailItem(c PlateauIntermediateItem) *DataCatalogItem {
 		}
 
 		return DataCatalogItemConfigItem{
-			Name: name,
-			URL:  assetURLFromFormat(a.URL, an.Format),
-			Type: an.Format,
+			Name:   name,
+			URL:    assetURLFromFormat(a.URL, an.Format),
+			Type:   an.Format,
+			Layers: []string{"rail"},
 		}
 	})
 	sort.Slice(data, func(a, b int) bool {
