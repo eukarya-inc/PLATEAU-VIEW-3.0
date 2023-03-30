@@ -197,7 +197,7 @@ const Field = styled.div<{ gap?: number }>`
   display: flex;
   align-items: center;
   ${({ gap }) => gap && `gap: ${gap}px;`}
-  height: 32px;
+  min-height: 32px;
 `;
 
 const FieldTitle = styled(Text)`
@@ -215,6 +215,7 @@ const FieldValue = styled.div`
 `;
 
 const ColorBlock = styled.div<{ color?: string; legendStyle?: "circle" | "square" | "line" }>`
+  flex: none;
   width: 30px;
   height: ${({ legendStyle }) => (legendStyle === "line" ? "3px" : "30px")};
   background: ${({ color }) => color ?? "#d9d9d9"};
@@ -229,6 +230,8 @@ const ColorBlock = styled.div<{ color?: string; legendStyle?: "circle" | "square
 `;
 
 const StyledImgWrapper = styled.div`
+  flex: none;
+  width: 30px;
   position: relative;
 `;
 
