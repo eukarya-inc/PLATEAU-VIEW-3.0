@@ -733,7 +733,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers: dataset.config?.data?.[0].layers ?? dataset.layers,
       ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
-      ...(["luse", "lsld", "urf"].includes(dataset.type_en) ||
+      ...(["luse", "lsld", "urf", "rail"].includes(dataset.type_en) ||
       (dataset.type_en === "tran" && format === "mvt")
         ? { jsonProperties: ["attributes"] }
         : {}),
@@ -741,9 +741,20 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     },
     visible: true,
     infobox: lodashMerge(
-      ["bldg", "tran", "frn", "veg", "luse", "lsld", "urf", "fld", "htd", "tnm", "ifld"].includes(
-        dataset.type_en,
-      )
+      [
+        "bldg",
+        "tran",
+        "frn",
+        "veg",
+        "luse",
+        "lsld",
+        "urf",
+        "fld",
+        "htd",
+        "tnm",
+        "ifld",
+        "rail",
+      ].includes(dataset.type_en)
         ? {
             blocks: [
               {

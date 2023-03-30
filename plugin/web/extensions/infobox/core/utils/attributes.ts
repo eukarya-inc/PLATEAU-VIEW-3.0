@@ -280,4 +280,6 @@ export const commonPropertiesMap: { [key: string]: string[] } = {
   luse: ["gml_id", "分類", "都市名", "調査年"],
   // 土砂災害警戒区域
   lsld: ["gml_id"],
+  // 鉄道モデル
+  rail: ["gml_id"],
 };
