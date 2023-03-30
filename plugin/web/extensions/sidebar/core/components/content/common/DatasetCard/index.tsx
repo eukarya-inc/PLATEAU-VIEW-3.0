@@ -170,7 +170,13 @@ const DatasetCard: React.FC<Props> = ({
 
     // Wait until reearth layer is overridden with updated dataset
     readyMVTPosition.current = new Promise(resolve =>
-      setTimeout(() => fetchMetadataJSONForMVT().then(resolve), 100),
+      setTimeout(
+        () =>
+          fetchMetadataJSONForMVT()
+            .then(resolve)
+            .catch(() => resolve(undefined)),
+        100,
+      ),
     );
   }, [dataset]);
 
