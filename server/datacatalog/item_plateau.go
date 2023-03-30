@@ -48,6 +48,7 @@ type PlateauItem struct {
 	DescriptionIfld []string           `json:"description_ifld"`
 	DescriptionTnm  []string           `json:"description_tnm"`
 	DescriptionBrid string             `json:"description_brid"`
+	DescriptionRail string             `json:"description_rail"`
 	Bldg            []*cms.PublicAsset `json:"bldg"`
 	Tran            []*cms.PublicAsset `json:"tran"`
 	Frn             []*cms.PublicAsset `json:"frn"`
@@ -60,6 +61,7 @@ type PlateauItem struct {
 	Ifld            []*cms.PublicAsset `json:"ifld"`
 	Tnm             []*cms.PublicAsset `json:"tnm"`
 	Brid            []*cms.PublicAsset `json:"brid"`
+	Rail            []*cms.PublicAsset `json:"rail"`
 	Dictionary      *cms.PublicAsset   `json:"dictionary"`
 	Dic             string             `json:"dic"`
 	SearchIndex     []*cms.PublicAsset `json:"search_index"`
@@ -160,7 +162,7 @@ func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 	}
 
 	return util.DerefSlice(lo.Filter(
-		append(append(append(append(append(append(append(
+		append(append(append(append(append(append(append(append(
 			i.BldgItems(c),
 			i.TranItem(c),
 			i.FrnItem(c),
@@ -172,7 +174,8 @@ func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 			i.TnmItems(c)...),
 			i.HtdItems(c)...),
 			i.IfldItems(c)...),
-			i.BridItem(c),
+			i.BridItem(c)),
+			i.RailItem(c),
 		),
 		func(i *DataCatalogItem, _ int) bool {
 			return i != nil

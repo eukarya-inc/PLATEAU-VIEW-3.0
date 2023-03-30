@@ -162,6 +162,18 @@ func TestAssetNameFrom(t *testing.T) {
 		Feature:  "brid",
 		Ext:      ".zip",
 	}, AssetNameFrom("14100_yokohama-shi_2022_3dtiles_1_op_brid.zip"))
+
+	assert.Equal(t, AssetName{
+		CityCode: "07212",
+		CityEn:   "minamisouma-shi",
+		Year:     "2022",
+		Format:   "mvt",
+		Op:       "1_op",
+		Feature:  "rail",
+		Ex:       "lod1",
+		LOD:      "1",
+		Ext:      ".zip",
+	}, AssetNameFrom("07212_minamisouma-shi_2022_mvt_1_op_rail_lod1.zip"))
 }
 
 func TestAssetName_String(t *testing.T) {
