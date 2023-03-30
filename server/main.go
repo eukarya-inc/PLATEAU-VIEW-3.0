@@ -124,30 +124,28 @@ func errorMessage(err error, log func(string, ...interface{})) (int, string) {
 func proxyHandlerFunc(c echo.Context) error {
     // Extract the target URL from the request path
     targetPath := c.Param("*")
-    targetURL, err := url.Parse(targetPath)
+    targetURL, err := url.ParseRequestURI(targetPath)
     if err != nil {
-        return c.JSON(http.StatusBadRequest, map[string]string{
-            "error": "Invalid target URL",
-        })
+      return c.JSON(http.StatusBadRequest, map[string]string{
+        "error": "Invalid target URL",
+      })
     }
 
-    // Create a new http.Request object with the target URL and Host header
-    req, err := http.NewRequest(c.Request().Method, targetURL.String(), c.Request().Body)
-    if err != nil {
-        return err
+    // Add the scheme to the targetURL if not present
+    if targetURL.Scheme == "" {
+      targetURL.Scheme = "https"
     }
-    req.Header.Set("Host", targetURL.Host)
 
+	  // Append query string parameters to target URL
+    targetURL.RawQuery = c.QueryString()
+	
     // Define the ProxyConfig object with custom Rewrite rules and ModifyResponse function
     proxyConfig := middleware.ProxyConfig{
         Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
             {
-                URL: req.URL,
+                URL: targetURL,
             },
         }),
-        Rewrite: map[string]string{
-            "^/proxy/.*": "/$1",
-        },
         ModifyResponse: func(resp *http.Response) error {
             // Copy the response headers from the target URL to the client response
             for k, vv := range resp.Header {
