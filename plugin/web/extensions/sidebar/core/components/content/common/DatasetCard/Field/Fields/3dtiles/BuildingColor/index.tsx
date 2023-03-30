@@ -1,5 +1,6 @@
-import { Radio } from "@web/sharedComponents";
+import { Checkbox, Radio } from "@web/sharedComponents";
 import { styled } from "@web/theme";
+import { useCallback, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -19,7 +20,24 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
     onUpdate,
   });
 
-  return editMode ? null : (
+  const [disableFloodRankLegend, setDisableFloodRankLegend] = useState(
+    value.disableFloodRankLegend,
+  );
+  const handleDisableFloodRankLegend = useCallback(() => {
+    setDisableFloodRankLegend(e => {
+      onUpdate({ ...value, disableFloodRankLegend: !e });
+      return !e;
+    });
+  }, [value, onUpdate]);
+
+  return editMode ? (
+    <Checkbox
+      style={{ margin: 0 }}
+      checked={disableFloodRankLegend}
+      onChange={handleDisableFloodRankLegend}>
+      <Text>浸水ランクの凡例を非表示にする</Text>
+    </Checkbox>
+  ) : (
     <>
       <Radio.Group onChange={handleUpdateColorType} value={options.colorType} defaultValue="none">
         <StyledRadio value="none">
@@ -47,9 +65,11 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
       </Radio.Group>
       {initialized && (
         <LegendContainer>
-          {options.colorType.startsWith("floods") ? (
+          {options.colorType.startsWith("floods") && !disableFloodRankLegend ? (
             <LegendImage src={LEGEND_IMAGES.floods} />
-          ) : options.colorType && options.colorType !== "none" ? (
+          ) : options.colorType &&
+            options.colorType !== "none" &&
+            !options.colorType.startsWith("floods") ? (
             <>
               <LegendLabel>凡例</LegendLabel>
               <LegendList>
@@ -72,6 +92,11 @@ const BuildingColor: React.FC<BaseFieldProps<"buildingColor">> = ({
 };
 
 export default BuildingColor;
+
+const Text = styled.p`
+  margin: 0;
+  font-size: 14px;
+`;
 
 const StyledRadio = styled(Radio)`
   width: 100%;

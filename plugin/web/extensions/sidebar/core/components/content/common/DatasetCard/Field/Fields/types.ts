@@ -380,6 +380,7 @@ type BuildingTransparency = FieldBase<"buildingTransparency"> & {
 };
 
 type BuildingColor = FieldBase<"buildingColor"> & {
+  disableFloodRankLegend?: boolean;
   userSettings: {
     colorType: string;
     updatedAt?: Date;
