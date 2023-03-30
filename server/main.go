@@ -135,6 +135,9 @@ func proxyHandlerFunc(c echo.Context) error {
     if targetURL.Scheme == "" {
       targetURL.Scheme = "https"
     }
+	if targetURL.Host == "" {
+		targetURL.Host = "api.odpt.org"
+	}
 
 	  // Append query string parameters to target URL
     targetURL.RawQuery = c.QueryString()
