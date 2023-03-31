@@ -36,7 +36,7 @@ const FloodFilter: React.FC<BaseFieldProps<"floodFilter">> = ({
     onUpdate,
   });
 
-  return editMode ? null : (
+  return editMode || (options.value?.length ?? 0) !== 2 ? null : (
     <div>
       <FieldWrapper>
         <LabelWrapper>

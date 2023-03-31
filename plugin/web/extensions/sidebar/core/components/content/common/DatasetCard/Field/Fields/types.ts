@@ -355,11 +355,15 @@ type Clipping = FieldBase<"clipping"> & {
 };
 
 type BuildingFilter = FieldBase<"buildingFilter"> & {
-  userSettings: {
-    height?: [from: number, to: number];
-    abovegroundFloor?: [from: number, to: number];
-    basementFloor?: [from: number, to: number];
-    buildingAge?: [from: number, to: number];
+  userSettings: Record<
+    "height" | "abovegroundFloor" | "basementFloor" | "buildingAge",
+    | {
+        value?: [from: number, to: number];
+        min?: number;
+        max?: number;
+      }
+    | undefined
+  > & {
     override?: any;
   };
 };
@@ -398,7 +402,10 @@ type FloodColor = FieldBase<"floodColor"> & {
 
 type FloodFilter = FieldBase<"floodFilter"> & {
   userSettings: {
-    rank?: [from: number, to: number];
+    value?: [from: number, to: number];
+    min?: number;
+    max?: number;
+    isOrg?: boolean;
     override?: any;
   };
 };

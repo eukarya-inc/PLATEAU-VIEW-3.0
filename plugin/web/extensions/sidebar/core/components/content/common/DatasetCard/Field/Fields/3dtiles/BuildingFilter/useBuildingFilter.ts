@@ -18,6 +18,7 @@ export const useBuildingFilter = ({
     () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
+  const initializedRef = useRef(false);
 
   const onUpdateRef = useRef(onUpdate);
   useEffect(() => {
@@ -35,9 +36,14 @@ export const useBuildingFilter = ({
   }, [options, dataID]);
 
   useEffect(() => {
+    if (!initializedRef.current) return;
     renderRef.current = render;
     debouncedRender();
   }, [render, debouncedRender]);
+
+  useEffect(() => {
+    initializedRef.current = true;
+  }, []);
 };
 
 export type State = {

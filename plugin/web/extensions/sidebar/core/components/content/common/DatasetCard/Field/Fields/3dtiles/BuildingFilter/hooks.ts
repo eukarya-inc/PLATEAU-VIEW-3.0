@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import omit from "lodash/omit";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 import { useObservingDataURL } from "../hooks";
@@ -11,7 +12,27 @@ const useHooks = ({
   dataID,
   onUpdate,
 }: Pick<BaseFieldProps<"buildingFilter">, "value" | "dataID" | "onUpdate">) => {
-  const [options, setOptions] = useState<OptionsState>({});
+  const [options, setOptions] = useState<OptionsState>(() =>
+    value.userSettings
+      ? Object.fromEntries(
+          Object.entries(FILTERING_FIELD_DEFINITION)
+            .map(([k_, v]) => {
+              const k = k_ as keyof typeof FILTERING_FIELD_DEFINITION;
+              return value.userSettings[k]
+                ? [k, { ...v, ...omit(value.userSettings[k], "override") }]
+                : undefined;
+            })
+            .filter(
+              (
+                f,
+              ): f is [
+                keyof typeof FILTERING_FIELD_DEFINITION,
+                (typeof FILTERING_FIELD_DEFINITION)[keyof typeof FILTERING_FIELD_DEFINITION],
+              ] => !!f,
+            ),
+        )
+      : {},
+  );
   const url = useObservingDataURL(dataID);
 
   const handleUpdate = useCallback(
@@ -19,10 +40,10 @@ const useHooks = ({
       onUpdate({
         ...value,
         userSettings: {
-          height: options.height?.value,
-          abovegroundFloor: options.abovegroundFloor?.value,
-          basementFloor: options.basementFloor?.value,
-          buildingAge: options.buildingAge?.value,
+          height: options.height,
+          abovegroundFloor: options.abovegroundFloor,
+          basementFloor: options.basementFloor,
+          buildingAge: options.buildingAge,
           override: { ["3dtiles"]: property },
         },
       });
@@ -54,6 +75,7 @@ const useHooks = ({
     [handleUpdateOptions],
   );
 
+  const fetchedUrlRef = useRef<string>();
   useEffect(() => {
     const handleFilteringFields = (data: any) => {
       const tempOptions: typeof options = {};
@@ -71,9 +93,17 @@ const useHooks = ({
                 USE_MIN_FIELD_PROPERTIES.includes(k) && "minimum" in propertyValue
                   ? Number(propertyValue.minimum) ?? type.min
                   : type.min;
+              const max = type.max;
+              const shouldChangeMin =
+                options[k]?.min !== min && options[k]?.value[0] === options[k]?.min;
+              const shouldChangeMax =
+                options[k]?.max !== max && options[k]?.value[1] === options[k]?.max;
               return {
                 ...type,
-                value: [min ?? type.value[0], type.value[1]] as typeof type.value,
+                value: [
+                  (shouldChangeMin ? min : options[k]?.value[0]) ?? type.value[0],
+                  (shouldChangeMax ? max : options[k]?.value[1]) ?? type.value[1],
+                ].filter(v => v !== undefined) as typeof type.value,
                 min,
               };
             })();
@@ -84,9 +114,10 @@ const useHooks = ({
       setOptions(tempOptions);
     };
     const fetchTileset = async () => {
-      if (!url) {
+      if (!url || fetchedUrlRef.current === url) {
         return;
       }
+      fetchedUrlRef.current = url;
       const data = await (async () => {
         try {
           return await fetch(url).then(r => r.json());
@@ -97,7 +128,7 @@ const useHooks = ({
       handleFilteringFields(data);
     };
     fetchTileset();
-  }, [dataID, url]);
+  }, [dataID, url, options]);
 
   useBuildingFilter({ options, dataID, onUpdate: handleUpdate });
 

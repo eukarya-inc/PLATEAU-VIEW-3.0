@@ -45,22 +45,24 @@ const BuildingFilter: React.FC<BaseFieldProps<"buildingFilter">> = ({
 
   return editMode ? null : (
     <div>
-      {fields.map(f => (
-        <FieldWrapper key={f.id}>
-          <LabelWrapper>
-            <Label>{f.label}</Label>
-            <Range>{rangeToText(f.value)}</Range>
-          </LabelWrapper>
-          <Slider
-            range={true}
-            value={f.value}
-            max={f.max}
-            min={f.min}
-            onChange={handleUpdateRange(f.id)}
-            {...styleProps}
-          />
-        </FieldWrapper>
-      ))}
+      {fields.map(f =>
+        f.value.length === 2 ? (
+          <FieldWrapper key={f.id}>
+            <LabelWrapper>
+              <Label>{f.label}</Label>
+              <Range>{rangeToText(f.value)}</Range>
+            </LabelWrapper>
+            <Slider
+              range={true}
+              value={f.value}
+              max={f.max}
+              min={f.min}
+              onChange={handleUpdateRange(f.id)}
+              {...styleProps}
+            />
+          </FieldWrapper>
+        ) : null,
+      )}
     </div>
   );
 };

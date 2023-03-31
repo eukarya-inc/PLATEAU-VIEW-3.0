@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import omit from "lodash/omit";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BaseFieldProps } from "../../types";
 import { useObservingDataURL } from "../hooks";
@@ -16,7 +17,7 @@ const useHooks = ({
   onUpdate,
 }: Pick<BaseFieldProps<"floodFilter">, "value" | "dataID" | "onUpdate" | "configData">) => {
   const [options, setOptions] = useState<FilteringField>({
-    value: value.userSettings?.rank,
+    ...omit(value.userSettings, "override"),
   });
   const url = useObservingDataURL(dataID);
 
@@ -26,12 +27,12 @@ const useHooks = ({
         ...value,
         userSettings: {
           ...value.userSettings,
-          rank: options.value,
+          ...options,
           override: { ["3dtiles"]: property },
         },
       });
     },
-    [onUpdate, value, options.value],
+    [onUpdate, value, options],
   );
 
   const handleUpdateRange = useCallback((v: number | number[]) => {
@@ -46,6 +47,7 @@ const useHooks = ({
     }
   }, []);
 
+  const fetchedURLRef = useRef<string>();
   useEffect(() => {
     const handleFilteringFields = (data: any) => {
       let tempOptions: typeof options = {};
@@ -59,10 +61,17 @@ const useHooks = ({
           Object.keys(propertyValue).length
         ) {
           const obj = propertyValue as any;
+          const min = obj.minimum;
+          const max = obj.maximum;
+          const shouldChangeMin = options.min !== min && options.value?.[0] === options.min;
+          const shouldChangeMax = options.max !== max && options.value?.[1] === options.max;
           tempOptions = {
-            min: obj.minimum,
-            max: obj.maximum,
-            value: [obj.minimum, obj.maximum],
+            min,
+            max,
+            value: [
+              (shouldChangeMin ? min : options.value?.[0]) ?? min,
+              (shouldChangeMax ? max : options.value?.[1]) ?? max,
+            ].filter(v => v !== undefined) as typeof options.value,
             isOrg: propertyKey.includes(FEATURE_PROPERTY_NAME_RANK_ORG_CODE),
           };
         }
@@ -70,9 +79,10 @@ const useHooks = ({
       setOptions(tempOptions);
     };
     const fetchTileset = async () => {
-      if (!url) {
+      if (!url || fetchedURLRef.current === url) {
         return;
       }
+      fetchedURLRef.current = url;
       const data = await (async () => {
         try {
           return await fetch(url).then(r => r.json());
@@ -83,7 +93,7 @@ const useHooks = ({
       handleFilteringFields(data);
     };
     fetchTileset();
-  }, [dataID, url]);
+  }, [dataID, url, options]);
 
   useFloodFilter({ options, dataID, onUpdate: handleUpdate });
 
