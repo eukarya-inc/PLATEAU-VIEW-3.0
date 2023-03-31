@@ -58,7 +58,7 @@ export function getRootFields(properties: Properties, dataType?: string, fld?: F
       get(properties, ["attributes", "luse:class"]),
     用途: get(properties, ["attributes", "bldg:usage", 0]),
     住所: get(properties, ["attributes", "bldg:address"]),
-    建築年: get(properties, ["attributes", "bldg:yearOfConstruction"]),
+    建築年: constructionYear(get(properties, ["attributes", "bldg:yearOfConstruction"]), dataType),
     計測高さ: get(properties, ["attributes", "bldg:measuredHeight"]),
     地上階数: get(properties, ["attributes", "bldg:storeysAboveGround"]),
     地下階数: get(properties, ["attributes", "bldg:storeysBelowGround"]),
@@ -137,6 +137,28 @@ export function getRootFields(properties: Properties, dataType?: string, fld?: F
       "uro:description",
     ]),
   });
+}
+
+export function constructionYear(
+  y: number | string | undefined | null,
+  dataType?: string,
+): string | number | undefined {
+  if (dataType !== "bldg") {
+    if (y === "" || typeof y === "undefined" || y === null) return undefined;
+    return y;
+  }
+
+  if (
+    !y ||
+    (typeof y === "number" && y <= 1) ||
+    y == "0" ||
+    y === "1" ||
+    y === "0000" ||
+    y === "0001"
+  ) {
+    return "不明";
+  }
+  return y;
 }
 
 export function name(
