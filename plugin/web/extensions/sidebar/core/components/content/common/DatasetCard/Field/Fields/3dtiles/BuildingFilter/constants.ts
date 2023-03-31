@@ -60,8 +60,8 @@ export const FILTERING_FIELD_DEFINITION: Record<
     label: "建築年で絞り込み",
     featurePropertyName: "建築年",
     order: 4,
-    value: [1900, MAX_BUILDING_AGE],
+    value: [1850, MAX_BUILDING_AGE],
     max: MAX_BUILDING_AGE,
-    min: 1900,
+    min: 1850,
   },
 };

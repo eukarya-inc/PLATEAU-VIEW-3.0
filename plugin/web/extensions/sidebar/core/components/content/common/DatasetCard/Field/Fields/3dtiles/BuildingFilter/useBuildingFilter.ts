@@ -3,7 +3,7 @@ import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
 
-import { OptionsState } from "./constants";
+import { FILTERING_FIELD_DEFINITION, OptionsState } from "./constants";
 
 export const useBuildingFilter = ({
   options,
@@ -60,16 +60,31 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
     const defaultConditionalValue = (prop: string, startValue: number) =>
       `((\${${prop}} === "" || \${${prop}} === null || isNaN(Number(\${${prop}}))) ? ${startValue} : Number(\${${prop}}))`;
     const condition = (
+      featurePropertyName: string,
       max: number,
+      min: number | undefined,
       range: [from: number, to: number] | undefined,
       conditionalValue: string,
     ) =>
+      featurePropertyName === FILTERING_FIELD_DEFINITION.buildingAge.featurePropertyName &&
+      min &&
+      min === range?.[0] &&
       max === range?.[1]
+        ? `true`
+        : min === range?.[0]
+        ? `${conditionalValue} <= ${range?.[1]}`
+        : max === range?.[1]
         ? `${conditionalValue} >= ${range?.[0]}`
         : `${conditionalValue} >= ${range?.[0]} && ${conditionalValue} <= ${range?.[1]}`;
     const conditions = Object.entries(state.options || {}).reduce((res, [, v]) => {
       const conditionalValue = defaultConditionalValue(v.featurePropertyName, v.min ?? 0);
-      const conditionDef = condition(v.max, v.value, conditionalValue);
+      const conditionDef = condition(
+        v.featurePropertyName,
+        v.max,
+        v.min,
+        v.value,
+        conditionalValue,
+      );
       return `${res ? `${res} && ` : ""}${conditionDef}`;
     }, "");
     onUpdateRef.current?.({
