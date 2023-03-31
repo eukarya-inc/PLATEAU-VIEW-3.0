@@ -206,29 +206,29 @@ const STRUCTURE_TYPE_CONDITIONS: Condition[] = [
     label: "鉄骨造",
   },
   {
-    condition: equalString(conditionalStructureType, "れんが造"),
-    color: "rgba(119, 23, 28, 1)",
-    label: "れんが造",
-  },
-  {
     condition: equalString(conditionalStructureType, "軽量鉄骨造"),
     color: "rgba(160, 79, 146, 1)",
     label: "軽量鉄骨造",
   },
   {
-    condition: equalString(conditionalStructureType, "コンクリートブロック造"),
+    condition: equalString(conditionalStructureType, "レンガ造・コンクリートブロック造・石造"),
     color: "rgba(119, 23, 28, 1)",
-    label: "コンクリートブロック造",
-  },
-  {
-    condition: equalString(conditionalStructureType, "石造"),
-    color: "rgba(119, 23, 28, 1)",
-    label: "石造",
+    label: "レンガ造・コンクリートブロック造・石造",
   },
   {
     condition: equalString(conditionalStructureType, "非木造"),
     color: "rgba(137, 182, 220, 1)",
     label: "非木造",
+  },
+  {
+    condition: equalString(conditionalStructureType, "耐火"),
+    color: "rgba(127, 123, 133, 1)",
+    label: "耐火",
+  },
+  {
+    condition: equalString(conditionalStructureType, "簡易耐火"),
+    color: "rgba(140, 155, 177, 1)",
+    label: "簡易耐火",
   },
   {
     condition: equalString(conditionalStructureType, "不明"),
