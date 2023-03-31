@@ -184,11 +184,18 @@ func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
 }
 
 func (i PlateauItem) IntermediateItem() PlateauIntermediateItem {
-	if i.CityGML == nil {
+	au := ""
+	if i.CityGML != nil {
+		au = i.CityGML.URL
+	} else if len(i.Bldg) > 0 {
+		au = i.Bldg[0].URL
+	}
+
+	if au == "" {
 		return PlateauIntermediateItem{}
 	}
 
-	an := AssetNameFrom(i.CityGML.URL)
+	an := AssetNameFrom(au)
 	dic := Dic{}
 	_ = json.Unmarshal(bom.Clean([]byte(i.Dic)), &dic)
 
