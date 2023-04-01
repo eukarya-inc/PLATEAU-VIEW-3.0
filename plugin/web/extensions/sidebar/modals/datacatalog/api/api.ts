@@ -3,6 +3,7 @@ import type {
   DataCatalogItem,
   DataCatalogTreeItem,
 } from "@web/extensions/sidebar/core/types";
+import { omit } from "lodash";
 
 import { makeTree, mapTree } from "./utils";
 
@@ -17,7 +18,7 @@ export type RawDataCatalogGroup = {
   children: RawDataCatalogTreeItem[];
 };
 
-export type RawDataCatalogItem = {
+type RawRawDataCatalogItem = {
   id: string;
   itemId?: string;
   name?: string;
@@ -37,13 +38,22 @@ export type RawDataCatalogItem = {
   type2?: string;
   type2_en?: string;
   format: string;
-  layers?: string[];
+  layers?: string[] | string;
+  layer?: string[] | string;
   url: string;
   desc: string;
   year: number;
   tags?: { type: "type" | "location"; value: string }[];
   openDataUrl?: string;
-  config?: { data?: { name: string; type: string; url: string; layers?: string[] }[] };
+  config?: {
+    data?: {
+      name: string;
+      type: string;
+      url: string;
+      layers?: string[] | string;
+      layer?: string[] | string;
+    }[];
+  };
   order?: number;
   // bldg only fields
   bldg_low_texture_url?: string;
@@ -52,6 +62,18 @@ export type RawDataCatalogItem = {
   // internal
   path?: string[];
   code: number;
+};
+
+export type RawDataCatalogItem = Omit<RawRawDataCatalogItem, "layers" | "layer" | "config"> & {
+  layers?: string[];
+  config?: {
+    data?: {
+      name: string;
+      type: string;
+      url: string;
+      layer?: string[];
+    }[];
+  };
 };
 
 export type GroupBy = "city" | "type" | "tag"; // Tag not implemented yet
@@ -65,12 +87,12 @@ export async function getDataCatalog(
     throw new Error("failed to fetch data catalog");
   }
 
-  const data: RawDataCatalogItem[] = await res.json();
+  const data: RawRawDataCatalogItem[] = await res.json();
   return data.map(modifyDataCatalog);
 }
 
 export function modifyDataCatalog(
-  d: Omit<RawDataCatalogItem, "pref_code_i" | "city_code_i" | "ward_code_i" | "tags" | "code">,
+  d: Omit<RawRawDataCatalogItem, "pref_code_i" | "city_code_i" | "ward_code_i" | "tags" | "code">,
 ): RawDataCatalogItem {
   const pref = d.pref === "全国" || d.pref === "全球" ? zenkyu : d.pref;
   const pref_code = d.pref === "全国" || d.pref === "全球" || d.pref === zenkyu ? "0" : d.pref_code;
@@ -78,7 +100,7 @@ export function modifyDataCatalog(
   const city_code_i = parseInt(d.city_code ?? "");
   const ward_code_i = parseInt(d.ward_code ?? "");
   return {
-    ...d,
+    ...omit(d, ["layers", "layer", "config"]),
     pref,
     pref_code,
     pref_code_i,
@@ -99,6 +121,21 @@ export function modifyDataCatalog(
       ...(d.city ? [{ type: "location", value: d.city } as const] : []),
       ...(d.ward ? [{ type: "location", value: d.ward } as const] : []),
     ],
+    ...(d.layers || d.layer ? { layers: [...getLayers(d.layers), ...getLayers(d.layer)] } : {}),
+    ...(d.config
+      ? {
+          config: {
+            ...(d.config.data
+              ? {
+                  data: d.config.data.map(dd => ({
+                    ...omit(dd, ["layers", "layer"]),
+                    layer: [...getLayers(dd.layers), ...getLayers(dd.layer)],
+                  })),
+                }
+              : {}),
+          },
+        }
+      : {}),
   };
 }
 
@@ -206,6 +243,10 @@ function filter(q: string | undefined, items: RawDataCatalogItem[]): RawDataCata
 
 function clamp(n: number): number {
   return Math.max(-1, Math.min(1, n));
+}
+
+function getLayers(layers?: string[] | string): string[] {
+  return layers ? (typeof layers === "string" ? layers.split(/, */).filter(Boolean) : layers) : [];
 }
 
 const zenkyu = "全球データ";

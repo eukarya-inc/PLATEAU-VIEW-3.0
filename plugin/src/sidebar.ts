@@ -731,7 +731,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     data: {
       type: format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
-      layers: dataset.config?.data?.[0].layers ?? dataset.layers,
+      layers: dataset.config?.data?.[0].layer ?? dataset.layers,
       ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
       ...(["luse", "lsld", "urf", "rail", "tran"].includes(dataset.type_en) ||
       (dataset.type_en === "tran" && format === "mvt")
