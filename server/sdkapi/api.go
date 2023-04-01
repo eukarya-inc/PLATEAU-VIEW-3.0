@@ -8,9 +8,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
 )
 
@@ -34,10 +36,10 @@ func Handler(conf Config, g *echo.Group) error {
 func handler(conf Config, g *echo.Group, cms *CMS) error {
 	conf.Default()
 
-	c, err := cacheMiddleware(conf)
-	if err != nil {
-		return err
-	}
+	c := putil.NewCacheMiddleware(putil.CacheConfig{
+		Disabled: conf.DisableCache,
+		TTL:      time.Duration(conf.CacheTTL) * time.Second,
+	})
 
 	g.GET("/datasets", func(c echo.Context) error {
 		data, err := cms.Datasets(c.Request().Context(), conf.Model)
@@ -45,7 +47,7 @@ func handler(conf Config, g *echo.Group, cms *CMS) error {
 			return err
 		}
 		return c.JSON(http.StatusOK, data)
-	}, auth(conf.Token), c)
+	}, auth(conf.Token), c.Middleware())
 
 	g.GET("/datasets/:id/files", func(c echo.Context) error {
 		data, err := cms.Files(c.Request().Context(), conf.Model, c.Param("id"))

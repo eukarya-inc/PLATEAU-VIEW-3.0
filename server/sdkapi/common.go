@@ -22,7 +22,6 @@ type Config struct {
 	Token        string
 	DisableCache bool
 	CacheTTL     int
-	CacheSize    string
 }
 
 func (c *Config) Default() {

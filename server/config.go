@@ -58,10 +58,8 @@ type Config struct {
 	Indexer_Delegate                  bool
 	DataCatalog_DisableCache          bool
 	DataCatalog_CacheTTL              int
-	DataCatalog_CacheSize             string
 	SDKAPI_DisableCache               bool
 	SDKAPI_CacheTTL                   int
-	SDKAPI_CacheSize                  string
 	GCParcent                         int
 }
 
@@ -132,7 +130,6 @@ func (c *Config) SDKAPI() sdkapi.Config {
 		Token:        c.SDK_Token,
 		DisableCache: c.SDKAPI_DisableCache,
 		CacheTTL:     c.SDKAPI_CacheTTL,
-		CacheSize:    c.SDKAPI_CacheSize,
 	}
 }
 
@@ -186,7 +183,6 @@ func (c *Config) DataCatalog() datacatalog.Config {
 		CMSProject:   c.CMS_PlateauProject,
 		DisableCache: c.DataCatalog_DisableCache,
 		CacheTTL:     c.DataCatalog_CacheTTL,
-		CacheSize:    c.DataCatalog_CacheSize,
 	}
 }
 

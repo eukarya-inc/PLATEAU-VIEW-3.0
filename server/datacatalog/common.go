@@ -14,7 +14,6 @@ type Config struct {
 	CMSProject   string
 	DisableCache bool
 	CacheTTL     int
-	CacheSize    string
 }
 
 func assetURLFromFormat(u, f string) string {
