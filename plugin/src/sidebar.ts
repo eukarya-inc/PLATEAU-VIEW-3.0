@@ -714,7 +714,7 @@ reearth.on("popupclose", () => {
 });
 
 function createLayer(dataset: DataCatalogItem, overrides?: any) {
-  const format = dataset.format?.toLowerCase();
+  const format = dataset.format?.toLowerCase().replace(/\s/g, "");
   const merge = (obj1: any, obj2: any): any => {
     const merged = cloneDeep(obj1);
     mergeWith(merged, obj2, (mergedValue, obj2Value) => {
@@ -729,7 +729,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
     type: "simple",
     title: dataset.name,
     data: {
-      type: format,
+      type: dataset.config?.data?.[0].type.toLowerCase().replace(/\s/g, "") ?? format,
       url: dataset.config?.data?.[0].url ?? dataset.url,
       layers: dataset.config?.data?.[0].layer ?? dataset.layers,
       ...(format === "wms" ? { parameters: { transparent: "true", format: "image/png" } } : {}),
