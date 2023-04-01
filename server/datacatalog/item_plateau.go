@@ -123,7 +123,9 @@ func (i PlateauItem) HtdItems(c PlateauIntermediateItem) []*DataCatalogItem {
 	return lo.Map(i.Htd, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
 		an := AssetNameFrom(a.URL)
 		dci := c.DataCatalogItem("高潮浸水想定区域モデル", an, a.URL, descFromAsset(a, i.DescriptionHtd), nil, false)
-		dci.Name = htdTnmIfldName("高潮浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Htd(an.FldName))
+		if dci != nil {
+			dci.Name = htdTnmIfldName("高潮浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Htd(an.FldName))
+		}
 		return dci
 	})
 }
@@ -137,7 +139,9 @@ func (i PlateauItem) IfldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		an := AssetNameFrom(a.URL)
 		desc := descFromAsset(a, i.DescriptionIfld)
 		dci := c.DataCatalogItem("内水浸水想定区域モデル", an, a.URL, desc, nil, false)
-		dci.Name = htdTnmIfldName("内水浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Ifld(an.FldName))
+		if dci != nil {
+			dci.Name = htdTnmIfldName("内水浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Ifld(an.FldName))
+		}
 		return dci
 	})
 }
@@ -150,7 +154,9 @@ func (i PlateauItem) TnmItems(c PlateauIntermediateItem) []*DataCatalogItem {
 	return lo.Map(i.Tnm, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
 		an := AssetNameFrom(a.URL)
 		dci := c.DataCatalogItem("津波浸水想定区域モデル", an, a.URL, descFromAsset(a, i.DescriptionTnm), nil, false)
-		dci.Name = htdTnmIfldName("津波浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Tnm(an.FldName))
+		if dci != nil {
+			dci.Name = htdTnmIfldName("津波浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Tnm(an.FldName))
+		}
 		return dci
 	})
 }

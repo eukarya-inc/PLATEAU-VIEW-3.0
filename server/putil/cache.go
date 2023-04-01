@@ -34,7 +34,9 @@ func NewCacheMiddleware(cfg CacheConfig) *CacheMiddleware {
 		cfg.TTL = defaultCacheTTL
 	}
 	if cfg.FS == nil {
-		cfg.FS = afero.NewBasePathFs(afero.NewOsFs(), cacheBasePath)
+		osfs := afero.NewOsFs()
+		_ = osfs.MkdirAll(cacheBasePath, os.FileMode(0755))
+		cfg.FS = afero.NewBasePathFs(osfs, cacheBasePath)
 	}
 
 	return &CacheMiddleware{

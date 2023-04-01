@@ -55,20 +55,22 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 
 		r := rivers[0]
 		dci := c.DataCatalogItem(fldModelName, r.an, r.a.URL, descFromAsset(r.a, i.DescriptionFld), nil, false)
-		dci.Name = fldName(fldModelName, i.CityName, r.an.FldName, r.dic)
-		dci.Config = DataCatalogItemConfig{
-			Data: lo.Map(rivers, func(rr river, _ int) DataCatalogItemConfigItem {
-				name := dci.Name
-				if rr.dic != nil {
-					name = rr.dic.Scale
-				}
+		if dci != nil {
+			dci.Name = fldName(fldModelName, i.CityName, r.an.FldName, r.dic)
+			dci.Config = DataCatalogItemConfig{
+				Data: lo.Map(rivers, func(rr river, _ int) DataCatalogItemConfigItem {
+					name := dci.Name
+					if rr.dic != nil {
+						name = rr.dic.Scale
+					}
 
-				return DataCatalogItemConfigItem{
-					Name: name,
-					URL:  assetURLFromFormat(rr.a.URL, rr.an.Format),
-					Type: rr.an.Format,
-				}
-			}),
+					return DataCatalogItemConfigItem{
+						Name: name,
+						URL:  assetURLFromFormat(rr.a.URL, rr.an.Format),
+						Type: rr.an.Format,
+					}
+				}),
+			}
 		}
 
 		return entry{i: r.i, item: dci}

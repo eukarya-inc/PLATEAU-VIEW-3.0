@@ -40,8 +40,10 @@ func (i PlateauItem) BridItem(c PlateauIntermediateItem) *DataCatalogItem {
 
 	an := AssetNameFrom(i.Brid[0].URL)
 	dci := c.DataCatalogItem(bridModelName, an, i.Brid[0].URL, i.DescriptionBrid, nil, false)
-	dci.Config = DataCatalogItemConfig{
-		Data: data,
+	if dci != nil {
+		dci.Config = DataCatalogItemConfig{
+			Data: data,
+		}
 	}
 
 	return dci
@@ -76,8 +78,10 @@ func (i PlateauItem) RailItem(c PlateauIntermediateItem) *DataCatalogItem {
 
 	an := AssetNameFrom(i.Rail[0].URL)
 	dci := c.DataCatalogItem(railModelName, an, i.Rail[0].URL, i.DescriptionRail, []string{"rail"}, false)
-	dci.Config = DataCatalogItemConfig{
-		Data: data,
+	if dci != nil {
+		dci.Config = DataCatalogItemConfig{
+			Data: data,
+		}
 	}
 
 	return dci
