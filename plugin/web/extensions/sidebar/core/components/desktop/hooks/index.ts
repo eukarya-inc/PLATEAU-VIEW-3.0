@@ -1,10 +1,9 @@
 import { postMsg, generateID } from "@web/extensions/sidebar/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-import { getDataCatalog, RawDataCatalogItem } from "../../../../modals/datacatalog/api/api";
-import { BuildingSearch, Data, Template } from "../../../types";
+import { BuildingSearch, Template } from "../../../types";
 import { Pages } from "../../Header";
-import { handleDataCatalogProcessing, updateExtended } from "../../utils";
+import { updateExtended } from "../../utils";
 
 import useDatasetHooks from "./datasetHooks";
 import useProjectHooks from "./projectHooks";
@@ -13,31 +12,20 @@ import useTemplateHooks from "./templateHooks";
 export default () => {
   const [inEditor, setInEditor] = useState(true);
 
-  const [catalogURL, setCatalogURL] = useState<string>();
-  const [catalogProjectName, setCatalogProjectName] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
-  const [publishToGeospatial, setPublishToGeospatial] = useState(false);
   const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
-
-  const [data, setData] = useState<Data[]>();
 
   const [loading, setLoading] = useState<boolean>(false);
 
-  const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = useCallback(({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(value);
     postMsg({ action: "saveSearchTerm", payload: { searchTerm: value } });
   }, []);
-
-  const processedCatalog = useMemo(() => {
-    const c = handleDataCatalogProcessing(catalogData, data);
-    return inEditor ? c : c.filter(c => !!c.public);
-  }, [catalogData, inEditor, data]);
 
   const {
     fieldTemplates,
@@ -56,19 +44,6 @@ export default () => {
     backendAccessToken,
     setLoading,
   });
-
-  const handleBackendFetch = useCallback(async () => {
-    if (!backendURL) return;
-    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}`);
-    if (res.status !== 200) return;
-    const resData = await res.json();
-
-    if (resData.templates) {
-      setFieldTemplates(resData.templates.filter((t: Template) => t.type === "field"));
-      setInfoboxTemplates(resData.templates.filter((t: Template) => t.type === "infobox"));
-    }
-    setData(resData.data);
-  }, [backendURL, backendProjectName, setInfoboxTemplates, setFieldTemplates]);
 
   const {
     project,
@@ -89,25 +64,20 @@ export default () => {
     updatedTemplateIDs,
     backendURL,
     backendProjectName,
-    processedCatalog,
     buildingSearch,
     setUpdatedTemplateIDs,
   });
 
-  const { handleDatasetUpdate, handleDatasetSave, handleDatasetPublish } = useDatasetHooks({
-    data,
+  const { handleDatasetUpdate, handleDatasetSave } = useDatasetHooks({
     templates: fieldTemplates,
     project,
     backendURL,
     backendProjectName,
     backendAccessToken,
-    publishToGeospatial,
     inEditor,
-    processedCatalog,
     setCleanseOverride,
     setLoading,
     updateProject,
-    handleBackendFetch,
   });
 
   // ****************************************
@@ -118,23 +88,18 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    const catalogBaseUrl = catalogURL || backendURL;
-    if (catalogBaseUrl) {
-      getDataCatalog(catalogBaseUrl, catalogProjectName).then(res => {
-        setCatalog(res);
-      });
-    }
-  }, [backendURL, catalogProjectName, catalogURL]);
+    (async () => {
+      if (!backendURL || !backendProjectName) return;
+      const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`);
+      if (res.status !== 200) return;
+      const resData = await res.json();
 
-  useEffect(() => {
-    if (backendURL) {
-      handleBackendFetch();
-    }
-  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    postMsg({ action: "updateDataCatalog", payload: processedCatalog });
-  }, [processedCatalog]);
+      if (resData) {
+        setFieldTemplates(resData.filter((t: Template) => t.type === "field"));
+        setInfoboxTemplates(resData.filter((t: Template) => t.type === "infobox"));
+      }
+    })();
+  }, [backendURL, backendProjectName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ****************************************
 
@@ -148,19 +113,15 @@ export default () => {
       } else if (e.data.action === "init" && e.data.payload) {
         setProjectID(e.data.payload.projectID);
         setInEditor(e.data.payload.inEditor);
-        setCatalogURL(e.data.payload.catalogURL);
-        setCatalogProjectName(e.data.payload.catalogProjectName);
         setReearthURL(`${e.data.payload.reearthURL}`);
         setBackendURL(e.data.payload.backendURL);
         setBackendProjectName(e.data.payload.backendProjectName);
         setBackendAccessToken(e.data.payload.backendAccessToken);
-        setPublishToGeospatial(e.data.payload.enableGeoPub);
+
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
         }
-      } else if (e.data.action === "updateDataset") {
-        handleDatasetPublish(e.data.payload.dataID, e.data.payload.publish);
       } else if (e.data.action === "triggerCatalogOpen") {
         handleModalOpen();
       } else if (e.data.action === "triggerHelpOpen") {
@@ -183,7 +144,7 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [handleDatasetPublish, handleInfoboxFieldsFetch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [handleInfoboxFieldsFetch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [currentPage, setCurrentPage] = useState<Pages>("data");
 
@@ -195,7 +156,7 @@ export default () => {
   // Building Search
   const handleBuildingSearch = useCallback(
     (dataID: string) => {
-      const plateauItem = catalogData.find(pd => pd.id === dataID);
+      const plateauItem = project.datasets.find(pd => pd.dataID === dataID);
       const searchIndex = plateauItem?.["search_index"];
       postMsg({
         action: "buildingSearchOpen",
@@ -206,7 +167,7 @@ export default () => {
         },
       });
     },
-    [catalogData],
+    [project.datasets],
   );
 
   const handleBuildingSearchOverride = useCallback(
@@ -255,11 +216,13 @@ export default () => {
   const handleModalOpen = useCallback(() => {
     postMsg({
       action: "catalogModalOpen",
+      payload: {
+        templates: fieldTemplates,
+      },
     });
-  }, []);
+  }, [fieldTemplates]);
 
   return {
-    catalog: processedCatalog,
     project,
     inEditor,
     reearthURL,

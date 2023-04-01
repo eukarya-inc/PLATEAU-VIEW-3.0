@@ -1,4 +1,4 @@
-import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
 import { isObject, mergeWith, omit, cloneDeep, merge as lodashMerge } from "lodash";
 
@@ -86,9 +86,8 @@ let currentSelected: string | undefined = undefined;
 const defaultLocation = { zone: "outer", section: "left", area: "middle" };
 const mobileLocation = { zone: "outer", section: "center", area: "top" };
 
-let catalog: DataCatalogItem[] = [];
-
 let addedDatasets: [dataID: string, status: "showing" | "hidden", layerID?: string][] = [];
+let templates: Template[] | undefined = undefined;
 
 let searchTerm = "";
 let expandedFolders: { id?: string; name?: string }[] = [];
@@ -189,9 +188,6 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
   } else if (action === "storageDelete") {
     reearth.clientStorage.deleteAsync(payload.key);
-  } else if (action === "updateDataCatalog") {
-    catalog = payload;
-    reearth.modal.postMessage({ action, payload: { updatedCatalog: payload } });
   } else if (action === "updateProject") {
     reearth.visualizer.overrideProperty(payload.sceneOverrides);
     reearth.clientStorage.setAsync("draftProject", payload);
@@ -268,9 +264,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "catalogModalOpen") {
     reearth.modal.show(dataCatalogHtml, { background: "transparent" });
-    if (payload) {
-      reearth.modal.postMessage({ action, payload });
-    }
+    templates = payload.templates;
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "saveSearchTerm") {
@@ -288,9 +282,15 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     reearth.modal.postMessage({
       action,
       payload: {
-        catalog,
         addedDatasets: addedDatasets.map(d => d[0]),
         inEditor: inEditor(),
+        backendProjectName: reearth.widget.property.default?.projectName ?? "",
+        backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
+        backendURL: reearth.widget.property.default?.plateauURL ?? "",
+        catalogURL: reearth.widget.property.default?.catalogURL ?? "",
+        catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
+        enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
+        templates,
         searchTerm,
         expandedFolders,
         dataset,

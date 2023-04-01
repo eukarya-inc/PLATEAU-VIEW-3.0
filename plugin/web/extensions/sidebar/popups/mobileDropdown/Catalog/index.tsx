@@ -1,10 +1,17 @@
-import { DataCatalogItem, GroupBy } from "@web/extensions/sidebar/modals/datacatalog/api/api";
+import { handleDataCatalogProcessing } from "@web/extensions/sidebar/core/components/utils";
+import { Data } from "@web/extensions/sidebar/core/types";
+import {
+  DataCatalogItem,
+  GroupBy,
+  RawDataCatalogItem,
+  getDataCatalog,
+} from "@web/extensions/sidebar/modals/datacatalog/api/api";
 import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import DatasetDetails from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Details";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import PopupItem from "../sharedComponents/PopupItem";
 
@@ -16,8 +23,12 @@ type Props = {
     id?: string | undefined;
     name?: string | undefined;
   }[];
-  catalog?: DataCatalogItem[];
   selectedDataset?: DataCatalogItem;
+  inEditor?: boolean;
+  catalogProjectName?: string;
+  catalogURL?: string;
+  backendURL?: string;
+  backendProjectName?: string;
   setSelectedDataset: React.Dispatch<React.SetStateAction<DataCatalogItem | undefined>>;
   setExpandedFolders?: React.Dispatch<
     React.SetStateAction<
@@ -36,8 +47,12 @@ const Catalog: React.FC<Props> = ({
   isMobile,
   searchTerm,
   expandedFolders,
-  catalog,
   selectedDataset,
+  inEditor,
+  catalogProjectName,
+  catalogURL,
+  backendURL,
+  backendProjectName,
   setSelectedDataset,
   setExpandedFolders,
   onSearch,
@@ -45,6 +60,37 @@ const Catalog: React.FC<Props> = ({
 }) => {
   const [filter, setFilter] = useState<GroupBy>("city");
   const [page, setPage] = useState<"catalog" | "details">("catalog");
+
+  const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
+  const [data, setData] = useState<Data[]>();
+
+  const processedCatalog = useMemo(() => {
+    const c = handleDataCatalogProcessing(catalogData, data);
+    return inEditor ? c : c.filter(c => !!c.public);
+  }, [catalogData, inEditor, data]);
+
+  useEffect(() => {
+    const catalogBaseUrl = catalogURL || backendURL;
+    if (catalogBaseUrl) {
+      getDataCatalog(catalogBaseUrl, catalogProjectName).then(res => {
+        setCatalog(res);
+      });
+    }
+  }, [backendURL, catalogProjectName, catalogURL]);
+
+  useEffect(() => {
+    if (!backendURL) return;
+    handleDataFetch();
+  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleDataFetch = useCallback(async () => {
+    if (!backendURL || !backendProjectName) return;
+    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/data`);
+    if (res.status !== 200) return;
+    const resData = await res.json();
+
+    setData(resData);
+  }, [backendURL, backendProjectName]);
 
   const handleOpenDetails = useCallback(
     (data?: DataCatalogItem) => {
@@ -91,7 +137,7 @@ const Catalog: React.FC<Props> = ({
             addedDatasetDataIDs={addedDatasetDataIDs}
             selectedItem={selectedDataset}
             isMobile={isMobile}
-            catalog={catalog}
+            catalog={processedCatalog}
             filter={filter}
             searchTerm={searchTerm}
             expandedFolders={expandedFolders}

@@ -20,10 +20,12 @@ const MobileDropdown: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
   const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
+  const [inEditor, setInEditor] = useState(false);
 
-  const [catalog, setCatalog] = useState<DataCatalogItem[]>();
   const [selectedDataset, setSelectedDataset] = useState<DataCatalogItem>();
 
+  const [catalogProjectName, setCatalogProjectName] = useState<string>();
+  const [catalogURL, setCatalogURL] = useState<string>();
   const [reearthURL, setReearthURL] = useState<string>();
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
@@ -31,12 +33,6 @@ const MobileDropdown: React.FC = () => {
   useEffect(() => {
     postMsg({ action: "initPopup" });
   }, []);
-
-  useEffect(() => {
-    if (currentTab === "catalog" && !catalog) {
-      postMsg({ action: "initMobileCatalog" });
-    }
-  }, [currentTab, catalog]);
 
   const changeTab = useCallback(
     (tab: Tab) => {
@@ -97,10 +93,11 @@ const MobileDropdown: React.FC = () => {
           if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
           if (e.data.payload.reearthURL) setReearthURL(e.data.payload.reearthURL);
           if (e.data.payload.backendURL) setBackendURL(e.data.payload.backendURL);
+          if (e.data.payload.catalogURL) setCatalogURL(e.data.payload.catalogURL);
+          setCatalogProjectName(e.data.payload.catalogProjectName);
+          if (e.data.payload.inEditor) setInEditor(e.data.payload.inEditor);
           if (e.data.payload.backendProjectName)
             setBackendProjectName(e.data.payload.backendProjectName);
-        } else if (e.data.action === "initMobileCatalog") {
-          if (e.data.payload) setCatalog(e.data.payload);
         } else if (e.data.action === "mobileCatalogOpen") {
           setSelectedDataset(e.data.payload);
           changeTab("catalog");
@@ -128,8 +125,12 @@ const MobileDropdown: React.FC = () => {
               isMobile
               searchTerm={searchTerm}
               expandedFolders={expandedFolders}
-              catalog={catalog}
               selectedDataset={selectedDataset}
+              inEditor={inEditor}
+              catalogProjectName={catalogProjectName}
+              catalogURL={catalogURL}
+              backendURL={backendURL}
+              backendProjectName={backendProjectName}
               setSelectedDataset={setSelectedDataset}
               setExpandedFolders={setExpandedFolders}
               onSearch={handleSearch}

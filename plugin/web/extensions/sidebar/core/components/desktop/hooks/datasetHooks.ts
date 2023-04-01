@@ -1,45 +1,47 @@
 import { Project } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import { Data, DataCatalogItem, Template } from "../../../types";
 import { convertToData } from "../../utils";
 
 export default ({
-  data,
   templates,
   project,
   backendURL,
   backendProjectName,
   backendAccessToken,
-  publishToGeospatial,
   inEditor,
-  processedCatalog,
   setCleanseOverride,
   setLoading,
   updateProject,
-  handleBackendFetch,
 }: {
-  data?: Data[];
   templates?: Template[];
   project?: Project;
   backendURL?: string;
   backendProjectName?: string;
   backendAccessToken?: string;
-  publishToGeospatial?: boolean;
   inEditor?: boolean;
-  processedCatalog: DataCatalogItem[];
   setCleanseOverride?: React.Dispatch<React.SetStateAction<string | undefined>>;
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   updateProject?: React.Dispatch<React.SetStateAction<Project>>;
-  handleBackendFetch: () => Promise<void>;
 }) => {
+  const handleDataFetch = useCallback(async () => {
+    if (!backendURL) return;
+    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/data`);
+    if (res.status !== 200) return;
+    const resData = await res.json();
+
+    return resData;
+  }, [backendURL, backendProjectName]);
+
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
       if (!backendURL || !backendAccessToken || !dataset) return;
       const datasetToSave = convertToData(dataset, templates);
 
-      const isNew = !data?.find(d => d.dataID === dataset.dataID);
+      const data = await handleDataFetch();
+      const isNew = data ? !data.find((d: Data) => d.dataID === dataset.dataID) : undefined;
 
       const fetchURL = !isNew
         ? `${backendURL}/sidebar/${backendProjectName}/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
@@ -55,14 +57,11 @@ export default ({
         body: JSON.stringify(datasetToSave),
       });
       if (res.status !== 200) {
-        handleBackendFetch();
+        console.log("A problem occured accessing the server:", res.statusText);
         return;
       }
-      const data2 = await res.json();
-      console.log("DATA JUST SAVED: ", data2);
-      handleBackendFetch(); // MAYBE UPDATE THIS LATER TO JUST UPDATE THE LOCAL VALUE
     },
-    [data, templates, backendAccessToken, backendURL, backendProjectName, handleBackendFetch],
+    [templates, backendAccessToken, backendURL, backendProjectName, handleDataFetch],
   );
 
   const handleDatasetUpdate = useCallback(
@@ -107,59 +106,21 @@ export default ({
     [inEditor, project?.datasets, setLoading, handleDataRequest],
   );
 
-  const handleDatasetPublish = useCallback(
-    (dataID: string, publish: boolean) => {
-      if (!inEditor || !processedCatalog) return;
-      const dataset = processedCatalog.find(item => item.dataID === dataID);
-
-      if (!dataset) return;
-
-      dataset.public = publish;
-
-      updateProject?.(project => {
-        const updatedDatasets = [...project.datasets];
-        const datasetIndex = updatedDatasets.findIndex(d2 => d2.dataID === dataID);
-        if (datasetIndex >= 0) {
-          updatedDatasets[datasetIndex] = dataset;
-        }
-        return {
-          ...project,
-          datasets: updatedDatasets,
-        };
-      });
-
-      handleDataRequest(dataset);
-
-      if (publish && publishToGeospatial && dataset.itemId && backendURL && backendAccessToken) {
-        fetch(`${backendURL}/publish_to_geospatialjp`, {
-          headers: {
-            authorization: `Bearer ${backendAccessToken}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({ id: dataset.itemId }),
-        })
-          .then(r => {
-            if (!r.ok)
-              throw `failed to publish the data on gspatial.jp: status code is ${r.statusText}`;
-          })
-          .catch(console.error);
+  useEffect(() => {
+    const eventListenerCallback = (e: MessageEvent<any>) => {
+      if (e.source !== parent) return;
+      if (e.data.action === "updateDataset" && e.data.payload) {
+        handleDatasetUpdate(e.data.payload);
       }
-    },
-    [
-      processedCatalog,
-      inEditor,
-      backendAccessToken,
-      backendURL,
-      publishToGeospatial,
-      updateProject,
-      handleDataRequest,
-    ],
-  );
+    };
+    addEventListener("message", eventListenerCallback);
+    return () => {
+      removeEventListener("message", eventListenerCallback);
+    };
+  }, [handleDatasetUpdate]);
 
   return {
     handleDatasetUpdate,
     handleDatasetSave,
-    handleDatasetPublish,
   };
 };

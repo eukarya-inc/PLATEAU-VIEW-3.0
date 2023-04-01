@@ -15,10 +15,11 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
   const {
     selected,
     project,
-    catalog,
     reearthURL,
     backendURL,
+    catalogURL,
     backendProjectName,
+    inEditor,
     templates,
     searchTerm,
     buildingSearch,
@@ -52,14 +53,14 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
             templates,
             project,
             buildingSearch,
+            inEditor,
             searchTerm,
+            catalogURL,
             reearthURL,
             backendURL,
             backendProjectName,
           },
         });
-      } else if (e.data.action === "initMobileCatalog") {
-        postMsg({ action: "initMobileCatalog", payload: catalog });
       } else if (e.data.action === "triggerCatalogOpen") {
         postMsg({ action: "modalClose" });
         handleTabSelect("catalog");

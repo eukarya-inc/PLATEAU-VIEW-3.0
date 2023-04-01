@@ -1,6 +1,6 @@
 import { postMsg, generateID } from "@web/extensions/sidebar/utils";
 import { getActiveFieldIDs } from "@web/extensions/sidebar/utils/dataset";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Tab } from "..";
 import {
@@ -8,8 +8,8 @@ import {
   getDataCatalog,
   RawDataCatalogItem,
 } from "../../../../modals/datacatalog/api/api";
-import { BuildingSearch, Data, FldInfo, Template } from "../../../types";
-import { handleDataCatalogProcessing, updateExtended } from "../../utils";
+import { BuildingSearch, FldInfo, Template } from "../../../types";
+import { updateExtended } from "../../utils";
 
 import useProjectHooks from "./projectHooks";
 
@@ -27,28 +27,22 @@ export default () => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
   const [infoboxTemplates, setInfoboxTemplates] = useState<Template[]>([]);
 
-  const [data, setData] = useState<Data[]>();
-
   const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const processedCatalog = useMemo(() => {
-    const c = handleDataCatalogProcessing(catalogData, data);
-    return inEditor ? c : c.filter(c => !!c.public);
-  }, [catalogData, inEditor, data]);
+  useEffect(() => {
+    (async () => {
+      if (!backendURL || !backendProjectName) return;
+      const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`);
+      if (res.status !== 200) return;
+      const resData = await res.json();
 
-  const handleBackendFetch = useCallback(async () => {
-    if (!backendURL) return;
-    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}`);
-    if (res.status !== 200) return;
-    const resData = await res.json();
-
-    if (resData.templates) {
-      setFieldTemplates(resData.templates.filter((t: Template) => t.type === "field"));
-      setInfoboxTemplates(resData.templates.filter((t: Template) => t.type === "infobox"));
-    }
-    setData(resData.data);
-  }, [backendURL, backendProjectName, setInfoboxTemplates, setFieldTemplates]);
+      if (resData) {
+        setFieldTemplates(resData.filter((t: Template) => t.type === "field"));
+        setInfoboxTemplates(resData.filter((t: Template) => t.type === "infobox"));
+      }
+    })();
+  }, [backendURL, backendProjectName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const {
     project,
@@ -66,7 +60,6 @@ export default () => {
     fieldTemplates,
     backendURL,
     backendProjectName,
-    processedCatalog,
     buildingSearch,
   });
 
@@ -125,22 +118,12 @@ export default () => {
     }
   }, [backendURL, catalogProjectName, catalogURL]);
 
-  useEffect(() => {
-    if (backendURL) {
-      handleBackendFetch();
-    }
-  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    postMsg({ action: "updateDataCatalog", payload: processedCatalog });
-  }, [processedCatalog]);
-
   // ****************************************
 
   const handleInfoboxFieldsFetch = useCallback(
     (dataID: string) => {
       let fields: (Template & { fldInfo?: FldInfo }) | undefined;
-      const catalogItem = processedCatalog?.find(d => d.dataID === dataID);
+      const catalogItem = project.datasets?.find(d => d.dataID === dataID);
       if (catalogItem) {
         const name = catalogItem?.type;
         const dataType = catalogItem?.type_en;
@@ -163,7 +146,7 @@ export default () => {
         payload: fields,
       });
     },
-    [processedCatalog, infoboxTemplates],
+    [project.datasets, infoboxTemplates],
   );
 
   useEffect(() => {
@@ -279,17 +262,21 @@ export default () => {
   const handleModalOpen = useCallback(() => {
     postMsg({
       action: "catalogModalOpen",
+      payload: {
+        templates: fieldTemplates,
+      },
     });
-  }, []);
+  }, [fieldTemplates]);
 
   return {
     selected,
     project,
-    catalog: processedCatalog,
     templates: fieldTemplates,
+    catalogURL,
     reearthURL,
     backendURL,
     backendProjectName,
+    inEditor,
     searchTerm,
     buildingSearch,
     setSelected,

@@ -6,7 +6,6 @@ import {
   getActiveFieldIDs,
   getDefaultGroup,
 } from "@web/extensions/sidebar/utils/dataset";
-import { merge } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BuildingSearch, Data, DataCatalogItem, FldInfo, Template } from "../../../types";
@@ -73,7 +72,6 @@ export default ({
   updatedTemplateIDs,
   backendURL,
   backendProjectName,
-  processedCatalog,
   buildingSearch,
   setUpdatedTemplateIDs,
 }: {
@@ -82,7 +80,6 @@ export default ({
   updatedTemplateIDs?: string[];
   backendURL?: string;
   backendProjectName?: string;
-  processedCatalog: DataCatalogItem[];
   buildingSearch?: BuildingSearch;
   setUpdatedTemplateIDs?: React.Dispatch<React.SetStateAction<string[] | undefined>>;
 }) => {
@@ -375,18 +372,14 @@ export default ({
 
   useEffect(() => {
     if (!backendURL || !backendProjectName || fetchedSharedProject.current) return;
-    if (projectID && processedCatalog.length) {
+    if (projectID) {
       (async () => {
         const res = await fetch(`${backendURL}/share/${backendProjectName}/${projectID}`);
         if (res.status !== 200) return;
         const data = await res.json();
         if (data) {
           (data.datasets as Data[]).forEach(d => {
-            const dataset = processedCatalog.find(item => item.dataID === d.dataID);
-            const mergedDataset: DataCatalogItem = merge(dataset, d, {});
-            if (mergedDataset) {
-              handleProjectDatasetAdd(mergedDataset);
-            }
+            handleProjectDatasetAdd(d);
           });
           if (data.userStory && data.userStory.length > 0) {
             handleInitUserStory(data.userStory);
@@ -400,7 +393,6 @@ export default ({
     projectID,
     backendURL,
     backendProjectName,
-    processedCatalog,
     handleProjectDatasetAdd,
     handleInitUserStory,
     handleProjectSceneUpdate,

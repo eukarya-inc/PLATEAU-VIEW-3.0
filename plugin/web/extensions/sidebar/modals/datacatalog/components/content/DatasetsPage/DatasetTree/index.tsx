@@ -1,4 +1,4 @@
-import { Input, Tabs } from "@web/sharedComponents";
+import { Input, Spin, Tabs } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useMemo, useState } from "react";
 
@@ -109,8 +109,8 @@ const DatasetTree: React.FC<Props> = ({
         defaultActiveKey="prefecture"
         tabBarStyle={showTabs ? { display: "none" } : { userSelect: "none" }}
         onChange={active => onFilter(active as GroupBy)}>
-        <Tabs.TabPane key="prefecture" tab="都道府県">
-          {dataCatalogTree && (
+        <Tabs.TabPane key="prefecture" tab="都道府県" style={{ position: "relative" }}>
+          {dataCatalogTree ? (
             <FileTree
               addedDatasetDataIDs={addedDatasetDataIDs}
               catalog={dataCatalogTree}
@@ -123,10 +123,14 @@ const DatasetTree: React.FC<Props> = ({
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}
             />
+          ) : (
+            <Loading>
+              <Spin />
+            </Loading>
           )}
         </Tabs.TabPane>
-        <Tabs.TabPane key="type" tab="種類">
-          {dataCatalogTree && (
+        <Tabs.TabPane key="type" tab="種類" style={{ position: "relative" }}>
+          {dataCatalogTree ? (
             <FileTree
               addedDatasetDataIDs={addedDatasetDataIDs}
               catalog={dataCatalogTree}
@@ -139,6 +143,10 @@ const DatasetTree: React.FC<Props> = ({
               onDatasetAdd={onDatasetAdd}
               onOpenDetails={onOpenDetails}
             />
+          ) : (
+            <Loading>
+              <Spin />
+            </Loading>
           )}
         </Tabs.TabPane>
       </StyledTabs>
@@ -185,4 +193,15 @@ const StyledTabs = styled(Tabs)`
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: #00bebe;
   }
+`;
+
+const Loading = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 400px;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
