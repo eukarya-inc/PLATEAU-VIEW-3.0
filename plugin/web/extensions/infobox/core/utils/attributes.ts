@@ -3,9 +3,10 @@ import { get } from "lodash";
 import type { FldInfo, Properties } from "../../types";
 
 import attributesData from "./attributes.csv?raw";
-import type { Json, JsonArray, JsonObject } from "./json";
+import type { Json, JsonArray, JsonObject, JsonPrimitive } from "./json";
 
 export const attributesMap = new Map<string, string>();
+const ignoredSuffix = ["_codeSpace"];
 
 attributesData
   .split("\n")
@@ -29,17 +30,21 @@ export function getAttributes(attributes: Json, mode?: "both" | "label" | "key")
     return Object.fromEntries(
       Object.entries(obj)
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([k, v]) => {
-          const label = keyMap?.get(k.replace(/_.+?$/, ""));
+        .map(([k, v]): [string, JsonPrimitive | JsonObject | JsonArray] | undefined => {
+          const m = k.match(/^(.*)(_.+?)$/);
+          if (m?.[2] && ignoredSuffix.includes(m[2])) return;
+
+          const label = keyMap?.get(m?.[1] || k);
           const nk =
             (mode === "both" || mode === "label") && label ? label + (suffix(k, keyMap) ?? "") : "";
           const ak = nk ? (mode === "both" ? `${nk}（${k}）` : nk) : k;
-
           if (typeof v === "object" && v) {
             return [ak || k, walk(v, keyMap)];
           }
+
           return [ak || k, v];
-        }),
+        })
+        .filter((e): e is [string, JsonPrimitive | JsonObject | JsonArray] => !!e),
     );
   }
 

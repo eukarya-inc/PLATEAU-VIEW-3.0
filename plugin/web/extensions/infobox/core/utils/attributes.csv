@@ -489,3 +489,4 @@ urf:zoneName,区域名
 urf:status,特別警戒未指定フラグ
 _uom,単位
 _code,コード
+_codeSpace,コードスペース
