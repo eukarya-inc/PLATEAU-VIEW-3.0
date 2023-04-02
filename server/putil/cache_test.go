@@ -16,7 +16,8 @@ import (
 )
 
 func TestCacheMiddleware_Disabled(t *testing.T) {
-	m := NewCacheMiddleware(CacheConfig{Disabled: true})
+	mfs := afero.NewMemMapFs()
+	m := NewCacheMiddleware(CacheConfig{Disabled: true, FS: mfs})
 	e := echo.New()
 	e.Use(m.Middleware())
 	e.GET("/aaa", func(c echo.Context) error {

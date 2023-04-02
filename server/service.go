@@ -18,9 +18,10 @@ import (
 )
 
 type Service struct {
-	Name    string
-	Echo    func(g *echo.Group) error
-	Webhook cmswebhook.Handler
+	Name           string
+	Echo           func(g *echo.Group) error
+	Webhook        cmswebhook.Handler
+	DisableNoCache bool
 }
 
 var services = [](func(*Config) (*Service, error)){
@@ -216,6 +217,7 @@ func DataCatalog(conf *Config) (*Service, error) {
 		Echo: func(g *echo.Group) error {
 			return datacatalog.Echo(c, g.Group("/datacatalog"))
 		},
+		DisableNoCache: true,
 	}, nil
 }
 

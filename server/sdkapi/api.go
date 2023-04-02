@@ -14,6 +14,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func Handler(conf Config, g *echo.Group) error {
@@ -36,10 +37,15 @@ func Handler(conf Config, g *echo.Group) error {
 func handler(conf Config, g *echo.Group, cms *CMS) error {
 	conf.Default()
 
-	c := putil.NewCacheMiddleware(putil.CacheConfig{
-		Disabled: conf.DisableCache,
-		TTL:      time.Duration(conf.CacheTTL) * time.Second,
-	})
+	g.Use(
+		auth(conf.Token),
+		middleware.CORS(),
+		middleware.Gzip(),
+		putil.NewCacheMiddleware(putil.CacheConfig{
+			Disabled: conf.DisableCache,
+			TTL:      time.Duration(conf.CacheTTL) * time.Second,
+		}).Middleware(),
+	)
 
 	g.GET("/datasets", func(c echo.Context) error {
 		data, err := cms.Datasets(c.Request().Context(), conf.Model)
@@ -47,7 +53,7 @@ func handler(conf Config, g *echo.Group, cms *CMS) error {
 			return err
 		}
 		return c.JSON(http.StatusOK, data)
-	}, auth(conf.Token), c.Middleware())
+	})
 
 	g.GET("/datasets/:id/files", func(c echo.Context) error {
 		data, err := cms.Files(c.Request().Context(), conf.Model, c.Param("id"))
@@ -55,7 +61,7 @@ func handler(conf Config, g *echo.Group, cms *CMS) error {
 			return err
 		}
 		return c.JSON(http.StatusOK, data)
-	}, auth(conf.Token))
+	})
 
 	return nil
 }

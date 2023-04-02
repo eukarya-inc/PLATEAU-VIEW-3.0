@@ -11,41 +11,43 @@ import (
 	"github.com/reearth/reearthx/rerror"
 )
 
-func Echo(cfg Config, e *echo.Group) error {
-	f, err := NewFetcher(nil, cfg.CMSBase)
+func Echo(conf Config, g *echo.Group) error {
+	f, err := NewFetcher(nil, conf.CMSBase)
 	if err != nil {
 		return err
 	}
 
-	c := putil.NewCacheMiddleware(putil.CacheConfig{
-		Disabled: cfg.DisableCache,
-		TTL:      time.Duration(cfg.CacheTTL) * time.Second,
-	})
-	if err != nil {
-		return err
-	}
+	g.Use(
+		middleware.CORS(),
+		// putil.CacheControlMiddleware("max-age=180", true),
+		middleware.Gzip(),
+		putil.NewCacheMiddleware(putil.CacheConfig{
+			Disabled: conf.DisableCache,
+			TTL:      time.Duration(conf.CacheTTL) * time.Second,
+		}).Middleware(),
+	)
 
-	e.GET("", func(c echo.Context) error {
-		if cfg.CMSProject == "" {
+	g.GET("", func(c echo.Context) error {
+		if conf.CMSProject == "" {
 			return rerror.ErrNotFound
 		}
 
-		res, err := f.Do(c.Request().Context(), cfg.CMSProject)
+		res, err := f.Do(c.Request().Context(), conf.CMSProject)
 		if err != nil {
 			log.Errorf("datacatalog: %v", err)
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	}, middleware.CORS(), c.Middleware())
+	})
 
-	e.GET("/:project", func(c echo.Context) error {
+	g.GET("/:project", func(c echo.Context) error {
 		res, err := f.Do(c.Request().Context(), c.Param("project"))
 		if err != nil {
 			log.Errorf("datacatalog: %v", err)
 			return c.JSON(http.StatusInternalServerError, "error")
 		}
 		return c.JSON(http.StatusOK, res.All())
-	}, middleware.CORS(), c.Middleware())
+	})
 
 	return nil
 }
