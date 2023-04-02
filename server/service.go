@@ -156,7 +156,8 @@ func SDKAPI(conf *Config) (*Service, error) {
 	}
 
 	return &Service{
-		Name: "sdkapi",
+		Name:           "sdkapi",
+		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
 			return sdkapi.Handler(c, g.Group("/sdk"))
 		},
@@ -199,7 +200,8 @@ func Sidebar(conf *Config) (*Service, error) {
 	}
 
 	return &Service{
-		Name: "sidebar",
+		Name:           "sidebar",
+		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
 			return sidebar.Echo(g.Group("/sidebar"), c)
 		},
