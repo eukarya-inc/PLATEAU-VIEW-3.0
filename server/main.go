@@ -143,13 +143,25 @@ func proxyHandlerFunc(c echo.Context) error {
 	// Append query string parameters to target URL
 	targetURL.RawQuery = c.QueryString()
 
+	 // Create a new http.Request object with the target URL and Host header
+	 req, err := http.NewRequest(c.Request().Method, targetURL.String(), c.Request().Body)
+	 if err != nil {
+		 return err
+	 }
+	 req.Host = targetURL.Host
+
+	 fmt.Println("URL: ", req.URL)
+
 	// Define the ProxyConfig object with custom Rewrite rules and ModifyResponse function
 	proxyConfig := middleware.ProxyConfig{
 		Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
 			{
-				URL: targetURL,
+				URL: req.URL,
 			},
 		}),
+		Rewrite: map[string]string{
+            "^/proxy": "",
+        },
 		ModifyResponse: func(resp *http.Response) error {
 			// Copy the response headers from the target URL to the client response
 			for k, vv := range resp.Header {
