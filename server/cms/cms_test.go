@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 	"github.com/samber/lo"
@@ -24,6 +25,24 @@ func TestCMS(t *testing.T) {
 	// valid
 	call := mockCMS(t, "http://cms.example.com", "TOKEN")
 	c := lo.Must(New("http://cms.example.com", "TOKEN"))
+
+	model, err := c.GetModel(ctx, "mmm")
+	assert.Equal(t, 1, call("GET /api/models/mmm"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Model{
+		ID:           "idid",
+		Key:          "mmm",
+		LastModified: time.Date(2023, time.April, 1, 1, 0, 0, 0, time.UTC),
+	}, model)
+
+	model, err = c.GetModelByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Model{
+		ID:           "idid",
+		Key:          "mmm",
+		LastModified: time.Date(2023, time.April, 1, 1, 0, 0, 0, time.UTC),
+	}, model)
 
 	item, err := c.GetItem(ctx, "a", false)
 	assert.Equal(t, 1, call("GET /api/items/a"))
@@ -83,6 +102,16 @@ func TestCMS(t *testing.T) {
 	httpmock.Reset()
 	call = mockCMS(t, "http://cms.example.com", "TOKEN")
 	c = lo.Must(New("http://cms.example.com", "TOKEN2"))
+
+	model, err = c.GetModel(ctx, "mmm")
+	assert.Equal(t, 1, call("GET /api/models/mmm"))
+	assert.Nil(t, model)
+	assert.ErrorContains(t, err, "failed to request: code=401")
+
+	model, err = c.GetModelByKey(ctx, "ppp", "mmm")
+	assert.Equal(t, 1, call("GET /api/projects/ppp/models/mmm"))
+	assert.Nil(t, model)
+	assert.ErrorContains(t, err, "failed to request: code=401")
 
 	item, err = c.GetItem(ctx, "a", false)
 	assert.Equal(t, 1, call("GET /api/items/a"))
@@ -226,6 +255,14 @@ func mockCMS(t *testing.T, host, token string) func(string) int {
 		}, nil
 	}))
 
+	modelResponder := checkHeader(func(r *http.Request) (any, error) {
+		return map[string]any{
+			"id":           "idid",
+			"key":          "mmm",
+			"lastModified": time.Date(2023, time.April, 1, 1, 0, 0, 0, time.UTC),
+		}, nil
+	})
+
 	itemsResponder := checkHeader(func(r *http.Request) (any, error) {
 		page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 		perPage, _ := strconv.Atoi(r.URL.Query().Get("perPage"))
@@ -248,6 +285,8 @@ func mockCMS(t *testing.T, host, token string) func(string) int {
 		}, nil
 	})
 
+	httpmock.RegisterResponder("GET", host+"/api/projects/ppp/models/mmm", modelResponder)
+	httpmock.RegisterResponder("GET", host+"/api/models/mmm", modelResponder)
 	httpmock.RegisterResponder("GET", host+"/api/projects/ppp/models/mmm/items", itemsResponder)
 	httpmock.RegisterResponder("GET", host+"/api/models/mmm/items", itemsResponder)
 

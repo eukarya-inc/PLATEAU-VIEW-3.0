@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/jarcoal/httpmock"
@@ -69,8 +70,16 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	defer httpmock.Deactivate()
 
 	expected := `[{"hoge":"foo"},{"hoge":"bar"}]` + "\n"
-	responder := func(req *http.Request) (*http.Response, error) {
-		return httpmock.NewJsonResponse(http.StatusOK, &cms.Items{
+	lastModified := time.Date(2022, time.April, 1, 0, 0, 0, 0, time.Local)
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey)),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Model{LastModified: lastModified}),
+	)
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Items{
 			Items: []cms.Item{
 				{
 					ID:     "a",
@@ -84,9 +93,8 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 			Page:       1,
 			PerPage:    50,
 			TotalCount: 1,
-		})
-	}
-	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")), responder)
+		}),
+	)
 
 	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/data", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -101,6 +109,7 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	assert.NoError(t, res)
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
 	assert.Equal(t, expected, rec.Body.String())
+	assert.Equal(t, lastModified.Format(time.RFC1123), rec.Header().Get("Last-Modified"))
 }
 
 func TestHandler_createDataHandler(t *testing.T) {
@@ -200,8 +209,10 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 	defer httpmock.Deactivate()
 
 	expected := `[{"hoge":"hoge"},{"hoge":"foo"}]` + "\n"
-	responder := func(req *http.Request) (*http.Response, error) {
-		return httpmock.NewJsonResponse(http.StatusOK, &cms.Items{
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Items{
 			Items: []cms.Item{
 				{
 					ID:     "a",
@@ -215,10 +226,13 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 			Page:       1,
 			PerPage:    50,
 			TotalCount: 2,
-		},
-		)
-	}
-	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")), responder)
+		}),
+	)
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey)),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Model{}),
+	)
 
 	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/templates", nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -350,4 +364,51 @@ func TestHandler_deleteTemplateHandler(t *testing.T) {
 	res := handler(ctx)
 	assert.NoError(t, res)
 	assert.Equal(t, http.StatusNoContent, rec.Result().StatusCode)
+}
+
+func TestHandler_LastModified(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+	lastModified := time.Date(2022, time.April, 1, 0, 0, 0, 0, time.Local)
+	lastModified2 := time.Date(2022, time.April, 2, 0, 0, 0, 0, time.Local)
+
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey)),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Model{LastModified: lastModified}),
+	)
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey)),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Model{LastModified: lastModified2}),
+	)
+
+	e := echo.New()
+
+	// no If-Modified-Since
+	r := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+	hit, err := newHandler().lastModified(e.NewContext(r, w), testCMSProject, dataModelKey, templateModelKey)
+	assert.NoError(t, err)
+	assert.False(t, hit)
+	assert.Equal(t, lastModified2.Format(time.RFC1123), w.Header().Get(echo.HeaderLastModified))
+
+	// If-Modified-Since
+	r = httptest.NewRequest("GET", "/", nil)
+	r.Header.Set(echo.HeaderIfModifiedSince, lastModified2.Format(time.RFC1123))
+	w = httptest.NewRecorder()
+	hit, err = newHandler().lastModified(e.NewContext(r, w), testCMSProject, dataModelKey, templateModelKey)
+	assert.NoError(t, err)
+	assert.True(t, hit)
+	assert.Equal(t, http.StatusNotModified, w.Result().StatusCode)
+	assert.Equal(t, lastModified2.Format(time.RFC1123), w.Header().Get(echo.HeaderLastModified))
+
+	// expired If-Modified-Since
+	r = httptest.NewRequest("GET", "/", nil)
+	r.Header.Set(echo.HeaderIfModifiedSince, lastModified.Format(time.RFC1123))
+	w = httptest.NewRecorder()
+	hit, err = newHandler().lastModified(e.NewContext(r, w), testCMSProject, dataModelKey, templateModelKey)
+	assert.NoError(t, err)
+	assert.False(t, hit)
+	assert.Equal(t, lastModified2.Format(time.RFC1123), w.Header().Get(echo.HeaderLastModified))
 }

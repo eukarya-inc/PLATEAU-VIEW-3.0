@@ -17,6 +17,8 @@ import (
 )
 
 type Interface interface {
+	GetModel(ctx context.Context, modelID string) (*Model, error)
+	GetModelByKey(ctx context.Context, proejctID, modelID string) (*Model, error)
 	GetItem(ctx context.Context, itemID string, asset bool) (*Item, error)
 	GetItemsPartially(ctx context.Context, modelID string, page, perPage int, asset bool) (*Items, error)
 	GetItems(ctx context.Context, modelID string, asset bool) (*Items, error)
@@ -59,6 +61,36 @@ func (c *CMS) assetParam(asset bool) map[string][]string {
 	return map[string][]string{
 		"asset": {"true"},
 	}
+}
+
+func (c *CMS) GetModel(ctx context.Context, modelID string) (*Model, error) {
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "models", modelID}, "", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get an model: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	model := &Model{}
+	if err := json.NewDecoder(b).Decode(model); err != nil {
+		return nil, fmt.Errorf("failed to parse an model: %w", err)
+	}
+
+	return model, nil
+}
+
+func (c *CMS) GetModelByKey(ctx context.Context, projectKey, modelKey string) (*Model, error) {
+	b, err := c.send(ctx, http.MethodGet, []string{"api", "projects", projectKey, "models", modelKey}, "", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get an model: %w", err)
+	}
+	defer func() { _ = b.Close() }()
+
+	model := &Model{}
+	if err := json.NewDecoder(b).Decode(model); err != nil {
+		return nil, fmt.Errorf("failed to parse an model: %w", err)
+	}
+
+	return model, nil
 }
 
 func (c *CMS) GetItem(ctx context.Context, itemID string, asset bool) (*Item, error) {

@@ -3,6 +3,7 @@ package sdkapi
 import (
 	"context"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/reearth/reearthx/rerror"
 )
 
 func Handler(conf Config, g *echo.Group) error {
@@ -48,6 +50,12 @@ func handler(conf Config, g *echo.Group, cms *CMS) error {
 	)
 
 	g.GET("/datasets", func(c echo.Context) error {
+		if hit, err := lastModified(c, cms, conf.Model); err != nil {
+			return err
+		} else if hit {
+			return nil
+		}
+
 		data, err := cms.Datasets(c.Request().Context(), conf.Model)
 		if err != nil {
 			return err
@@ -139,4 +147,28 @@ func isInt(s string) bool {
 		}
 	}
 	return true
+}
+
+func lastModified(c echo.Context, cms *CMS, prj string, models ...string) (bool, error) {
+	if cms == nil || cms.IntegrationAPIClient == nil {
+		return false, nil
+	}
+
+	mlastModified := time.Time{}
+
+	for _, m := range models {
+		model, err := cms.IntegrationAPIClient.GetModelByKey(c.Request().Context(), prj, m)
+		if err != nil {
+			if errors.Is(err, rerror.ErrNotFound) {
+				return false, c.JSON(http.StatusNotFound, "not found")
+			}
+			return false, err
+		}
+
+		if model != nil && mlastModified.Before(model.LastModified) {
+			mlastModified = model.LastModified
+		}
+	}
+
+	return putil.LastModified(c, mlastModified)
 }

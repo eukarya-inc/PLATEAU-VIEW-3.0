@@ -180,7 +180,6 @@ func (c *Config) Sidebar() sidebar.Config {
 func (c *Config) DataCatalog() datacatalog.Config {
 	return datacatalog.Config{
 		CMSBase:      c.CMS_BaseURL,
-		CMSProject:   c.CMS_PlateauProject,
 		DisableCache: c.DataCatalog_DisableCache,
 		CacheTTL:     c.DataCatalog_CacheTTL,
 	}

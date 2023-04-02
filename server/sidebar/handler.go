@@ -5,8 +5,10 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
@@ -34,6 +36,12 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
+		if hit, err := h.lastModified(c, prj, dataModelKey, templateModelKey); err != nil {
+			return err
+		} else if hit {
+			return nil
+		}
+
 		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
@@ -59,6 +67,12 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+
+		if hit, err := h.lastModified(c, prj, dataModelKey); err != nil {
+			return err
+		} else if hit {
+			return nil
+		}
 
 		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
 		if err != nil {
@@ -191,6 +205,12 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+
+		if hit, err := h.lastModified(c, prj, templateModelKey); err != nil {
+			return err
+		} else if hit {
+			return nil
+		}
 
 		res, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey, false)
 		if err != nil {
@@ -336,4 +356,24 @@ func itemJSON(f *cms.Field, id string) any {
 		}
 	}
 	return j
+}
+
+func (h *Handler) lastModified(c echo.Context, prj string, models ...string) (bool, error) {
+	mlastModified := time.Time{}
+
+	for _, m := range models {
+		model, err := h.CMS.GetModelByKey(c.Request().Context(), prj, m)
+		if err != nil {
+			if errors.Is(err, rerror.ErrNotFound) {
+				return false, c.JSON(http.StatusNotFound, "not found")
+			}
+			return false, err
+		}
+
+		if model != nil && mlastModified.Before(model.LastModified) {
+			mlastModified = model.LastModified
+		}
+	}
+
+	return putil.LastModified(c, mlastModified)
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
@@ -71,8 +72,9 @@ func (a *Asset) ToPublic() *PublicAsset {
 }
 
 type Model struct {
-	ID  string `json:"id"`
-	Key string `json:"key,omitempty"`
+	ID           string    `json:"id"`
+	Key          string    `json:"key,omitempty"`
+	LastModified time.Time `json:"lastModified,omitempty"`
 }
 
 type Items struct {
