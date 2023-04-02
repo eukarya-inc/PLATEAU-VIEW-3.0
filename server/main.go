@@ -125,6 +125,14 @@ func errorMessage(err error, log func(string, ...interface{})) (int, string) {
 	return code, msg
 }
 
+type MyRoundTripper struct {
+	r           http.RoundTripper
+}
+
+func (mrt MyRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	return mrt.r.RoundTrip(r)
+}
+
 func proxyHandlerFunc(c echo.Context) error {
 	// Extract the target URL from the request path
 	targetPath := c.Param("*")
@@ -143,20 +151,11 @@ func proxyHandlerFunc(c echo.Context) error {
 	// Append query string parameters to target URL
 	targetURL.RawQuery = c.QueryString()
 
-	 // Create a new http.Request object with the target URL and Host header
-	 req, err := http.NewRequest(c.Request().Method, targetURL.String(), c.Request().Body)
-	 if err != nil {
-		 return err
-	 }
-	 req.Host = targetURL.Host
-
-	 fmt.Println("URL: ", req.URL)
-
 	// Define the ProxyConfig object with custom Rewrite rules and ModifyResponse function
 	proxyConfig := middleware.ProxyConfig{
 		Balancer: middleware.NewRoundRobinBalancer([]*middleware.ProxyTarget{
 			{
-				URL: req.URL,
+				URL: targetURL,
 			},
 		}),
 		Rewrite: map[string]string{
@@ -180,6 +179,9 @@ func proxyHandlerFunc(c echo.Context) error {
 			}
 
 			return nil
+		},
+		Transport: &MyRoundTripper{
+			r: http.DefaultTransport,
 		},
 	}
 
