@@ -26,4 +26,4 @@ func CacheControlMiddleware(cacheControl string, capture bool) echo.MiddlewareFu
 	}
 }
 
-var NoCacheMiddleware = CacheControlMiddleware("private, no-store, no-cache, must-revalidate", true)
+var NoCacheMiddleware = CacheControlMiddleware("no-store", true)

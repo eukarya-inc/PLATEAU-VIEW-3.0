@@ -1,6 +1,7 @@
 package putil
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -17,9 +18,10 @@ const defaultCacheTTL = 3 * time.Minute
 const cacheBasePath = "cache"
 
 type CacheConfig struct {
-	Disabled bool
-	TTL      time.Duration
-	FS       afero.Fs
+	Disabled     bool
+	TTL          time.Duration
+	FS           afero.Fs
+	CacheControl bool
 }
 
 type CacheMiddleware struct {
@@ -96,7 +98,8 @@ func (m *CacheMiddleware) Middleware() echo.MiddlewareFunc {
 			}
 
 			e := m.save(key, c)
-			log.Debugf("cache: created: key=%s, expires_at=%d, content_type=%s", key, e.Expires.Unix(), e.ContentType)
+			maxAge := m.setCacheControl(c, m.cfg.TTL)
+			log.Debugf("cache: created: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
 			return nil
 		}
 	}
@@ -120,13 +123,27 @@ func (m *CacheMiddleware) load(c echo.Context, key string) error {
 		r, err := m.readFile(key)
 		if r != nil {
 			defer func() { _ = r.Close() }()
-			log.Debugf("cache: hit: key=%s, expires_at=%d, content_type=%s", key, e.Expires.Unix(), e.ContentType)
+			maxAge := m.setCacheControl(c, e.Expires.Sub(util.Now()))
+			log.Debugf("cache: hit: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
 			return c.Stream(http.StatusOK, e.ContentType, r)
 		} else {
 			log.Errorf("cache: failed to load a file: key=%s, err=%v", key, err)
 		}
 	}
 	return nil
+}
+
+func (m *CacheMiddleware) setCacheControl(c echo.Context, d time.Duration) int {
+	maxAge := -1
+	if m.cfg.CacheControl {
+		maxAge2 := int(d.Seconds())
+		if maxAge2 < 10 {
+			maxAge2 = 1 // 1s
+		}
+		c.Response().Header().Set(echo.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", maxAge2))
+		maxAge = maxAge2
+	}
+	return maxAge
 }
 
 func (m *CacheMiddleware) save(k string, c echo.Context) cacheEntry {

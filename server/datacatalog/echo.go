@@ -19,11 +19,11 @@ func Echo(conf Config, g *echo.Group) error {
 
 	g.Use(
 		middleware.CORS(),
-		// putil.CacheControlMiddleware("max-age=180", true),
 		middleware.Gzip(),
 		putil.NewCacheMiddleware(putil.CacheConfig{
-			Disabled: conf.DisableCache,
-			TTL:      time.Duration(conf.CacheTTL) * time.Second,
+			Disabled:     conf.DisableCache,
+			TTL:          time.Duration(conf.CacheTTL) * time.Second,
+			CacheControl: true,
 		}).Middleware(),
 	)
 
