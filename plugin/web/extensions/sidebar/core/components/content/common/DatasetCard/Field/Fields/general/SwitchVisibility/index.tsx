@@ -101,10 +101,10 @@ const SwitchVisibility: React.FC<BaseFieldProps<"switchVisibility">> = ({
   );
 
   const handleSelectVisibility = (id: string) => {
-    setSelectedVisibility(id);
     postMsg({
       action: "unselect",
     });
+    setSelectedVisibility(id);
   };
 
   const visibilityOptions = (

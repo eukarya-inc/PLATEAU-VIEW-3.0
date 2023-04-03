@@ -1,6 +1,6 @@
 import { mergeOverrides } from "@web/extensions/sidebar/core/components/utils";
 import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
-import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
+import { generateID, moveItemDown, moveItemUp, postMsg } from "@web/extensions/sidebar/utils";
 import { getActiveFieldIDs } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useState } from "react";
 
@@ -48,6 +48,7 @@ export default ({
   const handleCurrentGroupUpdate = useCallback(
     (fieldGroupID?: string) => {
       if (fieldGroupID === dataset.selectedGroup) return;
+      postMsg({ action: "unselect" });
       onDatasetUpdate?.({
         ...dataset,
         selectedGroup: fieldGroupID,
@@ -59,6 +60,7 @@ export default ({
   const handleCurrentDatasetUpdate = useCallback(
     (selectedDataset?: ConfigData) => {
       if (selectedDataset === dataset.selectedDataset) return;
+      postMsg({ action: "unselect" });
       onDatasetUpdate?.({
         ...dataset,
         selectedDataset,
