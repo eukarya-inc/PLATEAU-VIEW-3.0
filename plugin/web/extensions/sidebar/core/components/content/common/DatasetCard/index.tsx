@@ -1,10 +1,16 @@
 import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
+import {
+  getNameFromPath,
+  createFileName,
+  normalizeExtension,
+} from "@web/extensions/sidebar/utils/file";
 import { Dropdown, Icon, Menu, Spin } from "@web/sharedComponents";
+import { DownloadOutlined } from "@web/sharedComponents/Icon/icons";
 import { styled } from "@web/theme";
 import type { Identifier, XYCoord } from "dnd-core";
+import fileDownload from "js-file-download";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
@@ -322,6 +328,28 @@ const DatasetCard: React.FC<Props> = ({
   drag(dragRef);
   drop(preview(previewRef));
 
+  const handleDataDownload = useCallback(async (url: string, name?: string) => {
+    const res = await fetch(url, {
+      method: "GET",
+    });
+    const blob = await res.blob();
+    fileDownload(blob, name ?? "export-data");
+  }, []);
+
+  const handleDataExport = useCallback(async () => {
+    if (dataset.selectedDataset) {
+      const name = getNameFromPath(dataset.selectedDataset.name);
+      const format = normalizeExtension(dataset.format);
+      const filename = createFileName(name, format);
+      handleDataDownload(dataset.selectedDataset.url, filename);
+    } else if (dataset.url) {
+      const name = getNameFromPath(dataset.name);
+      const format = normalizeExtension(dataset.format);
+      const filename = createFileName(name, format);
+      handleDataDownload(dataset.url, filename);
+    }
+  }, [dataset.format, dataset.name, dataset.selectedDataset, dataset.url, handleDataDownload]);
+
   return (
     <div ref={previewRef} style={{ opacity }} data-handler-id={handlerId}>
       <StyledAccordionComponent allowZeroExpanded preExpanded={["datasetcard"]}>
@@ -372,11 +400,16 @@ const DatasetCard: React.FC<Props> = ({
                   {field.title && <FieldName>{field.title}</FieldName>}
                 </BaseField>
               ))}
+              {(dataset.format === "czml" || dataset.format === "geojson") && (
+                <BaseButton onClick={handleDataExport}>
+                  <DownloadOutlined style={{ fontSize: 20, color: "#00BEBE", marginRight: 8 }} />
+                  <Text>データをエクスポート</Text>
+                </BaseButton>
+              )}
               {dataset.openDataUrl && (
-                <OpenDataButton
-                  onClick={() => window.open(dataset.openDataUrl, "_blank", "noopener")}>
+                <BaseButton onClick={() => window.open(dataset.openDataUrl, "_blank", "noopener")}>
                   <Text>オープンデータを入手</Text>
-                </OpenDataButton>
+                </BaseButton>
               )}
               {dataset.components?.map((c, idx) => (
                 <Field
@@ -565,7 +598,7 @@ const Text = styled.p`
   user-select: none;
 `;
 
-const OpenDataButton = styled.div`
+const BaseButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;

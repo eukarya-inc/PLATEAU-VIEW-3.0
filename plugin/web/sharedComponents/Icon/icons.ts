@@ -79,7 +79,7 @@ import { ReactComponent as ExternalLink } from "./Icons/externalLink.svg";
 import { HolderOutlined } from "@ant-design/icons";
 import { PlayCircleFilled } from "@ant-design/icons";
 
-export { InboxOutlined } from "@ant-design/icons";
+export { InboxOutlined, DownloadOutlined } from "@ant-design/icons";
 
 export default {
   logo: Logo,

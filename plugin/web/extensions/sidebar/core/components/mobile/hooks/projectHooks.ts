@@ -5,6 +5,7 @@ import {
   flattenComponents,
   getActiveFieldIDs,
   getDefaultGroup,
+  getDefaultDataset,
 } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -157,6 +158,7 @@ export default ({
       const datasetToAdd = { ...dataset } as DataCatalogItem;
 
       datasetToAdd.selectedGroup = getDefaultGroup(datasetToAdd.components, fieldTemplates);
+      datasetToAdd.selectedDataset = getDefaultDataset(datasetToAdd);
 
       if (!dataset.components?.length) {
         const defaultTemplate = fieldTemplates?.find(ft =>

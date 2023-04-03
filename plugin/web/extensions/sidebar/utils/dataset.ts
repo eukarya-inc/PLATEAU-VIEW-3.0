@@ -1,9 +1,11 @@
+import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
+
 import {
   ConfigData,
   FieldComponent,
   SwitchGroup,
 } from "../core/components/content/common/DatasetCard/Field/Fields/types";
-import { Template } from "../core/types";
+import { DataCatalogItem, Template } from "../core/types";
 
 export const getActiveFieldIDs = (
   components?: FieldComponent[],
@@ -47,5 +49,13 @@ export const getDefaultGroup = (components?: FieldComponent[], baseTemplates?: T
 
   if (switchGroupComponents && switchGroupComponents.length > 0) {
     return switchGroupComponents[switchGroupComponents.length - 1].groups[0].fieldGroupID;
+  }
+};
+
+export const getDefaultDataset = (dataset?: DataCatalogItem | UserDataItem) => {
+  if (!dataset) return;
+
+  if (dataset.config?.data && dataset.config?.data?.length > 0) {
+    return dataset.config.data[0];
   }
 };
