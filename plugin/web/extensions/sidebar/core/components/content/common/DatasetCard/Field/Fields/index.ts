@@ -32,9 +32,11 @@ import PointLabel from "./point/PointLabel";
 import PointModel from "./point/PointModel";
 import PointSize from "./point/PointSize";
 import PointStroke from "./point/PointStroke";
+import PolygonClassificationType from "./polygon/PolygonClassificationType";
 import PolygonColor from "./polygon/PolygonColor";
 import PolygonColorGradient from "./polygon/PolygonColorGradient";
 import PolygonStroke from "./polygon/PolygonStroke";
+import PolylineClassificationType from "./polyline/PolylineClassificationType";
 import PolylineColor from "./polyline/PolylineColor";
 import PolylineColorGradient from "./polyline/PolylineColorGradient";
 import PolylineStrokeWeight from "./polyline/PolylineStrokeWeight";
@@ -75,10 +77,12 @@ const fields: Fields<FieldComponent> = {
   polylineColor: { Component: PolylineColor, hasUI: false },
   polylineColorGradient: { Component: PolylineColorGradient, hasUI: false },
   polylineStrokeWeight: { Component: PolylineStrokeWeight, hasUI: false },
+  polylineClassificationType: { Component: PolylineClassificationType, hasUI: false },
   // polygon
   polygonColor: { Component: PolygonColor, hasUI: false },
   polygonColorGradient: { Component: PolygonColorGradient, hasUI: false },
   polygonStroke: { Component: PolygonStroke, hasUI: false },
+  polygonClassificationType: { Component: PolygonClassificationType, hasUI: false },
   // 3d-tile
   clipping: { Component: Clipping, hasUI: true },
   buildingFilter: { Component: BuildingFilter, hasUI: true },

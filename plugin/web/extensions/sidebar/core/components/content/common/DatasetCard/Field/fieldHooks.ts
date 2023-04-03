@@ -202,6 +202,10 @@ export default ({
         name: fieldName["polylineStrokeWeight"],
         onClick: onFieldAdd({}),
       },
+      polylineClassificationType: {
+        name: fieldName["polylineClassificationType"],
+        onClick: onFieldAdd({}),
+      },
     };
   }, [onFieldAdd]);
 
@@ -217,6 +221,10 @@ export default ({
       // },
       polygonStroke: {
         name: fieldName["polygonStroke"],
+        onClick: onFieldAdd({}),
+      },
+      polygonClassificationType: {
+        name: fieldName["polygonClassificationType"],
         onClick: onFieldAdd({}),
       },
     };

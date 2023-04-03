@@ -64,6 +64,11 @@ export const cleanseOverrides: { [key: string]: any } = {
       strokeWidth: 5,
     },
   },
+  polylineClassificationType: {
+    polyline: {
+      classificationType: "both",
+    },
+  },
   polygonColor: {
     polygon: {
       fill: false,
@@ -74,6 +79,11 @@ export const cleanseOverrides: { [key: string]: any } = {
       stroke: true,
       strokeColor: "white",
       strokeWidth: 5,
+    },
+  },
+  polygonClassificationType: {
+    polygon: {
+      classificationType: "both",
     },
   },
   buildingColor: {

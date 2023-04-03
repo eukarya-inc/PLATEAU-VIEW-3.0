@@ -37,6 +37,7 @@ export const polygonFieldName = {
   polygonColor: "ポリゴン色",
   polygonColorGradient: "ポリゴン色（グラデーション）",
   polygonStroke: "ポリゴンストローク",
+  polygonClassificationType: "被せて表示",
 };
 
 export const threeDFieldName = {
@@ -53,6 +54,7 @@ export const polylineFieldName = {
   polylineColor: "ポリライン色",
   polylineColorGradient: "ポリライン色（グラデーション）",
   polylineStrokeWeight: "ポリラインストローク",
+  polylineClassificationType: "被せて表示",
 };
 
 export const fieldName = {
@@ -93,9 +95,11 @@ export type FieldComponent =
   | PolylineColor
   | PolylineColorGradient
   | PolylineStrokeWeight
+  | PolylineClassificationType
   | PolygonColor
   | PolygonColorGradient
   | PolygonStroke
+  | PolygonClassificationType
   | Clipping
   | BuildingFilter
   | BuildingTransparency
@@ -322,6 +326,11 @@ type PolylineStrokeWeight = FieldBase<"polylineStrokeWeight"> & {
   strokeWidth: number;
 };
 
+export type ClassificationType = "both" | "terrain" | "3dtiles";
+export type PolylineClassificationType = FieldBase<"polylineClassificationType"> & {
+  classificationType: ClassificationType;
+};
+
 export type PolygonColor = FieldBase<"polygonColor"> & {
   items?: {
     condition: Cond<number>;
@@ -342,6 +351,10 @@ export type PolygonStroke = FieldBase<"polygonStroke"> & {
     strokeWidth: number;
     condition: Cond<string | number>;
   }[];
+};
+
+export type PolygonClassificationType = FieldBase<"polygonClassificationType"> & {
+  classificationType: ClassificationType;
 };
 
 type Clipping = FieldBase<"clipping"> & {
@@ -441,10 +454,12 @@ export type Fields = {
   polylineColor: PolylineColor;
   polylineColorGradient: PolylineColorGradient;
   polylineStrokeWeight: PolylineStrokeWeight;
+  polylineClassificationType: PolylineClassificationType;
   // polygon
   polygonColor: PolygonColor;
   polygonColorGradient: PolygonColorGradient;
   polygonStroke: PolygonStroke;
+  polygonClassificationType: PolygonClassificationType;
   // 3d-model
   // 3d-tile
   clipping: Clipping;
