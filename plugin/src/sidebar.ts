@@ -92,6 +92,8 @@ let templates: Template[] | undefined = undefined;
 let searchTerm = "";
 let expandedFolders: { id?: string; name?: string }[] = [];
 let dataset: DataCatalogItem | undefined = undefined;
+let filter = "city";
+
 const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
   (i: PluginExtensionInstance) => i.id === reearth.widget.id,
 );
@@ -273,29 +275,44 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     expandedFolders = [...payload.expandedFolders];
   } else if (action === "saveDataset") {
     dataset = { ...payload.dataset };
+  } else if (action === "saveFilter") {
+    filter = payload.filter;
   } else if (action === "triggerHelpOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "modalClose") {
     reearth.modal.close();
     welcomePageIsOpen = false;
   } else if (action === "initDataCatalog") {
-    reearth.modal.postMessage({
-      action,
-      payload: {
-        addedDatasets: addedDatasets.map(d => d[0]),
-        inEditor: inEditor(),
-        backendProjectName: reearth.widget.property.default?.projectName ?? "",
-        backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
-        backendURL: reearth.widget.property.default?.plateauURL ?? "",
-        catalogURL: reearth.widget.property.default?.catalogURL ?? "",
-        catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
-        enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
-        templates,
-        searchTerm,
-        expandedFolders,
-        dataset,
-      },
-    });
+    if (reearth.viewport.isMobile) {
+      reearth.popup.postMessage({
+        action,
+        payload: {
+          searchTerm,
+          expandedFolders,
+          dataset,
+          filter,
+        },
+      });
+    } else {
+      reearth.modal.postMessage({
+        action,
+        payload: {
+          addedDatasets: addedDatasets.map(d => d[0]),
+          inEditor: inEditor(),
+          backendProjectName: reearth.widget.property.default?.projectName ?? "",
+          backendAccessToken: reearth.widget.property.default?.plateauAccessToken ?? "",
+          backendURL: reearth.widget.property.default?.plateauURL ?? "",
+          catalogURL: reearth.widget.property.default?.catalogURL ?? "",
+          catalogProjectName: reearth.widget.property.default?.catalogProjectName ?? "",
+          enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
+          templates,
+          searchTerm,
+          expandedFolders,
+          dataset,
+          filter,
+        },
+      });
+    }
   } else if (action === "helpPopupOpen") {
     reearth.popup.show(helpPopupHtml, { position: "right-start", offset: 4 });
   } else if (action === "groupSelectOpen") {

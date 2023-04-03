@@ -17,10 +17,12 @@ export type Props = {
   expandedFolders?: { id?: string; name?: string }[];
   searchTerm: string;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
+  filter: GroupBy;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelect?: (item?: DataCatalogItem) => void;
   onOpenDetails?: (data?: DataCatalogItem) => void;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
+  onFilter: (filter: GroupBy) => void;
   onDatasetPublish: (dataID: string, publish: boolean) => void;
 };
 
@@ -32,19 +34,16 @@ const DatasetsPage: React.FC<Props> = ({
   selectedItem,
   expandedFolders,
   searchTerm,
+  filter,
   setExpandedFolders,
   onSearch,
   onSelect,
   onOpenDetails,
+  onFilter,
   onDatasetAdd,
   onDatasetPublish,
 }) => {
   const [selectedTags, selectTags] = useState<Tag[]>([]);
-  const [filter, setFilter] = useState<GroupBy>("city");
-
-  const handleFilter = useCallback((filter: GroupBy) => {
-    setFilter(filter);
-  }, []);
 
   const handleTagSelect = useCallback(
     (tag: Tag) =>
@@ -52,10 +51,10 @@ const DatasetsPage: React.FC<Props> = ({
         const selected = tags.find(selectedTag => selectedTag.name === tag.name)
           ? [...tags.filter(t => t.name !== tag.name)]
           : [...tags, tag];
-        selected.length > 0 ? handleFilter("tag") : handleFilter("city");
+        selected.length > 0 ? onFilter("tag") : onFilter("city");
         return selected;
       }),
-    [handleFilter],
+    [onFilter],
   );
 
   const addDisabled = useCallback(
@@ -83,7 +82,7 @@ const DatasetsPage: React.FC<Props> = ({
           onSearch={onSearch}
           onSelect={onSelect}
           addDisabled={addDisabled}
-          onFilter={handleFilter}
+          onFilter={onFilter}
           onTagSelect={handleTagSelect}
           onOpenDetails={onOpenDetails}
           onDatasetAdd={onDatasetAdd}

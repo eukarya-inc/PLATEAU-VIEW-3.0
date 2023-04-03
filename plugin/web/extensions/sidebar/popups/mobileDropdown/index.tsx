@@ -134,6 +134,7 @@ const MobileDropdown: React.FC = () => {
               setSelectedDataset={setSelectedDataset}
               setExpandedFolders={setExpandedFolders}
               onSearch={handleSearch}
+              setSearchTerm={setSearchTerm}
               onDatasetAdd={handleDatasetAdd}
             />
           ),

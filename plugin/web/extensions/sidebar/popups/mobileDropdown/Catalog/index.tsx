@@ -39,6 +39,7 @@ type Props = {
     >
   >;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setSearchTerm: (searchTerm: string) => void;
   onDatasetAdd: (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => void;
 };
 
@@ -56,6 +57,7 @@ const Catalog: React.FC<Props> = ({
   setSelectedDataset,
   setExpandedFolders,
   onSearch,
+  setSearchTerm,
   onDatasetAdd,
 }) => {
   const [filter, setFilter] = useState<GroupBy>("city");
@@ -100,9 +102,15 @@ const Catalog: React.FC<Props> = ({
     [setSelectedDataset],
   );
 
-  const handleFilter = useCallback((filter: GroupBy) => {
-    setFilter(filter);
-  }, []);
+  const handleFilter = useCallback(
+    (filter: GroupBy) => {
+      setFilter(filter);
+      postMsg({ action: "saveFilter", payload: { filter } });
+      setExpandedFolders?.([]);
+      postMsg({ action: "saveExpandedFolders", payload: { expandedFolders: [] } });
+    },
+    [setExpandedFolders],
+  );
 
   const addDisabled = useCallback(
     (dataID: string) => {
@@ -125,6 +133,25 @@ const Catalog: React.FC<Props> = ({
       setPage("details");
     }
   }, [selectedDataset, page, setPage, setSelectedDataset]);
+
+  useEffect(() => {
+    postMsg({ action: "initDataCatalog" });
+  }, []);
+
+  useEffect(() => {
+    const eventListenerCallback = (e: MessageEvent<any>) => {
+      if (e.source !== parent) return;
+      if (e.data.action === "initDataCatalog") {
+        if (e.data.payload.filter) setFilter(e.data.payload.filter);
+        if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
+        if (e.data.payload.expandedFolders) setExpandedFolders?.(e.data.payload.expandedFolders);
+      }
+    };
+    addEventListener("message", eventListenerCallback);
+    return () => {
+      removeEventListener("message", eventListenerCallback);
+    };
+  }, [handleFilter, onSearch, setExpandedFolders, setSearchTerm]);
 
   return (
     <Wrapper>

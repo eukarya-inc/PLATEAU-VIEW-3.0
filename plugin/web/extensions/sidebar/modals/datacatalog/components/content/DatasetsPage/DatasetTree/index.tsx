@@ -106,10 +106,10 @@ const DatasetTree: React.FC<Props> = ({
       {showTags && <Tags tags={selectedTags} onTagSelect={onTagSelect} />}
       {searchTerm.length > 0 && <p style={{ margin: "0", alignSelf: "center" }}>検索結果</p>}
       <StyledTabs
-        defaultActiveKey="prefecture"
+        activeKey={filter}
         tabBarStyle={showTabs ? { display: "none" } : { userSelect: "none" }}
         onChange={active => onFilter(active as GroupBy)}>
-        <Tabs.TabPane key="prefecture" tab="都道府県" style={{ position: "relative" }}>
+        <Tabs.TabPane key="city" tab="都道府県" style={{ position: "relative" }}>
           {dataCatalogTree ? (
             <FileTree
               addedDatasetDataIDs={addedDatasetDataIDs}

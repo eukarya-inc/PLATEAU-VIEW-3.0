@@ -15,10 +15,12 @@ const DataCatalog: React.FC = () => {
     selectedItem,
     expandedFolders,
     searchTerm,
+    filter,
     setExpandedFolders,
     handleSearch,
     handleSelect,
     handleOpenDetails,
+    handleFilter,
     handleClose,
     handleTabChange,
     handleDatasetAdd,
@@ -54,10 +56,12 @@ const DataCatalog: React.FC = () => {
           selectedItem={selectedItem}
           expandedFolders={expandedFolders}
           searchTerm={searchTerm}
+          filter={filter}
           setExpandedFolders={setExpandedFolders}
           onSearch={handleSearch}
           onSelect={handleSelect}
           onOpenDetails={handleOpenDetails}
+          onFilter={handleFilter}
           onDatasetAdd={handleDatasetAdd}
           onDatasetPublish={handleDatasetPublish}
         />

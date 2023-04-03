@@ -8,7 +8,7 @@ import { postMsg } from "@web/extensions/sidebar/utils";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { RawDataCatalogItem, getDataCatalog } from "../api/api";
+import { RawDataCatalogItem, getDataCatalog, GroupBy } from "../api/api";
 
 export type Tab = "dataset" | "your-data";
 
@@ -138,6 +138,7 @@ export default () => {
       handleDataRequest,
     ],
   );
+  const [filter, setFilter] = useState<GroupBy>("city");
 
   const debouncedSearchRef = useRef(
     debounce((value: string) => {
@@ -165,6 +166,13 @@ export default () => {
 
   const handleClose = useCallback(() => {
     postMsg({ action: "modalClose" });
+  }, []);
+
+  const handleFilter = useCallback((filter: GroupBy) => {
+    setFilter(filter);
+    postMsg({ action: "saveFilter", payload: { filter } });
+    setExpandedFolders([]);
+    postMsg({ action: "saveExpandedFolders", payload: { expandedFolders: [] } });
   }, []);
 
   const handleDatasetAdd = useCallback(
@@ -197,6 +205,7 @@ export default () => {
         setCatalogProjectName(e.data.payload.catalogProjectName);
         setPublishToGeospatial(e.data.payload.enableGeoPub);
         setTemplates(e.data.payload.templates);
+        if (e.data.payload.filter) setFilter(e.data.payload.filter);
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
         if (e.data.payload.dataset) {
@@ -225,7 +234,7 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [handleOpenDetails, handleSelect]);
+  }, [handleFilter, handleOpenDetails, handleSelect]);
 
   return {
     currentTab,
@@ -236,10 +245,12 @@ export default () => {
     selectedItem,
     expandedFolders,
     searchTerm,
+    filter,
     setExpandedFolders,
     handleSearch,
     handleSelect,
     handleOpenDetails,
+    handleFilter,
     handleClose,
     handleTabChange: changeTabs,
     handleDatasetAdd,
