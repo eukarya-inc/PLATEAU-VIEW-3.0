@@ -133,7 +133,7 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
             getPopupContainer={trigger => trigger.parentElement ?? document.body}>
             <StyledDropdownButton>
               <p style={{ margin: 0 }}>{legendStyles[legend.style]}</p>
-              <Icon icon="arrowDownSimple" size={12} />
+              <StyledIcon icon="arrowDownSimple" size={12} />
             </StyledDropdownButton>
           </Dropdown>
         </FieldValue>
@@ -187,6 +187,10 @@ const StyledDropdownButton = styled.div`
   align-content: center;
   padding: 0 16px;
   cursor: pointer;
+`;
+
+const StyledIcon = styled(Icon)`
+  font-size: 0;
 `;
 
 const Text = styled.p`

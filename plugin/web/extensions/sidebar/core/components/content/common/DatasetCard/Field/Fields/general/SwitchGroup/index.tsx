@@ -94,7 +94,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
                   <p style={{ margin: 0 }}>
                     {fieldGroups?.find(fg => fg.id === g.fieldGroupID)?.name ?? "-"}
                   </p>
-                  <Icon icon="arrowDownSimple" size={12} />
+                  <StyledIcon icon="arrowDownSimple" size={12} />
                 </StyledDropdownButton>
               </Dropdown>
             </FieldValue>
@@ -121,7 +121,7 @@ const SwitchGroup: React.FC<BaseFieldProps<"switchGroup">> = ({
           <Dropdown overlay={uiMenu} placement="bottom" trigger={["click"]}>
             <StyledDropdownButton>
               <p style={{ margin: 0 }}>{currentGroup ? currentGroup.title : "-"}</p>
-              <Icon icon="arrowDownSimple" size={12} />
+              <StyledIcon icon="arrowDownSimple" size={12} />
             </StyledDropdownButton>
           </Dropdown>
         </FieldValue>
@@ -146,6 +146,10 @@ const StyledDropdownButton = styled.div`
   align-content: center;
   padding: 0 16px;
   cursor: pointer;
+`;
+
+const StyledIcon = styled(Icon)`
+  font-size: 0;
 `;
 
 const Text = styled.p`
