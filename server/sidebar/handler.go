@@ -36,6 +36,8 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
+		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
+
 		if hit, err := h.lastModified(c, prj, dataModelKey, templateModelKey); err != nil {
 			return err
 		} else if hit {
@@ -68,6 +70,8 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
 
+		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
+
 		if hit, err := h.lastModified(c, prj, dataModelKey); err != nil {
 			return err
 		} else if hit {
@@ -94,6 +98,8 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 		if itemID == "" {
 			return c.JSON(http.StatusNotFound, nil)
 		}
+
+		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
 		item, err := h.CMS.GetItem(ctx, itemID, false)
 		if err != nil {
@@ -205,6 +211,8 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+
+		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
 		if hit, err := h.lastModified(c, prj, templateModelKey); err != nil {
 			return err
