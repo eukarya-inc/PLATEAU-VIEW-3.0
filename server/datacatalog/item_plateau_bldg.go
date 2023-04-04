@@ -2,6 +2,9 @@ package datacatalog
 
 import (
 	"fmt"
+	"net/url"
+	"path"
+	"sort"
 	"strconv"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
@@ -14,46 +17,66 @@ func (i PlateauItem) BldgItems(c PlateauIntermediateItem) []*DataCatalogItem {
 		return nil
 	}
 
-	firstCode := lo.Min(lo.Filter(lo.MapToSlice(assets, func(k string, v []*cms.PublicAsset) int {
-		if len(v) == 0 {
-			return 0
-		}
-		an := AssetNameFrom(v[0].URL)
-		wc, _ := strconv.Atoi(an.WardCode)
-		return wc
-	}), func(i int, _ int) bool { return i > 0 }))
+	type city struct {
+		an       AssetName
+		set      *BldgSet
+		assets   []*cms.PublicAsset
+		wardCode int
+	}
 
-	return lo.Filter(lo.MapToSlice(assets, func(k string, v []*cms.PublicAsset) *DataCatalogItem {
-		s := BldgSetFrom(v)
-		if s == nil || s.MaxLOD.Texture == nil {
-			return nil
+	cities := lo.MapToSlice(assets, func(k string, v []*cms.PublicAsset) city {
+		set := BldgSetFrom(v)
+		if set == nil {
+			return city{}
 		}
 
-		an := AssetNameFrom(s.MaxLOD.Texture.URL)
+		an := AssetNameFrom(set.MaxLOD.Texture.URL)
 		wc, _ := strconv.Atoi(an.WardCode)
+		return city{
+			an:       an,
+			set:      set,
+			assets:   v,
+			wardCode: wc,
+		}
+	})
+
+	sort.Slice(cities, func(i, j int) bool {
+		return cities[i].wardCode < cities[j].wardCode
+	})
+
+	firstCode := cities[0].wardCode
+
+	return lo.FilterMap(cities, func(ci city, _ int) (*DataCatalogItem, bool) {
+		if ci.set == nil || ci.set.MaxLOD.Texture == nil {
+			return nil, false
+		}
+
 		dci := c.DataCatalogItem(
 			"建築物モデル",
-			an,
-			s.MaxLOD.Texture.URL,
+			ci.an,
+			ci.set.MaxLOD.Texture.URL,
 			i.DescriptionBldg,
 			nil,
-			firstCode > 0 && firstCode == wc,
+			firstCode == ci.wardCode,
+			"",
 		)
 
-		if s.MaxLOD.LowTexture != nil {
-			dci.BldgLowTextureURL = assetURLFromFormat(s.MaxLOD.LowTexture.URL, "3dtiles")
+		if dci == nil {
+			return nil, false
 		}
 
-		if s.MaxLOD.NoTexture != nil {
-			dci.BldgNoTextureURL = assetURLFromFormat(s.MaxLOD.NoTexture.URL, "3dtiles")
+		if ci.set.MaxLOD.LowTexture != nil {
+			dci.BldgLowTextureURL = assetURLFromFormat(ci.set.MaxLOD.LowTexture.URL, "3dtiles")
+		}
+
+		if ci.set.MaxLOD.NoTexture != nil {
+			dci.BldgNoTextureURL = assetURLFromFormat(ci.set.MaxLOD.NoTexture.URL, "3dtiles")
 		}
 
 		dci.SearchIndex = searchIndexURLFrom(i.SearchIndex, dci.WardCode)
-		dci.Config = s.Config()
+		dci.Config = ci.set.Config()
 
-		return dci
-	}), func(a *DataCatalogItem, _ int) bool {
-		return a != nil
+		return dci, true
 	})
 }
 
@@ -160,4 +183,24 @@ func (s *BldgSetLOD) Config() (c []DataCatalogItemConfigItem) {
 	}
 
 	return
+}
+
+func searchIndexURLFrom(assets []*cms.PublicAsset, wardCode string) string {
+	a, found := lo.Find(assets, func(a *cms.PublicAsset) bool {
+		if wardCode == "" {
+			return true
+		}
+		return AssetNameFrom(a.URL).WardCode == wardCode
+	})
+	if !found {
+		return ""
+	}
+
+	u, err := url.Parse(a.URL)
+	if err != nil {
+		return ""
+	}
+
+	u.Path = path.Join(assetRootPath(u.Path), "indexRoot.json")
+	return u.String()
 }

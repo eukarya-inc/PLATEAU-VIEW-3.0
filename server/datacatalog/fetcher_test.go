@@ -14,10 +14,10 @@ import (
 
 // func TestFetcher(t *testing.T) {
 // 	f := lo.Must(NewFetcher(nil, ""))
-// 	res := lo.Must(f.Do(context.Background(), ""))
-// 	item, _ := lo.Find(res.Plateau, func(i PlateauItem) bool { return i.CityName == "" })
-// 	fld := item.FldItems(item.IntermediateItem())
-// 	t.Log(string(lo.Must(json.MarshalIndent(fld, "", "  "))))
+// 	cmsres := lo.Must(f.Do(context.Background(), ""))
+// 	item, _ := lo.Find(cmsres.Plateau, func(i PlateauItem) bool { return i.CityName == "" })
+// 	res := item.GenItems(item.IntermediateItem())
+// 	t.Log(string(lo.Must(json.MarshalIndent(res, "", "  "))))
 // }
 
 func TestFetcher_Do(t *testing.T) {

@@ -34,7 +34,6 @@ func TestAssetNameFrom(t *testing.T) {
 		Feature:  "bldg",
 		WardCode: "22101",
 		WardEn:   "aoi-ku",
-		Ex:       "22101_aoi-ku_lod1",
 		LOD:      "1",
 		Ext:      ".zip",
 	}, AssetNameFrom("22100_shizuoka-shi_2022_3dtiles_op_1_bldg_22101_aoi-ku_lod1.zip"))
@@ -47,7 +46,6 @@ func TestAssetNameFrom(t *testing.T) {
 		WardCode:  "13101",
 		WardEn:    "chiyoda-ku",
 		Feature:   "bldg",
-		Ex:        "13101_chiyoda-ku_lod2_no_texture",
 		LOD:       "2",
 		NoTexture: true,
 		Op:        "1_1_op",
@@ -61,7 +59,7 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:   "3dtiles",
 		Op:       "op",
 		Feature:  "bldg",
-		Ex:       "lod1",
+		Ex:       "",
 		LOD:      "1",
 		Ext:      ".zip",
 	}, AssetNameFrom("22325_kannami-cho_2022_3dtiles_op_bldg_lod1.zip"))
@@ -71,9 +69,9 @@ func TestAssetNameFrom(t *testing.T) {
 		CityEn:   "kosai-shi",
 		Year:     "2022",
 		Format:   "3dtiles",
-		Op:       "op_nodem",
+		Op:       "op",
+		NoDEM:    true,
 		Feature:  "bldg",
-		Ex:       "lod1",
 		LOD:      "1",
 		Ext:      ".zip",
 	}, AssetNameFrom("22221_kosai-shi_2022_3dtiles_op_nodem_bldg_lod1.zip"))
@@ -85,7 +83,6 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:      "3dtiles",
 		Op:          "1_op2",
 		Feature:     "fld",
-		Ex:          "pref_shakujiigawa-shirakogawa_op",
 		Ext:         ".zip",
 		FldCategory: "pref",
 		FldName:     "shakujiigawa-shirakogawa_op",
@@ -98,7 +95,6 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:    "3dtiles",
 		Op:        "4_2_op",
 		Feature:   "bldg",
-		Ex:        "13109_shinagawa-ku_lod2_no_texture",
 		Ext:       ".zip",
 		WardCode:  "13109",
 		WardEn:    "shinagawa-ku",
@@ -113,7 +109,7 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:         "mvt",
 		Op:             "4_op",
 		Feature:        "urf",
-		Ex:             "UseDistrict",
+		Ex:             "",
 		Ext:            ".zip",
 		UrfFeatureType: "UseDistrict",
 	}, AssetNameFrom("23212_anjo-shi_2020_mvt_4_op_urf_UseDistrict.zip"))
@@ -125,7 +121,7 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:      "3dtiles",
 		Op:          "4_2_op",
 		Feature:     "fld",
-		Ex:          "natl_tmagawa_tamagawa-asakawa-etc_op",
+		Ex:          "",
 		Ext:         ".zip",
 		FldCategory: "natl",
 		FldName:     "tmagawa_tamagawa-asakawa-etc_op",
@@ -149,7 +145,6 @@ func TestAssetNameFrom(t *testing.T) {
 		Op:       "5_op",
 		Feature:  "tran",
 		LOD:      "3",
-		Ex:       "lod3",
 		Ext:      ".zip",
 	}, AssetNameFrom("https://example.com/43204_arao-shi_2020_mvt_5_op_tran_lod3.zip"))
 
@@ -161,7 +156,6 @@ func TestAssetNameFrom(t *testing.T) {
 		Op:       "1_op",
 		Feature:  "tnm",
 		FldName:  "12_1",
-		Ex:       "12_1",
 		Ext:      ".zip",
 	}, AssetNameFrom("12210_mobara-shi_2022_3dtiles_1_op_tnm_12_1.zip"))
 
@@ -182,10 +176,32 @@ func TestAssetNameFrom(t *testing.T) {
 		Format:   "mvt",
 		Op:       "1_op",
 		Feature:  "rail",
-		Ex:       "lod1",
 		LOD:      "1",
 		Ext:      ".zip",
 	}, AssetNameFrom("07212_minamisouma-shi_2022_mvt_1_op_rail_lod1.zip"))
+
+	assert.Equal(t, AssetName{
+		CityCode: "20217",
+		CityEn:   "saku-shi",
+		Year:     "2022",
+		Format:   "mvt",
+		Op:       "1_op",
+		Feature:  "gen",
+		GenName:  "development_guidance_area",
+		Ext:      ".zip",
+	}, AssetNameFrom("20217_saku-shi_2022_mvt_1_op_gen_development_guidance_area.zip"))
+
+	assert.Equal(t, AssetName{
+		CityCode: "20217",
+		CityEn:   "saku-shi",
+		Year:     "2022",
+		Format:   "mvt",
+		Op:       "1_op",
+		Feature:  "gen",
+		GenName:  "development_guidance_area",
+		LOD:      "1",
+		Ext:      ".zip",
+	}, AssetNameFrom("20217_saku-shi_2022_mvt_1_op_gen_development_guidance_area_lod1.zip"))
 }
 
 func TestAssetName_String(t *testing.T) {
@@ -199,14 +215,15 @@ func TestAssetName_String(t *testing.T) {
 	}.String())
 
 	assert.Equal(t, "13229_nishitokyo-shi_2022_3dtiles_1_op2_fld_pref_shakujiigawa-shirakogawa_op.zip", AssetName{
-		CityCode: "13229",
-		CityEn:   "nishitokyo-shi",
-		Year:     "2022",
-		Format:   "3dtiles",
-		Op:       "1_op2",
-		Feature:  "fld",
-		Ex:       "pref_shakujiigawa-shirakogawa_op",
-		Ext:      ".zip",
+		CityCode:    "13229",
+		CityEn:      "nishitokyo-shi",
+		Year:        "2022",
+		Format:      "3dtiles",
+		Op:          "1_op2",
+		Feature:     "fld",
+		FldCategory: "pref",
+		FldName:     "shakujiigawa-shirakogawa_op",
+		Ext:         ".zip",
 	}.String())
 
 	assert.Equal(t, "13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13109_shinagawa-ku_lod2_no_texture.zip", AssetName{
@@ -216,7 +233,6 @@ func TestAssetName_String(t *testing.T) {
 		Format:    "3dtiles",
 		Op:        "4_2_op",
 		Feature:   "bldg",
-		Ex:        "13109_shinagawa-ku_lod2_no_texture",
 		Ext:       ".zip",
 		WardCode:  "13109",
 		WardEn:    "shinagawa-ku",
@@ -231,7 +247,6 @@ func TestAssetName_String(t *testing.T) {
 		Format:         "mvt",
 		Op:             "4_op",
 		Feature:        "urf",
-		Ex:             "UseDistrict",
 		Ext:            ".zip",
 		UrfFeatureType: "UseDistrict",
 	}.String())

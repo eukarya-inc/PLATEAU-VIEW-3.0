@@ -80,7 +80,7 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 			invalid = true
 		}
 
-		if !i.CityGML.IsExtractionDone() {
+		if i.CityGML != nil && !i.CityGML.IsExtractionDone() {
 			warning = append(warning, fmt.Sprintf("%s:invalid_citygml", i.CityName))
 			invalid = true
 		}

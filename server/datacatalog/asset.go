@@ -9,9 +9,9 @@ import (
 	"github.com/samber/lo"
 )
 
-var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_((?:[0-9]+?_)*op[0-9]*(?:_[0-9(?:nodem)]+?)*)(?:_(.+?)(?:_(.+))?)?$`)
-var reLod = regexp.MustCompile(`(?:^|_)lod([0-9]+?)`)
-var reWard = regexp.MustCompile(`^([0-9]+?)_(.+?)_`)
+var reAssetName = regexp.MustCompile(`^([0-9]+?)_(.+?)_(.+?)_(.+?)_((?:[0-9]+?_)*op[0-9]*(?:_[0-9]+?)*)(_nodem)?(?:_(.+?)(?:_(.+))?)?$`)
+var reLod = regexp.MustCompile(`(^|.*_)lod([0-9]+?)`)
+var reWard = regexp.MustCompile(`^([0-9]+?)_([a-zA-Z].+)`)
 
 type AssetName struct {
 	CityCode       string
@@ -19,6 +19,7 @@ type AssetName struct {
 	Year           string
 	Format         string
 	Op             string
+	NoDEM          bool
 	Feature        string
 	Ex             string
 	Ext            string
@@ -30,6 +31,7 @@ type AssetName struct {
 	FldCategory    string
 	FldName        string
 	UrfFeatureType string
+	GenName        string
 }
 
 func (an AssetName) FldNameAndCategory() string {
@@ -56,30 +58,42 @@ func AssetNameFrom(name string) (a AssetName) {
 	a.Year = m[3]
 	a.Format = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(m[4], " ", ""), "%20", ""), "+", "")
 	a.Op = m[5]
-	if len(m) > 6 {
-		a.Feature = m[6]
-		if len(m) > 7 {
-			a.Ex = m[7]
+	if m[6] != "" {
+		a.NoDEM = true
+	}
+	if len(m) > 7 {
+		a.Feature = m[7]
+		if len(m) > 8 {
+			a.Ex = m[8]
 		}
 	}
 
+	a.LowTexture = strings.HasSuffix(a.Ex, "_low_texture")
+	if a.LowTexture {
+		a.Ex = strings.TrimSuffix(a.Ex, "_low_texture")
+	}
+
+	a.NoTexture = strings.HasSuffix(a.Ex, "_no_texture")
+	if a.NoTexture {
+		a.Ex = strings.TrimSuffix(a.Ex, "_no_texture")
+	}
+
 	lodm := reLod.FindStringSubmatch(a.Ex)
-	if len(lodm) >= 2 {
-		a.LOD = lodm[1]
+	if len(lodm) == 3 {
+		a.LOD = lodm[2]
+		a.Ex = strings.TrimSuffix(lodm[1], "_")
 	}
 
 	wardm := reWard.FindStringSubmatch(a.Ex)
-	if len(wardm) >= 2 {
+	if len(wardm) == 3 {
 		a.WardCode = wardm[1]
-		a.WardEn = wardm[2]
+		warden, ex, _ := strings.Cut(wardm[2], "_")
+		a.WardEn = warden
+		a.Ex = ex
 	}
 
-	a.LowTexture = strings.Contains(a.Ex, "_low_texture")
-	a.NoTexture = strings.Contains(a.Ex, "_no_texture")
-
-	if a.Feature == "urf" {
-		a.UrfFeatureType = a.Ex
-	} else if a.Feature == "fld" {
+	switch a.Feature {
+	case "fld":
 		fldCategory, fldName, found := strings.Cut(a.Ex, "_")
 		if found {
 			a.FldCategory = fldCategory
@@ -87,14 +101,34 @@ func AssetNameFrom(name string) (a AssetName) {
 		} else {
 			a.FldName = a.Ex
 		}
-	} else if a.Feature == "htd" || a.Feature == "ifld" || a.Feature == "tnm" {
+		a.Ex = ""
+	case "htd":
+	case "ifld":
+	case "tnm":
 		a.FldName = a.Ex
+		a.Ex = ""
+	case "urf":
+		a.UrfFeatureType = a.Ex
+		a.Ex = ""
+	case "gen":
+		a.GenName = a.Ex
+		a.Ex = ""
 	}
 
 	return
 }
 
 func (a AssetName) String() string {
+	lod, texture := "", ""
+	if a.LOD != "" {
+		lod = fmt.Sprintf("lod%s", a.LOD)
+	}
+	if a.NoTexture {
+		texture = "no_texture"
+	}
+	if a.LowTexture {
+		texture = "low_texture"
+	}
 	return strings.Join(lo.Filter([]string{
 		a.CityCode,
 		a.CityEn,
@@ -102,7 +136,15 @@ func (a AssetName) String() string {
 		a.Format,
 		a.Op,
 		a.Feature,
+		a.WardCode,
+		a.WardEn,
+		a.FldCategory,
+		a.FldName,
+		a.UrfFeatureType,
+		a.GenName,
 		a.Ex,
+		lod,
+		texture,
 	}, func(s string, _ int) bool { return s != "" }), "_") + a.Ext
 }
 
