@@ -63,10 +63,11 @@ func (a *Asset) ToPublic() *PublicAsset {
 		return nil
 	}
 	return &PublicAsset{
-		Type:        "asset",
-		ID:          a.ID,
-		URL:         a.URL,
-		ContentType: a.ContentType,
+		Type:                    "asset",
+		ID:                      a.ID,
+		URL:                     a.URL,
+		ContentType:             a.ContentType,
+		ArchiveExtractionStatus: a.ArchiveExtractionStatus,
 		// Files: ,
 	}
 }

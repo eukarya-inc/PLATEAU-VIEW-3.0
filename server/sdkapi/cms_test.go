@@ -18,6 +18,8 @@ func TestCMS(t *testing.T) {
 		IntegrationAPIClient: cms,
 	}
 	res := lo.Must(c.Datasets(ctx, modelKey))
+	// res := lo.Must(cms.GetItemsByKey(ctx, "", modelKey, true))
 	t.Log(string(lo.Must(json.MarshalIndent(res, "", "  "))))
 }
+
 // */

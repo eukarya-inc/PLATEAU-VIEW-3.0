@@ -28,11 +28,16 @@ func (r PublicAPIListResponse[T]) HasNext() bool {
 }
 
 type PublicAsset struct {
-	Type        string   `json:"type,omitempty"`
-	ID          string   `json:"id,omitempty"`
-	URL         string   `json:"url,omitempty"`
-	Files       []string `json:"files,omitempty"`
-	ContentType string   `json:"contentType,omitempty"`
+	Type                    string   `json:"type,omitempty"`
+	ID                      string   `json:"id,omitempty"`
+	URL                     string   `json:"url,omitempty"`
+	Files                   []string `json:"files,omitempty"`
+	ContentType             string   `json:"contentType,omitempty"`
+	ArchiveExtractionStatus string   `json:"archiveExtractionStatus,omitempty"`
+}
+
+func (a PublicAsset) IsExtractionDone() bool {
+	return a.ArchiveExtractionStatus == "done"
 }
 
 type PublicAPIClient[T any] struct {

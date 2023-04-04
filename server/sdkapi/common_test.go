@@ -188,3 +188,16 @@ func TestItemsFromIntegration(t *testing.T) {
 	}, items)
 
 }
+
+func TestCityCode(t *testing.T) {
+	assert.Equal(t, 123, cityCode(&cms.PublicAsset{
+		URL: "https://example.com/aaa/123_aaa.zip",
+	}))
+	assert.Equal(t, 0, cityCode(&cms.PublicAsset{
+		URL: "https://example.com/aaa/aaa_aaa.zip",
+	}))
+	assert.Equal(t, 0, cityCode(&cms.PublicAsset{
+		URL: "",
+	}))
+	assert.Equal(t, 0, cityCode(nil))
+}

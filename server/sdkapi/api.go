@@ -39,14 +39,14 @@ func Handler(conf Config, g *echo.Group) error {
 func handler(conf Config, g *echo.Group, cms *CMS) error {
 	conf.Default()
 
+	cache := putil.NewCacheMiddleware(putil.CacheConfig{
+		Disabled: conf.DisableCache,
+		TTL:      time.Duration(conf.CacheTTL) * time.Second,
+	}).Middleware()
+
 	g.Use(
 		auth(conf.Token),
-		middleware.CORS(),
 		middleware.Gzip(),
-		putil.NewCacheMiddleware(putil.CacheConfig{
-			Disabled: conf.DisableCache,
-			TTL:      time.Duration(conf.CacheTTL) * time.Second,
-		}).Middleware(),
 	)
 
 	g.GET("/datasets", func(c echo.Context) error {
@@ -61,7 +61,7 @@ func handler(conf Config, g *echo.Group, cms *CMS) error {
 			return err
 		}
 		return c.JSON(http.StatusOK, data)
-	})
+	}, cache)
 
 	g.GET("/datasets/:id/files", func(c echo.Context) error {
 		data, err := cms.Files(c.Request().Context(), conf.Model, c.Param("id"))

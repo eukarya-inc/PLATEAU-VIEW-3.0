@@ -120,8 +120,9 @@ func (c *mockCMS) Asset(ctx context.Context, id string) (*cms.Asset, error) {
 		return nil, rerror.ErrNotFound
 	}
 	return &cms.Asset{
-		ID:  "citygml",
-		URL: "https://example.com/citygml.zip",
+		ID:                      "citygml",
+		URL:                     "https://example.com/citygml.zip",
+		ArchiveExtractionStatus: "done",
 		File: &cms.File{
 			Children: []cms.File{
 				{Path: "/citygml/hoge/53394452_bldg_xxx.gml"},
@@ -163,7 +164,8 @@ var mockItem = cms.Item{
 		{
 			Key: "citygml",
 			Value: map[string]any{
-				"id": "citygml",
+				"id":                      "citygml",
+				"archiveExtractionStatus": "done",
 			},
 		},
 		{
@@ -172,8 +174,8 @@ var mockItem = cms.Item{
 		},
 		{
 			Key: "bldg",
-			Value: []map[string]any{
-				{
+			Value: []any{
+				map[string]any{
 					"url": "https://example.com/bldg.zip",
 				},
 			},
@@ -205,13 +207,14 @@ var mockItem2 = cms.Item{
 		{
 			Key: "citygml",
 			Value: map[string]any{
-				"id": "citygml",
+				"id":                      "citygml",
+				"archiveExtractionStatus": "done",
 			},
 		},
 		{
 			Key: "bldg",
-			Value: []map[string]any{
-				{
+			Value: []any{
+				map[string]any{
 					"url": "https://example.com/bldg.zip",
 				},
 			},
