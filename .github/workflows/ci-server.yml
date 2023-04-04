@@ -65,21 +65,3 @@ jobs:
       - name: 'indexer test: cat resultsData.csv'
         if: steps.testdata.outputs.testdata
         run: cat searchindex/indexer/testdata/result/resultsData.csv
-
-      # indexer HTTP test
-      - name: 'indexer HTTP test: is testdata available'
-        id: testdata2
-        run: echo $TESTDATA >> $GITHUB_OUTPUT
-        env:
-          TESTDATA: ${{ secrets.TESTURL && 'testdata=1' || 'testdata=' }}
-      - name: 'indexer HTTP test: run indexer test'
-        if: steps.testdata2.outputs.testdata
-        run: go test ./searchindex/indexer -v
-        env:
-          REEARTH_PLATEAUVIEW_TESTURL: ${{ secrets.TESTURL }}
-      - name: 'indexer HTTP test: list result files'
-        if: steps.testdata2.outputs.testdata
-        run: ls searchindex/indexer/testdata/result
-      - name: 'indexer HTTP test: cat resultsData.csv'
-        if: steps.testdata2.outputs.testdata
-        run: cat searchindex/indexer/testdata/result/resultsData.csv
