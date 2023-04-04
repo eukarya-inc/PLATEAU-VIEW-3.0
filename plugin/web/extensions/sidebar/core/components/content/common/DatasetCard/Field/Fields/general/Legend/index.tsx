@@ -1,6 +1,7 @@
 import AddButton from "@web/extensions/sidebar/core/components/content/common/DatasetCard/AddButton";
 import { array_move } from "@web/extensions/sidebar/utils";
 import { Icon, Dropdown, Menu } from "@web/sharedComponents";
+import ModifiedImage from "@web/sharedComponents/ModifiedImage";
 import { styled } from "@web/theme";
 import { useCallback, useState } from "react";
 
@@ -158,8 +159,14 @@ const Legend: React.FC<BaseFieldProps<"legend">> = ({ value, editMode, onUpdate 
         <Field key={idx} gap={12}>
           {legend.style === "icon" ? (
             <StyledImgWrapper>
-              <BlendColor color={item.color} />
-              <StyledImg src={item.url} />
+              {item.url && (
+                <ModifiedImage
+                  imageUrl={item.url}
+                  blendColor={item.color ?? " #d9d9d9"}
+                  width={30}
+                  height={30}
+                />
+              )}
             </StyledImgWrapper>
           ) : (
             <ColorBlock color={item.color} legendStyle={legend.style} />
@@ -237,19 +244,4 @@ const StyledImgWrapper = styled.div`
   flex: none;
   width: 30px;
   position: relative;
-`;
-
-const BlendColor = styled.div<{ color?: string }>`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background-color: ${({ color }) => color ?? "#d9d9d9"};
-  mix-blend-mode: color;
-`;
-
-const StyledImg = styled.img`
-  width: 30px;
-  height: 30px;
 `;
