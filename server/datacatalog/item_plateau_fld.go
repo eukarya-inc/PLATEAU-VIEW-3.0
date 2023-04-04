@@ -55,7 +55,7 @@ func (i PlateauItem) FldItems(c PlateauIntermediateItem) []*DataCatalogItem {
 
 		r := rivers[0]
 		name, desc := descFromAsset(r.a, i.DescriptionFld)
-		dci := c.DataCatalogItem(name, r.an, r.a.URL, desc, nil, false, name)
+		dci := c.DataCatalogItem(fldModelName, r.an, r.a.URL, desc, nil, false, name)
 
 		if dci != nil {
 			dci.Name = fldName(fldModelName, i.CityName, r.an.FldName, r.dic)
