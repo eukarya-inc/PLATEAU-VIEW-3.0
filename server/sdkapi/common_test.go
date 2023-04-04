@@ -126,8 +126,8 @@ func TestItemsFromIntegration(t *testing.T) {
 				},
 				{
 					Key: "bldg",
-					Value: []map[string]any{
-						{
+					Value: []any{
+						map[string]any{
 							"archiveExtractionStatus": "done",
 							"contentType":             "application/octet-stream",
 							"createdAt":               "2023-03-01T00:00:00.00Z",

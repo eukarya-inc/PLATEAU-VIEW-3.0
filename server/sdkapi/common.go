@@ -175,17 +175,17 @@ func (mm MaxLODMap) Files(urls []*url.URL) (r FilesResponse) {
 }
 
 type IItem struct {
-	ID             string           `json:"id" cms:"id,text"`
-	Prefecture     string           `json:"prefecture" cms:"prefecture,text"`
-	CityName       string           `json:"city_name" cms:"city_name,text"`
-	CityGML        map[string]any   `json:"citygml" cms:"citygml,asset"`
-	Description    string           `json:"description_bldg" cms:"description_bldg,textarea"`
-	MaxLOD         map[string]any   `json:"max_lod" cms:"max_lod,asset"`
-	Bldg           []map[string]any `json:"bldg" cms:"bldg,asset"`
-	Tran           []map[string]any `json:"tran" cms:"tran,asset"`
-	Frn            []map[string]any `json:"frn" cms:"frn,asset"`
-	Veg            []map[string]any `json:"veg" cms:"veg,asset"`
-	SDKPublication string           `json:"sdk_publication" cms:"sdk_publication,select"`
+	ID             string `json:"id" cms:"id,text"`
+	Prefecture     string `json:"prefecture" cms:"prefecture,text"`
+	CityName       string `json:"city_name" cms:"city_name,text"`
+	CityGML        any    `json:"citygml" cms:"citygml,asset"`
+	Description    string `json:"description_bldg" cms:"description_bldg,textarea"`
+	MaxLOD         any    `json:"max_lod" cms:"max_lod,asset"`
+	Bldg           []any  `json:"bldg" cms:"bldg,asset"`
+	Tran           []any  `json:"tran" cms:"tran,asset"`
+	Frn            []any  `json:"frn" cms:"frn,asset"`
+	Veg            []any  `json:"veg" cms:"veg,asset"`
+	SDKPublication string `json:"sdk_publication" cms:"sdk_publication,select"`
 }
 
 func (i IItem) Item() Item {
@@ -227,8 +227,8 @@ func assetsToPublic(a []cms.Asset) []cms.PublicAsset {
 	})
 }
 
-func integrationAssetToAssets(a []map[string]any) []cms.Asset {
-	return lo.FilterMap(a, func(a map[string]any, _ int) (cms.Asset, bool) {
+func integrationAssetToAssets(a []any) []cms.Asset {
+	return lo.FilterMap(a, func(a any, _ int) (cms.Asset, bool) {
 		pa := integrationAssetToAsset(a)
 		if pa == nil {
 			return cms.Asset{}, false
@@ -237,12 +237,18 @@ func integrationAssetToAssets(a []map[string]any) []cms.Asset {
 	})
 }
 
-func integrationAssetToAsset(a map[string]any) *cms.Asset {
+func integrationAssetToAsset(a any) *cms.Asset {
 	if a == nil {
 		return nil
 	}
+
+	m, ok := a.(map[string]any)
+	if !ok {
+		return nil
+	}
+
 	pa := &cms.Asset{}
-	if err := mapstructure.Decode(a, pa); err != nil {
+	if err := mapstructure.Decode(m, pa); err != nil {
 		return nil
 	}
 	return pa
