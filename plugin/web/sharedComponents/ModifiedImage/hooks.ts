@@ -8,21 +8,32 @@ type Props = {
   height: number;
 };
 
+const canvas = document.createElement("canvas");
+
 const useModifiedImage = ({ imageUrl, blendColor, width, height }: Props) => {
   const [modifiedImageUrl, setModifiedImageUrl] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!blendColor) {
+      setModifiedImageUrl(imageUrl);
+      return;
+    }
+
+    const rgb = tinycolor(blendColor).toRgb();
+    const color = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${rgb.a})`;
+
     const image = new Image();
     image.crossOrigin = "anonymous";
     image.src = imageUrl;
-    image.onload = (event: string | Event) => {
+    image.onload = event => {
       if (!image.complete) {
         console.error(`Failed to load image: ${imageUrl}`, event);
         setLoading(false);
         return;
       }
-      const canvas = document.createElement("canvas");
+
+      // Convert the canvas to a data URL
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
@@ -30,45 +41,25 @@ const useModifiedImage = ({ imageUrl, blendColor, width, height }: Props) => {
         setLoading(false);
         return;
       }
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(image, 0, 0, width, height);
+      ctx.globalCompositeOperation = "multiply";
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = "destination-in";
       ctx.drawImage(image, 0, 0, width, height);
 
-      const mappedColor = tinycolor(blendColor).toRgb();
-      const color = `rgba(${mappedColor.r}, ${mappedColor.g}, ${mappedColor.b}, ${mappedColor.a})`;
-
-      // Convert the canvas to a data URL
-      const canvas2 = document.createElement("canvas");
-      canvas2.width = width;
-      canvas2.height = height;
-      const ctx2 = canvas2.getContext("2d");
-      if (!ctx2) {
-        setLoading(false);
-        return;
-      }
-      ctx2.drawImage(image, 0, 0, width, height);
-      ctx2.globalCompositeOperation = "multiply";
-      ctx2.fillStyle = color;
-      ctx2.fillRect(0, 0, canvas2.width, canvas2.height);
-      ctx2.globalCompositeOperation = "destination-in";
-      ctx2.drawImage(image, 0, 0, width, height);
-
-      const modifiedImage = new Image();
-      modifiedImage.src = canvas2.toDataURL();
-
-      modifiedImage.onload = () => {
-        if (modifiedImage.complete) {
-          setModifiedImageUrl(modifiedImage.src);
-          setLoading(false);
-        } else {
-          setModifiedImageUrl(imageUrl);
-          setLoading(false);
-        }
-      };
+      setModifiedImageUrl(canvas.toDataURL());
+      setLoading(false);
     };
 
     image.onerror = (event: string | Event) => {
       console.error(`Failed to load image: ${imageUrl}`, event);
       setLoading(false);
     };
+
+    setLoading(true);
   }, [imageUrl, blendColor, width, height]);
 
   return { modifiedImageUrl, loading };
