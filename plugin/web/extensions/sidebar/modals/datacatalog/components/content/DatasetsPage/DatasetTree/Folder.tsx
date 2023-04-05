@@ -1,24 +1,32 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+
+import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
 
 export type Props = {
+  item: DataCatalogGroup;
   id: string;
   name: string;
   isMobile?: boolean;
   nestLevel: number;
   expandedFolders?: { id?: string; name?: string }[];
+  selectedID?: string;
+  onSelect?: (item: DataCatalogItem | DataCatalogGroup) => void;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   children?: React.ReactNode;
 };
 
 const Folder: React.FC<Props> = ({
+  item,
   id,
   name,
   isMobile,
   nestLevel,
   expandedFolders,
+  selectedID,
+  onSelect,
   setExpandedFolders,
   children,
 }) => {
@@ -37,8 +45,11 @@ const Folder: React.FC<Props> = ({
     }
   }, [expandedFolders, findCb, id, isOpen, name]);
 
+  const selected = useMemo(() => selectedID === item.id, [selectedID, item]);
+
   const handleExpand = useCallback(
     (folder: { id?: string; name?: string }) => {
+      onSelect?.(item);
       setExpandedFolders?.((prevState: { id?: string; name?: string }[]) => {
         const newExpandedFolders = [...prevState];
         const index = prevState.findIndex(findCb);
@@ -50,12 +61,15 @@ const Folder: React.FC<Props> = ({
         return newExpandedFolders;
       });
     },
-    [findCb, setExpandedFolders],
+    [item, findCb, onSelect, setExpandedFolders],
   );
 
   return (
     <Wrapper key={id} isOpen={isOpen}>
-      <FolderItem nestLevel={nestLevel} onClick={() => handleExpand({ id, name })}>
+      <FolderItem
+        selected={selected}
+        nestLevel={nestLevel}
+        onClick={() => handleExpand({ id, name })}>
         <NameWrapper isMobile={isMobile}>
           <Icon icon={isOpen ? "folderOpen" : "folder"} size={20} />
           <Name>{name}</Name>

@@ -1,25 +1,29 @@
-export type Tree<T> = { id: string; name: string; children?: Tree<T>[]; item?: T };
+export type Tree<T> = { id: string; name: string; desc?: string; children?: Tree<T>[]; item?: T };
 
-export function makeTree<T extends { path: string[] }>(items: T[]): Tree<T>[] {
+export function makeTree<
+  T extends { path: string[]; name?: string; desc?: string; type_en: string },
+>(items: T[]): Tree<T>[] {
   type R = { result: Tree<T>[]; map: Record<string, R> };
   const result: Tree<T>[] = [];
   const level: R = { result, map: {} };
 
   let idCounter = 0;
 
-  items.forEach(item => {
-    item.path.reduce<R>((r, name, i, a) => {
-      const last = a.length - 1 === i;
-      if (!r.map[name]) {
-        const list: R = { result: [], map: {} };
-        r.map[name] = list;
-
-        const id = `node-${idCounter++}`;
-        r.result.push({ id, name, ...(last ? { item } : { children: list.result }) });
-      }
-      return r.map[name];
-    }, level);
-  });
+  items
+    .filter(item => item.type_en !== "folder")
+    .forEach(item => {
+      item.path.reduce<R>((r, name, i, a) => {
+        const last = a.length - 1 === i;
+        if (!r.map[name]) {
+          const list: R = { result: [], map: {} };
+          r.map[name] = list;
+          const desc = items.find(i => i?.name === name && i.type_en === "folder")?.desc ?? "";
+          const id = `node-${idCounter++}`;
+          r.result.push({ id, name, desc, ...(last ? { item } : { children: list.result }) });
+        }
+        return r.map[name];
+      }, level);
+    });
 
   return result;
 }

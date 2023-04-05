@@ -12,8 +12,7 @@ type Props = {
   expandedFolders?: { id?: string; name?: string }[];
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
-  onOpenDetails?: (item?: DataCatalogItem) => void;
-  onSelect?: (item: DataCatalogItem) => void;
+  onSelect?: (item: DataCatalogItem | DataCatalogGroup) => void;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
 };
 
@@ -26,7 +25,6 @@ const TreeBuilder: React.FC<Props> = ({
   expandedFolders,
   addDisabled,
   onDatasetAdd,
-  onOpenDetails,
   onSelect,
   setExpandedFolders,
 }) => {
@@ -36,12 +34,15 @@ const TreeBuilder: React.FC<Props> = ({
         catalogItem.map(item =>
           "children" in item ? (
             <Folder
+              item={item}
               key={item.id}
               id={item.id}
               name={item.name}
               nestLevel={nestLevel + 1}
               expandedFolders={expandedFolders}
               isMobile={isMobile}
+              selectedID={selectedID}
+              onSelect={onSelect}
               setExpandedFolders={setExpandedFolders}>
               <TreeBuilder
                 catalogItem={item.children}
@@ -51,7 +52,6 @@ const TreeBuilder: React.FC<Props> = ({
                 expandedFolders={expandedFolders}
                 addDisabled={addDisabled}
                 onDatasetAdd={onDatasetAdd}
-                onOpenDetails={onOpenDetails}
                 onSelect={onSelect}
                 setExpandedFolders={setExpandedFolders}
               />
@@ -65,7 +65,6 @@ const TreeBuilder: React.FC<Props> = ({
               expandedFolders={expandedFolders}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
-              onOpenDetails={onOpenDetails}
               onSelect={onSelect}
               setExpandedFolders={setExpandedFolders}
             />
@@ -73,12 +72,15 @@ const TreeBuilder: React.FC<Props> = ({
         )
       ) : "children" in catalogItem ? (
         <Folder
+          item={catalogItem}
           key={catalogItem.id}
           id={catalogItem.id}
           name={catalogItem.name}
           nestLevel={nestLevel + 1}
           expandedFolders={expandedFolders}
           isMobile={isMobile}
+          selectedID={selectedID}
+          onSelect={onSelect}
           setExpandedFolders={setExpandedFolders}>
           <TreeBuilder
             catalogItem={catalogItem.children}
@@ -88,7 +90,6 @@ const TreeBuilder: React.FC<Props> = ({
             expandedFolders={expandedFolders}
             addDisabled={addDisabled}
             onDatasetAdd={onDatasetAdd}
-            onOpenDetails={onOpenDetails}
             onSelect={onSelect}
             setExpandedFolders={setExpandedFolders}
           />
@@ -101,7 +102,6 @@ const TreeBuilder: React.FC<Props> = ({
           selectedID={selectedID}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
-          onOpenDetails={onOpenDetails}
           onSelect={onSelect}
         />
       )}

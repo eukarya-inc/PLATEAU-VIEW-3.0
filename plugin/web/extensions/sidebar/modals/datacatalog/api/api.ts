@@ -15,6 +15,7 @@ export type RawDataCatalogTreeItem = RawDataCatalogGroup | RawDataCatalogItem;
 export type RawDataCatalogGroup = {
   id: string;
   name: string;
+  desc?: string;
   children: RawDataCatalogTreeItem[];
 };
 
@@ -159,6 +160,7 @@ export function getRawDataCatalogTree(
       item.item ?? {
         id: item.id,
         name: item.name,
+        desc: item.desc,
         children: [],
       },
   );

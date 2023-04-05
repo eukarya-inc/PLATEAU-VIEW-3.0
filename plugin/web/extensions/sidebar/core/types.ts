@@ -13,6 +13,7 @@ export type Root = {
 export type DataCatalogGroup = {
   id: string;
   name: string;
+  desc: string;
   children: DataCatalogTreeItem[];
 };
 

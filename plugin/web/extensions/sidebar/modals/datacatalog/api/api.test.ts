@@ -60,24 +60,29 @@ test("getRawDataCatalogTree by cities", () => {
     {
       id: "node-0",
       name: "全球データ",
+      desc: "",
       children: [zenkyuData],
     },
     {
       id: "node-2",
       name: "東京都",
+      desc: "",
       children: [
         {
           id: "node-3",
           name: "東京都23区",
+          desc: "",
           children: [
             {
               id: "node-4",
               name: "千代田区",
+              desc: "",
               children: [chiyodakuBldg, chiyodakuShelter],
             },
             {
               id: "node-7",
               name: "世田谷区",
+              desc: "",
               children: [setagayakuBldg, setagayakuShelter],
             },
             tokyo23kuPark,
@@ -86,11 +91,13 @@ test("getRawDataCatalogTree by cities", () => {
         {
           id: "node-11",
           name: "八王子市",
+          desc: "",
           children: [hachiojiBldg, hachiojiLandmark],
         },
         {
           id: "node-14",
           name: "ユースケース",
+          desc: "",
           children: [tokyoUsecase],
         },
       ],
@@ -98,15 +105,18 @@ test("getRawDataCatalogTree by cities", () => {
     {
       id: "node-16",
       name: "栃木県",
+      desc: "",
       children: [
         {
           id: "node-17",
           name: "宇都宮市",
+          desc: "",
           children: [
             utsunomiyashiBldg,
             {
               id: "node-19",
               name: "都市計画決定情報モデル",
+              desc: "",
               children: [utsunomiyashiUseDictrict],
             },
           ],
@@ -121,14 +131,17 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-0",
       name: "建築物モデル",
+      desc: "",
       children: [
         {
           id: "node-1",
           name: "東京都",
+          desc: "",
           children: [
             {
               id: "node-2",
               name: "東京都23区",
+              desc: "",
               children: [chiyodakuBldgByType, setagayakuBldgByType],
             },
             hachiojiBldgByType,
@@ -137,6 +150,7 @@ test("getRawDataCatalogTree by types", () => {
         {
           id: "node-6",
           name: "栃木県",
+          desc: "",
           children: [utsunomiyashiBldgByType],
         },
       ],
@@ -144,14 +158,17 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-8",
       name: "都市計画決定情報モデル",
+      desc: "",
       children: [
         {
           id: "node-9",
           name: "栃木県",
+          desc: "",
           children: [
             {
               id: "node-10",
               name: "宇都宮市",
+              desc: "",
               children: [utsunomiyashiUseDictrictByType],
             },
           ],
@@ -161,14 +178,17 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-12",
       name: "避難施設情報",
+      desc: "",
       children: [
         {
           id: "node-13",
           name: "東京都",
+          desc: "",
           children: [
             {
               id: "node-14",
               name: "東京都23区",
+              desc: "",
               children: [chiyodakuShelterByType, setagayakuShelterByType],
             },
           ],
@@ -178,10 +198,12 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-17",
       name: "ランドマーク情報",
+      desc: "",
       children: [
         {
           id: "node-18",
           name: "東京都",
+          desc: "",
           children: [hachiojiLandmarkByType],
         },
       ],
@@ -189,10 +211,12 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-20",
       name: "公園情報",
+      desc: "",
       children: [
         {
           id: "node-21",
           name: "東京都",
+          desc: "",
           children: [tokyo23kuParkByType],
         },
       ],
@@ -200,15 +224,18 @@ test("getRawDataCatalogTree by types", () => {
     {
       id: "node-23",
       name: "ユースケース",
+      desc: "",
       children: [
         {
           id: "node-24",
           name: "全球データ",
+          desc: "",
           children: [zenkyuDataByType],
         },
         {
           id: "node-26",
           name: "東京都",
+          desc: "",
           children: [tokyoUsecaseByType],
         },
       ],
@@ -221,14 +248,17 @@ test("getRawDataCatalogTree filter", () => {
     {
       id: "node-0",
       name: "建築物モデル",
+      desc: "",
       children: [
         {
           id: "node-1",
           name: "東京都",
+          desc: "",
           children: [
             {
               id: "node-2",
               name: "東京都23区",
+              desc: "",
               children: [setagayakuBldgByType],
             },
           ],
@@ -238,14 +268,17 @@ test("getRawDataCatalogTree filter", () => {
     {
       id: "node-4",
       name: "避難施設情報",
+      desc: "",
       children: [
         {
           id: "node-5",
           name: "東京都",
+          desc: "",
           children: [
             {
               id: "node-6",
               name: "東京都23区",
+              desc: "",
               children: [setagayakuShelterByType],
             },
           ],

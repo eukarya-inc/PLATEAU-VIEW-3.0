@@ -1,5 +1,6 @@
 import { Data } from "@web/extensions/sidebar/core/types";
 import {
+  DataCatalogGroup,
   DataCatalogItem,
   GroupBy,
   RawDataCatalogItem,
@@ -94,9 +95,11 @@ const Catalog: React.FC<Props> = ({
   }, [backendURL, backendProjectName]);
 
   const handleOpenDetails = useCallback(
-    (data?: DataCatalogItem) => {
-      setSelectedDataset(data);
-      setPage("details");
+    (data?: DataCatalogItem | DataCatalogGroup) => {
+      if (data && "dataID" in data) {
+        setSelectedDataset(data);
+        setPage("details");
+      }
     },
     [setSelectedDataset],
   );
@@ -171,7 +174,7 @@ const Catalog: React.FC<Props> = ({
             addDisabled={addDisabled}
             onSearch={onSearch}
             onFilter={handleFilter}
-            onOpenDetails={handleOpenDetails}
+            onSelect={handleOpenDetails}
             onDatasetAdd={onDatasetAdd}
           />
         </>

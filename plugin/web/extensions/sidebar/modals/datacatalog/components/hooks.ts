@@ -8,7 +8,7 @@ import {
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { RawDataCatalogItem, getDataCatalog, GroupBy } from "../api/api";
+import { RawDataCatalogItem, getDataCatalog, GroupBy, DataCatalogGroup } from "../api/api";
 
 export type Tab = "dataset" | "your-data";
 
@@ -17,8 +17,7 @@ export default () => {
   const [addedDatasetDataIDs, setAddedDatasetDataIDs] = useState<string[]>();
   const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
   const [inEditor, setEditorState] = useState(false);
-  const [selectedDatasetID, setDatasetID] = useState<string>();
-  const [selectedItem, selectItem] = useState<DataCatalogItem>();
+  const [selectedItem, selectItem] = useState<DataCatalogItem | DataCatalogGroup>();
   const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -37,7 +36,7 @@ export default () => {
   const processedCatalog = useMemo(() => {
     if (catalogData.length < 1 || data === undefined) return;
     const c = handleDataCatalogProcessing(catalogData, data);
-    return inEditor ? c : c.filter(c => !!c.public);
+    return inEditor ? c : c.filter(c => !!c.public || c.type_en === "folder");
   }, [catalogData, inEditor, data]);
 
   useEffect(() => {
@@ -156,12 +155,8 @@ export default () => {
     [debouncedSearchRef],
   );
 
-  const handleSelect = useCallback((item?: DataCatalogItem) => {
+  const handleSelect = useCallback((item?: DataCatalogItem | DataCatalogGroup) => {
     selectItem(item);
-  }, []);
-
-  const handleOpenDetails = useCallback((data?: DataCatalogItem) => {
-    setDatasetID(data?.dataID);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -210,7 +205,6 @@ export default () => {
         if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
         if (e.data.payload.dataset) {
           const item = e.data.payload.dataset;
-          handleOpenDetails(item);
           handleSelect(item);
           if (item.path) {
             setExpandedFolders(
@@ -234,14 +228,13 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [handleFilter, handleOpenDetails, handleSelect]);
+  }, [handleFilter, handleSelect]);
 
   return {
     currentTab,
     catalog: processedCatalog,
     addedDatasetDataIDs,
     inEditor,
-    selectedDatasetID,
     selectedItem,
     expandedFolders,
     searchTerm,
@@ -249,7 +242,6 @@ export default () => {
     setExpandedFolders,
     handleSearch,
     handleSelect,
-    handleOpenDetails,
     handleFilter,
     handleClose,
     handleTabChange: changeTabs,

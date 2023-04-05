@@ -2,7 +2,12 @@ import { Input, Spin, Tabs } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useMemo, useState } from "react";
 
-import { DataCatalogItem, getDataCatalogTree, GroupBy } from "../../../../api/api";
+import {
+  DataCatalogGroup,
+  DataCatalogItem,
+  getDataCatalogTree,
+  GroupBy,
+} from "../../../../api/api";
 import Tags, { Tag as TagType } from "../Tags";
 
 import FileTree from "./FileTree";
@@ -15,17 +20,16 @@ export type Props = {
   catalog?: DataCatalogItem[];
   selectedTags?: Tag[];
   filter: GroupBy;
-  selectedItem?: DataCatalogItem;
+  selectedItem?: DataCatalogItem | DataCatalogGroup;
   expandedFolders?: { id?: string; name?: string }[];
   searchTerm: string;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSelect?: (item?: DataCatalogItem) => void;
+  onSelect?: (item?: DataCatalogItem | DataCatalogGroup) => void;
   addDisabled: (dataID: string) => boolean;
   onFilter: (filter: GroupBy) => void;
   onTagSelect?: (tag: Tag) => void;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
-  onOpenDetails?: (data?: DataCatalogItem) => void;
 };
 
 // function typeFilter(catalog: Catalog): DataCatalog {
@@ -72,7 +76,6 @@ const DatasetTree: React.FC<Props> = ({
   onFilter,
   onTagSelect,
   onDatasetAdd,
-  onOpenDetails,
 }) => {
   const [loading, _toggleLoading] = useState(false); // needs implementation
 
@@ -121,7 +124,6 @@ const DatasetTree: React.FC<Props> = ({
               onSelect={onSelect}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
-              onOpenDetails={onOpenDetails}
             />
           ) : (
             <Loading>
@@ -141,7 +143,6 @@ const DatasetTree: React.FC<Props> = ({
               onSelect={onSelect}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
-              onOpenDetails={onOpenDetails}
             />
           ) : (
             <Loading>

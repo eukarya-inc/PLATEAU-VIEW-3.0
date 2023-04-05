@@ -1,4 +1,4 @@
-import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
+import { DataCatalogGroup, DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import { checkKeyPress } from "@web/extensions/sidebar/utils";
 import { getNameFromPath } from "@web/extensions/sidebar/utils/file";
 import { Button, Icon } from "@web/sharedComponents";
@@ -12,8 +12,7 @@ export type Props = {
   selectedID?: string;
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
-  onOpenDetails?: (item?: DataCatalogItem) => void;
-  onSelect?: (item: DataCatalogItem) => void;
+  onSelect?: (item: DataCatalogItem | DataCatalogGroup) => void;
 };
 
 const File: React.FC<Props> = ({
@@ -23,7 +22,6 @@ const File: React.FC<Props> = ({
   selectedID,
   addDisabled,
   onDatasetAdd,
-  onOpenDetails,
   onSelect,
 }) => {
   const handleClick = useCallback(
@@ -35,9 +33,8 @@ const File: React.FC<Props> = ({
   );
 
   const handleOpenDetails = useCallback(() => {
-    onOpenDetails?.(item);
     onSelect?.(item);
-  }, [item, onOpenDetails, onSelect]);
+  }, [item, onSelect]);
 
   const selected = useMemo(
     () => (item.type !== "group" ? selectedID === item.id : false),
