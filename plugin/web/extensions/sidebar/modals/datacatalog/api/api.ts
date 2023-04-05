@@ -88,7 +88,7 @@ export async function getDataCatalog(
   }
 
   const data: RawRawDataCatalogItem[] = await res.json();
-  return data.map(modifyDataCatalog);
+  return data.map(modifyDataCatalog).filter(i => i.type_en !== "folder");
 }
 
 export function modifyDataCatalog(
@@ -255,6 +255,7 @@ const types = [
   "bldg",
   "tran",
   "brid",
+  "rail",
   "veg",
   "frn",
   "luse",
@@ -264,6 +265,7 @@ const types = [
   "tnm",
   "htd",
   "ifld",
+  "gen",
   "shelter",
   "landmark",
   "station",
