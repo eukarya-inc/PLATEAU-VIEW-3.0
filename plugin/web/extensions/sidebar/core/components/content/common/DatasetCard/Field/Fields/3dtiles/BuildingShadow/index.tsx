@@ -31,15 +31,15 @@ const BuildingShadow: React.FC<BaseFieldProps<"buildingShadow">> = ({
         },
         {
           value: "enabled",
-          label: "投影と受光",
+          label: "影を落とす・受ける",
         },
         {
           value: "cast_only",
-          label: "投影のみ",
+          label: "影を落とすのみ",
         },
         {
           value: "receive_only",
-          label: "受光のみ",
+          label: "影を受けるのみ",
         },
       ]}
     />
