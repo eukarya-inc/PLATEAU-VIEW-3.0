@@ -89,7 +89,7 @@ export async function getDataCatalog(
   }
 
   const data: RawRawDataCatalogItem[] = await res.json();
-  return data.map(modifyDataCatalog).filter(i => i.type_en !== "folder");
+  return data.map(modifyDataCatalog);
 }
 
 export function modifyDataCatalog(
