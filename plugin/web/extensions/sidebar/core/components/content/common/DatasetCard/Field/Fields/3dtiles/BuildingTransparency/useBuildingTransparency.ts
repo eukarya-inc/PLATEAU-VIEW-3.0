@@ -1,5 +1,7 @@
-import { getTransparencyExpression } from "@web/extensions/sidebar/utils/color";
-import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
+import {
+  getTransparencyExpression,
+  getOverriddenLayerByDataID,
+} from "@web/extensions/sidebar/utils";
 import debounce from "lodash/debounce";
 import { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef } from "react";
 

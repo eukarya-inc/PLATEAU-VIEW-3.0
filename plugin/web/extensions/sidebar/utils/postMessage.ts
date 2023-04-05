@@ -1,4 +1,14 @@
-import { postMsg } from ".";
+import { PostMessageProps } from "@web/extensions/sidebar/types";
+
+export function postMsg({ action, payload }: PostMessageProps) {
+  parent.postMessage(
+    {
+      action,
+      payload,
+    },
+    "*",
+  );
+}
 
 export const getOverriddenLayerByDataID = (dataID: string | undefined) =>
   new Promise<any>(resolve => {

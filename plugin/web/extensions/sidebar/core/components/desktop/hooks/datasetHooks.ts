@@ -1,9 +1,8 @@
 import { Project } from "@web/extensions/sidebar/types";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { postMsg, convertDatasetToData } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect } from "react";
 
 import { Data, DataCatalogItem, Template } from "../../../types";
-import { convertToData } from "../../utils";
 
 export default ({
   templates,
@@ -38,7 +37,7 @@ export default ({
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
       if (!backendURL || !backendAccessToken || !dataset) return;
-      const datasetToSave = convertToData(dataset, templates);
+      const datasetToSave = convertDatasetToData(dataset, templates);
 
       const data = await handleDataFetch();
       const isNew = data ? !data.find((d: Data) => d.dataID === dataset.dataID) : undefined;

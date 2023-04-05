@@ -9,12 +9,12 @@ import {
   moveItemUp,
   removeItem,
   postMsg,
+  stringifyCondition,
 } from "@web/extensions/sidebar/utils";
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
 import { styled, commonStyles } from "@web/theme";
 import { useState, useCallback, useEffect, useRef } from "react";
 
-import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, SwitchVisibility as SwitchVisibilityType } from "../../types";
 
 import ConditionItem from "./ConditionItem";

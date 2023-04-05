@@ -1,8 +1,13 @@
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
-import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import {
-  flattenComponents,
+  generateID,
+  mergeProperty,
+  postMsg,
+  mergeOverrides,
+  prepareComponentsForOverride,
+} from "@web/extensions/sidebar/utils";
+import {
   getActiveFieldIDs,
   getDefaultGroup,
   getDefaultDataset,
@@ -13,9 +18,7 @@ import { BuildingSearch, Data, DataCatalogItem, Template } from "../../../types"
 import {
   StoryItem,
   Story as FieldStory,
-  FieldComponent,
 } from "../../content/common/DatasetCard/Field/Fields/types";
-import { mergeOverrides } from "../../utils";
 
 export const defaultProject: Project = {
   sceneOverrides: {
@@ -87,55 +90,21 @@ export default ({
       if (!activeIDs) return undefined;
       let overrides = undefined;
 
-      const flattenedComponents = flattenComponents(dataset.components);
-      const inactiveFields = flattenedComponents
-        ?.filter(c => !activeIDs.find(id => id === c.id))
-        .map(c => {
-          if (c.type === "switchDataset" && !c.cleanseOverride) {
-            c.cleanseOverride = {
-              data: {
-                url: dataset.config?.data?.[0].url,
-                time: {
-                  updateClockOnLoad: false,
-                },
-              },
-            };
-          }
-          return c;
-        });
-      const activeFields = flattenedComponents
-        ?.filter(c => !!activeIDs.find(id => id === c.id))
-        .map(c => {
-          if (c.type === "switchDataset" && !c.cleanseOverride) {
-            c.cleanseOverride = {
-              data: {
-                url: dataset.config?.data?.[0].url,
-                time: {
-                  updateClockOnLoad: false,
-                },
-              },
-            };
-          }
-          return c;
-        });
+      const { activeComponents, inactiveComponents } = prepareComponentsForOverride(
+        activeIDs,
+        dataset,
+        fieldTemplates,
+        buildingSearch,
+      );
 
-      const buildingSearchField = buildingSearch?.find(b => b.dataID === dataset.dataID);
-      if (buildingSearchField) {
-        if (buildingSearchField.active) {
-          activeFields?.push(buildingSearchField.field as FieldComponent);
-        } else {
-          inactiveFields?.push(buildingSearchField.cleanseField as FieldComponent);
-        }
-      }
-
-      const cleanseOverrides = mergeOverrides("cleanse", inactiveFields, cleanseOverride);
-      overrides = mergeOverrides("update", activeFields, cleanseOverrides);
+      const cleanseOverrides = mergeOverrides("cleanse", inactiveComponents, cleanseOverride);
+      overrides = mergeOverrides("update", activeComponents, cleanseOverrides);
 
       setCleanseOverride(undefined);
 
       return overrides;
     },
-    [cleanseOverride, buildingSearch],
+    [cleanseOverride, fieldTemplates, buildingSearch],
   );
 
   const handleProjectSceneUpdate = useCallback(

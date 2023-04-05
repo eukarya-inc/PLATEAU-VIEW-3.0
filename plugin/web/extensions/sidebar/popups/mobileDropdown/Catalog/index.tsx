@@ -1,4 +1,3 @@
-import { handleDataCatalogProcessing } from "@web/extensions/sidebar/core/components/utils";
 import { Data } from "@web/extensions/sidebar/core/types";
 import {
   DataCatalogItem,
@@ -9,7 +8,7 @@ import {
 import DatasetTree from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/DatasetTree";
 import DatasetDetails from "@web/extensions/sidebar/modals/datacatalog/components/content/DatasetsPage/Details";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { handleDataCatalogProcessing, postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { useCallback, useEffect, useMemo, useState } from "react";
 

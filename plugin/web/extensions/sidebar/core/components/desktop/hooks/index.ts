@@ -1,9 +1,8 @@
-import { postMsg, generateID } from "@web/extensions/sidebar/utils";
+import { postMsg, generateID, updateExtended } from "@web/extensions/sidebar/utils";
 import { useCallback, useEffect, useState } from "react";
 
 import { BuildingSearch, Template } from "../../../types";
 import { Pages } from "../../Header";
-import { updateExtended } from "../../utils";
 
 import useDatasetHooks from "./datasetHooks";
 import useProjectHooks from "./projectHooks";

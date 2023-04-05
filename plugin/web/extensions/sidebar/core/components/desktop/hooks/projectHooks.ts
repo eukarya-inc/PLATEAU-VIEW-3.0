@@ -1,12 +1,12 @@
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
-import { generateID, mergeProperty, postMsg } from "@web/extensions/sidebar/utils";
 import {
-  flattenComponents,
-  getActiveFieldIDs,
-  getDefaultGroup,
-  getDefaultDataset,
-} from "@web/extensions/sidebar/utils/dataset";
+  mergeOverrides,
+  mergeProperty,
+  postMsg,
+  prepareComponentsForOverride,
+} from "@web/extensions/sidebar/utils";
+import { getActiveFieldIDs, processDatasetToAdd } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BuildingSearch, Data, DataCatalogItem, FldInfo, Template } from "../../../types";
@@ -15,7 +15,6 @@ import {
   Story as FieldStory,
   FieldComponent,
 } from "../../content/common/DatasetCard/Field/Fields/types";
-import { mergeOverrides } from "../../utils";
 
 export const defaultProject: Project = {
   sceneOverrides: {
@@ -93,49 +92,15 @@ export default ({
       if (!activeIDs) return undefined;
       let overrides = undefined;
 
-      const flattenedComponents = flattenComponents(dataset.components, fieldTemplates);
-      const inactiveFields = flattenedComponents
-        ?.filter(c => !activeIDs.find(id => id === c.id))
-        .map(c => {
-          if (c.type === "switchDataset" && !c.cleanseOverride) {
-            c.cleanseOverride = {
-              data: {
-                url: dataset.config?.data?.[0].url,
-                time: {
-                  updateClockOnLoad: false,
-                },
-              },
-            };
-          }
-          return c;
-        });
-      const activeFields = flattenedComponents
-        ?.filter(c => !!activeIDs.find(id => id === c.id))
-        .map(c => {
-          if (c.type === "switchDataset" && !c.cleanseOverride) {
-            c.cleanseOverride = {
-              data: {
-                url: dataset.config?.data?.[0].url,
-                time: {
-                  updateClockOnLoad: false,
-                },
-              },
-            };
-          }
-          return c;
-        });
+      const { activeComponents, inactiveComponents } = prepareComponentsForOverride(
+        activeIDs,
+        dataset,
+        fieldTemplates,
+        buildingSearch,
+      );
 
-      const buildingSearchField = buildingSearch?.find(b => b.dataID === dataset.dataID);
-      if (buildingSearchField) {
-        if (buildingSearchField.active) {
-          activeFields?.push(buildingSearchField.field as FieldComponent);
-        } else {
-          inactiveFields?.push(buildingSearchField.cleanseField as FieldComponent);
-        }
-      }
-
-      const cleanseOverrides = mergeOverrides("cleanse", inactiveFields, cleanseOverride);
-      overrides = mergeOverrides("update", activeFields, cleanseOverrides);
+      const cleanseOverrides = mergeOverrides("cleanse", inactiveComponents, cleanseOverride);
+      overrides = mergeOverrides("update", activeComponents, cleanseOverrides);
 
       setCleanseOverride(undefined);
 
@@ -160,33 +125,7 @@ export default ({
 
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
-      const datasetToAdd = { ...dataset } as DataCatalogItem;
-
-      datasetToAdd.selectedGroup = getDefaultGroup(datasetToAdd.components, fieldTemplates);
-      datasetToAdd.selectedDataset = getDefaultDataset(datasetToAdd);
-
-      if (!dataset.components?.length) {
-        const defaultTemplate = fieldTemplates?.find(ft =>
-          dataset.type2
-            ? ft.name.includes(dataset.type2)
-            : dataset.type
-            ? ft.name.includes(dataset.type)
-            : undefined,
-        );
-        if (defaultTemplate && !datasetToAdd.components) {
-          datasetToAdd.components = [
-            {
-              id: generateID(),
-              type: "template",
-              templateID: defaultTemplate.id,
-              userSettings: {
-                components: defaultTemplate.components,
-              },
-            },
-          ];
-          datasetToAdd.selectedGroup = getDefaultGroup(defaultTemplate.components);
-        }
-      }
+      const datasetToAdd = processDatasetToAdd(dataset);
 
       updateProject(project => {
         const datasets = [...project.datasets];

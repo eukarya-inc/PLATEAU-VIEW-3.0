@@ -1,10 +1,10 @@
-import {
-  convertToData,
-  handleDataCatalogProcessing,
-} from "@web/extensions/sidebar/core/components/utils";
 import { Data, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
-import { postMsg } from "@web/extensions/sidebar/utils";
+import {
+  convertDatasetToData,
+  handleDataCatalogProcessing,
+  postMsg,
+} from "@web/extensions/sidebar/utils";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -66,7 +66,7 @@ export default () => {
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
       if (!backendURL || !backendAccessToken || !dataset) return;
-      const datasetToSave = convertToData(dataset, templates);
+      const datasetToSave = convertDatasetToData(dataset, templates);
 
       const isNew = !data?.find(d => d.dataID === dataset.dataID);
 

@@ -1,34 +1,60 @@
-import { RawDataCatalogItem } from "@web/extensions/sidebar/modals/datacatalog/api/api";
+import { cleanseOverrides } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/fieldConstants";
+import { FieldComponent } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/Fields/types";
+import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
+import { getTransparencyExpression } from "@web/extensions/sidebar/utils/color";
+import { flattenComponents } from "@web/extensions/sidebar/utils/dataset";
 import { cloneDeep, isEqual, merge } from "lodash";
 
-import { getTransparencyExpression } from "../../utils/color";
-import { getDefaultGroup } from "../../utils/dataset";
-import { Data, DataCatalogItem, Template } from "../types";
+export const prepareComponentsForOverride = (
+  activeIDs: string[],
+  dataset: DataCatalogItem,
+  templates?: Template[],
+  buildingSearch?: BuildingSearch,
+) => {
+  const flattenedComponents = flattenComponents(dataset.components, templates);
+  const inactiveComponents = flattenedComponents
+    ?.filter(c => !activeIDs.find(id => id === c.id))
+    .map(c => {
+      if (c.type === "switchDataset" && !c.cleanseOverride) {
+        c.cleanseOverride = {
+          data: {
+            url: dataset.config?.data?.[0].url,
+            time: {
+              updateClockOnLoad: false,
+            },
+          },
+        };
+      }
+      return c;
+    });
 
-import { cleanseOverrides } from "./content/common/DatasetCard/Field/fieldConstants";
-import { FieldComponent } from "./content/common/DatasetCard/Field/Fields/types";
+  const activeComponents = flattenedComponents
+    ?.filter(c => !!activeIDs.find(id => id === c.id))
+    .map(c => {
+      if (c.type === "switchDataset" && !c.cleanseOverride) {
+        c.cleanseOverride = {
+          data: {
+            url: dataset.config?.data?.[0].url,
+            time: {
+              updateClockOnLoad: false,
+            },
+          },
+        };
+      }
+      return c;
+    });
 
-export const prepareComponentsToSave = (components?: FieldComponent[], templates?: Template[]) => {
-  if (!components) return;
-  return components?.map((c: any) => {
-    const newComp = Object.assign({}, c);
-    if (newComp.type === "template" && newComp.components) {
-      newComp.components =
-        templates
-          ?.find(t => t.id === newComp.templateID)
-          ?.components?.map(c => {
-            return { ...c, userSettings: undefined };
-          }) ?? [];
+  const buildingSearchField = buildingSearch?.find(b => b.dataID === dataset.dataID);
+  if (buildingSearchField) {
+    if (buildingSearchField.active) {
+      activeComponents?.push(buildingSearchField.field as FieldComponent);
+    } else {
+      inactiveComponents?.push(buildingSearchField.cleanseField as FieldComponent);
     }
-    return { ...newComp, userSettings: undefined };
-  });
-};
-
-export const convertToData = (item: DataCatalogItem, templates?: Template[]): Data => {
+  }
   return {
-    dataID: item.dataID,
-    public: item.public,
-    components: prepareComponentsToSave(item.components, templates),
+    activeComponents,
+    inactiveComponents,
   };
 };
 
@@ -113,48 +139,3 @@ export const mergeOverrides = (
 
   return isEqual(overrides, {}) ? undefined : overrides;
 };
-
-export const updateExtended = (e: { vertically: boolean }) => {
-  const html = document.querySelector("html");
-  const body = document.querySelector("body");
-  const root = document.getElementById("root");
-
-  if (e?.vertically) {
-    html?.classList.add("extended");
-    body?.classList.add("extended");
-    root?.classList.add("extended");
-  } else {
-    html?.classList.remove("extended");
-    body?.classList.remove("extended");
-    root?.classList.remove("extended");
-  }
-};
-
-export const newItem = (ri: RawDataCatalogItem): DataCatalogItem => {
-  return {
-    ...ri,
-    dataID: ri.id,
-    public: false,
-    visible: true,
-  };
-};
-
-export const handleDataCatalogProcessing = (
-  catalog: (DataCatalogItem | RawDataCatalogItem)[],
-  savedData?: Data[],
-): DataCatalogItem[] =>
-  catalog.map(item => {
-    if (!savedData) return newItem(item);
-
-    const savedData2 = savedData.find(d => d.dataID === ("dataID" in item ? item.dataID : item.id));
-    if (savedData2) {
-      return {
-        ...item,
-        ...savedData2,
-        visible: true,
-        selectedGroup: getDefaultGroup(savedData2.components),
-      };
-    } else {
-      return newItem(item);
-    }
-  });

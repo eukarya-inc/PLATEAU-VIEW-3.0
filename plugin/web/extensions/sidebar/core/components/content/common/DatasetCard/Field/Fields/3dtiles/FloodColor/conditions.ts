@@ -1,6 +1,7 @@
+import { equalNumber, equalString } from "@web/extensions/sidebar/utils";
+
 import { BaseFieldProps } from "../../types";
 import { BuildingColor } from "../types";
-import { equalNumber, equalString } from "../utils";
 
 type Condition = [condition: string, color: BuildingColor];
 

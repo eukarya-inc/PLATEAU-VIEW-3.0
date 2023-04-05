@@ -3,11 +3,16 @@ import {
   ButtonWrapper,
   Wrapper,
 } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/commonComponents";
-import { generateID, moveItemDown, moveItemUp, removeItem } from "@web/extensions/sidebar/utils";
+import {
+  generateID,
+  moveItemDown,
+  moveItemUp,
+  removeItem,
+  stringifyCondition,
+} from "@web/extensions/sidebar/utils";
 import { styled, commonStyles } from "@web/theme";
 import { useCallback, useState } from "react";
 
-import { stringifyCondition } from "../../../utils";
 import { BaseFieldProps, Cond, PointColor as PointColorType } from "../../types";
 
 import PointColorItem from "./PointColorItem";

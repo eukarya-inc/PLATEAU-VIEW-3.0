@@ -1,5 +1,9 @@
-import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
-import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
+import {
+  getRGBAFromString,
+  RGBA,
+  rgbaToString,
+  getOverriddenLayerByDataID,
+} from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
 import { Radio } from "antd";
 import { ComponentProps, useCallback, useEffect, useRef, useState } from "react";

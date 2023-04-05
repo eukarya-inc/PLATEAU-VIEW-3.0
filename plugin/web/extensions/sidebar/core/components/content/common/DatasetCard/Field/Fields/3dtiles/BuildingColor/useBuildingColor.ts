@@ -1,5 +1,9 @@
-import { getRGBAFromString, RGBA, rgbaToString } from "@web/extensions/sidebar/utils/color";
-import { getOverriddenLayerByDataID } from "@web/extensions/sidebar/utils/getOverriddenLayerByDataID";
+import {
+  getRGBAFromString,
+  RGBA,
+  rgbaToString,
+  getOverriddenLayerByDataID,
+} from "@web/extensions/sidebar/utils";
 import debounce from "lodash/debounce";
 import pick from "lodash/pick";
 import { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useRef } from "react";

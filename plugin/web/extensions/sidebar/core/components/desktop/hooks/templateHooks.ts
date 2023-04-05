@@ -1,8 +1,7 @@
-import { postMsg } from "@web/extensions/sidebar/utils";
+import { postMsg, processComponentsToSave } from "@web/extensions/sidebar/utils";
 import { useCallback, useState } from "react";
 
 import { Template } from "../../../types";
-import { prepareComponentsToSave } from "../../utils";
 
 export default ({
   backendURL,
@@ -165,6 +164,6 @@ export default ({
 const convertForSave = (templateToSave: Template, templates: Template[]): Template => {
   return {
     ...templateToSave,
-    components: prepareComponentsToSave(templateToSave.components, templates),
+    components: processComponentsToSave(templateToSave.components, templates),
   };
 };

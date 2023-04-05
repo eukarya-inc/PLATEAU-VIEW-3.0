@@ -1,4 +1,3 @@
-import { BuildingColor } from "../types";
 import {
   compareGreaterThan,
   compareRange,
@@ -7,7 +6,9 @@ import {
   equalString,
   variable,
   stringOrNumber,
-} from "../utils";
+} from "@web/extensions/sidebar/utils";
+
+import { BuildingColor } from "../types";
 
 import { INDEPENDENT_COLOR_TYPE, LAND_SLIDE_RISK_FIELD } from "./constants";
 

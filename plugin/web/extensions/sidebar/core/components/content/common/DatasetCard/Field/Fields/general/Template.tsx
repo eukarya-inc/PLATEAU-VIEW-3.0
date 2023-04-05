@@ -1,5 +1,5 @@
-import { mergeOverrides } from "@web/extensions/sidebar/core/components/utils";
 import { Template } from "@web/extensions/sidebar/core/types";
+import { mergeOverrides } from "@web/extensions/sidebar/utils";
 import { Select } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { isEqual } from "lodash";

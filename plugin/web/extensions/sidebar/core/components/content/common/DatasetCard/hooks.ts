@@ -1,6 +1,11 @@
-import { mergeOverrides } from "@web/extensions/sidebar/core/components/utils";
 import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
-import { generateID, moveItemDown, moveItemUp, postMsg } from "@web/extensions/sidebar/utils";
+import {
+  generateID,
+  mergeOverrides,
+  moveItemDown,
+  moveItemUp,
+  postMsg,
+} from "@web/extensions/sidebar/utils";
 import { getActiveFieldIDs } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useState } from "react";
 
