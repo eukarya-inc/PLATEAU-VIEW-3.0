@@ -125,7 +125,7 @@ export default ({
 
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
-      const datasetToAdd = processDatasetToAdd(dataset);
+      const datasetToAdd = processDatasetToAdd(dataset, fieldTemplates);
 
       updateProject(project => {
         const datasets = [...project.datasets];

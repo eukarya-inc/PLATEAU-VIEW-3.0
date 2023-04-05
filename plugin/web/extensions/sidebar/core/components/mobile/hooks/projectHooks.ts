@@ -1,17 +1,12 @@
 import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
 import { Project, ReearthApi } from "@web/extensions/sidebar/types";
 import {
-  generateID,
   mergeProperty,
   postMsg,
   mergeOverrides,
   prepareComponentsForOverride,
 } from "@web/extensions/sidebar/utils";
-import {
-  getActiveFieldIDs,
-  getDefaultGroup,
-  getDefaultDataset,
-} from "@web/extensions/sidebar/utils/dataset";
+import { getActiveFieldIDs, processDatasetToAdd } from "@web/extensions/sidebar/utils/dataset";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BuildingSearch, Data, DataCatalogItem, Template } from "../../../types";
@@ -124,33 +119,7 @@ export default ({
 
   const handleProjectDatasetAdd = useCallback(
     (dataset: DataCatalogItem | UserDataItem) => {
-      const datasetToAdd = { ...dataset } as DataCatalogItem;
-
-      datasetToAdd.selectedGroup = getDefaultGroup(datasetToAdd.components, fieldTemplates);
-      datasetToAdd.selectedDataset = getDefaultDataset(datasetToAdd);
-
-      if (!dataset.components?.length) {
-        const defaultTemplate = fieldTemplates?.find(ft =>
-          dataset.type2
-            ? ft.name.includes(dataset.type2)
-            : dataset.type
-            ? ft.name.includes(dataset.type)
-            : undefined,
-        );
-        if (defaultTemplate && !datasetToAdd.components) {
-          datasetToAdd.components = [
-            {
-              id: generateID(),
-              type: "template",
-              templateID: defaultTemplate.id,
-              userSettings: {
-                components: defaultTemplate.components,
-              },
-            },
-          ];
-          datasetToAdd.selectedGroup = getDefaultGroup(defaultTemplate.components);
-        }
-      }
+      const datasetToAdd = processDatasetToAdd(dataset, fieldTemplates);
 
       updateProject(project => {
         const datasets = [...project.datasets];
