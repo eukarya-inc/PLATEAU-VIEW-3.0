@@ -40,7 +40,8 @@ func main() {
 		middleware.Recover(),
 		logger.AccessLogger(),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: conf.Origin,
+			AllowOrigins:  []string{"https://api.odpt.org"},
+			AllowMethods: []string{echo.GET},
 		}),
 	)
 
