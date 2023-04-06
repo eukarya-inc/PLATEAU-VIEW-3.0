@@ -103,7 +103,9 @@ func AssetNameFrom(name string) (a AssetName) {
 		}
 		a.Ex = ""
 	case "htd":
+		fallthrough
 	case "ifld":
+		fallthrough
 	case "tnm":
 		a.FldName = a.Ex
 		a.Ex = ""
