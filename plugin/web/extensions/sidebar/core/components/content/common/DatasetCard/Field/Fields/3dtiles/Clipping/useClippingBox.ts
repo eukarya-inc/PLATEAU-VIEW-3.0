@@ -1,3 +1,4 @@
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { RefObject, useEffect, useRef } from "react";
 
 import { BaseFieldProps } from "../../types";
@@ -34,8 +35,6 @@ export const useClippingBox = ({
   }, [options.aboveGroundOnly, options.show, options.direction, options.enabled, dataID]);
 };
 
-const reearth = (globalThis.parent as any).reearth;
-
 type LatLngHeight = {
   lng?: number;
   lat?: number;
@@ -61,15 +60,25 @@ type ClippingBoxState = {
   };
 };
 
+const getCenterOnScreen = () =>
+  new Promise<LatLngHeight>(resolve => {
+    const waitReturnedPostMsg = async (e: MessageEvent<any>) => {
+      if (e.source !== parent) return;
+      if (e.data.action === "getCenterOnScreen") {
+        resolve(e.data.payload.centerOnScreen);
+      }
+    };
+    addEventListener("message", waitReturnedPostMsg);
+    postMsg({
+      action: "getCenterOnScreen",
+    });
+  });
+
 const renderTileset = async (
   state: ClippingBoxState,
   onUpdateRef: RefObject<(tilesetProperty: any, boxProperty: any) => void>,
 ) => {
-  const viewport = reearth.viewport;
-  const centerOnScreen = reearth.scene.getLocationFromScreen(
-    viewport.width / 2,
-    viewport.height / 2,
-  );
+  const centerOnScreen = await getCenterOnScreen();
   const dimensions = {
     width: 100,
     height: 100,

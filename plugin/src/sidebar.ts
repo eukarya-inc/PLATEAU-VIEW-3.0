@@ -438,6 +438,27 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     });
   } else if (action === "unselect") {
     reearth.layers.select();
+  } else if (action === "getCenterOnScreen") {
+    const viewport = reearth.viewport;
+    const centerOnScreen = reearth.scene.getLocationFromScreen(
+      viewport.width / 2,
+      viewport.height / 2,
+    );
+    if (viewport.isMobile) {
+      reearth.popup.postMessage({
+        action,
+        payload: {
+          centerOnScreen,
+        },
+      });
+    } else {
+      reearth.ui.postMessage({
+        action,
+        payload: {
+          centerOnScreen,
+        },
+      });
+    }
   }
 
   // ************************************************

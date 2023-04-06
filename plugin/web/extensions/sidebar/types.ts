@@ -78,7 +78,8 @@ type ActionType =
   | "mobileDatasetUpdate"
   | "mobileCatalogOpen"
   | "initMobileCatalog"
-  | "updateMVTRaster";
+  | "updateMVTRaster"
+  | "getCenterOnScreen";
 // FIXME(@keiya01): support auto csv field complement
 // | "getLocationNamesFromCSVFeatureProperty"
 
