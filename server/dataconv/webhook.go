@@ -27,11 +27,12 @@ type Config struct {
 }
 
 type Item struct {
-	ID         string `json:"id" cms:"id"`
-	Type       string `json:"type" cms:"type"`
-	DataFormat string `json:"data_format" cms:"data_format,select"`
-	Data       string `json:"data" cms:"data,asset"`
-	DataConv   string `json:"data_conv" cms:"data_conv,select"`
+	ID         string   `json:"id" cms:"id"`
+	Type       string   `json:"type" cms:"type"`
+	DataFormat string   `json:"data_format" cms:"data_format,select"`
+	Data       string   `json:"data" cms:"data,asset"`
+	DataConv   string   `json:"data_conv" cms:"data_conv,select"`
+	DataOrig   []string `json:"data_orig" cms:"data_orig,asset"`
 }
 
 func (i Item) Fields() []cms.Field {
@@ -132,6 +133,7 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 	if _, err := c.UpdateItem(ctx, i.ID, Item{
 		Data:       aid,
 		DataFormat: "CZML",
+		DataOrig:   []string{a.ID},
 	}.Fields()); err != nil {
 		log.Errorf("dataconv: failed to update item (%s): %v", id, err)
 		return nil
