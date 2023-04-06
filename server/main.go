@@ -40,8 +40,7 @@ func main() {
 		middleware.Recover(),
 		logger.AccessLogger(),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins:  []string{"https://test.reearth.dev", "https://plateauview.mlit.go.jp/"},
-			AllowMethods: []string{echo.GET},
+			AllowOrigins: conf.Origin,
 		}),
 	)
 
@@ -49,7 +48,7 @@ func main() {
 		return c.JSON(http.StatusOK, "pong")
 	}, putil.NoCacheMiddleware)
 
-	e.GET("/proxy/*", proxyHandlerFunc, middleware.CORS())
+	e.GET("/proxy/*", proxyHandlerFunc, ACAOHeaderOverwriteMiddleware)
 
 	services := lo.Must(Services(conf))
 	serviceNames := lo.Map(services, func(s *Service, _ int) string { return s.Name })
@@ -76,6 +75,20 @@ func main() {
 	log.Infof("enabled services: %v", serviceNames)
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
 	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
+}
+
+func setResponseACAOHeaderFromRequest (req http.Request, resp echo.Response) {
+    resp.Header().Set(echo.HeaderAccessControlAllowOrigin, 
+    req.Header.Get(echo.HeaderOrigin))
+}
+
+func ACAOHeaderOverwriteMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+    return func(ctx echo.Context) error {
+        ctx.Response().Before(func() {
+            setResponseACAOHeaderFromRequest(*ctx.Request(), *ctx.Response())
+        })
+        return next(ctx)
+    }
 }
 
 func errorHandler(next func(error, echo.Context)) func(error, echo.Context) {
