@@ -77,20 +77,6 @@ func main() {
 	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
 }
 
-func setResponseACAOHeaderFromRequest (req http.Request, resp echo.Response) {
-    resp.Header().Set(echo.HeaderAccessControlAllowOrigin, 
-    req.Header.Get(echo.HeaderOrigin))
-}
-
-func ACAOHeaderOverwriteMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-    return func(ctx echo.Context) error {
-        ctx.Response().Before(func() {
-            setResponseACAOHeaderFromRequest(*ctx.Request(), *ctx.Response())
-        })
-        return next(ctx)
-    }
-}
-
 func errorHandler(next func(error, echo.Context)) func(error, echo.Context) {
 	return func(err error, c echo.Context) {
 		if c.Response().Committed {

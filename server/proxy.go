@@ -48,3 +48,17 @@ func proxyHandlerFunc(c echo.Context) error {
 
 	return nil
 }
+
+func setResponseACAOHeaderFromRequest(c echo.Context) {
+	c.Response().Header().Set(echo.HeaderAccessControlAllowOrigin,
+		c.Request().Header.Get(echo.HeaderOrigin))
+}
+
+func ACAOHeaderOverwriteMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Response().Before(func() {
+			setResponseACAOHeaderFromRequest(c)
+		})
+		return next(c)
+	}
+}
