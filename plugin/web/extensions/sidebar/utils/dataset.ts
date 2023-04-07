@@ -4,7 +4,7 @@ import {
   ConfigData,
   FieldComponent,
   SwitchGroup,
-} from "../core/components/content/common/DatasetCard/Field/Fields/types";
+} from "../core/components/content/common/FieldComponent/Fields/types";
 import { Data, DataCatalogItem, Template } from "../core/types";
 import { RawDataCatalogItem } from "../modals/datacatalog/api/api";
 

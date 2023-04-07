@@ -1,6 +1,6 @@
-import { cloneDeep, mergeWith } from "lodash";
+import { cloneDeep, mergeWith } from "lodash-es";
 
-import { Cond } from "../core/components/content/common/DatasetCard/Field/Fields/types";
+import { Cond } from "../core/components/content/common/FieldComponent/Fields/types";
 
 export * from "./array";
 export * from "./color";

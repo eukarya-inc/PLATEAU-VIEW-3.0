@@ -27,7 +27,7 @@ const Sidebar: React.FC<Props> = ({ className }) => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return isMobile !== undefined ? (
     isMobile ? (

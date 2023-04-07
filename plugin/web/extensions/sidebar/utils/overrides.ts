@@ -1,9 +1,9 @@
-import { cleanseOverrides } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/fieldConstants";
-import { FieldComponent } from "@web/extensions/sidebar/core/components/content/common/DatasetCard/Field/Fields/types";
+import { cleanseOverrides } from "@web/extensions/sidebar/core/components/content/common/FieldComponent/fieldConstants";
+import { FieldComponent } from "@web/extensions/sidebar/core/components/content/common/FieldComponent/Fields/types";
 import { BuildingSearch, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { getTransparencyExpression } from "@web/extensions/sidebar/utils/color";
 import { flattenComponents } from "@web/extensions/sidebar/utils/dataset";
-import { cloneDeep, isEqual, merge } from "lodash";
+import { cloneDeep, isEqual, merge } from "lodash-es";
 
 export const prepareComponentsForOverride = (
   activeIDs: string[],

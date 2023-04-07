@@ -1,5 +1,5 @@
 import update from "immutability-helper";
-import { omit } from "lodash";
+import { omit } from "lodash-es";
 import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
 import { postMsg, commonPropertiesMap, getAttributes, getRootFields } from "../core/utils";

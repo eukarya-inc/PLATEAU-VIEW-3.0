@@ -14,7 +14,7 @@ import {
   StoryItem,
   Story as FieldStory,
   FieldComponent,
-} from "../../content/common/DatasetCard/Field/Fields/types";
+} from "../../content/common/FieldComponent/Fields/types";
 
 export const defaultProject: Project = {
   sceneOverrides: {

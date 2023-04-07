@@ -1,6 +1,6 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
-import { isObject, mergeWith, omit, cloneDeep, merge as lodashMerge } from "lodash";
+import { isObject, mergeWith, omit, cloneDeep, merge as lodashMerge } from "lodash-es";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";

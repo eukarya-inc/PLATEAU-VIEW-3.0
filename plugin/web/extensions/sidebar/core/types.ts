@@ -3,7 +3,7 @@ import { RawDataCatalogItem } from "../modals/datacatalog/api/api";
 import {
   ConfigData,
   FieldComponent,
-} from "./components/content/common/DatasetCard/Field/Fields/types";
+} from "./components/content/common/FieldComponent/Fields/types";
 
 export type Root = {
   data: Data[];

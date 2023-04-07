@@ -1,5 +1,5 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { uniq, intersection } from "lodash";
+import { uniq, intersection } from "lodash-es";
 import Papa from "papaparse";
 import { useCallback, useEffect, useState, useRef } from "react";
 

@@ -10,10 +10,7 @@ import { getActiveFieldIDs, processDatasetToAdd } from "@web/extensions/sidebar/
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { BuildingSearch, Data, DataCatalogItem, Template } from "../../../types";
-import {
-  StoryItem,
-  Story as FieldStory,
-} from "../../content/common/DatasetCard/Field/Fields/types";
+import { StoryItem, Story as FieldStory } from "../../content/common/FieldComponent/Fields/types";
 
 export const defaultProject: Project = {
   sceneOverrides: {

@@ -2,7 +2,7 @@ import { Template } from "@web/extensions/sidebar/core/types";
 import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
 import { useCallback } from "react";
 
-import generateFieldComponentsList from "../common/DatasetCard/Field/fieldHooks";
+import generateFieldComponentsList from "../common/FieldComponent/fieldHooks";
 
 export default ({
   template,

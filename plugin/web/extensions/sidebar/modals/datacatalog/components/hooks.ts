@@ -5,7 +5,7 @@ import {
   handleDataCatalogProcessing,
   postMsg,
 } from "@web/extensions/sidebar/utils";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { RawDataCatalogItem, getDataCatalog, GroupBy, DataCatalogGroup } from "../api/api";

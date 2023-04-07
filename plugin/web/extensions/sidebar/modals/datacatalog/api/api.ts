@@ -3,7 +3,7 @@ import type {
   DataCatalogItem,
   DataCatalogTreeItem,
 } from "@web/extensions/sidebar/core/types";
-import { omit } from "lodash";
+import { omit } from "lodash-es";
 
 import { makeTree, mapTree } from "./utils";
 
