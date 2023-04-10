@@ -74,9 +74,6 @@ func (c *Catalog) Validate() error {
 	if c.Notes == "" {
 		missingkeys = append(missingkeys, "説明")
 	}
-	if c.Thumbnail == nil {
-		missingkeys = append(missingkeys, "サムネイル画像")
-	}
 
 	if len(missingkeys) > 0 {
 		errs = append(errs, fmt.Sprintf("%sは必須です。", strings.Join(missingkeys, "・")))
