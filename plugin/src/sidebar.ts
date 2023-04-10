@@ -1,6 +1,6 @@
 import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { PostMessageProps, Project, PluginMessage } from "@web/extensions/sidebar/types";
-import { isObject, mergeWith, omit, cloneDeep, merge as lodashMerge } from "lodash-es";
+import { omit, merge as lodashMerge } from "lodash";
 
 import html from "../dist/web/sidebar/core/index.html?raw";
 import clipVideoHtml from "../dist/web/sidebar/modals/clipVideo/index.html?raw";
@@ -13,6 +13,7 @@ import helpPopupHtml from "../dist/web/sidebar/popups/help/index.html?raw";
 import mobileDropdownHtml from "../dist/web/sidebar/popups/mobileDropdown/index.html?raw";
 
 import { inEditor } from "./utils/ineditor";
+import { mergeDefaultOverrides } from "./utils/merge";
 import { proxyGTFS } from "./utils/proxy";
 
 const defaultProject: Project = {
@@ -753,16 +754,6 @@ reearth.on("popupclose", () => {
 
 function createLayer(dataset: DataCatalogItem, overrides?: any) {
   const format = dataset.format?.toLowerCase().replace(/\s/g, "");
-  const merge = (obj1: any, obj2: any): any => {
-    const merged = cloneDeep(obj1);
-    mergeWith(merged, obj2, (mergedValue, obj2Value) => {
-      if (isObject(mergedValue)) {
-        return merge(mergedValue, obj2Value);
-      }
-      return obj2Value !== undefined ? obj2Value : mergedValue;
-    });
-    return merged;
-  };
   return {
     type: "simple",
     title: dataset.name,
@@ -816,7 +807,7 @@ function createLayer(dataset: DataCatalogItem, overrides?: any) {
       infoboxGlobal,
     ),
     ...(overrides !== undefined
-      ? merge(defaultOverrides, omit(overrides, ["data", "infobox"]))
+      ? mergeDefaultOverrides(defaultOverrides, omit(overrides, ["data", "infobox"]), format)
       : format === "geojson" || format === "czml"
       ? defaultOverrides
       : format === "gtfs"
