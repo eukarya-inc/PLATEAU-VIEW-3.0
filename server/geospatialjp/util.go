@@ -39,7 +39,12 @@ func findResource(pkg *ckan.Package, name, format, desc, url string) (_ ckan.Res
 		needUpdate = true
 	}
 	if url != "" && r.URL != url {
-		r.URL = url
+		r = ckan.Resource{
+			ID:        r.ID,
+			PackageID: r.PackageID,
+			Name:      r.Name,
+			URL:       url,
+		}
 		needUpdate = true
 	}
 	return r, needUpdate

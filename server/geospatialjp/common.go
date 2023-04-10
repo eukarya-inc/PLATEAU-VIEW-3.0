@@ -181,7 +181,7 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 	}
 
 	// find or create package
-	pkg, err := s.findAndUpdateOrCreatePackage(ctx, c, cityCode, cityName, dataYear)
+	pkg, err := s.findOrCreatePackage(ctx, c, cityCode, cityName, dataYear)
 	if err != nil {
 		return err
 	}
@@ -295,7 +295,7 @@ func (s *Services) parseCatalog(ctx context.Context, catalogURL string) (c *Cata
 	return c, cf, nil
 }
 
-func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c *Catalog, cityCode, cityName string, dataYear int) (*ckan.Package, error) {
+func (s *Services) findOrCreatePackage(ctx context.Context, c *Catalog, cityCode, cityName string, dataYear int) (*ckan.Package, error) {
 	// find
 	pkg, pkgName, err := s.findPackage(ctx, cityCode, cityName, dataYear)
 	if err != nil {
@@ -318,16 +318,16 @@ func (s *Services) findAndUpdateOrCreatePackage(ctx context.Context, c *Catalog,
 		return &pkg2, nil
 	}
 
-	// update
-	if c != nil {
-		newpkg := lo.ToPtr(packageFromCatalog(c, s.CkanOrg, pkgName, s.CkanPrivate))
-		newpkg.ID = pkg.ID
-		pkg2, err := s.Ckan.PatchPackage(ctx, *newpkg)
-		if err != nil {
-			return nil, fmt.Errorf("G空間情報センターのデータセット %s を更新できませんでした: %w", pkgName, err)
-		}
-		return &pkg2, nil
-	}
+	// update (currently disabled)
+	// if c != nil {
+	// 	newpkg := lo.ToPtr(packageFromCatalog(c, s.CkanOrg, pkgName, s.CkanPrivate))
+	// 	newpkg.ID = pkg.ID
+	// 	pkg2, err := s.Ckan.PatchPackage(ctx, *newpkg)
+	// 	if err != nil {
+	// 		return nil, fmt.Errorf("G空間情報センターのデータセット %s を更新できませんでした: %w", pkgName, err)
+	// 	}
+	// 	return &pkg2, nil
+	// }
 
 	return pkg, nil
 }
