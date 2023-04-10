@@ -27,7 +27,8 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 		}
 
 		b := struct {
-			ID string `json:"id"`
+			ID                    string `json:"id"`
+			DisableSDKPublication bool   `json:"disable_sdk_publication,omitempty"`
 		}{}
 		if err := c.Bind(&b); err != nil {
 			return c.JSON(http.StatusBadRequest, "invalid body")
@@ -48,7 +49,7 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 		}
 
 		gitem := ItemFrom(*item)
-		err = s.RegisterCkanResources(ctx, gitem)
+		err = s.RegisterCkanResources(ctx, gitem, b.DisableSDKPublication)
 
 		if err != nil {
 			comment := fmt.Sprintf("G空間情報センターへの登録処理でエラーが発生しました。%s", err)

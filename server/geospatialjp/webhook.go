@@ -59,7 +59,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 			// publish event: create resources to ckan
 			act = "create resources to ckan"
-			err = s.RegisterCkanResources(ctx, item)
+			err = s.RegisterCkanResources(ctx, item, false)
 
 			if err != nil {
 				comment := fmt.Sprintf("G空間情報センターへの登録処理でエラーが発生しました。%s", err)

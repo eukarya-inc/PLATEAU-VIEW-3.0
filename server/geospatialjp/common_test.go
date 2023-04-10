@@ -100,7 +100,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 		CityGML:       "citygml",
 		Catalog:       "catalog",
 		All:           "all",
-	}))
+	}, false))
 
 	pkg, err := ckanm.ShowPackage(ctx, "plateau-12210-mobara-shi-2022")
 	assert.NoError(t, err)
@@ -124,7 +124,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 		Specification: "第1版",
 		CityGML:       "citygml2",
 		Catalog:       "catalog2",
-	}), "目録ファイルにG空間情報センター用メタデータシートがありません。")
+	}, false), "目録ファイルにG空間情報センター用メタデータシートがありません。")
 
 	// case3: upload citygml and catalog of 第1版 to an existing package
 	ckanm = ckan.NewMock("org", []ckan.Package{
@@ -153,7 +153,7 @@ func TestService_RegisterCkanResources(t *testing.T) {
 		Specification: "第2版",
 		CityGML:       "citygml2",
 		Catalog:       "catalog2",
-	}))
+	}, false))
 
 	pkg, err = ckanm.ShowPackage(ctx, "plateau-12210-mobara-shi-2020")
 	assert.NoError(t, err)

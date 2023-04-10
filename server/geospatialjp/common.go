@@ -115,7 +115,7 @@ func (s *Services) CheckCatalog(ctx context.Context, projectID string, i Item) e
 	return nil
 }
 
-func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
+func (s *Services) RegisterCkanResources(ctx context.Context, i Item, disableSDKPublication bool) error {
 	if i.Catalog == "" {
 		return errors.New("「目録ファイル」が登録されていません。")
 	}
@@ -226,11 +226,16 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 		log.Infof("geospatialjp: all is not registerd so uploading is skipped")
 	}
 
+	sdkpub := ""
+	if !disableSDKPublication {
+		sdkpub = "公開する"
+	}
+
 	// update item
 	if i.ID != "" {
 		if _, err := s.CMS.UpdateItem(ctx, i.ID, Item{
 			ID:             i.ID,
-			SDKPublication: "公開する",
+			SDKPublication: sdkpub,
 			CatalogStatus:  StatusOK,
 		}.Fields()); err != nil {
 			log.Errorf("geospatialjp: failed to update an item: %v", err)
