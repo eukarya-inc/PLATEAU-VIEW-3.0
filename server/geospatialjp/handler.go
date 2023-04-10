@@ -53,7 +53,7 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 		if err != nil {
 			comment := fmt.Sprintf("G空間情報センターへの登録処理でエラーが発生しました。%s", err)
 			s.commentToItem(ctx, itemID, comment)
-			return c.JSON(http.StatusBadRequest, err)
+			return c.JSON(http.StatusBadRequest, map[string]any{"error": err.Error()})
 		}
 
 		s.commentToItem(ctx, itemID, "G空間情報センターへの登録が完了しました")

@@ -231,6 +231,7 @@ func (s *Services) RegisterCkanResources(ctx context.Context, i Item) error {
 		if _, err := s.CMS.UpdateItem(ctx, i.ID, Item{
 			ID:             i.ID,
 			SDKPublication: "公開する",
+			CatalogStatus:  StatusOK,
 		}.Fields()); err != nil {
 			log.Errorf("geospatialjp: failed to update an item: %v", err)
 		}
