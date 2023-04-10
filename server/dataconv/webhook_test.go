@@ -70,6 +70,7 @@ func TestWebhook(t *testing.T) {
 		Fields: Item{
 			DataFormat: "CZML",
 			Data:       "asset",
+			DataOrig:   []string{"aaa"},
 		}.Fields(),
 	}, c.i)
 }

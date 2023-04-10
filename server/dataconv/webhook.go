@@ -133,7 +133,7 @@ func webhookHandler(ctx context.Context, w *cmswebhook.Payload, conf Config, c c
 	if _, err := c.UpdateItem(ctx, i.ID, Item{
 		Data:       aid,
 		DataFormat: "CZML",
-		DataOrig:   []string{a.ID},
+		DataOrig:   []string{i.Data},
 	}.Fields()); err != nil {
 		log.Errorf("dataconv: failed to update item (%s): %v", id, err)
 		return nil

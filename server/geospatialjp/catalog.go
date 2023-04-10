@@ -125,10 +125,9 @@ func (c *CatalogFile) Parse() (res *Catalog, err error) {
 	res.Charge, errs = c.getCellValue(sheet, "有償無償区分*", "D19", errs)
 	res.Emergency, errs = c.getCellValue(sheet, "災害時区分*", "D20", errs)
 	res.Area, errs = c.getCellValue(sheet, "地理的範囲", "D21", errs)
-	res.ThumbnailFileName, res.Thumbnail, errs = c.getPicture(sheet, "サムネイル画像", "D22", errs)
+	res.ThumbnailFileName, res.Thumbnail, _ = c.getPicture(sheet, "サムネイル画像", "D22", errs) // optional
 	res.Fee, errs = c.getCellValue(sheet, "価格情報", "D23", errs)
 	res.LicenseAgreement, errs = c.getCellValue(sheet, "使用許諾", "D24", errs)
-	// メタデータ is not implemented
 
 	if len(errs) > 0 {
 		return res, fmt.Errorf("目録の読み込みに失敗しました。%w", errorsJoin(errs))
