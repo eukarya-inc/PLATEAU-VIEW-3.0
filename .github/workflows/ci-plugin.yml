@@ -40,9 +40,9 @@ jobs:
         run: yarn test
       - name: Build
         run: yarn build
-      - name: Save as  artifact
+      - name: Save artifacts
         uses: actions/upload-artifact@v2
         if: github.ref == 'refs/heads/main'
         with:
-          name: built-plugin
+          name: plateau-plugin
           path: plugin/dist/plugin
