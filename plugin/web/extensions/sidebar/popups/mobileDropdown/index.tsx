@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Tab } from "../../core/components/mobile";
 import { defaultProject } from "../../core/components/mobile/hooks/projectHooks";
-import { BuildingSearch, Template } from "../../core/types";
+import { Template } from "../../core/types";
 import { DataCatalogItem } from "../../modals/datacatalog/api/api";
 import { UserDataItem } from "../../modals/datacatalog/types";
 import { Project, ReearthApi } from "../../types";
@@ -19,7 +19,6 @@ const MobileDropdown: React.FC = () => {
   const [project, setProject] = useState<Project>(defaultProject);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
-  const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
   const [inEditor, setInEditor] = useState(false);
 
   const [selectedDataset, setSelectedDataset] = useState<DataCatalogItem>();
@@ -88,7 +87,6 @@ const MobileDropdown: React.FC = () => {
           if (e.data.payload.selected) setCurrentTab(e.data.payload.selected);
           if (e.data.payload.templates) setTemplates(e.data.payload.templates);
           if (e.data.payload.project) setProject(e.data.payload.project);
-          if (e.data.payload.buildingSearch) setBuildingSearch(e.data.payload.buildingSearch);
           if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
           if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
           if (e.data.payload.reearthURL) setReearthURL(e.data.payload.reearthURL);
@@ -143,7 +141,6 @@ const MobileDropdown: React.FC = () => {
             <Selection
               selectedDatasets={project.datasets}
               templates={templates}
-              buildingSearch={buildingSearch}
               onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
               onDatasetRemoveAll={handleProjectDatasetRemoveAll}

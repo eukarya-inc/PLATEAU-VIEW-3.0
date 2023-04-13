@@ -1,5 +1,5 @@
 import SelectionComponent from "@web/extensions/sidebar/core/components/content/Selection";
-import { DataCatalogItem, BuildingSearch, Template } from "@web/extensions/sidebar/core/types";
+import { DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
 import { ReearthApi } from "@web/extensions/sidebar/types";
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { styled } from "@web/theme";
@@ -10,7 +10,6 @@ import PopupItem from "../sharedComponents/PopupItem";
 type Props = {
   selectedDatasets: DataCatalogItem[];
   savingDataset?: boolean;
-  buildingSearch?: BuildingSearch;
   templates?: Template[];
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
@@ -23,7 +22,6 @@ type Props = {
 const Selection: React.FC<Props> = ({
   selectedDatasets,
   savingDataset,
-  buildingSearch,
   templates,
   onDatasetUpdate,
   onDatasetRemove,
@@ -44,7 +42,6 @@ const Selection: React.FC<Props> = ({
       <SelectionComponent
         selectedDatasets={selectedDatasets}
         savingDataset={savingDataset}
-        buildingSearch={buildingSearch}
         templates={templates}
         isMobile
         onDatasetUpdate={onDatasetUpdate}

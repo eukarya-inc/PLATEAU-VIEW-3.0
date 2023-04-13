@@ -23,7 +23,6 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
     inEditor,
     templates,
     searchTerm,
-    buildingSearch,
     setSelected,
   } = useHooks();
 
@@ -53,7 +52,6 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
             selected,
             templates,
             project,
-            buildingSearch,
             inEditor,
             searchTerm,
             catalogProjectName,

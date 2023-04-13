@@ -179,13 +179,14 @@ export default () => {
           field: {
             id,
             type: "search",
-            updatedAt: new Date(),
-            override: overrides,
+            userSettings: {
+              updatedAt: new Date(),
+              override: overrides,
+            },
           },
           cleanseField: {
             id,
             type: "search",
-            updatedAt: new Date(),
           },
         };
         const target = bs.find(b => b.dataID === dataID);
