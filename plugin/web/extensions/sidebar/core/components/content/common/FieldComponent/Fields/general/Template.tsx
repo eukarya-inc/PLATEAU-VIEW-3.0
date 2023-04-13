@@ -3,7 +3,7 @@ import { mergeOverrides } from "@web/extensions/sidebar/utils";
 import { Select } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { isEqual } from "lodash-es";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 
 import FieldComponent from "../..";
 import { BaseFieldProps, FieldComponent as FieldComponentType } from "../types";
@@ -22,6 +22,7 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
   onSceneUpdate,
 }) => {
   const [fieldComponents, setFieldComponents] = useState<FieldComponentType[] | undefined>();
+  const latestFieldComponents = useRef<FieldComponentType[] | undefined>();
 
   const hasTemplates = useMemo(() => templates && templates.length > 0, [templates]);
 
@@ -34,18 +35,20 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
 
     if (newFieldComponents && !isEqual(newFieldComponents, fieldComponents)) {
       setFieldComponents(newFieldComponents);
+      latestFieldComponents.current = newFieldComponents;
     }
   }, [activeIDs, fieldComponents, templates, hasTemplates, value.templateID, value, onUpdate]);
 
   const handleTemplateChange = useCallback(
     (id: string) => {
       const cleanseOverride = mergeOverrides("cleanse", fieldComponents);
-
+      const components = templates?.find(t => t.id === id)?.components ?? [];
+      latestFieldComponents.current = components;
       onUpdate({
         ...value,
         templateID: id,
         userSettings: {
-          components: templates?.find(t => t.id === id)?.components ?? [],
+          components,
           override: cleanseOverride,
         },
       });
@@ -55,14 +58,14 @@ const Template: React.FC<BaseFieldProps<"template">> = ({
 
   const handleFieldUpdate = useCallback(
     (id: string) => (property: any) => {
-      const newComponents = [...(fieldComponents ?? [])];
+      const newComponents = [...(latestFieldComponents.current ?? [])];
 
       const componentIndex = newComponents?.findIndex(c => c.id === id);
 
       if (!newComponents || componentIndex === undefined) return;
 
       newComponents[componentIndex] = { ...property };
-
+      latestFieldComponents.current = newComponents;
       onUpdate({
         ...value,
         userSettings: {

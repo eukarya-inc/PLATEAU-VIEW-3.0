@@ -1,5 +1,5 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
-import { RefObject, useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef, MutableRefObject } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -11,6 +11,7 @@ export const useClippingBox = ({
   options: Omit<BaseFieldProps<"clipping">["value"], "id" | "group" | "type">["userSettings"];
   onUpdate: (tilesetProperty: any, boxProperty: any) => void;
 }) => {
+  const isInitializedRef = useRef(false);
   const onUpdateRef = useRef(onUpdate);
   useEffect(() => {
     onUpdateRef.current = onUpdate;
@@ -27,6 +28,7 @@ export const useClippingBox = ({
             direction: options.direction,
             enabled: options.enabled,
           },
+          isInitializedRef,
         },
         onUpdateRef,
       );
@@ -58,6 +60,7 @@ type ClippingBoxState = {
     show: boolean;
     enabled: boolean;
   };
+  isInitializedRef: MutableRefObject<boolean>;
 };
 
 const getCenterOnScreen = () =>
@@ -121,30 +124,34 @@ const renderTileset = async (
   };
 
   const updateBox = () => {
-    onUpdateRef.current?.(
-      {
-        experimental_clipping: state.userSettings?.enabled
+    if (!state.isInitializedRef.current) {
+      state.isInitializedRef.current = true;
+    } else {
+      onUpdateRef.current?.(
+        {
+          experimental_clipping: state.userSettings?.enabled
+            ? {
+                ...boxProperties,
+                coordinates: [location.lng, location.lat, location.height],
+                visible: state.userSettings?.show,
+                direction: state.userSettings?.direction,
+                allowEnterGround: !state.userSettings?.keepBoxAboveGround,
+                useBuiltinBox: true,
+              }
+            : undefined,
+        },
+        state.userSettings?.enabled
           ? {
               ...boxProperties,
-              coordinates: [location.lng, location.lat, location.height],
-              visible: state.userSettings?.show,
-              direction: state.userSettings?.direction,
+              cursor: boxState.cursor,
+              activeBox: boxState.activeBox,
+              activeScalePointIndex: boxState.activeScalePointIndex,
+              activeEdgeIndex: boxState.activeEdgeIndex,
               allowEnterGround: !state.userSettings?.keepBoxAboveGround,
-              useBuiltinBox: true,
             }
           : undefined,
-      },
-      state.userSettings?.enabled
-        ? {
-            ...boxProperties,
-            cursor: boxState.cursor,
-            activeBox: boxState.activeBox,
-            activeScalePointIndex: boxState.activeScalePointIndex,
-            activeEdgeIndex: boxState.activeEdgeIndex,
-            allowEnterGround: !state.userSettings?.keepBoxAboveGround,
-          }
-        : undefined,
-    );
+      );
+    }
   };
 
   updateBox();

@@ -94,7 +94,8 @@ const MobileDropdown: React.FC = () => {
           if (e.data.payload.reearthURL) setReearthURL(e.data.payload.reearthURL);
           if (e.data.payload.backendURL) setBackendURL(e.data.payload.backendURL);
           if (e.data.payload.catalogURL) setCatalogURL(e.data.payload.catalogURL);
-          setCatalogProjectName(e.data.payload.catalogProjectName);
+          if (e.data.payload.catalogProjectName)
+            setCatalogProjectName(e.data.payload.catalogProjectName);
           if (e.data.payload.inEditor) setInEditor(e.data.payload.inEditor);
           if (e.data.payload.backendProjectName)
             setBackendProjectName(e.data.payload.backendProjectName);

@@ -1,6 +1,6 @@
 import { Icon, Dropdown, Menu, Radio } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { BaseFieldProps, ConfigData } from "../../types";
 
@@ -18,7 +18,6 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
   onUpdate,
   onCurrentDatasetUpdate,
 }) => {
-  const initialized = useRef(false);
   const [selectedStyle, selectStyle] = useState(value.uiStyle ?? "dropdown");
   const [selectedDataset, selectDataset] = useState(
     value.userSettings?.selected ?? configData?.[0],
@@ -58,48 +57,53 @@ const SwitchDataset: React.FC<BaseFieldProps<"switchDataset">> = ({
     />
   );
 
-  const handleStyleChange = useCallback((style: UIStyles) => {
-    selectStyle(style);
-  }, []);
-
-  const handleDatasetSelect = useCallback((dataset: ConfigData) => {
-    selectDataset(dataset);
-  }, []);
-
-  useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
-      return;
-    }
-
-    if (selectedDataset === value.userSettings?.selected && selectedStyle === value.uiStyle) return;
-    onUpdate({
-      ...value,
-      uiStyle: selectedStyle,
-      userSettings: {
-        selected: selectedDataset,
-        override: {
-          data: {
-            url: selectedDataset?.url,
-            type: selectedDataset?.type.toLowerCase().replace(/\s/g, ""),
-            layers: selectedDataset?.layer,
-            time: {
-              updateClockOnLoad: true,
+  const handleUpdate = useCallback(
+    (style: UIStyles, dataset?: ConfigData) => {
+      onUpdate({
+        ...value,
+        uiStyle: style,
+        userSettings: {
+          selected: dataset,
+          override: {
+            data: {
+              url: dataset?.url,
+              type: dataset?.type.toLowerCase().replace(/\s/g, ""),
+              layers: dataset?.layer,
+              time: {
+                updateClockOnLoad: true,
+              },
             },
           },
         },
-      },
-      cleanseOverride: {
-        data: {
-          url: configData?.[0].url,
-          time: {
-            updateClockOnLoad: false,
+        cleanseOverride: {
+          data: {
+            url: configData?.[0].url,
+            time: {
+              updateClockOnLoad: false,
+            },
           },
         },
-      },
-    });
-    onCurrentDatasetUpdate?.(selectedDataset);
-  }, [selectedDataset, selectedStyle, configData, value, onUpdate, onCurrentDatasetUpdate]);
+      });
+      onCurrentDatasetUpdate?.(dataset);
+    },
+    [configData, value, onUpdate, onCurrentDatasetUpdate],
+  );
+
+  const handleStyleChange = useCallback(
+    (style: UIStyles) => {
+      selectStyle(style);
+      handleUpdate(style, selectedDataset);
+    },
+    [handleUpdate, selectedDataset],
+  );
+
+  const handleDatasetSelect = useCallback(
+    (dataset: ConfigData) => {
+      selectDataset(dataset);
+      handleUpdate(selectedStyle, dataset);
+    },
+    [handleUpdate, selectedStyle],
+  );
 
   return editMode ? (
     <Wrapper>

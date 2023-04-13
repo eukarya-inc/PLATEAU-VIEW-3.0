@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useRef } from "react";
+import { RefObject, useCallback, useEffect, useRef, MutableRefObject } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -14,6 +14,7 @@ export const useBuildingShadow = ({
   options: BaseFieldProps<"buildingShadow">["value"]["userSettings"];
   onUpdate: (property: any) => void;
 }) => {
+  const isInitializedRef = useRef(false);
   const onUpdateRef = useRef(onUpdate);
   useEffect(() => {
     onUpdateRef.current = onUpdate;
@@ -24,6 +25,7 @@ export const useBuildingShadow = ({
       {
         dataID,
         shadow: options.shadow,
+        isInitializedRef,
       },
       onUpdateRef,
     );
@@ -37,13 +39,18 @@ export const useBuildingShadow = ({
 export type State = {
   dataID: string | undefined;
   shadow: BaseFieldProps<"buildingShadow">["value"]["userSettings"]["shadow"];
+  isInitializedRef: MutableRefObject<boolean>;
 };
 
 const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
   const updateTileset = () => {
-    onUpdateRef.current?.({
-      shadows: state.shadow,
-    });
+    if (!state.isInitializedRef.current) {
+      state.isInitializedRef.current = true;
+    } else {
+      onUpdateRef.current?.({
+        shadows: state.shadow,
+      });
+    }
   };
   updateTileset();
 };

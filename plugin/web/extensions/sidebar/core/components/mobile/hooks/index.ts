@@ -187,7 +187,7 @@ export default () => {
   // Building Search
   const handleBuildingSearch = useCallback(
     (dataID: string) => {
-      const plateauItem = project.datasets.find(pd => pd.id === dataID);
+      const plateauItem = project.datasets.find(pd => pd.dataID === dataID);
       const searchIndex = plateauItem?.["search_index"];
       postMsg({
         action: "buildingSearchOpen",

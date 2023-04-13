@@ -100,8 +100,6 @@ const useHooks = ({
       setFloods(tempFloods);
     };
     const fetchTileset = async () => {
-      setInitialized(true);
-
       if (!url) {
         return;
       }

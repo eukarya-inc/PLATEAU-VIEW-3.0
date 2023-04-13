@@ -74,11 +74,14 @@ export const mergeOverrides = (
 
   const needOrderComponents = components
     .filter(c => (c as any).userSettings?.updatedAt)
-    .sort(
-      (a, b) =>
-        ((a as any).userSettings?.updatedAt?.getTime?.() ?? 0) -
-        ((b as any).userSettings?.updatedAt?.getTime?.() ?? 0),
-    );
+    .sort((a, b) => {
+      const ta = (a as any).userSettings?.updatedAt;
+      const tb = (b as any).userSettings?.updatedAt;
+      return (
+        ((typeof ta === "string" ? new Date(ta) : ta)?.getTime?.() ?? 0) -
+        ((typeof tb === "string" ? new Date(tb) : tb)?.getTime?.() ?? 0)
+      );
+    });
   for (const component of needOrderComponents) {
     merge(
       overrides,

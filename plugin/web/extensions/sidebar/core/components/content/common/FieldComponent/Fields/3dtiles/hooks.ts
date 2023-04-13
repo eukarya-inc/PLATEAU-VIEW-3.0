@@ -26,6 +26,7 @@ export const useObservingDataURL = (dataID: string | undefined) => {
 
     return () => {
       if (timeoutId) window.clearTimeout(timeoutId);
+      removeEventListener("message", waitReturnedPostMsg);
     };
   });
 

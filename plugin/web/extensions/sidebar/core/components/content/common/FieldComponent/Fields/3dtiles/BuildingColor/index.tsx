@@ -134,7 +134,7 @@ const LegendList = styled.ul`
 const LegendItem = styled.li`
   display: flex;
   align-items: center;
-  list-item: none;
+  list-style: none;
 `;
 
 const ColorBlock = styled.div<{ color?: string }>`

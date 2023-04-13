@@ -1,5 +1,5 @@
 import debounce from "lodash/debounce";
-import { RefObject, useCallback, useEffect, useMemo, useRef } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useRef, MutableRefObject } from "react";
 
 import { BaseFieldProps } from "../../types";
 
@@ -18,7 +18,7 @@ export const useBuildingFilter = ({
     () => debounce(() => renderRef.current?.(), 100, { maxWait: 300 }),
     [],
   );
-  const initializedRef = useRef(false);
+  const isInitializedRef = useRef(false);
 
   const onUpdateRef = useRef(onUpdate);
   useEffect(() => {
@@ -30,25 +30,22 @@ export const useBuildingFilter = ({
       {
         dataID,
         options,
+        isInitializedRef,
       },
       onUpdateRef,
     );
   }, [options, dataID]);
 
   useEffect(() => {
-    if (!initializedRef.current) return;
     renderRef.current = render;
     debouncedRender();
   }, [render, debouncedRender]);
-
-  useEffect(() => {
-    initializedRef.current = true;
-  }, []);
 };
 
 export type State = {
   dataID: string | undefined;
   options: OptionsState;
+  isInitializedRef: MutableRefObject<boolean>;
 };
 
 const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => void>) => {
@@ -87,13 +84,18 @@ const renderTileset = (state: State, onUpdateRef: RefObject<(property: any) => v
       );
       return `${res ? `${res} && ` : ""}${conditionDef}`;
     }, "");
-    onUpdateRef.current?.({
-      show: {
-        expression: {
-          conditions: [...(conditions ? [[conditions, "true"]] : []), ["true", "false"]],
+
+    if (!state.isInitializedRef.current) {
+      state.isInitializedRef.current = true;
+    } else {
+      onUpdateRef.current?.({
+        show: {
+          expression: {
+            conditions: [...(conditions ? [[conditions, "true"]] : []), ["true", "false"]],
+          },
         },
-      },
-    });
+      });
+    }
   };
 
   updateTileset();
