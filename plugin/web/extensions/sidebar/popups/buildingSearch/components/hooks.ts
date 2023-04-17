@@ -291,7 +291,7 @@ export default () => {
   }, [selected]);
 
   useEffect(() => {
-    if (results.length === 1) {
+    if (results.length >= 1) {
       postMsg({
         action: "cameraLookAt",
         payload: [

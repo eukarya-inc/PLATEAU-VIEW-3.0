@@ -44,7 +44,7 @@ const BuildingSearch: React.FC = () => {
           </Button>
         </ButtonWrapper>
       </Header>
-      <MiniContent active={minimized} disabled={results.length === 0}>
+      <MiniContent active={minimized} disabled={results.length === 0} onClick={toggleMinimize}>
         {results.length === 0 ? `検索結果がありません` : `${results.length} 件が見つかりました`}
       </MiniContent>
       <Content active={!minimized}>
@@ -141,6 +141,7 @@ const MiniContent = styled.div<{ active: boolean; disabled: boolean }>`
   justify-content: center;
   font-size: 14px;
   color: ${({ disabled }) => (disabled ? "#bfbfbf" : "#000")};
+  cursor: pointer;
 `;
 
 const Content = styled.div<{ active: boolean }>`
