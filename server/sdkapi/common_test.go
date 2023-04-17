@@ -20,6 +20,8 @@ func TestItems_DatasetResponse(t *testing.T) {
 						ID:           "id",
 						Title:        "千代田区",
 						Description:  "description",
+						CityCode:     10000,
+						Year:         2022,
 						FeatureTypes: []string{"bldg", "tran", "frn", "veg"},
 					},
 				},
@@ -34,6 +36,7 @@ func TestItems_DatasetResponse(t *testing.T) {
 			CityGML: &cms.PublicAsset{
 				ID:                      "citygml",
 				ArchiveExtractionStatus: "done",
+				URL:                     "/10000_hoge-shi_2022_citygml_op.zip",
 			},
 			Bldg:           []cms.PublicAsset{{}},
 			Tran:           []cms.PublicAsset{{}},
@@ -194,7 +197,6 @@ func TestItemsFromIntegration(t *testing.T) {
 			SDKPublication: "公開する",
 		},
 	}, items)
-
 }
 
 func TestCityCode(t *testing.T) {
@@ -208,4 +210,12 @@ func TestCityCode(t *testing.T) {
 		URL: "",
 	}))
 	assert.Equal(t, 0, cityCode(nil))
+}
+
+func TestItem_Year(t *testing.T) {
+	assert.Equal(t, 2022, Item{
+		CityGML: &cms.PublicAsset{
+			URL: "https://example.com/10000_hoge-shi_2022_citygml_op",
+		},
+	}.Year())
 }

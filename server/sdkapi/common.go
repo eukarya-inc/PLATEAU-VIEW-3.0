@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"path"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -51,6 +52,7 @@ type DatasetCity struct {
 	Title        string   `json:"title"`
 	Description  string   `json:"description"`
 	FeatureTypes []string `json:"featureTypes"`
+	Year         int      `json:"-"`
 }
 
 type FilesResponse map[string][]File
@@ -65,9 +67,11 @@ type Items []Item
 
 func (i Items) DatasetResponse() (r *DatasetResponse) {
 	warning := []string{}
+	years := map[int]int{}
 	r = &DatasetResponse{}
 	prefs := []*DatasetPref{}
 	prefm := map[string]*DatasetPref{}
+
 	for _, i := range i {
 		invalid := false
 		if !i.IsPublic() {
@@ -88,6 +92,19 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 		if i.MaxLOD == nil || i.MaxLOD.URL == "" {
 			warning = append(warning, fmt.Sprintf("%s:no_maxlod", i.CityName))
 			invalid = true
+		}
+
+		citycode, year := i.CityCode(), i.Year()
+
+		if year > 0 && citycode > 0 {
+			if yy, ok := years[citycode]; ok && yy >= year {
+				// it's old data
+				invalid = true
+			} else {
+				years[citycode] = year
+			}
+		} else {
+			warning = append(warning, fmt.Sprintf("%s:invalid_year_or_citycode", i.CityName))
 		}
 
 		ft := i.FeatureTypes()
@@ -111,14 +128,24 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 
 		d := DatasetCity{
 			ID:           i.ID,
-			CityCode:     i.CityCode(),
+			CityCode:     citycode,
 			Title:        i.CityName,
 			Description:  i.Description,
 			FeatureTypes: ft,
+			Year:         year,
 		}
 		pd := prefm[i.Prefecture]
 		pd.Data = append(pd.Data, d)
 	}
+
+	// filter
+	prefs = lo.FilterMap(prefs, func(d *DatasetPref, _ int) (*DatasetPref, bool) {
+		d.Data = lo.Filter(d.Data, func(c DatasetCity, _ int) bool {
+			y := years[c.CityCode]
+			return y > 0 && c.Year > 0 && c.Year == y
+		})
+		return d, len(d.Data) > 0
+	})
 
 	// sort
 	sort.Slice(prefs, func(a, b int) bool {
@@ -168,6 +195,27 @@ func (i Item) IsPublic() bool {
 
 func (i Item) CityCode() int {
 	return cityCode(i.CityGML)
+}
+
+var reYear = regexp.MustCompile(`^\d+?_.+?_(\d+?)_`)
+
+func (i Item) Year() int {
+	if i.CityGML == nil {
+		return 0
+	}
+
+	u, _ := url.Parse(i.CityGML.URL)
+	if u == nil || u.Path == "" {
+		return 0
+	}
+
+	m := reYear.FindStringSubmatch(path.Base(u.Path))
+	if len(m) != 2 {
+		return 0
+	}
+
+	y, _ := strconv.Atoi(m[1])
+	return y
 }
 
 func (i Item) FeatureTypes() (t []string) {

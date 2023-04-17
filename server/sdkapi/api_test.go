@@ -121,7 +121,7 @@ func (c *mockCMS) Asset(ctx context.Context, id string) (*cms.Asset, error) {
 	}
 	return &cms.Asset{
 		ID:                      "citygml",
-		URL:                     "https://example.com/citygml.zip",
+		URL:                     "https://example.com/10000_hoge-shi_2022_citygml_op.zip",
 		ArchiveExtractionStatus: "done",
 		File: &cms.File{
 			Children: []cms.File{
@@ -165,6 +165,7 @@ var mockItem = cms.Item{
 			Key: "citygml",
 			Value: map[string]any{
 				"id":                      "citygml",
+				"url":                     "https://example.com/10000_hoge-shi_2022_citygml_op.zip",
 				"archiveExtractionStatus": "done",
 			},
 		},
