@@ -53,8 +53,21 @@ func (d ResponseAll) All() []DataCatalogItem {
 }
 
 func (d ResponseAll) plateau() []DataCatalogItem {
-	return lo.FlatMap(d.Plateau, func(i PlateauItem, _ int) []DataCatalogItem {
-		return i.DataCatalogItems()
+	m := map[string]int{}
+
+	return lo.Filter(lo.FlatMap(d.Plateau, func(i PlateauItem, _ int) []DataCatalogItem {
+		c := i.IntermediateItem()
+		if c.Year == 0 {
+			return nil
+		}
+		if y, ok := m[c.CityCode]; ok && y >= c.Year {
+			return nil
+		}
+		m[c.CityCode] = c.Year
+		return i.DataCatalogItems(c)
+	}), func(i DataCatalogItem, _ int) bool {
+		y, ok := m[i.CityCode]
+		return ok && y == i.Year
 	})
 }
 

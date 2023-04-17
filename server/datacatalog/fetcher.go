@@ -230,14 +230,16 @@ func (r response) HasNext() bool {
 
 func (r response) DataCatalogs() []DataCatalogItem {
 	if r.Plateau != nil {
-		return lo.FlatMap(r.Plateau, func(i PlateauItem, _ int) []DataCatalogItem {
-			return i.DataCatalogItems()
-		})
+		return (&ResponseAll{
+			Plateau: r.Plateau,
+		}).plateau()
 	}
+
 	if r.Usecase != nil {
-		return lo.FlatMap(r.Usecase, func(i UsecaseItem, _ int) []DataCatalogItem {
-			return i.DataCatalogs()
-		})
+		return (&ResponseAll{
+			Usecase: r.Usecase,
+		}).usecase()
 	}
+
 	return nil
 }

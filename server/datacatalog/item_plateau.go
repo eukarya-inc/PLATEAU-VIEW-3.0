@@ -173,8 +173,7 @@ func (i PlateauItem) TnmItems(c PlateauIntermediateItem) []*DataCatalogItem {
 	})
 }
 
-func (i PlateauItem) DataCatalogItems() []DataCatalogItem {
-	c := i.IntermediateItem()
+func (i PlateauItem) DataCatalogItems(c PlateauIntermediateItem) []DataCatalogItem {
 	if c.ID == "" {
 		return nil
 	}
@@ -217,6 +216,7 @@ func (i PlateauItem) IntermediateItem() PlateauIntermediateItem {
 	an := AssetNameFrom(au)
 	dic := Dic{}
 	_ = json.Unmarshal(bom.Clean([]byte(i.Dic)), &dic)
+	y, _ := strconv.Atoi(an.Year)
 
 	return PlateauIntermediateItem{
 		ID:          i.ID,
@@ -226,6 +226,7 @@ func (i PlateauItem) IntermediateItem() PlateauIntermediateItem {
 		CityCode:    an.CityCode,
 		Dic:         dic,
 		OpenDataURL: i.OpenDataURL,
+		Year:        y,
 	}
 }
 
@@ -237,6 +238,7 @@ type PlateauIntermediateItem struct {
 	CityCode    string
 	Dic         Dic
 	OpenDataURL string
+	Year        int
 }
 
 func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetURL, desc string, layers []string, firstWard bool, nameOverride string) *DataCatalogItem {
@@ -260,7 +262,6 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 	}
 
 	name, t2, t2en := itemName(t, cityOrWardName, nameOverride, an)
-	y, _ := strconv.Atoi(an.Year)
 	pref, prefCode := normalizePref(i.Prefecture)
 
 	var itemID string
@@ -287,7 +288,7 @@ func (i *PlateauIntermediateItem) DataCatalogItem(t string, an AssetName, assetU
 		Description: desc,
 		URL:         assetURLFromFormat(assetURL, an.Format),
 		Format:      an.Format,
-		Year:        y,
+		Year:        i.Year,
 		Layers:      layers,
 		OpenDataURL: i.OpenDataURL,
 	}
