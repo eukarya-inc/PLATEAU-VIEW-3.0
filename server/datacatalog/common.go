@@ -47,6 +47,12 @@ func assetURLFromFormat(u, f string) string {
 		}
 
 		return strings.ReplaceAll(strings.ReplaceAll(us, "%7B", "{"), "%7D", "}")
+	} else if f == "tms" {
+		if !isArchive {
+			// not CMS asset
+			return u
+		}
+		return u2.String()
 	} else if (f == "czml" || f == "kml") && isArchive {
 		u2.Path = path.Join(dir, name, fmt.Sprintf("%s.%s", name, f))
 		return u2.String()
