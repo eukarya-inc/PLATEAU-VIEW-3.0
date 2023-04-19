@@ -36,13 +36,20 @@ func assetURLFromFormat(u, f string) string {
 
 		u2.Path = path.Join(u2.Path, "tileset.json")
 		return u2.String()
-	} else if f == "mvt" {
+	} else if f == "tiles" || f == "mvt" {
 		us := ""
 		if !isArchive {
 			// not CMS asset
 			us = u
 		} else {
-			u2.Path = path.Join(u2.Path, "{z}/{x}/{y}.mvt")
+			ext := ""
+			if f == "mvt" {
+				ext = "mvt"
+			} else {
+				ext = "png"
+			}
+
+			u2.Path = path.Join(u2.Path, "{z}/{x}/{y}."+ext)
 			us = u2.String()
 		}
 
