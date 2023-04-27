@@ -292,7 +292,7 @@ export default ({
           (data.datasets as Data[]).forEach(d => {
             handleProjectDatasetAdd(d);
           });
-          if (data.userStory && data.userStory.length > 0) {
+          if (data.userStory?.scenes?.length > 0) {
             handleInitUserStory(data.userStory);
           }
           handleProjectSceneUpdate(data.sceneOverrides);
