@@ -31,6 +31,7 @@ export const defaultProject: Project = {
       },
       sceneMode: "3d",
       depthTestAgainstTerrain: false,
+      allowEnterGround: true,
     },
     terrain: {
       terrain: true,
