@@ -320,7 +320,7 @@ export default ({
         if (res.status !== 200) return;
         const data = await res.json();
         if (data) {
-          (data.datasets as Data[]).forEach(d => {
+          (data.datasets as Data[]).reverse().forEach(d => {
             handleProjectDatasetAdd(d);
           });
           if (data.userStory?.scenes?.length > 0) {

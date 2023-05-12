@@ -204,7 +204,7 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       const data = createLayer(payload.dataset, payload.overrides);
       console.log("DATA to add", data);
       const layerID = reearth.layers.add(data);
-      const idx = addedDatasets.push([payload.dataset.dataID, "showing", layerID]);
+      const idx = addedDatasets.push([payload.dataset.dataID, "showing", layerID]) - 1;
       if (!payload.dataset.visible) {
         reearth.layers.hide(addedDatasets[idx][2]);
         addedDatasets[idx][1] = "hidden";
