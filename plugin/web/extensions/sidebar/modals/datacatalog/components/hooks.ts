@@ -89,11 +89,13 @@ export default () => {
             return [resData];
           }
           const index = prevData?.findIndex(d => d.dataID === resData.dataID);
-          if (index) {
-            const updatedData = [...prevData];
+          const updatedData = [...prevData];
+          if (index !== -1) {
             updatedData[index] = resData;
-            return updatedData;
+          } else {
+            updatedData.push(resData);
           }
+          return updatedData;
         });
       }
     },
