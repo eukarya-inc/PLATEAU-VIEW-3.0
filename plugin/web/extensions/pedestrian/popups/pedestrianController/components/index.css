@@ -1,0 +1,8 @@
+/* overrides for leaflet */
+.leaflet-touch .leaflet-bar a{
+  line-height: 26px !important;
+}
+.leaflet-control-zoom{
+  transform-origin: left top !important;
+  transform: scale(0.7) !important;
+}

@@ -4,7 +4,8 @@ export type ActionType =
   | "pickingStart"
   | "pedestrianExit"
   | "cameraMove"
-  | "controllerReady";
+  | "controllerReady"
+  | "setSpeed";
 
 export type PostMessageProps = { action: ActionType; payload?: any };
 

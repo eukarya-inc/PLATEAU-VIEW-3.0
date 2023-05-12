@@ -3,6 +3,7 @@ import { styled } from "@web/theme";
 
 import ControlButton from "./ControlButton";
 import useHooks from "./hooks";
+import "./index.css";
 
 const PedestrianController: React.FC = () => {
   const {
@@ -16,6 +17,8 @@ const PedestrianController: React.FC = () => {
     moveDownOn,
     miniMapViewRotate,
     visible,
+    speed,
+    handleSetSpeed,
     handleMoveForwardClick,
     handleMoveBackwardClick,
     handleMoveLeftClick,
@@ -39,12 +42,15 @@ const PedestrianController: React.FC = () => {
       </Header>
       <Content>
         <ControlButton onClick={onMainButtonClick} icon="crosshair" text={mainButtonText} />
-        <MouseTip>
-          <Icon icon="mousetip" size={54} />
-        </MouseTip>
-        <Discription>
-          地図上のスタートしたい地点をクリックします。マウス操作で右や左に曲がります。
-        </Discription>
+        <Line style={{ alignItems: "center" }}>
+          <MouseTip>
+            <Icon icon="mousetip" size={54} />
+          </MouseTip>
+          <Discription>
+            地図上のスタートしたい地点をクリックします。マウス操作で右や左に曲がります。
+          </Discription>
+        </Line>
+
         <Directions>
           <Line>
             <EmptySpace />
@@ -99,6 +105,27 @@ const PedestrianController: React.FC = () => {
             />
           </Line>
         </UpAndDown>
+        <Line>
+          <Text>速度</Text>
+          <ControlButton
+            text="x1"
+            disabled={mode !== "pedestrian"}
+            active={speed === 1}
+            onClick={() => handleSetSpeed(1)}
+          />
+          <ControlButton
+            text="x2"
+            disabled={mode !== "pedestrian"}
+            active={speed === 2}
+            onClick={() => handleSetSpeed(2)}
+          />
+          <ControlButton
+            text="x3"
+            disabled={mode !== "pedestrian"}
+            active={speed === 3}
+            onClick={() => handleSetSpeed(3)}
+          />
+        </Line>
         <MiniMapWrapper hidden={mode !== "pedestrian"}>
           <ViewIndicator>
             <StyledIcon icon={"viewIndicator"} size={20} rotate={miniMapViewRotate} />
@@ -172,6 +199,16 @@ const Line = styled.div`
   display: flex;
   justify-content: space-between;
   gap: 8px;
+`;
+
+const Text = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #595959;
+  font-size: 14px;
+  line-height: 22px;
 `;
 
 const EmptySpace = styled.div`

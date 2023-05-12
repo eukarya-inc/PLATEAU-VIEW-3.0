@@ -11,21 +11,29 @@ if (reearth.viewport.isMobile) {
 } else {
   reearth.ui.show(html);
 
+  const speeds = {
+    1: 0.2,
+    2: 0.4,
+    3: 0.6,
+  };
+
   // status
   let mode: "ready" | "picking" | "pedestrian" = "ready";
   let initCamera: Camera | undefined = undefined;
   let controllerShown = false;
+  let speed: 1 | 2 | 3 = 1;
+  let moveRate = 0;
 
   const initControllerOptions = {
     width: 208,
-    height: 356,
+    height: 376,
     position: "bottom-end",
     offset: 4,
   };
 
   const fullControllerOptions = {
     width: 208,
-    height: 568,
+    height: 588,
     position: "bottom-end",
     offset: 4,
   };
@@ -59,10 +67,12 @@ if (reearth.viewport.isMobile) {
     ["moveRight", "moveLeft"],
   ]);
 
-  const updateCamera = () => {
-    let moveRate = reearth.camera.position.height / 100.0;
-    if (moveRate < 1) moveRate = 1;
+  const updateSpeed = () => {
+    moveRate = speeds[speed];
+  };
+  updateSpeed();
 
+  const updateCamera = () => {
     if (flags.moveForward) {
       reearth.camera.moveForward(moveRate);
     }
@@ -113,15 +123,16 @@ if (reearth.viewport.isMobile) {
   const handlePedestrianExit = () => {
     const curCamera = reearth.camera.position;
     if (initCamera) {
-      reearth.camera.flyTo(
+      reearth.camera.lookAt(
         {
           lng: curCamera.lng,
           lat: curCamera.lat,
-          height: initCamera?.height,
+          height: curCamera?.height,
           heading: initCamera?.heading,
           pitch: initCamera?.pitch,
           roll: initCamera?.roll,
           fov: initCamera?.fov,
+          range: 5000,
         },
         { duration: 2 },
       );
@@ -156,6 +167,9 @@ if (reearth.viewport.isMobile) {
           type: "controllerReady",
         });
       }
+    } else if (action === "setSpeed") {
+      speed = payload.speed;
+      updateSpeed();
     }
   });
 
@@ -176,7 +190,7 @@ if (reearth.viewport.isMobile) {
         {
           duration: 2,
         },
-        20,
+        2,
       );
       reearth.popup.postMessage({
         type: "pickingDone",
