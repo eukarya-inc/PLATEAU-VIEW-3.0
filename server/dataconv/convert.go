@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/color"
 	"net/http"
+	"strconv"
 
 	geojson "github.com/paulmach/go.geojson"
 	"github.com/samber/lo"
@@ -15,16 +16,15 @@ import (
 )
 
 const (
-	wallHeight           = 100
-	wallImageName        = "yellow_gradient.png"
-	billboardImageDir    = "billboard_image"
-	billboardPaddingH    = 16.0
-	billboardPaddingV    = 8.0
-	billboradFontSize    = 72.0
-	billboardRadius      = 30.0
-	billboardLineWidth   = 2.0
-	billboardLineHeight  = 100.0
-	billbordHeightMargin = 55.0
+	wallHeight          = 100
+	wallImageName       = "yellow_gradient.png"
+	billboardImageDir   = "billboard_image"
+	billboardPaddingH   = 16.0
+	billboardPaddingV   = 8.0
+	billboradFontSize   = 72.0
+	billboardRadius     = 30.0
+	billboardLineWidth  = 2.0
+	billboardLineHeight = 100.0
 )
 
 var (
@@ -42,6 +42,10 @@ var (
 )
 
 func init() {
+	loadFonts()
+}
+
+func loadFonts() {
 	billboardFontFamily.MustLoadFont(billboardFontData, 0, billboardFontStyle)
 }
 
@@ -61,11 +65,11 @@ func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 			continue
 		}
 
-		height, _ := f.PropertyFloat64("高さ")
+		height := floatValue(f.Properties["高さ"])
 		if len(f.Geometry.Point) == 2 {
-			f.Geometry.Point = append(f.Geometry.Point, height+billbordHeightMargin)
+			f.Geometry.Point = append(f.Geometry.Point, height)
 		} else if height > 0 {
-			f.Geometry.Point[2] = height + billbordHeightMargin
+			f.Geometry.Point[2] = height
 		}
 
 		image, err := GenerateLandmarkImage(name)
@@ -74,22 +78,23 @@ func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 		}
 
 		packets = append(packets, map[string]any{
-			"id":          fmt.Sprintf("%s_%d", id, i),
+			"id":          fmt.Sprintf("%s_%d", id, i+1),
 			"name":        name,
 			"description": name,
 			"billboard": map[string]any{
 				"eyeOffset": map[string]any{
-					"cartesian": []int{0, 0, 0},
+					"cartesian": []any{0.0, 0.0, 0.0},
 				},
+				"heightReference":  "RELATIVE_TO_GROUND",
 				"horizontalOrigin": "CENTER",
 				"image":            dataurl.New(image, http.DetectContentType(image)).String(),
 				"pixelOffset": map[string]any{
-					"cartesian2": []int{0, 0},
+					"cartesian2": []any{0.0, 0.0},
 				},
 				"scale":          0.5,
 				"show":           true,
-				"verticalOrigin": "BOTTOM",
 				"sizeInMeters":   true,
+				"verticalOrigin": "BOTTOM",
 			},
 			"position": map[string]any{
 				"cartographicDegrees": lo.Map(f.Geometry.Point, func(p float64, _ int) any { return p }),
@@ -206,4 +211,21 @@ func processProperties(p map[string]any) map[string]any {
 		}
 	}
 	return m
+}
+
+func floatValue(v any) float64 {
+	if v == nil {
+		return 0
+	}
+	switch v := v.(type) {
+	case float64:
+		return v
+	case int:
+		return float64(v)
+	case string:
+		f, _ := strconv.ParseFloat(v, 64)
+		return f
+	default:
+		return 0
+	}
 }
