@@ -233,7 +233,12 @@ function sortByOrder(a: number | undefined, b: number | undefined): number {
 function filter(q: string | undefined, items: RawDataCatalogItem[]): RawDataCatalogItem[] {
   if (!q) return items;
   return items.filter(
-    i => i.name?.includes(q) || i.pref.includes(q) || i.city?.includes(q) || i.ward?.includes(q),
+    i =>
+      i.name?.includes(q) ||
+      i.pref.includes(q) ||
+      i.city?.includes(q) ||
+      i.ward?.includes(q) ||
+      i.type_en === "folder",
   );
 }
 

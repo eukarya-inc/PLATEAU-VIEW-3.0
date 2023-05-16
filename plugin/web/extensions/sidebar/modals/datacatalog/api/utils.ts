@@ -17,7 +17,8 @@ export function makeTree<
         if (!r.map[name]) {
           const list: R = { result: [], map: {} };
           r.map[name] = list;
-          const desc = items.find(i => i?.name === name && i.type_en === "folder")?.desc ?? "";
+          const desc =
+            items.find(i => i?.path.at(-1) === name && i.type_en === "folder")?.desc ?? "";
           const id = `node-${idCounter++}`;
           r.result.push({ id, name, desc, ...(last ? { item } : { children: list.result }) });
         }
