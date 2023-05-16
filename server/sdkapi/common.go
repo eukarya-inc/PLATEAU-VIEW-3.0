@@ -186,6 +186,14 @@ type Item struct {
 	Tran           []cms.PublicAsset `json:"tran"`
 	Frn            []cms.PublicAsset `json:"frn"`
 	Veg            []cms.PublicAsset `json:"veg"`
+	Luse           []cms.PublicAsset `json:"luse"`
+	Lsld           []cms.PublicAsset `json:"lsld"`
+	Urf            []cms.PublicAsset `json:"urf"`
+	Fld            []cms.PublicAsset `json:"fld"`
+	Tnm            []cms.PublicAsset `json:"tnm"`
+	Htd            []cms.PublicAsset `json:"htd"`
+	Ifld           []cms.PublicAsset `json:"ifld"`
+	Dem            string            `json:"dem"`
 	SDKPublication string            `json:"sdk_publication"`
 }
 
@@ -231,6 +239,30 @@ func (i Item) FeatureTypes() (t []string) {
 	if len(i.Veg) > 0 {
 		t = append(t, "veg")
 	}
+	if len(i.Luse) > 0 {
+		t = append(t, "luse")
+	}
+	if len(i.Lsld) > 0 {
+		t = append(t, "lsld")
+	}
+	if len(i.Urf) > 0 {
+		t = append(t, "urf")
+	}
+	if len(i.Fld) > 0 {
+		t = append(t, "fld")
+	}
+	if len(i.Tnm) > 0 {
+		t = append(t, "tnm")
+	}
+	if len(i.Htd) > 0 {
+		t = append(t, "htd")
+	}
+	if len(i.Ifld) > 0 {
+		t = append(t, "ifld")
+	}
+	if i.Dem != "" && i.Dem != "無し" {
+		t = append(t, "dem")
+	}
 	return
 }
 
@@ -240,19 +272,28 @@ type MaxLODColumn struct {
 	Code   string  `json:"code"`
 	Type   string  `json:"type"`
 	MaxLOD float64 `json:"maxLod"`
+	File   string  `json:"file"`
 }
 
-type MaxLODMap map[string]map[string]float64
+type MaxLODMap map[string]map[string]MaxLODMapItem
+
+type MaxLODMapItem struct {
+	MaxLOD float64 `json:"maxLod"`
+	File   string  `json:"file"`
+}
 
 func (mc MaxLODColumns) Map() MaxLODMap {
 	m := MaxLODMap{}
 
 	for _, c := range mc {
 		if _, ok := m[c.Type]; !ok {
-			m[c.Type] = map[string]float64{}
+			m[c.Type] = map[string]MaxLODMapItem{}
 		}
 		t := m[c.Type]
-		t[c.Code] = c.MaxLOD
+		t[c.Code] = MaxLODMapItem{
+			MaxLOD: c.MaxLOD,
+			File:   c.File,
+		}
 	}
 
 	return m
@@ -264,16 +305,21 @@ func (mm MaxLODMap) Files(urls []*url.URL) (r FilesResponse) {
 		if _, ok := r[ty]; !ok {
 			r[ty] = ([]File)(nil)
 		}
-		for code, maxlod := range m {
+
+		for code, item := range m {
 			prefix := fmt.Sprintf("%s_%s_", code, ty)
 			u, ok := lo.Find(urls, func(u *url.URL) bool {
+				if item.File != "" {
+					return strings.HasSuffix(u.Path, item.File)
+				}
+				// prefix_xxx.gml
 				return strings.HasPrefix(path.Base(u.Path), prefix) && path.Ext(u.Path) == ".gml"
 			})
 			if ok {
 				r[ty] = append(r[ty], File{
 					Code:   code,
 					URL:    u.String(),
-					MaxLOD: maxlod,
+					MaxLOD: item.MaxLOD,
 				})
 			}
 		}

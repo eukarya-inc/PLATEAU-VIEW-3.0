@@ -30,4 +30,7 @@ func TestItem(t *testing.T) {
 	assert.Equal(t, Item{}, ItemFrom(cms.Item{}))
 	assert.Equal(t, cmsitem.Fields, item.Fields())
 	assert.Equal(t, []cms.Field(nil), Item{}.Fields())
+	assert.True(t, Item{Dem: "有り"}.HasDem())
+	assert.False(t, Item{Dem: ""}.HasDem())
+	assert.False(t, Item{Dem: "無し"}.HasDem())
 }

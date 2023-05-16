@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
-	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/reearth/reearthx/log"
 )
 
@@ -40,43 +39,9 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		item := ItemFrom(*w.ItemData.Item)
+		item.ProjectID = w.ItemData.Schema.ProjectID
 
-		if item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
-			log.Debugf("sdk webhook: skipped: %s", item.MaxLODStatus)
-			return nil
-		}
-
-		if item.CityGML == "" {
-			log.Debugf("sdk webhook: skipped: no citygml")
-			return nil
-		}
-
-		log.Infof("sdk webhook: item: %+v", item)
-
-		ctx := req.Context()
-		citygml, err := s.CMS.Asset(ctx, item.CityGML)
-		if err != nil {
-			log.Errorf("sdk webhook: failed to get citygml asset: %s", err)
-			return nil
-		}
-
-		if err := s.FME.Request(ctx, fme.MaxLODRequest{
-			ID: fme.ID{
-				ItemID:    item.ID,
-				AssetID:   citygml.ID,
-				ProjectID: w.ItemData.Schema.ProjectID,
-			}.String(conf.Secret),
-			Target: citygml.URL,
-		}); err != nil {
-			log.Errorf("sdk webhook: failed to send request to FME: %s", err)
-			return nil
-		}
-
-		if _, err := s.CMS.UpdateItem(ctx, item.ID, Item{
-			MaxLODStatus: StatusProcessing,
-		}.Fields()); err != nil {
-			log.Errorf("sdk webhook: failed to update item: %w", err)
-		}
+		s.RequestMaxLODExtraction(req.Context(), item)
 
 		log.Infof("sdk webhook: done")
 		return nil

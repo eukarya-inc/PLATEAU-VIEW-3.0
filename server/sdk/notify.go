@@ -1,9 +1,9 @@
 package sdk
 
 import (
+	"errors"
 	"net/http"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 )
@@ -30,30 +30,11 @@ func NotifyHandler(conf Config) (echo.HandlerFunc, error) {
 
 		log.Infof("sdk notify: received: %+v", f)
 
-		id, err := fme.ParseID(f.ID, conf.Secret)
-		if err != nil {
-			return c.JSON(http.StatusUnauthorized, "unauthorized")
-		}
-
-		log.Infof("sdk notify: validate: itemID=%s, assetID=%s", id.ItemID, id.AssetID)
-
-		aid, err := s.CMS.UploadAsset(ctx, id.ProjectID, f.ResultURL)
-		if err != nil {
-			log.Errorf("sdk notify: failed to update assets: %w", err)
-
-			if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
-				MaxLODStatus: StatusError,
-			}.Fields()); err != nil {
-				log.Errorf("sdk notify: failed to update item: %w", err)
+		if err := s.ReceiveFMEResult(ctx, f); err != nil {
+			if errors.Is(err, ErrInvalidID) {
+				return c.JSON(http.StatusUnauthorized, "unauthorized")
 			}
-			return nil
-		}
-
-		if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
-			MaxLODStatus: StatusOK,
-			MaxLOD:       aid,
-		}.Fields()); err != nil {
-			log.Errorf("sdk notify: failed to update item: %w", err)
+			log.Errorf("sdk notify: error: %v", err)
 			return nil
 		}
 

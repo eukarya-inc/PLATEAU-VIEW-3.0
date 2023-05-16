@@ -87,14 +87,14 @@ func TestGetMaxLOD(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 
-	data := `code,type,maxLod
-53394452,bldg,1
-53394452,tran,1
-53394453,bldg,1
-53394453,tran,1
-53394461,bldg,1
-53394461,tran,1
-53394462,bldg,1`
+	data := `code,type,maxLod,file
+53394452,bldg,1,
+53394452,tran,1,
+53394453,bldg,1,
+53394453,tran,1,
+53394461,bldg,1,
+53394461,tran,1,
+53394462,bldg,1,file`
 	httpmock.RegisterResponder("GET", "https://example.com", httpmock.NewBytesResponder(http.StatusOK, []byte(data)))
 
 	ctx := context.Background()
@@ -107,7 +107,7 @@ func TestGetMaxLOD(t *testing.T) {
 		{Code: "53394453", Type: "tran", MaxLOD: 1},
 		{Code: "53394461", Type: "bldg", MaxLOD: 1},
 		{Code: "53394461", Type: "tran", MaxLOD: 1},
-		{Code: "53394462", Type: "bldg", MaxLOD: 1},
+		{Code: "53394462", Type: "bldg", MaxLOD: 1, File: "file"},
 	}, res)
 }
 

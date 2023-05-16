@@ -121,7 +121,7 @@ func getMaxLOD(ctx context.Context, u string) (MaxLODColumns, error) {
 			return nil, fmt.Errorf("failed to read csv: %w", err)
 		}
 
-		if len(c) != 3 || !isInt(c[0]) {
+		if len(c) < 3 || !isInt(c[0]) {
 			continue
 		}
 
@@ -130,10 +130,16 @@ func getMaxLOD(ctx context.Context, u string) (MaxLODColumns, error) {
 			continue
 		}
 
+		f := ""
+		if len(c) > 3 {
+			f = c[3]
+		}
+
 		results = append(results, MaxLODColumn{
 			Code:   c[0],
 			Type:   c[1],
 			MaxLOD: m,
+			File:   f,
 		})
 	}
 
