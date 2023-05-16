@@ -117,7 +117,8 @@ func (c *Config) SDK() sdk.Config {
 		CMSBase:        c.CMS_BaseURL,
 		CMSToken:       c.CMS_Token,
 		CMSIntegration: c.CMS_IntegrationID,
-		Secret:         c.Secret,
+		FMESecret:      c.Secret,
+		APIToken:       c.Sidebar_Token,
 	}
 }
 

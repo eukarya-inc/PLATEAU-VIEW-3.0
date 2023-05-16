@@ -129,6 +129,7 @@ func TestIsDemIncludedInCSV(t *testing.T) {
 
 type cmsMock struct {
 	cms.Interface
+	GetItemCalls    []string
 	AssetCalls      []string
 	UpdateItemCalls []struct {
 		ID     string
@@ -140,7 +141,26 @@ type cmsMock struct {
 	}
 }
 
-func (m *cmsMock) Asset(ctx context.Context, id string) (item *cms.Asset, err error) {
+func (m *cmsMock) GetItem(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+	m.GetItemCalls = append(m.GetItemCalls, id)
+	return &cms.Item{
+		ID: id,
+		Fields: []cms.Field{
+			{
+				Key:   "citygml",
+				Type:  "asset",
+				Value: "citygml",
+			},
+			{
+				Key:   "max_lod_status",
+				Type:  "select",
+				Value: string(StatusReady),
+			},
+		},
+	}, nil
+}
+
+func (m *cmsMock) Asset(ctx context.Context, id string) (*cms.Asset, error) {
 	m.AssetCalls = append(m.AssetCalls, id)
 	return &cms.Asset{
 		ID:  id,

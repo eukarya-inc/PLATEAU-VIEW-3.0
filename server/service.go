@@ -143,6 +143,9 @@ func SDK(conf *Config) (*Service, error) {
 		Name: "sdk",
 		Echo: func(g *echo.Group) error {
 			g.POST("/notify_sdk", e)
+			if err := sdk.RequestHandler(c, g); err != nil {
+				return err
+			}
 			return nil
 		},
 		Webhook: w,

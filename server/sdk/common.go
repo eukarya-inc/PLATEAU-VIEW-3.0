@@ -21,7 +21,8 @@ type Config struct {
 	FMEBaseURL     string
 	FMEToken       string
 	FMEResultURL   string
-	Secret         string
+	FMESecret      string
+	APIToken       string
 }
 
 type Services struct {
@@ -41,7 +42,7 @@ func NewServices(conf Config) (*Services, error) {
 		return nil, err
 	}
 
-	return &Services{CMS: cms, FME: fme, FMESecret: conf.Secret}, nil
+	return &Services{CMS: cms, FME: fme, FMESecret: conf.FMESecret}, nil
 }
 
 func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item) {
