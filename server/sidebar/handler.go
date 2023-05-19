@@ -18,6 +18,7 @@ const (
 	dataModelKey     = "sidebar-data"
 	templateModelKey = "sidebar-template"
 	dataField        = "data"
+	limit            = 10
 )
 
 type Handler struct {
@@ -44,7 +45,35 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 			return nil
 		}
 
-		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
+		dataCh := make(chan []cms.Item, 1)
+		dataErrCh := make(chan error, 1)
+		templatesCh := make(chan []cms.Item, 1)
+		templateErrCh := make(chan error, 1)
+
+		go func() {
+			data, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
+			if err != nil {
+				dataErrCh <- err
+				return
+			}
+			dataCh <- data.Items
+			close(dataErrCh)
+		}()
+
+		go func() {
+			templates, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
+			if err != nil {
+				templateErrCh <- err
+				return
+			}
+			templatesCh <- templates.Items
+			close(templateErrCh)
+		}()
+
+		err := <-dataErrCh
+		if err == nil {
+			err = <-templateErrCh
+		}
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -52,14 +81,9 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 			return err
 		}
 
-		templates, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey, false)
-		if err != nil {
-			return err
-		}
-
 		return c.JSON(http.StatusOK, map[string]any{
-			"data":      itemsToJSONs(data.Items),
-			"templates": itemsToJSONs(templates.Items),
+			"data":      itemsToJSONs(<-dataCh),
+			"templates": itemsToJSONs(<-templatesCh),
 		})
 	}
 }
@@ -78,7 +102,7 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 			return nil
 		}
 
-		data, err := h.CMS.GetItemsByKey(ctx, prj, dataModelKey, false)
+		data, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -220,7 +244,7 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 			return nil
 		}
 
-		res, err := h.CMS.GetItemsByKey(ctx, prj, templateModelKey, false)
+		res, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
 		if err != nil {
 			if errors.Is(err, rerror.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")

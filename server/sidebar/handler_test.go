@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -24,11 +25,30 @@ const (
 	testCMSProject = "prj"
 )
 
-func newHandler() *Handler {
-	CMS := lo.Must(cms.New(testCMSHost, testCMSToken))
-	return &Handler{
-		CMS: CMS,
+func TestHandler(t *testing.T) {
+	const base = ""
+	const token = ""
+	const project = ""
+
+	if base == "" || token == "" || project == "" {
+		t.SkipNow()
 	}
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	ctx := echo.New().NewContext(req, rec)
+	ctx.SetParamNames("pid")
+	ctx.SetParamValues(project)
+
+	h := &Handler{
+		CMS: lo.Must(cms.New(base, token)),
+	}
+	handler := h.getAllDataHandler()
+	assert.NoError(t, handler(ctx))
+	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+
+	_ = os.WriteFile("result.json", rec.Body.Bytes(), 0644)
 }
 
 func TestHandler_getDataHandler(t *testing.T) {
@@ -411,4 +431,11 @@ func TestHandler_LastModified(t *testing.T) {
 	assert.NoError(t, err)
 	assert.False(t, hit)
 	assert.Equal(t, lastModified2.Format(time.RFC1123), w.Header().Get(echo.HeaderLastModified))
+}
+
+func newHandler() *Handler {
+	CMS := lo.Must(cms.New(testCMSHost, testCMSToken))
+	return &Handler{
+		CMS: CMS,
+	}
 }

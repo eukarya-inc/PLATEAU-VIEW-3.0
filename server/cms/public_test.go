@@ -51,6 +51,39 @@ func TestPublicAPIClient_GetAllItems(t *testing.T) {
 	assert.Nil(t, res)
 }
 
+func TestPublicAPIClient_GetAllItemsInParallel(t *testing.T) {
+	ctx := context.Background()
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"results": []any{
+			map[string]any{"id": "a"},
+		},
+		"totalCount": 101,
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm", "page=2&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"results": []any{
+			map[string]any{"id": "b"},
+		},
+		"totalCount": 101,
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/mmm2", "", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, nil)))
+
+	c, err := NewPublicAPIClient[any](nil, "https://example.com/", "ppp")
+	assert.NoError(t, err)
+	res, err := c.GetAllItemsInParallel(ctx, "mmm", 2)
+	assert.NoError(t, err)
+	assert.Equal(t, []any{
+		map[string]any{"id": "a"},
+		map[string]any{"id": "b"},
+	}, res)
+
+	res, err = c.GetAllItemsInParallel(ctx, "mmm2", 0)
+	assert.Equal(t, rerror.ErrNotFound, err)
+	assert.Nil(t, res)
+}
+
 func TestPublicAPIClient_GetItems(t *testing.T) {
 	ctx := context.Background()
 	httpmock.Activate()

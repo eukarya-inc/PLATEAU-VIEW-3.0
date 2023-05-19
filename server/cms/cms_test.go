@@ -225,6 +225,44 @@ func TestCMS_GetItems(t *testing.T) {
 	}, items)
 }
 
+func TestCMS_GetItemsInParallel(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	ctx := context.Background()
+	call := mockCMS(t, "http://cms.example.com", "TOKEN")
+	c := lo.Must(New("http://cms.example.com", "TOKEN"))
+
+	items, err := c.GetItemsInParallel(ctx, "mmm", false, 5)
+	assert.Equal(t, 5, call("GET /api/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems,
+		Page:       1,
+		PerPage:    100,
+		TotalCount: len(testItems),
+	}, items)
+}
+
+func TestCMS_GetItemsByKeyInParallel(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	ctx := context.Background()
+	call := mockCMS(t, "http://cms.example.com", "TOKEN")
+	c := lo.Must(New("http://cms.example.com", "TOKEN"))
+
+	items, err := c.GetItemsByKeyInParallel(ctx, "ppp", "mmm", false, 5)
+	assert.Equal(t, 5, call("GET /api/projects/ppp/models/mmm/items"))
+	assert.NoError(t, err)
+	assert.Equal(t, &Items{
+		Items:      testItems,
+		Page:       1,
+		PerPage:    100,
+		TotalCount: len(testItems),
+	}, items)
+}
+
 func mockCMS(t *testing.T, host, token string) func(string) int {
 	t.Helper()
 

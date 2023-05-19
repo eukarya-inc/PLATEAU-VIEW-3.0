@@ -12,6 +12,8 @@ import (
 	"github.com/samber/lo"
 )
 
+const limit = 10
+
 type CMS struct {
 	Project              string
 	PublicAPI            bool
@@ -43,7 +45,7 @@ func (c *CMS) Files(ctx context.Context, model, id string) (any, error) {
 }
 
 func (c *CMS) DatasetsWithPublicAPI(ctx context.Context, model string) (*DatasetResponse, error) {
-	items, err := c.PublicAPIClient.GetAllItems(ctx, model)
+	items, err := c.PublicAPIClient.GetAllItemsInParallel(ctx, model, limit)
 	if err != nil {
 		return nil, rerror.ErrInternalBy(err)
 	}

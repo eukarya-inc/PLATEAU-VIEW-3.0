@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"net/url"
 	"path"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/reearth/reearthx/rerror"
 	"github.com/reearth/reearthx/util"
+	"github.com/samber/lo"
 )
 
 type PublicAPIListResponse[T any] struct {
@@ -63,6 +65,7 @@ func NewPublicAPIClient[T any](c *http.Client, base, project string) (*PublicAPI
 
 func (c *PublicAPIClient[T]) GetAllItems(ctx context.Context, model string) (res []T, err error) {
 	perPage := 100
+
 	for p := 1; ; p++ {
 		r, err := c.GetItems(ctx, model, p, perPage)
 		if err != nil {
@@ -74,7 +77,25 @@ func (c *PublicAPIClient[T]) GetAllItems(ctx context.Context, model string) (res
 			break
 		}
 	}
+
 	return
+}
+
+func (c *PublicAPIClient[T]) GetAllItemsInParallel(ctx context.Context, model string, limit int) ([]T, error) {
+	perPage := 100
+
+	r, err := parallel(limit, func(i int) ([]T, int, error) {
+		r, err := c.GetItems(ctx, model, i+1, perPage)
+		if err != nil {
+			return nil, 0, err
+		}
+		return r.Results, int(math.Ceil(float64(r.TotalCount) / float64(perPage))), nil
+	})
+
+	if len(r) == 0 {
+		return nil, err
+	}
+	return lo.Flatten(r), err
 }
 
 func (c *PublicAPIClient[T]) GetItems(ctx context.Context, model string, page, perPage int) (_ *PublicAPIListResponse[T], err error) {

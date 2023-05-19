@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
+	"github.com/samber/lo"
 )
 
 type Interface interface {
@@ -22,8 +24,10 @@ type Interface interface {
 	GetItem(ctx context.Context, itemID string, asset bool) (*Item, error)
 	GetItemsPartially(ctx context.Context, modelID string, page, perPage int, asset bool) (*Items, error)
 	GetItems(ctx context.Context, modelID string, asset bool) (*Items, error)
+	GetItemsInParallel(ctx context.Context, modelID string, asset bool, limit int) (*Items, error)
 	GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, page, perPage int, asset bool) (*Items, error)
 	GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrKey string, asset bool) (*Items, error)
+	GetItemsByKeyInParallel(ctx context.Context, projectIDOrAlias, modelIDOrKey string, asset bool, limit int) (*Items, error)
 	CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error)
 	CreateItemByKey(ctx context.Context, projectID, modelID string, fields []Field) (*Item, error)
 	UpdateItem(ctx context.Context, itemID string, fields []Field) (*Item, error)
@@ -131,8 +135,7 @@ func (c *CMS) GetItemsPartially(ctx context.Context, modelID string, page, perPa
 	return items, nil
 }
 
-func (c *CMS) GetItems(ctx context.Context, modelID string, asset bool) (*Items, error) {
-	var items *Items
+func (c *CMS) GetItems(ctx context.Context, modelID string, asset bool) (items *Items, _ error) {
 	const perPage = 100
 	for p := 1; ; p++ {
 		i, err := c.GetItemsPartially(ctx, modelID, p, perPage, asset)
@@ -157,6 +160,36 @@ func (c *CMS) GetItems(ctx context.Context, modelID string, asset bool) (*Items,
 	}
 
 	return items, nil
+}
+
+func (c *CMS) GetItemsInParallel(ctx context.Context, modelID string, asset bool, limit int) (*Items, error) {
+	const perPage = 100
+	if limit <= 0 {
+		limit = 5
+	}
+
+	res, err := parallel(limit, func(p int) (*Items, int, error) {
+		r, err := c.GetItemsPartially(ctx, modelID, p+1, perPage, asset)
+		if err != nil || r == nil {
+			if r == nil || r.PerPage == 0 {
+				err = fmt.Errorf("invalid response: %#v", r)
+			}
+			return nil, 0, err
+		}
+		return r, int(math.Ceil(float64(r.TotalCount) / float64(perPage))), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res2 := res[0]
+	res2.Items = lo.FlatMap(res, func(i *Items, _ int) []Item {
+		if i == nil {
+			return nil
+		}
+		return i.Items
+	})
+	return res2, nil
 }
 
 func (c *CMS) GetItemsPartiallyByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, page, perPage int, asset bool) (*Items, error) {
@@ -207,6 +240,37 @@ func (c *CMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelIDOrAlia
 	}
 
 	return items, nil
+}
+
+func (c *CMS) GetItemsByKeyInParallel(ctx context.Context, projectIDOrAlias, modelIDOrAlias string, asset bool, limit int) (*Items, error) {
+	const perPage = 100
+	if limit <= 0 {
+		limit = 5
+	}
+
+	res, err := parallel(limit, func(p int) (*Items, int, error) {
+		r, err := c.GetItemsPartiallyByKey(ctx, projectIDOrAlias, modelIDOrAlias, p+1, perPage, asset)
+		if err != nil || r == nil {
+			if r == nil || r.PerPage == 0 {
+				err = fmt.Errorf("invalid response: %#v", r)
+			}
+			return nil, 0, err
+		}
+
+		return r, int(math.Ceil(float64(r.TotalCount) / float64(perPage))), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res2 := res[0]
+	res2.Items = lo.FlatMap(res, func(i *Items, _ int) []Item {
+		if i == nil {
+			return nil
+		}
+		return i.Items
+	})
+	return res2, nil
 }
 
 func (c *CMS) CreateItem(ctx context.Context, modelID string, fields []Field) (*Item, error) {
