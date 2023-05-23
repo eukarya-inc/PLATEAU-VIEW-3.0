@@ -24,9 +24,11 @@ import { ReactComponent as ArrowDownSimple } from "./Icons/arrowDownSimple.svg";
 import { ReactComponent as ArrowDown } from "./Icons/arrowDown.svg";
 import { ReactComponent as ArrowLeft } from "./Icons/arrowLeft.svg";
 import { ReactComponent as Visible } from "./Icons/visible.svg";
+import { ReactComponent as WarningCircle } from "./Icons/warningCircle.svg";
 import { ReactComponent as Hidden } from "./Icons/hidden.svg";
 import { ReactComponent as About } from "./Icons/about.svg";
 import { ReactComponent as MapPin } from "./Icons/mapPin.svg";
+import { ReactComponent as MobileWS } from "./Icons/mobileWS.svg";
 import { ReactComponent as User } from "./Icons/user.svg";
 import { ReactComponent as Search } from "./Icons/search.svg";
 import { ReactComponent as Inbox } from "./Icons/inbox.svg";
@@ -76,8 +78,7 @@ import { ReactComponent as GearWheel } from "./Icons/gearWheel.svg";
 import { ReactComponent as ExternalLink } from "./Icons/externalLink.svg";
 
 // Ant Design Icons
-import { HolderOutlined } from "@ant-design/icons";
-import { PlayCircleFilled } from "@ant-design/icons";
+import { HolderOutlined, PlayCircleFilled } from "@ant-design/icons";
 
 export { InboxOutlined, DownloadOutlined } from "@ant-design/icons";
 
@@ -105,9 +106,11 @@ export default {
   arrowDown: ArrowDown,
   arrowLeft: ArrowLeft,
   visible: Visible,
+  warningCircle: WarningCircle,
   hidden: Hidden,
   about: About,
   mapPin: MapPin,
+  mobileWS: MobileWS,
   user: User,
   search: Search,
   inbox: Inbox,
