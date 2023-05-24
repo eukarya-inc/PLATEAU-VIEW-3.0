@@ -10,8 +10,24 @@ import { ChangeEvent, useCallback, useState, useEffect } from "react";
 
 import { BaseFieldProps, Fields } from "../types";
 
+const generateConditions = (propertyName: string) => {
+  const fieldValue = "${" + String(propertyName) + "}";
+  return [`true`, ` ${fieldValue} `];
+};
+
+const extractValue = (fieldValue: string) => {
+  if (fieldValue.startsWith("={") && fieldValue.endsWith("}")) {
+    return fieldValue.substring(2, fieldValue.length - 1);
+  } else if (fieldValue.startsWith("=${") && fieldValue.endsWith("}")) {
+    return fieldValue.substring(3, fieldValue.length - 1);
+  } else {
+    return fieldValue.substring(1);
+  }
+};
+
 const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, onUpdate }) => {
   const [pointLabel, setPointLabel] = useState(value);
+  const [conditions, setConditions] = useState<string[]>();
 
   const updatePointLabelByProp = useCallback((prop: string, value: any) => {
     setPointLabel(pointLabel => {
@@ -25,7 +41,12 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
 
   const handleFieldChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      updatePointLabelByProp("field", e.target.value);
+      const fieldValue = e.target.value;
+      if (fieldValue.startsWith("=")) {
+        const extractedValue = extractValue(fieldValue);
+        setConditions(generateConditions(extractedValue));
+      } else setConditions(undefined);
+      updatePointLabelByProp("field", fieldValue);
     },
     [updatePointLabelByProp],
   );
@@ -86,7 +107,13 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
               color: pointLabel.fontColor,
             },
             heightReference: "relative",
-            labelText: pointLabel.field,
+            labelText: !conditions
+              ? pointLabel.field
+              : {
+                  expression: {
+                    conditions: [conditions],
+                  },
+                },
             extrude: pointLabel.extruded,
             labelBackground: pointLabel.useBackground,
             labelBackgroundColor: pointLabel.backgroundColor,
@@ -97,7 +124,7 @@ const PointLabel: React.FC<BaseFieldProps<"pointLabel">> = ({ value, editMode, o
     return () => {
       clearTimeout(timer);
     };
-  }, [pointLabel, value, onUpdate]);
+  }, [pointLabel, value, onUpdate, conditions]);
 
   return editMode ? (
     <Wrapper>
