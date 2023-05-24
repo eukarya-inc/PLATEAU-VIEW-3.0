@@ -23,20 +23,12 @@ const WelcomeScreen: React.FC = () => {
 
           <TextWrapper isMobile={isMobile}>
             {isMobile && <MobileIcon icon="mobileWS" color="#fff" width={99.02} height={142.06} />}
-            <Title weight={700} size={isMobile ? 36 : 48}>
+            <Title weight={700} size={isMobile ? 36 : 48} isMobile={isMobile}>
               ようこそ
             </Title>
-            <Text weight={500} size={isMobile ? 16 : 20}>
+            <Text weight={isMobile ? 700 : 500} size={isMobile ? 20 : 24}>
               {isMobile ? "データがお好きですか？" : "マップを使ってみる"}
             </Text>
-            {isMobile && (
-              <WarningWrapper>
-                <WarningText weight={500} size={14}>
-                  <InlineIcon icon="warningCircle" size={16} />
-                  スマホではデータサイズの問題から、テクスチャ付きのデータが正常に表示されない場合があります。ご了承ください。
-                </WarningText>
-              </WarningWrapper>
-            )}
           </TextWrapper>
           <ContentWrapper isMobile={isMobile}>
             {!isMobile && (
@@ -64,6 +56,14 @@ const WelcomeScreen: React.FC = () => {
               </ButtonWrapper>
             </BtnsWrapper>
           </ContentWrapper>
+          {isMobile && (
+            <WarningWrapper>
+              <WarningText weight={500} size={14}>
+                <InlineIcon icon="warningCircle" size={16} color="#FAAD14" />
+                スマホではデータサイズの問題から、テクスチャ付きのデータが正常に表示されない場合があります。ご了承ください。
+              </WarningText>
+            </WarningWrapper>
+          )}
           <CheckWrapper isMobile={isMobile}>
             <Checkbox checked={dontShowAgain} onClick={handleDontShowAgain} />
             <Text weight={700} size={14}>
@@ -103,11 +103,12 @@ const InnerWrapper = styled.div<{ isMobile?: boolean }>`
     `  position: relative;
   `};
   width: 100%;
-  max-width: ${({ isMobile }) => (isMobile ? "70vw" : "742px")};
+  max-width: ${({ isMobile }) => (isMobile ? "80vw" : "742px")};
 `;
 
 const MobileIcon = styled(Icon)`
   align-self: center;
+  margin-bottom: 24px;
 `;
 const Text = styled.p<{ weight: number; size: number }>`
   font-weight: ${({ weight }) => weight}px;
@@ -117,7 +118,8 @@ const Text = styled.p<{ weight: number; size: number }>`
 `;
 
 const Title = styled(Text)<{ isMobile?: boolean }>`
-  ${({ isMobile }) => (!isMobile ? `margin-bottom: 24px;` : `margin-bottom: 4px;`)}
+  ${({ isMobile }) =>
+    !isMobile ? `margin-bottom: 24px;` : `margin-bottom: 4px; line-height:46px;`}
 `;
 
 const WarningWrapper = styled.div`
@@ -127,21 +129,23 @@ const WarningWrapper = styled.div`
   padding: 0px;
   gap: 6px;
   width: 100%;
-  height: 66px;
-  margin-top: 48px;
+  margin-top: 12vh;
 `;
 const WarningText = styled(Text)`
   line-height: 22px;
 `;
 const InlineIcon = styled(Icon)`
   display: inline-block;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 3px;
 `;
 const TextWrapper = styled.div<{ isMobile?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  margin-bottom: ${({ isMobile }) => (isMobile ? "60px" : "24px")};
+  margin-bottom: ${({ isMobile }) => (isMobile ? "41.94px" : "24px")};
   ${({ isMobile }) =>
     isMobile &&
     `
@@ -237,9 +241,9 @@ const CheckWrapper = styled.div<{ isMobile?: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: ${({ isMobile }) => (isMobile ? "flex-start" : "center")};
-  align-self: ${({ isMobile }) => (isMobile ? "flex-end" : "center")};
+  align-self: ${({ isMobile }) => (isMobile ? "flex-start" : "center")};
   gap: 8px;
-  margin-top: ${({ isMobile }) => (isMobile ? "8px" : "50px")};
+  margin-top: ${({ isMobile }) => (isMobile ? "26px" : "50px")};
 `;
 
 const VideoWrapper = styled.div`
