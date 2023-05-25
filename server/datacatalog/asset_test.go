@@ -77,16 +77,17 @@ func TestAssetNameFrom(t *testing.T) {
 	}, AssetNameFrom("22221_kosai-shi_2022_3dtiles_op_nodem_bldg_lod1.zip"))
 
 	assert.Equal(t, AssetName{
-		CityCode:    "13229",
-		CityEn:      "nishitokyo-shi",
-		Year:        "2022",
-		Format:      "3dtiles",
-		Op:          "1_op2",
-		Feature:     "fld",
-		Ext:         ".zip",
-		FldCategory: "pref",
-		FldName:     "shakujiigawa-shirakogawa_op",
-	}, AssetNameFrom("13229_nishitokyo-shi_2022_3dtiles_1_op2_fld_pref_shakujiigawa-shirakogawa_op.zip"))
+		CityCode: "13229",
+		CityEn:   "nishitokyo-shi",
+		Year:     "2022",
+		Format:   "3dtiles",
+		Op:       "1_op2",
+		Feature:  "fld",
+		Ext:      ".zip",
+		FldAdmin: "pref",
+		FldName:  "shakujiigawa-shirakogawa",
+		FldScale: "l1",
+	}, AssetNameFrom("13229_nishitokyo-shi_2022_3dtiles_1_op2_fld_pref_shakujiigawa-shirakogawa_l1.zip"))
 
 	assert.Equal(t, AssetName{
 		CityCode:  "13100",
@@ -115,16 +116,16 @@ func TestAssetNameFrom(t *testing.T) {
 	}, AssetNameFrom("23212_anjo-shi_2020_mvt_4_op_urf_UseDistrict.zip"))
 
 	assert.Equal(t, AssetName{
-		CityCode:    "13100",
-		CityEn:      "tokyo23-ku",
-		Year:        "2020",
-		Format:      "3dtiles",
-		Op:          "4_2_op",
-		Feature:     "fld",
-		Ex:          "",
-		Ext:         ".zip",
-		FldCategory: "natl",
-		FldName:     "tmagawa_tamagawa-asakawa-etc_op",
+		CityCode: "13100",
+		CityEn:   "tokyo23-ku",
+		Year:     "2020",
+		Format:   "3dtiles",
+		Op:       "4_2_op",
+		Feature:  "fld",
+		Ex:       "",
+		Ext:      ".zip",
+		FldAdmin: "natl",
+		FldName:  "tmagawa_tamagawa-asakawa-etc_op",
 	}, AssetNameFrom("13100_tokyo23-ku_2020_3dtiles_4_2_op_fld_natl_tmagawa_tamagawa-asakawa-etc_op.zip"))
 
 	assert.Equal(t, AssetName{
@@ -226,15 +227,15 @@ func TestAssetName_String(t *testing.T) {
 	}.String())
 
 	assert.Equal(t, "13229_nishitokyo-shi_2022_3dtiles_1_op2_fld_pref_shakujiigawa-shirakogawa_op.zip", AssetName{
-		CityCode:    "13229",
-		CityEn:      "nishitokyo-shi",
-		Year:        "2022",
-		Format:      "3dtiles",
-		Op:          "1_op2",
-		Feature:     "fld",
-		FldCategory: "pref",
-		FldName:     "shakujiigawa-shirakogawa_op",
-		Ext:         ".zip",
+		CityCode: "13229",
+		CityEn:   "nishitokyo-shi",
+		Year:     "2022",
+		Format:   "3dtiles",
+		Op:       "1_op2",
+		Feature:  "fld",
+		FldAdmin: "pref",
+		FldName:  "shakujiigawa-shirakogawa_op",
+		Ext:      ".zip",
 	}.String())
 
 	assert.Equal(t, "13100_tokyo23-ku_2020_3dtiles_4_2_op_bldg_13109_shinagawa-ku_lod2_no_texture.zip", AssetName{
@@ -271,4 +272,14 @@ func TestAssetName_String(t *testing.T) {
 		Feature:  "frn",
 		Ext:      ".zip",
 	}.String())
+}
+
+func TestAssetName_LODInt(t *testing.T) {
+	assert.Equal(t, 0, AssetName{}.LODInt())
+	assert.Equal(t, 1, AssetName{LOD: "1"}.LODInt())
+}
+
+func TestAssetName_WardCodeInt(t *testing.T) {
+	assert.Equal(t, 0, AssetName{}.WardCodeInt())
+	assert.Equal(t, 10000, AssetName{WardCode: "10000"}.WardCodeInt())
 }

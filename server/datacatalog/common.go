@@ -98,3 +98,11 @@ func cityCode(code, name string, prefCode int) string {
 	}
 	return code
 }
+
+func isLayerSupported(format string) bool {
+	switch format {
+	case "mvt", "wms":
+		return true
+	}
+	return false
+}

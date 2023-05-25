@@ -45,7 +45,7 @@ func (c *CMS) Files(ctx context.Context, model, id string) (any, error) {
 }
 
 func (c *CMS) DatasetsWithPublicAPI(ctx context.Context, model string) (*DatasetResponse, error) {
-	items, err := c.PublicAPIClient.GetAllItemsInParallel(ctx, model, limit)
+	items, err := c.PublicAPIClient.GetAllItemsInParallel(ctx, c.Project, model, limit)
 	if err != nil {
 		return nil, rerror.ErrInternalBy(err)
 	}
@@ -54,7 +54,7 @@ func (c *CMS) DatasetsWithPublicAPI(ctx context.Context, model string) (*Dataset
 }
 
 func (c *CMS) FilesWithPublicAPI(ctx context.Context, model, id string) (any, error) {
-	item, err := c.PublicAPIClient.GetItem(ctx, model, id)
+	item, err := c.PublicAPIClient.GetItem(ctx, c.Project, model, id)
 	if err != nil {
 		return nil, rerror.ErrInternalBy(err)
 	}
@@ -62,7 +62,7 @@ func (c *CMS) FilesWithPublicAPI(ctx context.Context, model, id string) (any, er
 		return nil, rerror.ErrNotFound
 	}
 
-	asset, err := c.PublicAPIClient.GetAsset(ctx, item.CityGML.ID)
+	asset, err := c.PublicAPIClient.GetAsset(ctx, c.Project, item.CityGML.ID)
 	if err != nil {
 		return nil, rerror.ErrInternalBy(err)
 	}

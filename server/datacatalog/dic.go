@@ -38,24 +38,12 @@ var fldCatJa = map[string]string{
 func (d Dic) Fld(name, cat string) *DicEntry {
 	catja := fldCatJa[cat]
 	if catja == "" {
-		return d.findByName("fld", name)
+		return d.FindByName("fld", name)
 	}
 	return d.findByNameAndScale("fld", name, catja)
 }
 
-func (d Dic) Tnm(name string) *DicEntry {
-	return d.findByName("tnm", name)
-}
-
-func (d Dic) Htd(name string) *DicEntry {
-	return d.findByName("htd", name)
-}
-
-func (d Dic) Ifld(name string) *DicEntry {
-	return d.findByName("ifld", name)
-}
-
-func (d Dic) findByName(key, name string) *DicEntry {
+func (d Dic) FindByName(key, name string) *DicEntry {
 	entries, ok := d[key]
 	if !ok {
 		return nil

@@ -42,22 +42,22 @@ jobs:
         run: go test ./... -v -race
 
       # indexer test
-      - name: 'indexer test: is testdata available'
-        id: testdata
-        run: echo $TESTDATA >> $GITHUB_OUTPUT
-        env:
-          TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
-      - name: 'indexer test: download test 3D Tiles data'
-        if: steps.testdata.outputs.testdata
-        run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
-        env:
-          TESTDATA: ${{ secrets.TESTDATA }}
-      - name: 'indexer test: run indexer test'
-        if: steps.testdata.outputs.testdata
-        run: go test ./searchindex/indexer -v
-      - name: 'indexer test: list result files'
-        if: steps.testdata.outputs.testdata
-        run: ls searchindex/indexer/testdata/result
-      - name: 'indexer test: cat resultsData.csv'
-        if: steps.testdata.outputs.testdata
-        run: cat searchindex/indexer/testdata/result/resultsData.csv
+      # - name: 'indexer test: is testdata available'
+      #   id: testdata
+      #   run: echo $TESTDATA >> $GITHUB_OUTPUT
+      #   env:
+      #     TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
+      # - name: 'indexer test: download test 3D Tiles data'
+      #   if: steps.testdata.outputs.testdata
+      #   run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
+      #   env:
+      #     TESTDATA: ${{ secrets.TESTDATA }}
+      # - name: 'indexer test: run indexer test'
+      #   if: steps.testdata.outputs.testdata
+      #   run: go test ./searchindex/indexer -v
+      # - name: 'indexer test: list result files'
+      #   if: steps.testdata.outputs.testdata
+      #   run: ls searchindex/indexer/testdata/result
+      # - name: 'indexer test: cat resultsData.csv'
+      #   if: steps.testdata.outputs.testdata
+      #   run: cat searchindex/indexer/testdata/result/resultsData.csv

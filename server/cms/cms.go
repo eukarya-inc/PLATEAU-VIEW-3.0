@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
@@ -40,9 +41,10 @@ type Interface interface {
 }
 
 type CMS struct {
-	base   *url.URL
-	token  string
-	client *http.Client
+	base    *url.URL
+	token   string
+	client  *http.Client
+	timeout time.Duration
 }
 
 func New(base, token string) (*CMS, error) {
@@ -56,6 +58,15 @@ func New(base, token string) (*CMS, error) {
 		token:  token,
 		client: http.DefaultClient,
 	}, nil
+}
+
+func (c *CMS) WithTimeout(t time.Duration) *CMS {
+	return &CMS{
+		base:    c.base,
+		token:   c.token,
+		client:  c.client,
+		timeout: t,
+	}
 }
 
 func (c *CMS) assetParam(asset bool) map[string][]string {
@@ -457,7 +468,14 @@ func (c *CMS) CommentToAsset(ctx context.Context, assetID, content string) error
 }
 
 func (c *CMS) send(ctx context.Context, m string, p []string, ct string, body any) (io.ReadCloser, error) {
-	req, err := c.request(ctx, m, p, ct, body)
+	ctx2 := ctx
+	if c.timeout > 0 {
+		ctx3, cancel := context.WithTimeout(context.Background(), c.timeout)
+		ctx2 = ctx3
+		defer cancel()
+	}
+
+	req, err := c.request(ctx2, m, p, ct, body)
 	if err != nil {
 		return nil, err
 	}

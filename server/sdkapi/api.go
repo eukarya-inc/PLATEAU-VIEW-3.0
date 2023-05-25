@@ -27,7 +27,7 @@ func Handler(conf Config, g *echo.Group) error {
 		return err
 	}
 
-	// cl, err := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL, conf.Project)
+	// cl, err := cms.NewPublicAPIClient[Item](nil, conf.CMSBaseURL)
 	// if err != nil {
 	// 	return err
 	// }

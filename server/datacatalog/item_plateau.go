@@ -46,113 +46,83 @@ type PlateauItem struct {
 	OpenDataURL     string             `json:"opendata_url"`
 }
 
-func (i PlateauItem) LuseItem(c PlateauIntermediateItem) *DataCatalogItem {
-	if i.Luse == nil {
-		return nil
+func (i PlateauItem) Feature(ty string) []*cms.PublicAsset {
+	switch ty {
+	case "bldg":
+		return i.Bldg
+	case "tran":
+		return i.Tran
+	case "frn":
+		return i.Frn
+	case "veg":
+		return i.Veg
+	case "luse":
+		return i.Luse
+	case "lsld":
+		return i.Lsld
+	case "urf":
+		return i.Urf
+	case "fld":
+		return i.Fld
+	case "htd":
+		return i.Htd
+	case "ifld":
+		return i.Ifld
+	case "tnm":
+		return i.Tnm
+	case "brid":
+		return i.Brid
+	case "rail":
+		return i.Rail
+	case "gen":
+		return i.Gen
 	}
-
-	a := i.Luse[0]
-	return c.DataCatalogItem("土地利用モデル", AssetNameFrom(a.URL), a.URL, i.DescriptionLuse, []string{"luse"}, false, "")
+	return nil
 }
 
-func (i PlateauItem) LsldItem(c PlateauIntermediateItem) *DataCatalogItem {
-	if i.Lsld == nil {
-		return nil
+func (i PlateauItem) FeatureDescription(ty string) []string {
+	switch ty {
+	case "bldg":
+		return []string{i.DescriptionBldg}
+	case "tran":
+		return []string{i.DescriptionTran}
+	case "frn":
+		return []string{i.DescriptionFrn}
+	case "veg":
+		return []string{i.DescriptionVeg}
+	case "luse":
+		return []string{i.DescriptionLuse}
+	case "lsld":
+		return []string{i.DescriptionLsld}
+	case "urf":
+		return i.DescriptionUrf
+	case "fld":
+		return i.DescriptionFld
+	case "htd":
+		return i.DescriptionHtd
+	case "ifld":
+		return i.DescriptionIfld
+	case "tnm":
+		return i.DescriptionTnm
+	case "brid":
+		return []string{i.DescriptionBrid}
+	case "rail":
+		return []string{i.DescriptionRail}
+	case "gen":
+		return i.DescriptionGen
 	}
-
-	a := i.Lsld[0]
-	return c.DataCatalogItem("土砂災害警戒区域モデル", AssetNameFrom(a.URL), a.URL, i.DescriptionLsld, []string{"lsld"}, false, "")
+	return nil
 }
 
-func (i PlateauItem) UrfItems(c PlateauIntermediateItem) []*DataCatalogItem {
-	if len(i.Urf) == 0 {
-		return nil
-	}
-
-	return lo.Map(i.Urf, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
-		an := AssetNameFrom(a.URL)
-
-		name, desc := descFromAsset(a, i.DescriptionUrf)
-		return c.DataCatalogItem("都市計画決定情報モデル", an, a.URL, desc, urfLayers(an.UrfFeatureType), false, name)
-	})
-}
-
-func (i PlateauItem) HtdItems(c PlateauIntermediateItem) []*DataCatalogItem {
-	if len(i.Htd) == 0 {
-		return nil
-	}
-
-	return lo.Map(i.Htd, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
-		an := AssetNameFrom(a.URL)
-
-		_, desc := descFromAsset(a, i.DescriptionHtd)
-		dci := c.DataCatalogItem("高潮浸水想定区域モデル", an, a.URL, desc, nil, false, "")
-
-		if dci != nil {
-			dci.Name = htdTnmIfldName("高潮浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Htd(an.FldName))
-		}
-		return dci
-	})
-}
-
-func (i PlateauItem) IfldItems(c PlateauIntermediateItem) []*DataCatalogItem {
-	if len(i.Ifld) == 0 {
-		return nil
-	}
-
-	return lo.Map(i.Ifld, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
-		an := AssetNameFrom(a.URL)
-
-		_, desc := descFromAsset(a, i.DescriptionIfld)
-		dci := c.DataCatalogItem("内水浸水想定区域モデル", an, a.URL, desc, nil, false, "")
-
-		if dci != nil {
-			dci.Name = htdTnmIfldName("内水浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Ifld(an.FldName))
-		}
-		return dci
-	})
-}
-
-func (i PlateauItem) TnmItems(c PlateauIntermediateItem) []*DataCatalogItem {
-	if len(i.Tnm) == 0 {
-		return nil
-	}
-
-	return lo.Map(i.Tnm, func(a *cms.PublicAsset, _ int) *DataCatalogItem {
-		an := AssetNameFrom(a.URL)
-
-		_, desc := descFromAsset(a, i.DescriptionTnm)
-		dci := c.DataCatalogItem("津波浸水想定区域モデル", an, a.URL, desc, nil, false, "")
-
-		if dci != nil {
-			dci.Name = htdTnmIfldName("津波浸水想定区域モデル", i.CityName, an.FldName, c.Dic.Tnm(an.FldName))
-		}
-		return dci
-	})
-}
-
-func (i PlateauItem) DataCatalogItems(c PlateauIntermediateItem) []DataCatalogItem {
+func (i PlateauItem) AllDataCatalogItems(c PlateauIntermediateItem) []DataCatalogItem {
 	if c.ID == "" {
 		return nil
 	}
 
 	return util.DerefSlice(lo.Filter(
-		append(append(append(append(append(append(append(append(append(
-			i.BldgItems(c),
-			i.TranItem(c),
-			i.FrnItem(c),
-			i.VegItem(c),
-			i.LuseItem(c),
-			i.LsldItem(c)),
-			i.UrfItems(c)...),
-			i.FldItems(c)...),
-			i.TnmItems(c)...),
-			i.HtdItems(c)...),
-			i.IfldItems(c)...),
-			i.BridItem(c)),
-			i.RailItem(c)),
-			i.GenItems(c)...,
-		),
+		lo.FlatMap(FeatureTypes, func(ty string, _ int) []*DataCatalogItem {
+			return i.DataCatalogItems(c, ty)
+		}),
 		func(i *DataCatalogItem, _ int) bool {
 			return i != nil
 		},

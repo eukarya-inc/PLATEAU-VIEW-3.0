@@ -56,9 +56,6 @@ type RawRawDataCatalogItem = {
     }[];
   };
   order?: number;
-  // bldg only fields
-  bldg_low_texture_url?: string;
-  bldg_no_texture_url?: string;
   search_index?: string;
   // internal
   path?: string[];

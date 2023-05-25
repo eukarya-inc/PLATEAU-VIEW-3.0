@@ -78,8 +78,8 @@ func TestDir(t *testing.T) {
 		Description: "xxx",
 		Admin:       "",
 		Scale:       "",
-	}, d.Htd("bbb"))
-	assert.Nil(t, d.Htd("aaa"))
+	}, d.FindByName("htd", "bbb"))
+	assert.Nil(t, d.FindByName("htd", "aaa"))
 
 	assert.Equal(t, &DicEntry{
 		Code:        "",
@@ -87,8 +87,8 @@ func TestDir(t *testing.T) {
 		Description: "xxx",
 		Admin:       "",
 		Scale:       "",
-	}, d.Tnm("ccc"))
-	assert.Nil(t, d.Tnm("aaa"))
+	}, d.FindByName("tnm", "ccc"))
+	assert.Nil(t, d.FindByName("tnm", "aaa"))
 
 	assert.Equal(t, &DicEntry{
 		Code:        "",
@@ -96,6 +96,6 @@ func TestDir(t *testing.T) {
 		Description: "xxx",
 		Admin:       "",
 		Scale:       "",
-	}, d.Ifld("ddd"))
-	assert.Nil(t, d.Ifld("aaa"))
+	}, d.FindByName("ifld", "ddd"))
+	assert.Nil(t, d.FindByName("ifld", "aaa"))
 }
