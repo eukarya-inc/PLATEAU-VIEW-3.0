@@ -24,7 +24,7 @@ func TestRequestHandler(t *testing.T) {
 	err := requestHandler(Config{APIToken: "token!"}, g, s)
 	assert.NoError(t, err)
 
-	req := httptest.NewRequest("POST", "/request_max_lod", strings.NewReader(`{"ids":["id1","id2"]}`))
+	req := httptest.NewRequest("POST", "/request_max_lod", strings.NewReader(`{"ids":["id1","id2"],"project":"prj"}`))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer token!")
 	rec := httptest.NewRecorder()
@@ -65,15 +65,17 @@ func TestRequestHandler(t *testing.T) {
 	assert.Equal(t, []fme.Request{
 		fme.MaxLODRequest{
 			ID: fme.ID{
-				ItemID:  "id1",
-				AssetID: "citygml",
+				ItemID:    "id1",
+				AssetID:   "citygml",
+				ProjectID: "prj",
 			}.String("secret"),
 			Target: "https://example.com/citygml.zip",
 		},
 		fme.MaxLODRequest{
 			ID: fme.ID{
-				ItemID:  "id2",
-				AssetID: "citygml",
+				ItemID:    "id2",
+				AssetID:   "citygml",
+				ProjectID: "prj",
 			}.String("secret"),
 			Target: "https://example.com/citygml.zip",
 		},

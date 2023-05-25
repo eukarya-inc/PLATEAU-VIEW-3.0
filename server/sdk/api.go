@@ -24,11 +24,20 @@ func requestHandler(conf Config, g *echo.Group, s *Services) error {
 	g.POST("/request_max_lod", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		q := struct {
-			IDs []string `json:"ids"`
+			IDs     []string `json:"ids"`
+			Project string   `json:"project"`
 		}{}
 
 		if err := c.Bind(&q); err != nil {
 			return err
+		}
+
+		if len(q.IDs) == 0 {
+			return echo.NewHTTPError(http.StatusBadRequest, "ids is empty")
+		}
+
+		if q.Project == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "project is empty")
 		}
 
 		log.Infof("sdk: request max lod extraction for %d items: %v", len(q.IDs), q.IDs)
@@ -50,8 +59,7 @@ func requestHandler(conf Config, g *echo.Group, s *Services) error {
 			}
 
 			item := ItemFrom(*i)
-			// project id can be empty
-			s.RequestMaxLODExtraction(c.Request().Context(), item, true)
+			s.RequestMaxLODExtraction(c.Request().Context(), item, q.Project, true)
 		}
 
 		return c.JSON(http.StatusOK, "ok")

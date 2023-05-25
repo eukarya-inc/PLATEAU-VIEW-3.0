@@ -45,7 +45,7 @@ func NewServices(conf Config) (*Services, error) {
 	return &Services{CMS: cms, FME: fme, FMESecret: conf.FMESecret}, nil
 }
 
-func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item, force bool) {
+func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item, project string, force bool) {
 	if !force && item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
 		log.Debugf("sdk: skipped: %s", item.MaxLODStatus)
 		return
@@ -68,7 +68,7 @@ func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item, force
 		ID: fme.ID{
 			ItemID:    item.ID,
 			AssetID:   citygml.ID,
-			ProjectID: item.ProjectID,
+			ProjectID: project,
 		}.String(s.FMESecret),
 		Target: citygml.URL,
 	}); err != nil {
@@ -99,7 +99,7 @@ func (s *Services) ReceiveFMEResult(ctx context.Context, f FMEResult) error {
 
 	aid, err := s.CMS.UploadAsset(ctx, id.ProjectID, f.ResultURL)
 	if err != nil {
-		log.Errorf("sdk notify: failed to update assets: %v", err)
+		log.Errorf("sdk notify: failed to upload assets: %v", err)
 
 		if _, err := s.CMS.UpdateItem(ctx, id.ItemID, Item{
 			MaxLODStatus: StatusError,

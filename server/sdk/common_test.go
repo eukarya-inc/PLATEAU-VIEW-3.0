@@ -18,21 +18,21 @@ func TestServices_RequestMaxLODExtraction(t *testing.T) {
 		FMESecret: "secret",
 	}
 
+	project := "project_id"
 	item := Item{
 		ID:           "id",
 		CityGML:      "citygml",
 		MaxLOD:       "max_lod",
 		MaxLODStatus: StatusOK,
-		ProjectID:    "project_id",
 	}
 
-	s.RequestMaxLODExtraction(ctx, item, false)
+	s.RequestMaxLODExtraction(ctx, item, project, false)
 
 	assert.Nil(t, s.CMS.(*cmsMock).AssetCalls)
 	assert.Nil(t, s.CMS.(*cmsMock).UpdateItemCalls)
 	assert.Nil(t, s.FME.(*fmeMock).RequestCalls)
 
-	s.RequestMaxLODExtraction(ctx, item, true)
+	s.RequestMaxLODExtraction(ctx, item, project, true)
 
 	assert.Equal(t, []string{"citygml"}, s.CMS.(*cmsMock).AssetCalls)
 	assert.Equal(t, []struct {
