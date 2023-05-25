@@ -45,8 +45,8 @@ func NewServices(conf Config) (*Services, error) {
 	return &Services{CMS: cms, FME: fme, FMESecret: conf.FMESecret}, nil
 }
 
-func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item) {
-	if item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
+func (s *Services) RequestMaxLODExtraction(ctx context.Context, item Item, force bool) {
+	if !force && item.MaxLODStatus != "" && item.MaxLODStatus != StatusReady {
 		log.Debugf("sdk: skipped: %s", item.MaxLODStatus)
 		return
 	}

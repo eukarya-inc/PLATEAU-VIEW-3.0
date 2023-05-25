@@ -11,24 +11,30 @@ import (
 )
 
 func TestServices_RequestMaxLODExtraction(t *testing.T) {
+	ctx := context.Background()
 	s := Services{
 		CMS:       &cmsMock{},
 		FME:       &fmeMock{},
 		FMESecret: "secret",
 	}
-	ctx := context.Background()
+
 	item := Item{
 		ID:           "id",
 		CityGML:      "citygml",
 		MaxLOD:       "max_lod",
-		MaxLODStatus: StatusReady,
+		MaxLODStatus: StatusOK,
 		ProjectID:    "project_id",
 	}
 
-	s.RequestMaxLODExtraction(ctx, item)
+	s.RequestMaxLODExtraction(ctx, item, false)
+
+	assert.Nil(t, s.CMS.(*cmsMock).AssetCalls)
+	assert.Nil(t, s.CMS.(*cmsMock).UpdateItemCalls)
+	assert.Nil(t, s.FME.(*fmeMock).RequestCalls)
+
+	s.RequestMaxLODExtraction(ctx, item, true)
 
 	assert.Equal(t, []string{"citygml"}, s.CMS.(*cmsMock).AssetCalls)
-
 	assert.Equal(t, []struct {
 		ID     string
 		Fields []cms.Field
@@ -42,7 +48,6 @@ func TestServices_RequestMaxLODExtraction(t *testing.T) {
 			},
 		},
 	}}, s.CMS.(*cmsMock).UpdateItemCalls)
-
 	assert.Equal(t, []fme.Request{
 		fme.MaxLODRequest{
 			ID: fme.ID{

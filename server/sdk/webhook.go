@@ -41,7 +41,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		item := ItemFrom(*w.ItemData.Item)
 		item.ProjectID = w.ItemData.Schema.ProjectID
 
-		s.RequestMaxLODExtraction(req.Context(), item)
+		s.RequestMaxLODExtraction(req.Context(), item, false)
 
 		log.Infof("sdk webhook: done")
 		return nil

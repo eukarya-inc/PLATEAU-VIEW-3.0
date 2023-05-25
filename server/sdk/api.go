@@ -51,7 +51,7 @@ func requestHandler(conf Config, g *echo.Group, s *Services) error {
 
 			item := ItemFrom(*i)
 			// project id can be empty
-			s.RequestMaxLODExtraction(c.Request().Context(), item)
+			s.RequestMaxLODExtraction(c.Request().Context(), item, true)
 		}
 
 		return c.JSON(http.StatusOK, "ok")
