@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauv2"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
@@ -20,7 +21,7 @@ const ModelUsecase = "usecase"
 const ModelDataset = "dataset"
 
 type Fetcher struct {
-	cmsp *cms.PublicAPIClient[PlateauItem]
+	cmsp *cms.PublicAPIClient[plateauv2.CMSItem]
 	cmsu *cms.PublicAPIClient[UsecaseItem]
 	base *url.URL
 }
@@ -33,7 +34,7 @@ func NewFetcher(c *http.Client, cmsbase string) (*Fetcher, error) {
 
 	u.Path = path.Join(u.Path, "api", "p")
 
-	cmsp, err := cms.NewPublicAPIClient[PlateauItem](c, cmsbase)
+	cmsp, err := cms.NewPublicAPIClient[plateauv2.CMSItem](c, cmsbase)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func NewFetcher(c *http.Client, cmsbase string) (*Fetcher, error) {
 
 	return &Fetcher{
 		cmsp: cmsp,
-		cmsu: cms.ChangePublicAPIClientType[PlateauItem, UsecaseItem](cmsp),
+		cmsu: cms.ChangePublicAPIClientType[plateauv2.CMSItem, UsecaseItem](cmsp),
 		base: u,
 	}, nil
 }
@@ -62,7 +63,7 @@ func (f *Fetcher) Clone() *Fetcher {
 func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	f1, f2, f3 := f.Clone(), f.Clone(), f.Clone()
 
-	res1 := lo.Async2(func() ([]PlateauItem, error) {
+	res1 := lo.Async2(func() ([]plateauv2.CMSItem, error) {
 		return f1.plateau(ctx, project, ModelPlateau)
 	})
 	res2 := lo.Async2(func() ([]UsecaseItem, error) {
@@ -111,7 +112,7 @@ func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	return r, nil
 }
 
-func (f *Fetcher) plateau(ctx context.Context, project, model string) (resp []PlateauItem, err error) {
+func (f *Fetcher) plateau(ctx context.Context, project, model string) (resp []plateauv2.CMSItem, err error) {
 	r, err := f.cmsp.GetAllItemsInParallel(ctx, project, model, 10)
 	if err != nil {
 		return

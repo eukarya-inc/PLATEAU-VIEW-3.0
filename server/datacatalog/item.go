@@ -1,6 +1,8 @@
 package datacatalog
 
 import (
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauv2"
+	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
 
@@ -42,7 +44,7 @@ type DataCatalogGroup struct {
 }
 
 type ResponseAll struct {
-	Plateau []PlateauItem
+	Plateau []plateauv2.CMSItem
 	Usecase []UsecaseItem
 }
 
@@ -53,7 +55,7 @@ func (d ResponseAll) All() []DataCatalogItem {
 func (d ResponseAll) plateau() []DataCatalogItem {
 	m := map[string]int{}
 
-	return lo.Filter(lo.FlatMap(d.Plateau, func(i PlateauItem, _ int) []DataCatalogItem {
+	return lo.Filter(lo.FlatMap(d.Plateau, func(i plateauv2.CMSItem, _ int) []DataCatalogItem {
 		c := i.IntermediateItem()
 		if c.Year == 0 {
 			return nil
@@ -62,7 +64,7 @@ func (d ResponseAll) plateau() []DataCatalogItem {
 			return nil
 		}
 		m[c.CityCode] = c.Year
-		return i.AllDataCatalogItems(c)
+		return util.Map(i.AllDataCatalogItems(c), DataCatalogItemFromPlateauV2)
 	}), func(i DataCatalogItem, _ int) bool {
 		y, ok := m[i.CityCode]
 		return ok && y == i.Year
@@ -73,4 +75,8 @@ func (d ResponseAll) usecase() []DataCatalogItem {
 	return lo.FlatMap(d.Usecase, func(i UsecaseItem, _ int) []DataCatalogItem {
 		return i.DataCatalogs()
 	})
+}
+
+func DataCatalogItemFromPlateauV2(i plateauv2.DataCatalogItem) DataCatalogItem {
+	return DataCatalogItem(i)
 }

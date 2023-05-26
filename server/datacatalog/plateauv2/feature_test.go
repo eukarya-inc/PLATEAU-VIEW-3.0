@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestBldg(t *testing.T) {
 	// case1: multiple wards
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -116,7 +116,7 @@ func TestBldg(t *testing.T) {
 	}, i.DataCatalogItems(i.IntermediateItem(), "bldg"))
 
 	// case2: normal city
-	i = PlateauItem{
+	i = CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -177,7 +177,7 @@ func TestBldg(t *testing.T) {
 }
 
 func TestTran(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -242,7 +242,7 @@ func TestTran(t *testing.T) {
 
 func TestFrn(t *testing.T) {
 	// case1: multiple LODs
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -295,7 +295,7 @@ func TestFrn(t *testing.T) {
 	}, i.DataCatalogItems(i.IntermediateItem(), "frn"))
 
 	// case2: no LOD
-	i = PlateauItem{
+	i = CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -342,7 +342,7 @@ func TestFrn(t *testing.T) {
 
 func TestVeg(t *testing.T) {
 	// case1: multiple LODs
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -395,7 +395,7 @@ func TestVeg(t *testing.T) {
 	}, i.DataCatalogItems(i.IntermediateItem(), "veg"))
 
 	// case2: no LOD
-	i = PlateauItem{
+	i = CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -441,7 +441,7 @@ func TestVeg(t *testing.T) {
 }
 
 func TestLuse(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -479,7 +479,7 @@ func TestLuse(t *testing.T) {
 }
 
 func TestLsld(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -517,7 +517,7 @@ func TestLsld(t *testing.T) {
 }
 
 func TestUrf(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -531,10 +531,10 @@ func TestUrf(t *testing.T) {
 		OpenDataURL: "https://example.com",
 		Urf: []*cms.PublicAsset{
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_urf_QuasiUrbanPlanningArea.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_urf_AreaClassification.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_urf_AreaClassification.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_urf_QuasiUrbanPlanningArea.zip",
 			},
 			{
 				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_urf_DistrictsAndZones.zip",
@@ -624,7 +624,7 @@ func TestUrf(t *testing.T) {
 }
 
 func TestFld(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -638,10 +638,10 @@ func TestFld(t *testing.T) {
 		OpenDataURL: "https://example.com",
 		Fld: []*cms.PublicAsset{
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shikarigawa_toyohiragawa_l1.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l1.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l1.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shikarigawa_toyohiragawa_l1.zip",
 			},
 			{
 				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shinkawa_shinkawa_l1.zip",
@@ -650,10 +650,10 @@ func TestFld(t *testing.T) {
 				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shikarigawa_toyohiragawa_l2.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l2.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shinkawa_shinkawa_l2.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shinkawa_shinkawa_l2.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l2.zip",
 			},
 		},
 		Dic: `{"fld":[
@@ -760,7 +760,7 @@ func TestFld(t *testing.T) {
 }
 
 func TestTnm(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -839,7 +839,7 @@ func TestTnm(t *testing.T) {
 }
 
 func TestHtd(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -899,7 +899,7 @@ func TestHtd(t *testing.T) {
 }
 
 func TestIfld(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -959,7 +959,7 @@ func TestIfld(t *testing.T) {
 }
 
 func TestGen(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -1038,7 +1038,7 @@ func TestGen(t *testing.T) {
 }
 
 func TestBrid(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",
@@ -1094,7 +1094,7 @@ func TestBrid(t *testing.T) {
 }
 
 func TestRail(t *testing.T) {
-	i := PlateauItem{
+	i := CMSItem{
 		ID:         "id",
 		Prefecture: "北海道",
 		CityName:   "札幌市",

@@ -10,6 +10,12 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+type Config struct {
+	CMSBase      string
+	DisableCache bool
+	CacheTTL     int
+}
+
 func Echo(conf Config, g *echo.Group) error {
 	f, err := NewFetcher(nil, conf.CMSBase)
 	if err != nil {

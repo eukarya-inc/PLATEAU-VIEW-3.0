@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 
 	"github.com/eukarya-inc/jpareacode"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogutil"
 	"github.com/samber/lo"
 	"github.com/spkg/bom"
 )
@@ -160,7 +161,7 @@ func (b DataCatalogItemBuilder) Build() []*DataCatalogItem {
 
 		// default layers
 		var mainDefaultLayers []string
-		if isLayerSupported(defaultAsset.Name.Format) {
+		if datacatalogutil.IsLayerSupported(defaultAsset.Name.Format) {
 			if b.Options.UseGroupNameAsLayer {
 				mainDefaultLayers = []string{g.Name}
 			} else if b.Options.LayersForLOD != nil {
@@ -217,13 +218,13 @@ func (b DataCatalogItemBuilder) Build() []*DataCatalogItem {
 				}
 
 				var layers []string
-				if itemLayers != nil && isLayerSupported(a.Name.Format) {
+				if itemLayers != nil && datacatalogutil.IsLayerSupported(a.Name.Format) {
 					layers = itemLayers(a.Name)
 				}
 
 				return DataCatalogItemConfigItem{
 					Name:   name,
-					URL:    assetURLFromFormat(a.URL, a.Name.Format),
+					URL:    datacatalogutil.AssetURLFromFormat(a.URL, a.Name.Format),
 					Type:   a.Name.Format,
 					Layers: layers,
 				}
@@ -257,7 +258,7 @@ type PlateauIntermediateItem struct {
 	Year        int
 }
 
-func (i PlateauItem) IntermediateItem() PlateauIntermediateItem {
+func (i CMSItem) IntermediateItem() PlateauIntermediateItem {
 	au := ""
 	if i.CityGML != nil {
 		au = i.CityGML.URL
@@ -345,7 +346,7 @@ func (b *DataCatalogItemBuilder) dataCatalogItem(an AssetName, assetURL, desc st
 	}
 
 	// search index
-	wardCode := cityCode(an.WardCode, wardName, prefCode)
+	wardCode := datacatalogutil.CityCode(an.WardCode, wardName, prefCode)
 	var searchIndex string
 	if b.Options.SearchIndex {
 		searchIndex = searchIndexURLFrom(b.SearchIndex, wardCode)
@@ -371,12 +372,12 @@ func (b *DataCatalogItemBuilder) dataCatalogItem(an AssetName, assetURL, desc st
 		PrefCode:    jpareacode.FormatPrefectureCode(prefCode),
 		City:        b.IntermediateItem.City,
 		CityEn:      b.IntermediateItem.CityEn,
-		CityCode:    cityCode(b.IntermediateItem.CityCode, b.IntermediateItem.City, prefCode),
+		CityCode:    datacatalogutil.CityCode(b.IntermediateItem.CityCode, b.IntermediateItem.City, prefCode),
 		Ward:        wardName,
 		WardEn:      an.WardEn,
 		WardCode:    wardCode,
 		Description: desc,
-		URL:         assetURLFromFormat(assetURL, an.Format),
+		URL:         datacatalogutil.AssetURLFromFormat(assetURL, an.Format),
 		Format:      an.Format,
 		Year:        b.IntermediateItem.Year,
 		Layers:      layers,
@@ -458,6 +459,6 @@ func searchIndexURLFrom(assets []*cms.PublicAsset, wardCode string) string {
 		return ""
 	}
 
-	u.Path = path.Join(assetRootPath(u.Path), "indexRoot.json")
+	u.Path = path.Join(datacatalogutil.AssetRootPath(u.Path), "indexRoot.json")
 	return u.String()
 }

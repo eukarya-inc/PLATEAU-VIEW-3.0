@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"testing"
@@ -47,19 +47,3 @@ func TestDescFromAsset(t *testing.T) {
 	assert.Equal(t, "CCC", name)
 	assert.Equal(t, "", desc)
 }
-
-// func TestItemName(t *testing.T) {
-// 	name, t2, t2en := itemName("建築物モデル", "xxx市", "", AssetName{
-// 		Feature: "bldg",
-// 	})
-// 	assert.Equal(t, "建築物モデル（xxx市）", name)
-// 	assert.Equal(t, "", t2)
-// 	assert.Equal(t, "", t2en)
-
-// 	name, t2, t2en = itemName("建築物モデル", "xxx市", "AAA", AssetName{
-// 		Feature: "bldg",
-// 	})
-// 	assert.Equal(t, "AAA（xxx市）", name)
-// 	assert.Equal(t, "", t2)
-// 	assert.Equal(t, "", t2en)
-// }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/eukarya-inc/jpareacode"
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogutil"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
@@ -59,8 +60,8 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		city, ward, _ = strings.Cut(i.CityName, "/")
 	}
 
-	cCode := cityCode("", city, prefCodeInt)
-	wCode := cityCode("", ward, prefCodeInt)
+	cCode := datacatalogutil.CityCode("", city, prefCodeInt)
+	wCode := datacatalogutil.CityCode("", ward, prefCodeInt)
 
 	if i.DataFormat == folder {
 		return []DataCatalogItem{{
@@ -130,7 +131,7 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		Ward:        ward,
 		WardCode:    wCode,
 		Format:      f,
-		URL:         assetURLFromFormat(u, f),
+		URL:         datacatalogutil.AssetURLFromFormat(u, f),
 		Description: i.Description,
 		Config:      c,
 		Layers:      layers,
@@ -145,4 +146,19 @@ func formatTypeEn(f string) string {
 		return "3dtiles"
 	}
 	return strings.ToLower(f)
+}
+
+func normalizePref(pref string) (string, int) {
+	if pref == "全球" || pref == "全国" {
+		pref = "全球データ"
+	}
+
+	var prefCode int
+	if pref == "全球データ" {
+		prefCode = 0
+	} else {
+		prefCode = jpareacode.PrefectureCodeInt(pref)
+	}
+
+	return pref, prefCode
 }

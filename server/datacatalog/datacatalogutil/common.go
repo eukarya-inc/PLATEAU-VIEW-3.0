@@ -1,4 +1,4 @@
-package datacatalog
+package datacatalogutil
 
 import (
 	"fmt"
@@ -9,13 +9,7 @@ import (
 	"github.com/eukarya-inc/jpareacode"
 )
 
-type Config struct {
-	CMSBase      string
-	DisableCache bool
-	CacheTTL     int
-}
-
-func assetURLFromFormat(u, f string) string {
+func AssetURLFromFormat(u, f string) string {
 	u2, err := url.Parse(u)
 	if err != nil {
 		return u
@@ -27,7 +21,7 @@ func assetURLFromFormat(u, f string) string {
 	name := strings.TrimSuffix(base, ext)
 	isArchive := ext == ".zip" || ext == ".7z"
 
-	u2.Path = assetRootPath(u2.Path)
+	u2.Path = AssetRootPath(u2.Path)
 	if f == "3dtiles" {
 		if !isArchive {
 			// not CMS asset
@@ -67,27 +61,12 @@ func assetURLFromFormat(u, f string) string {
 	return u
 }
 
-func assetRootPath(p string) string {
+func AssetRootPath(p string) string {
 	fn := strings.TrimSuffix(path.Base(p), path.Ext(p))
 	return path.Join(path.Dir(p), fn)
 }
 
-func normalizePref(pref string) (string, int) {
-	if pref == "全球" || pref == "全国" {
-		pref = "全球データ"
-	}
-
-	var prefCode int
-	if pref == "全球データ" {
-		prefCode = 0
-	} else {
-		prefCode = jpareacode.PrefectureCodeInt(pref)
-	}
-
-	return pref, prefCode
-}
-
-func cityCode(code, name string, prefCode int) string {
+func CityCode(code, name string, prefCode int) string {
 	if code == "" {
 		cityName := strings.Split(name, "/")
 		if len(cityName) > 0 {
@@ -99,7 +78,7 @@ func cityCode(code, name string, prefCode int) string {
 	return code
 }
 
-func isLayerSupported(format string) bool {
+func IsLayerSupported(format string) bool {
 	switch format {
 	case "mvt", "wms":
 		return true

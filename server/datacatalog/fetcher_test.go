@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauv2"
 	"github.com/jarcoal/httpmock"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -47,7 +48,7 @@ func TestFetcher_Do(t *testing.T) {
 	ctx := context.Background()
 	r, err := lo.Must(NewFetcher(nil, "https://example.com")).Do(ctx, "ppp")
 	assert.Equal(t, ResponseAll{
-		Plateau: []PlateauItem{{ID: "x"}},
+		Plateau: []plateauv2.CMSItem{{ID: "x"}},
 		Usecase: []UsecaseItem{{ID: "y", Type: "ユースケース"}, {ID: "z"}},
 	}, r)
 	assert.NoError(t, err)

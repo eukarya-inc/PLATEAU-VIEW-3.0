@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"fmt"
@@ -21,21 +21,6 @@ var FeatureTypes = []string{
 	"brid",
 	"rail",
 	"gen",
-}
-
-func (i PlateauItem) DataCatalogItems(c PlateauIntermediateItem, ty string) []*DataCatalogItem {
-	o, ok := FeatureOptions[ty]
-	if !ok {
-		return nil
-	}
-
-	return DataCatalogItemBuilder{
-		Assets:           i.Feature(ty),
-		Descriptions:     i.FeatureDescription(ty),
-		SearchIndex:      i.SearchIndex,
-		IntermediateItem: c,
-		Options:          o,
-	}.Build()
 }
 
 var FeatureOptions = map[string]DataCatalogItemBuilderOption{
@@ -111,7 +96,7 @@ var FeatureOptions = map[string]DataCatalogItemBuilderOption{
 			return an.FldAdminAndName()
 		},
 		SortGroupBy: func(a, b AssetName) bool {
-			return a.FldName < b.FldName || a.FldAdmin < b.FldAdmin
+			return a.FldAdminAndName() < b.FldAdminAndName()
 		},
 		SortAssetBy: func(a, b AssetName) bool {
 			return a.FldScale < b.FldScale
@@ -197,3 +182,14 @@ func normalizeUrfFeatureType(ft string) string {
 	}
 	return ft
 }
+
+// func modelName(ft string, defaultName string) string {
+// 	mn := FeatureOptions[ft].ModelName
+// 	if mn == "" {
+// 		if defaultName != "" {
+// 			return defaultName
+// 		}
+// 		return ft
+// 	}
+// 	return mn
+// }

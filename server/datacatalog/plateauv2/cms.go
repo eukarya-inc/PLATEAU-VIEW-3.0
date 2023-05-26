@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cms"
@@ -6,7 +6,7 @@ import (
 	"github.com/samber/lo"
 )
 
-type PlateauItem struct {
+type CMSItem struct {
 	ID              string             `json:"id"`
 	Prefecture      string             `json:"prefecture"`
 	CityName        string             `json:"city_name"`
@@ -46,7 +46,7 @@ type PlateauItem struct {
 	OpenDataURL     string             `json:"opendata_url"`
 }
 
-func (i PlateauItem) Feature(ty string) []*cms.PublicAsset {
+func (i CMSItem) Feature(ty string) []*cms.PublicAsset {
 	switch ty {
 	case "bldg":
 		return i.Bldg
@@ -80,7 +80,7 @@ func (i PlateauItem) Feature(ty string) []*cms.PublicAsset {
 	return nil
 }
 
-func (i PlateauItem) FeatureDescription(ty string) []string {
+func (i CMSItem) FeatureDescription(ty string) []string {
 	switch ty {
 	case "bldg":
 		return []string{i.DescriptionBldg}
@@ -114,7 +114,7 @@ func (i PlateauItem) FeatureDescription(ty string) []string {
 	return nil
 }
 
-func (i PlateauItem) AllDataCatalogItems(c PlateauIntermediateItem) []DataCatalogItem {
+func (i CMSItem) AllDataCatalogItems(c PlateauIntermediateItem) []DataCatalogItem {
 	if c.ID == "" {
 		return nil
 	}
@@ -127,4 +127,19 @@ func (i PlateauItem) AllDataCatalogItems(c PlateauIntermediateItem) []DataCatalo
 			return i != nil
 		},
 	))
+}
+
+func (i CMSItem) DataCatalogItems(c PlateauIntermediateItem, ty string) []*DataCatalogItem {
+	o, ok := FeatureOptions[ty]
+	if !ok {
+		return nil
+	}
+
+	return DataCatalogItemBuilder{
+		Assets:           i.Feature(ty),
+		Descriptions:     i.FeatureDescription(ty),
+		SearchIndex:      i.SearchIndex,
+		IntermediateItem: c,
+		Options:          o,
+	}.Build()
 }

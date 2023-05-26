@@ -1,4 +1,4 @@
-package datacatalog
+package plateauv2
 
 import (
 	"fmt"
