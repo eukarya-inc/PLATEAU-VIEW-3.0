@@ -5,16 +5,18 @@ import {
   getRawDataCatalogTree,
   modifyDataCatalog,
   type RawDataCatalogItem,
+  // type RawDataCatalogTreeItem,
 } from "./api";
 
-// test("getDataCatalog", async () => {
-//   const d = await getDataCatalog("");
-//   print(d[0]);
+// test("getRawDataCatalogTree", async () => {
+//   const r = await getDataCatalog("", "");
+//   const d = getRawDataCatalogTree(r, "city", "");
+//   print(d);
 // });
 
 // function print(c: RawDataCatalogTreeItem[], depth?: number) {
 //   c.forEach(c => {
-//     console.log(" ".repeat(depth || 0), c.code, c.name);
+//     console.log(" ".repeat(depth || 0), c.name);
 //     if ("children" in c) {
 //       return print(c.children, (depth || 0) + 1);
 //     }

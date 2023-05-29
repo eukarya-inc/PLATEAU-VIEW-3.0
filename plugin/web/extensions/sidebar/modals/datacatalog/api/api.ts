@@ -199,8 +199,6 @@ function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
       ];
 }
 
-const typesWithFolders = ["usecase", "gen", "fld", "htd", "tnm", "ifld"];
-
 function sortBy(a: InternalDataCatalogItem, b: InternalDataCatalogItem, sort: GroupBy): number {
   return sort === "type"
     ? sortByType(a, b) || sortByCity(a, b) || sortByOrder(a.order, b.order)
@@ -264,6 +262,7 @@ const types = [
   "htd",
   "ifld",
   "gen",
+  "ex",
   "shelter",
   "landmark",
   "station",
@@ -273,3 +272,5 @@ const types = [
   "border",
   "usecase",
 ];
+
+const typesWithFolders = ["usecase", "gen", "fld", "htd", "tnm", "ifld", "ex"];
