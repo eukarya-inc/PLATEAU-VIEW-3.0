@@ -94,6 +94,10 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 			invalid = true
 		}
 
+		if i.Dem == "" {
+			warning = append(warning, fmt.Sprintf("%s:no_dem_info", i.CityName))
+		}
+
 		citycode, year := i.CityCode(), i.Year()
 
 		if year > 0 && citycode > 0 {
@@ -341,6 +345,7 @@ type IItem struct {
 	Tran           []any  `json:"tran" cms:"tran,asset"`
 	Frn            []any  `json:"frn" cms:"frn,asset"`
 	Veg            []any  `json:"veg" cms:"veg,asset"`
+	Dem            string `json:"dem" cms:"dem,select"`
 	SDKPublication string `json:"sdk_publication" cms:"sdk_publication,select"`
 }
 
@@ -356,6 +361,7 @@ func (i IItem) Item() Item {
 		Tran:           assetsToPublic(integrationAssetToAssets(i.Tran)),
 		Frn:            assetsToPublic(integrationAssetToAssets(i.Frn)),
 		Veg:            assetsToPublic(integrationAssetToAssets(i.Veg)),
+		Dem:            i.Dem,
 		SDKPublication: i.SDKPublication,
 	}
 }

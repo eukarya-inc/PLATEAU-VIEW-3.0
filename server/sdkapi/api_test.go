@@ -44,7 +44,7 @@ func TestHandler(t *testing.T) {
 				"title": "pref",
 				"data": []any{
 					map[string]any{
-						"featureTypes": []any{"bldg"},
+						"featureTypes": []any{"bldg", "dem"},
 						"id":           "item",
 						"title":        "city",
 						"description":  "desc",
@@ -190,6 +190,10 @@ var mockItem = cms.Item{
 		{
 			Key:   "sdk_publication",
 			Value: "公開する",
+		},
+		{
+			Key:   "dem",
+			Value: "有り",
 		},
 	},
 }
