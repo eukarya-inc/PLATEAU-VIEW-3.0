@@ -109,7 +109,7 @@ func (s *Services) ReceiveFMEResult(ctx context.Context, f FMEResult) error {
 		return nil
 	}
 
-	dem := ""
+	dem := "無し"
 	if hasDem {
 		dem = "有り"
 	}

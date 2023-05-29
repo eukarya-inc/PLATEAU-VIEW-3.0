@@ -75,27 +75,27 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 	for _, i := range i {
 		invalid := false
 		if !i.IsPublic() {
-			warning = append(warning, fmt.Sprintf("%s:not_published", i.CityName))
+			warning = append(warning, fmt.Sprintf("%s:%s:not_published", i.ID, i.CityName))
 			invalid = true
 		}
 
 		if i.CityGML == nil || i.CityGML.ID == "" {
-			warning = append(warning, fmt.Sprintf("%s:no_citygml", i.CityName))
+			warning = append(warning, fmt.Sprintf("%s:%s:no_citygml", i.ID, i.CityName))
 			invalid = true
 		}
 
 		if i.CityGML != nil && !i.CityGML.IsExtractionDone() {
-			warning = append(warning, fmt.Sprintf("%s:invalid_citygml", i.CityName))
+			warning = append(warning, fmt.Sprintf("%s:%s:invalid_citygml", i.ID, i.CityName))
 			invalid = true
 		}
 
 		if i.MaxLOD == nil || i.MaxLOD.URL == "" {
-			warning = append(warning, fmt.Sprintf("%s:no_maxlod", i.CityName))
+			warning = append(warning, fmt.Sprintf("%s:%s:no_maxlod", i.ID, i.CityName))
 			invalid = true
 		}
 
 		if i.Dem == "" {
-			warning = append(warning, fmt.Sprintf("%s:no_dem_info", i.CityName))
+			warning = append(warning, fmt.Sprintf("%s:%s:no_dem_info", i.ID, i.CityName))
 		}
 
 		citycode, year := i.CityCode(), i.Year()
