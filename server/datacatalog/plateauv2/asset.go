@@ -23,6 +23,7 @@ type AssetName struct {
 	Op             string
 	NoDEM          bool
 	Feature        string
+	FeatureEx      []string
 	Ex             string
 	Ext            string
 	WardCode       string
@@ -78,6 +79,10 @@ func AssetNameFrom(name string) (a AssetName) {
 	}
 	if len(m) > 7 {
 		a.Feature = m[7]
+		if strings.HasPrefix(a.Feature, "ex-") {
+			a.FeatureEx = strings.Split(a.Feature, "-")[1:]
+			a.Feature = "ex"
+		}
 		if len(m) > 8 {
 			a.Ex = m[8]
 		}
@@ -143,6 +148,10 @@ func AssetNameFrom(name string) (a AssetName) {
 
 func (a AssetName) String() string {
 	lod, texture := "", ""
+	feature := a.Feature
+	if len(a.FeatureEx) > 0 {
+		feature = strings.Join(append([]string{a.Feature}, a.FeatureEx...), "-")
+	}
 	if a.LOD != "" {
 		lod = fmt.Sprintf("lod%s", a.LOD)
 	}
@@ -158,7 +167,7 @@ func (a AssetName) String() string {
 		a.Year,
 		a.Format,
 		a.Op,
-		a.Feature,
+		feature,
 		a.WardCode,
 		a.WardEn,
 		a.FldAdmin,

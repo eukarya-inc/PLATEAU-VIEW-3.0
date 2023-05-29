@@ -7,43 +7,45 @@ import (
 )
 
 type CMSItem struct {
-	ID              string             `json:"id"`
-	Prefecture      string             `json:"prefecture"`
-	CityName        string             `json:"city_name"`
-	Specification   string             `json:"specification"`
-	CityGML         *cms.PublicAsset   `json:"citygml"`
-	DescriptionBldg string             `json:"description_bldg"`
-	DescriptionTran string             `json:"description_tran"`
-	DescriptionFrn  string             `json:"description_frn"`
-	DescriptionVeg  string             `json:"description_veg"`
-	DescriptionLuse string             `json:"description_luse"`
-	DescriptionLsld string             `json:"description_lsld"`
-	DescriptionUrf  []string           `json:"description_urf"`
-	DescriptionFld  []string           `json:"description_fld"`
-	DescriptionHtd  []string           `json:"description_htd"`
-	DescriptionIfld []string           `json:"description_ifld"`
-	DescriptionTnm  []string           `json:"description_tnm"`
-	DescriptionBrid string             `json:"description_brid"`
-	DescriptionRail string             `json:"description_rail"`
-	DescriptionGen  []string           `json:"description_gen"`
-	Bldg            []*cms.PublicAsset `json:"bldg"`
-	Tran            []*cms.PublicAsset `json:"tran"`
-	Frn             []*cms.PublicAsset `json:"frn"`
-	Veg             []*cms.PublicAsset `json:"veg"`
-	Luse            []*cms.PublicAsset `json:"luse"`
-	Lsld            []*cms.PublicAsset `json:"lsld"`
-	Urf             []*cms.PublicAsset `json:"urf"`
-	Fld             []*cms.PublicAsset `json:"fld"`
-	Htd             []*cms.PublicAsset `json:"htd"`
-	Ifld            []*cms.PublicAsset `json:"ifld"`
-	Tnm             []*cms.PublicAsset `json:"tnm"`
-	Brid            []*cms.PublicAsset `json:"brid"`
-	Rail            []*cms.PublicAsset `json:"rail"`
-	Gen             []*cms.PublicAsset `json:"gen"`
-	Dictionary      *cms.PublicAsset   `json:"dictionary"`
-	Dic             string             `json:"dic"`
-	SearchIndex     []*cms.PublicAsset `json:"search_index"`
-	OpenDataURL     string             `json:"opendata_url"`
+	ID               string             `json:"id"`
+	Prefecture       string             `json:"prefecture"`
+	CityName         string             `json:"city_name"`
+	Specification    string             `json:"specification"`
+	CityGML          *cms.PublicAsset   `json:"citygml"`
+	DescriptionBldg  string             `json:"description_bldg"`
+	DescriptionTran  string             `json:"description_tran"`
+	DescriptionFrn   string             `json:"description_frn"`
+	DescriptionVeg   string             `json:"description_veg"`
+	DescriptionLuse  string             `json:"description_luse"`
+	DescriptionLsld  string             `json:"description_lsld"`
+	DescriptionUrf   []string           `json:"description_urf"`
+	DescriptionFld   []string           `json:"description_fld"`
+	DescriptionHtd   []string           `json:"description_htd"`
+	DescriptionIfld  []string           `json:"description_ifld"`
+	DescriptionTnm   []string           `json:"description_tnm"`
+	DescriptionBrid  string             `json:"description_brid"`
+	DescriptionRail  string             `json:"description_rail"`
+	DescriptionGen   []string           `json:"description_gen"`
+	DescriptionExtra []string           `json:"description_extra"`
+	Bldg             []*cms.PublicAsset `json:"bldg"`
+	Tran             []*cms.PublicAsset `json:"tran"`
+	Frn              []*cms.PublicAsset `json:"frn"`
+	Veg              []*cms.PublicAsset `json:"veg"`
+	Luse             []*cms.PublicAsset `json:"luse"`
+	Lsld             []*cms.PublicAsset `json:"lsld"`
+	Urf              []*cms.PublicAsset `json:"urf"`
+	Fld              []*cms.PublicAsset `json:"fld"`
+	Htd              []*cms.PublicAsset `json:"htd"`
+	Ifld             []*cms.PublicAsset `json:"ifld"`
+	Tnm              []*cms.PublicAsset `json:"tnm"`
+	Brid             []*cms.PublicAsset `json:"brid"`
+	Rail             []*cms.PublicAsset `json:"rail"`
+	Gen              []*cms.PublicAsset `json:"gen"`
+	Extra            []*cms.PublicAsset `json:"extra"`
+	Dictionary       *cms.PublicAsset   `json:"dictionary"`
+	Dic              string             `json:"dic"`
+	SearchIndex      []*cms.PublicAsset `json:"search_index"`
+	OpenDataURL      string             `json:"opendata_url"`
 }
 
 func (i CMSItem) Feature(ty string) []*cms.PublicAsset {
@@ -76,6 +78,8 @@ func (i CMSItem) Feature(ty string) []*cms.PublicAsset {
 		return i.Rail
 	case "gen":
 		return i.Gen
+	case "extra":
+		return i.Extra
 	}
 	return nil
 }
@@ -110,6 +114,8 @@ func (i CMSItem) FeatureDescription(ty string) []string {
 		return []string{i.DescriptionRail}
 	case "gen":
 		return i.DescriptionGen
+	case "extra":
+		return i.DescriptionExtra
 	}
 	return nil
 }

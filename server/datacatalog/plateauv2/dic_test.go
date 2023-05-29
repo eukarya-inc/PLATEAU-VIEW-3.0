@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDir(t *testing.T) {
+func TestDic(t *testing.T) {
 	d := Dic{
 		"admin": []DicEntry{
 			{
@@ -32,18 +32,6 @@ func TestDir(t *testing.T) {
 				Description: "xxx",
 			},
 		},
-		"tnm": []DicEntry{
-			{
-				Name:        "ccc",
-				Description: "xxx",
-			},
-		},
-		"ifld": []DicEntry{
-			{
-				Name:        "ddd",
-				Description: "xxx",
-			},
-		},
 	}
 
 	assert.Equal(t, "A市", d.WardName("11111"))
@@ -55,22 +43,27 @@ func TestDir(t *testing.T) {
 		Description: "xxx",
 		Admin:       "都道府県",
 		Scale:       "",
-	}, d.Fld("aaa", "aedrqe"))
+	}, d.FindByAsset(AssetName{
+		Feature:  "fld",
+		FldName:  "aaa",
+		FldAdmin: "pref",
+	}))
 	assert.Equal(t, &DicEntry{
 		Code:        "",
 		Name:        "aaa",
 		Description: "xxx",
 		Admin:       "国",
 		Scale:       "",
-	}, d.Fld("aaa", "natl"))
-	assert.Equal(t, &DicEntry{
-		Code:        "",
-		Name:        "aaa",
-		Description: "xxx",
-		Admin:       "都道府県",
-		Scale:       "",
-	}, d.Fld("aaa", "pref"))
-	assert.Nil(t, d.Fld("bbb", ""))
+	}, d.FindByAsset(AssetName{
+		Feature:  "fld",
+		FldName:  "aaa",
+		FldAdmin: "natl",
+	}))
+	assert.Nil(t, d.FindByAsset(AssetName{
+		Feature:  "fld",
+		FldName:  "bbb",
+		FldAdmin: "pref",
+	}))
 
 	assert.Equal(t, &DicEntry{
 		Code:        "",
@@ -78,24 +71,13 @@ func TestDir(t *testing.T) {
 		Description: "xxx",
 		Admin:       "",
 		Scale:       "",
-	}, d.FindByName("htd", "bbb"))
-	assert.Nil(t, d.FindByName("htd", "aaa"))
-
-	assert.Equal(t, &DicEntry{
-		Code:        "",
-		Name:        "ccc",
-		Description: "xxx",
-		Admin:       "",
-		Scale:       "",
-	}, d.FindByName("tnm", "ccc"))
-	assert.Nil(t, d.FindByName("tnm", "aaa"))
-
-	assert.Equal(t, &DicEntry{
-		Code:        "",
-		Name:        "ddd",
-		Description: "xxx",
-		Admin:       "",
-		Scale:       "",
-	}, d.FindByName("ifld", "ddd"))
-	assert.Nil(t, d.FindByName("ifld", "aaa"))
+	}, d.FindByAsset(AssetName{
+		Feature: "htd",
+		FldName: "bbb",
+	}))
+	assert.Nil(t, d.FindByAsset(AssetName{
+		Feature:  "htd",
+		FldName:  "aaa",
+		FldAdmin: "pref",
+	}))
 }

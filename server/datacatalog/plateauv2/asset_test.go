@@ -214,6 +214,18 @@ func TestAssetNameFrom(t *testing.T) {
 		FldName:  "22_1",
 		Ext:      ".zip",
 	}, AssetNameFrom("22210_fuji-shi_2022_3dtiles_op_htd_22_1.zip"))
+
+	assert.Equal(t, AssetName{
+		CityCode:  "22203",
+		CityEn:    "numazu-shi",
+		Year:      "2022",
+		Format:    "3dtiles",
+		Op:        "1_op",
+		Feature:   "ex",
+		FeatureEx: []string{"fport", "shizuragyoko", "cons"},
+		LOD:       "2",
+		Ext:       ".zip",
+	}, AssetNameFrom("22203_numazu-shi_2022_3dtiles_1_op_ex-fport-shizuragyoko-cons_lod2.zip"))
 }
 
 func TestAssetName_String(t *testing.T) {
@@ -271,6 +283,18 @@ func TestAssetName_String(t *testing.T) {
 		Op:       "1_op",
 		Feature:  "frn",
 		Ext:      ".zip",
+	}.String())
+
+	assert.Equal(t, "22203_numazu-shi_2022_3dtiles_1_op_ex-fport-shizuragyoko-cons_lod2.zip", AssetName{
+		CityCode:  "22203",
+		CityEn:    "numazu-shi",
+		Year:      "2022",
+		Format:    "3dtiles",
+		Op:        "1_op",
+		Feature:   "ex",
+		FeatureEx: []string{"fport", "shizuragyoko", "cons"},
+		LOD:       "2",
+		Ext:       ".zip",
 	}.String())
 }
 

@@ -238,6 +238,52 @@ func TestTran(t *testing.T) {
 			},
 		},
 	}, i.DataCatalogItems(i.IntermediateItem(), "tran"))
+
+	i = CMSItem{
+		ID:         "id",
+		Prefecture: "北海道",
+		CityName:   "札幌市",
+		CityGML: &cms.PublicAsset{
+			URL: "https://example.com/01100_sapporo-shi_2020_citygml_op.zip",
+		},
+		DescriptionTran: "説明",
+		OpenDataURL:     "https://example.com",
+		Tran: []*cms.PublicAsset{
+			{
+				URL: "https://example.com/01100_sapporo-shi_2020_mvt_op_tran_lod1.zip",
+			},
+		},
+	}
+
+	assert.Equal(t, []*DataCatalogItem{
+		{
+			ID:          "01100_sapporo-shi_tran",
+			Name:        "道路モデル（札幌市）",
+			Pref:        "北海道",
+			PrefCode:    "01",
+			City:        "札幌市",
+			CityEn:      "sapporo-shi",
+			CityCode:    "01100",
+			Type:        "道路モデル",
+			TypeEn:      "tran",
+			Description: "説明",
+			URL:         "https://example.com/01100_sapporo-shi_2020_mvt_op_tran_lod1/{z}/{x}/{y}.mvt",
+			OpenDataURL: "https://example.com",
+			Format:      "mvt",
+			Layers:      []string{"Road"},
+			Year:        2020,
+			Config: DataCatalogItemConfig{
+				Data: []DataCatalogItemConfigItem{
+					{
+						Name:   "LOD1",
+						URL:    "https://example.com/01100_sapporo-shi_2020_mvt_op_tran_lod1/{z}/{x}/{y}.mvt",
+						Type:   "mvt",
+						Layers: []string{"Road"},
+					},
+				},
+			},
+		},
+	}, i.DataCatalogItems(i.IntermediateItem(), "tran"))
 }
 
 func TestFrn(t *testing.T) {
@@ -638,6 +684,9 @@ func TestFld(t *testing.T) {
 		OpenDataURL: "https://example.com",
 		Fld: []*cms.PublicAsset{
 			{
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shinkawa_shinkawa_l2.zip",
+			},
+			{
 				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l1.zip",
 			},
 			{
@@ -650,10 +699,10 @@ func TestFld(t *testing.T) {
 				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shikarigawa_toyohiragawa_l2.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_natl_shinkawa_shinkawa_l2.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l2.zip",
 			},
 			{
-				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l2.zip",
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_zfoobar_l2.zip",
 			},
 		},
 		Dic: `{"fld":[
@@ -662,7 +711,8 @@ func TestFld(t *testing.T) {
 			{ "name":"shinkawa_shinkawa_l1", "admin": "国", "description":"新川水系新川", "scale":"計画規模" },
 			{ "name":"shinkawa_shinkawa_l2", "admin": "国", "description":"新川水系新川", "scale":"想定最大規模" },
 			{ "name":"shinkawa_shinkawa_l1", "admin": "都道府県", "description":"新川水系新川", "scale":"計画規模" },
-			{ "name":"shinkawa_shinkawa_l2", "admin": "都道府県", "description":"新川水系新川", "scale":"想定最大規模" }
+			{ "name":"shinkawa_shinkawa_l2", "admin": "都道府県", "description":"新川水系新川", "scale":"想定最大規模" },
+			{ "name":"zfoobar_l2", "admin": "都道府県", "description":"zfoobar", "scale":"想定最大規模" }
 		]}`,
 	}
 
@@ -751,6 +801,30 @@ func TestFld(t *testing.T) {
 					{
 						Name: "想定最大規模",
 						URL:  "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_shinkawa_shinkawa_l2/tileset.json",
+						Type: "3dtiles",
+					},
+				},
+			},
+		},
+		{
+			ID:          "01100_sapporo-shi_fld_pref_zfoobar_l2",
+			Name:        "洪水浸水想定区域モデル zfoobar（都道府県管理区間）（札幌市）",
+			Pref:        "北海道",
+			PrefCode:    "01",
+			City:        "札幌市",
+			CityEn:      "sapporo-shi",
+			CityCode:    "01100",
+			Type:        "洪水浸水想定区域モデル",
+			TypeEn:      "fld",
+			URL:         "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_zfoobar_l2/tileset.json",
+			OpenDataURL: "https://example.com",
+			Year:        2020,
+			Format:      "3dtiles",
+			Config: DataCatalogItemConfig{
+				Data: []DataCatalogItemConfigItem{
+					{
+						Name: "想定最大規模",
+						URL:  "https://example.com/01100_sapporo-shi_2020_3dtiles_op_fld_pref_zfoobar_l2/tileset.json",
 						Type: "3dtiles",
 					},
 				},
@@ -1147,4 +1221,102 @@ func TestRail(t *testing.T) {
 			},
 		},
 	}, i.DataCatalogItems(i.IntermediateItem(), "rail"))
+}
+
+func TestExtra(t *testing.T) {
+	i := CMSItem{
+		ID:         "id",
+		Prefecture: "北海道",
+		CityName:   "札幌市",
+		CityGML: &cms.PublicAsset{
+			URL: "https://example.com/01100_sapporo-shi_2020_citygml_op.zip",
+		},
+		DescriptionExtra: []string{
+			`01100_sapporo-shi_2020_3dtiles_4_op_ex-port-hogehoge-bldg_lod1.zip
+@name: 名称
+@type: タイプ
+@type_en: type
+@area: 地域
+説明1`,
+			`01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod1.zip
+@layer: layer1
+説明2`,
+			`01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod2.zip
+@layer: layer1, layer2
+説明3`,
+		},
+		OpenDataURL: "https://example.com",
+		Extra: []*cms.PublicAsset{
+			{
+				URL: "https://example.com/01100_sapporo-shi_2020_3dtiles_4_op_ex-port-hogehoge-bldg_lod1.zip",
+			},
+			{
+				URL: "https://example.com/01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod1.zip",
+			},
+			{
+				URL: "https://example.com/01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod2.zip",
+			},
+		},
+	}
+
+	assert.Equal(t, []*DataCatalogItem{
+		{
+			ID:          "01100_sapporo-shi_ex_port-hogehoge-bldg",
+			Name:        "名称（地域）",
+			Pref:        "北海道",
+			PrefCode:    "01",
+			City:        "札幌市",
+			CityEn:      "sapporo-shi",
+			CityCode:    "01100",
+			Type:        "タイプ",
+			TypeEn:      "type",
+			Description: "説明1",
+			URL:         "https://example.com/01100_sapporo-shi_2020_3dtiles_4_op_ex-port-hogehoge-bldg_lod1/tileset.json",
+			OpenDataURL: "https://example.com",
+			Year:        2020,
+			Format:      "3dtiles",
+			Config: DataCatalogItemConfig{
+				Data: []DataCatalogItemConfigItem{
+					{
+						Name: "LOD1",
+						URL:  "https://example.com/01100_sapporo-shi_2020_3dtiles_4_op_ex-port-hogehoge-bldg_lod1/tileset.json",
+						Type: "3dtiles",
+					},
+				},
+			},
+		},
+		{
+			ID:          "01100_sapporo-shi_ex_port-hogehoge-hoge",
+			Name:        "その他のデータセット（札幌市）",
+			Pref:        "北海道",
+			PrefCode:    "01",
+			City:        "札幌市",
+			CityEn:      "sapporo-shi",
+			CityCode:    "01100",
+			Type:        "その他のデータセット",
+			TypeEn:      "ex",
+			Description: "説明2",
+			URL:         "https://example.com/01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod1/{z}/{x}/{y}.mvt",
+			Layers:      []string{"layer1"},
+			OpenDataURL: "https://example.com",
+			Year:        2020,
+			Format:      "mvt",
+			Config: DataCatalogItemConfig{
+				Data: []DataCatalogItemConfigItem{
+					{
+						Name:   "LOD1",
+						URL:    "https://example.com/01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod1/{z}/{x}/{y}.mvt",
+						Type:   "mvt",
+						Layers: []string{"layer1"},
+					},
+					{
+						Name:   "LOD2",
+						URL:    "https://example.com/01100_sapporo-shi_2020_mvt_4_op_ex-port-hogehoge-hoge_lod2/{z}/{x}/{y}.mvt",
+						Type:   "mvt",
+						Layers: []string{"layer1", "layer2"},
+					},
+				},
+			},
+		},
+	}, i.DataCatalogItems(i.IntermediateItem(), "extra"))
 }
