@@ -198,9 +198,6 @@ func TestItemsFromIntegration(t *testing.T) {
 					ArchiveExtractionStatus: "done",
 				},
 			},
-			Tran:           []cms.PublicAsset{},
-			Frn:            []cms.PublicAsset{},
-			Veg:            []cms.PublicAsset{},
 			SDKPublication: "公開する",
 		},
 	}, items)

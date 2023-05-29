@@ -345,6 +345,13 @@ type IItem struct {
 	Tran           []any  `json:"tran" cms:"tran,asset"`
 	Frn            []any  `json:"frn" cms:"frn,asset"`
 	Veg            []any  `json:"veg" cms:"veg,asset"`
+	Fld            []any  `json:"fld" cms:"fld,asset"`
+	Tnm            []any  `json:"tnm" cms:"tnm,asset"`
+	Htd            []any  `json:"htd" cms:"htd,asset"`
+	Ifld           []any  `json:"ifld" cms:"ifld,asset"`
+	Luse           []any  `json:"luse" cms:"luse,asset"`
+	Lsld           []any  `json:"lsld" cms:"lsld,asset"`
+	Urf            []any  `json:"urf" cms:"veg,asset"`
 	Dem            string `json:"dem" cms:"dem,select"`
 	SDKPublication string `json:"sdk_publication" cms:"sdk_publication,select"`
 }
@@ -361,6 +368,13 @@ func (i IItem) Item() Item {
 		Tran:           assetsToPublic(integrationAssetToAssets(i.Tran)),
 		Frn:            assetsToPublic(integrationAssetToAssets(i.Frn)),
 		Veg:            assetsToPublic(integrationAssetToAssets(i.Veg)),
+		Fld:            assetsToPublic(integrationAssetToAssets(i.Fld)),
+		Tnm:            assetsToPublic(integrationAssetToAssets(i.Tnm)),
+		Htd:            assetsToPublic(integrationAssetToAssets(i.Htd)),
+		Ifld:           assetsToPublic(integrationAssetToAssets(i.Ifld)),
+		Luse:           assetsToPublic(integrationAssetToAssets(i.Luse)),
+		Lsld:           assetsToPublic(integrationAssetToAssets(i.Lsld)),
+		Urf:            assetsToPublic(integrationAssetToAssets(i.Urf)),
 		Dem:            i.Dem,
 		SDKPublication: i.SDKPublication,
 	}
@@ -399,6 +413,9 @@ func ItemFromIntegration(ci *cms.Item) Item {
 }
 
 func assetsToPublic(a []cms.Asset) []cms.PublicAsset {
+	if len(a) == 0 {
+		return nil
+	}
 	return lo.FilterMap(a, func(a cms.Asset, _ int) (cms.PublicAsset, bool) {
 		p := a.ToPublic()
 		if p == nil {
