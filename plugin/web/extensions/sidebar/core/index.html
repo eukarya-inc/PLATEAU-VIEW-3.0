@@ -27,6 +27,9 @@
         height: 56px;
         border-radius: 0 0 8px 0;
     }
+    html{
+        --theme-color: #00bebe;
+    }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,3 +38,11 @@
     <div class="root" id="root"></div>
 </body>
 <script type="module" src="./main.tsx"></script>
+<script>
+window.addEventListener("message", function (e) {
+    if (e.source !== parent) return;
+    if (e.data.action === 'setPrimaryColor'){
+        document.documentElement.style.setProperty("--theme-color", e.data.payload);
+    }
+});
+</script>

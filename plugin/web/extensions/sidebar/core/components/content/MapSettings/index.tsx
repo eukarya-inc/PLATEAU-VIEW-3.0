@@ -121,7 +121,7 @@ const CheckboxWrapper = styled.div`
 const MapViewButton = styled.button<{ selected?: boolean }>`
   width: 91px;
   height: 29px;
-  background: ${({ selected }) => (selected ? "#00bebe" : "#d1d1d1")};
+  background: ${({ selected }) => (selected ? "var(--theme-color)" : "#d1d1d1")};
   border-radius: 4px;
   border: none;
   padding: 4px 8px;
@@ -129,7 +129,7 @@ const MapViewButton = styled.button<{ selected?: boolean }>`
   transition: background 0.3s;
 
   :hover {
-    background: #00bebe;
+    background: var(--theme-color);
   }
 `;
 
@@ -157,13 +157,13 @@ const ImageButton = styled.div<{ selected?: boolean }>`
   width: 64px;
   border-width: 2px;
   border-style: solid;
-  border-color: ${({ selected }) => (selected ? "#00bebe" : "transparent")};
+  border-color: ${({ selected }) => (selected ? "var(--theme-color)" : "transparent")};
   border-radius: 2px;
   padding: 4px 8px;
   cursor: pointer;
   transition: border-color 0.2s;
 
   :hover {
-    border-color: #00bebe;
+    border-color: var(--theme-color);
   }
 `;

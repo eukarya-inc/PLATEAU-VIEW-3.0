@@ -18,6 +18,9 @@ export default () => {
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
 
+  const [customProjectName, setCustomProjectName] = useState<string>();
+  const [customLogo, setCustomLogo] = useState<string>();
+
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
   const [infoboxTemplates, setInfoboxTemplates] = useState<Template[]>([]);
 
@@ -159,6 +162,8 @@ export default () => {
         setReearthURL(`${e.data.payload.reearthURL}`);
         setBackendURL(e.data.payload.backendURL);
         setBackendProjectName(e.data.payload.backendProjectName);
+        setCustomProjectName(e.data.payload.customProjectName);
+        setCustomLogo(e.data.payload.customLogo);
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.draftProject) {
           updateProject(e.data.payload.draftProject);
@@ -221,6 +226,8 @@ export default () => {
     backendProjectName,
     inEditor,
     searchTerm,
+    customProjectName,
+    customLogo,
     setSelected,
   };
 };

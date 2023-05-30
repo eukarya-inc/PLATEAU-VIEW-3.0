@@ -9,7 +9,7 @@ const BasicOperation: React.FC = () => {
         <Title>視点や画面移動</Title>
         <InstructionWrapper>
           <ImgWrapper>
-            <Icon icon="mouseMiddleButton" width={65} height={95} />
+            <Icon icon="mouseMiddleButton" width={65} height={95} color={"var(--theme-color)"} />
             <CaptionText>
               ドラッグ：視点移動
               <br />
@@ -18,11 +18,11 @@ const BasicOperation: React.FC = () => {
             </CaptionText>
           </ImgWrapper>
           <ImgWrapper>
-            <Icon icon="mouseLeftButton" width={65} height={95} />
+            <Icon icon="mouseLeftButton" width={65} height={95} color={"var(--theme-color)"} />
             <CaptionText>ドラッグ：画面移動</CaptionText>
           </ImgWrapper>
           <ImgWrapper>
-            <Icon icon="mouseRightButton" width={65} height={95} />
+            <Icon icon="mouseRightButton" width={65} height={95} color={"var(--theme-color)"} />
             <CaptionText>ドラッグ：拡大縮小</CaptionText>
           </ImgWrapper>
         </InstructionWrapper>
@@ -79,7 +79,7 @@ const Paragraph = styled.p`
 
 const InlineIcon = styled(Icon)`
   display: inline-block;
-  color: #00bebe;
+  color: var(--theme-color);
 `;
 const TopWrapper = styled.div`
   display: flex;

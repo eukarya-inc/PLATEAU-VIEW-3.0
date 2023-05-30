@@ -135,6 +135,10 @@ function generatePrintView(payload?: string) {
   };
   const localizedDate = currentDate.toLocaleDateString("ja", options);
 
+  const themeColor = getComputedStyle(document.documentElement).getPropertyValue(
+    "--theme-color" ?? "#00BEBE",
+  );
+
   iframeDoc.open();
 
   const iframeHTML = `
@@ -142,8 +146,8 @@ function generatePrintView(payload?: string) {
     <body>
       <div style="display: flex; flex-direction: column; max-width: 1200px; height: 100%; margin: 0 auto; padding: 20px;">
         <div style="display: flex; justify-content: right; align-items: center; gap: 8px; height: 60px;">
-          <button onclick="downloadScreenshot()" style="padding: 8px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">ダウンロード</button>
-          <button onclick="printScreenshot()" style="padding: 9px; border: none; border-radius: 4px; background: #00BEBE; color: white; cursor: pointer;">プリント</button>
+          <button onclick="downloadScreenshot()" style="padding: 8px; border: none; border-radius: 4px; background: ${themeColor}; color: white; cursor: pointer;">ダウンロード</button>
+          <button onclick="printScreenshot()" style="padding: 9px; border: none; border-radius: 4px; background: ${themeColor}; color: white; cursor: pointer;">プリント</button>
         </div>
         <div style="display: flex; justify-content: center; width: 100%;">
           <img src="${payload}" style="max-width: 100%; object-fit: contain;" />

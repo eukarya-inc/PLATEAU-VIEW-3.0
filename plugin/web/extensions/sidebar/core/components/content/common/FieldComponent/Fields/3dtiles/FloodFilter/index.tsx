@@ -11,15 +11,15 @@ const rangeToText = (range: [from: number, to: number]) => range.join(" ~ ");
 const styleProps = {
   trackStyle: [
     {
-      backgroundColor: "#00BEBE",
+      backgroundColor: "var(--theme-color)",
     },
   ] as CSSProperties[],
   handleStyle: [
     {
-      border: "2px solid #00BEBE",
+      border: "2px solid var(--theme-color)",
     },
     {
-      border: "2px solid #00BEBE",
+      border: "2px solid var(--theme-color)",
     },
   ] as CSSProperties[],
 };

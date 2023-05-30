@@ -25,7 +25,7 @@ const Wrapper = styled.div<{ selectable: boolean }>`
   gap: 12px;
   padding: 12px;
   position: relative;
-  color: #00bebe;
+  color: var(--theme-color);
   background: #f4f4f4;
   user-select: none;
   transition: 0.3s background;

@@ -28,6 +28,8 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     currentPage,
     loading,
     buildingSearch,
+    customProjectName,
+    customLogo,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,
@@ -73,6 +75,8 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
         current={currentPage}
         inEditor={inEditor}
         minimized={minimized}
+        customProjectName={customProjectName}
+        customLogo={customLogo}
         onMinimize={handleMinimize}
         onClick={handlePageChange}
       />

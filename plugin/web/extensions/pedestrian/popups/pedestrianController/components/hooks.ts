@@ -264,7 +264,6 @@ export default () => {
   );
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--theme-color", "#00BEBE");
     (globalThis as any).parent.document.body.setAttribute("tabindex", "0");
 
     if (!miniMap.current) {

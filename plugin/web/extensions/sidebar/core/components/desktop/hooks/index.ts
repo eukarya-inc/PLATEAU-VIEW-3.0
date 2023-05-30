@@ -17,6 +17,9 @@ export default () => {
   const [backendAccessToken, setBackendAccessToken] = useState<string>();
   const [buildingSearch, setBuildingSearch] = useState<BuildingSearch>([]);
 
+  const [customProjectName, setCustomProjectName] = useState<string>();
+  const [customLogo, setCustomLogo] = useState<string>();
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -116,6 +119,8 @@ export default () => {
         setBackendURL(e.data.payload.backendURL);
         setBackendProjectName(e.data.payload.backendProjectName);
         setBackendAccessToken(e.data.payload.backendAccessToken);
+        setCustomProjectName(e.data.payload.customProjectName);
+        setCustomLogo(e.data.payload.customLogo);
 
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.draftProject) {
@@ -233,6 +238,8 @@ export default () => {
     loading,
     buildingSearch,
     searchTerm,
+    customProjectName,
+    customLogo,
     handleSearch,
     handlePageChange,
     handleTemplateAdd,

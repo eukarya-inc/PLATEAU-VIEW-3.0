@@ -207,7 +207,7 @@ const WelcomeCloseButton = styled(CloseButton)<{ isMobile?: boolean }>`
   height: 40px;
   ${({ isMobile }) =>
     isMobile &&
-    `   background-color: #00bebe;
+    `   background-color: var(--theme-color);
   color: white;
   `};
   align-items: center;
@@ -226,7 +226,7 @@ const ButtonWrapper = styled.div<{ selected?: boolean }>`
   padding: 10px;
   width: 100%;
   height: 41px;
-  background: ${({ selected }) => (selected ? "#d1d1d1" : "#00bebe")};
+  background: ${({ selected }) => (selected ? "#d1d1d1" : "var(--theme-color)")};
   border-radius: 4px;
   border: none;
   gap: 8px;

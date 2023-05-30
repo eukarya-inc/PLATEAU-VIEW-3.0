@@ -4,6 +4,7 @@ import html from "../dist/web/pedestrian/core/index.html?raw";
 import pedestrianControllerHtml from "../dist/web/pedestrian/popups/pedestrianController/index.html?raw";
 
 const reearth = (globalThis as any).reearth;
+const defaultThemeColor = "#00BEBE";
 
 if (reearth.viewport.isMobile) {
   reearth.ui.close();
@@ -150,6 +151,10 @@ if (reearth.viewport.isMobile) {
     if (action === "pedestrianShow") {
       controllerShown = true;
       reearth.popup.show(pedestrianControllerHtml, initControllerOptions);
+      reearth.popup.postMessage({
+        action: "setPrimaryColor",
+        payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+      });
     } else if (action === "pedestrianClose") {
       controllerShown = false;
       reearth.popup.close();

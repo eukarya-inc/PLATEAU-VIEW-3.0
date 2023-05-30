@@ -41,7 +41,7 @@ const Wrapper = styled.div`
   }
   .editor-toolbar button.active,
   .editor-toolbar button:hover {
-    background: #a7e3e3 !important;
+    background: #ddd !important;
   }
   .CodeMirror {
     border-color: #d9d9d9 !important;
@@ -94,7 +94,7 @@ const Button = styled.div<{ primary?: boolean; disabled?: boolean }>`
   padding: 4px 12px;
   border-radius: 4px;
   background-color: ${({ primary, disabled }) =>
-    disabled ? "#d1d1d1" : primary ? "#00bebe" : "#d1d1d1"};
+    disabled ? "#d1d1d1" : primary ? "var(--theme-color)" : "#d1d1d1"};
   color: #fff;
   font-size: 14px;
   line-height: 21px;

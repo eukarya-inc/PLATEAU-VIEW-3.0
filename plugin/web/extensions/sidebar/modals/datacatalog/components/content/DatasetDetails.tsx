@@ -80,7 +80,7 @@ const DatasetDetails: React.FC<Props> = ({
     cancelText: "キャンセル",
     okButtonProps: {
       style: {
-        backgroundColor: "#00BEBE",
+        backgroundColor: "var(--theme-color)",
         width: "48%",
         border: "none",
       },
@@ -199,14 +199,14 @@ const BaseButton = styled.button<{ disabled?: boolean }>`
 
 const AddButton = styled(BaseButton)<{ disabled?: boolean }>`
   color: ${({ disabled }) => (disabled ? "grey" : "#ffffff")};
-  background-color: ${({ disabled }) => (disabled ? "#dcdcdc" : "#00bebe")};
+  background-color: ${({ disabled }) => (disabled ? "#dcdcdc" : "var(--theme-color)")};
   flex: 1;
   ${({ disabled }) => !disabled && "cursor: pointer;"}
 `;
 
 const ShareButton = styled(BaseButton)<{ isShareable?: boolean }>`
   display: ${({ isShareable }) => (isShareable !== false ? "flex" : "none")};
-  color: #00bebe;
+  color: var(--theme-color);
   background-color: #ffffff;
   flex: 1;
   cursor: pointer;
@@ -216,11 +216,11 @@ const PublishButton = styled(BaseButton)<{ published?: boolean }>`
   display: flex;
   min-width: 120px;
   color: #ffffff;
-  background-color: ${({ published }) => (published ? "#00bebe" : "#bfbfbf")};
+  background-color: ${({ published }) => (published ? "var(--theme-color)" : "#bfbfbf")};
   cursor: pointer;
 
   &:hover {
-    background-color: ${({ published }) => (published ? "#bfbfbf" : "#00bebe")};
+    background-color: ${({ published }) => (published ? "#bfbfbf" : "var(--theme-color)")};
   }
 `;
 

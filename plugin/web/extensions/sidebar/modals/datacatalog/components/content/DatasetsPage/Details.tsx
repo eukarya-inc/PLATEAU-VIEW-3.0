@@ -109,7 +109,7 @@ const NoDataFooter = styled.div`
   align-items: center;
   gap: 4px;
   margin: 0;
-  color: #00bebe;
+  color: var(--theme-color);
   cursor: pointer;
 `;
 
@@ -122,7 +122,7 @@ const Content = styled.div`
   margin-top: 16px;
   white-space: pre-wrap;
   a {
-    color: #00bebe;
+    color: var(--theme-color);
     svg {
       transform: translateY(2px);
     }

@@ -1,6 +1,5 @@
 <title></title>
 <style>
-
 html, body, .root { 
   background: #e7e7e7;
   font-family: 'Roboto', sans-serif;
@@ -10,13 +9,20 @@ html, body, .root {
   border-radius: 0;
   overflow-x: hidden;
 }
-
-
-  .extended{ height: 100%; }
-
-
+.extended{ height: 100%; }
+html{
+  --theme-color: #00bebe;
+}
 </style>
 <body>
   <div class="root" id="root"></div>
 </body>
 <script type="module" src="./main.tsx"></script>
+<script>
+window.addEventListener("message", function (e) {
+    if (e.source !== parent) return;
+    if (e.data.action === 'setPrimaryColor'){
+        document.documentElement.style.setProperty("--theme-color", e.data.payload);
+    }
+});
+</script>

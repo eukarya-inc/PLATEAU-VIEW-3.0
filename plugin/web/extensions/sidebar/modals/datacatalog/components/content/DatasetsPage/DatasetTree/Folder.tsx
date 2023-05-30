@@ -102,7 +102,7 @@ const FolderItem = styled.div<{ nestLevel: number; selected?: boolean }>`
   ${({ selected }) =>
     selected &&
     `
-  background: #00BEBE;
+  background: var(--theme-color);
   color: white;
   `}
 
@@ -111,7 +111,7 @@ const FolderItem = styled.div<{ nestLevel: number; selected?: boolean }>`
   cursor: pointer;
 
   :hover {
-    background: #00bebe;
+    background: var(--theme-color);
     color: white;
   }
   min-height: 29px;

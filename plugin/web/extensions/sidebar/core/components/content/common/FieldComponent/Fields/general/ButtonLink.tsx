@@ -112,7 +112,7 @@ const StyledButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #00bebe;
+  background: var(--theme-color);
   color: #fff;
   border-radius: 2px;
   height: 24px;

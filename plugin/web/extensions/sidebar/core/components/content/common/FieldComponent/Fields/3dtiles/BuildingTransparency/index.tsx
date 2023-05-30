@@ -8,10 +8,10 @@ import useHooks from "./hooks";
 
 const styleProps = {
   trackStyle: {
-    backgroundColor: "#00BEBE",
+    backgroundColor: "var(--theme-color)",
   } as CSSProperties,
   handleStyle: {
-    border: "2px solid #00BEBE",
+    border: "2px solid var(--theme-color)",
   } as CSSProperties,
 };
 

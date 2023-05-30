@@ -398,7 +398,6 @@ export default () => {
   }, []);
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--theme-color", "#00BEBE");
     postMsg({ action: "initPopup", payload: { type: "buildingSearch" } });
   }, []);
 

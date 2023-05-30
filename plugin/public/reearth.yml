@@ -9,6 +9,7 @@ extensions:
     schema:
       groups:
         - id: default
+          title: Plateau Dataset
           fields:
             - id: plateauURL
               type: string
@@ -32,6 +33,16 @@ extensions:
             - id: enableGeoPub
               type: bool
               title: G空間情報センターに公開
+        - id: appearance
+          title: Appearance
+          fields:
+            - id: customProjectName
+              type: string
+              title: プロジェクト名
+            - id: customLogo
+              type: url
+              title: Logo File
+              ui: image
     widgetLayout:
       defaultLocation:
         zone: outer

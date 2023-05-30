@@ -14,6 +14,8 @@ type Props = {
   current: string;
   inEditor?: boolean;
   minimized: boolean;
+  customProjectName?: string;
+  customLogo?: string;
   onMinimize: () => void;
   onClick: (p: Pages) => void;
 };
@@ -23,6 +25,8 @@ const Header: React.FC<Props> = ({
   current,
   inEditor,
   minimized,
+  customProjectName,
+  customLogo,
   onMinimize,
   onClick,
 }) => {
@@ -57,10 +61,21 @@ const Header: React.FC<Props> = ({
     return !inEditor ? [...items.slice(0, -1)] : [...items];
   }, [inEditor]);
 
+  const useCustomProjectHeader = useMemo(() => {
+    return customProjectName || customLogo;
+  }, [customProjectName, customLogo]);
+
   return (
     <HeaderWrapper className={className} minimized={minimized}>
       <TopSection>
-        <PlateauIcon icon="plateauLogo" size={114} wide />
+        {useCustomProjectHeader ? (
+          <CustomProjectHeader>
+            {customLogo && <CustomLogo src={customLogo} />}
+            {customProjectName && <CustomProjectName>{customProjectName}</CustomProjectName>}
+          </CustomProjectHeader>
+        ) : (
+          <PlateauIcon icon="plateauLogo" size={114} wide />
+        )}
         <MinimizeButton minimized={minimized}>
           <Icon icon={minimized ? "menu" : "close"} onClick={onMinimize} />
         </MinimizeButton>
@@ -118,7 +133,7 @@ const MinimizeButton = styled.div<{ minimized?: boolean }>`
   border: none;
   height: 32px;
   width: 32px;
-  background: #00bebe;
+  background: var(--theme-color);
   cursor: pointer;
   transition: background 0.3s;
   color: white;
@@ -137,16 +152,40 @@ const IconWrapper = styled.div<{ current?: boolean }>`
   padding: 6px;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  border-bottom-color: ${({ current }) => (current ? "#00bebe" : "transparent")};
-  color: ${({ current }) => (current ? "#00bebe" : "#C7C5C5")};
+  border-bottom-color: ${({ current }) => (current ? "var(--theme-color)" : "transparent")};
+  color: ${({ current }) => (current ? "var(--theme-color)" : "#C7C5C5")};
   transition: border-bottom-color 0.5s, color 0.5s;
 
   :hover {
-    border-bottom-color: #00bebe;
-    color: #00bebe;
+    border-bottom-color: var(--theme-color);
+    color: var(--theme-color);
   }
 `;
 
 const StyledIcon = styled(Icon)`
   width: 100%;
+`;
+
+const CustomProjectHeader = styled.div`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+const CustomLogo = styled("img")`
+  max-height: 32px;
+`;
+
+const CustomProjectName = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #000;
+  max-height: 63px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 `;

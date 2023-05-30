@@ -30,7 +30,7 @@ const Text = styled.p`
 `;
 
 const StyledIcon = styled(Icon)`
-  color: #00bebe;
+  color: var(--theme-color);
 `;
 
 const StoryButton = styled.div`

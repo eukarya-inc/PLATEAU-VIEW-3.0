@@ -3,14 +3,24 @@
     html, body{
         background: transparent;
     }
-    
     html, body, .root {
-      width: 560px;
-      height: 315px;
-      overflow: hidden;
+        width: 560px;
+        height: 315px;
+        overflow: hidden;
+    }
+    html{
+        --theme-color: #00bebe;
     }
 </style>
 <body>
     <div class="root" id="root"></div>
 </body>
 <script type="module" src="./main.tsx"></script>
+<script>
+window.addEventListener("message", function (e) {
+    if (e.source !== parent) return;
+    if (e.data.action === 'setPrimaryColor'){
+        document.documentElement.style.setProperty("--theme-color", e.data.payload);
+    }
+});
+</script>

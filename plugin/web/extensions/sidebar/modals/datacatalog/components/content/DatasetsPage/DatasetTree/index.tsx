@@ -168,7 +168,7 @@ const Wrapper = styled.div<{ isMobile?: boolean }>`
 const StyledInput = styled(Input.Search)`
   .ant-input {
     :hover {
-      border: 1px solid #00bebe;
+      border: 1px solid var(--theme-color);
     }
   }
   .ant-input-group-addon {
@@ -186,13 +186,13 @@ const StyledTabs = styled(Tabs)`
     padding: 0 10px;
   }
   .ant-tabs-tab:hover {
-    color: #00bebe;
+    color: var(--theme-color);
   }
   .ant-tabs-ink-bar {
-    background: #00bebe;
+    background: var(--theme-color);
   }
   .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: #00bebe;
+    color: var(--theme-color);
   }
 `;
 

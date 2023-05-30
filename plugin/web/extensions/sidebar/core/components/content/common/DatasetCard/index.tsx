@@ -216,7 +216,7 @@ const DatasetCard: React.FC<Props> = ({
           if (isMobile) {
             postMsg({ action: "mobileCatalogOpen", payload: dataset });
           } else {
-            postMsg({ action: "catalogModalOpen" });
+            postMsg({ action: "catalogModalOpen", payload: templates });
           }
           postMsg({ action: "saveDataset", payload: { dataset } });
         },
@@ -397,13 +397,15 @@ const DatasetCard: React.FC<Props> = ({
             <Content>
               {baseFields.map((field, idx) => (
                 <BaseField key={idx} onClick={field.onClick}>
-                  {field.icon && <Icon icon={field.icon} size={20} color="#00BEBE" />}
+                  {field.icon && <Icon icon={field.icon} size={20} color="var(--theme-color)" />}
                   {field.title && <FieldName>{field.title}</FieldName>}
                 </BaseField>
               ))}
               {(dataset.format === "czml" || dataset.format === "geojson") && (
                 <BaseButton onClick={handleDataExport}>
-                  <DownloadOutlined style={{ fontSize: 20, color: "#00BEBE", marginRight: 8 }} />
+                  <DownloadOutlined
+                    style={{ fontSize: 20, color: "var(--theme-color)", marginRight: 8 }}
+                  />
                   <Text>データをエクスポート</Text>
                 </BaseButton>
               )}

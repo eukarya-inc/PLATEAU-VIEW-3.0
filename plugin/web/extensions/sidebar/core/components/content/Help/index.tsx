@@ -56,7 +56,7 @@ const MenuItem = styled.div<{ selected?: boolean }>`
   ${({ selected }) =>
     selected &&
     `
-  background: #00BEBE;
+  background: var(--theme-color);
   color: #fff;
   `}
 `;

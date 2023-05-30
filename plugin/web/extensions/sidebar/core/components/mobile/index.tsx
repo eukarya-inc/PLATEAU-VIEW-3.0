@@ -1,7 +1,7 @@
 import { postMsg } from "@web/extensions/sidebar/utils";
 import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import useHooks from "./hooks";
 
@@ -23,6 +23,8 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
     inEditor,
     templates,
     searchTerm,
+    customProjectName,
+    customLogo,
     setSelected,
   } = useHooks();
 
@@ -91,9 +93,20 @@ const MobileSidebar: React.FC<Props> = ({ className }) => {
     };
   }, []);
 
+  const useCustomProjectHeader = useMemo(() => {
+    return customProjectName || customLogo;
+  }, [customProjectName, customLogo]);
+
   return (
     <Wrapper className={className}>
-      <PlateauIcon icon="plateauLogo" size={114} wide />
+      {useCustomProjectHeader ? (
+        <CustomProjectHeader>
+          {customLogo && <CustomLogo src={customLogo} />}
+          {customProjectName && <CustomProjectName>{customProjectName}</CustomProjectName>}
+        </CustomProjectHeader>
+      ) : (
+        <PlateauIcon icon="plateauLogo" size={114} wide />
+      )}
       <IconGroup>
         <StyledIcon
           icon="database"
@@ -138,14 +151,37 @@ const IconGroup = styled.div`
 `;
 
 const StyledIcon = styled(Icon)<{ selected?: boolean }>`
-  background: ${({ selected }) => (selected ? "#00bebe" : "transparent")};
-  color: ${({ selected }) => (selected ? "white" : "#00bebe")};
+  background: ${({ selected }) => (selected ? "var(--theme-color)" : "transparent")};
+  color: ${({ selected }) => (selected ? "white" : "var(--theme-color)")};
   padding: 4px;
   cursor: pointer;
   transition: background 0.3s, color 0.3s;
 
   :hover {
-    background: #00bebe;
+    background: var(--theme-color);
     color: white;
   }
+`;
+
+const CustomProjectHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+`;
+
+const CustomLogo = styled("img")`
+  max-height: 32px;
+`;
+
+const CustomProjectName = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 21px;
+  color: #000;
+  max-height: 42px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 `;

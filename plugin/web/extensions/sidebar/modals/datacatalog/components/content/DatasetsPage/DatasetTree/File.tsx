@@ -71,7 +71,7 @@ const Wrapper = styled.div<{ nestLevel: number; selected?: boolean }>`
   ${({ selected }) =>
     selected &&
     `
-  background: #00BEBE;
+  background: var(--theme-color);
   color: white;
   `}
 
@@ -80,7 +80,7 @@ const Wrapper = styled.div<{ nestLevel: number; selected?: boolean }>`
   cursor: pointer;
 
   :hover {
-    background: #00bebe;
+    background: var(--theme-color);
     color: white;
   }
 `;
@@ -103,7 +103,7 @@ const StyledButton = styled(Button)<{ disabled: boolean }>`
 `;
 
 const StyledIcon = styled(Icon)<{ selected: boolean }>`
-  color: ${({ selected }) => (selected ? "#ffffff" : "#00bebe")};
+  color: ${({ selected }) => (selected ? "#ffffff" : "var(--theme-color)")};
   ${Wrapper}:hover & {
     color: #ffffff;
   }

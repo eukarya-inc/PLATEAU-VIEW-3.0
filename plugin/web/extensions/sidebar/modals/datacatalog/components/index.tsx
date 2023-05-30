@@ -108,7 +108,7 @@ const Tab = styled.div<{ selected?: boolean }>`
   border-color: ${({ selected }) => (selected ? "#f4f4f4" : "#c8c8c8")};
   border-radius: 2px 2px 0px 0px;
   background: ${({ selected }) => (selected ? "#f4f4f4" : "#c8c8c8")};
-  color: ${({ selected }) => (selected ? "#00BEBE" : "#898989")};
+  color: ${({ selected }) => (selected ? "var(--theme-color)" : "#898989")};
   padding: 8px 12px;
   cursor: pointer;
 `;
@@ -131,7 +131,7 @@ const CloseButton = styled.button`
   height: 48px;
   width: 48px;
   border: none;
-  background: #00bebe;
+  background: var(--theme-color);
   color: white;
   cursor: pointer;
 `;

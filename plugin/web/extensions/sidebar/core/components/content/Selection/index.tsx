@@ -117,7 +117,7 @@ const StyledButton = styled.button`
   width: 100%;
   border: none;
   border-radius: 4px;
-  background: #00bebe;
+  background: var(--theme-color);
   color: #fff;
   padding: 10px;
   cursor: pointer;

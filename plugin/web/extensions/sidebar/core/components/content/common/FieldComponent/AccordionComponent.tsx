@@ -60,7 +60,7 @@ const AccordionComponent: React.FC<Props> = ({
                     {showGroupIcon && (
                       <StyledIcon
                         icon="group"
-                        color={hasGroup ? "#00BEBE" : "inherit"}
+                        color={hasGroup ? "var(--theme-color)" : "inherit"}
                         size={16}
                         onClick={onGroupSelectOpen}
                       />

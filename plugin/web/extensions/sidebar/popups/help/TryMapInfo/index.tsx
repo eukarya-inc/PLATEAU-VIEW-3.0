@@ -27,7 +27,7 @@ const TryMapInfo: React.FC = () => {
           <NumberingWrapper number={1} />
           <Paragraph>
             「
-            <InlineIcon icon="plusCircle" size={16} color={" #00bebe"} />
+            <InlineIcon icon="plusCircle" size={16} color={"var(--theme-color)"} />
             <BlueText>カタログから検索する</BlueText>
             」ボタンで使用可能なデータを表示し、マップに追加してみましょう。
           </Paragraph>
@@ -96,9 +96,9 @@ const ContentWrapper = styled.div`
 `;
 
 const BlueText = styled.span`
-  color: #00bebe;
+  color: var(--theme-color);
 `;
 const InlineIcon = styled(Icon)`
   display: inline-block;
-  color: #00bebe;
+  color: var(--theme-color);
 `;

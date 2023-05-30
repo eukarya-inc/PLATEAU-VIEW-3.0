@@ -67,6 +67,8 @@ const defaultProject: Project = {
   userStory: undefined,
 };
 
+const defaultThemeColor = "#00BEBE";
+
 type PluginExtensionInstance = {
   id: string;
   name: string;
@@ -105,6 +107,11 @@ const sidebarInstance: PluginExtensionInstance = reearth.plugins.instances.find(
 
 reearth.ui.show(html, { extended: true });
 
+reearth.ui.postMessage({
+  action: "setPrimaryColor",
+  payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+});
+
 if (
   sidebarInstance.runTimes === 1 ||
   (sidebarInstance.runTimes === 2 && reearth.viewport.isMobile)
@@ -125,6 +132,10 @@ if (
         height: reearth.viewport.height,
       });
       welcomePageIsOpen = true;
+      reearth.modal.postMessage({
+        action: "setPrimaryColor",
+        payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+      });
     }
   });
 } else {
@@ -152,6 +163,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
       width: reearth.viewport.width - 12,
     });
     mobileDropdownIsOpen = true;
+    reearth.popup.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "msgToMobileDropdown") {
     reearth.popup.postMessage({ action: "msgToPopup", payload });
   }
@@ -171,6 +186,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
         enableGeoPub: reearth.widget.property.default?.enableGeoPub ?? false,
         draftProject,
         searchTerm,
+        // appearance
+        customProjectName: reearth.widget.property.appearance?.customProjectName ?? "",
+        customLogo: reearth.widget.property.appearance?.customLogo ?? "",
+        primaryColor: reearth.widget.property.appearance?.primaryColor ?? "",
       };
       reearth.ui.postMessage({ action, payload: outBoundPayload });
     });
@@ -268,7 +287,13 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "catalogModalOpen") {
     reearth.modal.show(dataCatalogHtml, { background: "transparent" });
-    templates = payload.templates;
+    if (payload?.templates) {
+      templates = payload.templates;
+    }
+    reearth.modal.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "triggerCatalogOpen") {
     reearth.ui.postMessage({ action });
   } else if (action === "saveSearchTerm") {
@@ -317,9 +342,17 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     }
   } else if (action === "helpPopupOpen") {
     reearth.popup.show(helpPopupHtml, { position: "right-start", offset: 4 });
+    reearth.popup.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "groupSelectOpen") {
     reearth.popup.show(groupSelectPopupHtml, { position: "right", offset: 4 });
     reearth.popup.postMessage({ action: "groupSelectInit", payload });
+    reearth.popup.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "saveGroups") {
     reearth.ui.postMessage({ action, payload });
     reearth.popup.close();
@@ -349,8 +382,16 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
     mobileDropdownIsOpen = false;
   } else if (action === "mapModalOpen") {
     reearth.modal.show(mapVideoHtml, { background: "transparent" });
+    reearth.modal.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "clipModalOpen") {
     reearth.modal.show(clipVideoHtml, { background: "transparent" });
+    reearth.modal.postMessage({
+      action: "setPrimaryColor",
+      payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
+    });
   } else if (action === "cameraFlyTo") {
     if (Array.isArray(payload)) {
       reearth.camera.flyTo(...payload);
@@ -516,6 +557,10 @@ reearth.on("message", ({ action, payload }: PostMessageProps) => {
           mainAxis: 4,
           crossAxis: reearth.viewport.isMobile ? reearth.viewport.width * 0.05 : 0,
         },
+      });
+      reearth.popup.postMessage({
+        action: "setPrimaryColor",
+        payload: reearth.scene.property?.theme?.themeSelectColor ?? defaultThemeColor,
       });
     }
     openedpendingBuildingSearchDataID = payload.dataID;
