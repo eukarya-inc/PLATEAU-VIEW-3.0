@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -1041,7 +1042,7 @@ func TestGen(t *testing.T) {
 			URL: "https://example.com/01100_sapporo-shi_2020_citygml_op.zip",
 		},
 		DescriptionGen: []string{
-			"01100_sapporo-shi_2020_mvt_4_op_gen_AAA_AAA.zip\n@name: 名称\n説明1",
+			"01100_sapporo-shi_2020_mvt_4_op_gen_AAA_AAA.zip\n@name: 名称\n@root: true\n@order: 100\n説明1",
 			"01100_sapporo-shi_2020_3dtiles_4_op_gen_BBB_BBB.zip\n説明2",
 		},
 		OpenDataURL: "https://example.com",
@@ -1082,6 +1083,8 @@ func TestGen(t *testing.T) {
 					},
 				},
 			},
+			Root:  true,
+			Order: lo.ToPtr(100),
 		},
 		{
 			ID:          "01100_sapporo-shi_gen_BBB_BBB",

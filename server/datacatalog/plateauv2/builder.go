@@ -372,6 +372,8 @@ func (b *DataCatalogItemBuilder) dataCatalogItem(a asset, g assetGroup, desc str
 		OpenDataURL: opd,
 		Config:      config,
 		SearchIndex: searchIndex,
+		Root:        override.Root,
+		Order:       override.Order,
 	}
 }
 

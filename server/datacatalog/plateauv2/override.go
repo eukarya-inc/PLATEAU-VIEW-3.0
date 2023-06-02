@@ -1,6 +1,9 @@
 package plateauv2
 
-import "github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogutil"
+import (
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogutil"
+	"github.com/reearth/reearthx/util"
+)
 
 type Override struct {
 	Name     string
@@ -12,6 +15,8 @@ type Override struct {
 	Area     string
 	ItemName string
 	Layers   []string
+	Root     bool
+	Order    *int
 }
 
 func (o Override) Merge(p Override) Override {
@@ -38,6 +43,12 @@ func (o Override) Merge(p Override) Override {
 	}
 	if len(o.Layers) == 0 {
 		o.Layers = p.Layers
+	}
+	if !o.Root {
+		o.Root = p.Root
+	}
+	if o.Order == nil {
+		o.Order = util.CloneRef(p.Order)
 	}
 	return o
 }

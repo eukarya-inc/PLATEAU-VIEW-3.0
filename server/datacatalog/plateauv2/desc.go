@@ -2,6 +2,7 @@ package plateauv2
 
 import (
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/reearth/reearthx/util"
@@ -35,6 +36,13 @@ func descFromAsset(an AssetName, descs []string, single bool) Description {
 
 func DescriptionFrom(d string) Description {
 	tags, rest := extractTags(strings.TrimSpace(d))
+
+	var orderr *int
+	order, _ := strconv.Atoi(tags["order"])
+	if order > 0 {
+		orderr = &order
+	}
+
 	return Description{
 		Override: Override{
 			Name:     tags["name"],
@@ -46,6 +54,8 @@ func DescriptionFrom(d string) Description {
 			Area:     tags["area"],
 			ItemName: tags["item_name"],
 			Layers:   multipleValues(tags["layer"]),
+			Root:     tags["root"] == "true",
+			Order:    orderr,
 		},
 		Desc: rest,
 	}

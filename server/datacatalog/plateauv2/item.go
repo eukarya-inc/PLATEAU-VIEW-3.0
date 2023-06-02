@@ -25,4 +25,5 @@ type DataCatalogItem struct {
 	OpenDataURL string   `json:"openDataUrl,omitempty"`
 	Config      any      `json:"config,omitempty"`
 	Order       *int     `json:"order,omitempty"`
+	Root        bool     `json:"root,omitempty"`
 }
