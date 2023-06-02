@@ -56,6 +56,7 @@ type RawRawDataCatalogItem = {
     }[];
   };
   order?: number;
+  // bldg only fields
   search_index?: string;
   // internal
   path?: string[];
@@ -273,4 +274,4 @@ const types = [
   "usecase",
 ];
 
-const typesWithFolders = ["usecase", "gen", "fld", "htd", "tnm", "ifld", "ex"];
+const typesWithFolders = ["usecase", "gen", "fld", "htd", "tnm", "ifld", "urf", "ex"];
