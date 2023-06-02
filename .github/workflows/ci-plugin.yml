@@ -1,3 +1,4 @@
+name: ci-plugin
 on:
   workflow_call:
 jobs:

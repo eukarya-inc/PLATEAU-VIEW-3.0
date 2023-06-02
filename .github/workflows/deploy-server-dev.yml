@@ -4,6 +4,7 @@ on:
     workflows: [build-server]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
 env:
   IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-api:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-api:latest
