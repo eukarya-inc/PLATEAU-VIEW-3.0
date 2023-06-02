@@ -1,18 +1,7 @@
-name: ci-plugin
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - plugin/**
-      - .github/workflows/plugin.yml
-  pull_request:
-    paths:
-      - plugin/**
-      - .github/workflows/plugin.yml
+  workflow_call:
 jobs:
-  ci:
-    name: ci
+  ci-plugin:
     runs-on: ubuntu-latest
     defaults:
       run:

@@ -1,63 +1,63 @@
-name: ci-server
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - server/**
-      - .github/workflows/ci-server.yml
-      - .github/workflows/build-server.yml
-      - .github/workflows/deploy-server-dev.yml
-      - .github/workflows/deploy-server-prod.yml
-  pull_request:
-    paths:
-      - server/**
-      - .github/workflows/ci-server.yml
-      - .github/workflows/build-server.yml
-      - .github/workflows/deploy-server-dev.yml
-      - .github/workflows/deploy-server-prod.yml
+  workflow_call:
+env:
+  GO_VERSION: '1.20'
 jobs:
-  ci:
-    name: ci
+  ci-server-lint:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: server
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
-          cache-dependency-path: server/go.sum
-      - name: go mod download
-        run: go mod download
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: v1.52
           working-directory: server
           args: --timeout=5m
+  ci-server-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: server/go.sum
       - name: test
+        working-directory: server
         run: go test ./... -v -race
-
-      # indexer test
-      # - name: 'indexer test: is testdata available'
-      #   id: testdata
-      #   run: echo $TESTDATA >> $GITHUB_OUTPUT
-      #   env:
-      #     TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
-      # - name: 'indexer test: download test 3D Tiles data'
-      #   if: steps.testdata.outputs.testdata
-      #   run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
-      #   env:
-      #     TESTDATA: ${{ secrets.TESTDATA }}
-      # - name: 'indexer test: run indexer test'
-      #   if: steps.testdata.outputs.testdata
-      #   run: go test ./searchindex/indexer -v
-      # - name: 'indexer test: list result files'
-      #   if: steps.testdata.outputs.testdata
-      #   run: ls searchindex/indexer/testdata/result
-      # - name: 'indexer test: cat resultsData.csv'
-      #   if: steps.testdata.outputs.testdata
-      #   run: cat searchindex/indexer/testdata/result/resultsData.csv
+  # ci-server-test-index:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: 'indexer test: is testdata available'
+  #       id: testdata
+  #       run: echo $TESTDATA >> $GITHUB_OUTPUT
+  #       env:
+  #         TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
+  #     - uses: actions/checkout@v3
+  #       if: steps.testdata.outputs.testdata
+  #     - uses: actions/setup-go@v4
+  #       if: steps.testdata.outputs.testdata
+  #       with:
+  #         go-version: ${{ env.GO_VERSION }}
+  #         cache-dependency-path: server/go.sum
+  #     - name: 'indexer test: download test 3D Tiles data'
+  #       if: steps.testdata.outputs.testdata
+  #       working-directory: server
+  #       run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
+  #       env:
+  #         TESTDATA: ${{ secrets.TESTDATA }}
+  #     - name: 'indexer test: run indexer test'
+  #       if: steps.testdata.outputs.testdata
+  #       working-directory: server
+  #       run: go test ./searchindex/indexer -v
+  #     - name: 'indexer test: list result files'
+  #       if: steps.testdata.outputs.testdata
+  #       working-directory: server
+  #       run: ls searchindex/indexer/testdata/result
+  #     - name: 'indexer test: cat resultsData.csv'
+  #       if: steps.testdata.outputs.testdata
+  #       working-directory: server
+  #       run: cat searchindex/indexer/testdata/result/resultsData.csv
