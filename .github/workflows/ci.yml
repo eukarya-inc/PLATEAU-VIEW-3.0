@@ -26,6 +26,7 @@ jobs:
         with:
           files: |
             server
+            .github/workflows/ci.yml
             .github/workflows/ci-server.yml
             .github/workflows/build-server.yml
             .github/workflows/deploy-server-dev.yml
@@ -46,3 +47,10 @@ jobs:
     if: '!failure()'
     steps:
       - run: echo OK
+  build-server:
+    needs: ci-server
+    if: success() && github.event_name == 'push' && github.ref_name == 'main'
+    uses: ./.github/workflows/build-server.yml
+  deploy-server-dev:
+    needs: build-server
+    uses: ./.github/workflows/deploy-server-dev.yml
