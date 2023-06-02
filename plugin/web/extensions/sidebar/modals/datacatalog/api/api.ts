@@ -56,6 +56,7 @@ type RawRawDataCatalogItem = {
     }[];
   };
   order?: number;
+  root?: boolean;
   // bldg only fields
   search_index?: string;
   // internal
@@ -195,7 +196,9 @@ function path(i: RawDataCatalogItem, groupBy: GroupBy): string[] {
         i.pref,
         ...(i.city ? [i.city] : []),
         ...(i.ward ? [i.ward] : []),
-        ...(i.type2 || (typesWithFolders.includes(i.type_en) && i.pref !== zenkyu) ? [i.type] : []),
+        ...(i.type2 || (!i.root && typesWithFolders.includes(i.type_en) && i.pref !== zenkyu)
+          ? [i.type]
+          : []),
         ...(i.name || "（名称未決定）").split("/"),
       ];
 }
