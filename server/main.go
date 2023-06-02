@@ -9,11 +9,12 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
@@ -66,10 +67,10 @@ func main() {
 		}
 	}
 
-	cmswebhook.Echo(
+	cmsWebhookHandler(
 		e.Group("/webhook"),
 		[]byte(conf.CMS_Webhook_Secret),
-		webhookHandlers...,
+		webhookHandlers,
 	)
 
 	log.Infof("enabled services: %v", serviceNames)
@@ -111,6 +112,9 @@ func errorMessage(err error, log func(string, ...interface{})) (int, string) {
 			log("echo internal err: %+v", err2)
 		}
 	} else if errors.Is(err, rerror.ErrNotFound) {
+		code = http.StatusNotFound
+		msg = "not found"
+	} else if errors.Is(err, cms.ErrNotFound) {
 		code = http.StatusNotFound
 		msg = "not found"
 	} else {

@@ -1,6 +1,6 @@
 package sdk
 
-import "github.com/eukarya-inc/reearth-plateauview/server/cms"
+import cms "github.com/reearth/reearth-cms-api/go"
 
 type Status string
 

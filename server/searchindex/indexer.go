@@ -11,8 +11,8 @@ import (
 	"path"
 
 	"github.com/dustin/go-humanize"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex/indexer"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
 

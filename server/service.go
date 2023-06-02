@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/dataconv"
@@ -15,6 +14,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/labstack/echo/v4"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 )
 
 type Service struct {

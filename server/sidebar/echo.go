@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	cms "github.com/reearth/reearth-cms-api/go"
 )
 
 type Config struct {

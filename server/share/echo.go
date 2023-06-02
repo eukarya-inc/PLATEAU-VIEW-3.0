@@ -7,11 +7,10 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
-	"github.com/reearth/reearthx/rerror"
 )
 
 const (
@@ -58,7 +57,7 @@ func Echo(g *echo.Group, conf Config) error {
 
 		res, err := cmsapi.GetItem(c.Request().Context(), c.Param("id"), false)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 
@@ -100,7 +99,7 @@ func Echo(g *echo.Group, conf Config) error {
 			{Key: conf.CMSDataFieldKey, Type: "textarea", Value: string(body)},
 		})
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 

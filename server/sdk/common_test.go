@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/fme"
 	"github.com/jarcoal/httpmock"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/stretchr/testify/assert"
 )
 

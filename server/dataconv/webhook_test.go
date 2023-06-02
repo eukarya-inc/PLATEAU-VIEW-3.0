@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	"github.com/jarcoal/httpmock"
+	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/stretchr/testify/assert"
 )

@@ -10,10 +10,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
+	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
-	"github.com/reearth/reearthx/rerror"
 )
 
 var errSkipped = errors.New("not decompressed")
@@ -196,7 +195,7 @@ func (wc *webhookContext) GetItem(ctx context.Context) (item Item, si StorageIte
 
 		aid := wc.wp.AssetData.ID
 		if si, err = wc.st.FindByAsset(ctx, aid); err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				log.Debugf("searchindex webhook: skipped: asset not registered")
 				err = errSkipped
 				return
@@ -227,7 +226,7 @@ func (wc *webhookContext) GetItem(ctx context.Context) (item Item, si StorageIte
 
 		// check stroage
 		si, err = wc.st.FindByItem(ctx, wc.wp.ItemData.Item.ID)
-		if err != nil && !errors.Is(err, rerror.ErrNotFound) {
+		if err != nil && !errors.Is(err, cms.ErrNotFound) {
 			err = fmt.Errorf("cannot get data from storage: %v", err)
 			return
 		} else {

@@ -3,7 +3,7 @@ package sdk
 import (
 	"net/http"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
 )
 

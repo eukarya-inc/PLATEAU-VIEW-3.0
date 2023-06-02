@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp/ckan"
 	"github.com/jarcoal/httpmock"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"

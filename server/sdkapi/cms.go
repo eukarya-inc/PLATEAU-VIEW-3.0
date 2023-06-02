@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"

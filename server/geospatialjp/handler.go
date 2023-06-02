@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/rerror"
 )
 
@@ -42,7 +43,7 @@ func Handler(conf Config) (echo.HandlerFunc, error) {
 		ctx := c.Request().Context()
 		item, err := s.CMS.GetItem(ctx, itemID, false)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "見つかりませんでした。")
 			}
 			return rerror.ErrInternalBy(err)

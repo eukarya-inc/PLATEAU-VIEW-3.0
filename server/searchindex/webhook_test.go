@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
+	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/reearth/reearthx/util"

@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/jarcoal/httpmock"
 	"github.com/labstack/echo/v4"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )

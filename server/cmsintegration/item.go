@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	cms "github.com/reearth/reearth-cms-api/go"
 )
 
 type Status string

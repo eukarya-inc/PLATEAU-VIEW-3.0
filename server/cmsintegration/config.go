@@ -3,8 +3,8 @@ package cmsintegration
 import (
 	"fmt"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/fme"
+	cms "github.com/reearth/reearth-cms-api/go"
 )
 
 type Config struct {

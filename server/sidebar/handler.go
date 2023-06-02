@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
-	"github.com/reearth/reearthx/rerror"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
 
@@ -75,7 +74,7 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 			err = <-templateErrCh
 		}
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -104,7 +103,7 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 
 		data, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -127,7 +126,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 
 		item, err := h.CMS.GetItem(ctx, itemID, false)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -162,7 +161,7 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 		}}
 		item, err := h.CMS.CreateItemByKey(ctx, prj, dataModelKey, fields)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -198,7 +197,7 @@ func (h *Handler) updateDataHandler() func(c echo.Context) error {
 
 		item, err := h.CMS.UpdateItem(ctx, itemID, fields)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -220,7 +219,7 @@ func (h *Handler) deleteDataHandler() func(c echo.Context) error {
 		itemID := c.Param("iid")
 
 		if err := h.CMS.DeleteItem(ctx, itemID); err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -246,7 +245,7 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 
 		res, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -264,7 +263,7 @@ func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 		templateID := c.Param("tid")
 		template, err := h.CMS.GetItem(ctx, templateID, false)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -300,7 +299,7 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 
 		template, err := h.CMS.CreateItemByKey(ctx, prj, templateModelKey, fields)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -337,7 +336,7 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 
 		template, err := h.CMS.UpdateItem(ctx, templateID, fields)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -359,7 +358,7 @@ func (h *Handler) deleteTemplateHandler() func(c echo.Context) error {
 		templateID := c.Param("tid")
 
 		if err := h.CMS.DeleteItem(ctx, templateID); err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -396,7 +395,7 @@ func (h *Handler) lastModified(c echo.Context, prj string, models ...string) (bo
 	for _, m := range models {
 		model, err := h.CMS.GetModelByKey(c.Request().Context(), prj, m)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return false, c.JSON(http.StatusNotFound, "not found")
 			}
 			return false, err

@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/jpareacode"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogutil"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )

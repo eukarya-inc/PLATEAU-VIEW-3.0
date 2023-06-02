@@ -6,19 +6,20 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eukarya-inc/jpareacode v1.0.0
 	github.com/go-playground/validator/v10 v10.11.1
-	github.com/jarcoal/httpmock v1.2.0
+	github.com/jarcoal/httpmock v1.3.0
 	github.com/joho/godotenv v1.4.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/paulmach/go.geojson v1.4.0
 	github.com/reearth/go3dtiles v0.0.0-20221207041852-493e7e51cca9
+	github.com/reearth/reearth-cms-api/go v0.0.0-20230602042805-d09e72be0275
 	github.com/reearth/reearthx v0.0.0-20230322184331-1c50e053c6b4
-	github.com/samber/lo v1.33.0
+	github.com/samber/lo v1.38.1
 	github.com/sendgrid/sendgrid-go v3.12.0+incompatible
 	github.com/spf13/afero v1.9.3
 	github.com/spkg/bom v1.0.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	github.com/tdewolff/canvas v0.0.0-20221230020303-9eb6d3934367
 	github.com/thanhpk/randstr v1.0.4
 	github.com/vincent-petithory/dataurl v1.0.0
@@ -77,7 +78,7 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.2.0 // indirect
-	golang.org/x/exp v0.0.0-20220706164943-b4a6d9510983
+	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.5.0
 	golang.org/x/time v0.2.0 // indirect

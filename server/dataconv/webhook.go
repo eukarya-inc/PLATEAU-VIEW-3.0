@@ -9,9 +9,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/eukarya-inc/reearth-plateauview/server/cms/cmswebhook"
 	geojson "github.com/paulmach/go.geojson"
+	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
 	"github.com/spkg/bom"
 )

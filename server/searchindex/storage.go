@@ -3,8 +3,7 @@ package searchindex
 import (
 	"context"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
-	"github.com/reearth/reearthx/rerror"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 	"golang.org/x/exp/slices"
 )
@@ -83,7 +82,7 @@ func (s *Storage) FindByAsset(ctx context.Context, assetid string) (r StorageIte
 
 	r2 := all.FindByAsset(assetid)
 	if r2 == nil {
-		return r, rerror.ErrNotFound
+		return r, cms.ErrNotFound
 	}
 	return *r2, nil
 }
@@ -96,7 +95,7 @@ func (s *Storage) FindByItem(ctx context.Context, itemid string) (r StorageItem,
 
 	r2 := all.FindByItem(itemid)
 	if r2 == nil {
-		return r, rerror.ErrNotFound
+		return r, cms.ErrNotFound
 	}
 	return *r2, nil
 }

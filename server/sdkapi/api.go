@@ -12,11 +12,10 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/reearth/reearthx/rerror"
+	cms "github.com/reearth/reearth-cms-api/go"
 )
 
 func Handler(conf Config, g *echo.Group) error {
@@ -155,17 +154,17 @@ func isInt(s string) bool {
 	return true
 }
 
-func lastModified(c echo.Context, cms *CMS, prj string, models ...string) (bool, error) {
-	if cms == nil || cms.IntegrationAPIClient == nil {
+func lastModified(c echo.Context, cmsc *CMS, prj string, models ...string) (bool, error) {
+	if cmsc == nil || cmsc.IntegrationAPIClient == nil {
 		return false, nil
 	}
 
 	mlastModified := time.Time{}
 
 	for _, m := range models {
-		model, err := cms.IntegrationAPIClient.GetModelByKey(c.Request().Context(), prj, m)
+		model, err := cmsc.IntegrationAPIClient.GetModelByKey(c.Request().Context(), prj, m)
 		if err != nil {
-			if errors.Is(err, rerror.ErrNotFound) {
+			if errors.Is(err, cms.ErrNotFound) {
 				return false, c.JSON(http.StatusNotFound, "not found")
 			}
 			return false, err

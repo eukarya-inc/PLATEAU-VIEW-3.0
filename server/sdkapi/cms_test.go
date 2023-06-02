@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
 

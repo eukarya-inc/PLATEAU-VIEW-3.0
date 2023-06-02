@@ -8,9 +8,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cms"
 	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp/ckan"
 	"github.com/pkg/errors"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
