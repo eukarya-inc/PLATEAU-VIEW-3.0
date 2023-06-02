@@ -53,4 +53,9 @@ jobs:
     uses: ./.github/workflows/build-server.yml
   deploy-server-dev:
     needs: build-server
-    uses: ./.github/workflows/deploy-server-dev.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-server-dev

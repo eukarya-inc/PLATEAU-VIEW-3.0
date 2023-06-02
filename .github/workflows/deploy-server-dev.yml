@@ -1,7 +1,8 @@
 name: ⭐️ Deploy PLATEAU Server dev
 on:
-  workflow_call:
   workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-server-dev]
 env:
   IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-api:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-api:latest
@@ -36,7 +37,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: build-server.yml
+          workflow: ci.yml
           workflow_conclusion: success
           branch: main
           name: plateauview-api
