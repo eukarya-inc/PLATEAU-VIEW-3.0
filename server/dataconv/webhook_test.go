@@ -3,25 +3,27 @@ package dataconv
 import (
 	"context"
 	"fmt"
-	"io"
 	"net/http"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
-	"github.com/reearth/reearthx/rerror"
 	"github.com/stretchr/testify/assert"
 )
+
+var borderURL = fmt.Sprintf("http://example.com/%s.geojson", borderName)
 
 func TestWebhook(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.Deactivate()
 	httpmock.RegisterResponder("GET", borderURL, httpmock.NewStringResponder(http.StatusOK, border))
-	c := &cmsMock{}
+
+	ctx := context.Background()
+	srv := &Service{cms: &cmsMock{}, conf: Config{CMSModel: defaultCMSModel}}
 
 	// case1: skip conv
-	err := webhookHandler(context.Background(), &cmswebhook.Payload{
+	err := webhookHandler(ctx, srv, &cmswebhook.Payload{
 		Type: cmswebhook.EventItemUpdate,
 		ItemData: &cmswebhook.ItemData{
 			Item: &cms.Item{
@@ -39,13 +41,13 @@ func TestWebhook(t *testing.T) {
 			},
 		},
 		Operator: cmswebhook.Operator{User: &cmswebhook.User{}},
-	}, Config{}, c)
+	})
 
 	assert.NoError(t, err)
-	assert.Nil(t, c.i)
+	assert.Nil(t, srv.cms.(*cmsMock).i)
 
 	// case2: normal
-	err = webhookHandler(context.Background(), &cmswebhook.Payload{
+	err = webhookHandler(ctx, srv, &cmswebhook.Payload{
 		Type: cmswebhook.EventItemUpdate,
 		ItemData: &cmswebhook.ItemData{
 			Item: &cms.Item{
@@ -62,7 +64,7 @@ func TestWebhook(t *testing.T) {
 			},
 		},
 		Operator: cmswebhook.Operator{User: &cmswebhook.User{}},
-	}, Config{}, c)
+	})
 
 	assert.NoError(t, err)
 	assert.Equal(t, &cms.Item{
@@ -72,33 +74,5 @@ func TestWebhook(t *testing.T) {
 			Data:       "asset",
 			DataOrig:   []string{"aaa"},
 		}.Fields(),
-	}, c.i)
-}
-
-var borderURL = fmt.Sprintf("http://example.com/%s.geojson", borderName)
-
-type cmsMock struct {
-	cms.Interface
-	i *cms.Item
-}
-
-func (c *cmsMock) UpdateItem(ctx context.Context, itemID string, fields []cms.Field) (*cms.Item, error) {
-	c.i = &cms.Item{
-		ID:     itemID,
-		Fields: fields,
-	}
-	return nil, nil
-}
-
-func (c *cmsMock) Asset(ctx context.Context, id string) (*cms.Asset, error) {
-	if id == "aaa" {
-		return &cms.Asset{
-			URL: borderURL,
-		}, nil
-	}
-	return nil, rerror.ErrNotFound
-}
-
-func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error) {
-	return "asset", nil
+	}, srv.cms.(*cmsMock).i)
 }

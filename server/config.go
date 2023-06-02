@@ -191,6 +191,7 @@ func (c *Config) DataConv() dataconv.Config {
 		Disable:  c.DataConv_Disable,
 		CMSBase:  c.CMS_BaseURL,
 		CMSToken: c.CMS_Token,
+		APIToken: c.Sidebar_Token,
 		// CMSModel: ,
 	}
 }

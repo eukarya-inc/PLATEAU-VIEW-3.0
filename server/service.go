@@ -236,12 +236,24 @@ func DataConv(conf *Config) (*Service, error) {
 	if err != nil {
 		return nil, err
 	}
-	if w == nil {
+
+	api, err := dataconv.Handler(c)
+	if err != nil {
+		return nil, err
+	}
+
+	if w == nil && api == nil {
 		return nil, nil
 	}
 
 	return &Service{
 		Name:    "dataconv",
 		Webhook: w,
+		Echo: func(g *echo.Group) error {
+			if api != nil {
+				g.POST("/dataconv", echo.WrapHandler(api))
+			}
+			return nil
+		},
 	}, nil
 }
