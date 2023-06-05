@@ -53,6 +53,12 @@ func handler(s *Service, token string) (http.Handler, error) {
 			if err == nil {
 				item := Item{}
 				cmsitem.Unmarshal(&item)
+
+				item.DataConv = ""
+				if len(item.DataOrig) > 0 {
+					item.Data = item.DataOrig[0]
+				}
+
 				err = s.Convert(ctx, item, resp.Project)
 			}
 
