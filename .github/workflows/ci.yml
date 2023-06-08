@@ -19,6 +19,7 @@ jobs:
         with:
           files: |
             plugin
+            .github/workflows/ci.yml
             .github/workflows/ci-plugin.yml
       - name: changed files for server
         id: server
@@ -31,9 +32,17 @@ jobs:
             .github/workflows/build-server.yml
             .github/workflows/deploy-server-dev.yml
             .github/workflows/deploy-server-prod.yml
-  ci-plugin:
+  ci-plugin-version-update:
     needs: prepare
-    if: needs.prepare.outputs.plugin == 'true'
+    if: ${{ !failure() && needs.prepare.outputs.plugin == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
+    uses: ./.github/workflows/ci-plugin-version-update.yml
+    with:
+      commit-sha: ${{ github.sha }}
+  ci-plugin:
+    needs: 
+      - prepare
+      - ci-plugin-version-update
+    if: ${{ !failure() && needs.prepare.outputs.plugin == 'true' }} 
     uses: ./.github/workflows/ci-plugin.yml
   ci-server:
     needs: prepare
@@ -49,7 +58,7 @@ jobs:
       - run: echo OK
   build-server:
     needs: ci-server
-    if: success() && github.event_name == 'push' && github.ref_name == 'main'
+    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-server.yml
   deploy-server-dev:
     needs: build-server
