@@ -53,13 +53,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR Scope and Keywords
-        env:
-            GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
           title=$(echo "${{ github.event.pull_request.title }}")
-          contains_major=$(echo "$title" | grep -w -i -c "major")
-          contains_minor=$(echo "$title" | grep -w -i -c "minor")
-    
+          contains_major=0
+          contains_minor=0
+
+          if [[ $title == *"major"* ]]; then
+          contains_major=1
+          fi
+
+          if [[ $title == *"minor"* ]]; then
+          contains_minor=1
+          fi
+
           if [[ $contains_major -eq 0 && $contains_minor -eq 0 ]]; then
             echo "Error: The identified scope is 'plugin', but the 'major' or 'minor' keyword is missing from the title."
             exit 1
