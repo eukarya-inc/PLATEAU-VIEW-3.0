@@ -48,6 +48,18 @@ type UsecaseItem struct {
 
 var reReiwa = regexp.MustCompile(`令和([0-9]+?)年度`)
 
+func (i UsecaseItem) YearInt() (year int) {
+	if ym := reReiwa.FindStringSubmatch(i.Year); len(ym) > 1 {
+		yy, _ := strconv.Atoi(ym[1])
+		if yy > 0 {
+			year = yy + 2018
+		}
+	} else if yy, err := strconv.Atoi(strings.TrimSuffix(strings.TrimSuffix(i.Year, "度"), "年")); err == nil {
+		year = yy
+	}
+	return year
+}
+
 func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 	pref, prefCodeInt := normalizePref(i.Prefecture)
 	prefCode := jpareacode.FormatPrefectureCode(prefCodeInt)
@@ -92,14 +104,6 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 
 	f := formatTypeEn(i.DataFormat)
 
-	y := 0
-	if ym := reReiwa.FindStringSubmatch(i.Year); len(ym) > 1 {
-		yy, _ := strconv.Atoi(ym[1])
-		if yy > 0 {
-			y = yy + 2018
-		}
-	}
-
 	t := i.Type
 	if t != "" && t != "ユースケース" && !strings.HasSuffix(t, "情報") {
 		t += "情報"
@@ -135,7 +139,7 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 		Description: i.Description,
 		Config:      c,
 		Layers:      layers,
-		Year:        y,
+		Year:        i.YearInt(),
 		OpenDataURL: i.OpenDataURL,
 		Order:       i.Order,
 	}}
