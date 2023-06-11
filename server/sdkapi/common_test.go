@@ -110,6 +110,10 @@ func TestItemsFromIntegration(t *testing.T) {
 			ID: "xxx",
 			Fields: []cms.Field{
 				{
+					Key:   "specification",
+					Value: "第2.3版",
+				},
+				{
 					Key:   "prefecture",
 					Value: "pref",
 				},
@@ -182,10 +186,11 @@ func TestItemsFromIntegration(t *testing.T) {
 	items := ItemsFromIntegration(cmsitems)
 	assert.Equal(t, Items{
 		{
-			ID:          "xxx",
-			Prefecture:  "pref",
-			CityName:    "city",
-			Description: "desc",
+			ID:            "xxx",
+			Specification: "第2.3版",
+			Prefecture:    "pref",
+			CityName:      "city",
+			Description:   "desc",
 			CityGML: &cms.PublicAsset{
 				Type:                    "asset",
 				ID:                      "assetc",

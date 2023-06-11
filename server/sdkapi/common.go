@@ -48,6 +48,7 @@ type DatasetPref struct {
 
 type DatasetCity struct {
 	ID           string   `json:"id"`
+	Spec         string   `json:"spec"`
 	CityCode     int      `json:"-"`
 	Title        string   `json:"title"`
 	Description  string   `json:"description"`
@@ -132,6 +133,7 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 
 		d := DatasetCity{
 			ID:           i.ID,
+			Spec:         i.SpecVersion(),
 			CityCode:     citycode,
 			Title:        i.CityName,
 			Description:  i.Description,
@@ -181,6 +183,7 @@ func (i Items) DatasetResponse() (r *DatasetResponse) {
 
 type Item struct {
 	ID             string            `json:"id"`
+	Specification  string            `json:"specification"`
 	Prefecture     string            `json:"prefecture"`
 	CityName       string            `json:"city_name"`
 	CityGML        *cms.PublicAsset  `json:"citygml"`
@@ -203,6 +206,10 @@ type Item struct {
 
 func (i Item) IsPublic() bool {
 	return i.SDKPublication == "公開する"
+}
+
+func (i Item) SpecVersion() string {
+	return strings.TrimSuffix(strings.TrimPrefix(i.Specification, "第"), "版")
 }
 
 func (i Item) CityCode() int {
@@ -336,6 +343,7 @@ func (mm MaxLODMap) Files(urls []*url.URL) (r FilesResponse) {
 
 type IItem struct {
 	ID             string `json:"id" cms:"id,text"`
+	Specification  string `json:"specification" cms:"specification,select"`
 	Prefecture     string `json:"prefecture" cms:"prefecture,text"`
 	CityName       string `json:"city_name" cms:"city_name,text"`
 	CityGML        any    `json:"citygml" cms:"citygml,asset"`
@@ -359,6 +367,7 @@ type IItem struct {
 func (i IItem) Item() Item {
 	return Item{
 		ID:             i.ID,
+		Specification:  i.Specification,
 		Prefecture:     i.Prefecture,
 		CityName:       i.CityName,
 		CityGML:        integrationAssetToAsset(i.CityGML).ToPublic(),

@@ -46,6 +46,7 @@ func TestHandler(t *testing.T) {
 					map[string]any{
 						"featureTypes": []any{"bldg", "fld", "dem"},
 						"id":           "item",
+						"spec":         "2.3",
 						"title":        "city",
 						"description":  "desc",
 					},
@@ -154,6 +155,10 @@ var mockItem = cms.Item{
 	ID: "item",
 	Fields: []cms.Field{
 		{
+			Key:   "specification",
+			Value: "第2.3版",
+		},
+		{
 			Key:   "prefecture",
 			Value: "pref",
 		},
@@ -209,6 +214,10 @@ var mockItem = cms.Item{
 var mockItem2 = cms.Item{
 	ID: "aaa",
 	Fields: []cms.Field{
+		{
+			Key:   "specification",
+			Value: "第2.3版",
+		},
 		{
 			Key:   "prefecture",
 			Value: "pref",
