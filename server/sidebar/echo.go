@@ -6,27 +6,21 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	cms "github.com/reearth/reearth-cms-api/go"
 )
 
 type Config struct {
-	CMSBaseURL string
-	CMSToken   string
-	AdminToken string
+	CMSBaseURL      string
+	CMSMainToken    string
+	CMSMainProject  string
+	CMSTokenProject string
+	AdminToken      string
 }
 
 func Echo(g *echo.Group, c Config) error {
-	cms, err := cms.New(c.CMSBaseURL, c.CMSToken)
+	h, err := NewHandler(c)
 	if err != nil {
 		return err
 	}
-
-	initEcho(g, c, cms)
-	return nil
-}
-
-func initEcho(g *echo.Group, c Config, cms cms.Interface) {
-	h := NewHandler(cms)
 
 	g.Use(middleware.CORS(), middleware.BodyLimit("5M"))
 
@@ -41,6 +35,8 @@ func initEcho(g *echo.Group, c Config, cms cms.Interface) {
 	g.POST("/:pid/templates", h.createTemplateHandler(), authMiddleware(c.AdminToken))
 	g.PATCH("/:pid/templates/:tid", h.updateTemplateHandler(), authMiddleware(c.AdminToken))
 	g.DELETE("/:pid/templates/:tid", h.deleteTemplateHandler(), authMiddleware(c.AdminToken))
+
+	return nil
 }
 
 func authMiddleware(secret string) echo.MiddlewareFunc {

@@ -36,6 +36,7 @@ type Config struct {
 	CMS_IntegrationID                 string
 	CMS_PlateauProject                string
 	CMS_SystemProject                 string
+	CMS_TokenProject                  string
 	FME_BaseURL                       string
 	FME_Mock                          bool
 	FME_Token                         string
@@ -172,9 +173,11 @@ func (c *Config) Geospatialjp() geospatialjp.Config {
 
 func (c *Config) Sidebar() sidebar.Config {
 	return sidebar.Config{
-		CMSBaseURL: c.CMS_BaseURL,
-		CMSToken:   c.CMS_Token,
-		AdminToken: c.Sidebar_Token,
+		CMSBaseURL:      c.CMS_BaseURL,
+		CMSMainToken:    c.CMS_Token,
+		CMSMainProject:  c.CMS_SystemProject,
+		CMSTokenProject: c.CMS_TokenProject,
+		AdminToken:      c.Sidebar_Token,
 	}
 }
 

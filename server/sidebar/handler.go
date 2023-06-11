@@ -1,8 +1,10 @@
 package sidebar
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"time"
@@ -10,24 +12,44 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/labstack/echo/v4"
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
 )
 
 const (
-	dataModelKey     = "sidebar-data"
-	templateModelKey = "sidebar-template"
-	dataField        = "data"
-	limit            = 10
+	dataModelKey      = "sidebar-data"
+	templateModelKey  = "sidebar-template"
+	dataField         = "data"
+	tokenProject      = "system"
+	tokenModel        = "workspaces"
+	tokenProjectField = "project_alias"
+	tokenTokenField   = "cms_apikey"
+	limit             = 10
 )
 
 type Handler struct {
-	CMS cms.Interface
+	cmsbase         string
+	cmsMainProject  string
+	cmsTokenProject string
+	cmsMain         cms.Interface
 }
 
-func NewHandler(CMS cms.Interface) *Handler {
-	return &Handler{
-		CMS: CMS,
+func NewHandler(c Config) (*Handler, error) {
+	cmsMain, err := cms.New(c.CMSBaseURL, c.CMSMainToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize cms: %w", err)
 	}
+
+	if c.CMSTokenProject == "" {
+		c.CMSTokenProject = tokenProject
+	}
+
+	return &Handler{
+		cmsbase:         c.CMSBaseURL,
+		cmsMainProject:  c.CMSMainProject,
+		cmsTokenProject: c.CMSTokenProject,
+		cmsMain:         cmsMain,
+	}, nil
 }
 
 // GET /:pid
@@ -35,6 +57,10 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+		cmsh, err2 := h.cms(ctx, prj)
+		if err2 != nil {
+			return err2
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
@@ -50,7 +76,7 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 		templateErrCh := make(chan error, 1)
 
 		go func() {
-			data, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
+			data, err := cmsh.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
 			if err != nil {
 				dataErrCh <- err
 				return
@@ -60,7 +86,7 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 		}()
 
 		go func() {
-			templates, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
+			templates, err := cmsh.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
 			if err != nil {
 				templateErrCh <- err
 				return
@@ -92,6 +118,10 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
@@ -101,7 +131,7 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 			return nil
 		}
 
-		data, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
+		data, err := cmsh.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -117,6 +147,12 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 func (h *Handler) getDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
+
 		itemID := c.Param("iid")
 		if itemID == "" {
 			return c.JSON(http.StatusNotFound, nil)
@@ -124,7 +160,7 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
-		item, err := h.CMS.GetItem(ctx, itemID, false)
+		item, err := cmsh.GetItem(ctx, itemID, false)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -146,6 +182,11 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
+
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return err
@@ -159,7 +200,7 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 			Key:   dataField,
 			Value: string(b),
 		}}
-		item, err := h.CMS.CreateItemByKey(ctx, prj, dataModelKey, fields)
+		item, err := cmsh.CreateItemByKey(ctx, prj, dataModelKey, fields)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -180,6 +221,12 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 func (h *Handler) updateDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
+
 		itemID := c.Param("iid")
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
@@ -195,7 +242,7 @@ func (h *Handler) updateDataHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		item, err := h.CMS.UpdateItem(ctx, itemID, fields)
+		item, err := cmsh.UpdateItem(ctx, itemID, fields)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -217,8 +264,13 @@ func (h *Handler) deleteDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		itemID := c.Param("iid")
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 
-		if err := h.CMS.DeleteItem(ctx, itemID); err != nil {
+		if err := cmsh.DeleteItem(ctx, itemID); err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
@@ -234,6 +286,10 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
@@ -243,7 +299,7 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 			return nil
 		}
 
-		res, err := h.CMS.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
+		res, err := cmsh.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -259,9 +315,14 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 
 		templateID := c.Param("tid")
-		template, err := h.CMS.GetItem(ctx, templateID, false)
+		template, err := cmsh.GetItem(ctx, templateID, false)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -283,6 +344,11 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
 		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
+
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
 			return err
@@ -297,7 +363,7 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		template, err := h.CMS.CreateItemByKey(ctx, prj, templateModelKey, fields)
+		template, err := cmsh.CreateItemByKey(ctx, prj, templateModelKey, fields)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -314,10 +380,15 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 	}
 }
 
-// PATCH /:id/templates/:tid
+// PATCH /:pid/templates/:tid
 func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 
 		templateID := c.Param("tid")
 		b, err := io.ReadAll(c.Request().Body)
@@ -334,7 +405,7 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 			Value: string(b),
 		}}
 
-		template, err := h.CMS.UpdateItem(ctx, templateID, fields)
+		template, err := cmsh.UpdateItem(ctx, templateID, fields)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -351,13 +422,18 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 	}
 }
 
-// DELETE /:id/templates/:tid
+// DELETE /:pid/templates/:tid
 func (h *Handler) deleteTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
+		prj := c.Param("pid")
+		cmsh, err := h.cms(ctx, prj)
+		if err != nil {
+			return err
+		}
 		templateID := c.Param("tid")
 
-		if err := h.CMS.DeleteItem(ctx, templateID); err != nil {
+		if err := cmsh.DeleteItem(ctx, templateID); err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
@@ -390,10 +466,15 @@ func itemJSON(f *cms.Field, id string) any {
 }
 
 func (h *Handler) lastModified(c echo.Context, prj string, models ...string) (bool, error) {
-	mlastModified := time.Time{}
+	ctx := c.Request().Context()
+	cmsh, err := h.cms(ctx, prj)
+	if err != nil {
+		return false, err
+	}
 
+	mlastModified := time.Time{}
 	for _, m := range models {
-		model, err := h.CMS.GetModelByKey(c.Request().Context(), prj, m)
+		model, err := cmsh.GetModelByKey(ctx, prj, m)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return false, c.JSON(http.StatusNotFound, "not found")
@@ -407,4 +488,51 @@ func (h *Handler) lastModified(c echo.Context, prj string, models ...string) (bo
 	}
 
 	return putil.LastModified(c, mlastModified)
+}
+
+func (h *Handler) cms(ctx context.Context, prj string) (cms.Interface, error) {
+	if h.cmsMainProject != "" && h.cmsMainProject == prj {
+		return h.cmsMain, nil
+	}
+
+	token, err := h.getToken(ctx, prj)
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := cms.New(h.cmsbase, token)
+	if err != nil {
+		return nil, rerror.ErrInternalBy(fmt.Errorf("sidebar: failed to create cms for %s: %w", prj, err))
+	}
+
+	return c, nil
+}
+
+func (h *Handler) getToken(ctx context.Context, prj string) (string, error) {
+	if h.cmsTokenProject == "" {
+		return "", rerror.ErrNotFound
+	}
+
+	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsTokenProject, tokenModel, false, 100)
+	if err != nil {
+		if errors.Is(err, cms.ErrNotFound) {
+			return "", rerror.ErrNotFound
+		}
+		return "", rerror.ErrInternalBy(fmt.Errorf("sidebar: failed to get token: %w", err))
+	}
+
+	item, ok := lo.Find(items.Items, func(i cms.Item) bool {
+		s := i.FieldByKey(tokenProjectField).ValueString()
+		return s != nil && *s == prj
+	})
+	if !ok {
+		return "", rerror.ErrNotFound
+	}
+
+	token := item.FieldByKey(tokenTokenField).ValueString()
+	if token == nil || *token == "" {
+		return "", rerror.ErrNotFound
+	}
+
+	return *token, nil
 }

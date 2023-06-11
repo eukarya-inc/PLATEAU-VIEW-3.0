@@ -1,6 +1,7 @@
 package sidebar
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -15,12 +16,13 @@ import (
 	"github.com/jarcoal/httpmock"
 	"github.com/labstack/echo/v4"
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
 const (
-	testCMSHost    = "https://api.cms.test.reearth.dev"
+	testCMSHost    = "https://example.com"
 	testCMSToken   = "token"
 	testCMSProject = "prj"
 )
@@ -42,7 +44,7 @@ func TestHandler(t *testing.T) {
 	ctx.SetParamValues(project)
 
 	h := &Handler{
-		CMS: lo.Must(cms.New(base, token)),
+		cmsMain: lo.Must(cms.New(base, token)),
 	}
 	handler := h.getAllDataHandler()
 	assert.NoError(t, handler(ctx))
@@ -55,34 +57,92 @@ func TestHandler_getDataHandler(t *testing.T) {
 	itemID := "aaa"
 	httpmock.Activate()
 	defer httpmock.Deactivate()
+	mockCMSToken()
 
 	expected := `{"hoge":"hoge"}` + "\n"
 	responder := func(req *http.Request) (*http.Response, error) {
+		if req.Header.Get("Authorization") != "Bearer "+testCMSToken {
+			return httpmock.NewJsonResponse(http.StatusUnauthorized, nil)
+		}
+
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: itemID,
 			Fields: []cms.Field{
 				{Key: dataField, Value: expected},
 			},
-		},
-		)
+		})
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 
-	p := path.Join("/aaa/data/", itemID)
+	p := path.Join("/", testCMSProject, "data", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
-
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
-	ctx.SetParamValues("aaa", itemID)
-
+	ctx.SetParamValues(testCMSProject, itemID)
 	handler := newHandler().getDataHandler()
-	res := handler(ctx)
 
-	assert.NoError(t, res)
+	assert.NoError(t, handler(ctx))
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
 	assert.Equal(t, expected, rec.Body.String())
+
+	// invalid
+	p = path.Join("/", "INVALID", "data", itemID)
+	req = httptest.NewRequest(http.MethodGet, p, nil)
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	ctx = echo.New().NewContext(req, rec)
+	ctx.SetParamNames("pid", "iid")
+	ctx.SetParamValues("INVALID", itemID)
+	handler = newHandler().getDataHandler()
+	assert.Equal(t, rerror.ErrNotFound, handler(ctx))
+}
+
+func TestHandler_getDataHandler2(t *testing.T) {
+	itemID := "aaa"
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+	mockCMSToken()
+
+	expected := `{"hoge":"hoge"}` + "\n"
+	responder := func(req *http.Request) (*http.Response, error) {
+		if req.Header.Get("Authorization") != "Bearer token!" {
+			return httpmock.NewJsonResponse(http.StatusUnauthorized, nil)
+		}
+
+		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
+			ID: itemID,
+			Fields: []cms.Field{
+				{Key: dataField, Value: expected},
+			},
+		})
+	}
+	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
+
+	p := path.Join("/", "prjprj", "data", itemID)
+	req := httptest.NewRequest(http.MethodGet, p, nil)
+	req.Header.Set("Content-Type", "application/json")
+	rec := httptest.NewRecorder()
+	ctx := echo.New().NewContext(req, rec)
+	ctx.SetParamNames("pid", "iid")
+	ctx.SetParamValues("prjprj", itemID)
+	handler := newHandler().getDataHandler()
+
+	assert.NoError(t, handler(ctx))
+	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+	assert.Equal(t, expected, rec.Body.String())
+
+	// not found
+	p = path.Join("/", "INVALID", "data", itemID)
+	req = httptest.NewRequest(http.MethodGet, p, nil)
+	req.Header.Set("Content-Type", "application/json")
+	rec = httptest.NewRecorder()
+	ctx = echo.New().NewContext(req, rec)
+	ctx.SetParamNames("pid", "iid")
+	ctx.SetParamValues("INVALID", itemID)
+	handler = newHandler().getDataHandler()
+	assert.Equal(t, rerror.ErrNotFound, handler(ctx))
 }
 
 func TestHandler_getAllDataHandler(t *testing.T) {
@@ -116,7 +176,7 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 		}),
 	)
 
-	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/data", nil)
+	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "data"), nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -151,7 +211,7 @@ func TestHandler_createDataHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodPost, "/"+testCMSProject+"/data", strings.NewReader(`{"hoge":"foo"}`))
+	req := httptest.NewRequest(http.MethodPost, path.Join("/", testCMSProject, "data"), strings.NewReader(`{"hoge":"foo"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -186,14 +246,14 @@ func TestHandler_updateDataHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("PATCH", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 
-	p := path.Join("/aaa/data/", itemID)
+	p := path.Join("/", testCMSProject, "data/", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, strings.NewReader(`{"hoge":"hoge"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
-	ctx.SetParamValues("aaa", itemID)
+	ctx.SetParamValues(testCMSProject, itemID)
 
 	handler := newHandler().updateDataHandler()
 	res := handler(ctx)
@@ -209,14 +269,14 @@ func TestHandler_deleteDataHandler(t *testing.T) {
 
 	httpmock.RegisterResponder("DELETE", lo.Must(url.JoinPath(testCMSHost, "/api/items/", itemID)), httpmock.NewBytesResponder(http.StatusNoContent, nil))
 
-	p := path.Join("/aaa/data/", itemID)
+	p := path.Join("/", testCMSProject, "data/", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
-	ctx.SetParamValues("aaa", itemID)
+	ctx.SetParamValues(testCMSProject, itemID)
 
 	handler := newHandler().deleteDataHandler()
 	res := handler(ctx)
@@ -254,7 +314,7 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Model{}),
 	)
 
-	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/templates", nil)
+	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates"), nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
@@ -283,13 +343,13 @@ func TestHandler_fetchTemplateHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", templateID)), responder)
 
-	req := httptest.NewRequest(http.MethodGet, path.Join("/aaa/templates", templateID), nil)
+	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates", templateID), nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
-	ctx.SetParamNames("tid")
-	ctx.SetParamValues(templateID)
+	ctx.SetParamNames("pid", "tid")
+	ctx.SetParamValues(testCMSProject, templateID)
 
 	handler := newHandler().fetchTemplateHandler()
 	res := handler(ctx)
@@ -317,7 +377,7 @@ func TestHandler_createTemplateHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")), responder)
 
-	req := httptest.NewRequest(http.MethodGet, "/"+testCMSProject+"/templates", strings.NewReader(`{"hoge":"hoge"}`))
+	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates"), strings.NewReader(`{"hoge":"hoge"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 	ctx := echo.New().NewContext(req, rec)
@@ -350,13 +410,13 @@ func TestHandler_updateTemplateHandler(t *testing.T) {
 	}
 	httpmock.RegisterResponder("PATCH", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 
-	p := path.Join("/aaa/templates/", itemID)
+	p := path.Join("/", testCMSProject, "templates/", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, strings.NewReader(`{"hoge":"hoge"}`))
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
-	ctx.SetParamValues("aaa", itemID)
+	ctx.SetParamValues(testCMSProject, itemID)
 
 	handler := newHandler().updateDataHandler()
 	res := handler(ctx)
@@ -372,13 +432,13 @@ func TestHandler_deleteTemplateHandler(t *testing.T) {
 
 	httpmock.RegisterResponder("DELETE", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), httpmock.NewBytesResponder(http.StatusNoContent, nil))
 
-	req := httptest.NewRequest(http.MethodGet, path.Join("/aaa/templates", itemID), nil)
+	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates", itemID), nil)
 	req.Header.Set("Content-Type", "application/json")
 	rec := httptest.NewRecorder()
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
-	ctx.SetParamValues("aaa", itemID)
+	ctx.SetParamValues(testCMSProject, itemID)
 
 	handler := newHandler().deleteDataHandler()
 	res := handler(ctx)
@@ -433,9 +493,47 @@ func TestHandler_LastModified(t *testing.T) {
 	assert.Equal(t, lastModified2.Format(time.RFC1123), w.Header().Get(echo.HeaderLastModified))
 }
 
+func TestHandler_getToken(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+	mockCMSToken()
+	h := newHandler()
+
+	toekn, err := h.getToken(context.Background(), "prjprj")
+	assert.NoError(t, err)
+	assert.Equal(t, "token!", toekn)
+
+	toekn, err = h.getToken(context.Background(), "prjprj!")
+	assert.Equal(t, rerror.ErrNotFound, err)
+	assert.Empty(t, toekn)
+}
+
 func newHandler() *Handler {
-	CMS := lo.Must(cms.New(testCMSHost, testCMSToken))
 	return &Handler{
-		CMS: CMS,
+		cmsbase:         testCMSHost,
+		cmsMainProject:  testCMSProject,
+		cmsTokenProject: tokenProject,
+		cmsMain:         lo.Must(cms.New(testCMSHost, testCMSToken)),
 	}
+}
+
+func mockCMSToken() {
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", tokenProject, "models", tokenModel, "items")),
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, cms.Items{
+			PerPage:    1,
+			Page:       1,
+			TotalCount: 1,
+			Items: []cms.Item{
+				{
+					ID: "id",
+					Fields: []cms.Field{
+						{Key: tokenProjectField, Value: "prjprj"},
+						{Key: tokenTokenField, Value: "token!"},
+					},
+				},
+			},
+		}),
+	)
 }

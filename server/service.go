@@ -198,7 +198,7 @@ func Opinion(conf *Config) (*Service, error) {
 
 func Sidebar(conf *Config) (*Service, error) {
 	c := conf.Sidebar()
-	if c.AdminToken == "" || c.CMSToken == "" || c.CMSBaseURL == "" {
+	if c.AdminToken == "" || c.CMSMainToken == "" || c.CMSBaseURL == "" {
 		return nil, nil
 	}
 
