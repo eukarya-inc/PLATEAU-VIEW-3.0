@@ -140,13 +140,16 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 		}
 
 		data, err := cmsh.GetItemsByKeyInParallel(ctx, md.ProjectAlias, dataModelKey, false, limit)
-		if err != nil || data == nil {
-			if errors.Is(err, cms.ErrNotFound) || data == nil {
+		if err != nil {
+			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
 		}
 
+		if data == nil {
+			return c.JSON(http.StatusOK, itemsToJSONs(nil))
+		}
 		return c.JSON(http.StatusOK, itemsToJSONs(data.Items))
 	}
 }
@@ -450,7 +453,7 @@ func (h *Handler) lastModified(c echo.Context, prj string, models ...string) (bo
 		model, err := cmsh.GetModelByKey(ctx, prj, m)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
-				return false, c.JSON(http.StatusNotFound, "not found")
+				continue
 			}
 			return false, err
 		}

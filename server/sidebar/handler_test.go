@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"path"
 	"strings"
 	"testing"
@@ -45,13 +44,16 @@ func TestHandler(t *testing.T) {
 	ctx.SetParamValues(project)
 
 	h := &Handler{
-		cmsMain: lo.Must(cms.New(base, token)),
+		cmsbase:         base,
+		cmsTokenProject: tokenProject,
+		cmsMain:         lo.Must(cms.New(base, token)),
 	}
-	handler := h.getAllDataHandler()
+	handler := h.AuthMiddleware()(h.fetchRoot())
 	assert.NoError(t, handler(ctx))
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+	assert.Equal(t, "", rec.Body.String())
 
-	_ = os.WriteFile("result.json", rec.Body.Bytes(), 0644)
+	// _ = os.WriteFile("result.json", rec.Body.Bytes(), 0644)
 }
 
 func TestHandler_getDataHandler(t *testing.T) {
