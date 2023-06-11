@@ -9,6 +9,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauv2"
 	"github.com/jarcoal/httpmock"
+	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
@@ -52,4 +53,48 @@ func TestFetcher_Do(t *testing.T) {
 		Usecase: []UsecaseItem{{ID: "y", Type: "ユースケース"}, {ID: "z"}},
 	}, r)
 	assert.NoError(t, err)
+}
+
+func TestFetcher_Do2(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/plateau", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, map[string]any{
+		"error": "not found",
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/usecase", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, map[string]any{
+		"error": "not found",
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/dataset", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusOK, map[string]any{
+		"results":    []any{map[string]string{"id": "z"}},
+		"totalCount": 1,
+	})))
+
+	ctx := context.Background()
+	r, err := lo.Must(NewFetcher(nil, "https://example.com")).Do(ctx, "ppp")
+	assert.Equal(t, ResponseAll{
+		Plateau: nil,
+		Usecase: []UsecaseItem{{ID: "z"}},
+	}, r)
+	assert.NoError(t, err)
+}
+
+func TestFetcher_Do3(t *testing.T) {
+	httpmock.Activate()
+	defer httpmock.Deactivate()
+
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/plateau", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, map[string]any{
+		"error": "not found",
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/usecase", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, map[string]any{
+		"error": "not found",
+	})))
+	httpmock.RegisterResponderWithQuery("GET", "https://example.com/api/p/ppp/dataset", "page=1&per_page=100", lo.Must(httpmock.NewJsonResponder(http.StatusNotFound, map[string]any{
+		"error": "not found",
+	})))
+
+	ctx := context.Background()
+	r, err := lo.Must(NewFetcher(nil, "https://example.com")).Do(ctx, "ppp")
+	assert.Equal(t, rerror.ErrNotFound, err)
+	assert.Empty(t, r)
 }

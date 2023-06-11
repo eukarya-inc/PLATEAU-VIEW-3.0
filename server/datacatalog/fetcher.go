@@ -77,7 +77,7 @@ func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	r := ResponseAll{}
 
 	if res := <-res1; res.B != nil {
-		if errors.Is(res.B, rerror.ErrNotFound) {
+		if errors.Is(res.B, cms.ErrNotFound) {
 			notFound++
 		} else {
 			return ResponseAll{}, res.B
@@ -87,7 +87,7 @@ func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	}
 
 	if res := <-res2; res.B != nil {
-		if errors.Is(res.B, rerror.ErrNotFound) {
+		if errors.Is(res.B, cms.ErrNotFound) {
 			notFound++
 		} else {
 			return ResponseAll{}, res.B
@@ -97,7 +97,7 @@ func (f *Fetcher) Do(ctx context.Context, project string) (ResponseAll, error) {
 	}
 
 	if res := <-res3; res.B != nil {
-		if errors.Is(res.B, rerror.ErrNotFound) {
+		if errors.Is(res.B, cms.ErrNotFound) {
 			notFound++
 		} else {
 			return ResponseAll{}, res.B
