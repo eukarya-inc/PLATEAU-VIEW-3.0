@@ -81,7 +81,11 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 				dataErrCh <- err
 				return
 			}
-			dataCh <- data.Items
+			if data == nil {
+				dataCh <- nil
+			} else {
+				dataCh <- data.Items
+			}
 			close(dataErrCh)
 		}()
 
@@ -91,7 +95,11 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 				templateErrCh <- err
 				return
 			}
-			templatesCh <- templates.Items
+			if templates == nil {
+				templatesCh <- nil
+			} else {
+				templatesCh <- templates.Items
+			}
 			close(templateErrCh)
 		}()
 
@@ -132,8 +140,8 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 		}
 
 		data, err := cmsh.GetItemsByKeyInParallel(ctx, prj, dataModelKey, false, limit)
-		if err != nil {
-			if errors.Is(err, cms.ErrNotFound) {
+		if err != nil || data == nil {
+			if errors.Is(err, cms.ErrNotFound) || data == nil {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -300,8 +308,8 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 		}
 
 		res, err := cmsh.GetItemsByKeyInParallel(ctx, prj, templateModelKey, false, limit)
-		if err != nil {
-			if errors.Is(err, cms.ErrNotFound) {
+		if err != nil || res == nil {
+			if errors.Is(err, cms.ErrNotFound) || res == nil {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
@@ -514,8 +522,8 @@ func (h *Handler) getToken(ctx context.Context, prj string) (string, error) {
 	}
 
 	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsTokenProject, tokenModel, false, 100)
-	if err != nil {
-		if errors.Is(err, cms.ErrNotFound) {
+	if err != nil || items == nil {
+		if errors.Is(err, cms.ErrNotFound) || items == nil {
 			return "", rerror.ErrNotFound
 		}
 		return "", rerror.ErrInternalBy(fmt.Errorf("sidebar: failed to get token: %w", err))
