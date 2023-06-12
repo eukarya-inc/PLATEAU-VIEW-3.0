@@ -56,7 +56,7 @@ func NewHandler(c Config) (*Handler, error) {
 	}, nil
 }
 
-func (h *Handler) AuthMiddleware() echo.MiddlewareFunc {
+func (h *Handler) AuthMiddleware(skipAuth bool) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
@@ -74,7 +74,7 @@ func (h *Handler) AuthMiddleware() echo.MiddlewareFunc {
 			}
 
 			// auth
-			if req.Method == http.MethodPost || req.Method == http.MethodPatch || req.Method == http.MethodPut || req.Method == http.MethodDelete {
+			if !skipAuth && (req.Method == http.MethodPost || req.Method == http.MethodPatch || req.Method == http.MethodPut || req.Method == http.MethodDelete) {
 				header := req.Header.Get("Authorization")
 				token := strings.TrimPrefix(header, "Bearer ")
 				if md.SidebarAccessToken == "" || token != md.SidebarAccessToken {

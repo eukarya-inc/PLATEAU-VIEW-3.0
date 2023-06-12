@@ -33,7 +33,6 @@ func TestShareEcho(t *testing.T) {
 		CMSBaseURL:     "https://cms.example.com",
 		CMSMainToken:   "token",
 		CMSMainProject: "prj",
-		AdminToken:     "token",
 	}))
 
 	r := httptest.NewRequest("GET", "/share/prj/aaaa", nil)
@@ -49,20 +48,12 @@ func TestShareEcho(t *testing.T) {
 	assert.Equal(t, `{"a":"b"}`, strings.TrimSpace(w.Body.String()))
 
 	r = httptest.NewRequest("POST", "/share/prj", strings.NewReader(`{"a":"b"}`))
-	r.Header.Set("Authorization", "Bearer token")
 	w = httptest.NewRecorder()
 	e.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusOK, w.Result().StatusCode)
 	assert.Equal(t, `"aaa"`, strings.TrimSpace(w.Body.String()))
 
-	r = httptest.NewRequest("POST", "/share/prj", strings.NewReader(`{"a":"b"}`))
-	w = httptest.NewRecorder()
-	e.ServeHTTP(w, r)
-	assert.Equal(t, http.StatusUnauthorized, w.Result().StatusCode)
-	assert.Equal(t, `"unauthorized"`, strings.TrimSpace(w.Body.String()))
-
 	r = httptest.NewRequest("POST", "/share/prj", strings.NewReader(`---`))
-	r.Header.Set("Authorization", "Bearer token")
 	w = httptest.NewRecorder()
 	e.ServeHTTP(w, r)
 	assert.Equal(t, http.StatusBadRequest, w.Result().StatusCode)
