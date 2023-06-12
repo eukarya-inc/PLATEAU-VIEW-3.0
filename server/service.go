@@ -11,10 +11,10 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
-	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
+	"github.com/reearth/reearthx/util"
 )
 
 type Service struct {
@@ -30,7 +30,6 @@ var services = [](func(*Config) (*Service, error)){
 	SDK,
 	SDKAPI,
 	SearchIndex,
-	Share,
 	Opinion,
 	Sidebar,
 	DataCatalog,
@@ -167,20 +166,6 @@ func SDKAPI(conf *Config) (*Service, error) {
 	}, nil
 }
 
-func Share(conf *Config) (*Service, error) {
-	c := conf.Share()
-	if c.CMSBase == "" || c.CMSToken == "" || c.Disable {
-		return nil, nil
-	}
-
-	return &Service{
-		Name: "share",
-		Echo: func(g *echo.Group) error {
-			return share.Echo(g.Group("/share"), c)
-		},
-	}, nil
-}
-
 func Opinion(conf *Config) (*Service, error) {
 	c := conf.Opinion()
 	if c.SendGridAPIKey == "" || c.From == "" || c.To == "" {
@@ -206,7 +191,10 @@ func Sidebar(conf *Config) (*Service, error) {
 		Name:           "sidebar",
 		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
-			return sidebar.Echo(g.Group("/sidebar"), c)
+			return util.Try(
+				func() error { return sidebar.Echo(g.Group("/sidebar"), c) },
+				func() error { return sidebar.ShareEcho(g.Group("/share"), c) },
+			)
 		},
 	}, nil
 }

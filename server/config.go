@@ -13,7 +13,6 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
-	"github.com/eukarya-inc/reearth-plateauview/server/share"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -135,16 +134,6 @@ func (c *Config) SDKAPI() sdkapi.Config {
 	}
 }
 
-func (c *Config) Share() share.Config {
-	return share.Config{
-		CMSBase:  c.CMS_BaseURL,
-		CMSToken: c.CMS_Token,
-		Disable:  c.Share_Disable,
-		// CMSModel:   c.CMS_ShareModel,
-		// CMSDataFieldKey: c.CMS_ShareField,
-	}
-}
-
 func (c *Config) Opinion() opinion.Config {
 	return opinion.Config{
 		SendGridAPIKey: c.SendGrid_APIKey,
@@ -176,6 +165,7 @@ func (c *Config) Sidebar() sidebar.Config {
 		CMSBaseURL:      c.CMS_BaseURL,
 		CMSMainToken:    c.CMS_Token,
 		CMSTokenProject: c.CMS_TokenProject,
+		DisableShare:    c.Share_Disable,
 		// compat
 		CMSMainProject: c.CMS_SystemProject,
 		AdminToken:     c.Sidebar_Token,
