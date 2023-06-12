@@ -7,9 +7,13 @@ import { Data, DataCatalogItem, Template } from "../../../types";
 export default ({
   templates,
   project,
-  backendURL,
-  backendProjectName,
-  backendAccessToken,
+  backendURL: plateauBackendURL,
+  backendProjectName: plateuProjectName,
+  backendAccessToken: plateauAccessToken,
+  isCustomProject,
+  customBackendURL,
+  customBackendProjectName,
+  customBackendAccessToken,
   inEditor,
   setCleanseOverride,
   setLoading,
@@ -20,27 +24,76 @@ export default ({
   backendURL?: string;
   backendProjectName?: string;
   backendAccessToken?: string;
+  isCustomProject: boolean;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
+  customBackendAccessToken?: string;
   inEditor?: boolean;
   setCleanseOverride?: React.Dispatch<React.SetStateAction<string | undefined>>;
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
   updateProject?: React.Dispatch<React.SetStateAction<Project>>;
 }) => {
-  const handleDataFetch = useCallback(async () => {
-    if (!backendURL) return;
-    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/data`);
-    if (res.status !== 200) return;
-    const resData = await res.json();
+  const getTargetBackend = useCallback(
+    (isCustom: boolean) => {
+      return {
+        backendURL: isCustom ? customBackendURL : plateauBackendURL,
+        backendProjectName: isCustom ? customBackendProjectName : plateuProjectName,
+        backendAccessToken: isCustom ? customBackendAccessToken : plateauAccessToken,
+      };
+    },
+    [
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+    ],
+  );
 
+  const handleDataFetch = useCallback(async () => {
+    let resData: Data[] = [];
+    if (plateauBackendURL && plateuProjectName) {
+      const res = await fetch(`${plateauBackendURL}/sidebar/${plateuProjectName}/data`);
+      if (res.status === 200) {
+        const plateauResData = (await res.json()) as Data[];
+        resData = plateauResData.map(t => ({ ...t, dataSource: "plateau" }));
+      }
+    }
+    if (isCustomProject) {
+      const res = await fetch(`${customBackendURL}/sidebar/${customBackendProjectName}/data`);
+      if (res.status === 200) {
+        const customResData = (await res.json()) as Data[];
+        resData = resData.concat(customResData.map(t => ({ ...t, dataSource: "custom" })));
+      }
+    }
     return resData;
-  }, [backendURL, backendProjectName]);
+  }, [
+    isCustomProject,
+    plateauBackendURL,
+    plateuProjectName,
+    customBackendURL,
+    customBackendProjectName,
+  ]);
 
   const handleDataRequest = useCallback(
     async (dataset?: DataCatalogItem) => {
-      if (!backendURL || !backendAccessToken || !dataset) return;
+      if (
+        !dataset ||
+        (dataset.dataSource !== "custom" &&
+          (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+        (dataset.dataSource === "custom" &&
+          (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+      )
+        return;
       const datasetToSave = convertDatasetToData(dataset, templates);
 
       const data = await handleDataFetch();
       const isNew = data ? !data.find((d: Data) => d.dataID === dataset.dataID) : undefined;
+
+      const { backendURL, backendProjectName, backendAccessToken } = getTargetBackend(
+        dataset.dataSource === "custom",
+      );
 
       const fetchURL = !isNew
         ? `${backendURL}/sidebar/${backendProjectName}/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
@@ -60,7 +113,17 @@ export default ({
         return;
       }
     },
-    [templates, backendAccessToken, backendURL, backendProjectName, handleDataFetch],
+    [
+      templates,
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+      getTargetBackend,
+      handleDataFetch,
+    ],
   );
 
   const handleDatasetUpdate = useCallback(

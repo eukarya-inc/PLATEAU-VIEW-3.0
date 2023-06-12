@@ -4,34 +4,56 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 
 import useHooks from "./hooks";
+import useDataset from "./useDataset";
 
 const DataCatalog: React.FC = () => {
   const {
     currentTab,
-    catalog,
-    addedDatasetDataIDs,
     inEditor,
-    selectedItem,
-    expandedFolders,
+    isCustomProject,
     searchTerm,
+    selectedItem,
+    customSelectedItem,
+    expandedFolders,
+    customExpandedFolders,
     filter,
-    setExpandedFolders,
-    handleSearch,
-    handleSelect,
+    customFilter,
+    customDataCatalogTitle,
     handleFilter,
+    handleCustomFilter,
+    handleSelect,
+    handleCustomSelect,
+    handleSearch,
     handleClose,
     handleTabChange,
-    handleDatasetAdd,
-    handleDatasetPublish,
+    setExpandedFolders,
+    setCustomExpandedFolders,
   } = useHooks();
+
+  const {
+    catalog: customCatalog,
+    addedDatasetDataIDs: customAddedDatasetDataIDs,
+    handleDatasetAdd: handleCustomDatasetAdd,
+    handleDatasetPublish: handleCustomDatasetPublish,
+  } = useDataset({ inEditor, dataSource: "custom" });
+
+  const { catalog, addedDatasetDataIDs, handleDatasetAdd, handleDatasetPublish } = useDataset({
+    inEditor,
+    dataSource: "plateau",
+  });
 
   return (
     <Wrapper>
       <Header>
         <Title>データカタログ</Title>
         <TabsWrapper>
-          <Tab selected={currentTab === "dataset"} onClick={() => handleTabChange("dataset")}>
-            <Logo icon="plateauLogoPart" selected={currentTab === "dataset"} />
+          {isCustomProject && (
+            <Tab selected={currentTab === "custom"} onClick={() => handleTabChange("custom")}>
+              <TabName>{customDataCatalogTitle}</TabName>
+            </Tab>
+          )}
+          <Tab selected={currentTab === "plateau"} onClick={() => handleTabChange("plateau")}>
+            <Logo icon="plateauLogoPart" selected={currentTab === "plateau"} />
             <TabName>PLATEAUデータセット</TabName>
           </Tab>
           <Tab selected={currentTab === "your-data"} onClick={() => handleTabChange("your-data")}>
@@ -45,7 +67,7 @@ const DataCatalog: React.FC = () => {
       </Header>
       {currentTab === "your-data" ? (
         <YourDataPage onDatasetAdd={handleDatasetAdd} />
-      ) : (
+      ) : currentTab === "plateau" ? (
         <DatasetsPage
           catalog={catalog}
           addedDatasetDataIDs={addedDatasetDataIDs}
@@ -54,12 +76,32 @@ const DataCatalog: React.FC = () => {
           expandedFolders={expandedFolders}
           searchTerm={searchTerm}
           filter={filter}
+          dataSource={"plateau"}
+          editable={!isCustomProject}
           setExpandedFolders={setExpandedFolders}
           onSearch={handleSearch}
           onSelect={handleSelect}
           onFilter={handleFilter}
           onDatasetAdd={handleDatasetAdd}
           onDatasetPublish={handleDatasetPublish}
+        />
+      ) : (
+        <DatasetsPage
+          catalog={customCatalog}
+          addedDatasetDataIDs={customAddedDatasetDataIDs}
+          inEditor={inEditor}
+          selectedItem={customSelectedItem}
+          expandedFolders={customExpandedFolders}
+          searchTerm={searchTerm}
+          filter={customFilter}
+          dataSource={"custom"}
+          editable={isCustomProject}
+          setExpandedFolders={setCustomExpandedFolders}
+          onSearch={handleSearch}
+          onSelect={handleCustomSelect}
+          onFilter={handleCustomFilter}
+          onDatasetAdd={handleCustomDatasetAdd}
+          onDatasetPublish={handleCustomDatasetPublish}
         />
       )}
     </Wrapper>
@@ -110,6 +152,7 @@ const Tab = styled.div<{ selected?: boolean }>`
   background: ${({ selected }) => (selected ? "#f4f4f4" : "#c8c8c8")};
   color: ${({ selected }) => (selected ? "var(--theme-color)" : "#898989")};
   padding: 8px 12px;
+  max-width: 370px;
   cursor: pointer;
 `;
 
@@ -120,6 +163,9 @@ const Logo = styled(Icon)<{ selected?: boolean }>`
 const TabName = styled.p`
   margin: 0;
   user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const CloseButton = styled.button`

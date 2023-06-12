@@ -23,12 +23,13 @@ type BaseFieldType = Partial<DataCatalogItem> & {
   onClick?: () => void;
 };
 
-type Tabs = "default" | "edit";
+export type Tabs = "default" | "edit";
 
 export type Props = {
   template: Template;
   templates: Template[];
   savingTemplate: boolean;
+  isCustomProject: boolean;
   onTemplateSave: (template: Template) => Promise<void>;
   onTemplateUpdate?: (template: Template) => void;
 };
@@ -36,15 +37,17 @@ const TemplateCard: React.FC<Props> = ({
   template,
   templates,
   savingTemplate,
+  isCustomProject,
   onTemplateSave,
   onTemplateUpdate,
 }) => {
-  const [currentTab, changeTab] = useState<Tabs>("edit");
+  const [currentTab, changeTab] = useState<Tabs>();
   const [hidden, setHidden] = useState(false);
 
   const [editTitle, setEditTitle] = useState(false);
 
   const {
+    editable,
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,
@@ -53,6 +56,8 @@ const TemplateCard: React.FC<Props> = ({
     handleGroupsUpdate,
   } = useHooks({
     template,
+    isCustomProject,
+    changeTab,
     onTemplateUpdate,
   });
 
@@ -153,14 +158,14 @@ const TemplateCard: React.FC<Props> = ({
                       ) : (
                         <Title>{template.name}</Title>
                       )}
-                      {currentTab === "edit" && (
+                      {currentTab === "edit" && editable && (
                         <EditIcon icon="edit" size={16} onClick={handleToggleTitleEdit} />
                       )}
                     </NameWrapper>
                   </LeftMain>
                   <ArrowIcon icon="arrowDown" size={16} expanded={expanded} />
                 </HeaderContents>
-                {expanded && (
+                {expanded && editable && (
                   <TabWrapper>
                     <Tab id="default" selected={currentTab === "default"} onClick={handleTabChange}>
                       公開

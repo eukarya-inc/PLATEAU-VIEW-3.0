@@ -6,15 +6,23 @@ export type Project = ProjectType;
 
 export default ({
   project,
-  reearthURL,
-  backendURL,
-  backendProjectName,
+  reearthURL: plateauReearthURL,
+  backendURL: plateauBackendURL,
+  backendProjectName: plateauBackendProjectName,
+  isCustomProject,
+  customReearthURL,
+  customBackendURL,
+  customBackendProjectName,
   messageApi,
 }: {
   project?: Project;
   reearthURL?: string;
   backendURL?: string;
   backendProjectName?: string;
+  isCustomProject: boolean;
+  customReearthURL?: string;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
   messageApi: any;
 }) => {
   const [publishedUrl, setPublishedUrl] = useState<string>();
@@ -58,8 +66,22 @@ export default ({
           link.click();
           link.remove();
         } else if (e.data.action === "getCurrentCamera") {
-          if (!backendURL || !backendProjectName || !reearthURL || !project || !e.data.payload)
+          if (
+            (!isCustomProject &&
+              (!plateauBackendURL || !plateauBackendProjectName || !plateauReearthURL)) ||
+            (isCustomProject &&
+              (!customBackendURL || !customBackendProjectName || !customReearthURL)) ||
+            !project ||
+            !e.data.payload
+          )
             return;
+
+          const backendURL = isCustomProject ? customBackendURL : plateauBackendURL;
+          const backendProjectName = isCustomProject
+            ? customBackendProjectName
+            : plateauBackendProjectName;
+          const reearthURL = isCustomProject ? customReearthURL : plateauReearthURL;
+
           const updatedProject: Project = {
             ...project,
             sceneOverrides: [
@@ -84,7 +106,9 @@ export default ({
             }
           } else {
             const project = await resp.json();
-            setPublishedUrl(`${reearthURL}${reearthURL.includes("?") ? "&" : "?"}share=${project}`);
+            setPublishedUrl(
+              `${reearthURL}${reearthURL?.includes("?") ? "&" : "?"}share=${project}`,
+            );
           }
         }
       }
@@ -93,7 +117,17 @@ export default ({
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [project, reearthURL, messageApi, backendProjectName, backendURL]);
+  }, [
+    project,
+    messageApi,
+    plateauReearthURL,
+    plateauBackendURL,
+    plateauBackendProjectName,
+    isCustomProject,
+    customReearthURL,
+    customBackendURL,
+    customBackendProjectName,
+  ]);
 
   return {
     shareDisabled,

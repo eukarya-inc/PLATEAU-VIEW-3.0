@@ -71,8 +71,11 @@ export default ({
   fieldTemplates,
   infoboxTemplates,
   updatedTemplateIDs,
-  backendURL,
-  backendProjectName,
+  backendURL: plateauBackendURL,
+  backendProjectName: plateuProjectName,
+  isCustomProject,
+  customBackendURL,
+  customBackendProjectName,
   buildingSearch,
   setUpdatedTemplateIDs,
 }: {
@@ -81,6 +84,9 @@ export default ({
   updatedTemplateIDs?: string[];
   backendURL?: string;
   backendProjectName?: string;
+  isCustomProject: boolean;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
   buildingSearch?: BuildingSearch;
   setUpdatedTemplateIDs?: React.Dispatch<React.SetStateAction<string[] | undefined>>;
 }) => {
@@ -313,9 +319,17 @@ export default ({
   const fetchedSharedProject = useRef(false);
 
   useEffect(() => {
-    if (!backendURL || !backendProjectName || fetchedSharedProject.current) return;
+    if (
+      (!isCustomProject && (!plateauBackendURL || !plateuProjectName)) ||
+      (isCustomProject && (!customBackendURL || !customBackendProjectName)) ||
+      fetchedSharedProject.current
+    )
+      return;
+
     if (projectID) {
       (async () => {
+        const backendURL = isCustomProject ? customBackendURL : plateauBackendURL;
+        const backendProjectName = isCustomProject ? customBackendProjectName : plateuProjectName;
         const res = await fetch(`${backendURL}/share/${backendProjectName}/${projectID}`);
         if (res.status !== 200) return;
         const data = await res.json();
@@ -333,8 +347,11 @@ export default ({
     }
   }, [
     projectID,
-    backendURL,
-    backendProjectName,
+    isCustomProject,
+    plateauBackendURL,
+    plateuProjectName,
+    customBackendURL,
+    customBackendProjectName,
     handleProjectDatasetAdd,
     handleInitUserStory,
     handleProjectSceneUpdate,

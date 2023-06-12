@@ -17,8 +17,16 @@ const MobileDropdown: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>();
   const [templates, setTemplates] = useState<Template[]>();
   const [project, setProject] = useState<Project>(defaultProject);
+
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
+
+  const [isCustomProject, setIsCustomProject] = useState<boolean>(false);
+
+  const [customExpandedFolders, setCustomExpandedFolders] = useState<
+    { id?: string; name?: string }[]
+  >([]);
+
   const [inEditor, setInEditor] = useState(false);
 
   const [selectedDataset, setSelectedDataset] = useState<DataCatalogItem>();
@@ -29,6 +37,12 @@ const MobileDropdown: React.FC = () => {
   const [backendURL, setBackendURL] = useState<string>();
   const [backendProjectName, setBackendProjectName] = useState<string>();
 
+  const [customCatalogProjectName, setCustomCatalogProjectName] = useState<string>();
+  const [customCatalogURL, setCustomCatalogURL] = useState<string>();
+  const [customReearthURL, setCustomReearthURL] = useState<string>();
+  const [customBackendURL, setCustomBackendURL] = useState<string>();
+  const [customBackendProjectName, setCustomBackendProjectName] = useState<string>();
+
   useEffect(() => {
     postMsg({ action: "initPopup" });
   }, []);
@@ -37,6 +51,8 @@ const MobileDropdown: React.FC = () => {
     (tab: Tab) => {
       postMsg({ action: "msgFromPopup", payload: { currentTab: tab } }); // changes the selected tab in the ui
       setCurrentTab(tab); // changes the selected tab in the popup
+      setSearchTerm("");
+      postMsg({ action: "saveSearchTerm", payload: { searchTerm: "" } });
     },
     [setCurrentTab],
   );
@@ -87,16 +103,29 @@ const MobileDropdown: React.FC = () => {
           if (e.data.payload.selected) setCurrentTab(e.data.payload.selected);
           if (e.data.payload.templates) setTemplates(e.data.payload.templates);
           if (e.data.payload.project) setProject(e.data.payload.project);
+          if (e.data.payload.inEditor) setInEditor(e.data.payload.inEditor);
           if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
           if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
+
+          if (e.data.payload.isCustomProject) setIsCustomProject(e.data.payload.isCustomProject);
+          if (e.data.payload.customExpandedFolders)
+            setCustomExpandedFolders(e.data.payload.customExpandedFolders);
+
           if (e.data.payload.reearthURL) setReearthURL(e.data.payload.reearthURL);
           if (e.data.payload.backendURL) setBackendURL(e.data.payload.backendURL);
           if (e.data.payload.catalogURL) setCatalogURL(e.data.payload.catalogURL);
           if (e.data.payload.catalogProjectName)
             setCatalogProjectName(e.data.payload.catalogProjectName);
-          if (e.data.payload.inEditor) setInEditor(e.data.payload.inEditor);
           if (e.data.payload.backendProjectName)
             setBackendProjectName(e.data.payload.backendProjectName);
+
+          if (e.data.payload.customReearthURL) setCustomReearthURL(e.data.payload.customReearthURL);
+          if (e.data.payload.customBackendURL) setCustomBackendURL(e.data.payload.customBackendURL);
+          if (e.data.payload.customCatalogURL) setCustomCatalogURL(e.data.payload.customCatalogURL);
+          if (e.data.payload.customCatalogProjectName)
+            setCustomCatalogProjectName(e.data.payload.customCatalogProjectName);
+          if (e.data.payload.customBackendProjectName)
+            setCustomBackendProjectName(e.data.payload.customBackendProjectName);
         } else if (e.data.action === "mobileCatalogOpen") {
           setSelectedDataset(e.data.payload);
           changeTab("catalog");
@@ -110,7 +139,12 @@ const MobileDropdown: React.FC = () => {
   });
 
   const addedDatasetDataIDs = useMemo(
-    () => project?.datasets?.map(dataset => dataset.dataID),
+    () => project?.datasets?.filter(d => d.dataSource === "plateau").map(dataset => dataset.dataID),
+    [project?.datasets],
+  );
+
+  const customAddedDatasetDataIDs = useMemo(
+    () => project?.datasets?.filter(d => d.dataSource === "custom").map(dataset => dataset.dataID),
     [project?.datasets],
   );
 
@@ -120,18 +154,26 @@ const MobileDropdown: React.FC = () => {
         {
           catalog: (
             <Catalog
-              addedDatasetDataIDs={addedDatasetDataIDs}
               isMobile
+              inEditor={inEditor}
+              isCustomProject={isCustomProject}
+              addedDatasetDataIDs={addedDatasetDataIDs}
               searchTerm={searchTerm}
               expandedFolders={expandedFolders}
               selectedDataset={selectedDataset}
-              inEditor={inEditor}
               catalogProjectName={catalogProjectName}
               catalogURL={catalogURL}
               backendURL={backendURL}
               backendProjectName={backendProjectName}
+              customAddedDatasetDataIDs={customAddedDatasetDataIDs}
+              customExpandedFolders={customExpandedFolders}
+              customCatalogProjectName={customCatalogProjectName}
+              customCatalogURL={customCatalogURL}
+              customBackendURL={customBackendURL}
+              customBackendProjectName={customBackendProjectName}
               setSelectedDataset={setSelectedDataset}
               setExpandedFolders={setExpandedFolders}
+              setCustomExpandedFolders={setCustomExpandedFolders}
               onSearch={handleSearch}
               setSearchTerm={setSearchTerm}
               onDatasetAdd={handleDatasetAdd}
@@ -141,6 +183,7 @@ const MobileDropdown: React.FC = () => {
             <Selection
               selectedDatasets={project.datasets}
               templates={templates}
+              isCustomProject={isCustomProject}
               onDatasetUpdate={handleDatasetUpdate}
               onDatasetRemove={handleProjectDatasetRemove}
               onDatasetRemoveAll={handleProjectDatasetRemoveAll}
@@ -155,6 +198,10 @@ const MobileDropdown: React.FC = () => {
               reearthURL={reearthURL}
               backendURL={backendURL}
               backendProjectName={backendProjectName}
+              isCustomProject={isCustomProject}
+              customReearthURL={customReearthURL}
+              customBackendURL={customBackendURL}
+              customBackendProjectName={customBackendProjectName}
               onProjectSceneUpdate={handleProjectSceneUpdate}
             />
           ),

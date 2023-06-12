@@ -1,4 +1,4 @@
-import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
+import { DataCatalogGroup, DataCatalogItem, DataSource } from "../../../../api/api";
 
 import File from "./File";
 import Folder from "./Folder";
@@ -10,6 +10,7 @@ type Props = {
   selectedID?: string;
   nestLevel: number;
   expandedFolders?: { id?: string; name?: string }[];
+  dataSource?: DataSource;
   addDisabled: (dataID: string) => boolean;
   onDatasetAdd: (dataset: DataCatalogItem, keepModalOpen?: boolean) => void;
   onSelect?: (item: DataCatalogItem | DataCatalogGroup) => void;
@@ -23,6 +24,7 @@ const TreeBuilder: React.FC<Props> = ({
   selectedID,
   nestLevel,
   expandedFolders,
+  dataSource,
   addDisabled,
   onDatasetAdd,
   onSelect,
@@ -42,6 +44,7 @@ const TreeBuilder: React.FC<Props> = ({
               expandedFolders={expandedFolders}
               isMobile={isMobile}
               selectedID={selectedID}
+              dataSource={dataSource}
               onSelect={onSelect}
               setExpandedFolders={setExpandedFolders}>
               <TreeBuilder
@@ -50,6 +53,7 @@ const TreeBuilder: React.FC<Props> = ({
                 selectedID={selectedID}
                 nestLevel={nestLevel + 1}
                 expandedFolders={expandedFolders}
+                dataSource={dataSource}
                 addDisabled={addDisabled}
                 onDatasetAdd={onDatasetAdd}
                 onSelect={onSelect}
@@ -63,6 +67,7 @@ const TreeBuilder: React.FC<Props> = ({
               selectedID={selectedID}
               nestLevel={nestLevel + 1}
               expandedFolders={expandedFolders}
+              dataSource={dataSource}
               addDisabled={addDisabled}
               onDatasetAdd={onDatasetAdd}
               onSelect={onSelect}
@@ -80,6 +85,7 @@ const TreeBuilder: React.FC<Props> = ({
           expandedFolders={expandedFolders}
           isMobile={isMobile}
           selectedID={selectedID}
+          dataSource={dataSource}
           onSelect={onSelect}
           setExpandedFolders={setExpandedFolders}>
           <TreeBuilder
@@ -88,6 +94,7 @@ const TreeBuilder: React.FC<Props> = ({
             selectedID={selectedID}
             nestLevel={nestLevel + 1}
             expandedFolders={expandedFolders}
+            dataSource={dataSource}
             addDisabled={addDisabled}
             onDatasetAdd={onDatasetAdd}
             onSelect={onSelect}

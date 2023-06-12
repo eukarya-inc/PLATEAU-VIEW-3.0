@@ -64,6 +64,8 @@ type RawRawDataCatalogItem = {
   code: number;
 };
 
+export type DataSource = "plateau" | "custom";
+
 export type RawDataCatalogItem = Omit<RawRawDataCatalogItem, "layers" | "layer" | "config"> & {
   layers?: string[];
   config?: {
@@ -81,6 +83,7 @@ export type GroupBy = "city" | "type" | "tag"; // Tag not implemented yet
 export async function getDataCatalog(
   base: string,
   project?: string,
+  dataSource?: DataSource,
 ): Promise<RawDataCatalogItem[]> {
   const res = await fetch(`${base}/datacatalog${project ? `/${project}` : ""}`);
   if (!res.ok) {
@@ -88,12 +91,13 @@ export async function getDataCatalog(
   }
 
   const data: RawRawDataCatalogItem[] = await res.json();
-  return data.map(modifyDataCatalog);
+  return data.map(d => modifyDataCatalog(d, dataSource));
 }
 
 export function modifyDataCatalog(
   d: Omit<RawRawDataCatalogItem, "pref_code_i" | "city_code_i" | "ward_code_i" | "tags" | "code">,
-): RawDataCatalogItem {
+  dataSource?: DataSource,
+): RawDataCatalogItem & { dataSource?: DataSource } {
   const pref = d.pref === "全国" || d.pref === "全球" ? zenkyu : d.pref;
   const pref_code = d.pref === "全国" || d.pref === "全球" || d.pref === zenkyu ? "0" : d.pref_code;
   const pref_code_i = parseInt(pref_code ?? "");
@@ -136,6 +140,7 @@ export function modifyDataCatalog(
           },
         }
       : {}),
+    dataSource,
   };
 }
 

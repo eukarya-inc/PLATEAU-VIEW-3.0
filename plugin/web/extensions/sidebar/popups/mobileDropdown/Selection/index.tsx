@@ -11,6 +11,7 @@ type Props = {
   selectedDatasets: DataCatalogItem[];
   savingDataset?: boolean;
   templates?: Template[];
+  isCustomProject: boolean;
   onDatasetUpdate: (updatedDataset: DataCatalogItem) => void;
   onDatasetRemove: (id: string) => void;
   onDatasetRemoveAll: () => void;
@@ -23,6 +24,7 @@ const Selection: React.FC<Props> = ({
   selectedDatasets,
   savingDataset,
   templates,
+  isCustomProject,
   onDatasetUpdate,
   onDatasetRemove,
   onDatasetRemoveAll,
@@ -44,6 +46,7 @@ const Selection: React.FC<Props> = ({
         savingDataset={savingDataset}
         templates={templates}
         isMobile
+        isCustomProject={isCustomProject}
         onDatasetUpdate={onDatasetUpdate}
         onDatasetRemove={onDatasetRemove}
         onDatasetRemoveAll={onDatasetRemoveAll}

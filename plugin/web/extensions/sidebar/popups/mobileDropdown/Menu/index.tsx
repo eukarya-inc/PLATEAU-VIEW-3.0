@@ -14,6 +14,10 @@ export type Props = {
   reearthURL?: string;
   backendURL?: string;
   backendProjectName?: string;
+  isCustomProject: boolean;
+  customReearthURL?: string;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
   onProjectSceneUpdate: (updatedProperties: Partial<ReearthApi>) => void;
 };
 
@@ -48,6 +52,10 @@ const Menu: React.FC<Props> = ({
   reearthURL,
   backendURL,
   backendProjectName,
+  isCustomProject,
+  customReearthURL,
+  customBackendURL,
+  customBackendProjectName,
   onProjectSceneUpdate,
 }) => {
   const [currentItem, changeItem] = useState<MenuItem | undefined>();
@@ -106,6 +114,10 @@ const Menu: React.FC<Props> = ({
                     reearthURL={reearthURL}
                     backendURL={backendURL}
                     backendProjectName={backendProjectName}
+                    isCustomProject={isCustomProject}
+                    customReearthURL={customReearthURL}
+                    customBackendURL={customBackendURL}
+                    customBackendProjectName={customBackendProjectName}
                     isMobile
                   />
                 ),

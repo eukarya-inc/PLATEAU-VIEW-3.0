@@ -28,8 +28,12 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
     currentPage,
     loading,
     buildingSearch,
+    customReearthURL,
+    customBackendURL,
+    customBackendProjectName,
     customProjectName,
     customLogo,
+    isCustomProject,
     handlePageChange,
     handleTemplateAdd,
     handleTemplateSave,
@@ -91,6 +95,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   templates={templates}
                   buildingSearch={buildingSearch}
                   savingDataset={loading}
+                  isCustomProject={isCustomProject}
                   onDatasetSave={handleDatasetSave}
                   onDatasetUpdate={handleDatasetUpdate}
                   onDatasetRemove={handleProjectDatasetRemove}
@@ -114,6 +119,10 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                   reearthURL={reearthURL}
                   backendURL={backendURL}
                   backendProjectName={backendProjectName}
+                  isCustomProject={isCustomProject}
+                  customReearthURL={customReearthURL}
+                  customBackendURL={customBackendURL}
+                  customBackendProjectName={customBackendProjectName}
                 />
               ),
               help: <Help />,
@@ -122,6 +131,7 @@ const DesktopSidebar: React.FC<Props> = ({ className }) => {
                 <Templates
                   templates={templates}
                   savingTemplate={loading}
+                  isCustomProject={isCustomProject}
                   onTemplateAdd={handleTemplateAdd}
                   onTemplateSave={handleTemplateSave}
                   onTemplateRemove={handleTemplateRemove}

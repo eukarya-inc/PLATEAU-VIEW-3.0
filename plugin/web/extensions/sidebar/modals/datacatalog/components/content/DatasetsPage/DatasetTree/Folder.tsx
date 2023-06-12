@@ -3,7 +3,7 @@ import { Icon } from "@web/sharedComponents";
 import { styled } from "@web/theme";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-import { DataCatalogGroup, DataCatalogItem } from "../../../../api/api";
+import { DataCatalogGroup, DataCatalogItem, DataSource } from "../../../../api/api";
 
 export type Props = {
   item: DataCatalogGroup;
@@ -13,6 +13,7 @@ export type Props = {
   nestLevel: number;
   expandedFolders?: { id?: string; name?: string }[];
   selectedID?: string;
+  dataSource?: DataSource;
   onSelect?: (item: DataCatalogItem | DataCatalogGroup) => void;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   children?: React.ReactNode;
@@ -26,6 +27,7 @@ const Folder: React.FC<Props> = ({
   nestLevel,
   expandedFolders,
   selectedID,
+  dataSource,
   onSelect,
   setExpandedFolders,
   children,
@@ -56,12 +58,12 @@ const Folder: React.FC<Props> = ({
         index >= 0 ? newExpandedFolders.splice(index, 1) : newExpandedFolders.push(folder);
         postMsg({
           action: "saveExpandedFolders",
-          payload: { expandedFolders: newExpandedFolders },
+          payload: { dataSource, expandedFolders: newExpandedFolders },
         });
         return newExpandedFolders;
       });
     },
-    [item, findCb, onSelect, setExpandedFolders],
+    [item, dataSource, findCb, onSelect, setExpandedFolders],
   );
 
   return (

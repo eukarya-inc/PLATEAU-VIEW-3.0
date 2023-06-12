@@ -1,145 +1,56 @@
-import { Data, DataCatalogItem, Template } from "@web/extensions/sidebar/core/types";
-import { UserDataItem } from "@web/extensions/sidebar/modals/datacatalog/types";
-import {
-  convertDatasetToData,
-  handleDataCatalogProcessing,
-  postMsg,
-} from "@web/extensions/sidebar/utils";
+import { postMsg } from "@web/extensions/sidebar/utils";
 import { debounce } from "lodash-es";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { RawDataCatalogItem, getDataCatalog, GroupBy, DataCatalogGroup } from "../api/api";
+import { DataCatalogItem, GroupBy, DataCatalogGroup } from "../api/api";
 
-export type Tab = "dataset" | "your-data";
+export type Tab = "plateau" | "your-data" | "custom";
 
 export default () => {
-  const [currentTab, changeTabs] = useState<Tab>("dataset");
-  const [addedDatasetDataIDs, setAddedDatasetDataIDs] = useState<string[]>();
-  const [catalogData, setCatalog] = useState<RawDataCatalogItem[]>([]);
+  const [currentTab, changeTabs] = useState<Tab>();
   const [inEditor, setEditorState] = useState(false);
-  const [selectedItem, selectItem] = useState<DataCatalogItem | DataCatalogGroup>();
-  const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
+  const [isCustomProject, setIsCustomProject] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [customDataCatalogTitle, setCustomDataCatalogTitle] = useState<string>("");
 
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [expandedFolders, setExpandedFolders] = useState<{ id?: string; name?: string }[]>([]);
+  const [customExpandedFolders, setCustomExpandedFolders] = useState<
+    { id?: string; name?: string }[]
+  >([]);
 
-  const [backendProjectName, setBackendProjectName] = useState<string>();
-  const [backendAccessToken, setBackendAccessToken] = useState<string>();
-  const [backendURL, setBackendURL] = useState<string>();
-  const [catalogURL, setCatalogURL] = useState<string>();
-  const [publishToGeospatial, setPublishToGeospatial] = useState(false);
-
-  const [catalogProjectName, setCatalogProjectName] = useState<string>();
-
-  const [data, setData] = useState<Data[]>();
-
-  const processedCatalog = useMemo(() => {
-    if (catalogData.length < 1 || data === undefined) return;
-    const c = handleDataCatalogProcessing(catalogData, data);
-    return inEditor ? c : c.filter(c => !!c.public || c.type_en === "folder");
-  }, [catalogData, inEditor, data]);
-
-  useEffect(() => {
-    const catalogBaseUrl = catalogURL || backendURL;
-    if (catalogBaseUrl) {
-      getDataCatalog(catalogBaseUrl, catalogProjectName).then(res => {
-        setCatalog(res);
-      });
-    }
-  }, [backendURL, catalogProjectName, catalogURL]);
-
-  useEffect(() => {
-    if (!backendURL) return;
-    handleDataFetch();
-  }, [backendURL]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleDataFetch = useCallback(async () => {
-    if (!backendURL || !backendProjectName) return;
-    const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/data`);
-    if (res.status !== 200) return;
-    const resData = await res.json();
-
-    setData(resData ?? []);
-  }, [backendURL, backendProjectName]);
-
-  const handleDataRequest = useCallback(
-    async (dataset?: DataCatalogItem) => {
-      if (!backendURL || !backendAccessToken || !dataset) return;
-      const datasetToSave = convertDatasetToData(dataset, templates);
-
-      const isNew = !data?.find(d => d.dataID === dataset.dataID);
-
-      const fetchURL = !isNew
-        ? `${backendURL}/sidebar/${backendProjectName}/data/${dataset.id}` // should be id and not dataID because id here is the CMS item's id
-        : `${backendURL}/sidebar/${backendProjectName}/data`;
-
-      const method = !isNew ? "PATCH" : "POST";
-
-      const res = await fetch(fetchURL, {
-        headers: {
-          authorization: `Bearer ${backendAccessToken}`,
-        },
-        method,
-        body: JSON.stringify(datasetToSave),
-      });
-      if (res.status === 200) {
-        const resData = await res.json();
-        setData(prevData => {
-          if (!prevData) {
-            return [resData];
-          }
-          const index = prevData?.findIndex(d => d.dataID === resData.dataID);
-          const updatedData = [...prevData];
-          if (index !== -1) {
-            updatedData[index] = resData;
-          } else {
-            updatedData.push(resData);
-          }
-          return updatedData;
-        });
-      }
-    },
-    [data, templates, backendAccessToken, backendURL, backendProjectName],
-  );
-
-  const handleDatasetPublish = useCallback(
-    (dataID: string, publish: boolean) => {
-      if (!inEditor || !processedCatalog) return;
-      const dataset = processedCatalog.find(item => item.dataID === dataID);
-
-      if (!dataset) return;
-
-      dataset.public = publish;
-
-      postMsg({ action: "updateDataset", payload: dataset });
-      handleDataRequest(dataset);
-
-      if (publish && publishToGeospatial && dataset.itemId && backendURL && backendAccessToken) {
-        fetch(`${backendURL}/publish_to_geospatialjp`, {
-          headers: {
-            authorization: `Bearer ${backendAccessToken}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({ id: dataset.itemId }),
-        })
-          .then(r => {
-            if (!r.ok)
-              throw `failed to publish the data on gspatial.jp: status code is ${r.statusText}`;
-          })
-          .catch(console.error);
-      }
-    },
-    [
-      processedCatalog,
-      inEditor,
-      backendAccessToken,
-      backendURL,
-      publishToGeospatial,
-      handleDataRequest,
-    ],
-  );
   const [filter, setFilter] = useState<GroupBy>("city");
+  const [customFilter, setCustomFilter] = useState<GroupBy>("city");
+
+  const [selectedItem, selectItem] = useState<DataCatalogItem | DataCatalogGroup>();
+  const [customSelectedItem, selectCustomItem] = useState<DataCatalogItem | DataCatalogGroup>();
+
+  const handleSelect = useCallback((item?: DataCatalogItem | DataCatalogGroup) => {
+    selectItem(item);
+  }, []);
+
+  const handleCustomSelect = useCallback((item?: DataCatalogItem | DataCatalogGroup) => {
+    selectCustomItem(item);
+  }, []);
+
+  const handleFilter = useCallback((filter: GroupBy) => {
+    setFilter(filter);
+    postMsg({ action: "saveFilter", payload: { dataSource: "plateau", filter } });
+    setExpandedFolders([]);
+    postMsg({
+      action: "saveExpandedFolders",
+      payload: { dataSource: "plateau", expandedFolders: [] },
+    });
+  }, []);
+
+  const handleCustomFilter = useCallback((filter: GroupBy) => {
+    setCustomFilter(filter);
+    postMsg({ action: "saveFilter", payload: { dataSource: "custom", filter } });
+    setExpandedFolders([]);
+    postMsg({
+      action: "saveExpandedFolders",
+      payload: { dataSource: "custom", expandedFolders: [] },
+    });
+  }, []);
 
   const debouncedSearchRef = useRef(
     debounce((value: string) => {
@@ -157,33 +68,9 @@ export default () => {
     [debouncedSearchRef],
   );
 
-  const handleSelect = useCallback((item?: DataCatalogItem | DataCatalogGroup) => {
-    selectItem(item);
-  }, []);
-
   const handleClose = useCallback(() => {
     postMsg({ action: "modalClose" });
   }, []);
-
-  const handleFilter = useCallback((filter: GroupBy) => {
-    setFilter(filter);
-    postMsg({ action: "saveFilter", payload: { filter } });
-    setExpandedFolders([]);
-    postMsg({ action: "saveExpandedFolders", payload: { expandedFolders: [] } });
-  }, []);
-
-  const handleDatasetAdd = useCallback(
-    (dataset: DataCatalogItem | UserDataItem, keepModalOpen?: boolean) => {
-      postMsg({
-        action: "msgFromModal",
-        payload: {
-          dataset,
-        },
-      });
-      if (!keepModalOpen) handleClose();
-    },
-    [handleClose],
-  );
 
   useEffect(() => {
     postMsg({ action: "initDataCatalog" }); // Needed to trigger sending selected dataset ids from Sidebar
@@ -193,36 +80,58 @@ export default () => {
     const eventListenerCallback = (e: MessageEvent<any>) => {
       if (e.source !== parent) return;
       if (e.data.action === "initDataCatalog") {
-        setAddedDatasetDataIDs(e.data.payload.addedDatasets);
         setEditorState(e.data.payload.inEditor);
-        setBackendProjectName(e.data.payload.backendProjectName);
-        setBackendAccessToken(e.data.payload.backendAccessToken);
-        setBackendURL(e.data.payload.backendURL);
-        setCatalogURL(e.data.payload.catalogURL);
-        setCatalogProjectName(e.data.payload.catalogProjectName);
-        setPublishToGeospatial(e.data.payload.enableGeoPub);
-        setTemplates(e.data.payload.templates);
-        if (e.data.payload.filter) setFilter(e.data.payload.filter);
         if (e.data.payload.searchTerm) setSearchTerm(e.data.payload.searchTerm);
         if (e.data.payload.expandedFolders) setExpandedFolders(e.data.payload.expandedFolders);
+        if (e.data.payload.customExpandedFolders)
+          setCustomExpandedFolders(e.data.payload.customExpandedFolders);
+        if (e.data.payload.filter) setFilter(e.data.payload.filter);
+        if (e.data.payload.customFilter) setFilter(e.data.payload.customFilter);
+        if (e.data.payload.customDataCatalogTitle) {
+          setCustomDataCatalogTitle(e.data.payload.customDataCatalogTitle);
+        }
         if (e.data.payload.dataset) {
           const item = e.data.payload.dataset;
-          handleSelect(item);
-          if (item.path) {
-            setExpandedFolders(
-              item.path
-                .map((item: string) => ({ name: item }))
-                .filter((folder: { name?: string }) => folder.name !== item.name),
-            );
+          if (item.dataSource === "custom") {
+            handleCustomSelect(item);
+            if (item.path) {
+              setCustomExpandedFolders(
+                item.path
+                  .map((item: string) => ({ name: item }))
+                  .filter((folder: { name?: string }) => folder.name !== item.name),
+              );
+            }
+          } else {
+            handleSelect(item);
+            if (item.path) {
+              setExpandedFolders(
+                item.path
+                  .map((item: string) => ({ name: item }))
+                  .filter((folder: { name?: string }) => folder.name !== item.name),
+              );
+            }
           }
+
           postMsg({
             action: "saveDataset",
             payload: { dataset: undefined },
           });
         }
-      } else if (e.data.action === "updateDataCatalog") {
-        if (e.data.payload.updatedDatasetDataIDs) {
-          setAddedDatasetDataIDs(e.data.payload.updatedDatasetDataIDs);
+
+        const isCustomProject =
+          e.data.payload.customBackendURL &&
+          e.data.payload.customBackendProjectName &&
+          e.data.payload.customBackendAccessToken;
+        changeTabs(
+          e.data.payload.currentDatasetDataSource
+            ? e.data.payload.currentDatasetDataSource
+            : isCustomProject
+            ? "custom"
+            : "plateau",
+        );
+        setIsCustomProject(isCustomProject);
+        if (e.data.payload.currentDatasetDataSource) {
+          postMsg({ action: "clearCurrentDatasetDataSource" });
         }
       }
     };
@@ -230,24 +139,34 @@ export default () => {
     return () => {
       removeEventListener("message", eventListenerCallback);
     };
-  }, [handleFilter, handleSelect]);
+  }, [handleSelect, handleCustomSelect]);
+
+  const handleTabChange = useCallback((tab: Tab) => {
+    changeTabs(tab);
+    setSearchTerm("");
+    postMsg({ action: "saveSearchTerm", payload: { searchTerm: "" } });
+  }, []);
 
   return {
     currentTab,
-    catalog: processedCatalog,
-    addedDatasetDataIDs,
     inEditor,
-    selectedItem,
+    isCustomProject,
     expandedFolders,
+    customExpandedFolders,
     searchTerm,
+    selectedItem,
+    customSelectedItem,
     filter,
-    setExpandedFolders,
-    handleSearch,
-    handleSelect,
+    customFilter,
+    customDataCatalogTitle,
     handleFilter,
+    handleCustomFilter,
+    handleSelect,
+    handleCustomSelect,
+    handleSearch,
     handleClose,
-    handleTabChange: changeTabs,
-    handleDatasetAdd,
-    handleDatasetPublish,
+    handleTabChange: handleTabChange,
+    setExpandedFolders,
+    setCustomExpandedFolders,
   };
 };

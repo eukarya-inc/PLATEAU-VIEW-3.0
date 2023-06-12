@@ -11,6 +11,7 @@ export type Props = {
   dataset: DataCatalogItem | DataCatalogGroup | UserDataItem;
   isShareable?: boolean;
   isPublishable?: boolean;
+  editable?: boolean;
   addDisabled: boolean;
   inEditor?: boolean;
   requireLayerName?: boolean;
@@ -25,6 +26,7 @@ const DatasetDetails: React.FC<Props> = ({
   dataset,
   isShareable,
   isPublishable,
+  editable,
   addDisabled,
   inEditor,
   requireLayerName,
@@ -105,6 +107,7 @@ const DatasetDetails: React.FC<Props> = ({
           <Title>{title}</Title>
           {"dataID" in dataset &&
             inEditor &&
+            editable &&
             (!published ? (
               <Popconfirm {...popConfirmProps}>
                 <PublishButton published={published}>
@@ -174,6 +177,9 @@ const Title = styled.p`
   font-weight: 700;
   line-height: 22px;
   margin: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
 `;
 
 const ButtonWrapper = styled.div`

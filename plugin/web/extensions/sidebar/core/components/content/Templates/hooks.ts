@@ -1,16 +1,30 @@
 import { Template } from "@web/extensions/sidebar/core/types";
 import { generateID, moveItemDown, moveItemUp } from "@web/extensions/sidebar/utils";
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import generateFieldComponentsList from "../common/FieldComponent/fieldHooks";
 
+import { Tabs } from "./TemplateCard";
+
 export default ({
   template,
+  isCustomProject,
   onTemplateUpdate,
+  changeTab,
 }: {
   template: Template;
+  isCustomProject: boolean;
   onTemplateUpdate?: (template: Template) => void;
+  changeTab?: (tab: Tabs) => void;
 }) => {
+  const editable = useMemo(() => {
+    return !(template.dataSource === "plateau" && isCustomProject);
+  }, [template.dataSource, isCustomProject]);
+
+  useEffect(() => {
+    changeTab?.(editable ? "edit" : "default");
+  }, [editable, changeTab]);
+
   const handleFieldUpdate = useCallback(
     (id: string) => (property: any) => {
       const newDatasetComponents = template.components ? [...template.components] : [];
@@ -97,6 +111,7 @@ export default ({
   });
 
   return {
+    editable,
     fieldComponentsList,
     handleFieldUpdate,
     handleFieldRemove,

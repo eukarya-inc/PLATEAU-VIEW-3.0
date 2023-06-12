@@ -4,22 +4,56 @@ import { useCallback, useState } from "react";
 import { Template } from "../../../types";
 
 export default ({
-  backendURL,
-  backendProjectName,
-  backendAccessToken,
+  backendURL: plateauBackendURL,
+  backendProjectName: plateuProjectName,
+  backendAccessToken: plateauAccessToken,
+  isCustomProject,
+  customBackendURL,
+  customBackendProjectName,
+  customBackendAccessToken,
   setLoading,
 }: {
   backendURL?: string;
   backendProjectName?: string;
   backendAccessToken?: string;
+  isCustomProject: boolean;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
+  customBackendAccessToken?: string;
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [fieldTemplates, setFieldTemplates] = useState<Template[]>([]);
 
   const [updatedTemplateIDs, setUpdatedTemplateIDs] = useState<string[]>();
 
+  const getTargetBackend = useCallback(
+    (isCustom: boolean) => {
+      return {
+        backendURL: isCustom ? customBackendURL : plateauBackendURL,
+        backendProjectName: isCustom ? customBackendProjectName : plateuProjectName,
+        backendAccessToken: isCustom ? customBackendAccessToken : plateauAccessToken,
+      };
+    },
+    [
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+    ],
+  );
+
   const handleTemplateAdd = useCallback(async () => {
-    if (!backendURL || !backendProjectName || !backendAccessToken) return;
+    if (
+      (!isCustomProject && (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+      (isCustomProject &&
+        (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+    )
+      return;
+    const dataSource = isCustomProject ? "custom" : "plateau";
+    const { backendURL, backendProjectName, backendAccessToken } =
+      getTargetBackend(isCustomProject);
     const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`, {
       headers: {
         authorization: `Bearer ${backendAccessToken}`,
@@ -29,15 +63,34 @@ export default ({
     });
     if (res.status !== 200) return;
     const newTemplate = await res.json();
-    setFieldTemplates(t => [...t, newTemplate]);
-    return newTemplate as Template;
-  }, [backendURL, backendProjectName, backendAccessToken]);
+    const newTemplateWithDataSource = { ...newTemplate, dataSource };
+    setFieldTemplates(t => [...t, newTemplateWithDataSource]);
+    return newTemplateWithDataSource as Template;
+  }, [
+    isCustomProject,
+    plateauBackendURL,
+    plateuProjectName,
+    plateauAccessToken,
+    customBackendURL,
+    customBackendProjectName,
+    customBackendAccessToken,
+    getTargetBackend,
+  ]);
 
   const handleTemplateSave = useCallback(
     async (template: Template) => {
-      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      if (
+        (template.dataSource !== "custom" &&
+          (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+        (template.dataSource === "custom" &&
+          (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+      )
+        return;
       setLoading?.(true);
 
+      const { backendURL, backendProjectName, backendAccessToken } = getTargetBackend(
+        template.dataSource === "custom",
+      );
       const templateToSave = convertForSave(template, fieldTemplates);
 
       const res = await fetch(
@@ -56,36 +109,79 @@ export default ({
       setFieldTemplates(t => {
         return t.map(t2 => {
           if (t2.id === updatedTemplate.id) {
-            return updatedTemplate;
+            return { ...updatedTemplate, dataSource: template.dataSource };
           }
           return t2;
         });
       });
       setLoading?.(false);
     },
-    [backendURL, backendProjectName, backendAccessToken, fieldTemplates, setLoading],
+    [
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+      fieldTemplates,
+      setLoading,
+      getTargetBackend,
+    ],
   );
 
   const handleTemplateRemove = useCallback(
     async (id: string) => {
-      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      const template = fieldTemplates.find(t => t.id === id);
+      if (
+        !template ||
+        (template.dataSource !== "custom" &&
+          (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+        (template.dataSource === "custom" &&
+          (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+      )
+        return;
+
+      const { backendURL, backendProjectName, backendAccessToken } = getTargetBackend(
+        template.dataSource === "custom",
+      );
+
       const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates/${id}`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
         },
         method: "DELETE",
       });
-      if (res.status !== 200) return;
+      if (res.status !== 200 && res.status !== 204) return;
       setFieldTemplates(t => t.filter(t2 => t2.id !== id));
     },
-    [backendURL, backendProjectName, backendAccessToken],
+    [
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+      fieldTemplates,
+      getTargetBackend,
+    ],
   );
 
   const [infoboxTemplates, setInfoboxTemplates] = useState<Template[]>([]);
 
   const handleInfoboxTemplateAdd = useCallback(
     async (template: Omit<Template, "id">) => {
-      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      if (
+        (!isCustomProject && (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+        (isCustomProject &&
+          (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+      )
+        return;
+      const dataSource = isCustomProject ? "custom" : "plateau";
+
+      const { backendURL, backendProjectName, backendAccessToken } = getTargetBackend(
+        template.dataSource === "custom",
+      );
+
       const res = await fetch(`${backendURL}/sidebar/${backendProjectName}/templates`, {
         headers: {
           authorization: `Bearer ${backendAccessToken}`,
@@ -95,18 +191,38 @@ export default ({
       });
       if (res.status !== 200) return;
       const newTemplate = await res.json();
-      setInfoboxTemplates(t => [...t, newTemplate]);
+      setInfoboxTemplates(t => [...t, { ...newTemplate, dataSource }]);
       postMsg({
         action: "infoboxFieldsSaved",
       });
       return newTemplate as Template;
     },
-    [backendURL, backendProjectName, backendAccessToken],
+    [
+      isCustomProject,
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+      getTargetBackend,
+    ],
   );
 
   const handleInfoboxTemplateSave = useCallback(
     async (template: Template) => {
-      if (!backendURL || !backendProjectName || !backendAccessToken) return;
+      if (
+        (template.dataSource !== "custom" &&
+          (!plateauBackendURL || !plateuProjectName || !plateauAccessToken)) ||
+        (template.dataSource === "custom" &&
+          (!customBackendURL || !customBackendProjectName || !customBackendAccessToken))
+      )
+        return;
+
+      const { backendURL, backendProjectName, backendAccessToken } = getTargetBackend(
+        template.dataSource === "custom",
+      );
+
       const res = await fetch(
         `${backendURL}/sidebar/${backendProjectName}/templates/${template.id}`,
         {
@@ -122,7 +238,7 @@ export default ({
       setInfoboxTemplates(t => {
         return t.map(t2 => {
           if (t2.id === updatedTemplate.id) {
-            return updatedTemplate;
+            return { ...updatedTemplate, dataSource: template.dataSource };
           }
           return t2;
         });
@@ -131,7 +247,15 @@ export default ({
         action: "infoboxFieldsSaved",
       });
     },
-    [backendURL, backendProjectName, backendAccessToken],
+    [
+      plateauBackendURL,
+      plateuProjectName,
+      plateauAccessToken,
+      customBackendURL,
+      customBackendProjectName,
+      customBackendAccessToken,
+      getTargetBackend,
+    ],
   );
 
   const handleInfoboxFieldsSave = useCallback(
@@ -162,8 +286,10 @@ export default ({
 };
 
 const convertForSave = (templateToSave: Template, templates: Template[]): Template => {
-  return {
+  const templateForSave = {
     ...templateToSave,
     components: processComponentsToSave(templateToSave.components, templates),
   };
+  delete templateForSave.dataSource;
+  return templateForSave;
 };

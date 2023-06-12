@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import {
   DataCatalogGroup,
   DataCatalogItem,
+  DataSource,
   getDataCatalogTree,
   GroupBy,
 } from "../../../../api/api";
@@ -23,6 +24,7 @@ export type Props = {
   selectedItem?: DataCatalogItem | DataCatalogGroup;
   expandedFolders?: { id?: string; name?: string }[];
   searchTerm: string;
+  dataSource?: DataSource;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSelect?: (item?: DataCatalogItem | DataCatalogGroup) => void;
@@ -69,6 +71,7 @@ const DatasetTree: React.FC<Props> = ({
   selectedItem,
   expandedFolders,
   searchTerm,
+  dataSource,
   setExpandedFolders,
   onSearch,
   onSelect,
@@ -120,6 +123,7 @@ const DatasetTree: React.FC<Props> = ({
               isMobile={isMobile}
               selectedItem={selectedItem}
               expandedFolders={expandedFolders}
+              dataSource={dataSource}
               setExpandedFolders={setExpandedFolders}
               onSelect={onSelect}
               addDisabled={addDisabled}
@@ -139,6 +143,7 @@ const DatasetTree: React.FC<Props> = ({
               isMobile={isMobile}
               selectedItem={selectedItem}
               expandedFolders={expandedFolders}
+              dataSource={dataSource}
               setExpandedFolders={setExpandedFolders}
               onSelect={onSelect}
               addDisabled={addDisabled}

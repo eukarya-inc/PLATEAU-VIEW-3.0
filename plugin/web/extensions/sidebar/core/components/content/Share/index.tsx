@@ -11,6 +11,10 @@ export type Props = {
   backendURL?: string;
   backendProjectName?: string;
   isMobile?: boolean;
+  isCustomProject: boolean;
+  customReearthURL?: string;
+  customBackendURL?: string;
+  customBackendProjectName?: string;
 };
 
 const Share: React.FC<Props> = ({
@@ -18,6 +22,10 @@ const Share: React.FC<Props> = ({
   reearthURL,
   backendURL,
   backendProjectName,
+  isCustomProject,
+  customReearthURL,
+  customBackendURL,
+  customBackendProjectName,
   isMobile,
 }) => {
   const [copiedUrl, setCopiedUrl] = useState(false);
@@ -36,6 +44,10 @@ const Share: React.FC<Props> = ({
     reearthURL,
     backendURL,
     backendProjectName,
+    isCustomProject,
+    customReearthURL,
+    customBackendURL,
+    customBackendProjectName,
     messageApi,
   });
 

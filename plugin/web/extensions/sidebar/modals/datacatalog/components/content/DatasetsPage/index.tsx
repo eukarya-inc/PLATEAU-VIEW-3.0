@@ -2,7 +2,7 @@ import { DataCatalogItem } from "@web/extensions/sidebar/core/types";
 import PageLayout from "@web/extensions/sidebar/modals/datacatalog/components/content/PageLayout";
 import { useCallback, useMemo, useState } from "react";
 
-import { DataCatalogGroup, GroupBy } from "../../../api/api";
+import { DataCatalogGroup, GroupBy, DataSource } from "../../../api/api";
 import { UserDataItem } from "../../../types";
 
 import DatasetTree from "./DatasetTree";
@@ -15,6 +15,8 @@ export type Props = {
   selectedItem?: DataCatalogItem | DataCatalogGroup;
   expandedFolders?: { id?: string; name?: string }[];
   searchTerm: string;
+  dataSource: DataSource;
+  editable?: boolean;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   filter: GroupBy;
   onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -32,6 +34,8 @@ const DatasetsPage: React.FC<Props> = ({
   expandedFolders,
   searchTerm,
   filter,
+  dataSource,
+  editable,
   setExpandedFolders,
   onSearch,
   onSelect,
@@ -75,6 +79,7 @@ const DatasetsPage: React.FC<Props> = ({
           selectedItem={selectedItem}
           expandedFolders={expandedFolders}
           searchTerm={searchTerm}
+          dataSource={dataSource}
           setExpandedFolders={setExpandedFolders}
           onSearch={onSearch}
           onSelect={onSelect}
@@ -88,6 +93,7 @@ const DatasetsPage: React.FC<Props> = ({
         <DatasetDetails
           dataset={selectedDataset}
           inEditor={inEditor}
+          editable={editable}
           addDisabled={addDisabled}
           onTagSelect={handleTagSelect}
           onDatasetAdd={onDatasetAdd}

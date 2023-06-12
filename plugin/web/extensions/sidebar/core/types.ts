@@ -1,4 +1,4 @@
-import { RawDataCatalogItem } from "../modals/datacatalog/api/api";
+import { RawDataCatalogItem, DataSource } from "../modals/datacatalog/api/api";
 
 import {
   ConfigData,
@@ -17,7 +17,7 @@ export type DataCatalogGroup = {
   children: DataCatalogTreeItem[];
 };
 
-export type DataCatalogItem = RawDataCatalogItem & Data;
+export type DataCatalogItem = RawDataCatalogItem & Data & { dataSource?: DataSource };
 
 export type DataCatalogTreeItem = DataCatalogGroup | DataCatalogItem;
 
@@ -44,6 +44,7 @@ export type Template = {
   dataType?: string; // 'bldg' 'urf' etc.
   fields?: InfoboxField[];
   components?: FieldComponent[];
+  dataSource?: DataSource;
 };
 
 export type InfoboxField = {

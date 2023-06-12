@@ -52,6 +52,7 @@ export type Props = {
   inEditor?: boolean;
   savingDataset?: boolean;
   isMobile?: boolean;
+  isCustomProject: boolean;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   onDatasetSave?: (dataID: string) => void;
   onDatasetRemove?: (dataID: string) => void;
@@ -69,6 +70,7 @@ const DatasetCard: React.FC<Props> = ({
   inEditor,
   savingDataset,
   isMobile,
+  isCustomProject,
   moveCard,
   onDatasetSave,
   onDatasetRemove,
@@ -83,6 +85,7 @@ const DatasetCard: React.FC<Props> = ({
   const previewRef = useRef<HTMLDivElement>(null);
 
   const {
+    editable,
     activeComponentIDs,
     fieldComponentsList,
     handleFieldUpdate,
@@ -97,6 +100,7 @@ const DatasetCard: React.FC<Props> = ({
     inEditor,
     templates,
     buildingSearch,
+    isCustomProject,
     onDatasetUpdate,
     onOverride,
   });
@@ -216,7 +220,10 @@ const DatasetCard: React.FC<Props> = ({
           if (isMobile) {
             postMsg({ action: "mobileCatalogOpen", payload: dataset });
           } else {
-            postMsg({ action: "catalogModalOpen", payload: templates });
+            postMsg({
+              action: "catalogModalOpen",
+              payload: { templates, dataSource: dataset.dataSource },
+            });
           }
           postMsg({ action: "saveDataset", payload: { dataset } });
         },
@@ -240,7 +247,7 @@ const DatasetCard: React.FC<Props> = ({
           ]
         : []),
     ],
-    [currentTab, dataset, isMobile, onDatasetRemove, onBuildingSearch],
+    [templates, currentTab, dataset, isMobile, onDatasetRemove, onBuildingSearch],
   );
 
   const handleTabChange: React.MouseEventHandler<HTMLParagraphElement> = useCallback(e => {
@@ -376,7 +383,7 @@ const DatasetCard: React.FC<Props> = ({
                     </LeftMain>
                     <ArrowIcon icon="arrowDown" size={16} expanded={expanded} />
                   </HeaderContents>
-                  {inEditor && expanded && (
+                  {inEditor && expanded && editable && (
                     <TabWrapper>
                       <Tab
                         id="default"

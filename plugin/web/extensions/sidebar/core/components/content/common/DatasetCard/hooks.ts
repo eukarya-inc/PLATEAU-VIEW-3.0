@@ -7,7 +7,7 @@ import {
   postMsg,
 } from "@web/extensions/sidebar/utils";
 import { getActiveFieldIDs } from "@web/extensions/sidebar/utils/dataset";
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 
 import { cleanseOverrides } from "../FieldComponent/fieldConstants";
 import generateFieldComponentsList from "../FieldComponent/fieldHooks";
@@ -18,6 +18,7 @@ export default ({
   inEditor,
   templates,
   buildingSearch,
+  isCustomProject,
   onDatasetUpdate,
   onOverride,
 }: {
@@ -25,11 +26,16 @@ export default ({
   inEditor?: boolean;
   templates?: Template[];
   buildingSearch?: BuildingSearch;
+  isCustomProject: boolean;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onOverride?: (dataID: string, activeIDs?: string[]) => void;
 }) => {
   const [activeComponentIDs, setActiveIDs] = useState<string[] | undefined>();
   const latestComponents = useRef<FieldComponent[]>(dataset.components ?? []);
+
+  const editable = useMemo(() => {
+    return !(dataset.dataSource === "plateau" && isCustomProject);
+  }, [dataset.dataSource, isCustomProject]);
 
   useEffect(() => {
     const newActiveIDs = getActiveFieldIDs(
@@ -199,6 +205,7 @@ export default ({
   }, [dataset.components]);
 
   return {
+    editable,
     activeComponentIDs,
     fieldComponentsList,
     handleFieldUpdate,

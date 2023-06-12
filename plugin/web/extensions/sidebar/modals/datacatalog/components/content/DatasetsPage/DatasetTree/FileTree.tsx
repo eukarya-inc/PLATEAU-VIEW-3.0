@@ -1,6 +1,8 @@
 import { DataCatalogItem, DataCatalogGroup } from "@web/extensions/sidebar/core/types";
 import { styled } from "@web/theme";
 
+import { DataSource } from "../../../../api/api";
+
 import TreeBuilder from "./TreeBuilder";
 
 export type Props = {
@@ -9,6 +11,7 @@ export type Props = {
   isMobile?: boolean;
   selectedItem?: DataCatalogItem | DataCatalogGroup;
   expandedFolders?: { id?: string; name?: string }[];
+  dataSource?: DataSource;
   setExpandedFolders?: React.Dispatch<React.SetStateAction<{ id?: string; name?: string }[]>>;
   onSelect?: (item?: DataCatalogItem | DataCatalogGroup) => void;
   addDisabled: (dataID: string) => boolean;
@@ -21,6 +24,7 @@ const FileTree: React.FC<Props> = ({
   isMobile,
   selectedItem,
   expandedFolders,
+  dataSource,
   setExpandedFolders,
   onSelect,
   addDisabled,
@@ -36,6 +40,7 @@ const FileTree: React.FC<Props> = ({
           selectedID={selectedItem?.id}
           nestLevel={0}
           expandedFolders={expandedFolders}
+          dataSource={dataSource}
           addDisabled={addDisabled}
           onDatasetAdd={onDatasetAdd}
           onSelect={onSelect}

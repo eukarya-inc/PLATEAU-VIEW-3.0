@@ -18,6 +18,7 @@ export type Props = {
   buildingSearch?: BuildingSearch;
   savingDataset?: boolean;
   isMobile?: boolean;
+  isCustomProject: boolean;
   onDatasetSave?: (dataID: string) => void;
   onDatasetUpdate: (dataset: DataCatalogItem, cleanseOverride?: any) => void;
   onDatasetRemove: (dataID: string) => void;
@@ -37,6 +38,7 @@ const Selection: React.FC<Props> = ({
   buildingSearch,
   savingDataset,
   isMobile,
+  isCustomProject,
   onDatasetSave,
   onDatasetUpdate,
   onDatasetRemove,
@@ -79,6 +81,7 @@ const Selection: React.FC<Props> = ({
               savingDataset={savingDataset}
               inEditor={inEditor}
               isMobile={isMobile}
+              isCustomProject={isCustomProject}
               moveCard={moveCard}
               onDatasetSave={onDatasetSave}
               onDatasetUpdate={onDatasetUpdate}
