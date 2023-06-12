@@ -53,8 +53,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR Scope and Keywords
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
         run: |
-          title=$(echo "${{ github.event.pull_request.title }}")
+          title="$TITLE"
           contains_major=0
           contains_minor=0
 
