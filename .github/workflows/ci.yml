@@ -21,6 +21,7 @@ jobs:
             plugin
             .github/workflows/ci.yml
             .github/workflows/ci-plugin.yml
+            .github/workflows/ci-plugin-version-update.yml
       - name: changed files for server
         id: server
         uses: tj-actions/changed-files@v36

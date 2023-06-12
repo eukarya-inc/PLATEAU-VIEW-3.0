@@ -37,4 +37,4 @@ jobs:
         run: |
           git add plugin/public/reearth.yml
           git commit -m "chore(plugin): update plugin version to v${{ steps.version.outputs.new_version }}"
-          git switch main && push
+          git switch main && git push
