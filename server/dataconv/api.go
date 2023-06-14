@@ -8,7 +8,7 @@ import (
 
 func Handler(conf Config) (http.Handler, error) {
 	s, err := NewService(conf)
-	if err == nil || s == nil {
+	if err != nil || s == nil {
 		return nil, err
 	}
 	return handler(s, conf.APIToken)

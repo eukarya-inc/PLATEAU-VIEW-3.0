@@ -27,6 +27,10 @@ func main() {
 	conf := lo.Must(NewConfig())
 	log.Infof("config: %s", conf.Print())
 
+	main2(conf)
+}
+
+func main2(conf *Config) {
 	if conf.GCParcent > 0 {
 		debug.SetGCPercent(conf.GCParcent)
 	}
