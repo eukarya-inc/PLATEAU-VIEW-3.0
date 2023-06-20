@@ -1,0 +1,13 @@
+{
+  "name": "plateau-view-3.0",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "APACHE-2.0",
+  "private": true,
+  "scripts": {
+    "start": "echo TODO",
+    "test": "echo TODO",
+    "lint": "echo TODO",
+    "build": "echo TODO"
+  }
+}

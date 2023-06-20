@@ -1,8 +1,8 @@
 # Terraform
 
-PLATEAU VIEW 2.0（CMS・エディタ・ビューワ）を構築するためのTerraform用ファイルです。システム構築手順は「実証環境構築マニュアル」も併せて参照してください。
+PLATEAU VIEW 3.0（CMS・エディタ・ビューワ）を構築するためのTerraform用ファイルです。システム構築手順は「実証環境構築マニュアル」も併せて参照してください。
 
-PLATEAU VIEW 2.0のホスティングはGoogle Cloud Platform（GCP）のみ対応しています。AWSやオンプレミスのみでのホスティングはできません。
+PLATEAU VIEW 3.0のホスティングはGoogle Cloud Platform（GCP）のみ対応しています。AWSやオンプレミスのみでのホスティングはできません。
 
 ## セットアップ手順
 
