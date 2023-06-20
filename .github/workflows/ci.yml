@@ -42,7 +42,7 @@ jobs:
   ci-extension:
     needs:
       - prepare
-      - ci-extension-version-update
+      # - ci-extension-version-update
     if: ${{ !failure() && needs.prepare.outputs.extension == 'true' }}
     uses: ./.github/workflows/ci-extension.yml
   ci-server:
