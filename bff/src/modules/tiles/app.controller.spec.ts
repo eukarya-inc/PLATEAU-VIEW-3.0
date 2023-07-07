@@ -14,9 +14,7 @@ describe("AppController", () => {
     appController = app.get<TileAppController>(TileAppController);
   });
 
-  describe("root", () => {
-    it('should return "Hello Tiles!"', () => {
-      expect(appController.getHello()).toBe("Hello Tiles!");
-    });
+  it('should return "Hello Tiles!"', () => {
+    expect(appController.getHello()).toBe("Hello Tiles!");
   });
 });
