@@ -33,6 +33,17 @@ jobs:
             .github/workflows/build-server.yml
             .github/workflows/deploy-server-dev.yml
             .github/workflows/deploy-server-prod.yml
+      - name: changed files for bff
+        id: bff
+        uses: tj-actions/changed-files@v36
+        with:
+          files: |
+            bff
+            .github/workflows/ci.yml
+            .github/workflows/ci-bff.yml
+            # .github/workflows/build-bff.yml
+            # .github/workflows/deploy-bff-dev.yml
+            # .github/workflows/deploy-bff-prod.yml
   # ci-extension-version-update:
   #   needs: prepare
   #   if: ${{ !failure() && needs.prepare.outputs.extension == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
@@ -49,6 +60,10 @@ jobs:
     needs: prepare
     if: needs.prepare.outputs.server == 'true'
     uses: ./.github/workflows/ci-server.yml
+  ci-bff:
+    needs: prepare
+    if: needs.prepare.outputs.bff == 'true'
+    uses: ./.github/workflows/ci-bff.yml
   ci:
     runs-on: ubuntu-latest
     needs:
