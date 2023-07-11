@@ -1,4 +1,5 @@
 import { Args, ID, Query, Resolver } from "@nestjs/graphql";
+
 import { Health } from "../dto/health";
 
 @Resolver(() => Health)

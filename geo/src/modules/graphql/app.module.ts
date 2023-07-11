@@ -1,9 +1,11 @@
+import { join } from "path";
+
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Module } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
+
 import { GraphQLAppController } from "./app.controller";
 import { GraphQLAppService } from "./app.service";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { join } from "path";
 import { HealthModule } from "./modules/health.module";
 
 @Module({

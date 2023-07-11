@@ -1,4 +1,5 @@
 import { Controller } from "@nestjs/common";
+
 import { GraphQLAppService } from "./app.service";
 
 @Controller()
