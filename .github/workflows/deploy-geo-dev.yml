@@ -41,7 +41,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
           workflow_conclusion: success
-          branch: main
+          # TODO
+          # branch: main
           name: plateauview-geo
           check_artifacts: true
       - name: Unpack docker image
