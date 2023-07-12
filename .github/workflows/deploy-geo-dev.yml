@@ -3,6 +3,8 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [deploy-geo-dev]
+  # TODO: Remove
+  workflow_call:
 env:
   IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-geo:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-geo:latest
