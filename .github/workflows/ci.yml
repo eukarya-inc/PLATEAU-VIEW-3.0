@@ -33,6 +33,17 @@ jobs:
             .github/workflows/build-server.yml
             .github/workflows/deploy-server-dev.yml
             .github/workflows/deploy-server-prod.yml
+      - name: changed files for geo
+        id: geo
+        uses: tj-actions/changed-files@v36
+        with:
+          files: |
+            geo
+            .github/workflows/ci.yml
+            .github/workflows/ci-geo.yml
+            # .github/workflows/build-geo.yml
+            # .github/workflows/deploy-geo-dev.yml
+            # .github/workflows/deploy-geo-prod.yml
   # ci-extension-version-update:
   #   needs: prepare
   #   if: ${{ !failure() && needs.prepare.outputs.extension == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
@@ -49,6 +60,10 @@ jobs:
     needs: prepare
     if: needs.prepare.outputs.server == 'true'
     uses: ./.github/workflows/ci-server.yml
+  ci-geo:
+    needs: prepare
+    if: needs.prepare.outputs.geo == 'true'
+    uses: ./.github/workflows/ci-geo.yml
   ci:
     runs-on: ubuntu-latest
     needs:
