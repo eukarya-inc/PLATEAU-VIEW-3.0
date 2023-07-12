@@ -26,6 +26,7 @@ resource "google_project_iam_custom_role" "reearth_cms_api" {
     "storage.objects.update",
     "secretmanager.versions.access",
     "cloudtasks.tasks.create",
+    "cloudbuild.builds.create",
   ]
 }
 
@@ -93,7 +94,12 @@ resource "google_project_iam_custom_role" "plateauview_api" {
 
 
 resource "google_service_account" "cms_worker_m2m" {
-  account_id   = "cms-worker-m2m"
+  for_each = toset([
+    google_project_iam_custom_role.cms_worker_m2m.id,
+    "roles/pubsub.publisher",
+    "roles/storage.objectAdmin",
+  ])
+  role    = each.value
   display_name = "Service Account for cms worker m2m"
 }
 
