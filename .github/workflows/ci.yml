@@ -92,7 +92,7 @@ jobs:
   deploy-geo-dev:
     needs: build-geo
     # runs-on: ubuntu-latest
-    uses: ./.github/workflows/deploy-geo-prod.yml
+    uses: ./.github/workflows/deploy-geo-dev.yml
     # steps:
     #   - name: Dispatch deployment
     #     uses: peter-evans/repository-dispatch@v2
