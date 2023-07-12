@@ -90,7 +90,7 @@ jobs:
     # if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-geo.yml
   deploy-geo-dev:
-    # needs: build-geo
+    needs: build-geo
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
