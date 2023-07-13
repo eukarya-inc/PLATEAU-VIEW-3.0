@@ -1,6 +1,8 @@
 name: ⭐️ Deploy PLATEAU Geo production
 on:
   workflow_dispatch:
+  # TODO: Remove
+  workflow_call:
 env:
   IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-geo:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau/plateauview-geo:latest
@@ -45,23 +47,23 @@ jobs:
             --region $GCP_REGION \
             --platform managed \
             --quiet
-  push_hub:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: read
-    steps:
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pull image
-        run: docker pull $IMAGE
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Push image
-        run: docker tag $IMAGE $IMAGE_HUB && docker push $IMAGE_HUB
+  # push_hub:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     packages: read
+  #   steps:
+  #     - name: Log in to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Pull image
+  #       run: docker pull $IMAGE
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USER }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     - name: Push image
+  #       run: docker tag $IMAGE $IMAGE_HUB && docker push $IMAGE_HUB

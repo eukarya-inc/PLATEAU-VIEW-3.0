@@ -87,13 +87,14 @@ jobs:
   #         event-type: deploy-server-dev
   build-geo:
     needs: ci-geo
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    # if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-geo.yml
   deploy-geo-dev:
     needs: build-geo
     runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          event-type: deploy-geo-dev
+    uses: ./.github/workflows/deploy-geo-prod.yml
+    # steps:
+    #   - name: Dispatch deployment
+    #     uses: peter-evans/repository-dispatch@v2
+    #     with:
+    #       event-type: deploy-geo-dev
