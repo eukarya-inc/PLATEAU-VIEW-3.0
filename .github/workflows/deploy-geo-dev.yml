@@ -3,12 +3,10 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [deploy-geo-dev]
-  # TODO: Remove
-  workflow_call:
 env:
   IMAGE: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-geo:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-geo:latest
-  GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
+  GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/383489516390/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_REGION: asia-northeast1
 jobs:
@@ -41,8 +39,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
           workflow_conclusion: success
-          # TODO
-          # branch: main
+          branch: main
           name: plateauview-geo
           check_artifacts: true
       - name: Unpack docker image
