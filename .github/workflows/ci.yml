@@ -62,7 +62,7 @@ jobs:
     uses: ./.github/workflows/ci-server.yml
   ci-geo:
     needs: prepare
-    if: needs.prepare.outputs.geo == 'true'
+    # if: needs.prepare.outputs.geo == 'true'
     uses: ./.github/workflows/ci-geo.yml
   ci:
     runs-on: ubuntu-latest
