@@ -41,9 +41,9 @@ jobs:
             geo
             .github/workflows/ci.yml
             .github/workflows/ci-geo.yml
-            # .github/workflows/build-geo.yml
-            # .github/workflows/deploy-geo-dev.yml
-            # .github/workflows/deploy-geo-prod.yml
+            .github/workflows/build-geo.yml
+            .github/workflows/deploy-geo-dev.yml
+            .github/workflows/deploy-geo-prod.yml
   # ci-extension-version-update:
   #   needs: prepare
   #   if: ${{ !failure() && needs.prepare.outputs.extension == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
@@ -69,7 +69,8 @@ jobs:
     needs:
       - ci-extension
       - ci-server
-    if: '!failure()'
+      - ci-geo
+    if: "!failure()"
     steps:
       - run: echo OK
   # build-server:
@@ -84,3 +85,15 @@ jobs:
   #       uses: peter-evans/repository-dispatch@v2
   #       with:
   #         event-type: deploy-server-dev
+  build-geo:
+    needs: ci-geo
+    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    uses: ./.github/workflows/build-geo.yml
+  deploy-geo-dev:
+    needs: build-geo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-geo-dev
