@@ -43,7 +43,7 @@ jobs:
             .github/workflows/ci-geo.yml
             .github/workflows/build-geo.yml
             .github/workflows/deploy-geo-dev.yml
-            # .github/workflows/deploy-geo-prod.yml
+            .github/workflows/deploy-geo-prod.yml
   # ci-extension-version-update:
   #   needs: prepare
   #   if: ${{ !failure() && needs.prepare.outputs.extension == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
