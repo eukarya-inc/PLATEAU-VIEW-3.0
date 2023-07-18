@@ -290,9 +290,6 @@ resource "google_compute_region_network_endpoint_group" "plateauview_geo" {
 resource "google_compute_backend_service" "plateauview_geo" {
   affinity_cookie_ttl_sec = "0"
   enable_cdn              = true
-  cdn_policy {
-    signed_url_cache_max_age_sec = 7200
-  }
 
   backend {
     balancing_mode               = "UTILIZATION"
