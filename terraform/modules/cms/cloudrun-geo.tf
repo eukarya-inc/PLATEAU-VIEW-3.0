@@ -1,8 +1,6 @@
 locals {
   plateauview_geo_secret = []
-  plateauview_geo_ramdom = [
-    "REEARTH_PLATEAUVIEW_GEO_TOKEN",
-  ]
+  plateauview_geo_ramdom = []
 }
 
 resource "google_cloud_run_service" "plateauview_geo" {
@@ -67,12 +65,6 @@ resource "google_cloud_run_service" "plateauview_geo" {
     ]
   }
   depends_on = []
-}
-
-resource "random_string" "plateauview_geo_env" {
-  for_each = toset(local.plateauview_geo_ramdom)
-  length   = 32
-  special  = false
 }
 
 resource "google_cloud_run_service_iam_policy" "plateauview_geo_noauth" {
