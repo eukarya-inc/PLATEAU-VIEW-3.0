@@ -6,6 +6,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 
 import { GraphQLAppController } from "./app.controller";
 import { GraphQLAppService } from "./app.service";
+import { AreasModule } from "./modules/areas.module";
 import { HealthModule } from "./modules/health.module";
 
 @Module({
@@ -17,6 +18,7 @@ import { HealthModule } from "./modules/health.module";
       sortSchema: true,
     }),
     HealthModule,
+    AreasModule,
   ],
   controllers: [GraphQLAppController],
   providers: [GraphQLAppService],
