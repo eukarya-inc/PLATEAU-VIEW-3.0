@@ -2,6 +2,18 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Area {
+  code: String!
+  name: String!
+  radius: Float!
+  type: String!
+}
+
+type Areas {
+  address: String!
+  areas: [Area!]!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -13,5 +25,6 @@ type Health {
 }
 
 type Query {
+  areas(includeRadii: Boolean! = false, latitude: Float!, longitude: Float!): Areas
   health(id: ID!): Health!
 }
