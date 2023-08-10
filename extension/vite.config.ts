@@ -1,12 +1,28 @@
 import react from "@vitejs/plugin-react";
 import externalGlobals from "rollup-plugin-external-globals";
 import { defineConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
-const name = "PLATEAUVIEW3";
+import pkg from "./package.json";
+
+const name = "PlateauView3";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "./reearth.yml",
+          dest: ".",
+        },
+      ],
+    }),
+  ],
+  define: {
+    "process.env.VERSION": JSON.stringify(pkg.version),
+  },
   build: {
     lib: {
       name: `ReearthBuiltInPlugin_${name}`,

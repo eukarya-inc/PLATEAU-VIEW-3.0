@@ -8,6 +8,8 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "vite.config.ts"
+    "vite.config.ts",
+    "reearth-yml.ts",
+    "package.json"
   ]
 }

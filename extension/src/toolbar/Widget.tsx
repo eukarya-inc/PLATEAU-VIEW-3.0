@@ -19,8 +19,8 @@ export const Widget = () => {
   }, [reearth]);
 
   return (
-    <div style={{ background: "white" }}>
-      <button onClick={() => setCount(n => n + 1)}>count: {count}</button>
+    <div style={{ background: "green" }}>
+      <button onClick={() => setCount(n => n + 1)}>Count: {count}</button>
     </div>
   );
 };
