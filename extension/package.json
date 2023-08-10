@@ -7,8 +7,9 @@
   "scripts": {
     "dev": "yarn build:config && concurrently 'NODE_ENV=development vite build --watch' 'vite preview --port 5001 --strict-port'",
     "build:config": "ts-node-esm ./reearth-yml.ts",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --fix"
+    "build": "tsc && build:config && vite build",
+    "lint": "eslint . --ext ts,tsx --fix",
+    "test": "echo TODO: SETUP TEST"
   },
   "dependencies": {
     "jotai": "2.3.1",
