@@ -1,8 +1,12 @@
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
+
+import { countAtom } from "../shared/states/count";
 
 export const Widget = () => {
   const reearth = (window as any).reearth;
   const [count, setCount] = useState(0);
+  const [{ value: globalCount }, setGlobalCount] = useAtom(countAtom);
 
   useEffect(() => {
     const layerId = reearth.layers.add({
@@ -21,6 +25,8 @@ export const Widget = () => {
   return (
     <div style={{ background: "green" }}>
       <button onClick={() => setCount(n => n + 1)}>Count: {count}</button>
+      <br />
+      <button onClick={() => setGlobalCount(c => c + 1)}>Global;: {globalCount}</button>
     </div>
   );
 };
