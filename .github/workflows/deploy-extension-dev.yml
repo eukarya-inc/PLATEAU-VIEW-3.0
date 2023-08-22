@@ -32,7 +32,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
           workflow_conclusion: success
-          branch: main
+          # TODO: fix
+          # branch: main
           name: plateauview-extension
           check_artifacts: true
       - name: Deploy
