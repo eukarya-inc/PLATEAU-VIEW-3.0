@@ -34,9 +34,9 @@ jobs:
           workflow_conclusion: success
           # TODO: fix
           # branch: main
-          branch: deploy/extension
           name: plateauview-extension
           check_artifacts: true
+          search_artifacts: true
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
       - name: Pack extension
