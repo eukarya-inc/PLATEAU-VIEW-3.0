@@ -34,6 +34,7 @@ jobs:
           workflow_conclusion: success
           # TODO: fix
           # branch: main
+          branch: deploy/extension
           name: plateauview-extension
           check_artifacts: true
       - name: Deploy
