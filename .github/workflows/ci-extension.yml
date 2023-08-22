@@ -36,4 +36,4 @@ jobs:
         # if: github.ref == 'refs/heads/main'
         with:
           name: plateauview-extension
-          path: dist
+          path: extension/dist
