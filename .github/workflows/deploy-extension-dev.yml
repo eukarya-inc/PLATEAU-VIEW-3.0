@@ -41,9 +41,7 @@ jobs:
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
       - name: Pack extension
-        run: |
-          rm plateauview-extension.tar.gz
-          tar -zcvf plateauview-extension.tar.gz plateauview-extension
+        run: tar -zcvf plateauview-extension.tar.gz plateauview-extension
       - name: Save as artifact
         uses: actions/upload-artifact@v2
         with:
