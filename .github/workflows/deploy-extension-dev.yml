@@ -1,0 +1,47 @@
+name: ⭐️ Deploy PLATEAU Extension dev
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [deploy-extension-dev]
+env:
+  GCS_DEST: gs://plateau-dev-reearth-app-bucket
+  GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
+  GCP_WORKLOAD_IDENTITY_PROVIDER: projects/383489516390/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
+  GCP_REGION: asia-northeast1
+  
+jobs:
+  deploy_geo:
+    runs-on: ubuntu-latest
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Download geo artifacts
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ci.yml
+          workflow_conclusion: success
+          branch: main
+          name: plateauview-extension
+          check_artifacts: true
+      - name: Deploy
+        run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
+      - name: Pack extension
+        run: |
+          rm plateauview-extension.tar.gz
+          tar -zcvf plateauview-extension.tar.gz plateauview-extension
+      - name: Save as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: plateauview-extension
+          path: plateauview-extension.tar.gz
