@@ -35,6 +35,7 @@ jobs:
           # TODO: fix
           # branch: main
           name: plateauview-extension
+          path: plateauview-extension
           check_artifacts: true
           search_artifacts: true
       - name: Deploy
