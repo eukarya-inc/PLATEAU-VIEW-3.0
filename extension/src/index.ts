@@ -1,4 +1,3 @@
-import "./shared/states";
 import Search from "./search";
 import Toolbar from "./toolbar";
 
