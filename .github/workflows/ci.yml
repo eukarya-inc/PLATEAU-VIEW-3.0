@@ -80,13 +80,13 @@ jobs:
     # TODO: uncomment
     # if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch deployment
+    # steps:
+      # - name: Dispatch deployment
         # TODO: Fix
         # uses: peter-evans/repository-dispatch@v2
         # with:
         #   event-type: deploy-extension-dev
-        uses: ./.github/workflows/deploy-extension-dev.yml
+    uses: ./.github/workflows/deploy-extension-dev.yml
   # build-server:
   #   needs: ci-server
   #   if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
