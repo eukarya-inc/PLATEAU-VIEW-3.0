@@ -82,9 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          event-type: deploy-extension-dev
+        # TODO: Fix
+        # uses: peter-evans/repository-dispatch@v2
+        # with:
+        #   event-type: deploy-extension-dev
+        uses: ./.github/workflows/deploy-extension-dev.yml
   # build-server:
   #   needs: ci-server
   #   if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}

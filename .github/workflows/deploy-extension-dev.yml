@@ -1,8 +1,10 @@
 name: ⭐️ Deploy PLATEAU Extension dev
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [deploy-extension-dev]
+  workflow_call:
+  # TODO: Fix
+  # repository_dispatch:
+  #   types: [deploy-extension-dev]
 env:
   GCS_DEST: gs://plateau-dev-reearth-app-bucket
   GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
