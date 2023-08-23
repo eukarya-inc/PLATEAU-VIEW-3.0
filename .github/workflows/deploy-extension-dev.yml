@@ -1,10 +1,8 @@
 name: ⭐️ Deploy PLATEAU Extension dev
 on:
   workflow_dispatch:
-  workflow_call:
-  # TODO: Fix
-  # repository_dispatch:
-  #   types: [deploy-extension-dev]
+  repository_dispatch:
+    types: [deploy-extension-dev]
 env:
   GCS_DEST: gs://plateau-dev-reearth-app-bucket
   GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
@@ -32,12 +30,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
           workflow_conclusion: success
-          # TODO: fix
-          # branch: main
+          branch: main
           name: plateauview-extension
           path: plateauview-extension
           check_artifacts: true
-          search_artifacts: true
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
       - name: Pack extension

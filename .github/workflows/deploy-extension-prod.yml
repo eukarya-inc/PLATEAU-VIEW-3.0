@@ -22,7 +22,7 @@ jobs:
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
-      - name: Download geo artifacts
+      - name: Download extension artifacts
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,6 +30,7 @@ jobs:
           workflow_conclusion: success
           branch: main
           name: plateauview-extension
+          path: plateauview-extension
           check_artifacts: true
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
