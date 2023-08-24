@@ -10,14 +10,14 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
-import { platformAtom } from "../../prototypes/shared-states";
+import { platformAtom } from "../../../prototypes/shared-states";
 import {
   PlateauLogotype,
   PlateauSymbol,
   SelectItem,
   Shortcut,
-} from "../../prototypes/ui-components";
-import { hideAppOverlayAtom, showDeveloperPanelsAtom } from "../../prototypes/view/states/app";
+} from "../../../prototypes/ui-components";
+import { hideAppOverlayAtom, showDeveloperPanelsAtom } from "../../../prototypes/view/states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {
   onClick?: (event: MouseEvent<HTMLElement>, name: string) => void;

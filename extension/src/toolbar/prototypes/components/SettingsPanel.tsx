@@ -6,11 +6,11 @@ import {
   ParameterList,
   SegmentParameterItem,
   SwitchParameterItem,
-} from "../../prototypes/ui-components";
+} from "../../../prototypes/ui-components";
 import {
   graphicsQualityAtom,
   nativeResolutionEnabledAtom,
-} from "../../prototypes/view/states/graphics";
+} from "../../../prototypes/view/states/graphics";
 
 const Root = styled(FloatingPanel)(({ theme }) => ({
   width: 360,

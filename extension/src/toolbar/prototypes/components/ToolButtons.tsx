@@ -9,9 +9,9 @@ import {
   PointerArrowIcon,
   SketchIcon,
   StoryIcon,
-} from "../../prototypes/ui-components";
-import { toolAtom, toolMachineAtom, type Tool } from "../../prototypes/view/states/tool";
-import { type EventObject } from "../../prototypes/view/states/toolMachine";
+} from "../../../prototypes/ui-components";
+import { toolAtom, toolMachineAtom, type Tool } from "../../../prototypes/view/states/tool";
+import { type EventObject } from "../../../prototypes/view/states/toolMachine";
 
 const eventTypes: Record<Tool, EventObject["type"]> = {
   hand: "HAND",
@@ -42,7 +42,7 @@ export const ToolButtons: FC = () => {
       <AppToggleButton value="select" title="選択" shortcutKey="V">
         <PointerArrowIcon fontSize="medium" />
       </AppToggleButton>
-      <AppToggleButton value="pedestrian" title="歩行者視点" shortcutKey="P">
+      <AppToggleButton value="pedestrian" title="歩行者視点" shortcutKey="P" disabled>
         <PedestrianIcon fontSize="medium" />
       </AppToggleButton>
       <AppToggleButton value="sketch" title="作図" shortcutKey="G" disabled>

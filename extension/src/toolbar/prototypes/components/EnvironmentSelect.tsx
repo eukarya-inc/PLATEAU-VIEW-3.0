@@ -3,8 +3,8 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, type FC } from "react";
 
-import { colorMapTurbo } from "../../prototypes/color-maps";
-import { colorModeAtom } from "../../prototypes/shared-states";
+import { colorMapTurbo } from "../../../prototypes/color-maps";
+import { colorModeAtom } from "../../../prototypes/shared-states";
 import {
   AppIconButton,
   FloatingPanel,
@@ -16,16 +16,16 @@ import {
   SliderParameterItem,
   SwitchParameterItem,
   type SelectItemProps,
-} from "../../prototypes/ui-components";
-import darkMapImage from "../../prototypes/view/assets/dark_map.webp";
-import elevationImage from "../../prototypes/view/assets/elevation.webp";
-import lightMapImage from "../../prototypes/view/assets/light_map.webp";
-import satelliteImage from "../../prototypes/view/assets/satellite.webp";
+} from "../../../prototypes/ui-components";
 import {
   environmentTypeAtom,
   logarithmicTerrainElevationAtom,
   terrainElevationHeightRangeAtom,
-} from "../../prototypes/view/states/app";
+} from "../../../prototypes/view/states/app";
+import darkMapImage from "../../prototypes/view/assets/dark_map.webp";
+import elevationImage from "../../prototypes/view/assets/elevation.webp";
+import lightMapImage from "../../prototypes/view/assets/light_map.webp";
+import satelliteImage from "../../prototypes/view/assets/satellite.webp";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",

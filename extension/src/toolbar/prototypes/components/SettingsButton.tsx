@@ -1,7 +1,7 @@
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useId, type FC } from "react";
 
-import { AppIconButton, OverlayPopper, SettingsIcon } from "../../prototypes/ui-components";
+import { AppIconButton, OverlayPopper, SettingsIcon } from "../../../prototypes/ui-components";
 
 import { SettingsPanel } from "./SettingsPanel";
 

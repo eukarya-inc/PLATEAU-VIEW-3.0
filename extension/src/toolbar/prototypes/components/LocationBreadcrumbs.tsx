@@ -1,6 +1,6 @@
 import { type FC } from "react";
 
-import { AppBreadcrumbs, AppBreadcrumbsItem } from "../../prototypes/ui-components";
+import { AppBreadcrumbs, AppBreadcrumbsItem } from "../../../prototypes/ui-components";
 // FIXME
 // import { areasAtom } from "../../shared/states/address";
 // import { LocationBreadcrumbItem } from "./LocationBreadcrumbItem";

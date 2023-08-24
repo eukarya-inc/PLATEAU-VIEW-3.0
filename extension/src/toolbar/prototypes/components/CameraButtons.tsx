@@ -8,9 +8,9 @@ import {
   MinusIcon,
   PlusIcon,
   RotateAroundIcon,
-} from "../../prototypes/ui-components";
-import { enableKeyboardCameraControlAtom } from "../../prototypes/view/states/app";
-import { useCameraZoom } from "../../shared/reearth/hooks/useCameraZoom";
+} from "../../../prototypes/ui-components";
+import { enableKeyboardCameraControlAtom } from "../../../prototypes/view/states/app";
+import { useCameraZoom } from "../../../shared/reearth/hooks/useCameraZoom";
 
 function useBooleanAtomProps(atom: PrimitiveAtom<boolean>): {
   selected: boolean;
