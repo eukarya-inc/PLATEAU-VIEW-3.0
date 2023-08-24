@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { AppFrame } from "../prototypes/ui-components";
 
+import { InteractionMode } from "./components/InteractionMode";
 import { AppHeader } from "./prototypes/components/AppHeader";
 
 export const Widget = () => {
@@ -18,8 +19,13 @@ export const Widget = () => {
     });
     setTimeout(() => {
       reearth.camera.flyTo(layerId, { duration: 0 });
-    }, 100);
+    }, 300);
   }, [reearth]);
 
-  return <AppFrame header={<AppHeader />} />;
+  return (
+    <>
+      <AppFrame header={<AppHeader />} />
+      <InteractionMode />
+    </>
+  );
 };

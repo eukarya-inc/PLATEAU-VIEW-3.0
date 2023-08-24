@@ -87,3 +87,9 @@ export type CameraOptions = {
   easing?: (time: number) => number;
   withoutAnimation?: boolean;
 };
+
+export type LatLngHeight = {
+  lat: number;
+  lng: number;
+  height: number;
+};

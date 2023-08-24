@@ -17,15 +17,15 @@ import {
   SwitchParameterItem,
   type SelectItemProps,
 } from "../../../prototypes/ui-components";
+import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
+import elevationImage from "../../../prototypes/view/assets/elevation.webp";
+import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
+import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
 import {
   environmentTypeAtom,
   logarithmicTerrainElevationAtom,
   terrainElevationHeightRangeAtom,
 } from "../../../prototypes/view/states/app";
-import darkMapImage from "../../prototypes/view/assets/dark_map.webp";
-import elevationImage from "../../prototypes/view/assets/elevation.webp";
-import lightMapImage from "../../prototypes/view/assets/light_map.webp";
-import satelliteImage from "../../prototypes/view/assets/satellite.webp";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",
