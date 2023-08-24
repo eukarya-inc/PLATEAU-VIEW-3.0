@@ -82,7 +82,9 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
 }) => {
   const handleClickAway = useCallback(() => {
     if (!pinned) {
-      onClose?.();
+      setTimeout(() => {
+        onClose?.();
+      }, 0);
     }
   }, [onClose, pinned]);
 
@@ -110,7 +112,10 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
           },
         },
       ].filter(isNotFalse)}>
-      <ClickAwayListener onClickAway={handleClickAway}>
+      <ClickAwayListener
+        mouseEvent="onMouseUp"
+        touchEvent="onTouchEnd"
+        onClickAway={handleClickAway}>
         <div>
           {children}
           {arrow && <Arrow ref={setArrowRef} />}

@@ -5,8 +5,6 @@ const Root = styled("div")({
   overflow: "hidden",
   display: "flex",
   flexDirection: "column",
-  position: "fixed",
-  inset: 0,
 });
 
 const Header = styled("div")({
