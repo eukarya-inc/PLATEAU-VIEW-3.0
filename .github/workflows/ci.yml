@@ -22,6 +22,8 @@ jobs:
             .github/workflows/ci.yml
             .github/workflows/ci-extension.yml
             .github/workflows/ci-extension-version-update.yml
+            .github/workflows/deploy-extension-dev.yml
+            .github/workflows/deploy-extension-prod.yml
       - name: changed files for server
         id: server
         uses: tj-actions/changed-files@v36
@@ -73,6 +75,15 @@ jobs:
     if: "!failure()"
     steps:
       - run: echo OK
+  deploy-extension-dev:
+    needs: ci-extension
+    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-extension-dev
   # build-server:
   #   needs: ci-server
   #   if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
