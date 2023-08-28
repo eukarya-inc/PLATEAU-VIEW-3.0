@@ -12,6 +12,7 @@ env:
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/383489516390/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
   GCP_REGION: asia-northeast1
+  EXTENSION_URL: https://app.reearth.plateau.dev.reearth.io/extension
 concurrency:
   group: ${{ github.workflow }}
 jobs:
@@ -90,4 +91,5 @@ jobs:
             --image $IMAGE_NAME_GCP \
             --region $GCP_REGION \
             --platform managed \
-            --quiet
+            --quiet \
+            --set-env-vars "REEARTH_EXT_PLUGIN=${{ env.EXTENSION_URL }}"
