@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 
 import { AppFrame } from "../prototypes/ui-components";
+import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
+import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 
 import { InteractionMode } from "./components/InteractionMode";
-import { AppHeader } from "./prototypes/components/AppHeader";
 
 export const Widget = () => {
   const reearth = (window as any).reearth;
@@ -26,6 +27,7 @@ export const Widget = () => {
     <>
       <AppFrame header={<AppHeader />} />
       <InteractionMode />
+      <ToolMachineEvents />
     </>
   );
 };

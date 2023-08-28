@@ -1,8 +1,8 @@
 import { useAtomValue } from "jotai";
 import { type FC } from "react";
 
-import { AppBar, Space } from "../../../prototypes/ui-components";
-import { hideAppOverlayAtom } from "../../../prototypes/view/states/app";
+import { AppBar, Space } from "../../ui-components";
+import { hideAppOverlayAtom } from "../states/app";
 
 import { CameraButtons } from "./CameraButtons";
 import { DateControlButton } from "./DateControlButton";

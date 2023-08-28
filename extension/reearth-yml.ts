@@ -11,21 +11,26 @@ const yml = {
   version: pkg.version,
   extensions: [
     {
-      id: "search-widget",
-      type: "widget",
-      name: "search",
-      widgetLayout: {
-        defaultLocation: {
-          zone: "outer",
-          section: "right",
-          area: "top",
-        },
-      },
-    },
-    {
       id: "toolbar-widget",
       type: "widget",
       name: "toolbar",
+      widgetLayout: {
+        extendable: {
+          horizontally: true,
+        },
+        defaultLocation: {
+          zone: "outer",
+          section: "center",
+          area: "top",
+        },
+        extended: true,
+        floating: true,
+      },
+    },
+    {
+      id: "search-widget",
+      type: "widget",
+      name: "search",
       widgetLayout: {
         defaultLocation: {
           zone: "outer",

@@ -1,11 +1,11 @@
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useId, type FC } from "react";
 
-import { AppIconButton, ClockIcon, OverlayPopper } from "../../../prototypes/ui-components";
+import { AppIconButton, OverlayPopper, SettingsIcon } from "../../ui-components";
 
-import { DateControlPanel } from "./DateControlPanel";
+import { SettingsPanel } from "./SettingsPanel";
 
-export const DateControlButton: FC = () => {
+export const SettingsButton: FC = () => {
   const id = useId();
   const popupState = usePopupState({
     variant: "popover",
@@ -16,15 +16,14 @@ export const DateControlButton: FC = () => {
   return (
     <>
       <AppIconButton
-        title="日時"
+        title="設定"
         selected={popoverProps.open}
         disableTooltip={popoverProps.open}
-        disabled
         {...bindTrigger(popupState)}>
-        <ClockIcon />
+        <SettingsIcon />
       </AppIconButton>
       <OverlayPopper {...popoverProps} inset={1.5}>
-        <DateControlPanel />
+        <SettingsPanel />
       </OverlayPopper>
     </>
   );

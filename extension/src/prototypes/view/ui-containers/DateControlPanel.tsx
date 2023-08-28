@@ -8,7 +8,7 @@
 import { styled } from "@mui/material";
 import { useState, type FC } from "react";
 
-import { DateControl, FloatingPanel } from "../../../prototypes/ui-components";
+import { DateControl, FloatingPanel } from "../../ui-components";
 
 // FIXME
 // const cartesianScratch = new Cartesian3();

@@ -9,9 +9,9 @@ import {
   PointerArrowIcon,
   SketchIcon,
   StoryIcon,
-} from "../../../prototypes/ui-components";
-import { toolAtom, toolMachineAtom, type Tool } from "../../../prototypes/view/states/tool";
-import { type EventObject } from "../../../prototypes/view/states/toolMachine";
+} from "../../ui-components";
+import { toolAtom, toolMachineAtom, type Tool } from "../states/tool";
+import { type EventObject } from "../states/toolMachine";
 
 const eventTypes: Record<Tool, EventObject["type"]> = {
   hand: "HAND",
