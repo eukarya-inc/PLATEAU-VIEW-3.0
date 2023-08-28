@@ -1,8 +1,8 @@
 import { useAtom } from "jotai";
 import { type FC } from "react";
 
-import { getCesiumCanvas } from "../../../shared/reearth/canvas";
-import { useReEarthEvent } from "../../../shared/reearth/hooks/useReEarthEvent";
+import { useReEarthEvent } from "../../../shared/reearth/hooks";
+import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
 import { toolMachineAtom } from "../states/tool";
 

@@ -23,3 +23,9 @@ export type ReEarth = {
     callback: (...args: ReearthEventType[T]) => void,
   ) => void;
 };
+
+declare global {
+  interface Window {
+    reearth: Partial<ReEarth>;
+  }
+}

@@ -1,4 +1,4 @@
-import { SceneProperty } from "../reearth/scene";
+import { SceneProperty } from "../reearth/types";
 import { sharedAtom } from "../sharedAtoms";
 
 const initialScene: SceneProperty = {};

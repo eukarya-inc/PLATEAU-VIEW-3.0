@@ -2,7 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 
 import { Tool, toolAtom } from "../../prototypes/view/states/tool";
-import { InteractionModeType } from "../../shared/reearth/interactionMode";
+import { InteractionModeType } from "../../shared/reearth/types";
 import { reearthInteractionModeAtom } from "../../shared/states/interactionMode";
 
 const TOOL_TO_INTERACTIONMODE: Record<Tool, InteractionModeType> = {

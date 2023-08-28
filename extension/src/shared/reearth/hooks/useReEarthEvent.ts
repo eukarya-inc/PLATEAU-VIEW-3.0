@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { ReearthEventType } from "../event";
+import { ReearthEventType } from "../types";
 
 export const useReEarthEvent = <T extends keyof ReearthEventType>(
   eventName: T,
