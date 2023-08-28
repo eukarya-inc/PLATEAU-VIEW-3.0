@@ -13,7 +13,7 @@ const yml = {
     {
       id: "toolbar-widget",
       type: "widget",
-      name: "toolbar",
+      name: "Toolbar",
       widgetLayout: {
         extendable: {
           horizontally: true,
@@ -30,7 +30,7 @@ const yml = {
     {
       id: "search-widget",
       type: "widget",
-      name: "search",
+      name: "Search",
       widgetLayout: {
         defaultLocation: {
           zone: "outer",
