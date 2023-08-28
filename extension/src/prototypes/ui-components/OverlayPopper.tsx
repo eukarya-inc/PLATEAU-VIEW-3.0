@@ -82,6 +82,10 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
 }) => {
   const handleClickAway = useCallback(() => {
     if (!pinned) {
+      // ReEarth Editor uses react-dnd, but it occupies the events of document.
+      // So we need to invoke this after the process of react-dnd.
+      // The process is delayed depends on the `delay` option.
+      // https://github.com/react-dnd/react-dnd/blob/7c88c37489a53b5ac98699c46a506a8e085f1c03/packages/docsite/markdown/docs/05%20Backends/Touch.md?plain=1#L49
       setTimeout(() => {
         onClose?.();
       }, 0);
