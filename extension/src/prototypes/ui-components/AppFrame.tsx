@@ -5,8 +5,6 @@ const Root = styled("div")({
   overflow: "hidden",
   display: "flex",
   flexDirection: "column",
-  position: "fixed",
-  inset: 0,
 });
 
 const Header = styled("div")({
@@ -14,20 +12,11 @@ const Header = styled("div")({
   flexShrink: 0,
 });
 
-const Body = styled("div")({
-  position: "relative",
-  flexGrow: 1,
-  flexShrink: 1,
-});
-
 export interface AppFrameProps {
   header?: ReactNode;
   children?: ReactNode;
 }
 
-export const AppFrame: FC<AppFrameProps> = ({ header, children }) => (
-  <Root>
-    {header != null && <Header>{header}</Header>}
-    {children != null && <Body>{children}</Body>}
-  </Root>
+export const AppFrame: FC<AppFrameProps> = ({ header }) => (
+  <Root>{header != null && <Header>{header}</Header>}</Root>
 );

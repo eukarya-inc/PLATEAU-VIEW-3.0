@@ -1,32 +1,35 @@
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-import { countAtom } from "../shared/states/count";
+import { AppFrame } from "../prototypes/ui-components";
+import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
+import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
+
+import { useInteractionMode } from "./hooks/useInteractionMode";
 
 export const Widget = () => {
+  // TODO: Add type definition
   const reearth = (window as any).reearth;
-  const [count, setCount] = useState(0);
-  const [{ value: globalCount }, setGlobalCount] = useAtom(countAtom);
 
   useEffect(() => {
-    const layerId = reearth.layers.add({
+    const layerId = reearth?.layers?.add({
       type: "simple",
       data: {
         type: "3dtiles",
-        url: "https://assets.cms.plateau.reearth.io/assets/11/6d05db-ed47-4f88-b565-9eb385b1ebb0/13100_tokyo23-ku_2022_3dtiles%20_1_1_op_bldg_13101_chiyoda-ku_lod1/tileset.json",
+        url: "https://assets.cms.plateau.reearth.io/assets/4f/702958-5009-4d6b-a2e0-157c7e573eb2/13100_tokyo23-ku_2022_3dtiles%20_1_1_op_bldg_13101_chiyoda-ku_lod2_no_texture/tileset.json",
       },
       "3dtiles": {},
     });
     setTimeout(() => {
-      reearth.camera.flyTo(layerId, { duration: 0 });
-    }, 10);
+      reearth?.camera?.flyTo(layerId, { duration: 0 });
+    }, 300);
   }, [reearth]);
 
+  useInteractionMode();
+
   return (
-    <div style={{ background: "green" }}>
-      <button onClick={() => setCount(n => n + 1)}>Count: {count}</button>
-      <br />
-      <button onClick={() => setGlobalCount(c => c + 1)}>Global;: {globalCount}</button>
-    </div>
+    <>
+      <AppFrame header={<AppHeader />} />
+      <ToolMachineEvents />
+    </>
   );
 };
