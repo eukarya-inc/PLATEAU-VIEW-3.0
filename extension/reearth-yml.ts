@@ -24,7 +24,6 @@ const yml = {
           area: "top",
         },
         extended: true,
-        floating: true,
       },
     },
     {

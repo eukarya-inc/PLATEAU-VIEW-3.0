@@ -26,6 +26,6 @@ export type ReEarth = {
 
 declare global {
   interface Window {
-    reearth: Partial<ReEarth>;
+    reearth?: Partial<ReEarth>;
   }
 }

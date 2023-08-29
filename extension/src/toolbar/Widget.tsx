@@ -7,10 +7,11 @@ import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
 export const Widget = () => {
+  // TODO: Add type definition
   const reearth = (window as any).reearth;
 
   useEffect(() => {
-    const layerId = reearth.layers.add({
+    const layerId = reearth?.layers?.add({
       type: "simple",
       data: {
         type: "3dtiles",
@@ -19,7 +20,7 @@ export const Widget = () => {
       "3dtiles": {},
     });
     setTimeout(() => {
-      reearth.camera.flyTo(layerId, { duration: 0 });
+      reearth?.camera?.flyTo(layerId, { duration: 0 });
     }, 300);
   }, [reearth]);
 

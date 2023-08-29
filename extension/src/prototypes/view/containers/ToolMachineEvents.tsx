@@ -85,7 +85,10 @@ export const ToolMachineEvents: FC = () => {
   } else {
     cursor = "auto";
   }
-  canvas.style.cursor = cursor;
+
+  if (canvas) {
+    canvas.style.cursor = cursor;
+  }
 
   return null;
 };

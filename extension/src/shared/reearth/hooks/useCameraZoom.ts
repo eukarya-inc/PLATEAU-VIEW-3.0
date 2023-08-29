@@ -6,7 +6,7 @@ export interface CameraZoom {
 }
 
 export function useCameraZoom(): CameraZoom {
-  const camera = window.reearth.camera;
+  const camera = window.reearth?.camera;
 
   const zoomOut = useCallback(() => {
     camera?.zoomOut(1.5);
