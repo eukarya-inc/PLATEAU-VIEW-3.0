@@ -22,6 +22,8 @@ export default defineConfig({
   ],
   define: {
     "process.env.VERSION": JSON.stringify(pkg.version),
+    // Prevent conflict with import.meta.
+    "process.env.NODE_ENV": JSON.stringify(""),
   },
   build: {
     lib: {
