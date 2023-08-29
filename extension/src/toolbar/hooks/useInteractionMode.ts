@@ -13,7 +13,7 @@ const TOOL_TO_INTERACTIONMODE: Record<Tool, InteractionModeType> = {
   pedestrian: "move", // TODO: Check later
 };
 
-export const InteractionMode = () => {
+export const useInteractionMode = () => {
   const tool = useAtomValue(toolAtom);
   const setInteractionMode = useSetAtom(reearthInteractionModeAtom);
   useEffect(() => {
@@ -21,6 +21,4 @@ export const InteractionMode = () => {
       setInteractionMode(TOOL_TO_INTERACTIONMODE[tool]);
     }
   }, [tool, setInteractionMode]);
-
-  return null;
 };

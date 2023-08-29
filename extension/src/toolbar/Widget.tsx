@@ -4,7 +4,7 @@ import { AppFrame } from "../prototypes/ui-components";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 
-import { InteractionMode } from "./components/InteractionMode";
+import { useInteractionMode } from "./hooks/useInteractionMode";
 
 export const Widget = () => {
   const reearth = (window as any).reearth;
@@ -23,10 +23,11 @@ export const Widget = () => {
     }, 300);
   }, [reearth]);
 
+  useInteractionMode();
+
   return (
     <>
       <AppFrame header={<AppHeader />} />
-      <InteractionMode />
       <ToolMachineEvents />
     </>
   );
