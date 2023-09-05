@@ -13,3 +13,6 @@ These module's names are same with prototype's name.
 - shared-states ... Shared Jotai atoms utils.
 - react-helpers ... Helpers for React.
 - type-helpers ... Helpers for typing.
+- view ... Application logic.
+- view-layers ... Application layers logic
+- layers ... Some logics to handle layer
