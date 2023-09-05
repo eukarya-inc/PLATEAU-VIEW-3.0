@@ -67,7 +67,7 @@ const RootGrid = styled("div", {
   gridColumnGap: theme.spacing(spacing),
   gridAutoFlow: "column",
   gridAutoColumns: "",
-  margin: theme.spacing(spacing),
+  // margin: theme.spacing(spacing),
   minHeight: 0,
 }));
 
@@ -103,7 +103,7 @@ const Main = styled("main", {
   flexGrow: 0,
   width: mainWidth,
   minHeight: 0,
-  marginRight: theme.spacing(spacing),
+  // marginRight: theme.spacing(spacing),
   [`@container (min-width: calc(${mainWidth + contextWidth}px + ${theme.spacing(spacing)}))`]: {
     flexBasis: mainWidth,
     flexShrink: 0,
@@ -193,6 +193,7 @@ export const AppOverlayLayout: FC<AppOverlayLayoutProps> = memo(
     const mainRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       invariant(mainRef.current != null);
+      console.log(mainRef.current.getBoundingClientRect().height);
       setMaxMainHeight(mainRef.current.getBoundingClientRect().height);
       const observer = new ResizeObserver(([entry]) => {
         setMaxMainHeight(entry.contentRect.height);

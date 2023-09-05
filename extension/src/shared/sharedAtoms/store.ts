@@ -7,7 +7,7 @@ declare global {
 // Initialize stores for the share feature.
 window.__PLATEAUVIEW3_SHARED = window.__PLATEAUVIEW3_SHARED ?? {};
 
-// TODO: Support share feature
+// TODO(ReEarth): Support share feature
 // await fetch("share API").then(sharedData => {
 //   window.__PLATEAUVIEW3_SHARED = { ...window.__PLATEAUVIEW3_SHARED, ...sharedData };
 // });

@@ -97,6 +97,7 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
   const theme = useTheme();
   return (
     <Popper
+      style={{ zIndex: 1 }}
       // WORKAROUND: Accept popover props.
       {...(omit(props, ["anchorPosition", "anchorReference"]) as PopperProps)}
       modifiers={[

@@ -39,6 +39,9 @@ const Root = styled("div")(({ theme }) => ({
   [`& .${autocompleteClasses.input}`]: {
     marginLeft: theme.spacing(1),
   },
+  [`& .${autocompleteClasses.root} `]: {
+    width: "auto",
+  },
   [`& .${autocompleteClasses.listbox}`]: {
     padding: 0,
     maxHeight: "none",
