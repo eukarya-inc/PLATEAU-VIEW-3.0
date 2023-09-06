@@ -32,13 +32,12 @@ const yml = {
       name: "Search",
       widgetLayout: {
         extendable: {
-          horizontally: true,
           vertically: true,
         },
         defaultLocation: {
           zone: "inner",
           section: "left",
-          area: "top",
+          area: "middle",
         },
         extended: true,
       },
