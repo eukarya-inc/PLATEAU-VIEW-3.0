@@ -12,6 +12,7 @@ import { DarkThemeOverride } from "./DarkThemeOverride";
 
 const StyledAppBar = styled(MuiAppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
+  maxWidth: "100%",
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
