@@ -1,6 +1,6 @@
 // import { VectorMapImageryLayer } from "@takram/plateau-datasets";
 import { useAtomValue } from "jotai";
-import { type FC } from "react";
+import { useMemo, type FC } from "react";
 
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
 import { type ColorMode } from "../../shared-states";
@@ -35,6 +35,8 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
   //   layer?.sendToBack();
   // }, [layer]);
 
+  const tiles = useMemo(() => [{ id: "default", tile_type: "stamen_toner" }], []);
+
   return (
     <Scene
       // TODO: Define in theme
@@ -50,7 +52,7 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
       groundAtmosphereBrightnessShift={2}
       // TODO(ReEarth): Use Takram's tile
       // TODO(ReEarth): Support tile brightness
-      tiles={[{ id: "default", tile_type: "stamen_toner" }]}
+      tiles={tiles}
       {...props}
     />
   );

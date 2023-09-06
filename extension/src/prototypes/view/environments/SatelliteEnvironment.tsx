@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { type FC } from "react";
+import { useMemo, type FC } from "react";
 
 import { SceneProps, Scene } from "../../../shared/reearth/scene";
 import { enableTerrainLightingAtom } from "../states/app";
@@ -27,6 +27,23 @@ export const SatelliteEnvironment: FC<SceneProps> = props => {
   //   layer?.sendToBack();
   // }, [layer]);
 
+  const tiles = useMemo(
+    () => [
+      {
+        id: "tokyo_1",
+        tile_url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
+        tile_type: "url",
+      },
+      {
+        id: "tokyo_2",
+        tile_url:
+          "https://gic-plateau.s3.ap-northeast-1.amazonaws.com/2020/ortho/tiles/{z}/{x}/{y}.png",
+        tile_type: "url",
+      },
+    ],
+    [],
+  );
+
   return (
     <Scene
       enableGlobeLighting={enableTerrainLighting}
@@ -34,19 +51,7 @@ export const SatelliteEnvironment: FC<SceneProps> = props => {
       globeImageBasedLightingFactor={0.8}
       shadowDarkness={0.5}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
-      tiles={[
-        {
-          id: "tokyo_1",
-          tile_url: "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg",
-          tile_type: "url",
-        },
-        {
-          id: "tokyo_2",
-          tile_url:
-            "https://gic-plateau.s3.ap-northeast-1.amazonaws.com/2020/ortho/tiles/{z}/{x}/{y}.png",
-          tile_type: "url",
-        },
-      ]}
+      tiles={tiles}
       {...props}
     />
   );
