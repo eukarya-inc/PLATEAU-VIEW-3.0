@@ -7,10 +7,11 @@ import type {
   MultiPolygon,
 } from "geojson";
 
+import { Undefinable, WrappedRef } from "../utils";
+
 import type { AppearanceTypes, LayerAppearanceTypes } from "./appearance";
 import type { Infobox, Block, Tag } from "./compat";
 import type { Events } from "./layerEvent";
-import { Undefinable, WrappedRef } from "./utils";
 
 export type Layers = Undefinable<
   Omit<
