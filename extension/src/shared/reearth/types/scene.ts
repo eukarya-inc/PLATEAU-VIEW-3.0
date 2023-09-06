@@ -1,4 +1,4 @@
-import { Camera, LatLngHeight } from "./camera";
+import { CameraPosition, LatLngHeight } from "./camera";
 
 export type TerrainProperty = {
   terrain?: boolean;
@@ -13,9 +13,39 @@ export type TerrainProperty = {
   terrainNormal?: boolean;
 };
 
+export type Tile = {
+  id: string;
+  tile_type?: string;
+  tile_url?: string;
+  tile_maxLevel?: number;
+  tile_minLevel?: number;
+  tile_opacity?: number;
+};
+
+export type AmbientOcclusion = {
+  enabled?: boolean;
+  quality?: "low" | "medium" | "high" | "extreme";
+  intensity?: number;
+  ambientOcclusionOnly?: boolean;
+};
+
+export type Antialias = "low" | "medium" | "high" | "extreme";
+
+export type Timeline = {
+  animation?: boolean;
+  visible?: boolean;
+  current?: string;
+  start?: string;
+  stop?: string;
+  stepType?: "rate" | "fixed";
+  multiplier?: number;
+  step?: number;
+  rangeType?: "unbounded" | "clamped" | "bounced";
+};
+
 export type SceneProperty = {
   default?: {
-    camera?: Camera;
+    camera?: Partial<CameraPosition>;
     allowEnterGround?: boolean;
     skybox?: boolean;
     bgcolor?: string;
@@ -26,7 +56,7 @@ export type SceneProperty = {
   cameraLimiter?: {
     cameraLimitterEnabled?: boolean;
     cameraLimitterShowHelper?: boolean;
-    cameraLimitterTargetArea?: Camera;
+    cameraLimitterTargetArea?: CameraPosition;
     cameraLimitterTargetWidth?: number;
     cameraLimitterTargetLength?: number;
   };
@@ -35,17 +65,11 @@ export type SceneProperty = {
   //     indicator_image?: string;
   //     indicator_image_scale?: number;
   //   };
-  tiles?: {
-    id: string;
-    tile_type?: string;
-    tile_url?: string;
-    tile_maxLevel?: number;
-    tile_minLevel?: number;
-    tile_opacity?: number;
-  }[];
+  tiles?: Tile[];
   terrain?: TerrainProperty;
   atmosphere?: {
     enable_sun?: boolean;
+    enableMoon?: boolean;
     enable_lighting?: boolean;
     ground_atmosphere?: boolean;
     sky_atmosphere?: boolean;
@@ -53,25 +77,19 @@ export type SceneProperty = {
     shadowResolution?: 1024 | 2048 | 4096;
     softShadow?: boolean;
     shadowDarkness?: number;
+    shadowMaximumDistance?: number;
     fog?: boolean;
     fog_density?: number;
     brightness_shift?: number;
     hue_shift?: number;
     surturation_shift?: number;
+    skyboxBrightnessShift?: number;
+    skyboxSurturationShift?: number;
     globeShadowDarkness?: number;
     globeImageBasedLighting?: boolean;
+    globeBaseColor?: string;
   };
-  timeline?: {
-    animation?: boolean;
-    visible?: boolean;
-    current?: string;
-    start?: string;
-    stop?: string;
-    stepType?: "rate" | "fixed";
-    multiplier?: number;
-    step?: number;
-    rangeType?: "unbounded" | "clamped" | "bounced";
-  };
+  timeline?: Timeline;
   googleAnalytics?: {
     enableGA?: boolean;
     trackingId?: string;
@@ -82,12 +100,7 @@ export type SceneProperty = {
     themeSelectColor?: string;
     themeBackgroundColor?: string;
   };
-  ambientOcclusion?: {
-    enabled?: boolean;
-    quality?: "low" | "medium" | "high" | "extreme";
-    intensity?: number;
-    ambientOcclusionOnly?: boolean;
-  };
+  ambientOcclusion?: AmbientOcclusion;
   light?: {
     lightType?: "sunLight" | "directionalLight";
     lightDirectionX?: number;
@@ -100,7 +113,7 @@ export type SceneProperty = {
     imageBasedLightIntensity?: number;
   };
   render?: {
-    antialias?: "low" | "medium" | "high" | "extreme";
+    antialias?: Antialias;
     debugFramePerSecond?: boolean;
   };
 };

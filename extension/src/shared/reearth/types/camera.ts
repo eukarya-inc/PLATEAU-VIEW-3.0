@@ -1,6 +1,6 @@
 export type Camera = {
   /** Current camera position */
-  readonly position: CameraPosition | undefined;
+  readonly position: Partial<CameraPosition> | undefined;
   //   readonly viewport: Rect | undefined;
   readonly zoomIn: (amount: number, options?: CameraOptions) => void;
   readonly zoomOut: (amount: number, options?: CameraOptions) => void;

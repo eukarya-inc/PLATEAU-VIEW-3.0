@@ -31,11 +31,15 @@ const yml = {
       type: "widget",
       name: "Search",
       widgetLayout: {
-        defaultLocation: {
-          zone: "outer",
-          section: "left",
-          area: "top",
+        extendable: {
+          vertically: true,
         },
+        defaultLocation: {
+          zone: "inner",
+          section: "left",
+          area: "middle",
+        },
+        extended: true,
       },
     },
   ],

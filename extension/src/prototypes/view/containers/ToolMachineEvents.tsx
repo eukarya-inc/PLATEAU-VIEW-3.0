@@ -10,7 +10,7 @@ export const ToolMachineEvents: FC = () => {
   const [state, send] = useAtom(toolMachineAtom);
   // const tool = useAtomValue(toolAtom);
 
-  // TODO: Support this API from ReEarth side.
+  // TODO(ReEarth): Support this API from ReEarth side.
   // Stop inertial movements when switching between tools. There're no such
   // public methods to do so, so I'm accessing private API.
   // useEffect(() => {
