@@ -4,8 +4,8 @@ import { type FC } from "react";
 import { ShadowProps } from "../../../shared/reearth/scene";
 import { AmbientOcclusion } from "../../../shared/reearth/types";
 import {
-  sharableEnvironmentTypeAtom,
-  sharableGraphicsQualityAtom,
+  shareableEnvironmentTypeAtom,
+  shareableGraphicsQualityAtom,
 } from "../../../shared/states/scene";
 import { colorModeAtom } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
@@ -34,7 +34,7 @@ const shadowMapPropsAtom = atom(
 );
 
 const ambientOcclusionPropsAtom = atom((get): AmbientOcclusion => {
-  const quality = get(sharableGraphicsQualityAtom) || undefined;
+  const quality = get(shareableGraphicsQualityAtom) || undefined;
   return {
     enabled: get(ambientOcclusionEnabledAtom),
     intensity: get(ambientOcclusionIntensityAtom),
@@ -46,12 +46,12 @@ const ambientOcclusionPropsAtom = atom((get): AmbientOcclusion => {
 });
 
 export const Environments: FC = () => {
-  const environmentType = useAtomValue(sharableEnvironmentTypeAtom);
+  const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(colorModeAtom);
   const debugSphericalHarmonics = useAtomValue(debugSphericalHarmonicsAtom);
   const shadowProps = useAtomValue(shadowMapPropsAtom);
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);
-  const graphicsQuality = useAtomValue(sharableGraphicsQualityAtom) || undefined;
+  const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
 
   switch (environmentType) {

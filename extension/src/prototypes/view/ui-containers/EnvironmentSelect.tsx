@@ -7,7 +7,7 @@ import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
 import elevationImage from "../../../prototypes/view/assets/elevation.webp";
 import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
 import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
-import { sharableEnvironmentTypeAtom } from "../../../shared/states/scene";
+import { shareableEnvironmentTypeAtom } from "../../../shared/states/scene";
 import { colorMapTurbo } from "../../color-maps";
 import { colorModeAtom } from "../../shared-states";
 import {
@@ -160,7 +160,7 @@ const ElevationLegendButton: FC = () => {
 
 export const EnvironmentSelect: FC = () => {
   // FIXME
-  const [environmentType, setEnvironmentType] = useAtom(sharableEnvironmentTypeAtom);
+  const [environmentType, setEnvironmentType] = useAtom(shareableEnvironmentTypeAtom);
   const [colorMode, setColorMode] = useAtom(colorModeAtom);
 
   const id = useId();

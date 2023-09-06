@@ -2,11 +2,11 @@ import { environmentTypeAtom } from "../../prototypes/view/states/app";
 import { graphicsQualityAtom } from "../../prototypes/view/states/graphics";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
 
-export const sharableGraphicsQualityAtom = sharedStoreAtomWrapper(
+export const shareableGraphicsQualityAtom = sharedStoreAtomWrapper(
   "graphicsQuality",
   graphicsQualityAtom,
 );
-export const sharableEnvironmentTypeAtom = sharedStoreAtomWrapper(
+export const shareableEnvironmentTypeAtom = sharedStoreAtomWrapper(
   "environmentType",
   environmentTypeAtom,
 );

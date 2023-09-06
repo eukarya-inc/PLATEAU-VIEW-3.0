@@ -1,7 +1,7 @@
 import { styled } from "@mui/material";
 import { type FC } from "react";
 
-import { sharableGraphicsQualityAtom } from "../../../shared/states/scene";
+import { shareableGraphicsQualityAtom } from "../../../shared/states/scene";
 import {
   FloatingPanel,
   ParameterList,
@@ -28,7 +28,7 @@ export const SettingsPanel: FC = () => {
         <SegmentParameterItem
           label="グラフィック品質"
           exclusive
-          atom={sharableGraphicsQualityAtom}
+          atom={shareableGraphicsQualityAtom}
           items={[
             ["low", "低"],
             ["medium", "中"],
