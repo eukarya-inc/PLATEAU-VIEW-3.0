@@ -21,6 +21,7 @@ const Root = styled("div", {
   position: "absolute",
   inset: 0,
   top: 0,
+  minHeight: 81,
   pointerEvents: "none",
   "& > *": {
     direction: "ltr",
@@ -102,7 +103,7 @@ const Main = styled("main", {
   flexShrink: 1,
   flexGrow: 0,
   width: mainWidth,
-  minHeight: 0,
+  // minHeight: 0,
   // marginRight: theme.spacing(spacing),
   [`@container (min-width: calc(${mainWidth + contextWidth}px + ${theme.spacing(spacing)}))`]: {
     flexBasis: mainWidth,

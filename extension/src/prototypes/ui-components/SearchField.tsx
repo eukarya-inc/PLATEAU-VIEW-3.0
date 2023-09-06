@@ -19,6 +19,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
   alignItems: "center",
+  boxSizing: "border-box",
   minHeight: theme.spacing(6),
   padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
 }));

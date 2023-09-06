@@ -18,7 +18,9 @@ export const TilesetLayer: FC<Props> = ({ url, onLoad }) => {
         type: "3dtiles",
         url,
       },
-      "3dtiles": {},
+      "3dtiles": {
+        pbr: false,
+      },
     });
 
     setTimeout(() => {
