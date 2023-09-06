@@ -1,6 +1,12 @@
-import { SceneProperty } from "../reearth/types";
-import { sharedAtom } from "../sharedAtoms";
+import { environmentTypeAtom } from "../../prototypes/view/states/app";
+import { graphicsQualityAtom } from "../../prototypes/view/states/graphics";
+import { sharedStoreAtomWrapper } from "../sharedAtoms";
 
-const initialScene: SceneProperty = {};
-
-export const sceneAtom = sharedAtom("scene", initialScene);
+export const sharableGraphicsQualityAtom = sharedStoreAtomWrapper(
+  "graphicsQuality",
+  graphicsQualityAtom,
+);
+export const sharableEnvironmentTypeAtom = sharedStoreAtomWrapper(
+  "environmentType",
+  environmentTypeAtom,
+);

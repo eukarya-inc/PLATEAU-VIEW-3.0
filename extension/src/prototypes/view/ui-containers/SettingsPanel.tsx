@@ -1,16 +1,14 @@
 import { styled } from "@mui/material";
 import { type FC } from "react";
 
+import { sharableGraphicsQualityAtom } from "../../../shared/states/scene";
 import {
   FloatingPanel,
   ParameterList,
   SegmentParameterItem,
   SwitchParameterItem,
 } from "../../ui-components";
-import {
-  graphicsQualityAtom,
-  nativeResolutionEnabledAtom,
-} from "../states/graphics";
+import { nativeResolutionEnabledAtom } from "../states/graphics";
 
 const Root = styled(FloatingPanel)(({ theme }) => ({
   width: 360,
@@ -30,7 +28,7 @@ export const SettingsPanel: FC = () => {
         <SegmentParameterItem
           label="グラフィック品質"
           exclusive
-          atom={graphicsQualityAtom}
+          atom={sharableGraphicsQualityAtom}
           items={[
             ["low", "低"],
             ["medium", "中"],

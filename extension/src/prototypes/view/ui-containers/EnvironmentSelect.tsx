@@ -3,6 +3,11 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, type FC } from "react";
 
+import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
+import elevationImage from "../../../prototypes/view/assets/elevation.webp";
+import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
+import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
+import { sharableEnvironmentTypeAtom } from "../../../shared/states/scene";
 import { colorMapTurbo } from "../../color-maps";
 import { colorModeAtom } from "../../shared-states";
 import {
@@ -17,15 +22,7 @@ import {
   SwitchParameterItem,
   type SelectItemProps,
 } from "../../ui-components";
-import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
-import elevationImage from "../../../prototypes/view/assets/elevation.webp";
-import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
-import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
-import {
-  environmentTypeAtom,
-  logarithmicTerrainElevationAtom,
-  terrainElevationHeightRangeAtom,
-} from "../states/app";
+import { logarithmicTerrainElevationAtom, terrainElevationHeightRangeAtom } from "../states/app";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",
@@ -163,7 +160,7 @@ const ElevationLegendButton: FC = () => {
 
 export const EnvironmentSelect: FC = () => {
   // FIXME
-  const [environmentType, setEnvironmentType] = useAtom(environmentTypeAtom);
+  const [environmentType, setEnvironmentType] = useAtom(sharableEnvironmentTypeAtom);
   const [colorMode, setColorMode] = useAtom(colorModeAtom);
 
   const id = useId();

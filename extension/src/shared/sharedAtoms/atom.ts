@@ -1,6 +1,11 @@
 import { WritableAtom, atom } from "jotai";
 
-import { getStorageStoreValue, setSharedStoreValue, setStorageStoreValue } from "./store";
+import {
+  getSharedStoreValue,
+  getStorageStoreValue,
+  setSharedStoreValue,
+  setStorageStoreValue,
+} from "./store";
 
 type AtomValue<V> = { name: string; value: V };
 
@@ -20,8 +25,8 @@ export const sharedAtom = <V>(name: string, initialValue: V) => {
 };
 
 // For the share feature
-export const sharedStoreAtom = <V>(a: SharedAtom<V>) =>
-  atom(
+export const sharedStoreAtom = <V>(a: SharedAtom<V>) => {
+  const w = atom(
     get => get(a),
     (_get, set, update: (value: V, name: string) => V) => {
       set(a, (v, n) => {
@@ -30,6 +35,32 @@ export const sharedStoreAtom = <V>(a: SharedAtom<V>) =>
       });
     },
   );
+  w.onMount = set => {
+    set((_, n) => getSharedStoreValue(n) as V);
+  };
+  return w;
+};
+
+export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
+  name: string,
+  a: WritableAtom<V, A, S>,
+) => {
+  const w = atom(
+    get => get(a),
+    (_get, set, ...args: A) => {
+      setSharedStoreValue(name, args);
+      set(a, ...args);
+    },
+  );
+  w.onMount = set => {
+    getSharedStoreValue(name).then(v => {
+      if (v) {
+        set(...(v as A));
+      }
+    });
+  };
+  return w;
+};
 
 // For the UI setting
 export const storageStoreAtom = <V>(a: SharedAtom<V>) => {
