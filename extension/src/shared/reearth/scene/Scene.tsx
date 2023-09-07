@@ -124,10 +124,10 @@ export const Scene: FC<SceneProps> = ({
         fog_density: fogDensity,
 
         // Sun
-        enable_sun: showSun,
+        enable_sun: showSkyBox && showSun,
 
         // Moon
-        enableMoon: showMoon,
+        enableMoon: showSkyBox && showMoon,
 
         // Sky
         sky_atmosphere: showSkyAtmosphere,
@@ -141,7 +141,6 @@ export const Scene: FC<SceneProps> = ({
       },
       ambientOcclusion,
       light: {
-        lightType: "directionalLight",
         lightColor,
         lightIntensity: debugSphericalHarmonics ? 0.5 : lightIntensity,
 
