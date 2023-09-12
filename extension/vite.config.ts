@@ -20,6 +20,7 @@ export default defineConfig({
       ],
     }),
   ],
+  envPrefix: "PLATEAU",
   define: {
     "process.env.VERSION": JSON.stringify(pkg.version),
     // Prevent conflict with import.meta.
