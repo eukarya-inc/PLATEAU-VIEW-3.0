@@ -11,12 +11,7 @@ import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/ho
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
 import { platformAtom } from "../../shared-states";
-import {
-  PlateauLogotype,
-  PlateauSymbol,
-  SelectItem,
-  Shortcut,
-} from "../../ui-components";
+import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import { hideAppOverlayAtom, showDeveloperPanelsAtom } from "../states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {

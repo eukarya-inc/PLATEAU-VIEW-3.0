@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
 import { Environments } from "../prototypes/view/containers/Environments";
@@ -6,10 +8,12 @@ import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEven
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { layerComponents } from "../prototypes/view-layers/layerComponents";
 import { WidgetContext } from "../shared/context/WidgetContext";
+import { useHealth } from "../shared/graphql";
 
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
 export const Widget = () => {
+  useHealthCheck();
   useInteractionMode();
 
   return (
@@ -29,4 +33,20 @@ export const Widget = () => {
       <InitialLayers />
     </WidgetContext>
   );
+};
+
+// For debug
+const useHealthCheck = () => {
+  /* eslint-disable react-hooks/rules-of-hooks */
+  if (!import.meta.env.DEV) {
+    return;
+  }
+  const { data, loading } = useHealth("123");
+  useEffect(() => {
+    if (loading) {
+      console.log("Loading health...");
+    } else {
+      console.log("Health has been completed: ", data);
+    }
+  }, [loading, data]);
 };
