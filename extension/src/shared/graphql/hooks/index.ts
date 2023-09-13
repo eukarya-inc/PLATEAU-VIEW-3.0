@@ -1,1 +1,1 @@
-export * from "./helth";
+export * from "./health";

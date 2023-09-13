@@ -8,7 +8,7 @@ import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEven
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { layerComponents } from "../prototypes/view-layers/layerComponents";
 import { WidgetContext } from "../shared/context/WidgetContext";
-import { useHelth } from "../shared/graphql";
+import { useHealth } from "../shared/graphql";
 
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
@@ -41,7 +41,7 @@ const useHealthCheck = () => {
   if (!import.meta.env.DEV) {
     return;
   }
-  const { data, loading } = useHelth("123");
+  const { data, loading } = useHealth("123");
   useEffect(() => {
     if (loading) {
       console.log("Loading health...");
