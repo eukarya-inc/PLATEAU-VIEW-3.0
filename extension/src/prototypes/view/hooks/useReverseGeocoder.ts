@@ -27,7 +27,6 @@ export function useReverseGeocoder(): ReverseGeocoderResult | undefined {
       if (viewSize.current) {
         const threshold = viewSize.current * 0.5;
         areas.areas = areas.areas.filter(area => area.radius > threshold);
-        console.log(data.areas, viewSize.current);
       }
       setResult(areas as ReverseGeocoderResult);
     }
