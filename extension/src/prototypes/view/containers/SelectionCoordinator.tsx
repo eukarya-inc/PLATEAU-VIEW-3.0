@@ -26,6 +26,8 @@ export const SelectionCoordinator: FC = () => {
     if (layerSelection.length > 0) {
       setScreenSpaceSelection(clearValue);
       setColorSchemeSelection(clearValue);
+      // Deselect the feature selection
+      window.reearth?.layers?.select?.(undefined);
     }
   }, [layerSelection, setScreenSpaceSelection, setColorSchemeSelection]);
 
