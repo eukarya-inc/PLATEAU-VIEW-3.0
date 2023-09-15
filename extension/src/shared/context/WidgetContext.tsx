@@ -8,7 +8,7 @@ import { client } from "../graphql/client";
 export const WidgetContext: FC<PropsWithChildren> = ({ children }) => {
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>;
+      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
     </ApolloProvider>
   );
 };
