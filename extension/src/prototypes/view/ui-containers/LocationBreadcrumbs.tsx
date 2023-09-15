@@ -1,13 +1,13 @@
+import { useAtomValue } from "jotai";
 import { type FC } from "react";
 
+import { areasAtom } from "../../../shared/states/address";
 import { AppBreadcrumbs, AppBreadcrumbsItem } from "../../ui-components";
 // FIXME
-// import { areasAtom } from "../../shared/states/address";
 // import { LocationBreadcrumbItem } from "./LocationBreadcrumbItem";
 
 export const LocationBreadcrumbs: FC = () => {
-  const areas = ["Prefecture", "Municipality", "City"];
-  // useAtomValue(areasAtom);
+  const areas = useAtomValue(areasAtom);
   if (areas == null) {
     return null;
   }
@@ -15,7 +15,7 @@ export const LocationBreadcrumbs: FC = () => {
     <AppBreadcrumbs>
       {[...areas].reverse().map(area => (
         // <LocationBreadcrumbItem key={area.code} area={area} />
-        <AppBreadcrumbsItem key={area}>{area}</AppBreadcrumbsItem>
+        <AppBreadcrumbsItem key={area.code}>{area.name}</AppBreadcrumbsItem>
       ))}
     </AppBreadcrumbs>
   );
