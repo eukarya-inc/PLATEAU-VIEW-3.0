@@ -1,12 +1,11 @@
 import { atom, type PrimitiveAtom } from "jotai";
 import { splitAtom } from "jotai/utils";
 
-import { RGBA } from "../../shared/types";
 import { type SplitAtom } from "../type-helpers";
 
 export interface QualitativeColor {
   value: string | number;
-  color: RGBA;
+  color: string;
   name: string;
 }
 

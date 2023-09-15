@@ -117,7 +117,7 @@ export const SliderParameterItem = forwardRef<HTMLDivElement, InternalSliderPara
                   ? value
                   : MIXED;
               },
-              (get, set, value: SetStateAction<number | number[]>) => {
+              (_get, set, value: SetStateAction<number | number[]>) => {
                 atomOrAtoms.forEach(atom => {
                   set(atom, value);
                 });

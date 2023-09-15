@@ -71,17 +71,17 @@ export function useEvaluateFeatureColor({
       return blendedDefaultColor;
     }
     if (colorSetColors != null) {
-      const color = colorSetColors.reduce(
-        (result, { value, color }) =>
+      const expression = colorSetColors.reduce(
+        (result, { value, color: c }) =>
           condition(
             `${variable(colorProperty)} === ${numberOrString(value)}`,
-            rgba({ r: color.r * 255, g: color.g * 255, b: color.b * 255, a: opacity ?? color.a }),
+            color(c, opacity ?? 1),
             result,
           ),
         blendedDefaultColor,
       );
-      if (color) {
-        return color;
+      if (expression) {
+        return expression;
       }
     }
     if (colorMapParams != null) {
