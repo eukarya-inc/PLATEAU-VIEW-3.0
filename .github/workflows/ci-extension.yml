@@ -30,10 +30,3 @@ jobs:
         run: yarn test
       - name: Build
         run: yarn build
-      - name: Save artifacts
-        uses: actions/upload-artifact@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          name: plateauview-extension
-          path: extension/dist
-          if-no-files-found: error

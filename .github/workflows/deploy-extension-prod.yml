@@ -6,6 +6,7 @@ env:
   GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_REGION: asia-northeast1
+  PLATEAU_GEO_API: https://geo.plateau.reearth.io
 jobs:
   deploy_extension:
     runs-on: ubuntu-latest
@@ -14,6 +15,9 @@ jobs:
       contents: read
       id-token: write
       packages: write
+    defaults:
+      run:
+        working-directory: extension
     steps:
       - uses: actions/checkout@v3
       - uses: google-github-actions/auth@v0
@@ -22,15 +26,7 @@ jobs:
           service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
-      - name: Download extension artifacts
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: ci.yml
-          workflow_conclusion: success
-          branch: main
-          name: plateauview-extension
-          path: plateauview-extension
-          check_artifacts: true
+      - name: Build
+        run: yarn build
       - name: Deploy
-        run: gsutil -m -h "Cache-Control:no-store" rsync -dr plateauview-extension ${{ env.GCS_DEST }}/extension
+        run: gsutil -m -h "Cache-Control:no-store" rsync -dr dist ${{ env.GCS_DEST }}/extension
