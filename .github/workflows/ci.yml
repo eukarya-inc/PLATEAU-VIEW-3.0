@@ -77,7 +77,7 @@ jobs:
       - run: echo OK
   deploy-extension-dev:
     needs: ci-extension
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    # if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
