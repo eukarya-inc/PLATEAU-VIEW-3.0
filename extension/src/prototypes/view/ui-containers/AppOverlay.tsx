@@ -5,17 +5,20 @@ import { AppOverlayLayout } from "../../ui-components";
 import { hideAppOverlayAtom } from "../states/app";
 
 // import { DeveloperPanels } from "../developer/DeveloperPanels";
-// import { SelectionPanel } from "./SelectionPanel";
 import { MainPanel } from "./MainPanel";
+import { SelectionPanel } from "./SelectionPanel";
 
-export const AppOverlay: FC = () => {
+type Props = {
+  type: "main" | "aside" | "developer";
+};
+
+export const AppOverlay: FC<Props> = ({ type }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   return (
     <AppOverlayLayout
       hidden={hidden}
-      main={<MainPanel />}
-      // TODO(ReEarth): This should be placed at Toolbar widget
-      // aside={<SelectionPanel />}
+      main={type === "main" ? <MainPanel /> : null}
+      aside={type === "aside" ? <SelectionPanel /> : null}
       // developer={<DeveloperPanels />}
     />
   );

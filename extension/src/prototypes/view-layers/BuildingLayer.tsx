@@ -1,7 +1,7 @@
 import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo } from "react";
 
-import { TilesetLayer } from "../../shared/reearth/layers/3dtiles";
+import { TilesetLayerContainer } from "../../shared/layerContainers/3dtiles";
 import { LayerProps } from "../layers";
 
 import {
@@ -108,12 +108,15 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   versionAtom,
   lodAtom,
   texturedAtom,
-  // featureIndexAtom,
+  featureIndexAtom,
+  selections,
   // hiddenFeaturesAtom,
-  // propertiesAtom,
-  // colorPropertyAtom,
-  // colorSchemeAtom,
-  // opacityAtom,
+  propertiesAtom,
+  colorPropertyAtom,
+  colorSchemeAtom,
+  colorMapAtom,
+  colorRangeAtom,
+  opacityAtom,
   // showWireframeAtom,
 }) => {
   // const query = useMunicipalityDatasetsQuery({
@@ -132,16 +135,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   }, [municipalityName, setTitle]);
 
   const hidden = useAtomValue(hiddenAtom);
-  // const scene = useCesium(({ scene }) => scene);
-  // scene.requestRender();
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (!scene.isDestroyed()) {
-  //       scene.requestRender();
-  //     }
-  //   };
-  // }, [scene]);
 
   const [_version, setVersion] = useAtom(versionAtom);
   const [_lod, setLod] = useAtom(lodAtom);
@@ -189,16 +182,20 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   // TODO(ReEarth): Use GQL definition
   if (datum.format === "3dtiles" /* PlateauDatasetFormat.Cesium3DTiles */) {
     return (
-      <TilesetLayer
+      <TilesetLayerContainer
         url={datum.url}
         onLoad={handleLoad}
+        layerIdAtom={layerIdAtom}
         // component={PlateauBuildingTileset}
-        // featureIndexAtom={featureIndexAtom}
+        featureIndexAtom={featureIndexAtom}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}
-        // propertiesAtom={propertiesAtom}
-        // colorPropertyAtom={colorPropertyAtom}
-        // colorSchemeAtom={colorSchemeAtom}
-        // opacityAtom={opacityAtom}
+        propertiesAtom={propertiesAtom}
+        colorPropertyAtom={colorPropertyAtom}
+        colorSchemeAtom={colorSchemeAtom}
+        colorMapAtom={colorMapAtom}
+        colorRangeAtom={colorRangeAtom}
+        opacityAtom={opacityAtom}
+        selections={selections}
         // showWireframe={showWireframe}
       />
     );

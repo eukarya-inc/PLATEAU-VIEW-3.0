@@ -9,7 +9,7 @@
     "build:config": "ts-node-esm ./reearth-yml.ts",
     "build": "tsc && yarn build:config && vite build",
     "lint": "eslint . --ext ts,tsx --fix",
-    "test": "echo TODO: SETUP TEST",
+    "test": "vitest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "gql": "graphql-codegen && yarn lint"
@@ -46,6 +46,7 @@
     "react-color": "2.19.3",
     "react-dom": "18.2.0",
     "react-merge-refs": "2.0.2",
+    "react-use": "^17.4.0",
     "react-window": "1.8.9",
     "styled-components": "6.0.7",
     "xstate": "4.38.2"
@@ -87,6 +88,7 @@
     "typescript": "5.0.2",
     "vite": "4.4.5",
     "vite-plugin-static-copy": "0.17.0",
+    "vitest": "^0.34.3",
     "yaml": "2.3.1"
   },
   "resolutions": {

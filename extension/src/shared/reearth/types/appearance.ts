@@ -1,4 +1,5 @@
 import type { ExpressionContainer } from "./expression";
+import { Feature } from "./layer";
 import type {
   Camera,
   ClassificationType,
@@ -152,6 +153,7 @@ export type Cesium3DTilesAppearance = {
   specularEnvironmentMaps?: string;
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;
+  onLoadFeature?: (feature: Partial<Feature> | undefined) => void;
 };
 
 export type LegacyPhotooverlayAppearance = {

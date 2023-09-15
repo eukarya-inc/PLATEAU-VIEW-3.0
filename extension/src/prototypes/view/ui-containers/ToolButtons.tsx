@@ -10,10 +10,10 @@ import {
   SketchIcon,
   StoryIcon,
 } from "../../ui-components";
-import { toolAtom, toolMachineAtom, type Tool } from "../states/tool";
+import { toolAtom, toolMachineAtom, type ToolType } from "../states/tool";
 import { type EventObject } from "../states/toolMachine";
 
-const eventTypes: Record<Tool, EventObject["type"]> = {
+const eventTypes: Record<ToolType, EventObject["type"]> = {
   hand: "HAND",
   select: "SELECT",
   sketch: "SKETCH",
@@ -26,7 +26,7 @@ export const ToolButtons: FC = () => {
   const tool = useAtomValue(toolAtom);
 
   const handleChange = useCallback(
-    (_event: unknown, value: Tool | null) => {
+    (_event: unknown, value: ToolType | null) => {
       if (value != null) {
         send({ type: eventTypes[value] });
       }
@@ -35,7 +35,7 @@ export const ToolButtons: FC = () => {
   );
 
   return (
-    <AppToggleButtonGroup value={tool} onChange={handleChange}>
+    <AppToggleButtonGroup value={tool?.type} onChange={handleChange}>
       <AppToggleButton value="hand" title="移動" shortcutKey="H">
         <HandIcon fontSize="medium" />
       </AppToggleButton>

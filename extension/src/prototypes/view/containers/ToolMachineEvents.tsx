@@ -1,10 +1,10 @@
 import { useAtom } from "jotai";
-import { type FC } from "react";
+import { useEffect, type FC } from "react";
 
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
-import { toolMachineAtom } from "../states/tool";
+import { getTool, toolMachineAtom } from "../states/tool";
 
 export const ToolMachineEvents: FC = () => {
   const [state, send] = useAtom(toolMachineAtom);
@@ -74,21 +74,23 @@ export const ToolMachineEvents: FC = () => {
   });
 
   const canvas = getCesiumCanvas();
-  let cursor;
-  if (state.matches("activeTool.modal.hand") || state.matches("activeTool.momentary.hand")) {
-    cursor = "grabbing";
-  } else if (
-    state.matches("selectedTool.modal.hand") ||
-    state.matches("selectedTool.momentary.hand")
-  ) {
-    cursor = "grab";
-  } else {
-    cursor = "auto";
-  }
+  useEffect(() => {
+    let cursor;
+    const tool = getTool(state);
+    if (tool?.type === "hand" && tool.active) {
+      cursor = "grabbing";
+    } else if (tool?.type === "hand" && !tool.active) {
+      cursor = "grab";
+      // } else if (tool?.type === "sketch") {
+      // cursor = `url("${crossCursor.src}") 12 12, auto`;
+    } else {
+      cursor = "auto";
+    }
 
-  if (canvas) {
-    canvas.style.cursor = cursor;
-  }
+    if (canvas) {
+      canvas.style.cursor = cursor;
+    }
+  }, [canvas, state]);
 
   return null;
 };

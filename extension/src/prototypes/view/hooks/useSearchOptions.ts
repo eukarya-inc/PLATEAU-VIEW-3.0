@@ -7,11 +7,10 @@
 // import { atom, useAtomValue, useSetAtom } from "jotai";
 // import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  // computePlateauBoundingSphere,
-  // type SearchableFeatureRecord,
-  type TileFeatureIndex,
-} from "../../datasets";
+import { TileFeatureIndex } from "../../../shared/plateau";
+import // computePlateauBoundingSphere,
+// type SearchableFeatureRecord,
+"../../datasets";
 // import { addLayerAtom, layersAtom, useFindLayer, type LayerModel } from "../../layers";
 // import { isNotNullish } from "../../type-helpers";
 import { type SearchOption } from "../../ui-components";

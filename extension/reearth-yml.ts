@@ -42,6 +42,22 @@ const yml = {
         extended: true,
       },
     },
+    {
+      id: "inspector-widget",
+      type: "widget",
+      name: "Inspector",
+      widgetLayout: {
+        extendable: {
+          vertically: true,
+        },
+        defaultLocation: {
+          zone: "inner",
+          section: "right",
+          area: "middle",
+        },
+        extended: true,
+      },
+    },
   ],
 };
 

@@ -1,5 +1,7 @@
 import { useAtomValue, type PrimitiveAtom } from "jotai";
-import { Suspense, type ComponentType, type FC, type ReactNode } from "react";
+import { Suspense, type ComponentType, type FC, type ReactNode, useMemo } from "react";
+
+import { ScreenSpaceSelectionEntry, screenSpaceSelectionAtom } from "../screen-space-selection";
 
 import { layerAtomsAtom, layerIdsAtom, layerSelectionAtom } from "./states";
 import { type LayerComponents, type LayerModel, type LayerProps } from "./types";
@@ -8,18 +10,28 @@ interface LayerRendererProps {
   components: LayerComponents;
   index: number;
   layerAtom: PrimitiveAtom<LayerModel>;
+  selections: ScreenSpaceSelectionEntry[] | undefined;
 }
 
-const LayerRenderer: FC<LayerRendererProps> = ({ components, index, layerAtom }) => {
+const LayerRenderer: FC<LayerRendererProps> = ({ components, index, layerAtom, selections }) => {
   const layer = useAtomValue(layerAtom);
-  const selection = useAtomValue(layerSelectionAtom);
+  const layerSelection = useAtomValue(layerSelectionAtom);
+  const filteredSelections = useMemo(
+    () => selections?.filter(v => !layer.id.includes(v.value.layerId)),
+    [layer.id, selections],
+  );
   const Component = components[layer.type] as ComponentType<LayerProps>;
   if (Component == null) {
     return null;
   }
   return (
     <Suspense>
-      <Component {...layer} index={index} selected={selection.includes(layer.id)} />
+      <Component
+        {...layer}
+        index={index}
+        selected={layerSelection.includes(layer.id)}
+        selections={filteredSelections}
+      />
     </Suspense>
   );
 };
@@ -34,6 +46,7 @@ export function LayersRenderer<T extends LayerComponents>({
 }: LayersRendererProps<T>): JSX.Element {
   const layerAtoms = useAtomValue(layerAtomsAtom);
   const layerIds = useAtomValue(layerIdsAtom);
+  const selection = useAtomValue(screenSpaceSelectionAtom);
   return (
     <>
       {layerAtoms.map((layerAtom, index) => (
@@ -42,6 +55,7 @@ export function LayersRenderer<T extends LayerComponents>({
           components={components}
           index={index}
           layerAtom={layerAtom}
+          selections={selection}
         />
       ))}
     </>

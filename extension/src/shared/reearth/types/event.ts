@@ -1,5 +1,15 @@
 import { CameraPosition } from "./camera";
 
+export type MouseEvent = {
+  x?: number;
+  y?: number;
+  lat?: number;
+  lng?: number;
+  height?: number;
+  layerId?: string;
+  delta?: number;
+};
+
 export type ReearthEventType = {
   update: [];
   close: [];

@@ -4,7 +4,7 @@ import { WidgetContext } from "../shared/context/WidgetContext";
 export const Widget = () => {
   return (
     <WidgetContext>
-      <AppOverlay />
+      <AppOverlay type="main" />
     </WidgetContext>
   );
 };

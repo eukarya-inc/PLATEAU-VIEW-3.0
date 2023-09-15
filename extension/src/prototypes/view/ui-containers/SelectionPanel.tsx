@@ -1,0 +1,98 @@
+// import { PEDESTRIAN_OBJECT } from "@takram/plateau-pedestrian";
+
+// import { SKETCH_OBJECT } from "@takram/plateau-sketch";
+import { useAtom, useAtomValue } from "jotai";
+import { type ResizeCallback } from "re-resizable";
+import { useCallback, type FC } from "react";
+
+import { TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { Inspector } from "../../ui-components";
+import { ColorSchemeContent } from "../selection/ColorSchemeContent";
+import { LayerContent } from "../selection/LayerContent";
+import { TileFeatureContent } from "../selection/TileFeatureContent";
+import { inspectorWidthAtom } from "../states/app";
+import {
+  COLOR_SCHEME_SELECTION,
+  LAYER_SELECTION,
+  SCREEN_SPACE_SELECTION,
+  selectionGroupsAtom,
+} from "../states/selection";
+
+export const SelectionPanel: FC = () => {
+  let content = null;
+  // const contentType: "default" | "pedestrian" = "default";
+  const selectionGroups = useAtomValue(selectionGroupsAtom);
+  if (selectionGroups.length === 1) {
+    const [selectionGroup] = selectionGroups;
+    const { type, subtype } = selectionGroup;
+    switch (type) {
+      case LAYER_SELECTION:
+        switch (subtype) {
+          // case PEDESTRIAN_LAYER:
+          //   content = <PedestrianLayerContent values={selectionGroup.values} />;
+          //   contentType = "pedestrian";
+          //   break;
+          default:
+            content = <LayerContent values={selectionGroup.values} />;
+            break;
+        }
+        break;
+      case SCREEN_SPACE_SELECTION:
+        switch (subtype) {
+          case TILESET_FEATURE:
+            content = <TileFeatureContent values={selectionGroup.values} />;
+            break;
+          // case PEDESTRIAN_OBJECT:
+          //   content = <PedestrianLayerContent values={selectionGroup.values} />;
+          //   contentType = "pedestrian";
+          //   break;
+          // case SKETCH_OBJECT:
+          //   content = <SketchObjectContent values={selectionGroup.values} />;
+          //   break;
+        }
+        break;
+      case COLOR_SCHEME_SELECTION:
+        content = <ColorSchemeContent values={selectionGroup.values} />;
+        break;
+    }
+  } else if (selectionGroups.length > 1) {
+    content = null; // TODO: Show mixed content
+  }
+
+  const [inspectorWidth, setInspectorWidth] = useAtom(inspectorWidthAtom);
+  const handleResizeStop: ResizeCallback = useCallback(
+    (_event, _direction, _element, delta) => {
+      setInspectorWidth(prevValue => prevValue + delta.width);
+    },
+    [setInspectorWidth],
+  );
+
+  // const [pedestrianInspectorWidth, setPedestrianInspectorWidth] = useAtom(
+  //   pedestrianInspectorWidthAtom,
+  // );
+  // const handlePedestrianResizeStop: ResizeCallback = useCallback(
+  //   (_event, _direction, _element, delta) => {
+  //     setPedestrianInspectorWidth(prevValue => prevValue + delta.width);
+  //   },
+  //   [setPedestrianInspectorWidth],
+  // );
+
+  if (content == null) {
+    return null;
+  }
+  // if (contentType === "pedestrian") {
+  //   return (
+  //     <Inspector
+  //       key="pedestrian"
+  //       defaultWidth={pedestrianInspectorWidth}
+  //       onResizeStop={handlePedestrianResizeStop}>
+  //       <div>{content}</div>
+  //     </Inspector>
+  //   );
+  // }
+  return (
+    <Inspector key="default" defaultWidth={inspectorWidth} onResizeStop={handleResizeStop}>
+      <div>{content}</div>
+    </Inspector>
+  );
+};
