@@ -27,6 +27,12 @@ export type Camera = {
     options?: CameraOptions,
     offset?: number,
   ) => void;
+  readonly getFovInfo: (options: { withTerrain?: boolean; calcViewSize?: boolean }) =>
+    | {
+        center?: LatLngHeight;
+        viewSize?: number;
+      }
+    | undefined;
 };
 
 export type FlyToDestination = {

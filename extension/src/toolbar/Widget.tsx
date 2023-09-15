@@ -6,6 +6,7 @@ import { Environments } from "../prototypes/view/containers/Environments";
 import { InitialLayers } from "../prototypes/view/containers/InitialLayers";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
+import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { layerComponents } from "../prototypes/view-layers/layerComponents";
@@ -35,6 +36,7 @@ export const Widget = memo(function WidgetPresenter() {
       <InitialLayers />
       <SelectionCoordinator />
       <ScreenSpaceSelection />
+      <ReverseGeocoding />
     </WidgetContext>
   );
 });
