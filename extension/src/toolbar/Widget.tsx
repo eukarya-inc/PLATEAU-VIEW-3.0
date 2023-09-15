@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
@@ -14,7 +14,7 @@ import { useHealth } from "../shared/graphql";
 
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
-export const Widget = () => {
+export const Widget = memo(function WidgetPresenter() {
   useHealthCheck();
   useInteractionMode();
 
@@ -37,7 +37,7 @@ export const Widget = () => {
       <ScreenSpaceSelection />
     </WidgetContext>
   );
-};
+});
 
 // For debug
 const useHealthCheck = () => {
