@@ -1,7 +1,8 @@
-import { atom, type PrimitiveAtom } from "jotai";
+import { atom, SetStateAction, type PrimitiveAtom } from "jotai";
 
+import { type TileFeatureIndex } from "../../shared/plateau";
+import { PlateauProperties } from "../../shared/plateau/layers";
 import { colorMapPlateau, type ColorMap } from "../color-maps";
-import { type QualitativeColorSet, type TileFeatureIndex } from "../datasets";
 
 import { type ViewLayerModel } from "./createViewLayerModel";
 import { type LayerColorScheme } from "./types";
@@ -14,7 +15,7 @@ export interface PlateauTilesetLayerState {
   isPlateauTilesetLayer: true;
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
-  propertiesAtom: PrimitiveAtom<readonly PlateauTilesetProperty[] | null>;
+  propertiesAtom: PrimitiveAtom<PlateauProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: PrimitiveAtom<ColorMap>;
   colorRangeAtom: PrimitiveAtom<number[]>;
@@ -22,26 +23,27 @@ export interface PlateauTilesetLayerState {
   opacityAtom: PrimitiveAtom<number>;
 }
 
-export type PlateauTilesetProperty = { name: string } & (
-  | { type: "unknown" }
-  | {
-      type: "number";
-      minimum: number;
-      maximum: number;
-    }
-  | {
-      type: "qualitative";
-      colorSet: QualitativeColorSet;
-    }
-);
-
 export function createPlateauTilesetLayerState(
   params: PlateauTilesetLayerStateParams,
 ): PlateauTilesetLayerState {
-  const propertiesAtom = atom<readonly PlateauTilesetProperty[] | null>(null);
+  const propertiesAtom = atom<PlateauProperties | null>(null);
   const colorPropertyAtom = atom<string | null>(null);
   const colorMapAtom = atom<ColorMap>(colorMapPlateau);
   const colorRangeAtom = atom([0, 100]);
+  const valueRangeAtom = atom(
+    get => {
+      const properties = get(propertiesAtom);
+      const colorProperty = get(colorPropertyAtom);
+      const property =
+        colorProperty != null
+          ? properties?.value?.find(({ name }) => name === colorProperty)
+          : undefined;
+      return property?.type === "number" ? [property.minimum, property.maximum] : [];
+    },
+    (_get, _set, _value: SetStateAction<number[]>) => {
+      // Not writable
+    },
+  );
 
   const colorSchemeAtom = atom<LayerColorScheme | null>(get => {
     const properties = get(propertiesAtom);
@@ -49,7 +51,7 @@ export function createPlateauTilesetLayerState(
     if (colorProperty == null) {
       return null;
     }
-    const property = properties?.find(({ name }) => name === colorProperty);
+    const property = properties?.value?.find(({ name }) => name === colorProperty);
     return property?.type === "qualitative"
       ? property.colorSet
       : {
@@ -57,6 +59,7 @@ export function createPlateauTilesetLayerState(
           name: colorProperty.replaceAll("_", " "),
           colorMapAtom,
           colorRangeAtom,
+          valueRangeAtom,
         };
   });
 

@@ -1,6 +1,8 @@
 import { type Getter } from "jotai";
 import { type ComponentType, type HTMLAttributes } from "react";
 
+import { ScreenSpaceSelectionEntry } from "../screen-space-selection";
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface LayerModelOverrides {}
 
@@ -39,6 +41,7 @@ export type LayerProps<T extends LayerType = LayerType> = LayerModel<T> & {
   index: number;
   selected?: boolean;
   itemProps?: HTMLAttributes<HTMLElement>;
+  selections?: ScreenSpaceSelectionEntry[];
 };
 
 export type LayerComponents = {

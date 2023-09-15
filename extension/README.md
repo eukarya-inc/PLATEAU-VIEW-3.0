@@ -21,5 +21,12 @@ Then, set the `localhost` to env file in `reearth` repository.
 - streetView ... Main logic for street view widget
 - prototypes ... Modules which are ported from [takram-design-engineering/plateau-view](https://github.com/takram-design-engineering/plateau-view).
 - shared ... Shared logic between widgets
+    - constants ... Constant variables definition
+    - context ... Shared context. `WidgetContext` is used for each widget.
     - sharedAtoms ... Wrapped Jotai's atoms for abstracting side-effects
     - states ... Global state definitions
+    - graphql ... Functions related to GQL include react hooks.
+    - helpers ... Helper functions for specific use case
+    - layerContainers ... Connect a lot of atoms(states) with specific layer component.
+    - plateau ... Plateau specific module
+    - reearth ... Bundle ReEarth functions.

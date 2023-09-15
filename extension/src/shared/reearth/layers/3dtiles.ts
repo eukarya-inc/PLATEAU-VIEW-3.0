@@ -1,16 +1,47 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useMemo, useRef } from "react";
+
+import { Cesium3DTilesAppearance, LayerAppearance } from "../types";
+
+export const TILESET_FEATURE = "TILESET_FEATURE";
+
+declare module "../../../prototypes/screen-space-selection" {
+  interface ScreenSpaceSelectionOverrides {
+    [TILESET_FEATURE]: {
+      key: string;
+      layerId: string;
+    };
+  }
+}
 
 export type Tileset = {};
 export type TilesetFeature<P> = {
   properties: P;
 };
 
-export type Props = {
+export type TilesetProps = {
   url: string;
   onLoad?: (layerId: string) => void;
+  color?: string;
+  enableShadow?: boolean;
 };
 
-export const TilesetLayer: FC<Props> = ({ url, onLoad }) => {
+export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShadow }) => {
+  const layerIdRef = useRef<string>();
+  const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
+    () => ({
+      pbr: false,
+      ...(color
+        ? {
+            color: {
+              expression: color,
+            },
+          }
+        : {}),
+      shadows: enableShadow ? "enabled" : "disabled",
+    }),
+    [color, enableShadow],
+  );
+
   useEffect(() => {
     const layerId = window.reearth?.layers?.add?.({
       type: "simple",
@@ -18,10 +49,10 @@ export const TilesetLayer: FC<Props> = ({ url, onLoad }) => {
         type: "3dtiles",
         url,
       },
-      "3dtiles": {
-        pbr: false,
-      },
+      "3dtiles": appearance,
     });
+
+    layerIdRef.current = layerId;
 
     setTimeout(() => {
       if (layerId) {
@@ -33,7 +64,16 @@ export const TilesetLayer: FC<Props> = ({ url, onLoad }) => {
       if (!layerId) return;
       window.reearth?.layers?.delete?.(layerId);
     };
-  }, [url, onLoad]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const layerId = layerIdRef.current;
+    if (!layerId) return;
+
+    window.reearth?.layers?.override?.(layerId, {
+      ["3dtiles"]: appearance,
+    });
+  }, [appearance]);
 
   return null;
 };

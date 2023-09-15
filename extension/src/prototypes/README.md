@@ -16,3 +16,4 @@ These module's names are same with prototype's name.
 - view ... Application logic.
 - view-layers ... Application layers logic
 - layers ... Some logics to handle layer
+- screen-space-selection ... Handle selecting the layer's feature.

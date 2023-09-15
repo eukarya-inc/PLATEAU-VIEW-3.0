@@ -1,20 +1,12 @@
-import { useAtom } from "jotai";
-import { useState } from "react";
+import { memo } from "react";
 
+import { AppOverlay } from "../prototypes/view/ui-containers/AppOverlay";
 import { WidgetContext } from "../shared/context/WidgetContext";
-import { countAtom } from "../shared/states/count";
 
-export const Widget = () => {
-  const [count, setCount] = useState(0);
-  const [{ value: globalCount }, setGlobalCount] = useAtom(countAtom);
-
+export const Widget = memo(function WidgetPresenter() {
   return (
     <WidgetContext>
-      <div style={{ background: "blue" }}>
-        <button onClick={() => setCount(n => n + 1)}>Local: {count}</button>
-        <br />
-        <button onClick={() => setGlobalCount(c => c + 1)}>Global: {globalCount}</button>
-      </div>
+      <AppOverlay type="aside" />
     </WidgetContext>
   );
-};
+});
