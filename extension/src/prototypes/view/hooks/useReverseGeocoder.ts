@@ -23,7 +23,7 @@ export function useReverseGeocoder(): ReverseGeocoderResult | undefined {
 
   useEffect(() => {
     if (data?.areas) {
-      const areas = data.areas;
+      const areas = { ...data.areas };
       if (viewSize.current) {
         const threshold = viewSize.current * 0.5;
         areas.areas = areas.areas.filter(area => area.radius > threshold);
