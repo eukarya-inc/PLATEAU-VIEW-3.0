@@ -1,1 +1,1 @@
-export * from "./useOptinalAtom";
+export * from "./useOptionalAtom";
