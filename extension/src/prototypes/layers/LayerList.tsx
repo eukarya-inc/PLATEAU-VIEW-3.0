@@ -24,8 +24,10 @@ import {
 } from "react";
 import invariant from "tiny-invariant";
 
+import { rootLayersLayerAtomsAtom } from "../../shared/states/rootLayer";
+
 import { LayerListItem } from "./LayerListItem";
-import { layerAtomsAtom, layerIdsAtom, moveLayerAtom } from "./states";
+import { layerIdsAtom, moveLayerAtom } from "./states";
 import { type LayerProps } from "./types";
 
 const Root = styled("div")({});
@@ -53,7 +55,7 @@ export const LayerList = forwardRef<HTMLDivElement, LayerListProps>(
       }),
     );
 
-    const layerAtoms = useAtomValue(layerAtomsAtom);
+    const layerAtoms = useAtomValue(rootLayersLayerAtomsAtom);
     const layerIds = useAtomValue(layerIdsAtom);
     const move = useSetAtom(moveLayerAtom);
 

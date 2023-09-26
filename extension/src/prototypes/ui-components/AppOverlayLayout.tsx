@@ -194,7 +194,6 @@ export const AppOverlayLayout: FC<AppOverlayLayoutProps> = memo(
     const mainRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       invariant(mainRef.current != null);
-      console.log(mainRef.current.getBoundingClientRect().height);
       setMaxMainHeight(mainRef.current.getBoundingClientRect().height);
       const observer = new ResizeObserver(([entry]) => {
         setMaxMainHeight(entry.contentRect.height);

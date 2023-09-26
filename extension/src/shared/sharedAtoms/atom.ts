@@ -7,36 +7,53 @@ import {
   setStorageStoreValue,
 } from "./store";
 
-type AtomValue<V> = { name: string; value: V };
+export type AtomValue<V> = { name: string; value: V };
 
-type SharedAtom<V> = WritableAtom<AtomValue<V>, [update: (value: V, name: string) => V], void>;
+type SharedAtom<V> = WritableAtom<
+  AtomValue<V>,
+  [update: (value: V, name: string) => Promise<V>],
+  Promise<void>
+>;
 
-export const sharedAtom = <V>(name: string, initialValue: V) => {
+export const sharedAtom = <V>(name: string, initialValue: V): SharedAtom<V> => {
   const a = atom<AtomValue<V>>({ name, value: initialValue });
   const wrapped = atom(
     get => get(a),
-    (get, set, update: (value: V, name: string) => V) => {
+    async (get, set, update: (value: V, name: string) => Promise<V>) => {
       const { value } = get(a);
-      const result = update(value, name);
+      const result = await update(value, name);
       set(a, { name, value: result });
     },
   );
   return wrapped;
 };
 
+export const sharedAtomValue = <V>(a: SharedAtom<V>) => {
+  return atom(
+    get => get(a).value,
+    (_get, set, update: V) => {
+      set(a, async () => update);
+    },
+  );
+};
+
 // For the share feature
 export const sharedStoreAtom = <V>(a: SharedAtom<V>) => {
   const w = atom(
     get => get(a),
-    (_get, set, update: (value: V, name: string) => V) => {
-      set(a, (v, n) => {
-        setSharedStoreValue(n, update(v, n));
-        return update(v, n);
+    async (_get, set, update: (value: V, name: string) => Promise<V>) => {
+      set(a, async (v, n) => {
+        setSharedStoreValue(n, await update(v, n));
+        return await update(v, n);
       });
     },
   );
   w.onMount = set => {
-    set((_, n) => getSharedStoreValue(n) as V);
+    // Use an existence value, if storaged value is exist.
+    set(async (v, n) => {
+      const storageValue = getStorageStoreValue<V>(n);
+      return storageValue ? storageValue : (await getSharedStoreValue<V>(n)) ?? v;
+    });
   };
   return w;
 };
@@ -53,9 +70,9 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
     },
   );
   w.onMount = set => {
-    getSharedStoreValue(name).then(v => {
+    getSharedStoreValue<A>(name).then(v => {
       if (v) {
-        set(...(v as A));
+        set(...v);
       }
     });
   };
@@ -66,15 +83,35 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
 export const storageStoreAtom = <V>(a: SharedAtom<V>) => {
   const wrapped = atom(
     get => get(a),
-    (_get, set, update: (value: V, name: string) => V) => {
-      set(a, (v, n) => {
-        setStorageStoreValue(n, update(v, n));
-        return update(v, n);
+    async (_get, set, update: (value: V, name: string) => Promise<V>) => {
+      set(a, async (v, n) => {
+        setStorageStoreValue(n, await update(v, n));
+        return await update(v, n);
       });
     },
   );
   wrapped.onMount = set => {
-    set((v, n) => getStorageStoreValue(n) ?? v);
+    set(async (v, n) => getStorageStoreValue(n) ?? v);
   };
   return wrapped;
+};
+
+export const storageStoreAtomWrapper = <V, A extends unknown[], S>(
+  name: string,
+  a: WritableAtom<V, A, S>,
+) => {
+  const w = atom(
+    get => get(a),
+    (_get, set, ...args: A) => {
+      setStorageStoreValue(name, args);
+      set(a, ...args);
+    },
+  );
+  w.onMount = set => {
+    const v = getStorageStoreValue<A>(name);
+    if (v) {
+      set(...v);
+    }
+  };
+  return w;
 };

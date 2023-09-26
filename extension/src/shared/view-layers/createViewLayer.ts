@@ -1,12 +1,8 @@
 import { type SetOptional } from "type-fest";
 
-import { type LayerModel, type LayerType } from "../layers";
-
 // import { createBridgeLayer, type BridgeLayerModelParams } from "./BridgeLayer";
-import { createBuildingLayer, type BuildingLayerModelParams } from "./BuildingLayer";
-// import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
-// import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
-// import { createLandUseLayer, type LandUseLayerModelParams } from "./LandUseLayer";
+
+import { type LayerModel, type LayerType } from "../../prototypes/layers";
 import {
   BORDER_LAYER,
   BRIDGE_LAYER,
@@ -32,7 +28,12 @@ import {
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
   VEGETATION_LAYER,
-} from "./layerTypes";
+} from "../../prototypes/view-layers";
+
+import { createBuildingLayer, type BuildingLayerModelParams } from "./3dtiles/BuildingLayer";
+// import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
+// import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
+// import { createLandUseLayer, type LandUseLayerModelParams } from "./LandUseLayer";
 // import { createPedestrianLayer, type PedestrianLayerModelParams } from "./PedestrianLayer";
 // import {
 //   createRiverFloodingRiskLayer,

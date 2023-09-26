@@ -17,6 +17,8 @@ import {
 import { mergeRefs } from "react-merge-refs";
 import invariant from "tiny-invariant";
 
+import { WritableAtomForComponent } from "../../shared/view-layers/component";
+
 import { formatValue, type ValueFormatter } from "./helpers/formatValue";
 import { inversePseudoLog, pseudoLog } from "./helpers/pseudoLog";
 import { ParameterItemButton, type ParameterItemButtonProps } from "./ParameterItemButton";
@@ -62,8 +64,14 @@ export interface SliderParameterItemProps<Range extends boolean = false>
   logarithmic?: boolean;
   logarithmicBase?: number;
   atom: Range extends true
-    ? PrimitiveAtom<number[]> | Array<PrimitiveAtom<number[]>>
-    : PrimitiveAtom<number> | Array<PrimitiveAtom<number>>;
+    ?
+        | PrimitiveAtom<number[]>
+        | Array<PrimitiveAtom<number[]>>
+        | Array<WritableAtomForComponent<number[]>>
+    :
+        | PrimitiveAtom<number>
+        | Array<PrimitiveAtom<number>>
+        | Array<WritableAtomForComponent<number>>;
 }
 
 interface InternalSliderParameterItemProps

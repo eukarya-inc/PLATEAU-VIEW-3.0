@@ -1,3 +1,3 @@
 export * from "./3dtiles";
-export * from "./TIleFeatureIndex";
-export * from "./properties";
+export * from "./TilesetFeatureIndex";
+export * from "./TilesetProperties";

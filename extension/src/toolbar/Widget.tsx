@@ -3,15 +3,15 @@ import { memo, useEffect } from "react";
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
 import { Environments } from "../prototypes/view/containers/Environments";
-import { InitialLayers } from "../prototypes/view/containers/InitialLayers";
+import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
-import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
-import { layerComponents } from "../prototypes/view-layers/layerComponents";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { useHealth } from "../shared/graphql";
+import { InitialLayers } from "../shared/view/containers/InitialLayers";
+import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { useInteractionMode } from "./hooks/useInteractionMode";
 

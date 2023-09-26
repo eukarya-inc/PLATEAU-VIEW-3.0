@@ -31,7 +31,7 @@ export type PlateauTilesetProperty = { name: string } & (
     }
 );
 
-export class PlateauProperties extends Properties {
+export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
   get value(): PlateauTilesetProperty[] | undefined {
     if (this._cachedComputedProperties) {

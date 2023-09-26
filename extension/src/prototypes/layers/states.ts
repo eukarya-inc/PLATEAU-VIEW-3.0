@@ -1,17 +1,20 @@
 import { atom } from "jotai";
-import { atomWithReset, splitAtom } from "jotai/utils";
+import { splitAtom } from "jotai/utils";
 import { isEqual, pick } from "lodash";
 import { nanoid } from "nanoid";
-import { type SetOptional } from "type-fest";
 
+import { rootLayersAtom } from "../../shared/states/rootLayer";
+import { RootLayerConfig } from "../../shared/view-layers";
 import { atomsWithSelection } from "../shared-states";
 
 import { type LayerModel, type LayerPredicate } from "./types";
 
 // TODO: Rewrite with atomFamily perhaps?
-export const layersAtom = atomWithReset<LayerModel[]>([]);
-export const layerAtomsAtom = splitAtom(layersAtom);
-export const layerIdsAtom = atom(get => get(layerAtomsAtom).map(layerAtom => get(layerAtom).id));
+// export const layersAtom = atomWithReset<LayerModel[]>([]);
+export const layerAtomsAtom = splitAtom(rootLayersAtom);
+export const layerIdsAtom = atom(get =>
+  get(layerAtomsAtom).map(layerAtom => get(get(get(layerAtom).rootLayerAtom).layer).id),
+);
 
 const {
   selectionAtom: layerSelectionAtom,
@@ -33,7 +36,8 @@ export interface AddLayerOptions {
 
 export const addLayerAtom = atom(
   null,
-  (get, set, layer: SetOptional<LayerModel, "id">, { autoSelect = true }: AddLayerOptions = {}) => {
+  (get, set, root: RootLayerConfig, { autoSelect = true }: AddLayerOptions = {}) => {
+    const layer = get(get(root.rootLayerAtom).layer);
     const id = layer.id ?? nanoid();
     if (get(layerIdsAtom).includes(id)) {
       console.warn(`Layer already exits: ${id}`);
@@ -41,7 +45,7 @@ export const addLayerAtom = atom(
     }
     set(layerAtomsAtom, {
       type: "insert",
-      value: { ...layer, id },
+      value: root,
       before: get(layerAtomsAtom)[0],
     });
     if (autoSelect) {
@@ -49,7 +53,9 @@ export const addLayerAtom = atom(
     }
 
     return () => {
-      const layerAtom = get(layerAtomsAtom).find(layerAtom => get(layerAtom).id === id);
+      const layerAtom = get(layerAtomsAtom).find(
+        layerAtom => get(get(get(layerAtom).rootLayerAtom).layer).id === id,
+      );
       if (layerAtom == null) {
         console.warn(`Layer does not exit: ${id}`);
         return;
@@ -90,7 +96,9 @@ export const filterLayersAtom = atom(
 );
 
 export const removeLayerAtom = atom(null, (get, set, id: string) => {
-  const layerAtom = get(layerAtomsAtom).find(layerAtom => get(layerAtom).id === id);
+  const layerAtom = get(layerAtomsAtom).find(
+    layerAtom => get(get(get(layerAtom).rootLayerAtom).layer).id === id,
+  );
   if (layerAtom == null) {
     console.warn(`Layer does not exit: ${id}`);
     return;
@@ -104,12 +112,16 @@ export const removeLayerAtom = atom(null, (get, set, id: string) => {
 
 export const moveLayerAtom = atom(null, (get, set, activeId: string, overId: string) => {
   const layerAtoms = get(layerAtomsAtom);
-  const activeIndex = layerAtoms.findIndex(layerAtom => get(layerAtom).id === activeId);
+  const activeIndex = layerAtoms.findIndex(
+    layerAtom => get(get(get(layerAtom).rootLayerAtom).layer).id === activeId,
+  );
   if (activeIndex === -1) {
     console.warn(`Layer does not exit: ${activeId}`);
     return;
   }
-  const overIndex = layerAtoms.findIndex(layerAtom => get(layerAtom).id === overId);
+  const overIndex = layerAtoms.findIndex(
+    layerAtom => get(get(get(layerAtom).rootLayerAtom).layer).id === overId,
+  );
   if (overIndex === -1) {
     console.warn(`Layer does not exit: ${overId}`);
     return;
@@ -120,12 +132,12 @@ export const moveLayerAtom = atom(null, (get, set, activeId: string, overId: str
     before: activeIndex > overIndex ? layerAtoms[overIndex] : layerAtoms[overIndex + 1],
   });
 
-  const layers = get(layersAtom);
+  const layers = get(rootLayersAtom);
   const layerIndex = Math.max(activeIndex, overIndex);
   layers
     .slice(0, layerIndex)
     .reverse()
     .forEach(layer => {
-      layer.handleRef.current?.bringToFront();
+      get(get(layer.rootLayerAtom).layer).handleRef.current?.bringToFront();
     });
 });
