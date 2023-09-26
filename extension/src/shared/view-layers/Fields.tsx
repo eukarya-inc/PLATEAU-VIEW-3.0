@@ -2,7 +2,7 @@ import { FC } from "react";
 
 import { InspectorItem } from "../../prototypes/ui-components";
 import { OPACITY_FIELD } from "../api/types/fields/general";
-import { LayerOpacitySection } from "../view/selection/general/LayerOpacitySection";
+import { LayerOpacityField } from "../view/fields/general/LayerOpacityField";
 
 import { ComponentAtom } from "./component";
 
@@ -16,7 +16,7 @@ export const Fields: FC<Props> = ({ type, atoms }) => {
     case OPACITY_FIELD:
       return (
         <InspectorItem>
-          <LayerOpacitySection atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />
+          <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />
         </InspectorItem>
       );
   }

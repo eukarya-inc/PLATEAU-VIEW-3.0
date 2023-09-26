@@ -7,11 +7,11 @@ import {
 } from "../../../../prototypes/ui-components";
 import { WritableAtomForComponent } from "../../../view-layers/component";
 
-export interface LayerOpacitySectionProps {
+export interface LayerOpacityFieldProps {
   atoms: WritableAtomForComponent<number>[];
 }
 
-export const LayerOpacitySection: FC<LayerOpacitySectionProps> = ({ atoms }) => {
+export const LayerOpacityField: FC<LayerOpacityFieldProps> = ({ atoms }) => {
   if (atoms.length === 0) {
     return null;
   }

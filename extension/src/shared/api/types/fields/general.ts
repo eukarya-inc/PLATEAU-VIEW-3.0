@@ -6,4 +6,4 @@ export type OpacityField = FieldBase<{
   value: number;
 }>;
 
-export type GeneralFields = OpacityField;
+export type GeneralFields = OpacityField; // | ColorSchemeField

@@ -57,6 +57,7 @@ export const mockSettings: Setting[] = [
         components: [
           {
             type: OPACITY_FIELD,
+            format: "3dtiles",
             value: 1,
             storeable: true,
           },
@@ -78,6 +79,7 @@ export const mockSettings: Setting[] = [
         components: [
           {
             type: OPACITY_FIELD,
+            format: "3dtiles",
             value: 1,
             storeable: true,
           },
@@ -100,6 +102,7 @@ export const mockSettings: Setting[] = [
         components: [
           {
             type: OPACITY_FIELD,
+            format: "3dtiles",
             value: 1,
             storeable: true,
           },
@@ -121,6 +124,7 @@ export const mockSettings: Setting[] = [
         components: [
           {
             type: OPACITY_FIELD,
+            format: "3dtiles",
             value: 1,
             storeable: true,
           },
