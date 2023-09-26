@@ -13,7 +13,7 @@ export const Widget = () => {
       <div style={{ background: "blue" }}>
         <button onClick={() => setCount(n => n + 1)}>Local: {count}</button>
         <br />
-        <button onClick={() => setGlobalCount(c => c + 1)}>Global: {globalCount}</button>
+        <button onClick={() => setGlobalCount(async c => c + 1)}>Global: {globalCount}</button>
       </div>
     </WidgetContext>
   );

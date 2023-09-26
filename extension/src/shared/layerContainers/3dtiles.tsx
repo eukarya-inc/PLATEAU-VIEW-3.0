@@ -7,20 +7,22 @@ import {
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
 import { ViewLayerModel } from "../../prototypes/view-layers";
-import { PlateauProperties, TileFeatureIndex } from "../plateau";
+import { useOptionalAtomValue } from "../hooks";
+import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
+import { WritableAtomForComponent } from "../view-layers/component";
 
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
 
 type TilesetContainerProps = TilesetProps & {
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   layerIdAtom: PrimitiveAtom<string | null>;
-  propertiesAtom: PrimitiveAtom<PlateauProperties | null>;
+  propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: PrimitiveAtom<ColorMap>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
-  opacityAtom: PrimitiveAtom<number>;
+  opacityAtom?: WritableAtomForComponent<number>;
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
 };
 
@@ -67,18 +69,18 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
     (layerId: string) => {
       onLoad?.(layerId);
       setFeatureIndex(new TileFeatureIndex(layerId));
-      setProperties(new PlateauProperties(layerId));
+      setProperties(new PlateauTilesetProperties(layerId));
     },
     [onLoad, setFeatureIndex, setProperties],
   );
 
   const colorProperty = useAtomValue(colorPropertyAtom);
   const colorScheme = useAtomValue(colorSchemeAtom);
-  const opacity = useAtomValue(opacityAtom);
+  const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
     colorProperty: colorProperty ?? undefined,
     colorScheme: colorScheme ?? undefined,
-    opacity,
+    opacity: opacity,
     selections,
   });
 

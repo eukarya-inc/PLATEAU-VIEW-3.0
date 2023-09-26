@@ -1,11 +1,12 @@
 import { useSetAtom } from "jotai";
 
+import { RootLayerConfig } from "../../shared/view-layers";
+
 import { addLayerAtom, type AddLayerOptions } from "./states";
-import { type LayerModel, type LayerType } from "./types";
 
 // Provided for generic setter.
-export function useAddLayer(): <T extends LayerType>(
-  layer: Omit<LayerModel<T>, "id"> & { type: T },
+export function useAddLayer(): (
+  layer: Omit<RootLayerConfig, "id">,
   options?: AddLayerOptions,
 ) => () => void;
 

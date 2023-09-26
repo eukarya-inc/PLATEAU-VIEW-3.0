@@ -30,7 +30,7 @@ export const CameraButtons: FC = () => {
 
   return (
     <>
-      <AppIconButton title="キーボード操作" {...enableKeyboardCameraControlProps}>
+      <AppIconButton title="キーボード操作" {...enableKeyboardCameraControlProps} disabled>
         <KeyboardMovementIcon />
       </AppIconButton>
       <AppIconButton title="現在地" disabled>

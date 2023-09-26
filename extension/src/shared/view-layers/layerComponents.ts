@@ -1,10 +1,8 @@
-import { type LayerComponents } from "../layers";
-
 // import { BridgeLayer } from "./BridgeLayer";
-import { BuildingLayer } from "./BuildingLayer";
 // import { HeatmapLayer } from "./HeatmapLayer";
 // import { LandSlideRiskLayer } from "./LandSlideRiskLayer";
 // import { LandUseLayer } from "./LandUseLayer";
+import { type LayerComponents } from "../../prototypes/layers";
 import {
   BORDER_LAYER,
   BRIDGE_LAYER,
@@ -30,7 +28,9 @@ import {
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
   VEGETATION_LAYER,
-} from "./layerTypes";
+} from "../../prototypes/view-layers/layerTypes";
+
+import { BuildingLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
 // import { RoadLayer } from "./RoadLayer";

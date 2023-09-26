@@ -1,9 +1,10 @@
 import { useAtomValue, type PrimitiveAtom } from "jotai";
 import { Suspense, type ComponentType, type FC, type ReactNode, useMemo } from "react";
 
+import { rootLayersLayerAtomsAtom } from "../../shared/states/rootLayer";
 import { ScreenSpaceSelectionEntry, screenSpaceSelectionAtom } from "../screen-space-selection";
 
-import { layerAtomsAtom, layerIdsAtom, layerSelectionAtom } from "./states";
+import { layerIdsAtom, layerSelectionAtom } from "./states";
 import { type LayerComponents, type LayerModel, type LayerProps } from "./types";
 
 interface LayerRendererProps {
@@ -44,7 +45,7 @@ export interface LayersRendererProps<T extends LayerComponents> {
 export function LayersRenderer<T extends LayerComponents>({
   components,
 }: LayersRendererProps<T>): JSX.Element {
-  const layerAtoms = useAtomValue(layerAtomsAtom);
+  const layerAtoms = useAtomValue(rootLayersLayerAtomsAtom);
   const layerIds = useAtomValue(layerIdsAtom);
   const selection = useAtomValue(screenSpaceSelectionAtom);
   return (

@@ -4,12 +4,13 @@ import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
 import { flyToLayerId } from "../../../shared/reearth/utils";
+import { ComponentAtom } from "../../../shared/view-layers/component";
+import { Fields } from "../../../shared/view-layers/Fields";
 import { layerSelectionAtom, removeLayerAtom, type LayerType } from "../../layers";
 import {
   AddressIcon,
   InfoIcon,
   InspectorHeader,
-  InspectorItem,
   TrashIcon,
   VisibilityOffIcon,
   VisibilityOnIcon,
@@ -20,7 +21,6 @@ import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 import { LayerColorSection } from "./LayerColorSection";
 // import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
-import { LayerOpacitySection } from "./LayerOpacitySection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
 // import { LayerSketchSection } from "./LayerSketchSection";
 
@@ -77,6 +77,20 @@ export function LayerContent<T extends LayerType>({
     });
   }, [values, remove]);
 
+  const components = useMemo(() => {
+    const result: { [K in ComponentAtom["type"]]?: ComponentAtom["atom"][] } = {};
+    for (const layer of values) {
+      for (const componentAtom of layer.componentAtoms ?? []) {
+        if (result[componentAtom.type]) {
+          result[componentAtom.type]?.push(componentAtom.atom);
+          continue;
+        }
+        result[componentAtom.type] = [componentAtom.atom];
+      }
+    }
+    return Object.entries(result) as [k: ComponentAtom["type"], v: ComponentAtom["atom"][]][];
+  }, [values]);
+
   return (
     <List disablePadding>
       <InspectorHeader
@@ -120,11 +134,13 @@ export function LayerContent<T extends LayerType>({
       <LayerColorSection layers={values} />
       {/* <LayerHeatmapSection layers={values} /> */}
       <Divider />
-      <InspectorItem>
-        <LayerOpacitySection layers={values} />
-        {/* <LayerShowWireframeSection layers={values} />
+      {components.map(([type, atoms]) => (
+        <Fields key={type} type={type} atoms={atoms} />
+      ))}
+      {/* <InspectorItem> */}
+      {/* <LayerShowWireframeSection layers={values} />
         <LayerSketchSection layers={values} /> */}
-      </InspectorItem>
+      {/* </InspectorItem> */}
     </List>
   );
 }

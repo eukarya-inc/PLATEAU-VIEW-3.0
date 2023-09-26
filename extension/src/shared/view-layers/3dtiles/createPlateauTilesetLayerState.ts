@@ -1,13 +1,12 @@
 import { atom, SetStateAction, type PrimitiveAtom } from "jotai";
 
-import { type TileFeatureIndex } from "../../shared/plateau";
-import { PlateauProperties } from "../../shared/plateau/layers";
-import { colorMapPlateau, type ColorMap } from "../color-maps";
+import { colorMapPlateau, type ColorMap } from "../../../prototypes/color-maps";
+import { type ViewLayerModel, type LayerColorScheme } from "../../../prototypes/view-layers";
+import { type TileFeatureIndex } from "../../plateau";
+import { PlateauTilesetProperties } from "../../plateau/layers";
+import { ComponentIdParams, makeComponentAtomWrapper } from "../component";
 
-import { type ViewLayerModel } from "./createViewLayerModel";
-import { type LayerColorScheme } from "./types";
-
-export interface PlateauTilesetLayerStateParams {
+export interface PlateauTilesetLayerStateParams extends Omit<ComponentIdParams, "componentType"> {
   hiddenFeatures?: readonly string[];
 }
 
@@ -15,21 +14,33 @@ export interface PlateauTilesetLayerState {
   isPlateauTilesetLayer: true;
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
-  propertiesAtom: PrimitiveAtom<PlateauProperties | null>;
+  propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: PrimitiveAtom<ColorMap>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
-  opacityAtom: PrimitiveAtom<number>;
 }
 
 export function createPlateauTilesetLayerState(
   params: PlateauTilesetLayerStateParams,
 ): PlateauTilesetLayerState {
-  const propertiesAtom = atom<PlateauProperties | null>(null);
-  const colorPropertyAtom = atom<string | null>(null);
-  const colorMapAtom = atom<ColorMap>(colorMapPlateau);
-  const colorRangeAtom = atom([0, 100]);
+  const propertiesAtom = atom<PlateauTilesetProperties | null>(null);
+
+  const colorPropertyAtom = makeComponentAtomWrapper(
+    atom<string | null>(null),
+    { ...params, componentType: "colorProperty" },
+    true,
+  );
+  const colorMapAtom = makeComponentAtomWrapper(
+    atom<ColorMap>(colorMapPlateau),
+    { ...params, componentType: "colorMap" },
+    true,
+  );
+  const colorRangeAtom = makeComponentAtomWrapper(
+    atom([0, 100]),
+    { ...params, componentType: "colorRange" },
+    true,
+  );
   const valueRangeAtom = atom(
     get => {
       const properties = get(propertiesAtom);
@@ -72,6 +83,5 @@ export function createPlateauTilesetLayerState(
     colorMapAtom,
     colorRangeAtom,
     colorSchemeAtom,
-    opacityAtom: atom(1),
   };
 }

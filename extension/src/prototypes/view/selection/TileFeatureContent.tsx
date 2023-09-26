@@ -1,6 +1,6 @@
 import { Divider, IconButton, List, Tooltip } from "@mui/material";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useState, type FC } from "react";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useState, type FC, useMemo } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { layerSelectionAtom } from "../../layers";
@@ -47,10 +47,15 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
   }, [values, showFeatures]);
 
   const tilesetLayers = useAtomValue(highlightedTilesetLayersAtom);
+  const tilsetLayerIdsAtom = useMemo(
+    () => atom(get => tilesetLayers.map(l => get(get(l.rootLayerAtom).layer).id)),
+    [tilesetLayers],
+  );
+  const tilsetLayerIds = useAtomValue(tilsetLayerIdsAtom);
   const setLayerSelection = useSetAtom(layerSelectionAtom);
   const handleSelectLayers = useCallback(() => {
-    setLayerSelection(tilesetLayers.map(layer => layer.id));
-  }, [tilesetLayers, setLayerSelection]);
+    setLayerSelection(tilsetLayerIds);
+  }, [tilsetLayerIds, setLayerSelection]);
 
   return (
     <List disablePadding>
