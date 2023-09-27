@@ -23,9 +23,10 @@ export type TilesetProps = {
   onLoad?: (layerId: string) => void;
   color?: string;
   enableShadow?: boolean;
+  show?: string | boolean;
 };
 
-export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShadow }) => {
+export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShadow, show }) => {
   const layerIdRef = useRef<string>();
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
@@ -37,9 +38,15 @@ export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShado
             },
           }
         : {}),
+      show:
+        typeof show === "string"
+          ? {
+              expression: show,
+            }
+          : show,
       shadows: enableShadow ? "enabled" : "disabled",
     }),
-    [color, enableShadow],
+    [color, enableShadow, show],
   );
 
   useEffect(() => {

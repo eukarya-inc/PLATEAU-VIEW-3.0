@@ -105,7 +105,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
 
   const opacityAtom = useFindComponent<typeof OPACITY_FIELD>(componentAtoms ?? [], OPACITY_FIELD);
 
-  if (hidden || !url) {
+  if (!url) {
     return null;
   }
   // TODO(ReEarth): Use GQL definition
@@ -115,6 +115,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         url={url}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
+        hidden={hidden}
         // component={PlateauBuildingTileset}
         featureIndexAtom={featureIndexAtom}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}

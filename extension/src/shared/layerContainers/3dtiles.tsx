@@ -24,6 +24,7 @@ type TilesetContainerProps = TilesetProps & {
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
   opacityAtom?: WritableAtomForComponent<number>;
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
+  hidden: boolean;
 };
 
 export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
@@ -35,6 +36,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   colorSchemeAtom,
   opacityAtom,
   selections,
+  hidden,
   ...props
 }) => {
   const layerId = useAtomValue(layerIdAtom);
@@ -90,6 +92,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
       onLoad={handleLoad}
       color={color}
       enableShadow={!opacity || opacity === 1}
+      show={!hidden}
     />
   );
 };
