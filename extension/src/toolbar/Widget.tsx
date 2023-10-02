@@ -13,11 +13,13 @@ import { useHealth } from "../shared/graphql";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
+import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
 export const Widget = memo(function WidgetPresenter() {
   useHealthCheck();
   useInteractionMode();
+  useAttachScreenSpaceSelection();
 
   return (
     <WidgetContext>

@@ -2,6 +2,7 @@ import { intersection } from "lodash";
 import { useMemo, type FC } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { Feature } from "../../../shared/reearth/types/layer";
 import { isNotNullish } from "../../type-helpers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { type SCREEN_SPACE_SELECTION, type SelectionGroup } from "../states/selection";
@@ -16,20 +17,24 @@ export interface TileFeaturePropertiesSectionProps {
 const excludedPropertyNames = ["LOD1立ち上げに使用する高さ"];
 
 export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps> = ({ values }) => {
-  const featureIds = useMemo(() => values.filter(isNotNullish), [values]);
-
   const features = useMemo(() => {
-    // TODO: Support selecting multiple features
-    const selectedFeature = window.reearth?.layers?.selectedFeature;
-    if (selectedFeature?.id === featureIds[0].key) {
-      return [selectedFeature];
-    }
-    return [];
-  }, [featureIds]);
+    const layersMap = values.reduce((res, v) => {
+      if (!res[v.layerId]) {
+        res[v.layerId] = [];
+      }
+      res[v.layerId].push(v.key);
+      return res;
+    }, {} as { [layerId: string]: string[] });
+    return Object.keys(layersMap).reduce((res, layerId) => {
+      const featureIds = layersMap[layerId];
+      const fs = window.reearth?.layers?.findFeaturesByIds?.(layerId, featureIds);
+      return res.concat(fs ?? []);
+    }, [] as Feature[]);
+  }, [values]);
 
   const properties = useMemo(
     () =>
-      intersection(...features.map(feature => Object.keys(feature.properties)))
+      intersection(...features.map(feature => Object.keys(feature.properties ?? {})))
         .filter(name => !name.startsWith("_") && !excludedPropertyNames.includes(name))
         .map(name => ({
           name,

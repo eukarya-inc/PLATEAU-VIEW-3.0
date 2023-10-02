@@ -1,4 +1,5 @@
 import { CameraPosition, LatLngHeight } from "./camera";
+import { ComputedFeature } from "./layer";
 
 export type TerrainProperty = {
   terrain?: boolean;
@@ -118,6 +119,8 @@ export type SceneProperty = {
   };
 };
 
+export type PickedFeature = ComputedFeature & { layerId?: string };
+
 export type Scene = {
   readonly inEditor: boolean;
   readonly built: boolean;
@@ -130,4 +133,11 @@ export type Scene = {
     withTerrain?: boolean,
   ) => LatLngHeight | undefined;
   readonly sampleTerrainHeight: (lng: number, lat: number) => Promise<number | undefined>;
+  readonly pickManyFromViewport: (
+    windowPosition: [x: number, y: number],
+    windowWidth: number,
+    windowHeight: number,
+    // TODO: Get condition as expression for plugin
+    condition?: (f: PickedFeature) => boolean,
+  ) => PickedFeature[] | undefined;
 };

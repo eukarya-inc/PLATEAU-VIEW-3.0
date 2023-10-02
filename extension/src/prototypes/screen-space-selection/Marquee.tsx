@@ -30,35 +30,34 @@ export const Marquee: FC = () => {
     if (handler == null) {
       return;
     }
-    // TODO(ReEarth): Support selecting multiple features
-    // const removeListeners = [
-    //   handler.indeterminate.addEventListener(event => {
-    //     if (ref.current == null) {
-    //       return;
-    //     }
-    //     if (event.type === "rectangle") {
-    //       const { x, y, width, height } = event.rectangle;
-    //       ref.current.style.display = "block";
-    //       ref.current.style.top = `${y}px`;
-    //       ref.current.style.left = `${x}px`;
-    //       ref.current.style.width = `${width}px`;
-    //       ref.current.style.height = `${height}px`;
-    //     } else {
-    //       ref.current.style.display = "none";
-    //     }
-    //   }),
-    //   handler.change.addEventListener(event => {
-    //     if (ref.current == null) {
-    //       return;
-    //     }
-    //     ref.current.style.display = "none";
-    //   }),
-    // ];
-    // return () => {
-    //   removeListeners.forEach(removeListener => {
-    //     removeListener();
-    //   });
-    // };
+    const removeListeners = [
+      handler.indeterminate.addEventListener(event => {
+        if (ref.current == null || !event) {
+          return;
+        }
+        if (event.type === "rectangle") {
+          const { x, y, width, height } = event.rectangle;
+          ref.current.style.display = "block";
+          ref.current.style.top = `${y}px`;
+          ref.current.style.left = `${x}px`;
+          ref.current.style.width = `${width}px`;
+          ref.current.style.height = `${height}px`;
+        } else {
+          ref.current.style.display = "none";
+        }
+      }),
+      handler.change.addEventListener(() => {
+        if (ref.current == null) {
+          return;
+        }
+        ref.current.style.display = "none";
+      }),
+    ];
+    return () => {
+      removeListeners.forEach(removeListener => {
+        removeListener();
+      });
+    };
   }, [handler]);
 
   const colorMode = useAtomValue(colorModeAtom);

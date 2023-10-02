@@ -8,14 +8,22 @@ interface ScreenSpaceSelectionEventBase {
 
 export interface PointScreenSpaceSelectionEvent extends ScreenSpaceSelectionEventBase {
   type: "point";
-  layerId?: string;
-  featureId?: string;
+  x: number;
+  y: number;
 }
+
+export type Rectangle = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
 export interface RectangleScreenSpaceSelectionEvent extends ScreenSpaceSelectionEventBase {
   type: "rectangle";
   startPosition: [x: number, y: number];
   endPosition: [x: number, y: number];
+  rectangle: Rectangle;
 }
 
 export type ScreenSpaceSelectionEvent =

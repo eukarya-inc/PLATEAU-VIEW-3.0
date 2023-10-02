@@ -28,7 +28,7 @@ export const highlightedTilesetLayersAtom = atom(get => {
   return tilesetLayers.filter(root => {
     const layer = get(get(root.rootLayerAtom).layer);
     const featureIndex = get(layer.featureIndexAtom);
-    const features = featureIndex?.features;
+    const features = featureIndex?.featureIds;
     return features && featureKeys.some(key => features.includes(key.key));
   });
 });
@@ -53,29 +53,31 @@ export const featureIndicesAtom = atom(get => {
     layers
       .map(root => {
         const layer = get(get(root.rootLayerAtom).layer);
+        const layerId = get(layer.layerIdAtom);
         const featureIndex = get(layer.featureIndexAtom);
-        return featureIndex != null ? [layer.id, featureIndex] : undefined;
+        return featureIndex != null ? [layerId, featureIndex] : undefined;
       })
       .filter(isNotNullish),
   );
 });
 
-export const findFeaturesAtom = atom(null, (get, _set, key: string) => {
-  const indices = get(featureIndicesAtom);
-  for (const [layerId, index] of Object.entries(indices)) {
-    const features = index.find(key);
-    if (features != null) {
-      return { layerId, features };
-    }
-  }
-  return undefined;
-});
+// export const findFeaturesAtom = atom(null, (get, _set, key: string) => {
+//   const indices = get(featureIndicesAtom);
+//   for (const [layerId, index] of Object.entries(indices)) {
+//     const features = index.find(key);
+//     if (features != null) {
+//       return { layerId, features };
+//     }
+//   }
+//   return undefined;
+// });
 
 export const hideFeaturesAtom = atom(null, (get, set, value: readonly string[] | null) => {
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
     const layer = get(get(root.rootLayerAtom).layer);
-    const { id: layerId, hiddenFeaturesAtom } = layer;
+    const { layerIdAtom, hiddenFeaturesAtom } = layer;
+    const layerId = get(layerIdAtom);
     invariant(layerId);
     const featureIndex = get(featureIndicesAtom)[layerId];
     const nextValue = value?.filter(value => featureIndex.has(value));

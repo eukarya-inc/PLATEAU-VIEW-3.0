@@ -36,6 +36,9 @@ export type Layers = Undefinable<
       layerId: string | undefined,
       reason?: LayerSelectionReason | undefined,
     ) => void;
+    findFeatureById?: (layerId: string, featureId: string) => Feature | undefined;
+    findFeaturesByIds?: (layerId: string, featureId: string[]) => Feature[] | undefined;
+    selectFeature?: (layers: { layerId: string; featureId: string[] }[]) => void;
     selectionReason?: LayerSelectionReason;
     // For compat
     overriddenInfobox?: LayerSelectionReason["defaultInfobox"];
