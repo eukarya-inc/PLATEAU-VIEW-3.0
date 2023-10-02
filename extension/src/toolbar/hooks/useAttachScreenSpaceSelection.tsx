@@ -22,6 +22,6 @@ export const useAttachScreenSpaceSelection = () => {
     [selections],
   );
   useEffect(() => {
-    window.reearth?.layers?.selectFeature?.(layers);
+    window.reearth?.layers?.selectFeatures?.(layers);
   }, [layers]);
 };
