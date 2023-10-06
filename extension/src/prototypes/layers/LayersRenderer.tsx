@@ -16,11 +16,13 @@ interface LayerRendererProps {
 
 const LayerRenderer: FC<LayerRendererProps> = ({ components, index, layerAtom, selections }) => {
   const layer = useAtomValue(layerAtom);
+  const layerId = useAtomValue(layer.layerIdAtom);
   const layerSelection = useAtomValue(layerSelectionAtom);
   const filteredSelections = useMemo(
-    () => selections?.filter(v => !layer.id.includes(v.value.layerId)),
-    [layer.id, selections],
+    () => selections?.filter(v => layerId === v.value.layerId),
+    [layerId, selections],
   );
+
   const Component = components[layer.type] as ComponentType<LayerProps>;
   if (Component == null) {
     return null;

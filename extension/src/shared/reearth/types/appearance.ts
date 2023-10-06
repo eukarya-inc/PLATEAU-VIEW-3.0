@@ -153,6 +153,7 @@ export type Cesium3DTilesAppearance = {
   specularEnvironmentMaps?: string;
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;
+  selectedFeatureColor?: string;
   onLoadFeature?: (feature: Partial<Feature> | undefined) => void;
 };
 

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Event } from "../../shared/helpers";
+import { MouseEvent } from "../../shared/reearth/types";
 
 import {
   type ScreenSpaceSelectionEvent,
@@ -10,17 +11,22 @@ import {
 const pointEvent = {
   type: "point",
   action: "replace" as ScreenSpaceSelectionEventAction,
-  layerId: undefined as string | undefined,
-  featureId: undefined as string | undefined,
+  x: 0,
+  y: 0,
 } satisfies ScreenSpaceSelectionEvent;
 
-// TODO(ReEarth): Support selecting multiple feature
-// const rectangleEvent = {
-//   type: "rectangle",
-//   action: "replace" as ScreenSpaceSelectionEventAction,
-//   startPosition: [0, 0],
-//   endPosition: [0, 0],
-// } satisfies ScreenSpaceSelectionEvent;
+const rectangleEvent = {
+  type: "rectangle",
+  action: "replace" as ScreenSpaceSelectionEventAction,
+  startPosition: [0, 0],
+  endPosition: [0, 0],
+  rectangle: {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  },
+} satisfies ScreenSpaceSelectionEvent;
 
 function actionForModifier(keyName?: string): ScreenSpaceSelectionEventAction {
   // TODO: How we can determine meta key is pressed?
@@ -33,8 +39,12 @@ export class ScreenSpaceSelectionHandler {
   readonly change = new Event<ScreenSpaceSelectionEvent>();
 
   // private readonly handler: ScreenSpaceEventHandler;
-  // private startPosition?: [x: number, y: number];
+  private startPosition?: [x: number, y: number];
+
   private currentKeyName?: string;
+
+  private moving?: boolean = false;
+  private downing?: boolean = false;
 
   #disabled = false;
 
@@ -43,33 +53,18 @@ export class ScreenSpaceSelectionHandler {
 
     window.addEventListener("keydown", this.handleKeyDown);
 
-    window.reearth?.on?.("select", this.handleSelect);
-
-    // TODO(ReEarth): Support selecting multiple features
-    // handler.setInputAction(this.handleClick, ScreenSpaceEventType.LEFT_CLICK);
-    // handler.setInputAction(
-    //   this.handleClickWithModifier.bind(this, KeyboardEventModifier.SHIFT),
-    //   ScreenSpaceEventType.LEFT_CLICK,
-    //   KeyboardEventModifier.SHIFT,
-    // );
-    // handler.setInputAction(this.handleMouseDown, ScreenSpaceEventType.LEFT_DOWN);
-    // handler.setInputAction(this.handleMouseUp, ScreenSpaceEventType.LEFT_UP);
-    // handler.setInputAction(
-    //   this.handleMouseDown,
-    //   ScreenSpaceEventType.LEFT_DOWN,
-    //   KeyboardEventModifier.SHIFT,
-    // );
-    // handler.setInputAction(
-    //   this.handleMouseUpWithModifier.bind(this, KeyboardEventModifier.SHIFT),
-    //   ScreenSpaceEventType.LEFT_UP,
-    //   KeyboardEventModifier.SHIFT,
-    // );
-    // this.handler = handler;
+    // TODO(reearth): Support event with `shift` key
+    window.reearth?.on?.("mousedown", this.handleMouseDown);
+    window.reearth?.on?.("mouseup", this.handleMouseUp);
+    window.reearth?.on?.("mousemove", this.handleMouseMove);
   }
 
   destroy(): void {
     window.removeEventListener("keydown", this.handleKeyDown);
-    window.reearth?.off?.("select", this.handleSelect);
+
+    window.reearth?.off?.("mousedown", this.handleMouseDown);
+    window.reearth?.off?.("mouseup", this.handleMouseUp);
+    window.reearth?.off?.("mousemove", this.handleMouseMove);
   }
 
   get disabled(): boolean {
@@ -80,90 +75,84 @@ export class ScreenSpaceSelectionHandler {
     this.#disabled = value;
   }
 
-  private handleSelect = (layerId?: string, featureId?: string) => {
-    this.handleClickWithModifier(layerId, featureId, this.currentKeyName);
-  };
-
   private handleKeyDown(e: KeyboardEvent) {
     this.currentKeyName = e.key;
   }
 
-  private handleClickWithModifier(layerId?: string, featureId?: string, keyName?: string): void {
-    this.handleClick(layerId, featureId, keyName);
-  }
-
-  private readonly handleClick = (layerId?: string, featureId?: string, keyName?: string): void => {
-    if (this.disabled) {
+  private readonly handleClick = (position: [x: number, y: number], keyName?: string): void => {
+    if (this.disabled || this.moving) {
       return;
     }
     pointEvent.action = actionForModifier(keyName);
-    pointEvent.layerId = layerId;
-    pointEvent.featureId = featureId;
+    pointEvent.x = position[0];
+    pointEvent.y = position[1];
     this.change.dispatch(pointEvent);
   };
 
-  // private readonly handleMouseDown = (_event: MouseEvent): void => {
-  //   if (this.disabled) {
-  //     return;
-  //   }
-  // TODO(ReEarth): Support selecting multiple feature
-  // this.startPosition = event.position;
-  // this.handler.setInputAction(this.handleMouseMove, ScreenSpaceEventType.MOUSE_MOVE);
-  // this.handler.setInputAction(
-  //   this.handleMouseMove,
-  //   ScreenSpaceEventType.MOUSE_MOVE,
-  //   KeyboardEventModifier.SHIFT,
-  // );
-  // };
+  private readonly handleMouseDown = (event: MouseEvent): void => {
+    if (this.disabled) {
+      return;
+    }
+    // TODO(ReEarth): Support selecting multiple feature
+    this.startPosition = [event.x ?? 0, event.y ?? 0];
+    this.downing = true;
+  };
 
-  // private handleMouseUpWithModifier(keyName: string, position: [x: number, y: number]): void {
-  //   this.handleMouseUp(position, keyName);
-  // }
+  private readonly handleMouseUp = (event: MouseEvent): void => {
+    if (this.disabled) {
+      return;
+    }
 
-  // private readonly handleMouseUp = (position: [x: number, y: number], keyName?: string): void => {
-  //   if (this.disabled) {
-  //     return;
-  //   }
-  //   this.handleMouseMove(position, keyName, false);
-  //   this.startPosition = undefined;
-  // TODO(ReEarth): Support selecting multiple feature
-  // this.handler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE);
-  // this.handler.removeInputAction(ScreenSpaceEventType.MOUSE_MOVE, KeyboardEventModifier.SHIFT);
-  // };
+    if (this.moving) {
+      this.handleMouseMove(event, false);
+      this.moving = false;
+      this.startPosition = undefined;
+      this.downing = false;
+    } else {
+      this.startPosition = undefined;
+      this.downing = false;
+      this.handleClick([event.x ?? 0, event.y ?? 0], this.currentKeyName);
+    }
+  };
 
-  // private readonly handleMouseMove = (
-  //   position: [x: number, y: number],
-  //   _keyName?: string,
-  //   _indeterminate = true,
-  // ): void => {
-  //   if (this.disabled) {
-  //     return;
-  //   }
-  //   if (this.startPosition == null) {
-  //     return;
-  //   }
-  //   let x1 = this.startPosition[0];
-  //   let y1 = this.startPosition[1];
-  //   let x2 = position[0];
-  //   let y2 = position[1];
-  //   if (x1 > x2) {
-  //     [x2, x1] = [x1, x2];
-  //   }
-  //   if (y1 > y2) {
-  //     [y2, y1] = [y1, y2];
-  //   }
-  // TODO(ReEarth): Support selecting multiple feature
-  // rectangleEvent.action = actionForModifier(modifier);
-  // this.startPosition.clone(rectangleEvent.startPosition);
-  // event.endPosition.clone(rectangleEvent.endPosition);
-  // rectangleEvent.rectangle.x = x1;
-  // rectangleEvent.rectangle.y = y1;
-  // rectangleEvent.rectangle.width = x2 - x1;
-  // rectangleEvent.rectangle.height = y2 - y1;
-  // if (indeterminate) {
-  //   this.indeterminate.raiseEvent(rectangleEvent);
-  // } else {
-  //   this.change.raiseEvent(rectangleEvent);
-  // }
-  // };
+  private readonly handleMouseMove = (event: MouseEvent, indeterminate = true): void => {
+    if (this.disabled) {
+      return;
+    }
+    if (!this.startPosition) {
+      return;
+    }
+    if (!this.downing) {
+      return;
+    }
+
+    let x1 = this.startPosition[0];
+    let y1 = this.startPosition[1];
+    let x2 = event.x ?? 0;
+    let y2 = event.y ?? 0;
+
+    if (x2 - x1 === 0 && y2 - y1 === 0) return;
+
+    this.moving = true;
+
+    if (x1 > x2) {
+      [x2, x1] = [x1, x2];
+    }
+    if (y1 > y2) {
+      [y2, y1] = [y1, y2];
+    }
+    // TODO(ReEarth): Support selecting multiple feature
+    rectangleEvent.action = actionForModifier(this.currentKeyName);
+    rectangleEvent.startPosition = [...this.startPosition];
+    rectangleEvent.endPosition = [event.x ?? 0, event.y ?? 0];
+    rectangleEvent.rectangle.x = x1;
+    rectangleEvent.rectangle.y = y1;
+    rectangleEvent.rectangle.width = x2 - x1;
+    rectangleEvent.rectangle.height = y2 - y1;
+    if (indeterminate) {
+      this.indeterminate.dispatch(rectangleEvent);
+    } else {
+      this.change.dispatch(rectangleEvent);
+    }
+  };
 }

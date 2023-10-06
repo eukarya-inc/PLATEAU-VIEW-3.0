@@ -1,4 +1,3 @@
-import { useTheme } from "@mui/material";
 import { atom, useAtomValue } from "jotai";
 import { useMemo } from "react";
 
@@ -10,7 +9,6 @@ import {
   numberOrString,
   variable,
   rgba,
-  string,
   defaultConditionalNumber,
   color,
 } from "../../helpers";
@@ -30,10 +28,7 @@ export function useEvaluateFeatureColor({
   colorScheme,
   defaultColor = { r: 255, g: 255, b: 255, a: 1 },
   opacity,
-  selections,
 }: EvaluateTileFeatureColorParams): string | undefined {
-  const theme = useTheme();
-
   const blendedDefaultColor = rgba({ ...defaultColor, a: opacity ?? defaultColor.a });
 
   const colorSetColors = useAtomValue(
@@ -106,15 +101,5 @@ export function useEvaluateFeatureColor({
     }
   }, [colorProperty, colorSetColors, colorMapParams, blendedDefaultColor, opacity]);
 
-  const selectedFeatureExpression = useMemo(() => {
-    if (!selections?.length) return colorExpression;
-    const expressions = selections?.map(s => `(${variable("id")} === ${string(s.value.key)})`);
-    return condition(
-      expressions.join("||"),
-      color(theme.palette.primary.main, 1),
-      colorExpression || blendedDefaultColor,
-    );
-  }, [selections, colorExpression, blendedDefaultColor, theme]);
-
-  return selectedFeatureExpression;
+  return colorExpression;
 }

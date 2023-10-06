@@ -1,4 +1,5 @@
-import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
+import { useTheme } from "@mui/material";
+import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback } from "react";
 
 import { ColorMap } from "../../prototypes/color-maps";
@@ -39,16 +40,23 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   hidden,
   ...props
 }) => {
+  const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
   const layerId = useAtomValue(layerIdAtom);
   useScreenSpaceSelectionResponder({
     type: TILESET_FEATURE,
     convertToSelection: object => {
-      return "id" in object && typeof object.id === "string" && !!layerId
+      return "id" in object &&
+        typeof object.id === "string" &&
+        featureIndex &&
+        layerId &&
+        "layerId" in object &&
+        object.layerId === layerId
         ? {
             type: TILESET_FEATURE,
             value: {
               key: object.id,
               layerId,
+              featureIndex,
             },
           }
         : undefined;
@@ -56,7 +64,19 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
     shouldRespondToSelection: (
       value,
     ): value is ScreenSpaceSelectionEntry<typeof TILESET_FEATURE> => {
-      return value.type === TILESET_FEATURE && !!value.value && !!layerId;
+      return value.type === TILESET_FEATURE && !!value.value && value.value.layerId === layerId;
+    },
+    onSelect: value => {
+      if (featureIndex?.selectedFeatureIds.has(value.value.key)) {
+        return;
+      }
+      featureIndex?.select([value.value.key]);
+    },
+    onDeselect: value => {
+      if (!featureIndex?.selectedFeatureIds.has(value.value.key)) {
+        return;
+      }
+      featureIndex?.unselect([value.value.key]);
     },
     // computeBoundingSphere: (value, result = new BoundingSphere()) => {
     //   computeCartographicToCartesian(scene, location, result.center);
@@ -65,7 +85,6 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
     // },
   });
 
-  const setFeatureIndex = useSetAtom(featureIndexAtom);
   const setProperties = useSetAtom(propertiesAtom);
   const handleLoad = useCallback(
     (layerId: string) => {
@@ -86,6 +105,8 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
     selections,
   });
 
+  const theme = useTheme();
+
   return (
     <TilesetLayer
       {...props}
@@ -93,6 +114,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
       color={color}
       enableShadow={!opacity || opacity === 1}
       show={!hidden}
+      selectedFeatureColor={theme.palette.primary.main}
     />
   );
 };

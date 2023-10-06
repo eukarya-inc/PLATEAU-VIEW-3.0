@@ -1,5 +1,6 @@
 import { FC, useEffect, useMemo, useRef } from "react";
 
+import { TileFeatureIndex } from "../../plateau";
 import { Cesium3DTilesAppearance, LayerAppearance } from "../types";
 
 export const TILESET_FEATURE = "TILESET_FEATURE";
@@ -9,6 +10,7 @@ declare module "../../../prototypes/screen-space-selection" {
     [TILESET_FEATURE]: {
       key: string;
       layerId: string;
+      featureIndex: TileFeatureIndex;
     };
   }
 }
@@ -24,9 +26,17 @@ export type TilesetProps = {
   color?: string;
   enableShadow?: boolean;
   show?: string | boolean;
+  selectedFeatureColor?: string;
 };
 
-export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShadow, show }) => {
+export const TilesetLayer: FC<TilesetProps> = ({
+  url,
+  onLoad,
+  color,
+  enableShadow,
+  show,
+  selectedFeatureColor,
+}) => {
   const layerIdRef = useRef<string>();
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
@@ -45,8 +55,9 @@ export const TilesetLayer: FC<TilesetProps> = ({ url, onLoad, color, enableShado
             }
           : show,
       shadows: enableShadow ? "enabled" : "disabled",
+      selectedFeatureColor,
     }),
-    [color, enableShadow, show],
+    [color, enableShadow, show, selectedFeatureColor],
   );
 
   useEffect(() => {
