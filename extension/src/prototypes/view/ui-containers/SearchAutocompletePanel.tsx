@@ -19,13 +19,12 @@ import {
   FloatingPanel,
   Scrollable,
   SearchAutocomplete,
+  SearchAutocompleteProps,
+  SearchOption,
   Shortcut,
   testShortcut,
-  // TODO(ReEarth): Support search options
-  // type SearchAutocompleteProps,
-  // type SearchOption,
 } from "../../ui-components";
-// import { useSearchOptions } from "../hooks/useSearchOptions";
+import { useSearchOptions } from "../hooks/useSearchOptions";
 
 import { SearchList } from "./SearchList";
 
@@ -56,49 +55,46 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
   }, []);
 
   // TODO(ReEarth): Support search options
-  // const searchOptions = useSearchOptions({
-  //   skip: !focused,
-  // });
-  // const options = useMemo(
-  //   () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.addresses],
-  //   [searchOptions.datasets, searchOptions.buildings, searchOptions.addresses],
-  // );
-  const options = useMemo(() => [], []);
+  const searchOptions = useSearchOptions({
+    skip: !focused,
+  });
+  const options = useMemo(
+    () => [/* ...searchOptions.datasets, */ ...searchOptions.buildings, ...searchOptions.addresses],
+    [/* searchOptions.datasets, */ searchOptions.buildings, searchOptions.addresses],
+  );
 
-  // TODO(ReEarth): Support search options
-  // const selectOption = searchOptions.select;
-  // const handleOptionSelect = useCallback(
-  //   (event: MouseEvent, option: SearchOption) => {
-  //     selectOption(option);
-  //   },
-  //   [selectOption],
-  // );
+  const selectOption = searchOptions.select;
+  const handleOptionSelect = useCallback(
+    (_event: MouseEvent, option: SearchOption) => {
+      selectOption(option);
+    },
+    [selectOption],
+  );
 
   const [filters, setFilters] = useState<string[]>();
   const handleFiltersChange = useCallback((_event: MouseEvent, filters: string[]) => {
     setFilters(filters);
   }, []);
 
-  // TODO(ReEarth): Support search options
-  // const handleChange: NonNullable<SearchAutocompleteProps["onChange"]> = useCallback(
-  //   (event, values, reason, details) => {
-  //     if (reason === "removeOption") {
-  //       setFilters([]);
-  //       return;
-  //     }
-  //     const [value] = values.filter(
-  //       (value: SearchOption | string): value is SearchOption =>
-  //         typeof value !== "string" && value.type !== "filter",
-  //     );
-  //     if (value == null) {
-  //       return;
-  //     }
-  //     selectOption(value);
-  //     textFieldRef.current?.blur();
-  //     setFocused(false);
-  //   },
-  //   [selectOption],
-  // );
+  const handleChange: NonNullable<SearchAutocompleteProps["onChange"]> = useCallback(
+    (_event, values, reason, _details) => {
+      if (reason === "removeOption") {
+        setFilters([]);
+        return;
+      }
+      const [value] = values.filter(
+        (value: SearchOption | string): value is SearchOption =>
+          typeof value !== "string" && value.type !== "filter",
+      );
+      if (value == null) {
+        return;
+      }
+      selectOption(value);
+      textFieldRef.current?.blur();
+      setFocused(false);
+    },
+    [selectOption],
+  );
 
   useWindowEvent("keydown", event => {
     // TODO: Manage shortcut globally
@@ -147,7 +143,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
           filters={filters}
           maxHeight={maxMainHeight}
           onFocus={handleFocus}
-          // onChange={handleChange}
+          onChange={handleChange}
           endAdornment={
             <Shortcut variant="outlined" platform={platform} shortcutKey="K" commandKey />
           }>
@@ -163,20 +159,17 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
               </StyledTabs>
               {tab === 0 && (
                 <SearchList
-                  // TODO(ReEarth): Support search options
                   // datasets={searchOptions.datasets}
-                  // buildings={searchOptions.buildings}
-                  // addresses={searchOptions.addresses}
-                  // onOptionSelect={handleOptionSelect}
+                  buildings={searchOptions.buildings}
+                  addresses={searchOptions.addresses}
+                  onOptionSelect={handleOptionSelect}
                   datasets={[]}
-                  buildings={[]}
-                  addresses={[]}
                   onFiltersChange={handleFiltersChange}
                 />
               )}
               {/* TODO(ReEarth): Support dataset selection */}
-              {/* {tab === 1 && <DatasetAreaList />}
-              {tab === 2 && <DatasetTypeList />} */}
+              {/* {tab === 1 && <DatasetAreaList />} */}
+              {/* {tab === 2 && <DatasetTypeList />} */}
             </StyledScrollable>
           )}
         </SearchAutocomplete>
