@@ -30,7 +30,7 @@ import {
   VEGETATION_LAYER,
 } from "../../prototypes/view-layers/layerTypes";
 
-import { BuildingLayer } from ".";
+import { BuildingLayer, GeneralDatasetLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
 // import { RoadLayer } from "./RoadLayer";
@@ -43,25 +43,25 @@ export const layerComponents: LayerComponents = {
   [SKETCH_LAYER]: undefined, // SketchLayer,
 
   // Dataset layers
-  [BORDER_LAYER]: undefined,
-  [BRIDGE_LAYER]: undefined, // BridgeLayer,
+  [BORDER_LAYER]: GeneralDatasetLayer,
+  [BRIDGE_LAYER]: GeneralDatasetLayer, // BridgeLayer,
   [BUILDING_LAYER]: BuildingLayer,
-  [CITY_FURNITURE_LAYER]: undefined,
-  [EMERGENCY_ROUTE_LAYER]: undefined,
-  [GENERIC_CITY_OBJECT_LAYER]: undefined,
-  [HIGH_TIDE_RISK_LAYER]: undefined,
-  [INLAND_FLOODING_RISK_LAYER]: undefined,
-  [LAND_USE_LAYER]: undefined, // LandUseLayer,
-  [LANDMARK_LAYER]: undefined,
-  [LAND_SLIDE_RISK_LAYER]: undefined, // LandSlideRiskLayer,
-  [PARK_LAYER]: undefined,
-  [RAILWAY_LAYER]: undefined,
-  [RIVER_FLOODING_RISK_LAYER]: undefined, // RiverFloodingRiskLayer,
-  [ROAD_LAYER]: undefined, // RoadLayer,
-  [SHELTER_LAYER]: undefined,
-  [STATION_LAYER]: undefined,
-  [TSUNAMI_RISK_LAYER]: undefined,
-  [URBAN_PLANNING_LAYER]: undefined, // UrbanPlanningLayer,
-  [USE_CASE_LAYER]: undefined,
-  [VEGETATION_LAYER]: undefined,
+  [CITY_FURNITURE_LAYER]: GeneralDatasetLayer,
+  [EMERGENCY_ROUTE_LAYER]: GeneralDatasetLayer,
+  [GENERIC_CITY_OBJECT_LAYER]: GeneralDatasetLayer,
+  [HIGH_TIDE_RISK_LAYER]: GeneralDatasetLayer,
+  [INLAND_FLOODING_RISK_LAYER]: GeneralDatasetLayer,
+  [LAND_USE_LAYER]: GeneralDatasetLayer, // LandUseLayer,
+  [LANDMARK_LAYER]: GeneralDatasetLayer,
+  [LAND_SLIDE_RISK_LAYER]: GeneralDatasetLayer, // LandSlideRiskLayer,
+  [PARK_LAYER]: GeneralDatasetLayer,
+  [RAILWAY_LAYER]: GeneralDatasetLayer,
+  [RIVER_FLOODING_RISK_LAYER]: GeneralDatasetLayer, // RiverFloodingRiskLayer,
+  [ROAD_LAYER]: GeneralDatasetLayer, // RoadLayer,
+  [SHELTER_LAYER]: GeneralDatasetLayer,
+  [STATION_LAYER]: GeneralDatasetLayer,
+  [TSUNAMI_RISK_LAYER]: GeneralDatasetLayer,
+  [URBAN_PLANNING_LAYER]: GeneralDatasetLayer, // UrbanPlanningLayer,
+  [USE_CASE_LAYER]: GeneralDatasetLayer,
+  [VEGETATION_LAYER]: GeneralDatasetLayer,
 };
