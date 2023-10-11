@@ -1,3 +1,4 @@
+import Editor from "./editor";
 import Inspector from "./inspector";
 import Search from "./search";
 import StreetView from "./streetView";
@@ -8,7 +9,7 @@ const pluginId = `plateau-view-3~${process.env.VERSION}`;
 const localPlugin = {
   id: pluginId,
   name: "plateau-view-3",
-  widgets: [Toolbar, Search, Inspector, StreetView],
+  widgets: [Toolbar, Search, Inspector, StreetView, Editor],
   //    blocks: [
   //      {
   //        type: "block",

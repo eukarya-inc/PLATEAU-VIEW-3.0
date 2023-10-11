@@ -3,7 +3,7 @@ import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
 import { BUILDING_LAYER } from "../../prototypes/view-layers";
-import { ComponentGroup, Data, Infobox, Setting } from "../api/types";
+import { ComponentGroup, Data, FeatureInspectorConfig, Setting } from "../api/types";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
@@ -21,7 +21,7 @@ export type RootLayerParams = {
 };
 
 export type RootLayer = {
-  infoboxRef: Infobox | undefined; // TODO: Use API definition
+  featureInspector: FeatureInspectorConfig | undefined; // TODO: Use API definition
   camera: CameraPosition | undefined;
   layer: PrimitiveAtom<LayerModel>;
 };
@@ -37,12 +37,21 @@ const getDefaultComponentGroup = (): ComponentGroup => {
   return {} as ComponentGroup;
 };
 
+// TODO: Get component groups from specific template
+const getComponentGroupsFromTemplate = (templateId: string): ComponentGroup[] | undefined => {
+  console.log(templateId);
+  return [] as ComponentGroup[];
+};
+
 const findComponentGroup = (
   setting: Setting,
   currentGroupId: string | undefined,
 ): ComponentGroup | undefined => {
   return (
-    setting.groups?.find(g => (currentGroupId ? g.id === currentGroupId : g.default)) ??
+    (setting.fieldComponents?.templateId
+      ? getComponentGroupsFromTemplate(setting.fieldComponents.templateId)
+      : setting.fieldComponents?.groups
+    )?.find(g => (currentGroupId ? g.id === currentGroupId : g.default)) ??
     getDefaultComponentGroup()
   );
 };
@@ -114,12 +123,13 @@ const createRootLayer = (
   shareId: string | undefined,
 ): RootLayer => {
   const setting = findSetting(settings, currentDataId);
-  const group = findComponentGroup(setting, currentGroupId);
+  const componentGroup = findComponentGroup(setting, currentGroupId);
   const data = findData(dataList, currentDataId);
   return {
-    infoboxRef: setting.infobox,
-    camera: setting.camera,
-    layer: atom(createViewLayerWithComponentGroup(datasetId, title, data, group, shareId)),
+    // TODO: get settings from featureInspectorTemplate
+    featureInspector: setting.featureInspector?.config,
+    camera: setting.general?.camera,
+    layer: atom(createViewLayerWithComponentGroup(datasetId, title, data, componentGroup, shareId)),
   };
 };
 

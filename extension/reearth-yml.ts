@@ -58,6 +58,18 @@ const yml = {
         extended: true,
       },
     },
+    {
+      id: "editor-widget",
+      type: "widget",
+      name: "Editor",
+      widgetLayout: {
+        defaultLocation: {
+          zone: "outer",
+          section: "right",
+          area: "top",
+        },
+      },
+    },
   ],
 };
 

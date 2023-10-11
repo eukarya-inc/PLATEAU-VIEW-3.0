@@ -9,11 +9,13 @@ export const mockDatasets: Dataset[] = [
     data: [
       {
         id: "1",
+        name: "LOD1",
         format: "3dtiles",
         url: "https://assets.cms.plateau.reearth.io/assets/11/6d05db-ed47-4f88-b565-9eb385b1ebb0/13100_tokyo23-ku_2022_3dtiles%20_1_1_op_bldg_13101_chiyoda-ku_lod1/tileset.json",
       },
       {
         id: "2",
+        name: "LOD2",
         format: "3dtiles",
         url: "https://assets.cms.plateau.reearth.io/assets/ca/ee4cb0-9ce4-4f6c-bca1-9c7623e84cb1/13100_tokyo23-ku_2022_3dtiles_1_1_op_bldg_13101_chiyoda-ku_lod2_no_texture/tileset.json",
       },
@@ -29,11 +31,13 @@ export const mockDatasets: Dataset[] = [
     data: [
       {
         id: "1",
+        name: "LOD1",
         format: "3dtiles",
         url: "https://assets.cms.plateau.reearth.io/assets/5d/134c5b-d8a0-4cca-aeff-2354188a17ca/13100_tokyo23-ku_2022_3dtiles%20_1_1_op_bldg_13102_chuo-ku_lod1/tileset.json",
       },
       {
         id: "2",
+        name: "LOD2",
         format: "3dtiles",
         url: "https://assets.cms.plateau.reearth.io/assets/4a/30f295-cd07-46b0-b0ab-4a4b1b3af06b/13100_tokyo23-ku_2022_3dtiles_1_1_op_bldg_13102_chuo-ku_lod2_no_texture/tileset.json",
       },
@@ -50,89 +54,101 @@ export const mockSettings: Setting[] = [
     id: "1",
     datasetId: "13101",
     dataId: "1",
-    groups: [
-      {
-        id: "1",
-        default: true,
-        components: [
-          {
-            type: OPACITY_FIELD,
-            format: "3dtiles",
-            value: 1,
-            storeable: true,
-          },
-        ],
-      },
-    ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
+    general: {
+      camera: undefined,
+    },
+    fieldComponents: {
+      groups: [
+        {
+          id: "1",
+          default: true,
+          components: [
+            {
+              type: OPACITY_FIELD,
+              format: "3dtiles",
+              value: 1,
+              storeable: true,
+            },
+          ],
+        },
+      ],
+    },
+    featureInspector: undefined,
   },
   {
     id: "2",
     datasetId: "13101",
     dataId: "2",
-    groups: [
-      {
-        id: "1",
-        default: true,
-        components: [
-          {
-            type: OPACITY_FIELD,
-            format: "3dtiles",
-            value: 1,
-            storeable: true,
-          },
-        ],
-      },
-    ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
+    general: {
+      camera: undefined,
+    },
+    fieldComponents: {
+      groups: [
+        {
+          id: "1",
+          default: true,
+          components: [
+            {
+              type: OPACITY_FIELD,
+              format: "3dtiles",
+              value: 1,
+              storeable: true,
+            },
+          ],
+        },
+      ],
+    },
+    featureInspector: undefined,
   },
   // For Chuo
   {
     id: "3",
     datasetId: "13102",
     dataId: "1",
-    groups: [
-      {
-        id: "1",
-        default: true,
-        components: [
-          {
-            type: OPACITY_FIELD,
-            format: "3dtiles",
-            value: 1,
-            storeable: true,
-          },
-        ],
-      },
-    ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
+    general: {
+      camera: undefined,
+    },
+    fieldComponents: {
+      groups: [
+        {
+          id: "1",
+          default: true,
+          components: [
+            {
+              type: OPACITY_FIELD,
+              format: "3dtiles",
+              value: 1,
+              storeable: true,
+            },
+          ],
+        },
+      ],
+    },
+    featureInspector: undefined,
   },
   {
     id: "4",
     datasetId: "13102",
     dataId: "2",
-    groups: [
-      {
-        id: "1",
-        default: true,
-        components: [
-          {
-            type: OPACITY_FIELD,
-            format: "3dtiles",
-            value: 1,
-            storeable: true,
-          },
-        ],
-      },
-    ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
+    general: {
+      camera: undefined,
+    },
+    fieldComponents: {
+      groups: [
+        {
+          id: "1",
+          default: true,
+          components: [
+            {
+              type: OPACITY_FIELD,
+              format: "3dtiles",
+              value: 1,
+              storeable: true,
+            },
+          ],
+        },
+      ],
+    },
+    featureInspector: undefined,
   },
 ];

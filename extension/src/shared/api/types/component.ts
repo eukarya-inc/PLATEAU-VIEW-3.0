@@ -13,3 +13,5 @@ export type ComponentGroup = {
   default?: boolean;
   components: ComponentBase[];
 };
+
+export type ComponentTemplate = { id: string; groups: ComponentGroup[] };

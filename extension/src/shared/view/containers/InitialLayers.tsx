@@ -1,7 +1,8 @@
+import { useAtomValue } from "jotai";
 import { useEffect, type FC, useMemo } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
-import { mockDatasets, mockSettings } from "../../api/mock";
+import { useDatasetsAPI, useSettingsAPI } from "../../api";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 const INITIAL_DATASET_ID_LIST = [
@@ -18,8 +19,16 @@ const INITIAL_DATASET_ID_LIST = [
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
 
-  const datasets = mockDatasets;
-  const settings = mockSettings;
+  const { datasetsAtom, handleDatasetsFetch } = useDatasetsAPI();
+  const { settingsAtom, handleSettingsFetch } = useSettingsAPI();
+
+  const datasets = useAtomValue(datasetsAtom);
+  const settings = useAtomValue(settingsAtom);
+
+  useEffect(() => {
+    handleDatasetsFetch();
+    handleSettingsFetch();
+  }, [handleDatasetsFetch, handleSettingsFetch]);
 
   const initialDatasets = useMemo(
     () => datasets.filter(d => INITIAL_DATASET_ID_LIST.find(d2 => d.id === d2.datasetId)),

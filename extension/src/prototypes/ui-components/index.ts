@@ -73,3 +73,7 @@ export * from "./styles";
 export * from "./SwitchParameterItem";
 export * from "./theme";
 export * from "./ValueParameterItem";
+export * from "./EditorBar";
+export * from "./EditorPanel";
+export * from "./EditorTreeView";
+export * from "./EditorTreeItem";
