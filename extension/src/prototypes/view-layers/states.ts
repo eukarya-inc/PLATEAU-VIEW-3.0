@@ -27,6 +27,9 @@ export const highlightedTilesetLayersAtom = atom(get => {
   const tilesetLayers = get(tilesetLayersAtom);
   return tilesetLayers.filter(root => {
     const layer = get(get(root.rootLayerAtom).layer);
+    if (!("featureIndexAtom" in layer)) {
+      return;
+    }
     const featureIndex = get(layer.featureIndexAtom);
     const features = featureIndex?.featureIds;
     return features && featureKeys.some(key => features.includes(key.key));
@@ -54,6 +57,9 @@ export const featureIndicesAtom = atom(get => {
       .map(root => {
         const layer = get(get(root.rootLayerAtom).layer);
         const layerId = get(layer.layerIdAtom);
+        if (!("featureIndexAtom" in layer)) {
+          return;
+        }
         const featureIndex = get(layer.featureIndexAtom);
         return featureIndex != null ? [layerId, featureIndex] : undefined;
       })
@@ -76,6 +82,9 @@ export const hideFeaturesAtom = atom(null, (get, set, value: readonly string[] |
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
     const layer = get(get(root.rootLayerAtom).layer);
+    if (!("hiddenFeaturesAtom" in layer)) {
+      return;
+    }
     const { layerIdAtom, hiddenFeaturesAtom } = layer;
     const layerId = get(layerIdAtom);
     invariant(layerId);
@@ -93,6 +102,9 @@ export const showFeaturesAtom = atom(null, (get, set, value: readonly string[] |
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
     const layer = get(get(root.rootLayerAtom).layer);
+    if (!("hiddenFeaturesAtom" in layer)) {
+      return;
+    }
     const { hiddenFeaturesAtom } = layer;
     set(hiddenFeaturesAtom, prevValue => {
       if (value == null) {
@@ -112,6 +124,9 @@ export const showAllFeaturesAtom = atom(null, (get, set) => {
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
     const layer = get(get(root.rootLayerAtom).layer);
+    if (!("hiddenFeaturesAtom" in layer)) {
+      return;
+    }
     const { hiddenFeaturesAtom } = layer;
     set(hiddenFeaturesAtom, null);
   });

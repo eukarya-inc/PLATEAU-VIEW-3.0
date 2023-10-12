@@ -41,7 +41,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
-  const layerId = useAtomValue(layerIdAtom);
+  const [layerId, setLayerId] = useAtom(layerIdAtom);
   useScreenSpaceSelectionResponder({
     type: TILESET_FEATURE,
     convertToSelection: object => {
@@ -89,10 +89,11 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   const handleLoad = useCallback(
     (layerId: string) => {
       onLoad?.(layerId);
+      setLayerId(layerId);
       setFeatureIndex(new TileFeatureIndex(layerId));
       setProperties(new PlateauTilesetProperties(layerId));
     },
-    [onLoad, setFeatureIndex, setProperties],
+    [onLoad, setFeatureIndex, setProperties, setLayerId],
   );
 
   const colorProperty = useAtomValue(colorPropertyAtom);

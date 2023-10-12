@@ -65,6 +65,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
       type: "simple",
       data: {
         type: "3dtiles",
+        idProperty: "gml_id",
         url,
       },
       "3dtiles": appearance,

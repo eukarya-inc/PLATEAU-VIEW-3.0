@@ -1,4 +1,4 @@
-import { PrimitiveAtom, WritableAtom } from "jotai";
+import { WritableAtom } from "jotai";
 import invariant from "tiny-invariant";
 
 import { Component, ComponentBase } from "../api/types";
@@ -32,8 +32,8 @@ export const makeComponentId = ({ datasetId, componentType, shareId }: Component
   return name;
 };
 
-export const makeComponentAtomWrapper = <V>(
-  a: PrimitiveAtom<V>,
+export const makeComponentAtomWrapper = <V, A extends unknown[], S>(
+  a: WritableAtom<V, A, S>,
   params: ComponentIdParams,
   storeable?: boolean,
 ) => {

@@ -5,6 +5,7 @@ import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { PlateauTilesetProperty } from "../../../shared/plateau";
+import { BuildingLayerModel } from "../../../shared/view-layers";
 import { type LayerModel } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
 import {
@@ -17,7 +18,7 @@ import {
   SelectParameterItem,
   SliderParameterItem,
 } from "../../ui-components";
-import { colorSchemeSelectionAtom } from "../../view-layers";
+import { BUILDING_LAYER, colorSchemeSelectionAtom } from "../../view-layers";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   ...theme.typography.body2,
@@ -31,7 +32,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const Legend: FC<{
-  layers: readonly LayerModel[];
+  layers: readonly BuildingLayerModel[];
 }> = ({ layers }) => {
   const colorScheme = useAtomValue(
     useMemo(
@@ -155,17 +156,21 @@ function getProperty(get: Getter, layers: readonly LayerModel[]): PlateauTileset
   return null;
 }
 
-export interface LayerColorSectionProps {
+export interface BuildingLayerColorSectionProps {
   layers: readonly LayerModel[];
 }
 
-export const LayerColorSection: FC<LayerColorSectionProps> = ({ layers }) => {
+export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ layers }) => {
+  const buildingLayers = useMemo(
+    () => layers.filter((l): l is BuildingLayerModel => l.type === BUILDING_LAYER),
+    [layers],
+  );
   const propertyItems = useAtomValue(
     useMemo(
       () =>
         atom((get): Array<[null, string] | [string, string]> => {
           const names = intersection(
-            ...layers.map(layer =>
+            ...buildingLayers.map(layer =>
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property =>
@@ -182,30 +187,34 @@ export const LayerColorSection: FC<LayerColorSectionProps> = ({ layers }) => {
             ...names.map((name): [string, string] => [name, name.replaceAll("_", " ")]),
           ];
         }),
-      [layers],
+      [buildingLayers],
     ),
   );
 
   const colorPropertyAtoms = useMemo(() => {
-    const atoms = layers.map(layer =>
+    const atoms = buildingLayers.map(layer =>
       "colorPropertyAtom" in layer ? layer.colorPropertyAtom : undefined,
     );
     return atoms.every(<T,>(atom: T | undefined): atom is T => atom != null) ? atoms : undefined;
-  }, [layers]);
+  }, [buildingLayers]);
 
   const colorMapAtoms = useMemo(() => {
-    const atoms = layers.map(layer => ("colorMapAtom" in layer ? layer.colorMapAtom : undefined));
+    const atoms = buildingLayers.map(layer =>
+      "colorMapAtom" in layer ? layer.colorMapAtom : undefined,
+    );
     return atoms.every(<T,>(atom: T | undefined): atom is T => atom != null) ? atoms : undefined;
-  }, [layers]);
+  }, [buildingLayers]);
 
   const colorRangeAtoms = useMemo(() => {
-    const atoms = layers.map(layer =>
+    const atoms = buildingLayers.map(layer =>
       "colorRangeAtom" in layer ? layer.colorRangeAtom : undefined,
     );
     return atoms.every(<T,>(atom: T | undefined): atom is T => atom != null) ? atoms : undefined;
-  }, [layers]);
+  }, [buildingLayers]);
 
-  const property = useAtomValue(useMemo(() => atom(get => getProperty(get, layers)), [layers]));
+  const property = useAtomValue(
+    useMemo(() => atom(get => getProperty(get, buildingLayers)), [buildingLayers]),
+  );
 
   // Update color range when properties change.
   const resetColorRange = useSetAtom(
@@ -215,14 +224,14 @@ export const LayerColorSection: FC<LayerColorSectionProps> = ({ layers }) => {
           if (colorRangeAtoms == null) {
             return;
           }
-          const property = getProperty(get, layers);
+          const property = getProperty(get, buildingLayers);
           if (property?.type === "number") {
             colorRangeAtoms.forEach(colorRange => {
               set(colorRange, [property.minimum, property.maximum]);
             });
           }
         }),
-      [layers, colorRangeAtoms],
+      [buildingLayers, colorRangeAtoms],
     ),
   );
 
@@ -234,7 +243,7 @@ export const LayerColorSection: FC<LayerColorSectionProps> = ({ layers }) => {
       <Divider />
       <InspectorItem>
         <ParameterList>
-          <GroupedParameterItem label="色分け" content={<Legend layers={layers} />}>
+          <GroupedParameterItem label="色分け" content={<Legend layers={buildingLayers} />}>
             <InspectorItem sx={{ width: 320 }}>
               <ParameterList>
                 <SelectParameterItem

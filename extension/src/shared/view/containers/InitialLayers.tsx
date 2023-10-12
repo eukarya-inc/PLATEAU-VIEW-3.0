@@ -14,6 +14,11 @@ const INITIAL_DATASET_ID_LIST = [
     datasetId: "13102",
     dataId: "2",
   },
+  // For debug
+  // {
+  //   datasetId: "13101_shelter",
+  //   dataId: "1",
+  // },
 ];
 
 export const InitialLayers: FC = () => {
@@ -49,7 +54,7 @@ export const InitialLayers: FC = () => {
           currentDataId: INITIAL_DATASET_ID_LIST.find(
             d1 => d1.datasetId === d.id && dataIds.includes(d1.dataId),
           )?.dataId,
-          settings: settings.filter(s => dataIds.includes(s.dataId)),
+          settings: settings.filter(s => s.datasetId === d.id && dataIds.includes(s.dataId)),
           shareId,
         }),
         { autoSelect: false },

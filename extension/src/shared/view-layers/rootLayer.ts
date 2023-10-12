@@ -1,8 +1,7 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
 import invariant from "tiny-invariant";
 
-import { LayerModel, LayerType } from "../../prototypes/layers";
-import { BUILDING_LAYER } from "../../prototypes/view-layers";
+import { LayerModel } from "../../prototypes/layers";
 import { ComponentGroup, Data, FeatureInspectorConfig, Setting } from "../api/types";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../sharedAtoms";
@@ -79,15 +78,6 @@ const convertRootLayerParams = (params: RootLayerParams) => {
   });
 };
 
-const formatToLayerType = (format: string | undefined): LayerType | undefined => {
-  switch (format) {
-    case "3dtiles":
-      return BUILDING_LAYER;
-    default:
-      return;
-  }
-};
-
 const createViewLayerWithComponentGroup = (
   datasetId: string,
   title: string,
@@ -95,7 +85,7 @@ const createViewLayerWithComponentGroup = (
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
 ): LayerModel => {
-  const type = formatToLayerType(data?.format);
+  const type = data?.type;
   invariant(type);
   return {
     ...createViewLayer({

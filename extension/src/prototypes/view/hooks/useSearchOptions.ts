@@ -1,17 +1,14 @@
-// import { BoundingSphere, Cartesian3 } from "@cesium/engine";
-// import { useCesium } from "@takram/plateau-cesium";
-// import { flyToBoundingSphere } from "@takram/plateau-cesium-helpers";
-// import { PlateauDatasetType, useDatasetsQuery, type DatasetsQuery } from "@takram/plateau-graphql";
-
-// import { screenSpaceSelectionAtom } from "@takram/plateau-screen-space-selection";
-// import { atom, useAtomValue, useSetAtom } from "jotai";
-// import { useCallback, useEffect, useMemo, useState } from "react";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import invariant from "tiny-invariant";
 
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
-// import { addLayerAtom, layersAtom, useFindLayer, type LayerModel } from "../../layers";
-// import { isNotNullish } from "../../type-helpers";
+import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { LayerModel } from "../../layers";
+import { screenSpaceSelectionAtom } from "../../screen-space-selection";
+import { isNotNullish } from "../../type-helpers";
 import { type SearchOption } from "../../ui-components";
-// import { BUILDING_LAYER, createViewLayer } from "../../view-layers";
+import { BUILDING_LAYER } from "../../view-layers";
 // import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 // import { areasAtom } from "../states/address";
 
@@ -23,6 +20,8 @@ export interface DatasetSearchOption extends SearchOption {
 export interface BuildingSearchOption extends SearchOption /* , earchableFeatureRecord */ {
   type: "building";
   featureIndex: TileFeatureIndex;
+  lat?: number;
+  long?: number;
 }
 
 export interface AddressSearchOption extends SearchOption {
@@ -94,145 +93,127 @@ export interface SearchOptionsParams {
 //   }, [skip, query, layers, findLayer]);
 // }
 
-// function useBuildingSearchOption({
-//   skip = false,
-// }: SearchOptionsParams = {}): readonly BuildingSearchOption[] {
-//   const layers = useAtomValue(layersAtom);
-//   const featureIndices = useAtomValue(
-//     useMemo(
-//       () =>
-//         atom(get =>
-//           layers
-//             .filter(
-//               (layer): layer is LayerModel<typeof BUILDING_LAYER> => layer.type === BUILDING_LAYER,
-//             )
-//             .map(layer => get(layer.featureIndexAtom))
-//             .filter(isNotNullish),
-//         ),
-//       [layers],
-//     ),
-//   );
-//   const [featureIndicesKey, setFeatureIndicesKey] = useState(0);
-//   useEffect(() => {
-//     const removeListeners = featureIndices.map(featureIndex =>
-//       featureIndex.onUpdate.addEventListener(() => {
-//         setFeatureIndicesKey(value => value + 1);
-//       }),
-//     );
-//     return () => {
-//       removeListeners.forEach(removeListener => {
-//         removeListener();
-//       });
-//     };
-//   }, [featureIndices]);
+function useBuildingSearchOption({
+  skip = false,
+}: SearchOptionsParams = {}): readonly BuildingSearchOption[] {
+  const layers = useAtomValue(rootLayersLayersAtom);
+  const featureIndices = useAtomValue(
+    useMemo(
+      () =>
+        atom(get =>
+          layers
+            .filter(
+              (layer): layer is LayerModel<typeof BUILDING_LAYER> => layer.type === BUILDING_LAYER,
+            )
+            .map(layer => get(layer.featureIndexAtom))
+            .filter(isNotNullish),
+        ),
+      [layers],
+    ),
+  );
+  const [featureIndicesKey, setFeatureIndicesKey] = useState(0);
+  useEffect(() => {
+    setFeatureIndicesKey(value => value + 1);
+  }, [featureIndices]);
 
-//   return useMemo(
-//     () => {
-//       if (skip) {
-//         return [];
-//       }
-//       return featureIndices.flatMap(featureIndex =>
-//         featureIndex.searchableFeatures.map(({ key, name, feature, longitude, latitude }) => ({
-//           type: "building" as const,
-//           name,
-//           feature,
-//           featureIndex,
-//           key,
-//           longitude,
-//           latitude,
-//         })),
-//       );
-//     },
-//     // eslint-disable-next-line react-hooks/exhaustive-deps
-//     [skip, featureIndices, featureIndicesKey],
-//   );
-// }
+  return useMemo(
+    () => {
+      if (skip) {
+        return [];
+      }
+      return featureIndices.flatMap(featureIndex => {
+        const fs =
+          window.reearth?.layers?.findFeaturesByIds?.(
+            featureIndex.layerId,
+            featureIndex.featureIds,
+          ) ?? [];
+        const addedIds: string[] = [];
+        return fs.reduce<BuildingSearchOption[]>((res, f) => {
+          if (f?.properties?.["名称"] && !addedIds.includes(f.id)) {
+            res.push({
+              type: "building" as const,
+              name: f?.properties?.["名称"],
+              featureIndex,
+              id: f?.id,
+            });
+            addedIds.push(f.id);
+          }
+          return res;
+        }, []);
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [skip, featureIndices, featureIndicesKey],
+  );
+}
 
-// export interface SearchOptions {
-//   datasets: readonly DatasetSearchOption[];
-//   buildings: readonly BuildingSearchOption[];
-//   addresses: readonly AddressSearchOption[];
-//   select: (option: SearchOption) => void;
-// }
+export interface SearchOptions {
+  // datasets: readonly DatasetSearchOption[];
+  buildings: readonly BuildingSearchOption[];
+  addresses: readonly AddressSearchOption[];
+  select: (option: SearchOption) => void;
+}
 
-// export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
-//   const datasets = useDatasetSearchOptions(options);
-//   const buildings = useBuildingSearchOption(options);
+export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
+  // const datasets = useDatasetSearchOptions(options);
+  const buildings = useBuildingSearchOption(options);
 
-//   const scene = useCesium(({ scene }) => scene, { indirect: true });
-//   const addLayer = useSetAtom(addLayerAtom);
-//   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
-//   const select = useCallback(
-//     (option: SearchOption) => {
-//       if (scene == null) {
-//         return;
-//       }
-//       switch (option.type) {
-//         case "dataset": {
-//           const datasetOption = option as DatasetSearchOption;
-//           const type = datasetTypeLayers[datasetOption.dataset.type];
-//           const municipality = datasetOption.dataset.municipality;
-//           if (type == null || municipality == null) {
-//             return;
-//           }
-//           if (type === BUILDING_LAYER) {
-//             addLayer(
-//               createViewLayer({
-//                 type,
-//                 municipalityCode: municipality.code,
-//               }),
-//             );
-//           } else {
-//             addLayer(
-//               createViewLayer({
-//                 type,
-//                 municipalityCode: municipality.code,
-//                 datasetId: datasetOption.dataset.id,
-//                 datumId: datasetOption.dataset.data[0].id,
-//               }),
-//             );
-//           }
-//           break;
-//         }
-//         case "building": {
-//           const buildingOption = option as BuildingSearchOption;
-//           let boundingSphere = computePlateauBoundingSphere([buildingOption.feature]);
-//           const minRadius = 200; // Arbitrary size
-//           if (boundingSphere != null) {
-//             boundingSphere.radius = Math.max(minRadius, boundingSphere.radius * 2);
-//           } else {
-//             // Fallback
-//             boundingSphere = new BoundingSphere(
-//               Cartesian3.fromDegrees(
-//                 buildingOption.longitude,
-//                 buildingOption.latitude,
-//                 0,
-//                 scene.globe.ellipsoid,
-//               ),
-//               minRadius,
-//             );
-//           }
-//           void flyToBoundingSphere(scene, boundingSphere);
-//           setScreenSpaceSelection([
-//             {
-//               type: "PLATEAU_TILE_FEATURE",
-//               value: {
-//                 featureIndex: buildingOption.featureIndex,
-//                 key: buildingOption.key,
-//               },
-//             },
-//           ]);
-//           break;
-//         }
-//       }
-//     },
-//     [scene, addLayer, setScreenSpaceSelection],
-//   );
+  // const addLayer = useSetAtom(addLayerAtom);
+  const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
+  const select = useCallback(
+    (option: SearchOption) => {
+      switch (option.type) {
+        case "dataset": {
+          // const datasetOption = option as DatasetSearchOption;
+          // const type = datasetTypeLayers[datasetOption.dataset.type];
+          // const municipality = datasetOption.dataset.municipality;
+          // if (type == null || municipality == null) {
+          //   return;
+          // }
+          // if (type === BUILDING_LAYER) {
+          //   addLayer(
+          //     createViewLayer({
+          //       type,
+          //       municipalityCode: municipality.code,
+          //     }),
+          //   );
+          // } else {
+          //   addLayer(
+          //     createViewLayer({
+          //       type,
+          //       municipalityCode: municipality.code,
+          //       datasetId: datasetOption.dataset.id,
+          //       datumId: datasetOption.dataset.data[0].id,
+          //     }),
+          //   );
+          // }
+          break;
+        }
+        case "building": {
+          const buildingOption = option as BuildingSearchOption;
+          invariant(buildingOption.id);
+          // TODO: Implement flyTo by `_x` and `_y` properties which are embeded in feature.
+          setScreenSpaceSelection([
+            {
+              type: "TILESET_FEATURE",
+              value: {
+                layerId: buildingOption.featureIndex.layerId,
+                featureIndex: buildingOption.featureIndex,
+                key: buildingOption.id,
+              },
+            },
+          ]);
+          break;
+        }
+      }
+    },
+    [setScreenSpaceSelection],
+  );
 
-//   return {
-//     datasets,
-//     buildings,
-//     addresses: [],
-//     select,
-//   };
-// }
+  return {
+    // datasets,
+    buildings,
+    addresses: [],
+    select,
+  };
+}
