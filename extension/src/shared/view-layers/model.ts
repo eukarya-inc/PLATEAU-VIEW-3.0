@@ -1,4 +1,5 @@
 import { ViewLayerModel, ViewLayerModelParams } from "../../prototypes/view-layers";
+import { DataType } from "../reearth/types/layer";
 
 import { ComponentAtom } from "./component";
 
@@ -8,7 +9,7 @@ export type LayerModelParams = ViewLayerModelParams & {
 };
 
 export type LayerModelBase = {
-  format?: string;
+  format?: DataType;
   url?: string;
   componentAtoms?: ComponentAtom[];
 };

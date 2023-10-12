@@ -5,7 +5,8 @@ import { useAtom, useAtomValue } from "jotai";
 import { type ResizeCallback } from "re-resizable";
 import { useCallback, type FC } from "react";
 
-import { TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
@@ -41,6 +42,9 @@ export const SelectionPanel: FC = () => {
         switch (subtype) {
           case TILESET_FEATURE:
             content = <TileFeatureContent values={selectionGroup.values} />;
+            break;
+          case GENERAL_FEATURE:
+            content = <GeneralFeatureContent values={selectionGroup.values} />;
             break;
           // case PEDESTRIAN_OBJECT:
           //   content = <PedestrianLayerContent values={selectionGroup.values} />;

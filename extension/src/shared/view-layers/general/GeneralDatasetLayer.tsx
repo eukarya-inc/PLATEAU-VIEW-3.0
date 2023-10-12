@@ -3,82 +3,61 @@ import { FC, useCallback, useEffect } from "react";
 
 import type { LayerProps } from "../../../prototypes/layers";
 import { ScreenSpaceSelectionEntry } from "../../../prototypes/screen-space-selection";
-import {
-  createViewLayerModel,
-  BUILDING_LAYER,
-  ConfigurableLayerModel,
-} from "../../../prototypes/view-layers";
-import { OPACITY_FIELD } from "../../api/types/fields/general";
-import { TilesetLayerContainer } from "../../layerContainers/3dtiles";
-import { TILESET_FEATURE } from "../../reearth/layers";
+import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototypes/view-layers";
+import { POINT_COLOR_FIELD } from "../../api/types/fields/point";
+import { GeneralLayerContainer } from "../../layerContainers/general";
+import { GENERAL_FEATURE } from "../../reearth/layers";
+import { Properties } from "../../reearth/utils";
 import { useFindComponent } from "../hooks";
 import { LayerModel, LayerModelParams } from "../model";
 
-import {
-  PlateauTilesetLayerState,
-  PlateauTilesetLayerStateParams,
-  createPlateauTilesetLayerState,
-} from "./createPlateauTilesetLayerState";
+import { GENERAL_FORMAT } from "./format";
+import { GeneralLayerType } from "./types";
 
-export interface BuildingLayerModelParams extends LayerModelParams, PlateauTilesetLayerStateParams {
+export interface GeneralLayerModelParams extends LayerModelParams {
   municipalityCode: string;
   title: string;
   version?: string;
-  lod?: number;
-  textured?: boolean;
+  type: GeneralLayerType;
 }
 
-export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
+export interface GeneralLayerModel extends LayerModel {
   municipalityCode: string;
   title: string;
   versionAtom: PrimitiveAtom<string | null>;
-  lodAtom: PrimitiveAtom<number | null>;
-  texturedAtom: PrimitiveAtom<boolean | null>;
-  showWireframeAtom: PrimitiveAtom<boolean>;
+  propertiesAtom: PrimitiveAtom<Properties | null>;
 }
 
-export function createBuildingLayer(
-  params: BuildingLayerModelParams,
-): ConfigurableLayerModel<BuildingLayerModel> {
+export function createGeneralDatasetLayer(
+  params: GeneralLayerModelParams,
+): ConfigurableLayerModel<GeneralLayerModel> {
   return {
     ...createViewLayerModel(params),
-    ...createPlateauTilesetLayerState(params),
-    type: BUILDING_LAYER,
+    type: params.type,
     municipalityCode: params.municipalityCode,
     title: params.title,
     versionAtom: atom(params.version ?? null),
-    lodAtom: atom(params.lod ?? null),
-    texturedAtom: atom(params.textured ?? null),
-    showWireframeAtom: atom(false),
+    propertiesAtom: atom<Properties | null>(null),
   };
 }
 
-export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
+export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
   format,
   url,
+  type,
   title,
   titleAtom,
   hiddenAtom,
   layerIdAtom,
   versionAtom,
-  lodAtom,
-  texturedAtom,
-  featureIndexAtom,
   selections,
-  // hiddenFeaturesAtom,
   propertiesAtom,
-  colorPropertyAtom,
-  colorSchemeAtom,
-  colorMapAtom,
-  colorRangeAtom,
   componentAtoms,
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
 
   const [_version, _setVersion] = useAtom(versionAtom);
-  const [_lod, _setLod] = useAtom(lodAtom);
-  const [_textured, _setTextured] = useAtom(texturedAtom);
 
   const setLayerId = useSetAtom(layerIdAtom);
   const handleLoad = useCallback(
@@ -105,29 +84,29 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   // TODO(ReEarth): Need a wireframe API
   // const showWireframe = useAtomValue(showWireframeAtom);
 
-  const opacityAtom = useFindComponent<typeof OPACITY_FIELD>(componentAtoms ?? [], OPACITY_FIELD);
+  const pointColorAtom = useFindComponent<typeof POINT_COLOR_FIELD>(
+    componentAtoms ?? [],
+    POINT_COLOR_FIELD,
+  );
 
   if (!url) {
     return null;
   }
   // TODO(ReEarth): Use GQL definition
-  if (format === "3dtiles" /* PlateauDatasetFormat.Cesium3DTiles */) {
+  if (format && GENERAL_FORMAT.includes(format)) {
     return (
-      <TilesetLayerContainer
+      <GeneralLayerContainer
         url={url}
+        format={format}
+        type={type}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
         hidden={hidden}
         // component={PlateauBuildingTileset}
-        featureIndexAtom={featureIndexAtom}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}
         propertiesAtom={propertiesAtom}
-        colorPropertyAtom={colorPropertyAtom}
-        colorSchemeAtom={colorSchemeAtom}
-        colorMapAtom={colorMapAtom}
-        colorRangeAtom={colorRangeAtom}
-        opacityAtom={opacityAtom}
-        selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
+        selections={selections as ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[]}
+        pointColorAtom={pointColorAtom}
         // showWireframe={showWireframe}
       />
     );

@@ -6,4 +6,10 @@ export type PointColorField = FieldBase<{
   value: string;
 }>;
 
-export type PointFields = PointColorField;
+export const POINT_SIZE_FIELD = "POINT_SIZE_FIELD";
+export type PointSizeField = FieldBase<{
+  type: typeof POINT_SIZE_FIELD;
+  value: number;
+}>;
+
+export type PointFields = PointColorField | PointSizeField;

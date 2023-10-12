@@ -52,12 +52,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options
 
       switch (event.type) {
         case "point": {
-          const fs = window.reearth?.scene?.pickManyFromViewport(
-            [event.x, event.y],
-            1,
-            1,
-            f => f.properties && !!getGMLId(f.properties),
-          );
+          const fs = window.reearth?.scene?.pickManyFromViewport([event.x, event.y], 1, 1);
           if (fs) {
             objects = fs;
           }

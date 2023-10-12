@@ -26,6 +26,7 @@ import {
 } from "../../prototypes/view-layers";
 
 import { BuildingLayerModel } from "./3dtiles";
+import { GeneralLayerModel } from "./general";
 
 export interface LayerModelOverrides {
   [HEATMAP_LAYER]: never; // HeatmapLayerModel;
@@ -33,25 +34,25 @@ export interface LayerModelOverrides {
   [SKETCH_LAYER]: never; // SketchLayerModel;
 
   // Dataset layers
-  [BORDER_LAYER]: never; // BorderLayerModel
-  [BRIDGE_LAYER]: never; // BridgeLayerModel;
+  [BORDER_LAYER]: GeneralLayerModel; // BorderLayerModel
+  [BRIDGE_LAYER]: GeneralLayerModel; // BridgeLayerModel;
   [BUILDING_LAYER]: BuildingLayerModel;
-  [CITY_FURNITURE_LAYER]: never; // CityFurnitureLayerModel
-  [EMERGENCY_ROUTE_LAYER]: never; // EmergencyRouteLayerModel
-  [GENERIC_CITY_OBJECT_LAYER]: never; // GenericLayerModel
-  [HIGH_TIDE_RISK_LAYER]: never; // HighTideRiskLayerModel
-  [INLAND_FLOODING_RISK_LAYER]: never; // InlandFloodingRiskLayerModel
-  [LAND_USE_LAYER]: never; // LandUseLayerModel;
-  [LANDMARK_LAYER]: never; // LandmarkLayerModel
-  [LAND_SLIDE_RISK_LAYER]: never; // LandSlideRiskLayerModel;
-  [PARK_LAYER]: never; // ParkLayerModel
-  [RAILWAY_LAYER]: never; // RailwayLayerModel
-  [RIVER_FLOODING_RISK_LAYER]: never; // RiverFloodingRiskLayerModel;
-  [ROAD_LAYER]: never; // RoadLayerModel;
-  [SHELTER_LAYER]: never; // ShelterLayerModel
-  [STATION_LAYER]: never; // StationLayerModel
-  [TSUNAMI_RISK_LAYER]: never; // TsunamiRiskLayerModel
-  [URBAN_PLANNING_LAYER]: never; // UrbanPlanningLayerModel;
-  [USE_CASE_LAYER]: never; // UseCaseLayerModel
-  [VEGETATION_LAYER]: never; // VegetationLayerModel
+  [CITY_FURNITURE_LAYER]: GeneralLayerModel; // CityFurnitureLayerModel
+  [EMERGENCY_ROUTE_LAYER]: GeneralLayerModel; // EmergencyRouteLayerModel
+  [GENERIC_CITY_OBJECT_LAYER]: GeneralLayerModel; // GenericLayerModel
+  [HIGH_TIDE_RISK_LAYER]: GeneralLayerModel; // HighTideRiskLayerModel
+  [INLAND_FLOODING_RISK_LAYER]: GeneralLayerModel; // InlandFloodingRiskLayerModel
+  [LAND_USE_LAYER]: GeneralLayerModel; // LandUseLayerModel;
+  [LANDMARK_LAYER]: GeneralLayerModel; // LandmarkLayerModel
+  [LAND_SLIDE_RISK_LAYER]: GeneralLayerModel; // LandSlideRiskLayerModel;
+  [PARK_LAYER]: GeneralLayerModel; // ParkLayerModel
+  [RAILWAY_LAYER]: GeneralLayerModel; // RailwayLayerModel
+  [RIVER_FLOODING_RISK_LAYER]: GeneralLayerModel; // RiverFloodingRiskLayerModel;
+  [ROAD_LAYER]: GeneralLayerModel; // RoadLayerModel;
+  [SHELTER_LAYER]: GeneralLayerModel; // ShelterLayerModel
+  [STATION_LAYER]: GeneralLayerModel; // StationLayerModel
+  [TSUNAMI_RISK_LAYER]: GeneralLayerModel; // TsunamiRiskLayerModel
+  [URBAN_PLANNING_LAYER]: GeneralLayerModel; // UrbanPlanningLayerModel;
+  [USE_CASE_LAYER]: GeneralLayerModel; // UseCaseLayerModel
+  [VEGETATION_LAYER]: GeneralLayerModel; // VegetationLayerModel
 }

@@ -18,7 +18,7 @@ import {
 import { layerTypeIcons, layerTypeNames } from "../../view-layers";
 import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 
-import { LayerColorSection } from "./LayerColorSection";
+import { BuildingLayerColorSection } from "./BuildingLayerColorSection";
 // import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
@@ -131,7 +131,7 @@ export function LayerContent<T extends LayerType>({
         onClose={handleClose}
       />
       <LayerHiddenFeaturesSection layers={values} />
-      <LayerColorSection layers={values} />
+      <BuildingLayerColorSection layers={values} />
       {/* <LayerHeatmapSection layers={values} /> */}
       <Divider />
       {components.map(([type, atoms]) => (
