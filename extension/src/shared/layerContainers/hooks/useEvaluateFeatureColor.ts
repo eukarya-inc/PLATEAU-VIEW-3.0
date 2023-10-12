@@ -79,7 +79,7 @@ export function useEvaluateFeatureColor({
         return expression;
       }
     }
-    if (colorMapParams != null) {
+    if (colorMapParams) {
       let expression = blendedDefaultColor;
 
       const { colorMap, colorRange } = colorMapParams;
