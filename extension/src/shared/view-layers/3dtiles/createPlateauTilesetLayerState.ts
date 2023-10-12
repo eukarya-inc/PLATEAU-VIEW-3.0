@@ -1,6 +1,6 @@
-import { atom, SetStateAction, type PrimitiveAtom } from "jotai";
+import { atom, SetStateAction, type PrimitiveAtom, WritableAtom } from "jotai";
 
-import { colorMapPlateau, type ColorMap } from "../../../prototypes/color-maps";
+import { colorMapPlateau, ColorMap, ColorMapType } from "../../../prototypes/color-maps";
 import { type ViewLayerModel, type LayerColorScheme } from "../../../prototypes/view-layers";
 import { type TileFeatureIndex } from "../../plateau";
 import { PlateauTilesetProperties } from "../../plateau/layers";
@@ -16,7 +16,7 @@ export interface PlateauTilesetLayerState {
   hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
   propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
-  colorMapAtom: PrimitiveAtom<ColorMap>;
+  colorMapAtom: WritableAtom<ColorMap<ColorMapType>, [SetStateAction<ColorMap>], void>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
 }
@@ -31,8 +31,40 @@ export function createPlateauTilesetLayerState(
     { ...params, componentType: "colorProperty" },
     true,
   );
+
+  const originalColorMapAtom = atom<ColorMap>(colorMapPlateau);
+  const wrappedOriginalColorMapAtom = atom(
+    get => get(originalColorMapAtom),
+    (get, set, colorMapAction: SetStateAction<ColorMap>) => {
+      const colorMap =
+        typeof colorMapAction === "function"
+          ? colorMapAction(get(originalColorMapAtom))
+          : colorMapAction;
+      if (colorMap instanceof ColorMap) {
+        set(originalColorMapAtom, colorMap);
+        return;
+      }
+      const objectColorMap: any = colorMap;
+      if (
+        objectColorMap &&
+        "type" in objectColorMap &&
+        typeof objectColorMap.type === "string" &&
+        "name" in objectColorMap &&
+        typeof objectColorMap.name === "string" &&
+        "lut" in objectColorMap &&
+        objectColorMap.lut &&
+        Array.isArray(objectColorMap.lut)
+      ) {
+        set(
+          originalColorMapAtom,
+          new ColorMap(objectColorMap.type, objectColorMap.name, objectColorMap.lut),
+        );
+      }
+    },
+  );
+
   const colorMapAtom = makeComponentAtomWrapper(
-    atom<ColorMap>(colorMapPlateau),
+    wrappedOriginalColorMapAtom,
     { ...params, componentType: "colorMap" },
     true,
   );

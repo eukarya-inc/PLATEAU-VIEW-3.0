@@ -1,11 +1,11 @@
-import { atom, type PrimitiveAtom } from "jotai";
+import { WritableAtom, type PrimitiveAtom, SetStateAction } from "jotai";
 
-import { colorMapPlateau, type ColorMap } from "../color-maps";
+import { ColorMapType, type ColorMap } from "../color-maps";
 
 export interface QuantitativeColorMap {
   type: "quantitative";
   name: string;
-  colorMapAtom: PrimitiveAtom<ColorMap>;
+  colorMapAtom: WritableAtom<ColorMap<ColorMapType>, [SetStateAction<ColorMap>], void>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   valueRangeAtom: PrimitiveAtom<number[]>;
 }
@@ -15,22 +15,4 @@ export interface QuantitativeColorSetOptions {
   colorMap?: ColorMap;
   colorRange?: number[];
   valueRange?: number[];
-}
-
-export function atomsWithQuantitativeColorMap({
-  name,
-  colorMap = colorMapPlateau,
-  colorRange = [0, 100],
-  valueRange = colorRange,
-}: QuantitativeColorSetOptions): QuantitativeColorMap {
-  const colorMapAtom = atom(colorMap);
-  const colorRangeAtom = atom(colorRange);
-  const valueRangeAtom = atom(valueRange);
-  return {
-    type: "quantitative",
-    name,
-    colorMapAtom,
-    colorRangeAtom,
-    valueRangeAtom,
-  };
 }

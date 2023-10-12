@@ -1,5 +1,5 @@
 import { Select, styled, type SelectChangeEvent, type SelectProps } from "@mui/material";
-import { atom, useAtom, type PrimitiveAtom, type SetStateAction } from "jotai";
+import { atom, useAtom, type PrimitiveAtom, type SetStateAction, WritableAtom } from "jotai";
 import { forwardRef, useCallback, useMemo, type PropsWithoutRef, type ReactNode } from "react";
 
 import {
@@ -54,7 +54,11 @@ const Value = styled("div")(({ theme }) => ({
 export interface ColorMapParameterItemProps
   extends PropsWithoutRef<Omit<SelectProps<string | null>, "value">>,
     Pick<ParameterItemProps, "label" | "labelFontSize" | "description"> {
-  atom: PrimitiveAtom<ColorMap> | Array<PrimitiveAtom<ColorMap>>;
+  atom:
+    | PrimitiveAtom<ColorMap>
+    | Array<PrimitiveAtom<ColorMap>>
+    | WritableAtom<ColorMap, [SetStateAction<ColorMap>], void>
+    | WritableAtom<ColorMap, [SetStateAction<ColorMap>], void>[];
 }
 
 const MIXED = "MIXED";
