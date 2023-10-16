@@ -17,7 +17,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({ geoUrl, children }
   }, [geoUrl]);
 
   if (!client) {
-    return;
+    return null;
   }
 
   return (
