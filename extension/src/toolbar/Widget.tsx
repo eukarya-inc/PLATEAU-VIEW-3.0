@@ -1,4 +1,4 @@
-import { memo, useEffect } from "react";
+import { FC, memo, useEffect } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
@@ -10,19 +10,22 @@ import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEven
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { useHealth } from "../shared/graphql";
+import { WidgetProps } from "../shared/types/widget";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
-export const Widget = memo(function WidgetPresenter() {
+type Props = WidgetProps<{ geoURL?: string; plateauURL?: string }>;
+
+export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   useHealthCheck();
   useInteractionMode();
   useAttachScreenSpaceSelection();
 
   return (
-    <WidgetContext>
+    <WidgetContext geoUrl={widget.property.default.geoURL}>
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
       {/* <Suspense>

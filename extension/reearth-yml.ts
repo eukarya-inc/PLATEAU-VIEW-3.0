@@ -25,6 +25,62 @@ const yml = {
         },
         extended: true,
       },
+      schema: {
+        groups: [
+          {
+            id: "default",
+            title: "PLATEAUデータセット",
+            fields: [
+              {
+                id: "plateauURL",
+                type: "string",
+                title: "バックエンドURL",
+              },
+              {
+                id: "geoURL",
+                type: "string",
+                title: "GeoサーバーバックエンドURL",
+              },
+              {
+                id: "projectName",
+                type: "string",
+                title: "プロジェクト名",
+              },
+              {
+                id: "plateauAccessToken",
+                type: "string",
+                title: "バックエンドアクセストークン",
+                private: true,
+              },
+              {
+                id: "catalogURL",
+                type: "string",
+                title: "データカタログURL",
+              },
+              {
+                id: "catalogProjectName",
+                type: "string",
+                title: "データカタログのプロジェクト名",
+              },
+              {
+                id: "reearthURL",
+                type: "string",
+                title: "Re:Earthプロジェクトの公開URL",
+              },
+              {
+                id: "enableGeoPub",
+                type: "bool",
+                title: "G空間情報センターに公開",
+              },
+              {
+                id: "hideFeedback",
+                type: "bool",
+                title: "フィードバックを非表示",
+              },
+            ],
+          },
+        ],
+      },
     },
     {
       id: "search-widget",
