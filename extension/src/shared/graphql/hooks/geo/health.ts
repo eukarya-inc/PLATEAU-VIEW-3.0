@@ -1,4 +1,4 @@
-import { HEALTH } from "../base/queries/health";
+import { HEALTH } from "../../base/geo/queries/health";
 
 import { useQuery } from "./base";
 

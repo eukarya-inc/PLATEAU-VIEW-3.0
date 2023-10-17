@@ -100,6 +100,7 @@ export interface SearchOption {
   type: SearchOptionType;
   id?: string;
   name: string;
+  index?: string;
 }
 
 const iconComponents: Record<Exclude<SearchOptionType, "filter">, ComponentType> = {
@@ -117,7 +118,7 @@ const groupNames: Record<Exclude<SearchOptionType, "filter">, string> = {
 };
 
 function getOptionLabel(value: string | SearchOption): string {
-  return typeof value === "string" ? value : value.name;
+  return typeof value === "string" ? value : value.index ?? value.name;
 }
 
 function renderGroup(params: AutocompleteRenderGroupParams): ReactNode {

@@ -1,7 +1,7 @@
 import { Button, Divider, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom, type Getter } from "jotai";
 import { intersection, isEqual, min, uniqWith } from "lodash-es";
-import { useCallback, useMemo, type FC } from "react";
+import { useCallback, useMemo, type FC, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { PlateauTilesetProperty } from "../../../shared/plateau";
@@ -165,6 +165,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
     () => layers.filter((l): l is BuildingLayerModel => l.type === BUILDING_LAYER),
     [layers],
   );
+  const [recalcPropertyItems, setRecalcPropertyItems] = useState(0);
   const propertyItems = useAtomValue(
     useMemo(
       () =>
@@ -187,7 +188,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
             ...names.map((name): [string, string] => [name, name.replaceAll("_", " ")]),
           ];
         }),
-      [buildingLayers],
+      [buildingLayers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
     ),
   );
 
@@ -235,7 +236,16 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
     ),
   );
 
-  if (colorPropertyAtoms == null || colorMapAtoms == null || colorRangeAtoms == null) {
+  const handleClickParameterItem = useCallback(() => {
+    setRecalcPropertyItems(p => p + 1);
+  }, []);
+
+  if (
+    !buildingLayers.length ||
+    colorPropertyAtoms == null ||
+    colorMapAtoms == null ||
+    colorRangeAtoms == null
+  ) {
     return null;
   }
   return (
@@ -243,7 +253,10 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
       <Divider />
       <InspectorItem>
         <ParameterList>
-          <GroupedParameterItem label="色分け" content={<Legend layers={buildingLayers} />}>
+          <GroupedParameterItem
+            label="色分け"
+            onClick={handleClickParameterItem}
+            content={<Legend layers={buildingLayers} />}>
             <InspectorItem sx={{ width: 320 }}>
               <ParameterList>
                 <SelectParameterItem

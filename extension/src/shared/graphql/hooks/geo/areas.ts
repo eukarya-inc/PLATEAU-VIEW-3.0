@@ -1,8 +1,8 @@
-import { AREAS } from "../base/queries/areas";
+import { CAMERA_AREAS } from "../../base/geo/queries/areas";
 
-import { useLasyQuery } from "./base";
+import { useLazyQuery } from "./base";
 
-export const useAreas = ({
+export const useCameraAreas = ({
   longitude,
   latitude,
   includeRadii,
@@ -11,7 +11,7 @@ export const useAreas = ({
   latitude: number;
   includeRadii?: boolean;
 }) => {
-  return useLasyQuery(AREAS, {
+  return useLazyQuery(CAMERA_AREAS, {
     variables: {
       longitude,
       latitude,

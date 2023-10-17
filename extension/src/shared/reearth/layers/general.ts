@@ -27,6 +27,7 @@ export type GeneralProps = {
   pointColor?: string;
   pointSize?: string;
   show?: string | boolean;
+  visible?: boolean;
   selectedFeatureColor?: string;
 };
 
@@ -37,6 +38,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
   pointColor,
   pointSize,
   show,
+  visible,
 }) => {
   const layerIdRef = useRef<string>();
   const pointAppearance: LayerAppearance<MarkerAppearance> | undefined = useMemo(
@@ -98,9 +100,10 @@ export const GeneralLayer: FC<GeneralProps> = ({
     if (!layerId) return;
 
     window.reearth?.layers?.override?.(layerId, {
+      visible,
       ...(pointAppearance ? { marker: pointAppearance } : {}),
     });
-  }, [pointAppearance]);
+  }, [pointAppearance, visible]);
 
   return null;
 };

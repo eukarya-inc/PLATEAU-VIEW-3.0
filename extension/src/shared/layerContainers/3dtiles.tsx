@@ -114,7 +114,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
       onLoad={handleLoad}
       color={color}
       enableShadow={!opacity || opacity === 1}
-      show={!hidden}
+      visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />
   );

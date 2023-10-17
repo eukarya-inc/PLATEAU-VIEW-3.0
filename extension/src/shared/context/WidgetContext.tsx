@@ -3,26 +3,35 @@ import { ThemeProvider } from "@mui/material";
 import { FC, PropsWithChildren, useEffect } from "react";
 
 import { lightTheme } from "../../prototypes/ui-components";
-import { client, createClient } from "../graphql/client";
+import { geoClient, createGeoClient, plateauClient, createPlateauClient } from "../graphql/clients";
 
 type Props = {
   geoUrl?: string;
+  plateauUrl?: string;
 };
 
-export const WidgetContext: FC<PropsWithChildren<Props>> = ({ geoUrl, children }) => {
+export const WidgetContext: FC<PropsWithChildren<Props>> = ({ geoUrl, plateauUrl, children }) => {
   useEffect(() => {
-    if (!client && geoUrl) {
-      createClient(geoUrl);
+    if (!geoClient && geoUrl) {
+      createGeoClient(geoUrl);
     }
   }, [geoUrl]);
 
-  if (!client) {
+  useEffect(() => {
+    if (!plateauClient && plateauUrl) {
+      createPlateauClient(plateauUrl);
+    }
+  }, [plateauUrl]);
+
+  if (!geoClient || !plateauClient) {
     return null;
   }
 
   return (
-    <ApolloProvider client={client}>
-      <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+    <ApolloProvider client={plateauClient}>
+      <ApolloProvider client={geoClient}>
+        <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+      </ApolloProvider>
     </ApolloProvider>
   );
 };

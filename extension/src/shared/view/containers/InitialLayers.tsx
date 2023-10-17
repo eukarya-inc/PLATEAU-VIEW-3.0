@@ -1,50 +1,43 @@
 import { useEffect, type FC, useMemo } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
-import { mockDatasets, mockSettings } from "../../api/mock";
+import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
+import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
+import { mockSettings } from "../../api/mock";
+import { useDatasets } from "../../graphql";
+import { DatasetItem, DatasetsInput } from "../../graphql/types/plateau";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
-
-const INITIAL_DATASET_ID_LIST = [
-  {
-    datasetId: "13101",
-    dataId: "2",
-  },
-  {
-    datasetId: "13102",
-    dataId: "2",
-  },
-  // For debug
-  // {
-  //   datasetId: "13101_shelter",
-  //   dataId: "1",
-  // },
-];
 
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
 
-  const datasets = mockDatasets;
+  const initialDatasetInput: DatasetsInput = useMemo(
+    () => ({
+      areaCodes: ["13101", "13102"],
+      includeTypes: [PlateauDatasetType.Building],
+      year: 2022,
+    }),
+    [],
+  );
+  const query = useDatasets(initialDatasetInput);
   const settings = mockSettings;
 
-  const initialDatasets = useMemo(
-    () => datasets.filter(d => INITIAL_DATASET_ID_LIST.find(d2 => d.id === d2.datasetId)),
-    [datasets],
-  );
+  const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
   // TODO: Get share ID
   const shareId = undefined;
 
   useEffect(() => {
     const remove = initialDatasets.map(d => {
-      const dataIds = d.data.map(data => data.id);
+      const dataIds = d.items.map(data => data.id);
+      const dataList = d.items as DatasetItem[];
       return addLayer(
         createRootLayerAtom({
+          type: datasetTypeLayers[d.type.code as PlateauDatasetType],
           datasetId: d.id,
-          dataList: d.data,
-          title: d.municipalityName,
-          currentDataId: INITIAL_DATASET_ID_LIST.find(
-            d1 => d1.datasetId === d.id && dataIds.includes(d1.dataId),
-          )?.dataId,
+          dataList,
+          title: d.name,
+          currentDataId: dataList.find(v => v.id.endsWith("LOD2"))?.id,
           settings: settings.filter(s => s.datasetId === d.id && dataIds.includes(s.dataId)),
           shareId,
         }),

@@ -25,7 +25,9 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   useAttachScreenSpaceSelection();
 
   return (
-    <WidgetContext geoUrl={widget.property.default.geoURL}>
+    <WidgetContext
+      geoUrl={widget.property.default.geoURL}
+      plateauUrl={widget.property.default.plateauURL}>
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
       {/* <Suspense>

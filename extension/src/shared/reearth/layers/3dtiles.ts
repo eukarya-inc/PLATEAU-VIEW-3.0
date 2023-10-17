@@ -26,6 +26,7 @@ export type TilesetProps = {
   color?: string;
   enableShadow?: boolean;
   show?: string | boolean;
+  visible?: boolean;
   selectedFeatureColor?: string;
 };
 
@@ -35,6 +36,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
   color,
   enableShadow,
   show,
+  visible,
   selectedFeatureColor,
 }) => {
   const layerIdRef = useRef<string>();
@@ -90,9 +92,10 @@ export const TilesetLayer: FC<TilesetProps> = ({
     if (!layerId) return;
 
     window.reearth?.layers?.override?.(layerId, {
+      visible,
       ["3dtiles"]: appearance,
     });
-  }, [appearance]);
+  }, [appearance, visible]);
 
   return null;
 };

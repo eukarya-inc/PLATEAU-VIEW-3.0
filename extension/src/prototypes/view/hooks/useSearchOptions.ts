@@ -2,19 +2,25 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
+import { useDatasets } from "../../../shared/graphql";
+import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/plateau";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
+import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
-import { LayerModel } from "../../layers";
+import { createRootLayerAtom } from "../../../shared/view-layers";
+import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import { isNotNullish } from "../../type-helpers";
 import { type SearchOption } from "../../ui-components";
 import { BUILDING_LAYER } from "../../view-layers";
+import { datasetTypeLayers } from "../constants/datasetTypeLayers";
+import { PlateauDatasetType } from "../constants/plateau";
 // import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 // import { areasAtom } from "../states/address";
 
 export interface DatasetSearchOption extends SearchOption {
   type: "dataset";
-  // dataset: DatasetsQuery["datasets"][number];
+  dataset: DatasetsQuery["datasets"][number];
 }
 
 export interface BuildingSearchOption extends SearchOption /* , earchableFeatureRecord */ {
@@ -29,69 +35,62 @@ export interface AddressSearchOption extends SearchOption {
 }
 
 export interface SearchOptionsParams {
+  inputValue?: string;
   skip?: boolean;
 }
 
-// TODO(ReEarth): Support search options
-// function useDatasetSearchOptions({
-//   skip = false,
-// }: SearchOptionsParams = {}): readonly DatasetSearchOption[] {
-//   const areas = useAtomValue(areasAtom);
-//   const municipalityCodes = useMemo(
-//     () => areas?.filter(area => area.type === "municipality").map(area => area.code) ?? [],
-//     [areas],
-//   );
-//   const query = useDatasetsQuery({
-//     variables:
-//       municipalityCodes.length > 0
-//         ? {
-//             municipalityCodes,
-//             includeTypes: [
-//               // TODO: Update supported dataset types.
-//               PlateauDatasetType.Bridge,
-//               PlateauDatasetType.Building,
-//               PlateauDatasetType.LandUse,
-//               PlateauDatasetType.LandSlideRisk,
-//               PlateauDatasetType.RiverFloodingRisk,
-//               PlateauDatasetType.Road,
-//               PlateauDatasetType.UrbanPlanning,
-//             ],
-//           }
-//         : undefined,
-//     skip: skip || municipalityCodes.length === 0,
-//   });
+// TODO(reearth): Search entire data
+function useDatasetSearchOptions({
+  inputValue,
+  skip = false,
+}: SearchOptionsParams = {}): readonly DatasetSearchOption[] {
+  const areas = useAtomValue(areasAtom);
+  const municipalityCodes = useMemo(
+    () => areas?.filter(area => area.type === "municipality").map(area => area.code) ?? [],
+    [areas],
+  );
+  const query = useDatasets(
+    inputValue
+      ? {
+          searchTokens: inputValue.split(/ |\u3000/),
+        }
+      : municipalityCodes.length > 0
+      ? {
+          areaCodes: municipalityCodes,
+        }
+      : {},
+    { skip: skip || (!inputValue && !municipalityCodes.length) },
+  );
 
-//   const layers = useAtomValue(layersAtom);
-//   const findLayer = useFindLayer();
+  const layers = useAtomValue(rootLayersLayersAtom);
+  const findLayer = useFindLayer();
 
-//   return useMemo(() => {
-//     if (skip) {
-//       return [];
-//     }
-//     return (
-//       query.data?.datasets
-//         .filter(dataset => {
-//           if (dataset.municipality == null) {
-//             return undefined;
-//           }
-//           const layerType = datasetTypeLayers[dataset.type];
-//           return (
-//             layerType == null ||
-//             findLayer(layers, {
-//               type: layerType,
-//               municipalityCode: dataset.municipality.code,
-//               datasetId: dataset.id,
-//             }) == null
-//           );
-//         })
-//         .map(dataset => ({
-//           type: "dataset" as const,
-//           name: dataset.name !== "" ? dataset.name : dataset.typeName,
-//           dataset,
-//         })) ?? []
-//     );
-//   }, [skip, query, layers, findLayer]);
-// }
+  return useMemo(() => {
+    if (skip) {
+      return [];
+    }
+    return (
+      query.data?.datasets
+        .filter(dataset => {
+          const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+          return (
+            !layerType ||
+            findLayer(layers, {
+              id: dataset.id,
+            }) == null
+          );
+        })
+        .map(dataset => ({
+          type: "dataset" as const,
+          name: dataset.name,
+          index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
+            dataset.ward?.name ?? ""
+          }`,
+          dataset,
+        })) ?? []
+    );
+  }, [skip, query, layers, findLayer]);
+}
 
 function useBuildingSearchOption({
   skip = false,
@@ -148,45 +147,55 @@ function useBuildingSearchOption({
 }
 
 export interface SearchOptions {
-  // datasets: readonly DatasetSearchOption[];
+  datasets: readonly DatasetSearchOption[];
   buildings: readonly BuildingSearchOption[];
   addresses: readonly AddressSearchOption[];
   select: (option: SearchOption) => void;
 }
 
 export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
-  // const datasets = useDatasetSearchOptions(options);
+  const datasets = useDatasetSearchOptions(options);
   const buildings = useBuildingSearchOption(options);
 
-  // const addLayer = useSetAtom(addLayerAtom);
+  const addLayer = useSetAtom(addLayerAtom);
   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
   const select = useCallback(
     (option: SearchOption) => {
       switch (option.type) {
         case "dataset": {
-          // const datasetOption = option as DatasetSearchOption;
-          // const type = datasetTypeLayers[datasetOption.dataset.type];
-          // const municipality = datasetOption.dataset.municipality;
-          // if (type == null || municipality == null) {
-          //   return;
-          // }
-          // if (type === BUILDING_LAYER) {
-          //   addLayer(
-          //     createViewLayer({
-          //       type,
-          //       municipalityCode: municipality.code,
-          //     }),
-          //   );
-          // } else {
-          //   addLayer(
-          //     createViewLayer({
-          //       type,
-          //       municipalityCode: municipality.code,
-          //       datasetId: datasetOption.dataset.id,
-          //       datumId: datasetOption.dataset.data[0].id,
-          //     }),
-          //   );
-          // }
+          const datasetOption = option as DatasetSearchOption;
+          const dataset = datasetOption.dataset as Dataset;
+          const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+          const municipalityCode = datasetOption.dataset.wardCode;
+          if (type == null || !municipalityCode) {
+            return;
+          }
+          if (type === BUILDING_LAYER) {
+            addLayer(
+              createRootLayerAtom({
+                datasetId: dataset.id,
+                type,
+                title: dataset.name,
+                // TODO: Support components
+                settings: [],
+                dataList: dataset.items,
+                // municipalityCode: municipalityCode,
+              }),
+            );
+          } else {
+            addLayer(
+              createRootLayerAtom({
+                datasetId: datasetOption.dataset.id,
+                type,
+                title: dataset.name,
+                // TODO: Support components
+                settings: [],
+                dataList: dataset.items,
+                // municipalityCode: municipalityCode,
+                // datumId: datasetOption.dataset.data[0].id,
+              }),
+            );
+          }
           break;
         }
         case "building": {
@@ -207,11 +216,11 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         }
       }
     },
-    [setScreenSpaceSelection],
+    [setScreenSpaceSelection, addLayer],
   );
 
   return {
-    // datasets,
+    datasets,
     buildings,
     addresses: [],
     select,
