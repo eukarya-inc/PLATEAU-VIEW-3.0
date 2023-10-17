@@ -75,5 +75,4 @@ export * from "./theme";
 export * from "./ValueParameterItem";
 export * from "./EditorBar";
 export * from "./EditorPanel";
-export * from "./EditorTreeView";
-export * from "./EditorTreeItem";
+export * from "./EditorTree";

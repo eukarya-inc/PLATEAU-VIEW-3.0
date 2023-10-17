@@ -14,4 +14,4 @@ export type ComponentGroup = {
   components: ComponentBase[];
 };
 
-export type ComponentTemplate = { id: string; groups: ComponentGroup[] };
+export type ComponentTemplate = { id: string; name: string; groups: ComponentGroup[] };

@@ -1,4 +1,5 @@
-import { styled, Paper, PaperProps } from "@mui/material";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import { styled, Paper, PaperProps, Button } from "@mui/material";
 import { forwardRef } from "react";
 
 import { AutoHeight } from ".";
@@ -12,15 +13,43 @@ export const EditorPanel = forwardRef<HTMLDivElement, EditorPanelProps>(({ child
 ));
 
 export type EditorSectionProps = {
-  sidebar: React.ReactNode;
+  sidebarMain: React.ReactNode;
+  sidebarBottom?: React.ReactNode;
   main: React.ReactNode;
+  header?: React.ReactNode;
+  showContentAction?: boolean;
+  onSave?: () => void;
 };
 
-export const EditorSection: React.FC<EditorSectionProps> = ({ sidebar, main }) => {
+export const EditorSection: React.FC<EditorSectionProps> = ({
+  sidebarMain,
+  sidebarBottom,
+  main,
+  header,
+  showContentAction,
+  onSave,
+}) => {
   return (
     <ContentWrapper>
-      <Sidebar>{sidebar}</Sidebar>
-      <Main>{main}</Main>
+      <Sidebar>
+        <SidebarMain>{sidebarMain}</SidebarMain>
+        {sidebarBottom ? <SidebarBottom>{sidebarBottom}</SidebarBottom> : null}
+      </Sidebar>
+      <Main>
+        {header && <SectionHeader>{header}</SectionHeader>}
+        <SectionContent>{main}</SectionContent>
+        {showContentAction && (
+          <SectionAction>
+            <StyledButton
+              startIcon={<SaveOutlinedIcon />}
+              variant="contained"
+              color="primary"
+              onClick={onSave}>
+              Save
+            </StyledButton>
+          </SectionAction>
+        )}
+      </Main>
     </ContentWrapper>
   );
 };
@@ -31,21 +60,76 @@ const StyledPaper = styled(Paper)(({ theme, elevation = 4 }) => ({
   boxShadow: theme.shadows[elevation],
   pointerEvents: "auto",
   margin: "6px 6px 0 0",
+  overflow: "hidden",
 }));
 
 const ContentWrapper = styled("div")({
   width: "577px",
-  maxHeight: "573px",
+  height: "573px",
   display: "flex",
+  alignItems: "stretch",
+  [`*`]: {
+    boxSizing: "border-box",
+  },
 });
 
 const Sidebar = styled("div")({
   width: "199px",
   height: "100%",
+  overflow: "auto",
+  display: "flex",
+  flexDirection: "column",
+  borderRight: "1px solid rgba(0, 0, 0, 0.12)",
 });
 
-const Main = styled("div")({
-  height: "573px",
-  display: "flex",
+const SidebarMain = styled("div")({
+  height: "100%",
   flex: 1,
 });
+
+const SidebarBottom = styled("div")({
+  flexGrow: 0,
+  height: "auto",
+});
+
+const Main = styled("div")(({ theme }) => ({
+  height: "573px",
+  display: "flex",
+  flexDirection: "column",
+  flex: 1,
+  backgroundColor: theme.palette.grey[300],
+}));
+
+const SectionHeader = styled("div")(({ theme }) => ({
+  height: "38px",
+  backgroundColor: theme.palette.background.paper,
+  borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
+  flexShrink: 0,
+}));
+
+const SectionContent = styled("div")(({ theme }) => ({
+  flex: 1,
+  overflow: "auto",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  padding: "8px",
+  fontSize: theme.typography.body2.fontSize,
+}));
+
+const SectionAction = styled("div")(({ theme }) => ({
+  height: "48px",
+  backgroundColor: theme.palette.background.paper,
+  borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+  flexShrink: 0,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(0, 1),
+}));
+
+const StyledButton = styled(Button)(() => ({
+  width: "100%",
+  color: "#fff",
+  height: "32px",
+}));

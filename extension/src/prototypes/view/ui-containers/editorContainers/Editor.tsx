@@ -1,25 +1,12 @@
-import { useAtomValue } from "jotai";
 import { type FC, useState, useMemo, useCallback } from "react";
 
-import { useDatasetsAPI } from "../../../shared/api";
-import { EditorBar, EditorPanel } from "../../ui-components";
-import { LAYER_SELECTION, selectionGroupsAtom } from "../states/selection";
+import { EditorBar, EditorPanel } from "../../../ui-components";
 
 import { EditorDatasetSection } from "./EditorDatasetSection";
+import { EditorFieldComponentsTemplateSection } from "./EditorFieldComponentsTemplateSection";
+import { EditorInspectorEmphasisPropertyTemplateSection } from "./EditorInspectorEmphasisPropertyTemplateSection";
 
 export const Editor: FC = () => {
-  const { datasetsAtom } = useDatasetsAPI();
-  const datasets = useAtomValue(datasetsAtom);
-
-  const selectionGroups = useAtomValue(selectionGroupsAtom);
-  const selectedSingleLayer = useMemo(
-    () =>
-      selectionGroups.length === 1 && selectionGroups[0].type === LAYER_SELECTION
-        ? selectionGroups[0].values[0]
-        : null,
-    [selectionGroups],
-  );
-
   const [editorType, setEditorType] = useState("dataset");
 
   const editorTypes = useMemo(
@@ -53,11 +40,11 @@ export const Editor: FC = () => {
       />
       <EditorPanel>
         {editorType === "dataset" ? (
-          <EditorDatasetSection layer={selectedSingleLayer} datasets={datasets} />
+          <EditorDatasetSection />
         ) : editorType === "fieldComponentsTemplate" ? (
-          <>{editorType}</>
+          <EditorFieldComponentsTemplateSection />
         ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
-          <>{editorType}</>
+          <EditorInspectorEmphasisPropertyTemplateSection />
         ) : null}
       </EditorPanel>
     </>

@@ -2,7 +2,7 @@ import { PrimitiveAtom, WritableAtom, atom } from "jotai";
 import invariant from "tiny-invariant";
 
 import { LayerModel } from "../../prototypes/layers";
-import { ComponentGroup, Data, FeatureInspectorConfig, Setting } from "../api/types";
+import { ComponentGroup, Data, FeatureInspectorSettings, Setting } from "../api/types";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
@@ -20,7 +20,7 @@ export type RootLayerParams = {
 };
 
 export type RootLayer = {
-  featureInspector: FeatureInspectorConfig | undefined; // TODO: Use API definition
+  featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
   camera: CameraPosition | undefined;
   layer: PrimitiveAtom<LayerModel>;
 };
@@ -117,7 +117,7 @@ const createRootLayer = (
   const data = findData(dataList, currentDataId);
   return {
     // TODO: get settings from featureInspectorTemplate
-    featureInspector: setting.featureInspector?.config,
+    featureInspector: setting.featureInspector,
     camera: setting.general?.camera,
     layer: atom(createViewLayerWithComponentGroup(datasetId, title, data, componentGroup, shareId)),
   };

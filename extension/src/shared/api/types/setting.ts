@@ -1,7 +1,7 @@
 import { CameraPosition } from "../../reearth/types";
 
 import { ComponentGroup } from "./component";
-import { FeatureInspectorConfig } from "./featureInspector";
+import { EmphasisProperty } from "./emphasis";
 
 export type Setting = {
   id: string;
@@ -14,8 +14,17 @@ export type Setting = {
     templateId?: string;
     groups?: ComponentGroup[];
   };
-  featureInspector?: {
-    templateId?: string;
-    config?: FeatureInspectorConfig;
+  featureInspector?: FeatureInspectorSettings;
+};
+
+export type FeatureInspectorSettings = {
+  basic: {
+    titleType: "datasetType" | "custom";
+    customTitle: string;
+    displayType: "propertyList" | "";
+  };
+  emphasisProperty: {
+    templateId: string;
+    properties: EmphasisProperty[];
   };
 };

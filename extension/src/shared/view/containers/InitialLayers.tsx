@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { useEffect, type FC, useMemo } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
-import { useDatasetsAPI, useSettingsAPI } from "../../api";
+import { useDatasetsAPI, useSettingsAPI, useTemplateAPI } from "../../api";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 const INITIAL_DATASET_ID_LIST = [
@@ -26,6 +26,7 @@ export const InitialLayers: FC = () => {
 
   const { datasetsAtom, handleDatasetsFetch } = useDatasetsAPI();
   const { settingsAtom, handleSettingsFetch } = useSettingsAPI();
+  const { handleTemplateFetch } = useTemplateAPI();
 
   const datasets = useAtomValue(datasetsAtom);
   const settings = useAtomValue(settingsAtom);
@@ -33,7 +34,8 @@ export const InitialLayers: FC = () => {
   useEffect(() => {
     handleDatasetsFetch();
     handleSettingsFetch();
-  }, [handleDatasetsFetch, handleSettingsFetch]);
+    handleTemplateFetch();
+  }, [handleDatasetsFetch, handleSettingsFetch, handleTemplateFetch]);
 
   const initialDatasets = useMemo(
     () => datasets.filter(d => INITIAL_DATASET_ID_LIST.find(d2 => d.id === d2.datasetId)),

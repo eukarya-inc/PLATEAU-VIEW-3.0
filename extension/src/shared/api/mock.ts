@@ -1,6 +1,6 @@
 import { BUILDING_LAYER, SHELTER_LAYER } from "../../prototypes/view-layers";
 
-import { Setting, Dataset } from "./types";
+import { Setting, Dataset, ComponentTemplate, EmphasisPropertyTemplate } from "./types";
 import { OPACITY_FIELD } from "./types/fields/general";
 import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "./types/fields/point";
 
@@ -86,7 +86,7 @@ export const mockSettings: Setting[] = [
           components: [
             {
               type: OPACITY_FIELD,
-                value: 1,
+              value: 1,
               storeable: true,
             },
           ],
@@ -110,7 +110,7 @@ export const mockSettings: Setting[] = [
           components: [
             {
               type: OPACITY_FIELD,
-                value: 1,
+              value: 1,
               storeable: true,
             },
           ],
@@ -135,7 +135,7 @@ export const mockSettings: Setting[] = [
           components: [
             {
               type: OPACITY_FIELD,
-                value: 1,
+              value: 1,
               storeable: true,
             },
           ],
@@ -159,7 +159,7 @@ export const mockSettings: Setting[] = [
           components: [
             {
               type: OPACITY_FIELD,
-                value: 1,
+              value: 1,
               storeable: true,
             },
           ],
@@ -174,26 +174,82 @@ export const mockSettings: Setting[] = [
     id: "5",
     datasetId: "13101_shelter",
     dataId: "1",
+    general: {
+      camera: undefined,
+    },
+    fieldComponents: {
+      groups: [
+        {
+          id: "1",
+          default: true,
+          components: [
+            {
+              type: POINT_COLOR_FIELD,
+              value: `"#f0ff00"`,
+              storeable: false,
+            },
+            {
+              type: POINT_SIZE_FIELD,
+              value: 100,
+              storeable: false,
+            },
+          ],
+        },
+      ],
+    },
+    featureInspector: undefined,
+  },
+];
+
+export const mockFieldComponentTemplates: ComponentTemplate[] = [
+  {
+    id: "1",
+    name: "都市計画決定情報モデル/用途地域モデル/Default",
     groups: [
       {
         id: "1",
         default: true,
         components: [
           {
-            type: POINT_COLOR_FIELD,
-            value: `"#f0ff00"`,
-            storeable: false,
-          },
-          {
-            type: POINT_SIZE_FIELD,
-            value: 100,
-            storeable: false,
+            type: OPACITY_FIELD,
+            value: 1,
+            storeable: true,
           },
         ],
       },
     ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
+  },
+  {
+    id: "2",
+    name: "都市計画決定情報モデル/用途地域モデル/LOD1",
+    groups: [
+      {
+        id: "1",
+        default: true,
+        components: [
+          {
+            type: OPACITY_FIELD,
+            value: 1,
+            storeable: true,
+          },
+        ],
+      },
+    ],
+  },
+];
+
+export const mockInspectorEmphasisPropertyTemplates: EmphasisPropertyTemplate[] = [
+  {
+    id: "1",
+    name: "ランドマーク情報/Default",
+    properties: [
+      {
+        id: "1",
+        propertyName: "name",
+        displayName: "名称",
+        condition: "",
+        visible: true,
+      },
+    ],
   },
 ];
