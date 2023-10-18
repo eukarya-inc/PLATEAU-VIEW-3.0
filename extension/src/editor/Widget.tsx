@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import { Editor } from "../prototypes/view/ui-containers/editorContainers/Editor";
+import { Editor } from "../prototypes/view/ui-containers/editorContainers";
 import { WidgetContext } from "../shared/context/WidgetContext";
 
 export const Widget = memo(function WidgetPresenter() {

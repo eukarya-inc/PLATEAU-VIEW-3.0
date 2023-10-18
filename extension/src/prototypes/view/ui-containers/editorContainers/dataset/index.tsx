@@ -33,6 +33,8 @@ export type DraftSetting = Omit<Setting, "id"> & {
   id?: string;
 };
 
+export type UpdateSetting = React.Dispatch<React.SetStateAction<DraftSetting | undefined>>;
+
 export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
   const [ready, setReady] = useState(false);
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
@@ -136,7 +138,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     ] as EditorTreeItem[];
   }, [dataset]);
 
-  const [setting, updateSetting] = useState<DraftSetting>();
+  const [draftSetting, updateDraftSetting] = useState<DraftSetting>();
 
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
@@ -153,7 +155,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
 
   useEffect(() => {
     if (!dataset?.id || !dataId) return;
-    updateSetting(
+    updateDraftSetting(
       settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
         datasetId: dataset.id,
         dataId,
@@ -182,12 +184,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
   );
 
   const handleSave = useCallback(() => {
-    console.log("save setting", setting);
-  }, [setting]);
-
-  useEffect(() => {
-    console.log("setting changed", setting);
-  }, [setting]);
+    console.log("save setting", draftSetting);
+  }, [draftSetting]);
 
   const showSaveButton = useMemo(
     () => !!dataset?.id && !!dataId && contentType !== "folder",
@@ -213,9 +211,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
           ) : contentType === "general" ? (
             <GeneralPage
               dataset={dataset}
-              setting={setting}
               dataId={dataId}
-              updateSetting={updateSetting}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
             />
           ) : contentType === "fieldComponents" ? (
             <>fieldComponents</>

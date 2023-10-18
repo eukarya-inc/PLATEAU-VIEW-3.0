@@ -2,11 +2,10 @@ import { cloneDeep } from "lodash-es";
 import { useMemo } from "react";
 import ReactJson from "react-json-view";
 
-import { Dataset } from "../../../../shared/api/types";
+import { Dataset } from "../../../../../../shared/api/types";
+import { EditorBlock, EditorBlockProps } from "../../../../../ui-components";
 
-import { BasicBlock, BasicBlockProps } from "./BasicBlock";
-
-type DataBlockProps = BasicBlockProps & {
+type DataBlockProps = EditorBlockProps & {
   dataset?: Dataset;
   dataId?: string;
 };
@@ -17,7 +16,7 @@ export const DataBlock: React.FC<DataBlockProps> = ({ dataset, dataId, ...props 
     [dataset, dataId],
   );
   return (
-    <BasicBlock title="Data" expandable {...props}>
+    <EditorBlock title="Data" expandable {...props}>
       {data && (
         <ReactJson
           src={data}
@@ -29,6 +28,6 @@ export const DataBlock: React.FC<DataBlockProps> = ({ dataset, dataId, ...props 
           style={{ wordBreak: "break-all", lineHeight: 1.2 }}
         />
       )}
-    </BasicBlock>
+    </EditorBlock>
   );
 };

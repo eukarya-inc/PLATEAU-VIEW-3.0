@@ -1,5 +1,5 @@
 import { Dataset } from "../../../../../shared/api/types";
-import { StatusBlock } from "../../editorBlocks/StatusBlock";
+import { StatusBlock } from "./blocks/StatusBlock";
 
 type StatusPageProps = {
   dataset?: Dataset;

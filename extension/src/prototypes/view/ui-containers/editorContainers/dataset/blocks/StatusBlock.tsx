@@ -1,20 +1,18 @@
 import { styled } from "@mui/material";
 import { green, red } from "@mui/material/colors";
 
-import { Dataset } from "../../../../shared/api/types";
-import { BlockContentWrapper } from "../../../ui-components";
-import { EditorCommonField } from "../../../ui-components/editor/EditorCommonField";
-import { EditorTextField } from "../../../ui-components/editor/EditorTextField";
+import { Dataset } from "../../../../../../shared/api/types";
+import { BlockContentWrapper, EditorBlock, EditorBlockProps } from "../../../../../ui-components";
+import { EditorCommonField } from "../../../../../ui-components/editor/EditorCommonField";
+import { EditorTextField } from "../../../../../ui-components/editor/EditorTextField";
 
-import { BasicBlock, BasicBlockProps } from "./BasicBlock";
-
-type StatusBlockProps = BasicBlockProps & {
+type StatusBlockProps = EditorBlockProps & {
   dataset?: Dataset;
 };
 
 export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) => {
   return (
-    <BasicBlock title="Status" expandable {...props}>
+    <EditorBlock title="Status" expandable {...props}>
       <BlockContentWrapper>
         <EditorCommonField label="Status">
           <PublishStatus published={dataset?.published}>
@@ -25,7 +23,7 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) =
         <EditorTextField label="Updated At" value={""} disabled />
         <EditorTextField label="CMS URL" value={""} multiline disabled rows={4} />
       </BlockContentWrapper>
-    </BasicBlock>
+    </EditorBlock>
   );
 };
 
