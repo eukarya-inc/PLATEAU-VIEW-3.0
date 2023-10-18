@@ -1,8 +1,9 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
+import { ApolloClient, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
 
-import { GEO_API } from "../constants";
-
-export const client = new ApolloClient({
-  uri: `${GEO_API}/graphql`,
-  cache: new InMemoryCache(),
-});
+export let client: ApolloClient<NormalizedCacheObject> | undefined;
+export const createClient = (url: string) => {
+  client = new ApolloClient({
+    uri: `${url}/graphql`,
+    cache: new InMemoryCache(),
+  });
+};
