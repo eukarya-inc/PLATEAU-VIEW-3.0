@@ -1,10 +1,11 @@
-import { Data } from "./data";
+import { DatasetItem } from "../../graphql/types/plateau";
 
 export type Dataset = {
   id: string;
+
   municipalityCode: string;
   municipalityName: string;
-  data: Data[];
+  items: DatasetItem[];
   version: string;
   textured?: boolean;
   lod?: number;

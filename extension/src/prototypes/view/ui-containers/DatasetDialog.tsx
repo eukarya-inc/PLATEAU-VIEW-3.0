@@ -1,0 +1,124 @@
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  Divider,
+  listItemSecondaryActionClasses,
+  styled,
+  type DialogProps,
+} from "@mui/material";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useMemo, type FC } from "react";
+
+import { useDatasetById } from "../../../shared/graphql";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { createRootLayerAtom } from "../../../shared/view-layers";
+import { removeLayerAtom, useAddLayer } from "../../layers";
+import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
+import { BUILDING_LAYER } from "../../view-layers";
+import { datasetTypeIcons } from "../constants/datasetTypeIcons";
+import { datasetTypeLayers } from "../constants/datasetTypeLayers";
+import { PlateauDatasetType } from "../constants/plateau";
+
+const StyledEntityTitle = styled(EntityTitle)(({ theme }) => ({
+  minHeight: theme.spacing(6),
+  [`& .${listItemSecondaryActionClasses.root}`]: {
+    right: 4,
+  },
+}));
+
+const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  whiteSpace: "pre-line",
+}));
+
+const StyledButton = styled(Button, {
+  shouldForwardProp: prop => prop !== "checked",
+})<{
+  checked?: boolean;
+}>(({ theme, checked = false }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  ...(checked && {
+    color: theme.palette.primary.main,
+  }),
+}));
+
+export interface DatasetDialogProps extends Omit<DialogProps, "children"> {
+  dataset: DatasetFragmentFragment;
+}
+
+export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, ...props }) => {
+  const { data } = useDatasetById(dataset.id);
+
+  // TODO: Separate into hook
+  const layer = useAtomValue(
+    useMemo(
+      () =>
+        atom(get =>
+          get(rootLayersLayersAtom).find(
+            layer => layer.type === BUILDING_LAYER && layer.id === dataset.id,
+          ),
+        ),
+      [dataset],
+    ),
+  );
+
+  const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const addLayer = useAddLayer();
+  const removeLayer = useSetAtom(removeLayerAtom);
+  const handleClick = useCallback(() => {
+    if (layerType == null || !data?.node) {
+      return;
+    }
+    if (layer == null) {
+      addLayer(
+        createRootLayerAtom({
+          type: layerType,
+          datasetId: dataset.id,
+          title: dataset.name,
+          // TODO: Support components
+          settings: [],
+          dataList: dataset.items as DatasetItem[],
+          // municipalityCode: municipalityCode,
+          // datumId: datasetOption.dataset.data[0].id,
+        }),
+      );
+    } else {
+      removeLayer(layer.id);
+    }
+  }, [dataset, data, layer, layerType, addLayer, removeLayer]);
+
+  return (
+    <Dialog {...props}>
+      <StyledEntityTitle
+        iconComponent={datasetTypeIcons[dataset.type.code as PlateauDatasetType]}
+        title={{
+          primary: dataset.type.name,
+          secondary: dataset?.city?.name,
+        }}
+        secondaryAction={
+          <StyledButton
+            variant="contained"
+            startIcon={
+              layer == null ? (
+                <PrefixedAddSmallIcon fontSize="small" />
+              ) : (
+                <PrefixedCheckSmallIcon fontSize="small" />
+              )
+            }
+            checked={layer != null}
+            disabled={layerType == null}
+            onClick={handleClick}>
+            {layer == null ? "追加" : "追加済み"}
+          </StyledButton>
+        }
+      />
+      <Divider />
+      <DialogContent>
+        <StyledDialogContentText>{data?.node?.description}</StyledDialogContentText>
+      </DialogContent>
+    </Dialog>
+  );
+};

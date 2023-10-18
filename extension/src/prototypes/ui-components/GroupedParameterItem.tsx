@@ -1,6 +1,6 @@
 import { Divider, Popover, styled, useTheme } from "@mui/material";
 import { anchorRef, bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { useId, type FC, type ReactNode } from "react";
+import { useId, type FC, type ReactNode, MouseEventHandler } from "react";
 
 import { SettingsIcon } from "./icons";
 import { InspectorHeader } from "./InspectorHeader";
@@ -16,6 +16,7 @@ export interface GroupedParameterItemProps
   extends Pick<ParameterItemProps, "label" | "labelFontSize" | "description"> {
   content?: ReactNode;
   children?: ReactNode;
+  onClick?: MouseEventHandler<HTMLDivElement>;
 }
 
 export const GroupedParameterItem: FC<GroupedParameterItemProps> = ({
@@ -23,6 +24,7 @@ export const GroupedParameterItem: FC<GroupedParameterItemProps> = ({
   labelFontSize,
   description,
   content,
+  onClick,
   children,
 }) => {
   const id = useId();
@@ -30,6 +32,12 @@ export const GroupedParameterItem: FC<GroupedParameterItemProps> = ({
     variant: "popover",
     popupId: id,
   });
+  const { onClick: onClickForPopup, ...popupTriggers } = bindTrigger(popupState);
+
+  const handleClick: MouseEventHandler<HTMLDivElement> = e => {
+    onClick?.(e);
+    onClickForPopup(e);
+  };
 
   const theme = useTheme();
   return (
@@ -40,7 +48,8 @@ export const GroupedParameterItem: FC<GroupedParameterItemProps> = ({
         labelFontSize={labelFontSize}
         description={description}
         icon={<SettingsIcon />}
-        {...bindTrigger(popupState)}
+        onClick={handleClick}
+        {...popupTriggers}
       />
       <Content>{content}</Content>
       <Popover
