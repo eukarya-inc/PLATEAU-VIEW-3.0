@@ -1,5 +1,7 @@
 import { CameraBlock } from "./blocks/CameraBlock";
 import { DataBlock } from "./blocks/DataBlock";
+import { DataFetchingBlock } from "./blocks/DataFetchingBlock";
+import { EventBlock } from "./blocks/EventBlock";
 
 import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
@@ -20,6 +22,8 @@ export const GeneralPage: React.FC<GeneralPageProps> = ({
     <>
       <DataBlock dataset={dataset} dataId={dataId} expanded={false} />
       <CameraBlock setting={setting} updateSetting={updateSetting} expanded={false} />
+      <DataFetchingBlock setting={setting} updateSetting={updateSetting} expanded={false} />
+      <EventBlock setting={setting} updateSetting={updateSetting} expanded={false} />
     </>
   );
 };

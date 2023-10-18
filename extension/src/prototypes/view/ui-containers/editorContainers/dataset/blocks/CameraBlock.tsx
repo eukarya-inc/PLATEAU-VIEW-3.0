@@ -24,7 +24,7 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
 
   useEffect(() => {
     updateSetting?.(s => {
-      if (!s) return;
+      if (!s) return s;
       const isUndefinedCamera =
         latitude === "" &&
         longitude === "" &&
@@ -94,16 +94,19 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
           <LineWrapper>
             <EditorTextInput
               placeholder="Latitude"
+              type="number"
               value={latitude}
               onChange={e => setLatitude(e.target.value)}
             />
             <EditorTextInput
               placeholder="Longitude"
+              type="number"
               value={longitude}
               onChange={e => setLongitude(e.target.value)}
             />
             <EditorTextInput
               placeholder="Altitude"
+              type="number"
               value={altitude}
               onChange={e => setAltitude(e.target.value)}
             />
@@ -113,16 +116,19 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
           <LineWrapper>
             <EditorTextInput
               placeholder="Heading"
+              type="number"
               value={heading}
               onChange={e => setHeading(e.target.value)}
             />
             <EditorTextInput
               placeholder="Pitch"
+              type="number"
               value={pitch}
               onChange={e => setPitch(e.target.value)}
             />
             <EditorTextInput
               placeholder="Roll"
+              type="number"
               value={roll}
               onChange={e => setRoll(e.target.value)}
             />

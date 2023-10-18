@@ -77,3 +77,7 @@ export * from "./editor/EditorBar";
 export * from "./editor/EditorPanel";
 export * from "./editor/EditorTree";
 export * from "./editor/EditorBlock";
+export * from "./editor/EditorCommonField";
+export * from "./editor/EditorSwitch";
+export * from "./editor/EditorTextField";
+export * from "./editor/EditorSelect";

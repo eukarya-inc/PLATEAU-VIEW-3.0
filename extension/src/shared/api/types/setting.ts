@@ -9,6 +9,16 @@ export type Setting = {
   dataId: string;
   general?: {
     camera?: CameraPosition | undefined;
+    dataFetching?: {
+      enabled?: boolean;
+      timeInterval?: number;
+    };
+    featureClickEvent?: {
+      eventType: "openFeatureInspector" | "jumpToUrl";
+      urlType?: "manual" | "featureProperty";
+      manualUrl?: string;
+      featurePropertyName?: string;
+    };
   };
   fieldComponents?: {
     templateId?: string;
