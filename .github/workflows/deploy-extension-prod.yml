@@ -6,7 +6,7 @@ env:
   GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau.iam.gserviceaccount.com
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/232353765693/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
   GCP_REGION: asia-northeast1
-  PLATEAU_GEO_API: https://geo.plateau.reearth.io
+  PLATEAU_ORIGIN: https://app.reearth.plateau.reearth.io/extension
 jobs:
   deploy_extension:
     runs-on: ubuntu-latest

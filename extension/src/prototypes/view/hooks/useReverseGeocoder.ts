@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
-import { useAreas } from "../../../shared/graphql/hooks";
+import { useCameraAreas } from "../../../shared/graphql/hooks/geo";
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import type { Address } from "../../../shared/states/address";
 
@@ -14,7 +14,7 @@ export function useReverseGeocoder(): ReverseGeocoderResult | undefined {
 
   const viewSize = useRef<number>();
 
-  const [getAreas, { data }] = useAreas({
+  const [getAreas, { data }] = useCameraAreas({
     longitude: croods.longitude ?? 0,
     latitude: croods.latitude ?? 0,
     includeRadii: true,

@@ -4,6 +4,14 @@ import Search from "./search";
 import StreetView from "./streetView";
 import Toolbar from "./toolbar";
 
+const loadCSS = () => {
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `${import.meta.env.PLATEAU_ORIGIN}/style.css`;
+  document.head.appendChild(link);
+};
+loadCSS();
+
 const pluginId = `plateau-view-3~${process.env.VERSION}`;
 
 const localPlugin = {

@@ -10,7 +10,7 @@ import {
   LazyQueryResultTuple,
 } from "@apollo/client";
 
-import { client } from "../client";
+import { plateauClient } from "../../clients";
 
 export const useQuery = <TData = any, TVariables extends OperationVariables = OperationVariables>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
@@ -18,11 +18,11 @@ export const useQuery = <TData = any, TVariables extends OperationVariables = Op
 ): QueryResult<TData, TVariables> => {
   return useApolloQuery(query, {
     ...options,
-    client,
+    client: plateauClient,
   });
 };
 
-export const useLasyQuery = <
+export const useLazyQuery = <
   TData = any,
   TVariables extends OperationVariables = OperationVariables,
 >(
@@ -31,6 +31,6 @@ export const useLasyQuery = <
 ): LazyQueryResultTuple<TData, TVariables> => {
   return useApolloLazyQuery(query, {
     ...options,
-    client,
+    client: plateauClient,
   });
 };

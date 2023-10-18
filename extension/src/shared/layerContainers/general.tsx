@@ -80,7 +80,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
       {...props}
       onLoad={handleLoad}
       pointColor={pointColor}
-      show={!hidden}
+      visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />
   );

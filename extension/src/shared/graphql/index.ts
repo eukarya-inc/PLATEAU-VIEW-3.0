@@ -1,2 +1,4 @@
-export * from "./hooks";
-export * from "./client";
+export * from "./hooks/geo";
+export * from "./hooks/plateau";
+export * from "./clients/geo";
+export * from "./clients/plateau";

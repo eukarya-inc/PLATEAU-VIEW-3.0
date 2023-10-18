@@ -13,7 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query GetAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n": types.GetAreasDocument,
+    "\n  query CameraAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n": types.CameraAreasDocument,
     "\n  query Health($id: ID!) {\n    health(id: $id) {\n      id\n      date\n    }\n  }\n": types.HealthDocument,
 };
 
@@ -34,7 +34,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query GetAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n"): (typeof documents)["\n  query GetAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n"];
+export function gql(source: "\n  query CameraAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n"): (typeof documents)["\n  query CameraAreas($longitude: Float!, $latitude: Float!, $includeRadii: Boolean) {\n    areas(longitude: $longitude, latitude: $latitude, includeRadii: $includeRadii) {\n      areas {\n        code\n        name\n        radius\n        type\n      },\n      address\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

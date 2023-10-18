@@ -12,6 +12,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
 import { platformAtom } from "../../shared-states";
 import {
@@ -26,11 +27,19 @@ import {
 } from "../../ui-components";
 import { useSearchOptions } from "../hooks/useSearchOptions";
 
+import { DatasetAreaList } from "./DatasetAreaList";
+import { DatasetTypeList } from "./DatasetTypeList";
 import { SearchList } from "./SearchList";
 
-const StyledScrollable = styled(Scrollable)(({ theme }) => ({
-  maxHeight: `calc(100% - ${theme.spacing(6)} - 1px)`,
-}));
+const StyledScrollable = styled(Scrollable)(({ theme }) => {
+  const canvas = getCesiumCanvas();
+  const searchHeaderHeight = "70px";
+  return {
+    maxHeight: `calc(${canvas?.clientHeight}px - ${theme.spacing(
+      6,
+    )} - 1px - ${searchHeaderHeight})`,
+  };
+});
 
 const StyledTabs = styled(Tabs)(({ theme }) => ({
   position: "sticky",
@@ -54,13 +63,24 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
     setFocused(true);
   }, []);
 
+  const [inputValue, setInputValue] = useState("");
+  const handleInputChange: NonNullable<SearchAutocompleteProps["onInputChange"]> = useCallback(
+    (_event, value, _reason) => {
+      setInputValue(value);
+    },
+    [],
+  );
+
+  const deferredInputValue = useDeferredValue(inputValue);
+
   // TODO(ReEarth): Support search options
   const searchOptions = useSearchOptions({
+    inputValue: deferredInputValue,
     skip: !focused,
   });
   const options = useMemo(
-    () => [/* ...searchOptions.datasets, */ ...searchOptions.buildings, ...searchOptions.addresses],
-    [/* searchOptions.datasets, */ searchOptions.buildings, searchOptions.addresses],
+    () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.addresses],
+    [searchOptions.datasets, searchOptions.buildings, searchOptions.addresses],
   );
 
   const selectOption = searchOptions.select;
@@ -144,6 +164,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
           maxHeight={maxMainHeight}
           onFocus={handleFocus}
           onChange={handleChange}
+          onInputChange={handleInputChange}
           endAdornment={
             <Shortcut variant="outlined" platform={platform} shortcutKey="K" commandKey />
           }>
@@ -159,17 +180,15 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
               </StyledTabs>
               {tab === 0 && (
                 <SearchList
-                  // datasets={searchOptions.datasets}
+                  datasets={searchOptions.datasets}
                   buildings={searchOptions.buildings}
                   addresses={searchOptions.addresses}
                   onOptionSelect={handleOptionSelect}
-                  datasets={[]}
                   onFiltersChange={handleFiltersChange}
                 />
               )}
-              {/* TODO(ReEarth): Support dataset selection */}
-              {/* {tab === 1 && <DatasetAreaList />} */}
-              {/* {tab === 2 && <DatasetTypeList />} */}
+              {tab === 1 && <DatasetAreaList />}
+              {tab === 2 && <DatasetTypeList />}
             </StyledScrollable>
           )}
         </SearchAutocomplete>

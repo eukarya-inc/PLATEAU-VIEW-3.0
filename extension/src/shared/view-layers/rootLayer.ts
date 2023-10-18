@@ -1,8 +1,10 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
 import invariant from "tiny-invariant";
 
-import { LayerModel } from "../../prototypes/layers";
-import { ComponentGroup, Data, FeatureInspectorSettings, Setting } from "../api/types";
+import { LayerModel, LayerType } from "../../prototypes/layers";
+import { ComponentGroup, FeatureInspectorSettings, Setting } from "../api/types";
+import { DatasetItem } from "../graphql/types/plateau";
+import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
@@ -12,9 +14,10 @@ import { createViewLayer } from "./createViewLayer";
 
 export type RootLayerParams = {
   datasetId: string;
+  type: LayerType;
   title: string;
   settings: Setting[];
-  dataList: Data[];
+  dataList: DatasetItem[];
   currentDataId?: string;
   shareId?: string;
 };
@@ -59,7 +62,7 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) =>
   (currentDataId ? settings.find(s => s.dataId === currentDataId) : settings[0]) ??
   getDefaultSetting();
 
-const findData = (dataList: Data[], currentDataId: string | undefined) =>
+const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
   currentDataId ? dataList.find(d => d.id === currentDataId) : dataList[0];
 
 // TODO: Set default settings
@@ -80,12 +83,12 @@ const convertRootLayerParams = (params: RootLayerParams) => {
 
 const createViewLayerWithComponentGroup = (
   datasetId: string,
+  type: LayerType,
   title: string,
-  data: Data | undefined,
+  data: DatasetItem | undefined,
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
 ): LayerModel => {
-  const type = data?.type;
   invariant(type);
   return {
     ...createViewLayer({
@@ -97,7 +100,7 @@ const createViewLayerWithComponentGroup = (
     }),
     componentAtoms: makeComponentAtoms(datasetId, componentGroup?.components ?? [], shareId),
     id: datasetId,
-    format: data?.format,
+    format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
   };
 };
@@ -105,8 +108,9 @@ const createViewLayerWithComponentGroup = (
 // TODO: Get layer from specified dataset
 const createRootLayer = (
   datasetId: string,
+  type: LayerType,
   title: string,
-  dataList: Data[],
+  dataList: DatasetItem[],
   settings: Setting[],
   currentDataId: string | undefined,
   currentGroupId: string | undefined,
@@ -119,7 +123,9 @@ const createRootLayer = (
     // TODO: get settings from featureInspectorTemplate
     featureInspector: setting.featureInspector,
     camera: setting.general?.camera,
-    layer: atom(createViewLayerWithComponentGroup(datasetId, title, data, componentGroup, shareId)),
+    layer: atom(
+      createViewLayerWithComponentGroup(datasetId, type, title, data, componentGroup, shareId),
+    ),
   };
 };
 
@@ -128,6 +134,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer(
       params.datasetId,
+      params.type,
       params.title,
       params.dataList,
       settings,
@@ -150,6 +157,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
         rootLayerAtom,
         createRootLayer(
           params.datasetId,
+          params.type,
           params.title,
           params.dataList,
           settings,
@@ -174,6 +182,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
         rootLayer.layer,
         createViewLayerWithComponentGroup(
           params.datasetId,
+          params.type,
           params.title,
           data,
           group,
