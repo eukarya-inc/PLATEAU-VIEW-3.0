@@ -25,7 +25,7 @@ export interface BuildingLayerModelParams extends LayerModelParams, PlateauTiles
   title: string;
   version?: string;
   lod?: number;
-  textured?: boolean;
+  textured: boolean;
 }
 
 export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
@@ -33,8 +33,8 @@ export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState
   title: string;
   versionAtom: PrimitiveAtom<string | null>;
   lodAtom: PrimitiveAtom<number | null>;
-  texturedAtom: PrimitiveAtom<boolean | null>;
   showWireframeAtom: PrimitiveAtom<boolean>;
+  textured: boolean;
 }
 
 export function createBuildingLayer(
@@ -44,11 +44,11 @@ export function createBuildingLayer(
     ...createViewLayerModel(params),
     ...createPlateauTilesetLayerState(params),
     type: BUILDING_LAYER,
+    textured: params.textured,
     municipalityCode: params.municipalityCode,
     title: params.title,
     versionAtom: atom(params.version ?? null),
     lodAtom: atom(params.lod ?? null),
-    texturedAtom: atom(params.textured ?? null),
     showWireframeAtom: atom(false),
   };
 }
@@ -57,12 +57,12 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   format,
   url,
   title,
+  textured,
   titleAtom,
   hiddenAtom,
   layerIdAtom,
   versionAtom,
   lodAtom,
-  texturedAtom,
   featureIndexAtom,
   selections,
   // hiddenFeaturesAtom,
@@ -78,7 +78,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
 
   const [_version, _setVersion] = useAtom(versionAtom);
   const [_lod, _setLod] = useAtom(lodAtom);
-  const [_textured, _setTextured] = useAtom(texturedAtom);
 
   const setLayerId = useSetAtom(layerIdAtom);
   const handleLoad = useCallback(
@@ -118,6 +117,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
         hidden={hidden}
+        textured={textured}
         // component={PlateauBuildingTileset}
         featureIndexAtom={featureIndexAtom}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}

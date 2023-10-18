@@ -29,7 +29,7 @@ export function createPlateauTilesetLayerState(
   const colorPropertyAtom = makeComponentAtomWrapper(
     atom<string | null>(null),
     { ...params, componentType: "colorProperty" },
-    true,
+    false,
   );
 
   const originalColorMapAtom = atom<ColorMap>(colorMapPlateau);

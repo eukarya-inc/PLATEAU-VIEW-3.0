@@ -28,6 +28,7 @@ export type TilesetProps = {
   show?: string | boolean;
   visible?: boolean;
   selectedFeatureColor?: string;
+  textured?: boolean;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({
@@ -38,11 +39,12 @@ export const TilesetLayer: FC<TilesetProps> = ({
   show,
   visible,
   selectedFeatureColor,
+  textured,
 }) => {
   const layerIdRef = useRef<string>();
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: false,
+      pbr: textured,
       ...(color
         ? {
             color: {
@@ -59,7 +61,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor,
     }),
-    [color, enableShadow, show, selectedFeatureColor],
+    [color, enableShadow, show, selectedFeatureColor, textured],
   );
 
   useEffect(() => {
@@ -75,12 +77,6 @@ export const TilesetLayer: FC<TilesetProps> = ({
 
     layerIdRef.current = layerId;
 
-    setTimeout(() => {
-      if (layerId) {
-        onLoad?.(layerId);
-      }
-    }, 0);
-
     return () => {
       if (!layerId) return;
       window.reearth?.layers?.delete?.(layerId);
@@ -92,10 +88,25 @@ export const TilesetLayer: FC<TilesetProps> = ({
     if (!layerId) return;
 
     window.reearth?.layers?.override?.(layerId, {
+      data: {
+        type: "3dtiles",
+        idProperty: "gml_id",
+        url,
+      },
       visible,
       ["3dtiles"]: appearance,
     });
-  }, [appearance, visible]);
+  }, [appearance, visible, url]);
+
+  useEffect(() => {
+    const layerId = layerIdRef.current;
+    if (!layerId) return;
+    setTimeout(() => {
+      if (layerId) {
+        onLoad?.(layerId);
+      }
+    }, 0);
+  }, [onLoad, url]);
 
   return null;
 };

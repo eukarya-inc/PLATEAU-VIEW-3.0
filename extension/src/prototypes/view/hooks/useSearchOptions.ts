@@ -179,7 +179,8 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 // TODO: Support components
                 settings: [],
                 dataList: dataset.items,
-                // municipalityCode: municipalityCode,
+                areaCode: municipalityCode,
+                currentDataId: datasetOption.dataset.items[0].id,
               }),
             );
           } else {
@@ -191,8 +192,8 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 // TODO: Support components
                 settings: [],
                 dataList: dataset.items,
-                // municipalityCode: municipalityCode,
-                // datumId: datasetOption.dataset.data[0].id,
+                areaCode: municipalityCode,
+                currentDataId: datasetOption.dataset.items[0].id,
               }),
             );
           }
