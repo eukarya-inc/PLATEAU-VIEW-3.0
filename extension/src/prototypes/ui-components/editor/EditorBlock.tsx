@@ -4,28 +4,34 @@ import Collapse from "@mui/material/Collapse";
 import { useState, useCallback } from "react";
 
 export type EditorBlockProps = {
-  title: string;
+  title?: string;
   expandable?: boolean;
+  expanded?: boolean;
   children?: React.ReactNode;
 };
 
-export const EditorBlock: React.FC<EditorBlockProps> = ({ title, expandable, children }) => {
-  const [expanded, setExpanded] = useState(true);
+export const EditorBlock: React.FC<EditorBlockProps> = ({
+  title,
+  expandable,
+  expanded,
+  children,
+}) => {
+  const [localExpaned, setExpanded] = useState(expanded === undefined ? true : expanded);
 
   const handleTitleClick = useCallback(() => {
     if (!expandable) return;
-    setExpanded(!expanded);
-  }, [expandable, expanded]);
+    setExpanded(!localExpaned);
+  }, [expandable, localExpaned]);
 
   return (
     <BlockWrapper>
       <BlockHeader>
         <BlockTitle expandable={!!expandable} onClick={handleTitleClick}>
-          {expandable && <StyledIcon expanded={expanded} />}
+          {expandable && <StyledIcon expanded={localExpaned} />}
           {title}
         </BlockTitle>
       </BlockHeader>
-      <Collapse in={expanded || !expandable}>
+      <Collapse in={localExpaned || !expandable}>
         <BlockContent>{children}</BlockContent>
       </Collapse>
     </BlockWrapper>
@@ -66,5 +72,5 @@ export const BlockContentWrapper = styled("div")(() => ({
   display: "flex",
   flexDirection: "column",
   gap: "8px",
-  padding: "12px",
+  padding: "4px",
 }));

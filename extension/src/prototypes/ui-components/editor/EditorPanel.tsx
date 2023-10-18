@@ -2,7 +2,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Paper, PaperProps, Button } from "@mui/material";
 import { forwardRef } from "react";
 
-import { AutoHeight } from ".";
+import { AutoHeight } from "../";
 
 export type EditorPanelProps = PaperProps;
 
@@ -17,7 +17,7 @@ export type EditorSectionProps = {
   sidebarBottom?: React.ReactNode;
   main: React.ReactNode;
   header?: React.ReactNode;
-  showContentAction?: boolean;
+  showSaveButton?: boolean;
   onSave?: () => void;
 };
 
@@ -26,7 +26,7 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
   sidebarBottom,
   main,
   header,
-  showContentAction,
+  showSaveButton,
   onSave,
 }) => {
   return (
@@ -38,7 +38,7 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
       <Main>
         {header && <SectionHeader>{header}</SectionHeader>}
         <SectionContent>{main}</SectionContent>
-        {showContentAction && (
+        {showSaveButton && (
           <SectionAction>
             <StyledButton
               startIcon={<SaveOutlinedIcon />}
@@ -79,6 +79,7 @@ const Sidebar = styled("div")({
   overflow: "auto",
   display: "flex",
   flexDirection: "column",
+  flexShrink: 0,
   borderRight: "1px solid rgba(0, 0, 0, 0.12)",
 });
 
@@ -98,6 +99,7 @@ const Main = styled("div")(({ theme }) => ({
   flexDirection: "column",
   flex: 1,
   backgroundColor: theme.palette.grey[300],
+  maxWidth: "377px",
 }));
 
 const SectionHeader = styled("div")(({ theme }) => ({

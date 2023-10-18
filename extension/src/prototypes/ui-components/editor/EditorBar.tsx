@@ -13,11 +13,11 @@ import {
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useId, useMemo, useCallback, FC, MouseEvent } from "react";
 
-import { DarkThemeOverride } from "./DarkThemeOverride";
-import { FloatingPanel } from "./FloatingPanel";
-import { DropDownIcon } from "./icons";
-import { OverlayPopper } from "./OverlayPopper";
-import { SelectItem, SelectItemProps } from "./SelectItem";
+import { DarkThemeOverride } from "../DarkThemeOverride";
+import { FloatingPanel } from "../FloatingPanel";
+import { DropDownIcon } from "../icons";
+import { OverlayPopper } from "../OverlayPopper";
+import { SelectItem, SelectItemProps } from "../SelectItem";
 
 const StyledEditorBar = styled(MuiAppBar)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,

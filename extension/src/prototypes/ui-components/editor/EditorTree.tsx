@@ -13,18 +13,14 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 import { useCallback, useMemo } from "react";
 
-import { EditorDatasetItemProperty } from "../view/ui-containers/editorContainers/EditorDatasetSection";
-import { EditorFieldComponentsTemplateItemProperty } from "../view/ui-containers/editorContainers/EditorFieldComponentsTemplateSection";
-
 export type EditorTreeItem = {
   id: string;
   name: string;
-  property?: EditorDatasetItemProperty | EditorFieldComponentsTemplateItemProperty;
+  property?: any;
   children?: EditorTreeItem[];
 };
 
-export type EditorTreeSelection = { id: string } & EditorDatasetItemProperty &
-  EditorFieldComponentsTemplateItemProperty;
+export type EditorTreeSelection = { id: string } & EditorTreeItem["property"];
 
 type EditorTreeItemProps = {
   item: EditorTreeItem;

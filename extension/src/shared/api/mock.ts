@@ -28,6 +28,7 @@ export const mockDatasets: Dataset[] = [
     version: "2022",
     textured: false,
     lod: 2,
+    published: true,
   },
   {
     id: "13102",

@@ -2,16 +2,18 @@ import { styled, Typography } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
-import { useDatasetsAPI, useSettingsAPI } from "../../../../shared/api";
+import { useDatasetsAPI, useSettingsAPI } from "../../../../../shared/api";
+import { Setting } from "../../../../../shared/api/types";
 import {
   EditorSection,
   EditorTree,
   EditorTreeItem,
   EditorTreeSelection,
-} from "../../../ui-components";
-import { LAYER_SELECTION, selectionGroupsAtom } from "../../states/selection";
+} from "../../../../ui-components";
+import { LAYER_SELECTION, selectionGroupsAtom } from "../../../states/selection";
 
-import { EditorDatasetConent } from "./EditorDatasetConent";
+import { GeneralPage } from "./GeneralPage";
+import { StatusPage } from "./StatusPage";
 
 export type EditorDatasetSectionProps = {};
 
@@ -25,6 +27,10 @@ export type EditorDatasetConentType =
 export type EditorDatasetItemProperty = {
   dataId?: string;
   type?: EditorDatasetConentType;
+};
+
+export type DraftSetting = Omit<Setting, "id"> & {
+  id?: string;
 };
 
 export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
@@ -130,10 +136,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     ] as EditorTreeItem[];
   }, [dataset]);
 
-  const setting = useMemo(
-    () => settings.find(s => s.datasetId === dataset?.id && s.dataId === dataId),
-    [dataId, dataset, settings],
-  );
+  const [setting, updateSetting] = useState<DraftSetting>();
 
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
@@ -147,6 +150,19 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     setExpanded(tree.map(item => item.id));
     setReady(true);
   }, [tree]);
+
+  useEffect(() => {
+    if (!dataset?.id || !dataId) return;
+    updateSetting(
+      settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
+        datasetId: dataset.id,
+        dataId,
+        general: {},
+        fieldComponents: {},
+        featureInspector: {},
+      },
+    );
+  }, [dataId, dataset, settings]);
 
   const handleItemClick = useCallback(({ id, dataId, type }: EditorTreeSelection) => {
     setSelected(id);
@@ -165,11 +181,17 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     [expanded],
   );
 
-  const handleSave = useCallback(() => {}, []);
+  const handleSave = useCallback(() => {
+    console.log("save setting", setting);
+  }, [setting]);
 
-  const showContentAction = useMemo(
-    () => contentType && ["general", "fieldComponents", "featureInspector"].includes(contentType),
-    [contentType],
+  useEffect(() => {
+    console.log("setting changed", setting);
+  }, [setting]);
+
+  const showSaveButton = useMemo(
+    () => !!dataset?.id && !!dataId && contentType !== "folder",
+    [dataset, dataId, contentType],
   );
 
   return layer ? (
@@ -184,8 +206,25 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
           onExpandClick={handleExpandClick}
         />
       }
-      main={<EditorDatasetConent type={contentType} dataset={dataset} setting={setting} />}
-      showContentAction={showContentAction}
+      main={
+        <>
+          {contentType === "status" ? (
+            <StatusPage dataset={dataset} />
+          ) : contentType === "general" ? (
+            <GeneralPage
+              dataset={dataset}
+              setting={setting}
+              dataId={dataId}
+              updateSetting={updateSetting}
+            />
+          ) : contentType === "fieldComponents" ? (
+            <>fieldComponents</>
+          ) : contentType === "featureInspector" ? (
+            <>featureInspector</>
+          ) : null}
+        </>
+      }
+      showSaveButton={showSaveButton}
       onSave={handleSave}
     />
   ) : (

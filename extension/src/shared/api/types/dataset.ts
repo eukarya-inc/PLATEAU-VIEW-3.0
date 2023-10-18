@@ -8,4 +8,5 @@ export type Dataset = {
   version: string;
   textured?: boolean;
   lod?: number;
+  published?: boolean;
 };

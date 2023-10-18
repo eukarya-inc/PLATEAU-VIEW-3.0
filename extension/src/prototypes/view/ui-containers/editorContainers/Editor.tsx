@@ -2,7 +2,7 @@ import { type FC, useState, useMemo, useCallback } from "react";
 
 import { EditorBar, EditorPanel } from "../../../ui-components";
 
-import { EditorDatasetSection } from "./EditorDatasetSection";
+import { EditorDatasetSection } from "./dataset";
 import { EditorFieldComponentsTemplateSection } from "./EditorFieldComponentsTemplateSection";
 import { EditorInspectorEmphasisPropertyTemplateSection } from "./EditorInspectorEmphasisPropertyTemplateSection";
 

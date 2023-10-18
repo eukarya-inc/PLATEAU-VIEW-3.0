@@ -8,7 +8,7 @@ export type Setting = {
   datasetId: string;
   dataId: string;
   general?: {
-    camera?: CameraPosition;
+    camera?: CameraPosition | undefined;
   };
   fieldComponents?: {
     templateId?: string;
@@ -18,12 +18,12 @@ export type Setting = {
 };
 
 export type FeatureInspectorSettings = {
-  basic: {
+  basic?: {
     titleType: "datasetType" | "custom";
     customTitle: string;
     displayType: "propertyList" | "";
   };
-  emphasisProperty: {
+  emphasisProperty?: {
     templateId: string;
     properties: EmphasisProperty[];
   };
