@@ -4,9 +4,9 @@ import { useEffect, type FC, useMemo } from "react";
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
+import { useSettingsAPI, useTemplateAPI } from "../../api";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/plateau";
-import { useSettingsAPI, useTemplateAPI } from "../../api";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
@@ -21,17 +21,16 @@ export const InitialLayers: FC = () => {
     [],
   );
   const query = useDatasets(initialDatasetInput);
+  const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
+  // TODO: Move to a proper place
   const { settingsAtom, handleSettingsFetch } = useSettingsAPI();
   const { handleTemplateFetch } = useTemplateAPI();
-
   const settings = useAtomValue(settingsAtom);
-
   useEffect(() => {
     handleSettingsFetch();
     handleTemplateFetch();
   }, [handleSettingsFetch, handleTemplateFetch]);
-  const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
   // TODO: Get share ID
   const shareId = undefined;

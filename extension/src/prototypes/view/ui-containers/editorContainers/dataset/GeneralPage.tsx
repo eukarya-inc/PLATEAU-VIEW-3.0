@@ -1,12 +1,10 @@
-import { Dataset } from "../../../../../shared/api/types";
-
 import { CameraBlock } from "./blocks/CameraBlock";
 import { DataBlock } from "./blocks/DataBlock";
 
-import { DraftSetting, UpdateSetting } from ".";
+import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
 type GeneralPageProps = {
-  dataset?: Dataset;
+  dataset?: EditorDataset;
   setting?: DraftSetting;
   dataId?: string;
   updateSetting?: UpdateSetting;

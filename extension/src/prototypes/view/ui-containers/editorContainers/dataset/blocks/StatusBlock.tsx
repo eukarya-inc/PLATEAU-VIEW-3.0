@@ -1,13 +1,13 @@
 import { styled } from "@mui/material";
 import { green, red } from "@mui/material/colors";
 
-import { Dataset } from "../../../../../../shared/api/types";
+import { EditorDataset } from "..";
 import { BlockContentWrapper, EditorBlock, EditorBlockProps } from "../../../../../ui-components";
 import { EditorCommonField } from "../../../../../ui-components/editor/EditorCommonField";
 import { EditorTextField } from "../../../../../ui-components/editor/EditorTextField";
 
 type StatusBlockProps = EditorBlockProps & {
-  dataset?: Dataset;
+  dataset?: EditorDataset;
 };
 
 export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) => {

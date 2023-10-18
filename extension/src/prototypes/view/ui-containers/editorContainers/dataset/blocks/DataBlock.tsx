@@ -2,17 +2,17 @@ import { cloneDeep } from "lodash-es";
 import { useMemo } from "react";
 import ReactJson from "react-json-view";
 
-import { Dataset } from "../../../../../../shared/api/types";
+import { EditorDataset } from "..";
 import { EditorBlock, EditorBlockProps } from "../../../../../ui-components";
 
 type DataBlockProps = EditorBlockProps & {
-  dataset?: Dataset;
+  dataset?: EditorDataset;
   dataId?: string;
 };
 
 export const DataBlock: React.FC<DataBlockProps> = ({ dataset, dataId, ...props }) => {
   const data = useMemo(
-    () => cloneDeep(dataId === "default" ? dataset : dataset?.data.find(d => d.id === dataId)),
+    () => cloneDeep(dataId === "default" ? dataset : dataset?.items.find(d => d.id === dataId)),
     [dataset, dataId],
   );
   return (

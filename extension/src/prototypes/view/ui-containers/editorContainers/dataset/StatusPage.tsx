@@ -1,8 +1,9 @@
-import { Dataset } from "../../../../../shared/api/types";
 import { StatusBlock } from "./blocks/StatusBlock";
 
+import { EditorDataset } from ".";
+
 type StatusPageProps = {
-  dataset?: Dataset;
+  dataset?: EditorDataset;
 };
 
 export const StatusPage: React.FC<StatusPageProps> = ({ dataset }) => {

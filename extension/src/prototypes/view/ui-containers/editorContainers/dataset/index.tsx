@@ -2,18 +2,25 @@ import { styled, Typography } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
-import { useDatasetsAPI, useSettingsAPI } from "../../../../../shared/api";
+import { useSettingsAPI } from "../../../../../shared/api";
 import { Setting } from "../../../../../shared/api/types";
+import { useDatasetById } from "../../../../../shared/graphql";
+import { DatasetFragmentFragment } from "../../../../../shared/graphql/types/plateau";
+import { layerSelectionAtom } from "../../../../layers";
 import {
   EditorSection,
   EditorTree,
   EditorTreeItem,
   EditorTreeSelection,
 } from "../../../../ui-components";
-import { LAYER_SELECTION, selectionGroupsAtom } from "../../../states/selection";
 
 import { GeneralPage } from "./GeneralPage";
 import { StatusPage } from "./StatusPage";
+
+// TODO: use plateview dataset type
+export type EditorDataset = DatasetFragmentFragment & {
+  published?: boolean;
+};
 
 export type EditorDatasetSectionProps = {};
 
@@ -40,21 +47,15 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
 
-  const { datasetsAtom } = useDatasetsAPI();
   const { settingsAtom } = useSettingsAPI();
-  const datasets = useAtomValue(datasetsAtom);
   const settings = useAtomValue(settingsAtom);
 
-  const selectionGroups = useAtomValue(selectionGroupsAtom);
-  const layer = useMemo(
-    () =>
-      selectionGroups.length === 1 && selectionGroups[0].type === LAYER_SELECTION
-        ? selectionGroups[0].values[0]
-        : null,
-    [selectionGroups],
-  );
+  const layer = useAtomValue(layerSelectionAtom)?.[0];
+  const query = useDatasetById(layer);
 
-  const dataset = useMemo(() => datasets.find(d => d.id === layer?.id), [layer, datasets]);
+  const dataset = useMemo(() => {
+    return query.data?.node;
+  }, [query]);
 
   const tree = useMemo(() => {
     setReady(false);
@@ -101,7 +102,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
           },
         ],
       },
-      ...dataset.data.map(item => ({
+      ...dataset.items.map(item => ({
         id: `${dataset.id}-${item.id}`,
         name: item.name,
         property: {
@@ -205,22 +206,25 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
         />
       }
       main={
-        <>
-          {contentType === "status" ? (
-            <StatusPage dataset={dataset} />
-          ) : contentType === "general" ? (
-            <GeneralPage
-              dataset={dataset}
-              dataId={dataId}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : contentType === "fieldComponents" ? (
-            <>fieldComponents</>
-          ) : contentType === "featureInspector" ? (
-            <>featureInspector</>
-          ) : null}
-        </>
+        ready && (
+          <>
+            {contentType === "status" ? (
+              <StatusPage dataset={dataset} />
+            ) : contentType === "general" ? (
+              <GeneralPage
+                key={`${dataset.id}-${dataId}`}
+                dataset={dataset}
+                dataId={dataId}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "fieldComponents" ? (
+              <>fieldComponents</>
+            ) : contentType === "featureInspector" ? (
+              <>featureInspector</>
+            ) : null}
+          </>
+        )
       }
       showSaveButton={showSaveButton}
       onSave={handleSave}
