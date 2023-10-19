@@ -36,7 +36,7 @@ export const InitialLayers: FC = () => {
           type: datasetTypeLayers[d.type.code as PlateauDatasetType],
           datasetId: d.id,
           dataList,
-          areaCode: d.wardCode || d.cityCode,
+          areaCode: d.wardCode || d.cityCode || d.prefectureCode,
           title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
           settings: settings.filter(s => s.datasetId === d.id && dataIds.includes(s.dataId)),

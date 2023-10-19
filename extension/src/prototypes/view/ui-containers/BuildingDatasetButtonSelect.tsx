@@ -49,7 +49,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
     const removeLayer = useSetAtom(removeLayerAtom);
     const paramsAtom = useMemo(() => {
       if (!rootLayer) {
-        return atom(null, (get, set, params?: SetStateAction<Params | null>) => {
+        return atom(null, (_get, _set, params?: SetStateAction<Params | null>) => {
           const nextParams = typeof params === "function" ? params(null) : params;
           if (nextParams == null) {
             return;
