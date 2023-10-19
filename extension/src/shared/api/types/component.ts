@@ -10,6 +10,7 @@ export type Component<T extends ComponentBase["type"] = ComponentBase["type"]> =
 
 export type ComponentGroup = {
   id: string;
+  name: string;
   default?: boolean;
   components: ComponentBase[];
 };

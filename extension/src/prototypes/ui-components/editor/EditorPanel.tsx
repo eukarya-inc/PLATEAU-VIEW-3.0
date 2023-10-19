@@ -103,7 +103,8 @@ const Main = styled("div")(({ theme }) => ({
 }));
 
 const SectionHeader = styled("div")(({ theme }) => ({
-  height: "38px",
+  padding: theme.spacing(1.25, 1),
+  fontSize: theme.typography.body2.fontSize,
   backgroundColor: theme.palette.background.paper,
   borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
   flexShrink: 0,

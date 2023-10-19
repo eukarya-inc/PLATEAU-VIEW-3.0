@@ -2,9 +2,11 @@ import { type FC, useState, useMemo, useCallback } from "react";
 
 import { EditorBar, EditorPanel } from "../../../ui-components";
 
+import { EditorFieldComponentsTemplateSection } from "./componentTemplate";
 import { EditorDatasetSection } from "./dataset";
-import { EditorFieldComponentsTemplateSection } from "./EditorFieldComponentsTemplateSection";
-import { EditorInspectorEmphasisPropertyTemplateSection } from "./EditorInspectorEmphasisPropertyTemplateSection";
+import { EditorInspectorEmphasisPropertyTemplateSection } from "./emphasisPropertyTemplate";
+
+export const PLATEAUVIEW_EDITOR_DOM_ID = "__plateauview_editor__";
 
 export const Editor: FC = () => {
   const [editorType, setEditorType] = useState("dataset");
@@ -32,7 +34,7 @@ export const Editor: FC = () => {
   }, []);
 
   return (
-    <>
+    <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
       <EditorBar
         editorTypes={editorTypes}
         editorType={editorType}
@@ -47,6 +49,6 @@ export const Editor: FC = () => {
           <EditorInspectorEmphasisPropertyTemplateSection />
         ) : null}
       </EditorPanel>
-    </>
+    </div>
   );
 };

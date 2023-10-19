@@ -1,12 +1,12 @@
 import { ComponentTemplate, EmphasisPropertyTemplate } from "../../../../shared/api/types";
-import { EditorTreeItem } from "../../../ui-components";
+import { EditorTreeItemType } from "../../../ui-components";
 
 export const convertTemplatesToTree = (
   templates: ComponentTemplate[] | EmphasisPropertyTemplate[],
 ) => {
   if (!templates) return [];
 
-  const tree: EditorTreeItem[] = [];
+  const tree: EditorTreeItemType[] = [];
   templates.forEach(template => {
     if (!template.name) return;
     const paths = template.name.split("/");
@@ -31,11 +31,11 @@ export const convertTemplatesToTree = (
   return tree;
 };
 
-const findOrCreateParent: (tree: EditorTreeItem[], path: string) => EditorTreeItem = (
+const findOrCreateParent: (tree: EditorTreeItemType[], path: string) => EditorTreeItemType = (
   tree,
   path,
 ) => {
-  let parent: EditorTreeItem;
+  let parent: EditorTreeItemType;
   const paths = path.split("/");
   const existParent = tree.find(t => t.name === paths[0]);
   if (existParent) {
@@ -52,3 +52,7 @@ const findOrCreateParent: (tree: EditorTreeItem[], path: string) => EditorTreeIt
   if (paths.length === 1) return parent;
   return findOrCreateParent(parent.children, paths.slice(1).join("/"));
 };
+
+export function generateID() {
+  return Date.now().toString(36) + Math.random().toString(16).slice(2);
+}

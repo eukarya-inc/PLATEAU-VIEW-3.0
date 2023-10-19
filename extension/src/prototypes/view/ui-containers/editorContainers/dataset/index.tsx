@@ -10,10 +10,11 @@ import { layerSelectionAtom } from "../../../../layers";
 import {
   EditorSection,
   EditorTree,
-  EditorTreeItem,
+  EditorTreeItemType,
   EditorTreeSelection,
 } from "../../../../ui-components";
 
+import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
 import { StatusPage } from "./StatusPage";
 
@@ -51,7 +52,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
   const settings = useAtomValue(settingsAtom);
 
   const layer = useAtomValue(layerSelectionAtom)?.[0];
-  const query = useDatasetById(layer);
+  const query = useDatasetById(layer ?? "");
 
   const dataset = useMemo(() => {
     return query.data?.node;
@@ -136,7 +137,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
           },
         ],
       })),
-    ] as EditorTreeItem[];
+    ] as EditorTreeItemType[];
   }, [dataset]);
 
   const [draftSetting, updateDraftSetting] = useState<DraftSetting>();
@@ -193,7 +194,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     [dataset, dataId, contentType],
   );
 
-  return layer ? (
+  return layer && dataset ? (
     <EditorSection
       sidebarMain={
         <EditorTree
@@ -219,7 +220,11 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
                 updateSetting={updateDraftSetting}
               />
             ) : contentType === "fieldComponents" ? (
-              <>fieldComponents</>
+              <FieldComponentsPage
+                key={`${dataset.id}-${dataId}`}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
             ) : contentType === "featureInspector" ? (
               <>featureInspector</>
             ) : null}

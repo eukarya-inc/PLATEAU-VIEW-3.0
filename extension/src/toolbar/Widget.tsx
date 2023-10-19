@@ -24,7 +24,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   useInteractionMode();
   useAttachScreenSpaceSelection();
 
-  console.log(widget.property.default.geoURL, widget.property.default.plateauURL, widget.property);
+  // console.log(widget.property.default.geoURL, widget.property.default.plateauURL, widget.property);
 
   return (
     <WidgetContext

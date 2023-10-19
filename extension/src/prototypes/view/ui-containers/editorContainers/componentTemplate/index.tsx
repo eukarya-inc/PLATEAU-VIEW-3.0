@@ -1,33 +1,32 @@
 import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback } from "react";
 
-import { useTemplateAPI } from "../../../../shared/api";
-import { EditorSection, EditorTree, EditorTreeSelection } from "../../../ui-components";
+import { useTemplateAPI } from "../../../../../shared/api";
+import { EditorSection, EditorTree, EditorTreeSelection } from "../../../../ui-components";
+import { convertTemplatesToTree } from "../utils";
 
-import { EditorInspectorEmphasisPropertyTemplateContent } from "./EditorInspectorEmphasisPropertyTemplateContent";
-import { convertTemplatesToTree } from "./utils";
+import { ComponentTemplatePage } from "./ComponentTemplatePage";
 
-export type EditorEmphasisPropertyTemplateContentType = "folder" | "template" | "empty";
-export type EditorEmphasisPropertyTemplateItemProperty = {
+export type EditorFieldComponentsTemplateContentType = "folder" | "template" | "empty";
+export type EditorFieldComponentsTemplateItemProperty = {
   templateId?: string;
 };
 
-export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
-  const [contentType, setContentType] =
-    useState<EditorEmphasisPropertyTemplateContentType>("empty");
+export const EditorFieldComponentsTemplateSection: React.FC = () => {
+  const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { emphasisPropertyTemplatesAtom } = useTemplateAPI();
-  const emphasisPropertyTemplates = useAtomValue(emphasisPropertyTemplatesAtom);
+  const { componentTemplatesAtom } = useTemplateAPI();
+  const componentTemplates = useAtomValue(componentTemplatesAtom);
 
   const templatesTree = useMemo(
-    () => convertTemplatesToTree(emphasisPropertyTemplates),
-    [emphasisPropertyTemplates],
+    () => convertTemplatesToTree(componentTemplates),
+    [componentTemplates],
   );
 
   const template = useMemo(
-    () => emphasisPropertyTemplates.find(c => c.id === templateId),
-    [emphasisPropertyTemplates, templateId],
+    () => componentTemplates.find(c => c.id === templateId),
+    [componentTemplates, templateId],
   );
 
   const [expanded, setExpanded] = useState<string[]>([]);
@@ -62,9 +61,8 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
           onExpandClick={handleExpandClick}
         />
       }
-      main={
-        <EditorInspectorEmphasisPropertyTemplateContent type={contentType} template={template} />
-      }
+      main={contentType === "template" ? <ComponentTemplatePage template={template} /> : null}
+      header={template?.name}
     />
   );
 };

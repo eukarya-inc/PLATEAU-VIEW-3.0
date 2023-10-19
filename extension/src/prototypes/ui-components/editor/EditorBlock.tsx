@@ -27,7 +27,7 @@ export const EditorBlock: React.FC<EditorBlockProps> = ({
     <BlockWrapper>
       <BlockHeader>
         <BlockTitle expandable={!!expandable} onClick={handleTitleClick}>
-          {expandable && <StyledIcon expanded={localExpaned} />}
+          {expandable && <StyledIcon expanded={localExpaned ? 1 : 0} />}
           {title}
         </BlockTitle>
       </BlockHeader>
@@ -38,7 +38,7 @@ export const EditorBlock: React.FC<EditorBlockProps> = ({
   );
 };
 
-const BlockWrapper = styled("div")();
+const BlockWrapper = styled("div")({});
 
 const BlockHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -54,7 +54,7 @@ const BlockTitle = styled("div")<{ expandable: boolean }>(({ expandable }) => ({
   padding: expandable ? "0 8px 0 4px" : "0 8px",
 }));
 
-const StyledIcon = styled(ArrowRightIcon)<{ expanded: boolean }>(({ expanded }) => ({
+const StyledIcon = styled(ArrowRightIcon)<{ expanded: number }>(({ expanded }) => ({
   display: "flex",
   alignItems: "center",
   width: "24px",

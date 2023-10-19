@@ -16,12 +16,12 @@ export type EventBlockProps = EditorBlockProps & {
 
 const eventTypeOptions = [
   {
-    label: "Open Feature Inspector",
+    label: "Open feature inspector",
     value: "openFeatureInspector",
   },
   {
-    label: "Jump to URL",
-    value: "jumpToUrl",
+    label: "Open new tab",
+    value: "openNewTab",
   },
 ];
 
@@ -31,8 +31,8 @@ const urlTypeOptions = [
     value: "manual",
   },
   {
-    label: "Feature Property",
-    value: "featureProperty",
+    label: "From data",
+    value: "fromData",
   },
 ];
 
@@ -42,29 +42,29 @@ export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, 
   );
 
   const [urlType, setUrlType] = useState(setting?.general?.featureClickEvent?.urlType ?? "manual");
-  const [manualUrl, setManualUrl] = useState(setting?.general?.featureClickEvent?.manualUrl ?? "");
-  const [featurePropertyName, setFeaturePropertyName] = useState(
-    setting?.general?.featureClickEvent?.featurePropertyName ?? "",
+  const [websiteURL, setWebsiteURL] = useState(
+    setting?.general?.featureClickEvent?.websiteURL ?? "",
   );
+  const [fieldName, setFieldName] = useState(setting?.general?.featureClickEvent?.fieldName ?? "");
 
   const handleEventTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "openFeatureInspector" || e.target.value === "jumpToUrl") {
+    if (e.target.value === "openFeatureInspector" || e.target.value === "openNewTab") {
       setEventType(e.target.value);
     }
   }, []);
 
   const handleUrlTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "manual" || e.target.value === "featureProperty") {
+    if (e.target.value === "manual" || e.target.value === "fromData") {
       setUrlType(e.target.value);
     }
   }, []);
 
-  const handleManualUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setManualUrl(e.target.value);
+  const handleWebsiteUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setWebsiteURL(e.target.value);
   }, []);
 
-  const handleFeaturePropertyNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setFeaturePropertyName(e.target.value);
+  const handleFieldNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFieldName(e.target.value);
   }, []);
 
   useEffect(() => {
@@ -77,13 +77,13 @@ export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, 
           featureClickEvent: {
             eventType,
             urlType,
-            manualUrl,
-            featurePropertyName,
+            websiteURL,
+            fieldName,
           },
         },
       };
     });
-  }, [eventType, urlType, manualUrl, featurePropertyName, updateSetting]);
+  }, [eventType, urlType, websiteURL, fieldName, updateSetting]);
 
   return (
     <EditorBlock title="Event" expandable {...props}>
@@ -94,23 +94,23 @@ export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, 
           options={eventTypeOptions}
           onChange={handleEventTypeChange}
         />
-        {eventType === "jumpToUrl" && (
+        {eventType === "openNewTab" && (
           <EditorSelect
-            label="Feature Click Event Type"
+            label="URL Type"
             value={urlType}
             options={urlTypeOptions}
             onChange={handleUrlTypeChange}
           />
         )}
-        {eventType === "jumpToUrl" && urlType === "manual" && (
-          <EditorTextField label="Manual URL" value={manualUrl} onChange={handleManualUrlChange} />
-        )}
-        {eventType === "jumpToUrl" && urlType === "featureProperty" && (
+        {eventType === "openNewTab" && urlType === "manual" && (
           <EditorTextField
-            label="Feature Property Name"
-            value={featurePropertyName}
-            onChange={handleFeaturePropertyNameChange}
+            label="Website URL"
+            value={websiteURL}
+            onChange={handleWebsiteUrlChange}
           />
+        )}
+        {eventType === "openNewTab" && urlType === "fromData" && (
+          <EditorTextField label="Field Name" value={fieldName} onChange={handleFieldNameChange} />
         )}
       </BlockContentWrapper>
     </EditorBlock>

@@ -16,6 +16,7 @@ export const mockSettings: Setting[] = [
         {
           id: "1",
           default: true,
+          name: "Default",
           components: [
             {
               type: OPACITY_FIELD,
@@ -41,6 +42,7 @@ export const mockSettings: Setting[] = [
         {
           id: "1",
           default: true,
+          name: "Default",
           components: [
             {
               type: OPACITY_FIELD,
@@ -53,31 +55,6 @@ export const mockSettings: Setting[] = [
     },
     featureInspector: undefined,
   },
-  {
-    id: "4",
-    datasetId: "d_13102_bldg",
-    dataId: "di_13102_bldg_LOD2",
-    general: {
-      camera: undefined,
-    },
-    fieldComponents: {
-      groups: [
-        {
-          id: "1",
-          default: true,
-          components: [
-            {
-              type: OPACITY_FIELD,
-              value: 1,
-              storeable: true,
-            },
-          ],
-        },
-      ],
-    },
-    featureInspector: undefined,
-  },
-
   // For chiyoda shelter
   {
     id: "3",
@@ -91,6 +68,7 @@ export const mockSettings: Setting[] = [
         {
           id: "1",
           default: true,
+          name: "Default",
           components: [
             {
               type: POINT_COLOR_FIELD,
@@ -118,6 +96,7 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
       {
         id: "1",
         default: true,
+        name: "Default",
         components: [
           {
             type: OPACITY_FIELD,
@@ -135,6 +114,7 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
       {
         id: "1",
         default: true,
+        name: "Default",
         components: [
           {
             type: OPACITY_FIELD,

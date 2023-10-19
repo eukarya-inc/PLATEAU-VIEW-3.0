@@ -57,15 +57,17 @@ export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
         <EditorCommonField label="Enable realtime data fetching">
           <EditorSwitch checked={enabled} onChange={handleEnabledChange} />
         </EditorCommonField>
-        <EditorTextField
-          label="Time Interval"
-          value={timeInterval}
-          onChange={handleTimeIntervalChange}
-          type="number"
-          InputProps={{
-            endAdornment: <InputAdornment position="end">s</InputAdornment>,
-          }}
-        />
+        {enabled && (
+          <EditorTextField
+            label="Time Interval"
+            value={timeInterval}
+            onChange={handleTimeIntervalChange}
+            type="number"
+            InputProps={{
+              endAdornment: <InputAdornment position="end">s</InputAdornment>,
+            }}
+          />
+        )}
       </BlockContentWrapper>
     </EditorBlock>
   );

@@ -14,13 +14,14 @@ export type Setting = {
       timeInterval?: number;
     };
     featureClickEvent?: {
-      eventType: "openFeatureInspector" | "jumpToUrl";
-      urlType?: "manual" | "featureProperty";
-      manualUrl?: string;
-      featurePropertyName?: string;
+      eventType: "openFeatureInspector" | "openNewTab";
+      urlType?: "manual" | "fromData";
+      websiteURL?: string;
+      fieldName?: string;
     };
   };
   fieldComponents?: {
+    useTemplate?: boolean;
     templateId?: string;
     groups?: ComponentGroup[];
   };
