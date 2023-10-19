@@ -28,10 +28,15 @@ export function joinPath(values: string[]): ReactNode {
 
 export interface DatasetListItemProps
   extends Omit<DatasetTreeItemProps, "nodeId" | "icon" | "secondaryAction"> {
+  municipalityCode: string;
   dataset: DatasetFragmentFragment;
 }
 
-export const DatasetListItem: FC<DatasetListItemProps> = ({ dataset, ...props }) => {
+export const DatasetListItem: FC<DatasetListItemProps> = ({
+  dataset,
+  municipalityCode,
+  ...props
+}) => {
   // TODO: Separate into hook
   const layer = useAtomValue(
     useMemo(
@@ -58,15 +63,14 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({ dataset, ...props })
           // TODO: Support components
           settings: [],
           dataList: dataset.items as DatasetItem[],
-          // municipalityCode: municipalityCode,
-          // datumId: datasetOption.dataset.data[0].id,
+          areaCode: municipalityCode,
         }),
         { autoSelect: !smDown },
       );
     } else {
       removeLayer(layer.id);
     }
-  }, [dataset, layer, layerType, addLayer, removeLayer, smDown]);
+  }, [dataset, layer, layerType, addLayer, removeLayer, smDown, municipalityCode]);
 
   const [infoOpen, setInfoOpen] = useState(false);
   const handleInfo = useCallback((event: MouseEvent) => {
@@ -93,7 +97,12 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({ dataset, ...props })
         onClick={handleClick}
         {...props}
       />
-      <DatasetDialog open={infoOpen} dataset={dataset} onClose={handleInfoClose} />
+      <DatasetDialog
+        open={infoOpen}
+        dataset={dataset}
+        municipalityCode={municipalityCode}
+        onClose={handleInfoClose}
+      />
     </>
   );
 };

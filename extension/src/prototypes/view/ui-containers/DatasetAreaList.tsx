@@ -26,12 +26,23 @@ const DatasetGroup: FC<{
     return (
       <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name}>
         {datasets.map(dataset => (
-          <DatasetListItem key={dataset.id} dataset={dataset} label={dataset.name} />
+          <DatasetListItem
+            key={dataset.id}
+            municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+            dataset={dataset}
+            label={dataset.name}
+          />
         ))}
       </DatasetTreeItem>
     );
   }
-  return <DatasetListItem dataset={datasets[0]} label={datasets[0].type.name} />;
+  return (
+    <DatasetListItem
+      dataset={datasets[0]}
+      municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
+      label={datasets[0].type.name}
+    />
+  );
 };
 
 const MunicipalityItem: FC<{
@@ -64,6 +75,7 @@ const MunicipalityItem: FC<{
     return (
       <DatasetListItem
         dataset={dataset}
+        municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
         label={joinPath([...parents, municipality.name, dataset.type.name])}
       />
     );

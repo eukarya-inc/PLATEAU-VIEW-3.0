@@ -6,7 +6,7 @@ import { ComponentGroup, FeatureInspectorSettings, Setting } from "../api/types"
 import { DatasetItem } from "../graphql/types/plateau";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
-import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../sharedAtoms";
+import { sharedStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
 
 import { makeComponentAtoms } from "./component";
@@ -16,6 +16,7 @@ export type RootLayerParams = {
   datasetId: string;
   type: LayerType;
   title: string;
+  areaCode: string;
   settings: Setting[];
   dataList: DatasetItem[];
   currentDataId?: string;
@@ -29,9 +30,11 @@ export type RootLayer = {
 };
 
 export type RootLayerConfig = {
+  id: string;
+  areaCode: string;
   rootLayerAtom: PrimitiveAtom<RootLayer>;
-  currentGroupIdAtom: WritableAtom<string | undefined, [update: string], void>;
-  currentDataIdAtom: WritableAtom<string | undefined, [update: string], void>;
+  currentGroupIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
+  currentDataIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
 };
 
 // TODO: Get default component group from template
@@ -97,6 +100,7 @@ const createViewLayerWithComponentGroup = (
       title,
       datasetId,
       shareId,
+      textured: data?.name !== "LOD1" && data?.name !== "LOD2（テクスチャなし）",
     }),
     componentAtoms: makeComponentAtoms(datasetId, componentGroup?.components ?? [], shareId),
     id: datasetId,
@@ -150,8 +154,10 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
 
   const currentDataIdAtomAtom = atom(
     get => get(currentDataIdAtom),
-    (get, set, update: string) => {
+    (get, set, update: string | undefined) => {
       const currentDataId = get(currentDataIdAtom);
+      if (currentDataId === update) return;
+
       const currentGroupId = get(currentGroupIdAtom);
       set(
         rootLayerAtom,
@@ -161,7 +167,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           params.title,
           params.dataList,
           settings,
-          currentDataId,
+          update,
           currentGroupId,
           params.shareId,
         ),
@@ -172,7 +178,10 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
 
   const currentGroupIdAtomAtom = atom(
     get => get(currentGroupIdAtom),
-    (get, set, update: string) => {
+    (get, set, update: string | undefined) => {
+      const currentGroupId = get(currentGroupIdAtom);
+      if (currentGroupId === update) return;
+
       const rootLayer = get(rootLayerAtom);
       const currentDataId = get(currentDataIdAtom);
       const setting = findSetting(settings, currentDataId);
@@ -196,20 +205,22 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
   const shareableCurrentDataIdName = `${params.datasetId}_${CURRENT_DATA_ID}${
     params.shareId ? `_${params.shareId}` : ""
   }`;
-  const shareableCurrentDataIdAtom = storageStoreAtomWrapper(
+  const shareableCurrentDataIdAtom = sharedStoreAtomWrapper(
     shareableCurrentDataIdName,
-    sharedStoreAtomWrapper(shareableCurrentDataIdName, currentDataIdAtomAtom),
+    currentDataIdAtomAtom,
   );
 
   const shareableCurrentComponentGroupIdName = `${params.datasetId}_${CURRENT_COMPONENT_GROUP_ID}${
     params.shareId ? `_${params.shareId}` : ""
   }`;
-  const shareableCurrentGroupIdAtom = storageStoreAtomWrapper(
+  const shareableCurrentGroupIdAtom = sharedStoreAtomWrapper(
     shareableCurrentComponentGroupIdName,
-    sharedStoreAtomWrapper(shareableCurrentComponentGroupIdName, currentGroupIdAtomAtom),
+    currentGroupIdAtomAtom,
   );
 
   return {
+    id: params.datasetId,
+    areaCode: params.areaCode,
     rootLayerAtom: atom(
       get => get(rootLayerAtom),
       () => {}, // readonly

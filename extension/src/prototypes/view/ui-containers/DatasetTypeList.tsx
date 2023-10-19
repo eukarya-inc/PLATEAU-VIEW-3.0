@@ -25,6 +25,7 @@ const MunicipalityItem: FC<{
     return (
       <DatasetListItem
         dataset={query.data.area.datasets[0]}
+        municipalityCode={municipality.code}
         label={joinPath([...parents, municipality.name])}
       />
     );
@@ -35,7 +36,12 @@ const MunicipalityItem: FC<{
       label={joinPath([...parents, municipality.name])}
       loading={query.loading}>
       {query.data?.area?.datasets?.map(dataset => (
-        <DatasetListItem key={dataset.id} dataset={dataset} label={dataset.name} />
+        <DatasetListItem
+          key={dataset.id}
+          municipalityCode={municipality.code}
+          dataset={dataset}
+          label={dataset.name}
+        />
       ))}
     </DatasetTreeItem>
   );

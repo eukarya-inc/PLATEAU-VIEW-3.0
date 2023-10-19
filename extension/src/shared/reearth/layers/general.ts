@@ -83,12 +83,6 @@ export const GeneralLayer: FC<GeneralProps> = ({
 
     layerIdRef.current = layerId;
 
-    setTimeout(() => {
-      if (layerId) {
-        onLoad?.(layerId);
-      }
-    }, 0);
-
     return () => {
       if (!layerId) return;
       window.reearth?.layers?.delete?.(layerId);
@@ -100,10 +94,24 @@ export const GeneralLayer: FC<GeneralProps> = ({
     if (!layerId) return;
 
     window.reearth?.layers?.override?.(layerId, {
+      data: {
+        type: format,
+        url,
+      },
       visible,
       ...(pointAppearance ? { marker: pointAppearance } : {}),
     });
-  }, [pointAppearance, visible]);
+  }, [pointAppearance, visible, format, url]);
+
+  useEffect(() => {
+    const layerId = layerIdRef.current;
+    if (!layerId) return;
+    setTimeout(() => {
+      if (layerId) {
+        onLoad?.(layerId);
+      }
+    }, 0);
+  }, [onLoad, url]);
 
   return null;
 };

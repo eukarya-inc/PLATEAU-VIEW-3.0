@@ -17,17 +17,19 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
-type Props = WidgetProps<{ geoURL?: string; plateauURL?: string }>;
+type Props = WidgetProps<{ geoURL?: { value: string }; plateauURL?: { value: string } }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   useHealthCheck();
   useInteractionMode();
   useAttachScreenSpaceSelection();
 
+  console.log(widget.property.default.geoURL, widget.property.default.plateauURL, widget.property);
+
   return (
     <WidgetContext
-      geoUrl={widget.property.default.geoURL}
-      plateauUrl={widget.property.default.plateauURL}>
+      geoUrl={widget.property.default.geoURL?.value}
+      plateauUrl={widget.property.default.plateauURL?.value}>
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
       {/* <Suspense>

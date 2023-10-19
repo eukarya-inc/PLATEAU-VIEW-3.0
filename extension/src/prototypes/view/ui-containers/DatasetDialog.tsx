@@ -46,10 +46,11 @@ const StyledButton = styled(Button, {
 }));
 
 export interface DatasetDialogProps extends Omit<DialogProps, "children"> {
+  municipalityCode: string;
   dataset: DatasetFragmentFragment;
 }
 
-export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, ...props }) => {
+export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCode, ...props }) => {
   const { data } = useDatasetById(dataset.id);
 
   // TODO: Separate into hook
@@ -81,14 +82,13 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, ...props }) => 
           // TODO: Support components
           settings: [],
           dataList: dataset.items as DatasetItem[],
-          // municipalityCode: municipalityCode,
-          // datumId: datasetOption.dataset.data[0].id,
+          areaCode: municipalityCode,
         }),
       );
     } else {
       removeLayer(layer.id);
     }
-  }, [dataset, data, layer, layerType, addLayer, removeLayer]);
+  }, [dataset, data, layer, layerType, addLayer, removeLayer, municipalityCode]);
 
   return (
     <Dialog {...props}>
