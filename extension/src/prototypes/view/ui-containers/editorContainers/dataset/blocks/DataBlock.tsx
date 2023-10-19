@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import ReactJson from "react-json-view";
 
 import { EditorDataset } from "..";
+import { Dataset } from "../../../../../../shared/graphql/types/plateau";
 import { EditorBlock, EditorBlockProps } from "../../../../../ui-components";
 
 type DataBlockProps = EditorBlockProps & {
@@ -12,7 +13,12 @@ type DataBlockProps = EditorBlockProps & {
 
 export const DataBlock: React.FC<DataBlockProps> = ({ dataset, dataId, ...props }) => {
   const data = useMemo(
-    () => cloneDeep(dataId === "default" ? dataset : dataset?.items.find(d => d.id === dataId)),
+    () =>
+      cloneDeep(
+        dataId === "default"
+          ? dataset
+          : (dataset?.items as Dataset["items"]).find(d => d.id === dataId),
+      ),
     [dataset, dataId],
   );
   return (
