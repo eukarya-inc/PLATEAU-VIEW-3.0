@@ -12,6 +12,8 @@ type ComponentGroupsProps = {
   onGroupSelect: (id: string) => void;
   onGroupCreate: () => void;
   onGroupDelete: (id: string) => void;
+  onGroupRename: (id: string, name: string) => void;
+  onGroupMove: (id: string, direction: "forward" | "backward") => void;
 };
 
 export const ComponentGroups: React.FC<ComponentGroupsProps> = ({
@@ -20,16 +22,23 @@ export const ComponentGroups: React.FC<ComponentGroupsProps> = ({
   onGroupSelect,
   onGroupCreate,
   onGroupDelete,
+  onGroupRename,
+  onGroupMove,
 }) => {
   return (
     <GroupsWrapper>
-      {groups.map(group => (
+      {groups.map((group, index) => (
         <ComponentGroupItem
           key={group.id}
           group={group}
           active={group.id === currentGroup?.id}
+          deleteDisabled={groups.length <= 1}
+          moveForwardDisabled={index === 0}
+          moveBackwardDisabled={index === groups.length - 1}
           onGroupSelect={onGroupSelect}
           onGroupDelete={onGroupDelete}
+          onGroupRename={onGroupRename}
+          onGroupMove={onGroupMove}
         />
       ))}
       <ComponentGroupButton variant="outlined" onClick={onGroupCreate}>

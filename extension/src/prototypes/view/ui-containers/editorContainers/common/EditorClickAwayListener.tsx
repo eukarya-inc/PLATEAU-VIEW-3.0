@@ -15,7 +15,6 @@ export const EditorClickAwayListener: React.FC<EditorClickAwayListenerProps> = (
 
   const handleClickAway = useCallback(
     (e: MouseEvent) => {
-      console.log("click");
       if (ref.current?.contains(e.target as Node)) {
         return;
       }

@@ -9,5 +9,6 @@ export * from "./EditorTextField";
 export * from "./EditorSelect";
 export * from "./EditorPopper";
 export * from "./EditorPopperList";
+export * from "./EditorDialog";
 export * from "./ComponentGroupSplitButton";
 export * from "./ComponentGroupButton";

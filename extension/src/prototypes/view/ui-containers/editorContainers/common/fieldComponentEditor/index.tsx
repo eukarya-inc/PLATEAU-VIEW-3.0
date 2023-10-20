@@ -55,6 +55,34 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
     [groups],
   );
 
+  const handleGroupRename = useCallback(
+    (id: string, name: string) => {
+      setGroups(groups.map(g => (g.id === id ? { ...g, name } : g)));
+    },
+    [groups],
+  );
+
+  const handleGroupMove = useCallback(
+    (id: string, direction: "forward" | "backward") => {
+      const index = groups.findIndex(g => g.id === id);
+      if (
+        index === -1 ||
+        (direction === "forward" && index === 0) ||
+        (direction === "backward" && index === groups.length - 1)
+      )
+        return;
+      const newGroups = [...groups];
+      const [removed] = newGroups.splice(index, 1);
+      if (direction === "forward") {
+        newGroups.splice(index - 1, 0, removed);
+      } else {
+        newGroups.splice(index + 1, 0, removed);
+      }
+      setGroups(newGroups);
+    },
+    [groups],
+  );
+
   return (
     <ComponentGroups
       groups={groups}
@@ -62,6 +90,8 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
       onGroupSelect={handleGroupSelect}
       onGroupCreate={handleGroupCreate}
       onGroupDelete={handleGroupDelete}
+      onGroupRename={handleGroupRename}
+      onGroupMove={handleGroupMove}
     />
   );
 };

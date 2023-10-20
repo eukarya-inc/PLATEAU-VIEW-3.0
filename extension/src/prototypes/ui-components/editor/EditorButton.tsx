@@ -11,7 +11,6 @@ export const EditorButton: React.FC<EditorButtonProps> = ({ children, ...props }
 };
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  width: "100%",
   height: "28px",
   fontSize: theme.typography.body2.fontSize,
   [`&.${buttonClasses.containedPrimary}`]: {

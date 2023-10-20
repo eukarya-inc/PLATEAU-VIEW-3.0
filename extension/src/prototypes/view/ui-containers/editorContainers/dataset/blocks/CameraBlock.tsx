@@ -135,10 +135,10 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
           </LineWrapper>
         </EditorCommonField>
         <LineWrapper>
-          <EditorButton variant="outlined" onClick={handleClearCamera}>
+          <EditorButton variant="outlined" fullWidth onClick={handleClearCamera}>
             Clear
           </EditorButton>
-          <EditorButton variant="contained" onClick={handleCapture}>
+          <EditorButton variant="contained" fullWidth onClick={handleCapture}>
             Capture
           </EditorButton>
         </LineWrapper>
