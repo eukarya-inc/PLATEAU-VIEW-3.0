@@ -1,9 +1,10 @@
 import { useAtomValue } from "jotai";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { useTemplateAPI } from "../../../../../shared/api";
+import { ComponentTemplate } from "../../../../../shared/api/types";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../../../../ui-components";
-import { convertTemplatesToTree } from "../utils";
+import { convertTemplatesToTree, generateID } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
 
@@ -11,6 +12,8 @@ export type EditorFieldComponentsTemplateContentType = "folder" | "template" | "
 export type EditorFieldComponentsTemplateItemProperty = {
   templateId?: string;
 };
+
+export type UpdateTemplate = React.Dispatch<React.SetStateAction<ComponentTemplate | undefined>>;
 
 export const EditorFieldComponentsTemplateSection: React.FC = () => {
   const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
@@ -24,10 +27,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
     [componentTemplates],
   );
 
-  const template = useMemo(
-    () => componentTemplates.find(c => c.id === templateId),
-    [componentTemplates, templateId],
-  );
+  const [template, updateTemplate] = useState<ComponentTemplate | undefined>();
 
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
@@ -51,9 +51,29 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
 
   const showSaveButton = useMemo(() => contentType === "template", [contentType]);
 
+  useEffect(() => {
+    updateTemplate(componentTemplates.find(c => c.id === templateId));
+  }, [componentTemplates, templateId]);
+
+  useEffect(() => {
+    if (!template) return;
+    if (!template.groups || template.groups.length === 0) {
+      updateTemplate({
+        ...template,
+        groups: [
+          {
+            id: generateID(),
+            name: "Default",
+            components: [],
+          },
+        ],
+      });
+    }
+  }, [template]);
+
   const handleSave = useCallback(() => {
-    console.log("field component template save");
-  }, []);
+    console.log("field component template save", template);
+  }, [template]);
 
   return (
     <EditorSection
@@ -67,7 +87,11 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
           onExpandClick={handleExpandClick}
         />
       }
-      main={contentType === "template" ? <ComponentTemplatePage template={template} /> : null}
+      main={
+        contentType === "template" && template ? (
+          <ComponentTemplatePage template={template} updateTemplate={updateTemplate} />
+        ) : null
+      }
       header={template?.name}
       showSaveButton={showSaveButton}
       onSave={handleSave}

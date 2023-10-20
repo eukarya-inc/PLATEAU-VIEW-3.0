@@ -1,7 +1,6 @@
 import { styled } from "@mui/material";
 
 import { ComponentGroup } from "../../../../../../shared/api/types";
-import { UpdateSetting } from "../../dataset";
 
 import { ComponentAddButton } from "./ComponentAddButton";
 import { ComponentGroups } from "./ComponentGroups";
@@ -9,30 +8,33 @@ import { ComponentItem } from "./ComponentItem";
 import useGroups from "./useGroups";
 
 type FieldComponentEditorProps = {
-  fieldComponentsGroups: ComponentGroup[] | undefined;
+  componentsGroups: ComponentGroup[];
   hidden?: boolean;
-  updateSetting?: UpdateSetting;
+  onComponentGroupsUpdate: (groups: ComponentGroup[]) => void;
 };
 
 export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
-  fieldComponentsGroups,
+  componentsGroups,
   hidden,
-  updateSetting,
+  onComponentGroupsUpdate,
 }) => {
   const {
-    groups,
     currentGroup,
     handleGroupSelect,
     handleGroupCreate,
     handleGroupDelete,
     handleGroupRename,
     handleGroupMove,
-  } = useGroups({ fieldComponentsGroups, updateSetting });
+    handleComponentAdd,
+  } = useGroups({ componentsGroups, onComponentGroupsUpdate });
+
+  console.log("groups", componentsGroups);
+  console.log("currentGroup", currentGroup);
 
   return (
     <FieldComponentEditorWrapper hidden={hidden}>
       <ComponentGroups
-        groups={groups}
+        groups={componentsGroups}
         currentGroup={currentGroup}
         onGroupSelect={handleGroupSelect}
         onGroupCreate={handleGroupCreate}
@@ -43,7 +45,7 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
       {currentGroup?.components.map(component => (
         <ComponentItem key={component.id} component={component} />
       ))}
-      <ComponentAddButton currentGroup={currentGroup} updateSetting={updateSetting} />
+      {currentGroup && <ComponentAddButton onComponentAdd={handleComponentAdd} />}
     </FieldComponentEditorWrapper>
   );
 };

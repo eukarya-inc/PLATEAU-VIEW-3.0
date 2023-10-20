@@ -1,22 +1,15 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useCallback, useState, useMemo } from "react";
 
-import { ComponentGroup } from "../../../../../../shared/api/types";
 import { ComponentSelector, EditorButton, EditorDialog } from "../../../../../ui-components";
-import { UpdateSetting } from "../../dataset";
-import { generateID } from "../../utils";
 
 import { fields, fieldCatagories, type FieldType } from "./fields";
 
 type ComponentAddButtonProps = {
-  currentGroup?: ComponentGroup;
-  updateSetting?: UpdateSetting;
+  onComponentAdd?: (type: FieldType) => void;
 };
 
-export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({
-  currentGroup,
-  updateSetting,
-}) => {
+export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({ onComponentAdd }) => {
   const [addComponentOpen, setAddComponentOpen] = useState(false);
 
   const handleOpenAddComponent = useCallback(() => {
@@ -47,18 +40,9 @@ export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({
 
   const handleComponentAdd = useCallback(() => {
     if (!newComponentType) return;
-    updateSetting?.(s => {
-      if (!s) return s;
-      s.fieldComponents?.groups
-        ?.find(g => g.id === currentGroup?.id)
-        ?.components.push({
-          id: generateID(),
-          type: newComponentType,
-        });
-      return { ...s };
-    });
+    onComponentAdd?.(newComponentType);
     setAddComponentOpen(false);
-  }, [currentGroup?.id, newComponentType, updateSetting]);
+  }, [newComponentType, onComponentAdd]);
 
   return (
     <>

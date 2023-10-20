@@ -13,6 +13,7 @@ import {
   EditorTreeItemType,
   EditorTreeSelection,
 } from "../../../../ui-components";
+import { generateID } from "../utils";
 
 import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
@@ -189,6 +190,25 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     console.log("save setting", draftSetting);
   }, [draftSetting]);
 
+  useEffect(() => {
+    if (!draftSetting) return;
+    if (!draftSetting.fieldComponents?.groups || draftSetting.fieldComponents.groups.length === 0) {
+      updateDraftSetting({
+        ...draftSetting,
+        fieldComponents: {
+          ...draftSetting.fieldComponents,
+          groups: [
+            {
+              id: generateID(),
+              name: "Default",
+              components: [],
+            },
+          ],
+        },
+      });
+    }
+  }, [draftSetting]);
+
   const showSaveButton = useMemo(
     () => !!dataset?.id && !!dataId && contentType !== "folder",
     [dataset, dataId, contentType],
@@ -219,7 +239,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
                 setting={draftSetting}
                 updateSetting={updateDraftSetting}
               />
-            ) : contentType === "fieldComponents" ? (
+            ) : contentType === "fieldComponents" && draftSetting ? (
               <FieldComponentsPage
                 key={`${dataset.id}-${dataId}`}
                 setting={draftSetting}
