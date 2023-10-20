@@ -3,7 +3,7 @@ import { atomWithReset } from "jotai/utils";
 import { useCallback, type FC } from "react";
 
 import { useAreaDatasets, useAreas } from "../../../shared/graphql";
-import { AreasQuery } from "../../../shared/graphql/types/plateau";
+import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";

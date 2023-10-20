@@ -1,4 +1,4 @@
-import { DatasetFormat } from "../graphql/types/plateau";
+import { DatasetFormat } from "../graphql/types/catalog";
 import { DataType } from "../reearth/types/layer";
 
 export const REEARTH_DATA_FORMATS: Record<DatasetFormat, DataType> = {

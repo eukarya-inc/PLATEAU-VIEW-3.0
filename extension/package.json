@@ -14,7 +14,7 @@
     "build-storybook": "storybook build",
     "gql": "run-p gql:*",
     "gql:geo": "graphql-codegen --config ./codegen_geo.ts && yarn lint",
-    "gql:plateau": "graphql-codegen --config ./codegen_plateau.ts && yarn lint"
+    "gql:plateau": "graphql-codegen --config ./codegen_catalog.ts && yarn lint"
   },
   "dependencies": {
     "@ant-design/colors": "7.0.0",

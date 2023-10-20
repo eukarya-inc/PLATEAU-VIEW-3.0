@@ -2,7 +2,7 @@ import { IconButton, styled, useMediaQuery, useTheme } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, type MouseEvent, type ReactNode } from "react";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";

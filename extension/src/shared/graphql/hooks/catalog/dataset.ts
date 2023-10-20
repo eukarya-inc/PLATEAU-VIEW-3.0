@@ -1,5 +1,5 @@
-import { DatasetFragmentFragment, DatasetsInput } from "../../base/plateau/__gen__/graphql";
-import { DATASETS, DATASET_BY_ID } from "../../base/plateau/queries/dataset";
+import { DatasetFragmentFragment, DatasetsInput } from "../../base/catalog/__gen__/graphql";
+import { DATASETS, DATASET_BY_ID } from "../../base/catalog/queries/dataset";
 
 import { useLazyQuery, useQuery } from "./base";
 

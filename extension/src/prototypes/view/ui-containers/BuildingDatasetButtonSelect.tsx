@@ -2,7 +2,7 @@ import { Stack, Typography, type SelectChangeEvent } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type Getter, type SetStateAction } from "jotai";
 import { memo, useCallback, useMemo, type FC } from "react";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";

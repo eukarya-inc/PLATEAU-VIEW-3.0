@@ -4,7 +4,7 @@ import { differenceBy } from "lodash";
 import { memo, useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFilterLayers } from "../../layers";

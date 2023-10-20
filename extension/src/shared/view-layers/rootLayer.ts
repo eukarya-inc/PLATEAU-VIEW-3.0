@@ -1,9 +1,10 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
+import { isEqual } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
 import { ComponentGroup, Infobox, Setting } from "../api/types";
-import { DatasetItem } from "../graphql/types/plateau";
+import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
@@ -35,6 +36,7 @@ export type RootLayerConfig = {
   rootLayerAtom: PrimitiveAtom<RootLayer>;
   currentGroupIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
   currentDataIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
+  settingsAtom: WritableAtom<Setting[], [settings: Setting[]], void>;
 };
 
 // TODO: Get default component group from template
@@ -64,9 +66,9 @@ const getDefaultSetting = (): Setting => {
   return {} as Setting;
 };
 
-const convertRootLayerParams = (params: RootLayerParams) => {
-  return params.dataList.map(data => {
-    const setting = params.settings.find(s => s.dataId === data.id);
+const findSettingsByData = (dataList: DatasetItem[], settings: Setting[]) => {
+  return dataList.map(data => {
+    const setting = settings.find(s => s.dataId === data.id);
     if (setting) {
       return setting;
     } else {
@@ -122,18 +124,47 @@ const createRootLayer = (
 };
 
 export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig => {
-  const settings = convertRootLayerParams(params);
+  const initialSettings = findSettingsByData(params.dataList, params.settings);
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer(
       params.datasetId,
       params.type,
       params.title,
       params.dataList,
-      settings,
+      initialSettings,
       params.currentDataId,
       undefined,
       params.shareId,
     ),
+  );
+
+  const settingsPrimitiveAtom = atom(initialSettings);
+  const settingsAtom = atom(
+    get => get(settingsPrimitiveAtom),
+    (get, set, settings: Setting[]) => {
+      const prevSettings = get(settingsPrimitiveAtom);
+      const nextSettings = findSettingsByData(params.dataList, settings);
+
+      if (!isEqual(prevSettings, nextSettings)) return;
+
+      const currentDataId = get(currentDataIdAtom);
+      const currentGroupId = get(currentGroupIdAtom);
+
+      set(
+        rootLayerAtom,
+        createRootLayer(
+          params.datasetId,
+          params.type,
+          params.title,
+          params.dataList,
+          nextSettings,
+          currentDataId,
+          currentGroupId,
+          params.shareId,
+        ),
+      );
+      set(settingsPrimitiveAtom, nextSettings);
+    },
   );
 
   const currentDataIdAtom = atom<string | undefined>(params.currentDataId);
@@ -154,7 +185,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           params.type,
           params.title,
           params.dataList,
-          settings,
+          get(settingsPrimitiveAtom),
           update,
           currentGroupId,
           params.shareId,
@@ -172,7 +203,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
 
       const rootLayer = get(rootLayerAtom);
       const currentDataId = get(currentDataIdAtom);
-      const setting = findSetting(settings, currentDataId);
+      const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(params.dataList, currentDataId);
       const group = findComponentGroup(setting, update);
       set(
@@ -215,5 +246,6 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
     ),
     currentDataIdAtom: shareableCurrentDataIdAtom,
     currentGroupIdAtom: shareableCurrentGroupIdAtom,
+    settingsAtom,
   };
 };

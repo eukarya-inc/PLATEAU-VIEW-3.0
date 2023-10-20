@@ -1,11 +1,12 @@
+import { useAtomValue } from "jotai";
 import { useEffect, type FC, useMemo } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
-import { mockSettings } from "../../api/mock";
 import { useDatasets } from "../../graphql";
-import { DatasetItem, DatasetsInput } from "../../graphql/types/plateau";
+import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
+import { settingsAtom } from "../../states/setting";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
@@ -20,7 +21,7 @@ export const InitialLayers: FC = () => {
     [],
   );
   const query = useDatasets(initialDatasetInput);
-  const settings = mockSettings;
+  const settings = useAtomValue(settingsAtom);
 
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 

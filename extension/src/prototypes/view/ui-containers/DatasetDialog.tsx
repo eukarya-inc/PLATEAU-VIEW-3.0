@@ -12,7 +12,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC } from "react";
 
 import { useDatasetById } from "../../../shared/graphql";
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";

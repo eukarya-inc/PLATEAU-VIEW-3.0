@@ -1,6 +1,5 @@
 import { Setting } from "./types";
 import { OPACITY_FIELD } from "./types/fields/general";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "./types/fields/point";
 
 export const mockSettings: Setting[] = [
   // For Chiyoda
@@ -49,30 +48,30 @@ export const mockSettings: Setting[] = [
   },
 
   // For chiyoda shelter
-  {
-    id: "3",
-    datasetId: "d_13101_shelter",
-    dataId: "di_13101_shelter",
-    groups: [
-      {
-        id: "1",
-        default: true,
-        components: [
-          {
-            type: POINT_COLOR_FIELD,
-            value: `"#f0ff00"`,
-            storeable: false,
-          },
-          {
-            type: POINT_SIZE_FIELD,
-            value: 100,
-            storeable: false,
-          },
-        ],
-      },
-    ],
-    template: undefined,
-    infobox: undefined,
-    camera: undefined,
-  },
+  // {
+  //   id: "3",
+  //   datasetId: "d_13101_shelter",
+  //   dataId: "di_13101_shelter",
+  //   groups: [
+  //     {
+  //       id: "1",
+  //       default: true,
+  //       components: [
+  //         {
+  //           type: POINT_COLOR_FIELD,
+  //           value: `"#f0ff00"`,
+  //           storeable: false,
+  //         },
+  //         {
+  //           type: POINT_SIZE_FIELD,
+  //           value: 100,
+  //           storeable: false,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   template: undefined,
+  //   infobox: undefined,
+  //   camera: undefined,
+  // },
 ];

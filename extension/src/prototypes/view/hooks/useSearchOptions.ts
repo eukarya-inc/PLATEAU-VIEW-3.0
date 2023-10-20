@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { useDatasets } from "../../../shared/graphql";
-import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/plateau";
+import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
