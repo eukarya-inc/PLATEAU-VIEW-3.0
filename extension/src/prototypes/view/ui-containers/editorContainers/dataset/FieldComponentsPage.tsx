@@ -16,7 +16,11 @@ export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
   return (
     <>
       <FieldComponentTemplateBlock setting={setting} updateSetting={updateSetting} />
-      <FieldComponentEditor fieldComponentsGroups={setting?.fieldComponents?.groups} />
+      <FieldComponentEditor
+        fieldComponentsGroups={setting?.fieldComponents?.groups}
+        hidden={setting?.fieldComponents?.useTemplate}
+        updateSetting={updateSetting}
+      />
     </>
   );
 };

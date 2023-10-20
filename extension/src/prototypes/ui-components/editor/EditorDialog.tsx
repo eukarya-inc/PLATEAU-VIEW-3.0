@@ -16,6 +16,7 @@ type EditorDialogProps = DialogProps & {
   title?: string;
   description?: string;
   submitDisabled?: boolean;
+  primaryButtonText?: string;
   onClose?: () => void;
   onSubmit?: () => void;
   children?: React.ReactNode;
@@ -26,6 +27,7 @@ export const EditorDialog: React.FC<EditorDialogProps> = ({
   title,
   description,
   submitDisabled,
+  primaryButtonText,
   onClose,
   onSubmit,
   children,
@@ -43,7 +45,7 @@ export const EditorDialog: React.FC<EditorDialogProps> = ({
           Cancel
         </EditorButton>
         <EditorButton variant="contained" onClick={onSubmit} disabled={!!submitDisabled}>
-          Submit
+          {primaryButtonText ?? "Submit"}
         </EditorButton>
       </StyledDialogActions>
     </StyledDialog>

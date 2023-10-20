@@ -1,97 +1,55 @@
-import { useState, useCallback } from "react";
+import { styled } from "@mui/material";
 
 import { ComponentGroup } from "../../../../../../shared/api/types";
-import { generateID } from "../../utils";
+import { UpdateSetting } from "../../dataset";
 
+import { ComponentAddButton } from "./ComponentAddButton";
 import { ComponentGroups } from "./ComponentGroups";
+import { ComponentItem } from "./ComponentItem";
+import useGroups from "./useGroups";
 
 type FieldComponentEditorProps = {
   fieldComponentsGroups: ComponentGroup[] | undefined;
+  hidden?: boolean;
+  updateSetting?: UpdateSetting;
 };
 
 export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
   fieldComponentsGroups,
+  hidden,
+  updateSetting,
 }) => {
-  const [groups, setGroups] = useState<ComponentGroup[]>(
-    fieldComponentsGroups ?? [
-      {
-        id: generateID(),
-        name: "Default",
-        default: true,
-        components: [],
-      },
-      {
-        id: generateID(),
-        name: "Default2",
-        components: [],
-      },
-    ],
-  );
-  const [currentGroup, setCurrentGroup] = useState<ComponentGroup | undefined>(groups[0]);
-
-  const handleGroupSelect = useCallback(
-    (id: string) => {
-      setCurrentGroup(groups.find(g => g.id === id));
-    },
-    [groups],
-  );
-
-  const handleGroupCreate = useCallback(() => {
-    const newGroup: ComponentGroup = {
-      id: generateID(),
-      name: "New Group",
-      components: [],
-    };
-    setGroups([...groups, newGroup]);
-  }, [groups]);
-
-  const handleGroupDelete = useCallback(
-    (id: string) => {
-      if (groups.length <= 1) {
-        return;
-      }
-      setGroups(groups.filter(g => g.id !== id));
-    },
-    [groups],
-  );
-
-  const handleGroupRename = useCallback(
-    (id: string, name: string) => {
-      setGroups(groups.map(g => (g.id === id ? { ...g, name } : g)));
-    },
-    [groups],
-  );
-
-  const handleGroupMove = useCallback(
-    (id: string, direction: "forward" | "backward") => {
-      const index = groups.findIndex(g => g.id === id);
-      if (
-        index === -1 ||
-        (direction === "forward" && index === 0) ||
-        (direction === "backward" && index === groups.length - 1)
-      )
-        return;
-      const newGroups = [...groups];
-      const [removed] = newGroups.splice(index, 1);
-      if (direction === "forward") {
-        newGroups.splice(index - 1, 0, removed);
-      } else {
-        newGroups.splice(index + 1, 0, removed);
-      }
-      setGroups(newGroups);
-    },
-    [groups],
-  );
+  const {
+    groups,
+    currentGroup,
+    handleGroupSelect,
+    handleGroupCreate,
+    handleGroupDelete,
+    handleGroupRename,
+    handleGroupMove,
+  } = useGroups({ fieldComponentsGroups, updateSetting });
 
   return (
-    <ComponentGroups
-      groups={groups}
-      currentGroup={currentGroup}
-      onGroupSelect={handleGroupSelect}
-      onGroupCreate={handleGroupCreate}
-      onGroupDelete={handleGroupDelete}
-      onGroupRename={handleGroupRename}
-      onGroupMove={handleGroupMove}
-    />
+    <FieldComponentEditorWrapper hidden={hidden}>
+      <ComponentGroups
+        groups={groups}
+        currentGroup={currentGroup}
+        onGroupSelect={handleGroupSelect}
+        onGroupCreate={handleGroupCreate}
+        onGroupDelete={handleGroupDelete}
+        onGroupRename={handleGroupRename}
+        onGroupMove={handleGroupMove}
+      />
+      {currentGroup?.components.map(component => (
+        <ComponentItem key={component.id} component={component} />
+      ))}
+      <ComponentAddButton currentGroup={currentGroup} updateSetting={updateSetting} />
+    </FieldComponentEditorWrapper>
   );
 };
+
+const FieldComponentEditorWrapper = styled("div")<{ hidden?: boolean }>(({ theme, hidden }) => ({
+  display: hidden ? "none" : "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+}));

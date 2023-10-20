@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import { InspectorItem } from "../../prototypes/ui-components";
-import { OPACITY_FIELD } from "../api/types/fields/general";
+import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { LayerOpacityField } from "../view/fields/general/LayerOpacityField";
 
 import { ComponentAtom } from "./component";

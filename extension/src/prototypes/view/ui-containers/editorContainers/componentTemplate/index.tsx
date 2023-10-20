@@ -49,6 +49,12 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
     [expanded],
   );
 
+  const showSaveButton = useMemo(() => contentType === "template", [contentType]);
+
+  const handleSave = useCallback(() => {
+    console.log("field component template save");
+  }, []);
+
   return (
     <EditorSection
       sidebarMain={
@@ -63,6 +69,8 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
       }
       main={contentType === "template" ? <ComponentTemplatePage template={template} /> : null}
       header={template?.name}
+      showSaveButton={showSaveButton}
+      onSave={handleSave}
     />
   );
 };

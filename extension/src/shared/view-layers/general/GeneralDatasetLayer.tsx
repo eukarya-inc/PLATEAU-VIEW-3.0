@@ -4,7 +4,7 @@ import { FC, useCallback, useEffect } from "react";
 import type { LayerProps } from "../../../prototypes/layers";
 import { ScreenSpaceSelectionEntry } from "../../../prototypes/screen-space-selection";
 import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototypes/view-layers";
-import { POINT_COLOR_FIELD } from "../../api/types/fields/point";
+import { POINT_COLOR_FIELD } from "../../types/fieldComponents/point";
 import { GeneralLayerContainer } from "../../layerContainers/general";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Properties } from "../../reearth/utils";

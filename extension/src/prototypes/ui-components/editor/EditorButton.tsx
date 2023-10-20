@@ -1,4 +1,4 @@
-import { styled, Button, ButtonProps, buttonClasses } from "@mui/material";
+import { styled, Button, ButtonProps, buttonClasses, svgIconClasses } from "@mui/material";
 
 export type EditorButtonProps = ButtonProps;
 
@@ -15,5 +15,9 @@ const StyledButton = styled(Button)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   [`&.${buttonClasses.containedPrimary}`]: {
     color: "#fff",
+  },
+  [`.${svgIconClasses.root}`]: {
+    width: "18px",
+    marginRight: theme.spacing(0.5),
   },
 }));

@@ -10,5 +10,7 @@ export * from "./EditorSelect";
 export * from "./EditorPopper";
 export * from "./EditorPopperList";
 export * from "./EditorDialog";
+export * from "./EditorButton";
 export * from "./ComponentGroupSplitButton";
 export * from "./ComponentGroupButton";
+export * from "./ComponentSelector";

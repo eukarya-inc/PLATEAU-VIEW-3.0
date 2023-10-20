@@ -1,6 +1,7 @@
+import { OPACITY_FIELD } from "../types/fieldComponents/general";
+import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../types/fieldComponents/point";
+
 import { Setting, ComponentTemplate, EmphasisPropertyTemplate } from "./types";
-import { OPACITY_FIELD } from "./types/fields/general";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "./types/fields/point";
 
 export const mockSettings: Setting[] = [
   // For Chiyoda
@@ -19,8 +20,8 @@ export const mockSettings: Setting[] = [
           name: "Default",
           components: [
             {
+              id: "1",
               type: OPACITY_FIELD,
-              value: 1,
               storeable: false,
             },
           ],
@@ -45,8 +46,8 @@ export const mockSettings: Setting[] = [
           name: "Default",
           components: [
             {
+              id: "1",
               type: OPACITY_FIELD,
-              value: 1,
               storeable: true,
             },
           ],
@@ -71,13 +72,13 @@ export const mockSettings: Setting[] = [
           name: "Default",
           components: [
             {
+              id: "1",
               type: POINT_COLOR_FIELD,
-              value: `"#f0ff00"`,
               storeable: false,
             },
             {
+              id: "2",
               type: POINT_SIZE_FIELD,
-              value: 100,
               storeable: false,
             },
           ],
@@ -99,8 +100,8 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
         name: "Default",
         components: [
           {
+            id: "1",
             type: OPACITY_FIELD,
-            value: 1,
             storeable: true,
           },
         ],
@@ -117,8 +118,8 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
         name: "Default",
         components: [
           {
+            id: "1",
             type: OPACITY_FIELD,
-            value: 1,
             storeable: true,
           },
         ],
