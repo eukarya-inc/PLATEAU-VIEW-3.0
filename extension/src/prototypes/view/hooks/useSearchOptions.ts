@@ -94,6 +94,7 @@ function useDatasetSearchOptions({
 }
 
 function useBuildingSearchOption({
+  inputValue,
   skip = false,
 }: SearchOptionsParams = {}): readonly BuildingSearchOption[] {
   const layers = useAtomValue(rootLayersLayersAtom);
@@ -114,7 +115,7 @@ function useBuildingSearchOption({
   const [featureIndicesKey, setFeatureIndicesKey] = useState(0);
   useEffect(() => {
     setFeatureIndicesKey(value => value + 1);
-  }, [featureIndices]);
+  }, [featureIndices, inputValue]);
 
   return useMemo(
     () => {
