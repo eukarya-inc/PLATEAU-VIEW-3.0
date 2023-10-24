@@ -16,6 +16,7 @@ type GeneralContainerProps = GeneralProps & {
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
   pointColorAtom?: WritableAtomForComponent<string>;
+  pointSizeAtom?: WritableAtomForComponent<number>;
   selections?: ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[];
   hidden: boolean;
   type: LayerType;
@@ -25,6 +26,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   onLoad,
   layerIdAtom,
   pointColorAtom,
+  pointSizeAtom,
   propertiesAtom,
   hidden,
   ...props
@@ -72,6 +74,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   );
 
   const pointColor = useOptionalAtomValue(pointColorAtom);
+  const pointSize = useOptionalAtomValue(pointSizeAtom);
 
   const theme = useTheme();
 
@@ -80,6 +83,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
       {...props}
       onLoad={handleLoad}
       pointColor={pointColor}
+      pointSize={JSON.stringify(pointSize)}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />

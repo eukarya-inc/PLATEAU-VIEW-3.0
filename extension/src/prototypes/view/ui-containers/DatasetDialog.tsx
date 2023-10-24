@@ -14,6 +14,7 @@ import { useCallback, useMemo, type FC } from "react";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { settingsAtom } from "../../../shared/states/setting";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
@@ -66,6 +67,8 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
     ),
   );
 
+  const settings = useAtomValue(settingsAtom);
+
   const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
@@ -74,13 +77,15 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
       return;
     }
     if (layer == null) {
+      const filteredSettings = settings.filter(
+        s => s.datasetId === dataset.id && dataset.items[0].id === s.dataId,
+      );
       addLayer(
         createRootLayerAtom({
           type: layerType,
           datasetId: dataset.id,
           title: dataset.name,
-          // TODO: Support components
-          settings: [],
+          settings: filteredSettings,
           dataList: dataset.items as DatasetItem[],
           areaCode: municipalityCode,
         }),
@@ -88,7 +93,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
     } else {
       removeLayer(layer.id);
     }
-  }, [dataset, data, layer, layerType, addLayer, removeLayer, municipalityCode]);
+  }, [dataset, data, layer, layerType, addLayer, removeLayer, municipalityCode, settings]);
 
   return (
     <Dialog {...props}>

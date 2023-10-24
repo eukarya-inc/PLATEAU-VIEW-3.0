@@ -120,7 +120,7 @@ const yml = {
       name: "SampleEditor",
       widgetLayout: {
         defaultLocation: {
-          zone: "outer",
+          zone: "inner",
           section: "right",
           area: "bottom",
         },

@@ -3,6 +3,7 @@ import { memo, useCallback, useMemo, type FC } from "react";
 
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { settingsAtom } from "../../../shared/states/setting";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFindLayer } from "../../layers";
 import { ContextButton } from "../../ui-components";
@@ -31,6 +32,7 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
           : undefined,
       [dataset.id, layers, layerType, findLayer],
     );
+    const settings = useAtomValue(settingsAtom);
 
     const addLayer = useAddLayer();
     const removeLayer = useSetAtom(removeLayerAtom);
@@ -40,13 +42,15 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
         return;
       }
       if (layer == null) {
+        const filteredSettings = settings.filter(
+          s => s.datasetId === dataset.id && dataset.items[0].id === s.dataId,
+        );
         addLayer(
           createRootLayerAtom({
             type: layerType,
             datasetId: dataset.id,
             title: dataset.name,
-            // TODO: Support components
-            settings: [],
+            settings: filteredSettings,
             dataList: dataset.items as DatasetItem[],
             areaCode: municipalityCode,
           }),
@@ -54,7 +58,7 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
       } else {
         removeLayer(layer.id);
       }
-    }, [dataset, layer, layerType, addLayer, removeLayer, municipalityCode]);
+    }, [dataset, layer, layerType, addLayer, removeLayer, municipalityCode, settings]);
 
     const datum = dataset.items[0];
     const showDataFormats = useAtomValue(showDataFormatsAtom);

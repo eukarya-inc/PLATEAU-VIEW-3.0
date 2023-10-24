@@ -3,6 +3,7 @@ import { isEqual } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
+import { isNotNullish } from "../../prototypes/type-helpers";
 import { ComponentGroup, Infobox, Setting } from "../api/types";
 import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
@@ -67,14 +68,16 @@ const getDefaultSetting = (): Setting => {
 };
 
 const findSettingsByData = (dataList: DatasetItem[], settings: Setting[]) => {
-  return dataList.map(data => {
-    const setting = settings.find(s => s.dataId === data.id);
-    if (setting) {
-      return setting;
-    } else {
-      return getDefaultSetting();
-    }
-  });
+  return dataList
+    .map(data => {
+      const setting = settings.find(s => s.dataId === data.id);
+      if (setting) {
+        return setting;
+      } else {
+        return;
+      }
+    })
+    .filter(isNotNullish);
 };
 
 const createViewLayerWithComponentGroup = (
@@ -84,6 +87,7 @@ const createViewLayerWithComponentGroup = (
   data: DatasetItem | undefined,
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
+  shouldInitialize: boolean,
 ): LayerModel => {
   invariant(type);
   return {
@@ -95,7 +99,12 @@ const createViewLayerWithComponentGroup = (
       shareId,
       textured: data?.name !== "LOD1" && data?.name !== "LOD2（テクスチャなし）",
     }),
-    componentAtoms: makeComponentAtoms(datasetId, componentGroup?.components ?? [], shareId),
+    componentAtoms: makeComponentAtoms(
+      datasetId,
+      componentGroup?.components ?? [],
+      shareId,
+      shouldInitialize,
+    ),
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
@@ -112,6 +121,7 @@ const createRootLayer = (
   currentDataId: string | undefined,
   currentGroupId: string | undefined,
   shareId: string | undefined,
+  shouldInitialize: boolean,
 ): RootLayer => {
   const setting = findSetting(settings, currentDataId);
   const group = findComponentGroup(setting, currentGroupId);
@@ -119,7 +129,17 @@ const createRootLayer = (
   return {
     infoboxRef: setting.infobox,
     camera: setting.camera,
-    layer: atom(createViewLayerWithComponentGroup(datasetId, type, title, data, group, shareId)),
+    layer: atom(
+      createViewLayerWithComponentGroup(
+        datasetId,
+        type,
+        title,
+        data,
+        group,
+        shareId,
+        shouldInitialize,
+      ),
+    ),
   };
 };
 
@@ -135,6 +155,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       params.currentDataId,
       undefined,
       params.shareId,
+      true,
     ),
   );
 
@@ -145,7 +166,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       const prevSettings = get(settingsPrimitiveAtom);
       const nextSettings = findSettingsByData(params.dataList, settings);
 
-      if (!isEqual(prevSettings, nextSettings)) return;
+      if (isEqual(prevSettings, nextSettings)) return;
 
       const currentDataId = get(currentDataIdAtom);
       const currentGroupId = get(currentGroupIdAtom);
@@ -161,6 +182,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           currentDataId,
           currentGroupId,
           params.shareId,
+          false,
         ),
       );
       set(settingsPrimitiveAtom, nextSettings);
@@ -189,6 +211,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           update,
           currentGroupId,
           params.shareId,
+          false,
         ),
       );
       set(currentDataIdAtom, () => update);
@@ -206,6 +229,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(params.dataList, currentDataId);
       const group = findComponentGroup(setting, update);
+
       set(
         rootLayer.layer,
         createViewLayerWithComponentGroup(
@@ -215,6 +239,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           data,
           group,
           params.shareId,
+          false,
         ),
       );
       set(currentGroupIdAtom, () => update);

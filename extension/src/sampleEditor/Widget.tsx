@@ -1,17 +1,8 @@
 import { Button } from "@mui/material";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
-import {
-  ChangeEvent,
-  FC,
-  memo,
-  useCallback,
-  useDeferredValue,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, FC, memo, useCallback, useDeferredValue, useRef, useState } from "react";
 
-import { Setting } from "../shared/api/types";
+import { Component, Setting } from "../shared/api/types";
 import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../shared/api/types/fields/point";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import {
@@ -49,38 +40,33 @@ const mockSetting: Setting = {
   camera: undefined,
 };
 
-const SettingItem: FC<{ settingAtom: PrimitiveAtom<Setting>; index: number }> = ({
-  settingAtom,
-  index,
-}) => {
-  const setting = useAtomValue(settingAtom);
-  const updateSetting = useSetAtom(updateSettingAtom);
-
+const ComponentItem: FC<{
+  component: Component;
+  setting: Setting;
+  settingIndex: number;
+  componentIndex: number;
+  groupIndex: number;
+}> = ({ component, setting, settingIndex, componentIndex, groupIndex }) => {
   const [value, setValue] = useState({
-    type: "string",
-    groupIndex: -1,
-    componentIndex: -1,
-    value: "",
+    type: typeof component.value,
+    groupIndex,
+    componentIndex,
+    value: component.value,
   });
   const deferredValue = useDeferredValue(value);
 
-  const handleChange = useCallback(
-    (type: "string" | "number", groupIndex: number, componentIndex: number) =>
-      (e: ChangeEvent<HTMLInputElement>) => {
-        setValue({ type, groupIndex, componentIndex, value: e.target.value });
-      },
-    [],
-  );
+  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setValue(v => ({ ...v, value: e.target.value }));
+  }, []);
 
-  const removeSetting = useSetAtom(removeSettingAtom);
-  const handleRemoveSetting = useCallback(() => {
-    removeSetting(settingAtom);
-  }, [removeSetting, settingAtom]);
+  const updateSetting = useSetAtom(updateSettingAtom);
 
   const settingRef = useRef(setting);
   settingRef.current = setting;
-  useEffect(() => {
+
+  const apply = useCallback(() => {
     const s = settingRef.current;
+
     updateSetting(
       {
         ...s,
@@ -92,21 +78,43 @@ const SettingItem: FC<{ settingAtom: PrimitiveAtom<Setting>; index: number }> = 
                   ...c,
                   value:
                     deferredValue.type === "string"
-                      ? (JSON.stringify(deferredValue.value) as any)
+                      ? (deferredValue.value as any)
                       : Number(deferredValue.value) ?? 0,
                 }
               : c,
           ),
         })),
       },
-      index,
+      settingIndex,
     );
-  }, [deferredValue, index, updateSetting]);
+  }, [deferredValue, settingIndex, updateSetting]);
+
+  return (
+    <li>
+      <label>{component.type}: </label>
+      <input onChange={handleChange} value={value.value} />
+      <Button onClick={apply} color="warning">
+        Apply
+      </Button>
+    </li>
+  );
+};
+
+const SettingItem: FC<{ settingAtom: PrimitiveAtom<Setting>; index: number }> = ({
+  settingAtom,
+  index,
+}) => {
+  const setting = useAtomValue(settingAtom);
+
+  const removeSetting = useSetAtom(removeSettingAtom);
+  const handleRemoveSetting = useCallback(() => {
+    removeSetting(settingAtom);
+  }, [removeSetting, settingAtom]);
 
   return (
     <li>
       <h3>{setting.datasetId}</h3>
-      <Button color="primary" onClick={handleRemoveSetting}>
+      <Button color="error" onClick={handleRemoveSetting}>
         Remove
       </Button>
       <ul>
@@ -117,13 +125,14 @@ const SettingItem: FC<{ settingAtom: PrimitiveAtom<Setting>; index: number }> = 
               <ul>
                 {group.components.map((c, ci) => {
                   return (
-                    <li key={ci.toString()}>
-                      <label>{c.type}: </label>
-                      <input
-                        onChange={handleChange(typeof c.value as "string" | "number", gi, ci)}
-                        value={c.value}
-                      />
-                    </li>
+                    <ComponentItem
+                      key={ci.toString()}
+                      component={c}
+                      setting={setting}
+                      settingIndex={index}
+                      groupIndex={gi}
+                      componentIndex={ci}
+                    />
                   );
                 })}
               </ul>

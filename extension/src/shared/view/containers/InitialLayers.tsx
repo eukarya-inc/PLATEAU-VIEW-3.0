@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useEffect, type FC, useMemo } from "react";
+import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
@@ -28,6 +28,8 @@ export const InitialLayers: FC = () => {
   // TODO: Get share ID
   const shareId = undefined;
 
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
   useEffect(() => {
     const remove = initialDatasets.map(d => {
       const dataIds = d.items.map(data => data.id);
@@ -40,7 +42,9 @@ export const InitialLayers: FC = () => {
           areaCode: d.wardCode || d.cityCode || d.prefectureCode,
           title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-          settings: settings.filter(s => s.datasetId === d.id && dataIds.includes(s.dataId)),
+          settings: settingsRef.current.filter(
+            s => s.datasetId === d.id && dataIds.includes(s.dataId),
+          ),
           shareId,
         }),
         { autoSelect: false },
@@ -100,7 +104,7 @@ export const InitialLayers: FC = () => {
         remove();
       });
     };
-  }, [addLayer, initialDatasets, settings, shareId]);
+  }, [addLayer, initialDatasets, shareId]);
 
   return null;
 };
