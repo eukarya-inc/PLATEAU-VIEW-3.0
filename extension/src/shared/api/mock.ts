@@ -1,5 +1,10 @@
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../types/fieldComponents/point";
+import {
+  POINT_COLOR_FIELD,
+  POINT_FILL_COLOR_CONDITION_FIELD,
+  POINT_FILL_COLOR_VALUE_FIELD,
+  POINT_SIZE_FIELD,
+} from "../types/fieldComponents/point";
 
 import { Setting, ComponentTemplate, EmphasisPropertyTemplate } from "./types";
 
@@ -48,7 +53,7 @@ export const mockSettings: Setting[] = [
             {
               id: "1",
               type: OPACITY_FIELD,
-              storeable: true,
+              storeable: false,
             },
           ],
         },
@@ -103,6 +108,14 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
             id: "1",
             type: OPACITY_FIELD,
             storeable: true,
+          },
+          {
+            id: "2",
+            type: POINT_FILL_COLOR_VALUE_FIELD,
+          },
+          {
+            id: "3",
+            type: POINT_FILL_COLOR_CONDITION_FIELD,
           },
         ],
       },

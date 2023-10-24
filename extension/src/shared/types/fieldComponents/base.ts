@@ -1,1 +1,1 @@
-export type FieldBase<T> = { id: string; storeable?: boolean } & T;
+export type FieldBase<T> = { storeable?: boolean } & T;

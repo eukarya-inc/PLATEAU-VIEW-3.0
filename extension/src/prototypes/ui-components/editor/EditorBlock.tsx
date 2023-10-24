@@ -20,8 +20,8 @@ export const EditorBlock: React.FC<EditorBlockProps> = ({
 
   const handleTitleClick = useCallback(() => {
     if (!expandable) return;
-    setExpanded(!localExpaned);
-  }, [expandable, localExpaned]);
+    setExpanded(prev => !prev);
+  }, [expandable]);
 
   return (
     <BlockWrapper>

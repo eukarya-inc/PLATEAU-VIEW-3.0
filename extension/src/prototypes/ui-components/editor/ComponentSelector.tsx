@@ -4,11 +4,13 @@ import { useCallback, useState, useMemo, useEffect } from "react";
 type ComponentSelectorProps = {
   tree: { label: string; value: string; children: { label: string; value: string }[] }[];
   onComponentSelect?: (type: string) => void;
+  onComponentDoubleClick?: () => void;
 };
 
 export const ComponentSelector: React.FC<ComponentSelectorProps> = ({
   tree,
   onComponentSelect,
+  onComponentDoubleClick,
 }) => {
   const [selectedCategory, selectCategory] = useState(tree[0]?.value);
   const [selectedField, selectField] = useState<string>();
@@ -48,6 +50,7 @@ export const ComponentSelector: React.FC<ComponentSelectorProps> = ({
           <StyledListItemButton
             key={field.value}
             onClick={() => handleFieldClick(field.value)}
+            onDoubleClick={onComponentDoubleClick}
             selected={field.value === selectedField}>
             {field.label}
           </StyledListItemButton>

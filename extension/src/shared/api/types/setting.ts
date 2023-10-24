@@ -35,6 +35,7 @@ export type FeatureInspectorSettings = {
     displayType: "propertyList" | "";
   };
   emphasisProperty?: {
+    useTemplate?: boolean;
     templateId: string;
     properties: EmphasisProperty[];
   };

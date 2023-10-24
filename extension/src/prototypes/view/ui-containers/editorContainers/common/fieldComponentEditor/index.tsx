@@ -5,7 +5,7 @@ import { ComponentGroup } from "../../../../../../shared/api/types";
 import { ComponentAddButton } from "./ComponentAddButton";
 import { ComponentGroups } from "./ComponentGroups";
 import { ComponentItem } from "./ComponentItem";
-import useGroups from "./useGroups";
+import useHooks from "./hooks";
 
 type FieldComponentEditorProps = {
   componentsGroups: ComponentGroup[];
@@ -20,16 +20,17 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
 }) => {
   const {
     currentGroup,
+    movingComponentId,
     handleGroupSelect,
     handleGroupCreate,
-    handleGroupDelete,
+    handleGroupRemove,
     handleGroupRename,
     handleGroupMove,
     handleComponentAdd,
-  } = useGroups({ componentsGroups, onComponentGroupsUpdate });
-
-  console.log("groups", componentsGroups);
-  console.log("currentGroup", currentGroup);
+    handleComponentUpdate,
+    handleComponentRemove,
+    handleComponentMove,
+  } = useHooks({ componentsGroups, onComponentGroupsUpdate });
 
   return (
     <FieldComponentEditorWrapper hidden={hidden}>
@@ -38,12 +39,21 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
         currentGroup={currentGroup}
         onGroupSelect={handleGroupSelect}
         onGroupCreate={handleGroupCreate}
-        onGroupDelete={handleGroupDelete}
+        onGroupRemove={handleGroupRemove}
         onGroupRename={handleGroupRename}
         onGroupMove={handleGroupMove}
       />
-      {currentGroup?.components.map(component => (
-        <ComponentItem key={component.id} component={component} />
+      {currentGroup?.components.map((component, index) => (
+        <ComponentItem
+          key={component.id}
+          movingComponentId={movingComponentId}
+          moveUpDisabled={index === 0}
+          moveDownDisabled={index === currentGroup.components.length - 1}
+          component={component}
+          onComponentUpdate={handleComponentUpdate}
+          onComponentRemove={handleComponentRemove}
+          onComponentMove={handleComponentMove}
+        />
       ))}
       {currentGroup && <ComponentAddButton onComponentAdd={handleComponentAdd} />}
     </FieldComponentEditorWrapper>

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 
-import { ComponentGroup } from "../../../../../../shared/api/types";
+import { ComponentGroup, SettingComponent } from "../../../../../../shared/api/types";
 import { generateID } from "../../utils";
 
 import { FieldType } from "./fields";
@@ -30,7 +30,7 @@ export default ({ componentsGroups, onComponentGroupsUpdate }: Props) => {
     onComponentGroupsUpdate([...componentsGroups, newGroup]);
   }, [componentsGroups, onComponentGroupsUpdate]);
 
-  const handleGroupDelete = useCallback(
+  const handleGroupRemove = useCallback(
     (id: string) => {
       if (componentsGroups.length <= 1) {
         return;
@@ -68,6 +68,8 @@ export default ({ componentsGroups, onComponentGroupsUpdate }: Props) => {
     [componentsGroups, onComponentGroupsUpdate],
   );
 
+  const [movingComponentId, setMovingComponentId] = useState<string | undefined>();
+
   const handleComponentAdd = useCallback(
     (type: FieldType) => {
       if (!currentGroup) return;
@@ -80,6 +82,56 @@ export default ({ componentsGroups, onComponentGroupsUpdate }: Props) => {
     [currentGroup, componentsGroups, onComponentGroupsUpdate],
   );
 
+  const handleComponentUpdate = useCallback(
+    (component: SettingComponent) => {
+      if (!currentGroup) return;
+      const newGroup = {
+        ...currentGroup,
+        components: currentGroup.components.map(c => (c.id === component.id ? component : c)),
+      };
+      onComponentGroupsUpdate(componentsGroups.map(g => (g.id === currentGroup.id ? newGroup : g)));
+    },
+    [componentsGroups, currentGroup, onComponentGroupsUpdate],
+  );
+
+  const handleComponentRemove = useCallback(
+    (id: string) => {
+      if (!currentGroup) return;
+      const newGroup = {
+        ...currentGroup,
+        components: currentGroup.components.filter(c => c.id !== id),
+      };
+      onComponentGroupsUpdate(componentsGroups.map(g => (g.id === currentGroup.id ? newGroup : g)));
+    },
+    [componentsGroups, currentGroup, onComponentGroupsUpdate],
+  );
+
+  const handleComponentMove = useCallback(
+    (id: string, direction: "up" | "down") => {
+      if (!currentGroup) return;
+      setMovingComponentId(id);
+      const index = currentGroup.components.findIndex(c => c.id === id);
+      if (
+        index === -1 ||
+        (direction === "up" && index === 0) ||
+        (direction === "down" && index === currentGroup.components.length - 1)
+      )
+        return;
+      const newGroup = {
+        ...currentGroup,
+        components: [...currentGroup.components],
+      };
+      const [removed] = newGroup.components.splice(index, 1);
+      if (direction === "up") {
+        newGroup.components.splice(index - 1, 0, removed);
+      } else {
+        newGroup.components.splice(index + 1, 0, removed);
+      }
+      onComponentGroupsUpdate(componentsGroups.map(g => (g.id === currentGroup.id ? newGroup : g)));
+    },
+    [componentsGroups, currentGroup, onComponentGroupsUpdate],
+  );
+
   // select default group if there is no selected group
   useEffect(() => {
     if (componentsGroups.length > 0 && !currentGroup) {
@@ -87,13 +139,26 @@ export default ({ componentsGroups, onComponentGroupsUpdate }: Props) => {
     }
   }, [componentsGroups, currentGroup]);
 
+  // unset moving component id
+  useEffect(() => {
+    if (movingComponentId) {
+      setTimeout(() => {
+        if (movingComponentId) setMovingComponentId(undefined);
+      }, 200);
+    }
+  }, [movingComponentId]);
+
   return {
     currentGroup,
+    movingComponentId,
     handleGroupSelect,
     handleGroupCreate,
-    handleGroupDelete,
+    handleGroupRemove,
     handleGroupRename,
     handleGroupMove,
     handleComponentAdd,
+    handleComponentUpdate,
+    handleComponentRemove,
+    handleComponentMove,
   };
 };

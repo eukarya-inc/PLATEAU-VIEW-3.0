@@ -25,15 +25,20 @@ export const fieldSettings: {
   },
   // point
   POINT_COLOR_FIELD: {
-    defaultValue: "",
+    defaultValue: `"#f0ff00"`,
     hasLegendUI: true,
   },
   POINT_SIZE_FIELD: {
-    defaultValue: 10,
+    defaultValue: 100,
     hasLegendUI: true,
   },
   POINT_FILL_COLOR_VALUE_FIELD: {
     defaultValue: "",
     hasLegendUI: true,
+  },
+  POINT_FILL_COLOR_CONDITION_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+    hasLayerUI: true,
   },
 };

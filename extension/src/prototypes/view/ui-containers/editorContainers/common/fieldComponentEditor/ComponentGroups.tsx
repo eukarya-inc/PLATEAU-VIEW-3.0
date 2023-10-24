@@ -11,7 +11,7 @@ type ComponentGroupsProps = {
   currentGroup: ComponentGroup | undefined;
   onGroupSelect: (id: string) => void;
   onGroupCreate: () => void;
-  onGroupDelete: (id: string) => void;
+  onGroupRemove: (id: string) => void;
   onGroupRename: (id: string, name: string) => void;
   onGroupMove: (id: string, direction: "forward" | "backward") => void;
 };
@@ -21,7 +21,7 @@ export const ComponentGroups: React.FC<ComponentGroupsProps> = ({
   currentGroup,
   onGroupSelect,
   onGroupCreate,
-  onGroupDelete,
+  onGroupRemove,
   onGroupRename,
   onGroupMove,
 }) => {
@@ -36,7 +36,7 @@ export const ComponentGroups: React.FC<ComponentGroupsProps> = ({
           moveForwardDisabled={index === 0}
           moveBackwardDisabled={index === groups.length - 1}
           onGroupSelect={onGroupSelect}
-          onGroupDelete={onGroupDelete}
+          onGroupRemove={onGroupRemove}
           onGroupRename={onGroupRename}
           onGroupMove={onGroupMove}
         />

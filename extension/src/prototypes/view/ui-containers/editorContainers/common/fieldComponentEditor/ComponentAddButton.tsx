@@ -58,7 +58,11 @@ export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({ onCompon
         onClose={handleCloseAddComponent}
         onSubmit={handleComponentAdd}
         submitDisabled={!newComponentType}>
-        <ComponentSelector tree={componentTree} onComponentSelect={handleComponentTypeSelect} />
+        <ComponentSelector
+          tree={componentTree}
+          onComponentSelect={handleComponentTypeSelect}
+          onComponentDoubleClick={handleComponentAdd}
+        />
       </EditorDialog>
     </>
   );

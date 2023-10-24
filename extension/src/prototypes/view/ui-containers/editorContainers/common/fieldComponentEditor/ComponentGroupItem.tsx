@@ -18,7 +18,7 @@ type ComponentGroupItemProps = {
   moveForwardDisabled?: boolean;
   moveBackwardDisabled?: boolean;
   onGroupSelect?: (id: string) => void;
-  onGroupDelete?: (id: string) => void;
+  onGroupRemove?: (id: string) => void;
   onGroupRename?: (id: string, name: string) => void;
   onGroupMove?: (id: string, direction: "forward" | "backward") => void;
 };
@@ -30,7 +30,7 @@ export const ComponentGroupItem: React.FC<ComponentGroupItemProps> = ({
   moveForwardDisabled,
   moveBackwardDisabled,
   onGroupSelect,
-  onGroupDelete,
+  onGroupRemove,
   onGroupRename,
   onGroupMove,
 }) => {
@@ -50,9 +50,9 @@ export const ComponentGroupItem: React.FC<ComponentGroupItemProps> = ({
   }, [group.id, onGroupSelect]);
 
   const handleDelete = useCallback(() => {
-    onGroupDelete?.(group.id);
+    onGroupRemove?.(group.id);
     setMenuOpen(false);
-  }, [group.id, onGroupDelete]);
+  }, [group.id, onGroupRemove]);
 
   const [renameOpen, setRenameOpen] = useState(false);
   const [newName, setNewName] = useState(group.name);

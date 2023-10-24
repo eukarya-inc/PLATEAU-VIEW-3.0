@@ -1,3 +1,5 @@
+import { PointFillColorConditionFieldPreset } from "../../../prototypes/view/ui-containers/editorContainers/common/fieldComponentEditor/fields/point/EditorPointFillConditionValueField";
+
 import { FieldBase } from "./base";
 
 export const POINT_COLOR_FIELD = "POINT_COLOR_FIELD";
@@ -26,34 +28,24 @@ export type PointFillColorValueField = FieldBase<{
   };
 }>;
 
-// export const POINT_FILL_COLOR_CONDITION_FIELD = "POINT_FILL_COLOR_CONDITION_FIELD";
-// export type PointFillColorConditionField = FieldBase<{
-//   type: typeof POINT_FILL_COLOR_CONDITION_FIELD;
-//   value: string;
-//   legendUI?: {
-//     currentRuleId: string;
-//     overrideRules: {
-//       ruleId: string;
-//       conditionId: string;
-//       color: string;
-//     }[];
-//   };
-//   layerUI?: {};
-//   preset?: {
-//     rules?: {
-//       id: string;
-//       propertyName?: string;
-//       legendName?: string;
-//       conditions?: {
-//         id: string;
-//         operation?: "==" | "!=" | ">" | ">=" | "<" | "<=";
-//         value?: string;
-//         color?: string;
-//         asLegend?: boolean;
-//         legendName?: string;
-//       }[];
-//     }[];
-//   };
-// }>;
+export const POINT_FILL_COLOR_CONDITION_FIELD = "POINT_FILL_COLOR_CONDITION_FIELD";
+export type PointFillColorConditionField = FieldBase<{
+  type: typeof POINT_FILL_COLOR_CONDITION_FIELD;
+  value: string;
+  legendUI?: {
+    currentRuleId: string;
+    overrideRules: {
+      ruleId: string;
+      conditionId: string;
+      color: string;
+    }[];
+  };
+  layerUI?: {};
+  preset?: PointFillColorConditionFieldPreset;
+}>;
 
-export type PointFields = PointColorField | PointSizeField | PointFillColorValueField;
+export type PointFields =
+  | PointColorField
+  | PointSizeField
+  | PointFillColorValueField
+  | PointFillColorConditionField;

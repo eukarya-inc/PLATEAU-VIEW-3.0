@@ -13,6 +13,7 @@ import {
   EditorTreeItemType,
   EditorTreeSelection,
 } from "../../../../ui-components";
+import { EditorCache } from "../useCache";
 import { generateID } from "../utils";
 
 import { FieldComponentsPage } from "./FieldComponentsPage";
@@ -24,7 +25,9 @@ export type EditorDataset = DatasetFragmentFragment & {
   published?: boolean;
 };
 
-export type EditorDatasetSectionProps = {};
+export type EditorDatasetSectionProps = {
+  cache?: EditorCache;
+};
 
 export type EditorDatasetConentType =
   | "status"
@@ -44,7 +47,7 @@ export type DraftSetting = Omit<Setting, "id"> & {
 
 export type UpdateSetting = React.Dispatch<React.SetStateAction<DraftSetting | undefined>>;
 
-export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
+export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) => {
   const [ready, setReady] = useState(false);
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
@@ -67,6 +70,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
         id: `${dataset.id}-status`,
         name: "Status",
         property: {
+          dataId: "status",
           type: "status",
         },
       },
@@ -158,22 +162,35 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
 
   useEffect(() => {
     if (!dataset?.id || !dataId) return;
-    updateDraftSetting(
-      settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
-        datasetId: dataset.id,
-        dataId,
-        general: {},
-        fieldComponents: {},
-        featureInspector: {},
-      },
-    );
-  }, [dataId, dataset, settings]);
+    // get cache
+    const cacheSetting = cache?.get(`dataset-${dataset.id}-${dataId}`);
 
-  const handleItemClick = useCallback(({ id, dataId, type }: EditorTreeSelection) => {
-    setSelected(id);
-    setContentType(type);
-    setDataId(dataId);
-  }, []);
+    updateDraftSetting(
+      cacheSetting
+        ? cacheSetting
+        : settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
+            datasetId: dataset.id,
+            dataId,
+            general: {},
+            fieldComponents: {},
+            featureInspector: {},
+          },
+    );
+  }, [dataId, dataset, settings, cache]);
+
+  const handleItemClick = useCallback(
+    ({ id, dataId, type }: EditorTreeSelection) => {
+      // save cache
+      if (draftSetting) {
+        cache?.set(`dataset-${dataset.id}-${dataId}`, { ...draftSetting });
+      }
+      // update state
+      setSelected(id);
+      setContentType(type);
+      setDataId(dataId);
+    },
+    [cache, dataset, draftSetting],
+  );
 
   const handleExpandClick = useCallback(
     (id: string) => {
@@ -186,10 +203,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     [expanded],
   );
 
-  const handleSave = useCallback(() => {
-    console.log("save setting", draftSetting);
-  }, [draftSetting]);
-
+  // setting must have a defulat component group
   useEffect(() => {
     if (!draftSetting) return;
     if (!draftSetting.fieldComponents?.groups || draftSetting.fieldComponents.groups.length === 0) {
@@ -213,6 +227,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = () => {
     () => !!dataset?.id && !!dataId && contentType !== "folder",
     [dataset, dataId, contentType],
   );
+
+  const handleSave = useCallback(() => {
+    console.log("save setting", draftSetting);
+  }, [draftSetting]);
 
   return layer && dataset ? (
     <EditorSection

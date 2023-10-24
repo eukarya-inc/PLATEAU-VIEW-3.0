@@ -5,6 +5,7 @@ import { EditorBar, EditorPanel } from "../../../ui-components";
 import { EditorFieldComponentsTemplateSection } from "./componentTemplate";
 import { EditorDatasetSection } from "./dataset";
 import { EditorInspectorEmphasisPropertyTemplateSection } from "./emphasisPropertyTemplate";
+import useCache from "./useCache";
 
 export const PLATEAUVIEW_EDITOR_DOM_ID = "__plateauview_editor__";
 
@@ -33,6 +34,8 @@ export const Editor: FC = () => {
     setEditorType(editorType);
   }, []);
 
+  const cache = useCache();
+
   return (
     <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
       <EditorBar
@@ -42,7 +45,7 @@ export const Editor: FC = () => {
       />
       <EditorPanel>
         {editorType === "dataset" ? (
-          <EditorDatasetSection />
+          <EditorDatasetSection cache={cache} />
         ) : editorType === "fieldComponentsTemplate" ? (
           <EditorFieldComponentsTemplateSection />
         ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
