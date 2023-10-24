@@ -99,7 +99,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
         url,
       },
       visible,
-      ...(pointAppearance ? { marker: pointAppearance } : {}),
+      ...(pointAppearance ? { marker: pointAppearance } : { marker: undefined }),
     });
   }, [pointAppearance, visible, format, url]);
 
