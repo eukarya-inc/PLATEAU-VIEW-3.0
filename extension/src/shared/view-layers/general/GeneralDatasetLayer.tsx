@@ -4,7 +4,7 @@ import { FC, useCallback, useEffect } from "react";
 import type { LayerProps } from "../../../prototypes/layers";
 import { ScreenSpaceSelectionEntry } from "../../../prototypes/screen-space-selection";
 import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototypes/view-layers";
-import { POINT_COLOR_FIELD } from "../../api/types/fields/point";
+import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../../api/types/fields/point";
 import { GeneralLayerContainer } from "../../layerContainers/general";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Properties } from "../../reearth/utils";
@@ -88,6 +88,10 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
     componentAtoms ?? [],
     POINT_COLOR_FIELD,
   );
+  const pointSizeAtom = useFindComponent<typeof POINT_SIZE_FIELD>(
+    componentAtoms ?? [],
+    POINT_SIZE_FIELD,
+  );
 
   if (!url) {
     return null;
@@ -107,6 +111,7 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
         propertiesAtom={propertiesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[]}
         pointColorAtom={pointColorAtom}
+        pointSizeAtom={pointSizeAtom}
         // showWireframe={showWireframe}
       />
     );

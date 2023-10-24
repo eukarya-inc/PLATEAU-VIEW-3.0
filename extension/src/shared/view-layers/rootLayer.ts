@@ -1,9 +1,11 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
+import { isEqual } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
+import { isNotNullish } from "../../prototypes/type-helpers";
 import { ComponentGroup, Infobox, Setting } from "../api/types";
-import { DatasetItem } from "../graphql/types/plateau";
+import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
@@ -35,6 +37,7 @@ export type RootLayerConfig = {
   rootLayerAtom: PrimitiveAtom<RootLayer>;
   currentGroupIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
   currentDataIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
+  settingsAtom: WritableAtom<Setting[], [settings: Setting[]], void>;
 };
 
 // TODO: Get default component group from template
@@ -64,15 +67,17 @@ const getDefaultSetting = (): Setting => {
   return {} as Setting;
 };
 
-const convertRootLayerParams = (params: RootLayerParams) => {
-  return params.dataList.map(data => {
-    const setting = params.settings.find(s => s.dataId === data.id);
-    if (setting) {
-      return setting;
-    } else {
-      return getDefaultSetting();
-    }
-  });
+const findSettingsByData = (dataList: DatasetItem[], settings: Setting[]) => {
+  return dataList
+    .map(data => {
+      const setting = settings.find(s => s.dataId === data.id);
+      if (setting) {
+        return setting;
+      } else {
+        return;
+      }
+    })
+    .filter(isNotNullish);
 };
 
 const createViewLayerWithComponentGroup = (
@@ -82,6 +87,7 @@ const createViewLayerWithComponentGroup = (
   data: DatasetItem | undefined,
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
+  shouldInitialize: boolean,
 ): LayerModel => {
   invariant(type);
   return {
@@ -93,7 +99,12 @@ const createViewLayerWithComponentGroup = (
       shareId,
       textured: data?.name !== "LOD1" && data?.name !== "LOD2（テクスチャなし）",
     }),
-    componentAtoms: makeComponentAtoms(datasetId, componentGroup?.components ?? [], shareId),
+    componentAtoms: makeComponentAtoms(
+      datasetId,
+      componentGroup?.components ?? [],
+      shareId,
+      shouldInitialize,
+    ),
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
@@ -110,6 +121,7 @@ const createRootLayer = (
   currentDataId: string | undefined,
   currentGroupId: string | undefined,
   shareId: string | undefined,
+  shouldInitialize: boolean,
 ): RootLayer => {
   const setting = findSetting(settings, currentDataId);
   const group = findComponentGroup(setting, currentGroupId);
@@ -117,23 +129,64 @@ const createRootLayer = (
   return {
     infoboxRef: setting.infobox,
     camera: setting.camera,
-    layer: atom(createViewLayerWithComponentGroup(datasetId, type, title, data, group, shareId)),
+    layer: atom(
+      createViewLayerWithComponentGroup(
+        datasetId,
+        type,
+        title,
+        data,
+        group,
+        shareId,
+        shouldInitialize,
+      ),
+    ),
   };
 };
 
 export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig => {
-  const settings = convertRootLayerParams(params);
+  const initialSettings = findSettingsByData(params.dataList, params.settings);
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer(
       params.datasetId,
       params.type,
       params.title,
       params.dataList,
-      settings,
+      initialSettings,
       params.currentDataId,
       undefined,
       params.shareId,
+      true,
     ),
+  );
+
+  const settingsPrimitiveAtom = atom(initialSettings);
+  const settingsAtom = atom(
+    get => get(settingsPrimitiveAtom),
+    (get, set, settings: Setting[]) => {
+      const prevSettings = get(settingsPrimitiveAtom);
+      const nextSettings = findSettingsByData(params.dataList, settings);
+
+      if (isEqual(prevSettings, nextSettings)) return;
+
+      const currentDataId = get(currentDataIdAtom);
+      const currentGroupId = get(currentGroupIdAtom);
+
+      set(
+        rootLayerAtom,
+        createRootLayer(
+          params.datasetId,
+          params.type,
+          params.title,
+          params.dataList,
+          nextSettings,
+          currentDataId,
+          currentGroupId,
+          params.shareId,
+          false,
+        ),
+      );
+      set(settingsPrimitiveAtom, nextSettings);
+    },
   );
 
   const currentDataIdAtom = atom<string | undefined>(params.currentDataId);
@@ -154,10 +207,11 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           params.type,
           params.title,
           params.dataList,
-          settings,
+          get(settingsPrimitiveAtom),
           update,
           currentGroupId,
           params.shareId,
+          false,
         ),
       );
       set(currentDataIdAtom, () => update);
@@ -172,9 +226,10 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
 
       const rootLayer = get(rootLayerAtom);
       const currentDataId = get(currentDataIdAtom);
-      const setting = findSetting(settings, currentDataId);
+      const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(params.dataList, currentDataId);
       const group = findComponentGroup(setting, update);
+
       set(
         rootLayer.layer,
         createViewLayerWithComponentGroup(
@@ -184,6 +239,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           data,
           group,
           params.shareId,
+          false,
         ),
       );
       set(currentGroupIdAtom, () => update);
@@ -215,5 +271,6 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
     ),
     currentDataIdAtom: shareableCurrentDataIdAtom,
     currentGroupIdAtom: shareableCurrentGroupIdAtom,
+    settingsAtom,
   };
 };

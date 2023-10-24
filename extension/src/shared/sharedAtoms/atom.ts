@@ -38,7 +38,7 @@ export const sharedAtomValue = <V>(a: SharedAtom<V>) => {
 };
 
 // For the share feature
-export const sharedStoreAtom = <V>(a: SharedAtom<V>) => {
+export const sharedStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) => {
   const w = atom(
     get => get(a),
     async (_get, set, update: (value: V, name: string) => Promise<V>) => {
@@ -49,6 +49,7 @@ export const sharedStoreAtom = <V>(a: SharedAtom<V>) => {
     },
   );
   w.onMount = set => {
+    if (!shouldInitialize) return;
     // Use an existence value, if storaged value is exist.
     set(async (v, n) => {
       const storageValue = getStorageStoreValue<V>(n);
@@ -80,7 +81,7 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
 };
 
 // For the UI setting
-export const storageStoreAtom = <V>(a: SharedAtom<V>) => {
+export const storageStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) => {
   const wrapped = atom(
     get => get(a),
     async (_get, set, update: (value: V, name: string) => Promise<V>) => {
@@ -91,6 +92,7 @@ export const storageStoreAtom = <V>(a: SharedAtom<V>) => {
     },
   );
   wrapped.onMount = set => {
+    if (!shouldInitialize) return;
     set(async (v, n) => getStorageStoreValue(n) ?? v);
   };
   return wrapped;

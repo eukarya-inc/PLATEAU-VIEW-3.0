@@ -5,7 +5,7 @@ import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { useAreaDatasets, useAreas } from "../../../shared/graphql";
-import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/plateau";
+import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";

@@ -1,6 +1,6 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
-const rootGQLDirectory = "src/shared/graphql/base/plateau/";
+const rootGQLDirectory = "src/shared/graphql/base/catalog/";
 
 const rootGenerateDirectory = `${rootGQLDirectory}__gen__/`;
 

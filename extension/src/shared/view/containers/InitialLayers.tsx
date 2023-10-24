@@ -1,11 +1,12 @@
-import { useEffect, type FC, useMemo } from "react";
+import { useAtomValue } from "jotai";
+import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
-import { mockSettings } from "../../api/mock";
 import { useDatasets } from "../../graphql";
-import { DatasetItem, DatasetsInput } from "../../graphql/types/plateau";
+import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
+import { settingsAtom } from "../../states/setting";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
@@ -20,13 +21,15 @@ export const InitialLayers: FC = () => {
     [],
   );
   const query = useDatasets(initialDatasetInput);
-  const settings = mockSettings;
+  const settings = useAtomValue(settingsAtom);
 
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
   // TODO: Get share ID
   const shareId = undefined;
 
+  const settingsRef = useRef(settings);
+  settingsRef.current = settings;
   useEffect(() => {
     const remove = initialDatasets.map(d => {
       const dataIds = d.items.map(data => data.id);
@@ -39,7 +42,9 @@ export const InitialLayers: FC = () => {
           areaCode: d.wardCode || d.cityCode || d.prefectureCode,
           title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-          settings: settings.filter(s => s.datasetId === d.id && dataIds.includes(s.dataId)),
+          settings: settingsRef.current.filter(
+            s => s.datasetId === d.id && dataIds.includes(s.dataId),
+          ),
           shareId,
         }),
         { autoSelect: false },
@@ -99,7 +104,7 @@ export const InitialLayers: FC = () => {
         remove();
       });
     };
-  }, [addLayer, initialDatasets, settings, shareId]);
+  }, [addLayer, initialDatasets, shareId]);
 
   return null;
 };

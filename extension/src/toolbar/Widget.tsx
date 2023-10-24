@@ -14,22 +14,29 @@ import { WidgetProps } from "../shared/types/widget";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
+import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
-type Props = WidgetProps<{ geoURL?: { value: string }; plateauURL?: { value: string } }>;
+type Props = WidgetProps<{
+  geoURL?: { value: string };
+  plateauURL?: { value: string };
+  catalogURL?: { value: string };
+  projectName?: { value: string };
+}>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   useHealthCheck();
   useInteractionMode();
   useAttachScreenSpaceSelection();
 
-  console.log(widget.property.default.geoURL, widget.property.default.plateauURL, widget.property);
-
   return (
     <WidgetContext
       geoUrl={widget.property.default.geoURL?.value}
-      plateauUrl={widget.property.default.plateauURL?.value}>
+      plateauUrl={widget.property.default.plateauURL?.value}
+      catalogUrl={widget.property.default.catalogURL?.value}
+      projectId={widget.property.default.projectName?.value}>
+      <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
       {/* <Suspense>

@@ -48,6 +48,7 @@ export const makeComponentAtoms = (
   datasetId: string | undefined,
   components: Component[],
   shareId: string | undefined,
+  shouldInitialize: boolean,
 ): ComponentAtom[] => {
   invariant(datasetId);
   return components.map(component => {
@@ -56,12 +57,14 @@ export const makeComponentAtoms = (
     if (component.storeable) {
       return {
         type: component.type,
-        atom: sharedAtomValue(sharedStoreAtom(storageStoreAtom(a))),
+        atom: sharedAtomValue(
+          sharedStoreAtom(storageStoreAtom(a, shouldInitialize), shouldInitialize),
+        ),
       };
     }
     return {
       type: component.type,
-      atom: sharedAtomValue(sharedStoreAtom(a)),
+      atom: sharedAtomValue(sharedStoreAtom(a, shouldInitialize)),
     };
   });
 };

@@ -1,5 +1,5 @@
-import { AREAS, AREA_DATASETS } from "../../base/plateau/queries/area";
-import { AreasInput, DatasetsInput } from "../../types/plateau";
+import { AREAS, AREA_DATASETS } from "../../base/catalog/queries/area";
+import { AreasInput, DatasetsInput } from "../../types/catalog";
 
 import { useQuery } from "./base";
 

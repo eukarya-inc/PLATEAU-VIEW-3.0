@@ -4,8 +4,9 @@ import { differenceBy } from "lodash";
 import { memo, useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { settingsAtom } from "../../../shared/states/setting";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFilterLayers } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
@@ -49,6 +50,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     invariant(datasets.length > 0);
     const rootLayers = useAtomValue(rootLayersAtom);
     const layers = useAtomValue(rootLayersLayersAtom);
+    const settings = useAtomValue(settingsAtom);
     // Assume that all the datasets share the same type.
     const layerType = datasetTypeLayers[datasets[0].type.code as PlateauDatasetType];
     invariant(layerType !== "BUILDING_LAYER", "Building layer is not supported.");
@@ -97,14 +99,16 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
           });
           paramsToAdd.forEach(({ datasetId, datumId }) => {
             const dataset = datasets.find(d => d.id === datasetId);
+            const filteredSettings = settings.filter(
+              s => s.datasetId === datasetId && datumId === s.dataId,
+            );
             addLayer(
               createRootLayerAtom({
                 type: layerType,
                 areaCode: municipalityCode,
                 datasetId,
                 title: dataset?.name ?? "",
-                // TODO: Support components
-                settings: [],
+                settings: filteredSettings,
                 dataList: dataset?.items as DatasetItem[],
                 currentDataId: datumId,
               }),
@@ -117,7 +121,15 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
           });
         },
       );
-    }, [municipalityCode, filteredRootLayers, datasets, layerType, addLayer, removeLayer]);
+    }, [
+      municipalityCode,
+      filteredRootLayers,
+      datasets,
+      layerType,
+      addLayer,
+      removeLayer,
+      settings,
+    ]);
 
     const [params, setParams] = useAtom(paramsAtom);
 
