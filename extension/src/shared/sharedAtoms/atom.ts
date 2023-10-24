@@ -81,7 +81,7 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
 };
 
 // For the UI setting
-export const storageStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize: boolean) => {
+export const storageStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) => {
   const wrapped = atom(
     get => get(a),
     async (_get, set, update: (value: V, name: string) => Promise<V>) => {
