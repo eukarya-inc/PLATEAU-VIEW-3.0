@@ -135,6 +135,7 @@ const createRootLayer = (
   const setting = findSetting(settings, currentDataId);
   const componentGroup = findComponentGroup(setting, currentGroupId);
   const data = findData(dataList, currentDataId);
+  console.log("componentGroup", componentGroup);
   return {
     // TODO: get settings from featureInspectorTemplate
     featureInspector: setting.featureInspector,

@@ -5,7 +5,7 @@ export type OpacityField = FieldBase<{
   type: typeof OPACITY_FIELD;
   value: number;
   preset?: {
-    value?: number;
+    defaultValue?: number;
   };
 }>;
 

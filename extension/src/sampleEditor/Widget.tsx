@@ -28,14 +28,14 @@ const mockSetting: Setting = {
           {
             type: POINT_COLOR_FIELD,
             preset: {
-              value: `"#f0ff00"`,
+              defaultValue: `"#f0ff00"`,
             },
             storeable: false,
           } as SettingComponent<"POINT_COLOR_FIELD">,
           {
             type: POINT_SIZE_FIELD,
             preset: {
-              value: 100,
+              defaultValue: 100,
             },
             storeable: false,
           } as SettingComponent<"POINT_SIZE_FIELD">,
@@ -56,9 +56,11 @@ const ComponentItem: FC<{
     type: typeof component.type,
     groupIndex,
     componentIndex,
-    value: component.preset?.value,
+    value: component.preset?.defaultValue,
   });
   const deferredValue = useDeferredValue(value);
+
+  console.log(deferredValue);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setValue(v => ({ ...v, value: e.target.value }));

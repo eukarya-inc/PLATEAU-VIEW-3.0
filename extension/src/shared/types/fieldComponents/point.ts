@@ -7,7 +7,7 @@ export type PointColorField = FieldBase<{
   type: typeof POINT_COLOR_FIELD;
   value: string;
   preset?: {
-    value: string;
+    defaultValue?: string;
   };
 }>;
 
@@ -16,7 +16,7 @@ export type PointSizeField = FieldBase<{
   type: typeof POINT_SIZE_FIELD;
   value: number;
   preset?: {
-    value: number;
+    defaultValue?: number;
   };
 }>;
 
@@ -28,7 +28,7 @@ export type PointFillColorValueField = FieldBase<{
     color: string;
   };
   preset?: {
-    color: string;
+    defaultValue?: string;
     asLegend?: boolean;
     legendName?: string;
   };
