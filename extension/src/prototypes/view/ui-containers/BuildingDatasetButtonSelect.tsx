@@ -2,8 +2,9 @@ import { Stack, Typography, type SelectChangeEvent } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type Getter, type SetStateAction } from "jotai";
 import { memo, useCallback, useMemo, type FC } from "react";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
+import { settingsAtom } from "../../../shared/states/setting";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { ContextButtonSelect, SelectItem } from "../../ui-components";
@@ -44,6 +45,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
       () => rootLayers.find(l => l.id === dataset.id),
       [rootLayers, dataset],
     );
+    const settings = useAtomValue(settingsAtom);
 
     const addLayer = useAddLayer();
     const removeLayer = useSetAtom(removeLayerAtom);
@@ -54,13 +56,15 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           if (nextParams == null) {
             return;
           }
+          const filteredSettings = settings.filter(
+            s => s.datasetId === dataset.id && nextParams.id === s.dataId,
+          );
           addLayer(
             createRootLayerAtom({
               type: BUILDING_LAYER,
               datasetId: dataset.id,
               title: dataset.name,
-              // TODO: Support components
-              settings: [],
+              settings: filteredSettings,
               dataList: dataset.items as DatasetItem[],
               currentDataId: nextParams.id,
               areaCode: municipalityCode,
@@ -80,12 +84,11 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           if (nextParams == null) {
             removeLayer(rootLayer.id);
           } else {
-            console.log(nextParams);
             set(rootLayer.currentDataIdAtom, nextParams.id);
           }
         },
       );
-    }, [rootLayer, addLayer, removeLayer, dataset, municipalityCode]);
+    }, [rootLayer, addLayer, removeLayer, dataset, municipalityCode, settings]);
 
     const [params, setParams] = useAtom(paramsAtom);
 

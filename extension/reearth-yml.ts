@@ -126,6 +126,18 @@ const yml = {
         },
       },
     },
+    {
+      id: "sample-editor-widget",
+      type: "widget",
+      name: "SampleEditor",
+      widgetLayout: {
+        defaultLocation: {
+          zone: "inner",
+          section: "right",
+          area: "bottom",
+        },
+      },
+    },
   ],
 };
 

@@ -1,2 +1,2 @@
 export * from "./geo";
-export * from "./plateau";
+export * from "./catalog";

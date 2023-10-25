@@ -3,14 +3,28 @@ import { ThemeProvider } from "@mui/material";
 import { FC, PropsWithChildren, useEffect } from "react";
 
 import { lightTheme } from "../../prototypes/ui-components";
-import { geoClient, createGeoClient, plateauClient, createPlateauClient } from "../graphql/clients";
+import {
+  createSettingClient,
+  settingClient,
+  createTemplateClient,
+  templateClient,
+} from "../api/clients";
+import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
 type Props = {
   geoUrl?: string;
   plateauUrl?: string;
+  projectId?: string;
+  catalogUrl?: string;
 };
 
-export const WidgetContext: FC<PropsWithChildren<Props>> = ({ geoUrl, plateauUrl, children }) => {
+export const WidgetContext: FC<PropsWithChildren<Props>> = ({
+  geoUrl,
+  plateauUrl,
+  projectId,
+  catalogUrl,
+  children,
+}) => {
   useEffect(() => {
     if (!geoClient && geoUrl) {
       createGeoClient(geoUrl);
@@ -18,17 +32,24 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({ geoUrl, plateauUrl
   }, [geoUrl]);
 
   useEffect(() => {
-    if (!plateauClient && plateauUrl) {
-      createPlateauClient(plateauUrl);
+    if (!catalogClient && catalogUrl) {
+      createCatalogClient(catalogUrl);
     }
-  }, [plateauUrl]);
+  }, [catalogUrl]);
 
-  if (!geoClient || !plateauClient) {
+  useEffect(() => {
+    if (!settingClient && !templateClient && plateauUrl && projectId) {
+      createSettingClient(projectId, plateauUrl);
+      createTemplateClient(projectId, plateauUrl);
+    }
+  }, [projectId, plateauUrl]);
+
+  if (!geoClient || !catalogClient) {
     return null;
   }
 
   return (
-    <ApolloProvider client={plateauClient}>
+    <ApolloProvider client={catalogClient}>
       <ApolloProvider client={geoClient}>
         <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
       </ApolloProvider>

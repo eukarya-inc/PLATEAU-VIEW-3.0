@@ -3,10 +3,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { useDatasets } from "../../../shared/graphql";
-import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/plateau";
+import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { settingsAtom } from "../../../shared/states/setting";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
@@ -93,6 +94,7 @@ function useDatasetSearchOptions({
 }
 
 function useBuildingSearchOption({
+  inputValue,
   skip = false,
 }: SearchOptionsParams = {}): readonly BuildingSearchOption[] {
   const layers = useAtomValue(rootLayersLayersAtom);
@@ -113,7 +115,7 @@ function useBuildingSearchOption({
   const [featureIndicesKey, setFeatureIndicesKey] = useState(0);
   useEffect(() => {
     setFeatureIndicesKey(value => value + 1);
-  }, [featureIndices]);
+  }, [featureIndices, inputValue]);
 
   return useMemo(
     () => {
@@ -156,6 +158,7 @@ export interface SearchOptions {
 export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
   const datasets = useDatasetSearchOptions(options);
   const buildings = useBuildingSearchOption(options);
+  const settings = useAtomValue(settingsAtom);
 
   const addLayer = useSetAtom(addLayerAtom);
   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
@@ -170,14 +173,16 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           if (type == null || !municipalityCode) {
             return;
           }
+          const filteredSettings = settings.filter(
+            s => s.datasetId === dataset.id && datasetOption.dataset.items[0].id === s.dataId,
+          );
           if (type === BUILDING_LAYER) {
             addLayer(
               createRootLayerAtom({
                 datasetId: dataset.id,
                 type,
                 title: dataset.name,
-                // TODO: Support components
-                settings: [],
+                settings: filteredSettings,
                 dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
@@ -189,8 +194,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 datasetId: datasetOption.dataset.id,
                 type,
                 title: dataset.name,
-                // TODO: Support components
-                settings: [],
+                settings: filteredSettings,
                 dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
@@ -217,7 +221,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         }
       }
     },
-    [setScreenSpaceSelection, addLayer],
+    [setScreenSpaceSelection, addLayer, settings],
   );
 
   return {
