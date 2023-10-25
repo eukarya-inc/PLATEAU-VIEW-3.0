@@ -14,7 +14,6 @@ export const ComponentTemplatePage: React.FC<ComponentTemplatePageProps> = ({
   template,
   updateTemplate,
 }) => {
-  console.log("template", template);
   const handleUpdateComponentGroups = useCallback(
     (groups: ComponentGroup[]) => {
       updateTemplate?.(t => {

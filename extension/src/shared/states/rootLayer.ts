@@ -31,9 +31,7 @@ export const rootLayersLayerAtomsAtom = atom<PrimitiveAtom<LayerModel>[]>(get =>
 export const updateRootLayerBySetting = atom(undefined, (get, set, setting: Setting) => {
   const rootLayers = get(rootLayersAtom);
   const layer = rootLayers.find(l => l.id === setting.datasetId);
-  console.log("updateRootLayerBySetting", setting, layer);
   if (!layer) {
-    console.log("updateRootLayerBySetting: layer not found");
     return;
   }
   const currentSettings = [...get(layer.settingsAtom)];
@@ -43,7 +41,6 @@ export const updateRootLayerBySetting = atom(undefined, (get, set, setting: Sett
   } else {
     currentSettings[settingIndex] = setting;
   }
-  console.log("currentSettings", currentSettings);
   set(layer.settingsAtom, currentSettings);
 });
 

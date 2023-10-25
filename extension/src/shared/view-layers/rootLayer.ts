@@ -47,7 +47,7 @@ const getDefaultComponentGroup = (): ComponentGroup => {
 
 // TODO: Get component groups from specific template
 const getComponentGroupsFromTemplate = (templateId: string): ComponentGroup[] | undefined => {
-  console.log(templateId);
+  console.log("TODO: Get component groups with templateId", templateId);
   return [] as ComponentGroup[];
 };
 
@@ -135,7 +135,7 @@ const createRootLayer = (
   const setting = findSetting(settings, currentDataId);
   const componentGroup = findComponentGroup(setting, currentGroupId);
   const data = findData(dataList, currentDataId);
-  console.log("componentGroup", componentGroup);
+
   return {
     // TODO: get settings from featureInspectorTemplate
     featureInspector: setting.featureInspector,

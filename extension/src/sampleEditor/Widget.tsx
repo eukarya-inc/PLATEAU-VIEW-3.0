@@ -60,8 +60,6 @@ const ComponentItem: FC<{
   });
   const deferredValue = useDeferredValue(value);
 
-  console.log(deferredValue);
-
   const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setValue(v => ({ ...v, value: e.target.value }));
   }, []);

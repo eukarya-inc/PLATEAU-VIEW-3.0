@@ -72,7 +72,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
   }, [template]);
 
   const handleSave = useCallback(() => {
-    console.log("field component template save", template);
+    console.log("TODO: field component template save", template);
   }, [template]);
 
   return (

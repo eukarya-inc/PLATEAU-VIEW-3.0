@@ -229,7 +229,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   );
 
   const handleSave = useCallback(() => {
-    console.log("save setting", draftSetting);
+    console.log("TODO: Save setting", draftSetting);
   }, [draftSetting]);
 
   return layer && dataset ? (
