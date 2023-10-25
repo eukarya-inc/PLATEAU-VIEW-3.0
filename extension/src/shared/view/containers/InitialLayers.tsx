@@ -1,10 +1,10 @@
-import { useAtomValue, useAtomValue } from "jotai";
+import { useAtomValue } from "jotai";
 import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
-import { useSettingsAPI, useTemplateAPI } from "../../api";
+import { useTemplateAPI } from "../../api";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
@@ -27,13 +27,11 @@ export const InitialLayers: FC = () => {
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
   // TODO: Move to a proper place
-  const { settingsAtom, handleSettingsFetch } = useSettingsAPI();
+
   const { handleTemplateFetch } = useTemplateAPI();
-  const settings = useAtomValue(settingsAtom);
   useEffect(() => {
-    handleSettingsFetch();
     handleTemplateFetch();
-  }, [handleSettingsFetch, handleTemplateFetch]);
+  }, [handleTemplateFetch]);
 
   // TODO: Get share ID
   const shareId = undefined;

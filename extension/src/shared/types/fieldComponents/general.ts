@@ -4,6 +4,9 @@ export const OPACITY_FIELD = "OPACITY_FIELD";
 export type OpacityField = FieldBase<{
   type: typeof OPACITY_FIELD;
   value: number;
+  preset?: {
+    value?: number;
+  };
 }>;
 
 export const LAYER_DESCRIPTION_FIELD = "LAYER_DESCRIPTION_FIELD";

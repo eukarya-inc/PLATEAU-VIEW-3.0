@@ -98,6 +98,7 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
   {
     id: "1",
     name: "都市計画決定情報モデル/用途地域モデル/Default",
+    type: "component",
     groups: [
       {
         id: "1",
@@ -124,6 +125,7 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
   {
     id: "2",
     name: "都市計画決定情報モデル/用途地域モデル/LOD1",
+    type: "component",
     groups: [
       {
         id: "1",
@@ -145,6 +147,7 @@ export const mockInspectorEmphasisPropertyTemplates: EmphasisPropertyTemplate[] 
   {
     id: "1",
     name: "ランドマーク情報/Default",
+    type: "emphasis",
     properties: [
       {
         id: "1",

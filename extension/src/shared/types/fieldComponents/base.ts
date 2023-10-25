@@ -1,1 +1,6 @@
-export type FieldBase<T> = { storeable?: boolean } & T;
+export type FieldBase<T> = {
+  storeable?: boolean;
+  preset?: {
+    value?: string | number;
+  };
+} & T;

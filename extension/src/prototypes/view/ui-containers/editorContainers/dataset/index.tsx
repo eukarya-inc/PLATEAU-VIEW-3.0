@@ -5,7 +5,7 @@ import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 import { useSettingsAPI } from "../../../../../shared/api";
 import { Setting } from "../../../../../shared/api/types";
 import { useDatasetById } from "../../../../../shared/graphql";
-import { DatasetFragmentFragment } from "../../../../../shared/graphql/types/plateau";
+import { DatasetFragmentFragment } from "../../../../../shared/graphql/types/catalog";
 import { layerSelectionAtom } from "../../../../layers";
 import {
   EditorSection,

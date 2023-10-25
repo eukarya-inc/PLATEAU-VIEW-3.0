@@ -2,8 +2,8 @@ import { Button } from "@mui/material";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, FC, memo, useCallback, useDeferredValue, useRef, useState } from "react";
 
-import { Component, Setting } from "../shared/api/types";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../shared/api/types/fields/point";
+import { FieldType } from "../prototypes/view/ui-containers/editorContainers/common/fieldComponentEditor/fields";
+import { Setting, SettingComponent } from "../shared/api/types";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import {
   addSettingAtom,
@@ -11,47 +11,52 @@ import {
   settingsAtomsAtom,
   updateSettingAtom,
 } from "../shared/states/setting";
+import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../shared/types/fieldComponents/point";
 
 // Setting for 避難施設情報（千代田区）
 const mockSetting: Setting = {
   id: "3",
   datasetId: "d_13101_shelter",
   dataId: "di_13101_shelter",
-  groups: [
-    {
-      id: "1",
-      default: true,
-      components: [
-        {
-          type: POINT_COLOR_FIELD,
-          value: `"#f0ff00"`,
-          storeable: false,
-        },
-        {
-          type: POINT_SIZE_FIELD,
-          value: 100,
-          storeable: false,
-        },
-      ],
-    },
-  ],
-  template: undefined,
-  infobox: undefined,
-  camera: undefined,
+  fieldComponents: {
+    groups: [
+      {
+        id: "1",
+        name: "",
+        default: true,
+        components: [
+          {
+            type: POINT_COLOR_FIELD,
+            preset: {
+              value: `"#f0ff00"`,
+            },
+            storeable: false,
+          } as SettingComponent<"POINT_COLOR_FIELD">,
+          {
+            type: POINT_SIZE_FIELD,
+            preset: {
+              value: 100,
+            },
+            storeable: false,
+          } as SettingComponent<"POINT_SIZE_FIELD">,
+        ],
+      },
+    ],
+  },
 };
 
 const ComponentItem: FC<{
-  component: Component;
+  component: SettingComponent<FieldType>;
   setting: Setting;
   settingIndex: number;
   componentIndex: number;
   groupIndex: number;
 }> = ({ component, setting, settingIndex, componentIndex, groupIndex }) => {
   const [value, setValue] = useState({
-    type: typeof component.value,
+    type: typeof component.type,
     groupIndex,
     componentIndex,
-    value: component.value,
+    value: component.preset?.value,
   });
   const deferredValue = useDeferredValue(value);
 
@@ -70,20 +75,23 @@ const ComponentItem: FC<{
     updateSetting(
       {
         ...s,
-        groups: s.groups?.map((g, gi) => ({
-          ...g,
-          components: g.components.map((c, ci) =>
-            deferredValue.groupIndex === gi && deferredValue.componentIndex === ci
-              ? {
-                  ...c,
-                  value:
-                    deferredValue.type === "string"
-                      ? (deferredValue.value as any)
-                      : Number(deferredValue.value) ?? 0,
-                }
-              : c,
-          ),
-        })),
+        fieldComponents: {
+          ...s.fieldComponents,
+          groups: s.fieldComponents?.groups?.map((g, gi) => ({
+            ...g,
+            components: g.components.map((c, ci) =>
+              deferredValue.groupIndex === gi && deferredValue.componentIndex === ci
+                ? {
+                    ...c,
+                    value:
+                      deferredValue.type === "string"
+                        ? (deferredValue.value as any)
+                        : Number(deferredValue.value) ?? 0,
+                  }
+                : c,
+            ),
+          })),
+        },
       },
       settingIndex,
     );
@@ -118,7 +126,7 @@ const SettingItem: FC<{ settingAtom: PrimitiveAtom<Setting>; index: number }> = 
         Remove
       </Button>
       <ul>
-        {setting.groups?.map((group, gi) => {
+        {setting.fieldComponents?.groups?.map((group, gi) => {
           return (
             <li key={group.id}>
               {group.id}

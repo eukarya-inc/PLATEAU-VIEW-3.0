@@ -140,7 +140,6 @@ const createRootLayer = (
     featureInspector: setting.featureInspector,
     camera: setting.general?.camera,
     layer: atom(
-      
       createViewLayerWithComponentGroup(
         datasetId,
         type,
@@ -150,7 +149,6 @@ const createRootLayer = (
         shareId,
         shouldInitialize,
       ),
-    ,
     ),
   };
 };

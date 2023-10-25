@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import ReactJson from "react-json-view";
 
 import { EditorDataset } from "..";
-import { Dataset } from "../../../../../../shared/graphql/types/plateau";
+import { Dataset } from "../../../../../../shared/graphql/types/catalog";
 import { EditorBlock, EditorBlockProps } from "../../../../../ui-components";
 
 type DataBlockProps = EditorBlockProps & {
