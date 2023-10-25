@@ -55,7 +55,8 @@ export const makeComponentAtoms = (
   invariant(datasetId);
   return components.map(component => {
     const name = makeComponentId({ datasetId, componentType: component.type, shareId });
-    const defaultValue = fieldSettings[component.type].defaultValue;
+    const defaultValue =
+      component.preset?.defaultValue ?? fieldSettings[component.type].defaultValue;
     // TODO: load value from shared data
     const a = sharedAtom(name, defaultValue);
     if (component.storeable) {

@@ -85,10 +85,12 @@ const ComponentItem: FC<{
               deferredValue.groupIndex === gi && deferredValue.componentIndex === ci
                 ? {
                     ...c,
-                    value:
-                      deferredValue.type === "string"
-                        ? (deferredValue.value as any)
-                        : Number(deferredValue.value) ?? 0,
+                    preset: {
+                      defaultValue:
+                        deferredValue.type === "string"
+                          ? (deferredValue.value as any)
+                          : Number(deferredValue.value) ?? 0,
+                    },
                   }
                 : c,
             ),

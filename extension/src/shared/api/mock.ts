@@ -28,6 +28,9 @@ export const mockSettings: Setting[] = [
               id: "1",
               type: OPACITY_FIELD,
               storeable: false,
+              preset: {
+                defaultValue: 1,
+              },
             },
           ],
         },
@@ -54,6 +57,9 @@ export const mockSettings: Setting[] = [
               id: "1",
               type: OPACITY_FIELD,
               storeable: false,
+              preset: {
+                defaultValue: 1,
+              },
             },
           ],
         },
@@ -80,11 +86,17 @@ export const mockSettings: Setting[] = [
               id: "1",
               type: POINT_COLOR_FIELD,
               storeable: false,
+              preset: {
+                defaultValue: `"#0ffffff"`,
+              },
             },
             {
               id: "2",
               type: POINT_SIZE_FIELD,
               storeable: false,
+              preset: {
+                defaultValue: 100,
+              },
             },
           ],
         },
