@@ -53,7 +53,7 @@ const ComponentItem: FC<{
   groupIndex: number;
 }> = ({ component, setting, settingIndex, componentIndex, groupIndex }) => {
   const [value, setValue] = useState({
-    type: typeof component.type,
+    type: typeof component.preset?.defaultValue,
     groupIndex,
     componentIndex,
     value: component.preset?.defaultValue,
