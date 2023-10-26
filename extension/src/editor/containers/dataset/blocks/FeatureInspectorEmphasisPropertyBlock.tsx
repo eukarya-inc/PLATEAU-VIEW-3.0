@@ -16,8 +16,8 @@ import {
 } from "../../ui-components";
 
 type FeatureInspectorEmphasisPropertyBlockProps = EditorBlockProps & {
-  setting?: DraftSetting;
-  updateSetting?: UpdateSetting;
+  setting: DraftSetting;
+  updateSetting: UpdateSetting;
 };
 
 export const FeatureInspectorEmphasisPropertyBlock: React.FC<
@@ -103,6 +103,7 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
           <Divider />
           <BlockContentWrapper>
             <EmphasisPropertyEditor
+              id={`__emphasis-property-${setting.datasetId}-${setting.dataId}__`}
               properties={setting?.featureInspector?.emphasisProperty?.properties ?? []}
               onPropertiesUpdate={handlePropertiesUpdate}
             />

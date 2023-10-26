@@ -1,4 +1,6 @@
 import { type FC, useState, useMemo, useCallback } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import { EditorBar, EditorPanel } from "../../prototypes/ui-components";
 
@@ -38,20 +40,22 @@ export const Editor: FC = () => {
 
   return (
     <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
-      <EditorBar
-        editorTypes={editorTypes}
-        editorType={editorType}
-        onEditorTypeChange={handleEditorTypeChange}
-      />
-      <EditorPanel>
-        {editorType === "dataset" ? (
-          <EditorDatasetSection cache={cache} />
-        ) : editorType === "fieldComponentsTemplate" ? (
-          <EditorFieldComponentsTemplateSection />
-        ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
-          <EditorInspectorEmphasisPropertyTemplateSection />
-        ) : null}
-      </EditorPanel>
+      <DndProvider backend={HTML5Backend}>
+        <EditorBar
+          editorTypes={editorTypes}
+          editorType={editorType}
+          onEditorTypeChange={handleEditorTypeChange}
+        />
+        <EditorPanel>
+          {editorType === "dataset" ? (
+            <EditorDatasetSection cache={cache} />
+          ) : editorType === "fieldComponentsTemplate" ? (
+            <EditorFieldComponentsTemplateSection />
+          ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
+            <EditorInspectorEmphasisPropertyTemplateSection />
+          ) : null}
+        </EditorPanel>
+      </DndProvider>
     </div>
   );
 };

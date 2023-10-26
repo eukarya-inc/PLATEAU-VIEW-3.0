@@ -12,16 +12,6 @@ export const FeatureInspectorPage: React.FC<FeatureInspectorPageProps> = ({
   setting,
   updateSetting,
 }) => {
-  // const handleFeatureInspectorUpdate = (featureInspectorSettings: FeatureInspectorSettings) => {
-  //   updateSetting(s => {
-  //     if (!s) return s;
-  //     return {
-  //       ...s,
-  //       featureInspector: { ...s.featureInspector, featureInspector: featureInspectorSettings },
-  //     };
-  //   });
-  // };
-
   return (
     <>
       <FeatureInspectorBasicBlock setting={setting} updateSetting={updateSetting} />

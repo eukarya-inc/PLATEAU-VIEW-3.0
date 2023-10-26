@@ -183,7 +183,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   }, [dataId, dataset, settings, cache]);
 
   const handleItemClick = useCallback(
-    ({ id, dataId, type }: EditorTreeSelection) => {
+    ({ id, dataId: newDataId, type }: EditorTreeSelection) => {
       // save cache
       if (draftSetting) {
         cache?.set(`dataset-${dataset.id}-${dataId}`, { ...draftSetting });
@@ -191,9 +191,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
       // update state
       setSelected(id);
       setContentType(type);
-      setDataId(dataId);
+      setDataId(newDataId);
     },
-    [cache, dataset, draftSetting],
+    [cache, dataset, dataId, draftSetting],
   );
 
   const handleExpandClick = useCallback(

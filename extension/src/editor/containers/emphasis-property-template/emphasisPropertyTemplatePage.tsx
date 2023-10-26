@@ -29,6 +29,7 @@ export const EmphasisPropertyTemplatePage: React.FC<EmphasisPropertyTemplatePage
     <EditorBlock title="Emphasis Properties">
       <BlockContentWrapper>
         <EmphasisPropertyEditor
+          id={template.id}
           properties={template.properties}
           onPropertiesUpdate={handlePropertiesUpdate}
         />

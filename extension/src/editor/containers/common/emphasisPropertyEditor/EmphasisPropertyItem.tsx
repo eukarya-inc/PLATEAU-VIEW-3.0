@@ -8,17 +8,31 @@ import { useCallback } from "react";
 import { EmphasisProperty } from "../../../../shared/api/types";
 import { PropertyInputField } from "../../ui-components";
 
+import useDnD from "./useDnD";
+
 type EmphasisPropertyItemProps = {
+  id: string;
+  index: number;
   propertyItem: EmphasisProperty;
   onPropertyUpdate: (property: EmphasisProperty) => void;
   onPropertyRemove: (propertyId: string) => void;
+  onPropertyMove: (dragIndex: number, hoverIndex: number) => void;
 };
 
 export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
+  id,
+  index,
   propertyItem,
   onPropertyUpdate,
   onPropertyRemove,
+  onPropertyMove,
 }) => {
+  const { dragRef, previewRef, isDragging, handlerId } = useDnD({
+    id,
+    index,
+    onMove: onPropertyMove,
+  });
+
   const handleDisplayNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onPropertyUpdate({ ...propertyItem, displayName: e.target.value });
@@ -49,8 +63,11 @@ export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
   }, [propertyItem, onPropertyRemove]);
 
   return (
-    <PropertyItemWrapper>
-      <IconWrapper>
+    <PropertyItemWrapper
+      ref={previewRef}
+      data-handler-id={handlerId}
+      style={{ opacity: isDragging ? 0.2 : 1 }}>
+      <IconWrapper ref={dragRef}>
         <DragIndicatorIcon />
       </IconWrapper>
       <VisibleWrapper onClick={handleVisibleChange}>
@@ -87,6 +104,7 @@ export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
 export const PropertyItemWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(0.2),
+  padding: theme.spacing(0.2, 0),
 }));
 
 export const IconWrapper = styled("div")(({ theme }) => ({

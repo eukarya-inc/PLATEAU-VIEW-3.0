@@ -10,6 +10,7 @@ import { EmphasisPropertyHeader } from "./EmphasisPropertyHeader";
 import { EmphasisPropertyItem } from "./EmphasisPropertyItem";
 
 type EmphasisPropertyEditorProps = {
+  id: string;
   properties: EmphasisProperty[];
   onPropertiesUpdate: (properties: EmphasisProperty[]) => void;
 };
@@ -50,17 +51,37 @@ export const EmphasisPropertyEditor: React.FC<EmphasisPropertyEditorProps> = ({
     [properties, onPropertiesUpdate],
   );
 
+  const handlePropertyMove = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const dragProperty = properties[dragIndex];
+      const newProperties = [...properties];
+      newProperties.splice(dragIndex, 1);
+      newProperties.splice(hoverIndex, 0, dragProperty);
+      onPropertiesUpdate?.(newProperties);
+    },
+    [properties, onPropertiesUpdate],
+  );
+
   return (
     <EmphasisPropertyEditorWrapper>
-      {properties?.length > 0 && <EmphasisPropertyHeader />}
-      {properties.map(p => (
-        <EmphasisPropertyItem
-          key={p.id}
-          propertyItem={p}
-          onPropertyUpdate={handlePropertyUpdate}
-          onPropertyRemove={handlePropertyRemove}
-        />
-      ))}
+      {properties?.length > 0 && (
+        <>
+          <EmphasisPropertyHeader />
+          <PropertyListWrapper>
+            {properties.map((p, index) => (
+              <EmphasisPropertyItem
+                id={p.id}
+                key={p.id}
+                index={index}
+                propertyItem={p}
+                onPropertyUpdate={handlePropertyUpdate}
+                onPropertyRemove={handlePropertyRemove}
+                onPropertyMove={handlePropertyMove}
+              />
+            ))}
+          </PropertyListWrapper>
+        </>
+      )}
       <EditorButton variant="contained" fullWidth onClick={handlePropertyAdd}>
         <AddOutlinedIcon />
         Add Property
@@ -69,8 +90,11 @@ export const EmphasisPropertyEditor: React.FC<EmphasisPropertyEditorProps> = ({
   );
 };
 
-const EmphasisPropertyEditorWrapper = styled("div")(({ theme }) => ({
+const EmphasisPropertyEditorWrapper = styled("div")(() => ({
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1),
+}));
+
+const PropertyListWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0.5, 0, 1),
 }));
