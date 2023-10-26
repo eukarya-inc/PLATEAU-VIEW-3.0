@@ -1,7 +1,8 @@
 import { memo } from "react";
 
-import { Editor } from "../prototypes/view/ui-containers/editorContainers";
 import { WidgetContext } from "../shared/context/WidgetContext";
+
+import { Editor } from "./containers";
 
 export const Widget = memo(function WidgetPresenter() {
   const enabled = !!window.reearth?.scene?.inEditor;

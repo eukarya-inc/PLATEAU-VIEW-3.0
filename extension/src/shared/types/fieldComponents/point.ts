@@ -1,4 +1,4 @@
-import { PointFillColorConditionFieldPreset } from "../../../prototypes/view/ui-containers/editorContainers/common/fieldComponentEditor/fields/point/EditorPointFillConditionValueField";
+import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillConditionValueField";
 
 import { FieldBase } from "./base";
 

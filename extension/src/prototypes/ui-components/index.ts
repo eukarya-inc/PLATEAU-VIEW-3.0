@@ -73,4 +73,4 @@ export * from "./styles";
 export * from "./SwitchParameterItem";
 export * from "./theme";
 export * from "./ValueParameterItem";
-export * from "./editor";
+export * from "../../editor/containers/ui-components";
