@@ -10,13 +10,14 @@ import {
 import { useOptionalAtomValue } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE } from "../reearth/layers";
 import { Properties } from "../reearth/utils";
+import { PointColorField, PointSizeField } from "../types/fieldComponents/point";
 import { WritableAtomForComponent } from "../view-layers/component";
 
 type GeneralContainerProps = GeneralProps & {
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
-  pointColorAtom?: WritableAtomForComponent<string>;
-  pointSizeAtom?: WritableAtomForComponent<number>;
+  pointColorAtom?: WritableAtomForComponent<PointColorField>;
+  pointSizeAtom?: WritableAtomForComponent<PointSizeField>;
   selections?: ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[];
   hidden: boolean;
   type: LayerType;
@@ -82,8 +83,8 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
     <GeneralLayer
       {...props}
       onLoad={handleLoad}
-      pointColor={pointColor}
-      pointSize={JSON.stringify(pointSize)}
+      pointColor={pointColor?.value}
+      pointSize={pointSize?.value ? JSON.stringify(pointSize?.value) : undefined}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />

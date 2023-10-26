@@ -8,9 +8,9 @@ import {
   BUILDING_LAYER,
   ConfigurableLayerModel,
 } from "../../../prototypes/view-layers";
-import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import { TilesetLayerContainer } from "../../layerContainers/3dtiles";
 import { TILESET_FEATURE } from "../../reearth/layers";
+import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import { useFindComponent } from "../hooks";
 import { LayerModel, LayerModelParams } from "../model";
 

@@ -17,7 +17,7 @@ export type WritableAtomForComponent<T> = WritableAtom<T, [update: T], void>;
 
 export type ComponentAtom<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   type: Component<T>["type"];
-  atom: WritableAtomForComponent<Component<T>["value"]>;
+  atom: WritableAtomForComponent<Component<T>>;
 };
 
 export type ComponentIdParams = {
@@ -55,10 +55,12 @@ export const makeComponentAtoms = (
   invariant(datasetId);
   return components.map(component => {
     const name = makeComponentId({ datasetId, componentType: component.type, shareId });
-    const defaultValue =
-      component.preset?.defaultValue ?? fieldSettings[component.type].defaultValue;
+    const componentForAtom = {
+      ...component,
+      value: component.preset?.defaultValue || fieldSettings[component.type].defaultValue,
+    } as Component;
     // TODO: load value from shared data
-    const a = sharedAtom(name, defaultValue);
+    const a = sharedAtom(name, componentForAtom);
     if (component.storeable) {
       return {
         type: component.type,

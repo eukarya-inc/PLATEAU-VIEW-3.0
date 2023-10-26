@@ -11,6 +11,7 @@ import { ViewLayerModel } from "../../prototypes/view-layers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
+import { OpacityField } from "../types/fieldComponents/general";
 import { WritableAtomForComponent } from "../view-layers/component";
 
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
@@ -23,7 +24,7 @@ type TilesetContainerProps = TilesetProps & {
   colorMapAtom: PrimitiveAtom<ColorMap>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
-  opacityAtom?: WritableAtomForComponent<number>;
+  opacityAtom?: WritableAtomForComponent<OpacityField>;
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
 };
@@ -102,7 +103,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   const color = useEvaluateFeatureColor({
     colorProperty: colorProperty ?? undefined,
     colorScheme: colorScheme ?? undefined,
-    opacity: opacity,
+    opacity: opacity?.value,
     selections,
   });
 
@@ -113,7 +114,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
       {...props}
       onLoad={handleLoad}
       color={color}
-      enableShadow={!opacity || opacity === 1}
+      enableShadow={!opacity || opacity.value === 1}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />
