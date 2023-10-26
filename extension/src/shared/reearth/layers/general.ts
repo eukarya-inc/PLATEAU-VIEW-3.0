@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef } from "react";
 
 import { LayerType } from "../../../prototypes/layers";
-import { LayerAppearance, MarkerAppearance } from "../types";
+import { LayerAppearanceTypes } from "../types";
 import { DataType } from "../types/layer";
 
 export const GENERAL_FEATURE = "GENERAL_FEATURE";
@@ -20,55 +20,56 @@ export type GeneralFeature<P> = {
   properties: P;
 };
 
+export type GeneralAppearances = Omit<Partial<LayerAppearanceTypes>, "3dtiles">;
+
 export type GeneralProps = {
   url: string;
   format: DataType;
   onLoad?: (layerId: string) => void;
-  pointColor?: string;
-  pointSize?: string;
   show?: string | boolean;
   visible?: boolean;
   selectedFeatureColor?: string;
+  appearances: GeneralAppearances;
 };
 
-export const GeneralLayer: FC<GeneralProps> = ({
-  url,
-  format,
-  onLoad,
-  pointColor,
-  pointSize,
-  show,
-  visible,
-}) => {
+const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
+  resource: {
+    clampToGround: true,
+  },
+  marker: {
+    heightReference: "clamp",
+  },
+  polyline: {
+    clampToGround: true,
+  },
+  polygon: {
+    heightReference: "clamp",
+  },
+};
+
+export const GeneralLayer: FC<GeneralProps> = ({ url, format, onLoad, visible, appearances }) => {
   const layerIdRef = useRef<string>();
-  const pointAppearance: LayerAppearance<MarkerAppearance> | undefined = useMemo(
-    () =>
-      pointColor || pointSize
-        ? {
-            style: "point",
-            ...(pointColor
-              ? {
-                  pointColor: {
-                    expression: pointColor,
-                  },
-                }
-              : {}),
-            ...(pointSize
-              ? {
-                  pointSize: {
-                    expression: pointSize,
-                  },
-                }
-              : {}),
-            show:
-              typeof show === "string"
-                ? {
-                    expression: show,
-                  }
-                : show,
-          }
-        : undefined,
-    [pointColor, pointSize, show],
+  const mergedAppearances: Partial<LayerAppearanceTypes> | undefined = useMemo(
+    () => ({
+      ...appearances,
+      resource: {
+        ...DEFAULT_APPEARNACES.resource,
+        ...(appearances.resource ?? {}),
+      },
+      marker: {
+        ...DEFAULT_APPEARNACES.marker,
+        ...(appearances.marker ?? {}),
+      },
+      polyline: {
+        ...DEFAULT_APPEARNACES.polyline,
+        ...(appearances.polyline ?? {}),
+      },
+      polygon: {
+        ...DEFAULT_APPEARNACES.polygon,
+        ...(appearances.polygon ?? {}),
+      },
+    }),
+    [appearances],
   );
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
         type: format,
         url,
       },
-      ...(pointAppearance ? { marker: pointAppearance } : {}),
+      ...mergedAppearances,
     });
 
     layerIdRef.current = layerId;
@@ -99,9 +100,9 @@ export const GeneralLayer: FC<GeneralProps> = ({
         url,
       },
       visible,
-      ...(pointAppearance ? { marker: pointAppearance } : { marker: undefined }),
+      ...mergedAppearances,
     });
-  }, [pointAppearance, visible, format, url]);
+  }, [mergedAppearances, visible, format, url]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;
