@@ -26,6 +26,7 @@ export const removeSettingAtom = atom(undefined, (get, set, setting: PrimitiveAt
 
 export const updateSettingAtom = atom(undefined, (get, set, setting: Setting, index: number) => {
   set(updateRootLayerBySetting, setting);
+  console.log("updateSettingAtom", setting, index);
 
   const settings = get(settingsAtomsAtom);
   const settingAtom = settings[index];

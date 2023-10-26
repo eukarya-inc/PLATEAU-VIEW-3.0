@@ -1,7 +1,7 @@
 import { WritableAtom } from "jotai";
 import invariant from "tiny-invariant";
 
-import { Component, ComponentBase } from "../api/types";
+import { SettingComponent } from "../api/types";
 import {
   sharedAtom,
   sharedAtomValue,
@@ -10,6 +10,8 @@ import {
   storageStoreAtom,
   storageStoreAtomWrapper,
 } from "../sharedAtoms";
+import { Component, ComponentBase } from "../types/fieldComponents";
+import { fieldSettings } from "../view/fields/fieldSettings";
 
 export type WritableAtomForComponent<T> = WritableAtom<T, [update: T], void>;
 
@@ -46,14 +48,17 @@ export const makeComponentAtomWrapper = <V, A extends unknown[], S>(
 
 export const makeComponentAtoms = (
   datasetId: string | undefined,
-  components: Component[],
+  components: SettingComponent[],
   shareId: string | undefined,
   shouldInitialize: boolean,
 ): ComponentAtom[] => {
   invariant(datasetId);
   return components.map(component => {
     const name = makeComponentId({ datasetId, componentType: component.type, shareId });
-    const a = sharedAtom(name, component.value);
+    const defaultValue =
+      component.preset?.defaultValue ?? fieldSettings[component.type].defaultValue;
+    // TODO: load value from shared data
+    const a = sharedAtom(name, defaultValue);
     if (component.storeable) {
       return {
         type: component.type,

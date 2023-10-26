@@ -1,17 +1,42 @@
 import { CameraPosition } from "../../reearth/types";
 
 import { ComponentGroup } from "./component";
-import { Infobox } from "./infobox";
+import { EmphasisProperty } from "./emphasis";
 
 export type Setting = {
   id: string;
   datasetId: string;
   dataId: string;
-  groups?: ComponentGroup[];
-  template?: {
-    groupId?: string;
-    infoboxId?: string;
+  general?: {
+    camera?: CameraPosition | undefined;
+    dataFetching?: {
+      enabled?: boolean;
+      timeInterval?: number;
+    };
+    featureClickEvent?: {
+      eventType: "openFeatureInspector" | "openNewTab";
+      urlType?: "manual" | "fromData";
+      websiteURL?: string;
+      fieldName?: string;
+    };
   };
-  infobox?: Infobox;
-  camera?: CameraPosition;
+  fieldComponents?: {
+    useTemplate?: boolean;
+    templateId?: string;
+    groups?: ComponentGroup[];
+  };
+  featureInspector?: FeatureInspectorSettings;
+};
+
+export type FeatureInspectorSettings = {
+  basic?: {
+    titleType: "datasetType" | "custom";
+    customTitle: string;
+    displayType: "propertyList" | "";
+  };
+  emphasisProperty?: {
+    useTemplate?: boolean;
+    templateId: string;
+    properties: EmphasisProperty[];
+  };
 };

@@ -1,8 +1,4 @@
-import { ComponentGroup } from "./component";
-import { Infobox } from "./infobox";
+import { ComponentTemplate } from "./component";
+import { EmphasisPropertyTemplate } from "./emphasis";
 
-export type Template = {
-  id: string; // This should be like `Building model/LOD2/Default`
-  groups: ComponentGroup[];
-  infobox?: Infobox;
-};
+export type Template = ComponentTemplate | EmphasisPropertyTemplate;

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { ComponentBase } from "../api/types";
+import { ComponentBase } from "../types/fieldComponents";
 
 import { ComponentAtom, findComponentAtom } from "./component";
 

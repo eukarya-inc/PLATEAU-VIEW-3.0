@@ -56,6 +56,9 @@ export const themeOptions: ThemeOptions = {
       main: "#00bebe",
     },
     secondary: grey,
+    action: {
+      selectedOpacity: 0.88,
+    },
   },
   typography: {
     fontSize: 14,

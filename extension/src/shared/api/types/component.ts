@@ -1,15 +1,19 @@
-import { GeneralFields } from "./fields/general";
-import { PointFields } from "./fields/point";
+import type { Component, ComponentBase } from "../../types/fieldComponents";
 
-export type ComponentBase = GeneralFields | PointFields;
-
-export type Component<T extends ComponentBase["type"] = ComponentBase["type"]> = Extract<
-  ComponentBase,
-  { type: T }
->;
+export type SettingComponent<T extends ComponentBase["type"] = ComponentBase["type"]> = {
+  id: string;
+} & Omit<Component<T>, "value" | "legendUI" | "layerUI">;
 
 export type ComponentGroup = {
   id: string;
-  default?: boolean;
-  components: ComponentBase[];
+  name: string;
+  default?: boolean; // TODO: remove this. The first element in the array should be the default
+  components: SettingComponent<ComponentBase["type"]>[];
+};
+
+export type ComponentTemplate = {
+  id: string;
+  type: "component";
+  name: string;
+  groups: ComponentGroup[];
 };
