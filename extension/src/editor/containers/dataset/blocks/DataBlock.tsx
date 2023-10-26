@@ -3,7 +3,11 @@ import { useMemo } from "react";
 import ReactJson from "react-json-view";
 
 import { EditorDataset } from "..";
-import { EditorBlock, EditorBlockProps } from "../../../../prototypes/ui-components";
+import {
+  BlockContentWrapper,
+  EditorBlock,
+  EditorBlockProps,
+} from "../../../../prototypes/ui-components";
 import { Dataset } from "../../../../shared/graphql/types/catalog";
 
 type DataBlockProps = EditorBlockProps & {
@@ -23,17 +27,19 @@ export const DataBlock: React.FC<DataBlockProps> = ({ dataset, dataId, ...props 
   );
   return (
     <EditorBlock title="Data" expandable {...props}>
-      {data && (
-        <ReactJson
-          src={data}
-          displayDataTypes={false}
-          enableClipboard={false}
-          displayObjectSize={false}
-          quotesOnKeys={false}
-          indentWidth={2}
-          style={{ wordBreak: "break-all", lineHeight: 1.2 }}
-        />
-      )}
+      <BlockContentWrapper>
+        {data && (
+          <ReactJson
+            src={data}
+            displayDataTypes={false}
+            enableClipboard={false}
+            displayObjectSize={false}
+            quotesOnKeys={false}
+            indentWidth={2}
+            style={{ wordBreak: "break-all", lineHeight: 1.2 }}
+          />
+        )}
+      </BlockContentWrapper>
     </EditorBlock>
   );
 };

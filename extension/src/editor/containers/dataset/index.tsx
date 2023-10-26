@@ -12,13 +12,14 @@ import {
   EditorTreeItemType,
   EditorTreeSelection,
 } from "../../../prototypes/ui-components";
-import { EditorCache } from "../useCache";
-import { generateID } from "../utils";
 import { useSettingsAPI } from "../../../shared/api";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { EditorCache } from "../useCache";
+import { generateID } from "../utils";
 
+import { FeatureInspectorPage } from "./FeatureInspectorPage";
 import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
 import { StatusPage } from "./StatusPage";
@@ -285,8 +286,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
                 setting={draftSetting}
                 updateSetting={updateDraftSetting}
               />
-            ) : contentType === "featureInspector" ? (
-              <>featureInspector</>
+            ) : contentType === "featureInspector" && draftSetting ? (
+              <FeatureInspectorPage
+                key={`${dataset.id}-${dataId}`}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
             ) : null}
           </>
         )

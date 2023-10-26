@@ -58,7 +58,7 @@ export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockPr
   return (
     <EditorBlock title="Template" expandable {...props}>
       <BlockContentWrapper>
-        <EditorCommonField label="Use template">
+        <EditorCommonField label="Use template" inline>
           <EditorSwitch checked={useTemplate} onChange={handleUseTemplateChange} />
         </EditorCommonField>
         {useTemplate && (

@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { EditorSection, EditorTree, EditorTreeSelection } from "../../../prototypes/ui-components";
 import { useTemplateAPI } from "../../../shared/api";
+import { EmphasisPropertyTemplate } from "../../../shared/api/types";
 import { convertTemplatesToTree } from "../utils";
 
 import { EmphasisPropertyTemplatePage } from "./emphasisPropertyTemplatePage";
@@ -11,6 +12,10 @@ export type EditorEmphasisPropertyTemplateContentType = "folder" | "template" | 
 export type EditorEmphasisPropertyTemplateItemProperty = {
   templateId?: string;
 };
+
+export type UpdateTemplate = React.Dispatch<
+  React.SetStateAction<EmphasisPropertyTemplate | undefined>
+>;
 
 export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
   const [contentType, setContentType] =
@@ -25,10 +30,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     [emphasisPropertyTemplates],
   );
 
-  const template = useMemo(
-    () => emphasisPropertyTemplates.find(c => c.id === templateId),
-    [emphasisPropertyTemplates, templateId],
-  );
+  const [template, updateTemplate] = useState<EmphasisPropertyTemplate | undefined>();
 
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
@@ -50,6 +52,16 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     [expanded],
   );
 
+  const showSaveButton = useMemo(() => contentType === "template", [contentType]);
+
+  useEffect(() => {
+    updateTemplate(emphasisPropertyTemplates.find(c => c.id === templateId));
+  }, [emphasisPropertyTemplates, templateId]);
+
+  const handleSave = useCallback(() => {
+    console.log("TODO: emphasis property template save", template);
+  }, [template]);
+
   return (
     <EditorSection
       sidebarMain={
@@ -63,9 +75,13 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
         />
       }
       main={
-        contentType === "template" ? <EmphasisPropertyTemplatePage template={template} /> : null
+        contentType === "template" && template ? (
+          <EmphasisPropertyTemplatePage template={template} updateTemplate={updateTemplate} />
+        ) : null
       }
       header={template?.name}
+      showSaveButton={showSaveButton}
+      onSave={handleSave}
     />
   );
 };

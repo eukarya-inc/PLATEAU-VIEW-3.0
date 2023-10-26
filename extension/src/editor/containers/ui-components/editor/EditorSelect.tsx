@@ -7,16 +7,16 @@ import {
   MenuItem,
 } from "@mui/material";
 
-import { EditorCommonLabel } from "./EditorCommonField";
+import { EditorCommonField } from "./EditorCommonField";
 
 export type EditorSelectProps = TextFieldProps & {
+  label?: string;
   options: { value: string; label: string }[];
 };
 
 export const EditorSelect: React.FC<EditorSelectProps> = ({ label, options, ...props }) => {
   return (
-    <Wrapper>
-      <EditorCommonLabel>{label}</EditorCommonLabel>
+    <EditorCommonField label={label}>
       <StyledTextField size="small" variant="outlined" fullWidth select {...props}>
         {options.map(option => (
           <StyledMenuItem key={option.value} value={option.value}>
@@ -24,13 +24,9 @@ export const EditorSelect: React.FC<EditorSelectProps> = ({ label, options, ...p
           </StyledMenuItem>
         ))}
       </StyledTextField>
-    </Wrapper>
+    </EditorCommonField>
   );
 };
-
-const Wrapper = styled("div")(() => ({
-  width: "100%",
-}));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   [`.${inputBaseClasses.input}`]: {

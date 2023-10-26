@@ -54,7 +54,7 @@ export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
   return (
     <EditorBlock title="Data Fetching" expandable {...props}>
       <BlockContentWrapper>
-        <EditorCommonField label="Enable realtime data fetching">
+        <EditorCommonField label="Enable realtime data fetching" inline>
           <EditorSwitch checked={enabled} onChange={handleEnabledChange} />
         </EditorCommonField>
         {enabled && (

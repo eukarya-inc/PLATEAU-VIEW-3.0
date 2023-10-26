@@ -1,3 +1,4 @@
+import { ComponentGroup } from "../../../shared/api/types";
 import { FieldComponentEditor } from "../common/fieldComponentEditor";
 
 import { FieldComponentTemplateBlock } from "./blocks/FieldComponentTemplateBlock";
@@ -13,7 +14,7 @@ export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
   setting,
   updateSetting,
 }) => {
-  const handleComponentGroupsUpdate = (groups: any) => {
+  const handleComponentGroupsUpdate = (groups: ComponentGroup[]) => {
     updateSetting(s => {
       if (!s) return s;
       return { ...s, fieldComponents: { ...s.fieldComponents, groups } };

@@ -32,11 +32,11 @@ export type FeatureInspectorSettings = {
   basic?: {
     titleType: "datasetType" | "custom";
     customTitle: string;
-    displayType: "propertyList" | "";
+    displayType: "auto" | "builtin" | "propertyList" | "CZMLDescription";
   };
   emphasisProperty?: {
     useTemplate?: boolean;
-    templateId: string;
-    properties: EmphasisProperty[];
+    templateId?: string;
+    properties?: EmphasisProperty[];
   };
 };

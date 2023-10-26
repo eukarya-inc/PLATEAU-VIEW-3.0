@@ -65,12 +65,11 @@ const StyledIcon = styled(ArrowRightIcon)<{ expanded: number }>(({ expanded }) =
 const BlockContent = styled("div")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   backgroundColor: theme.palette.grey[100],
-  padding: "8px",
 }));
 
-export const BlockContentWrapper = styled("div")(() => ({
+export const BlockContentWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  gap: "8px",
-  padding: "4px",
+  gap: theme.spacing(1),
+  padding: theme.spacing(1.5),
 }));

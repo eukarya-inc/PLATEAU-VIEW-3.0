@@ -1,7 +1,7 @@
 export type EmphasisProperty = {
   id: string;
-  propertyName: string;
-  displayName?: string;
+  displayName: string;
+  jsonPath: string;
   condition?: string;
   visible?: boolean;
 };

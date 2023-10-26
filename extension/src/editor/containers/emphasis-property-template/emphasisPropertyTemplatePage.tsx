@@ -1,11 +1,38 @@
-import { EmphasisPropertyTemplate } from "../../../shared/api/types";
+import { useCallback } from "react";
+
+import { EmphasisProperty, EmphasisPropertyTemplate } from "../../../shared/api/types";
+import { EmphasisPropertyEditor } from "../common/emphasisPropertyEditor";
+import { BlockContentWrapper, EditorBlock } from "../ui-components";
+
+import { UpdateTemplate } from ".";
 
 type EmphasisPropertyTemplatePageProps = {
-  template: EmphasisPropertyTemplate | undefined;
+  template: EmphasisPropertyTemplate;
+  updateTemplate: UpdateTemplate;
 };
 
 export const EmphasisPropertyTemplatePage: React.FC<EmphasisPropertyTemplatePageProps> = ({
   template,
+  updateTemplate,
 }) => {
-  return <>Emphasis Property Template Page {template?.id}</>;
+  const handlePropertiesUpdate = useCallback(
+    (properties: EmphasisProperty[]) => {
+      updateTemplate?.(t => {
+        if (!t?.id) return t;
+        return { ...t, properties };
+      });
+    },
+    [updateTemplate],
+  );
+
+  return (
+    <EditorBlock title="Emphasis Properties">
+      <BlockContentWrapper>
+        <EmphasisPropertyEditor
+          properties={template.properties}
+          onPropertiesUpdate={handlePropertiesUpdate}
+        />
+      </BlockContentWrapper>
+    </EditorBlock>
+  );
 };

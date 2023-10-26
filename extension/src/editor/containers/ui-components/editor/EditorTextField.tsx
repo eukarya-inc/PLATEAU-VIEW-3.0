@@ -1,25 +1,22 @@
 import { styled, TextField, TextFieldProps, inputBaseClasses } from "@mui/material";
 
-import { EditorCommonLabel } from "./EditorCommonField";
+import { EditorCommonField } from "./EditorCommonField";
 
-export type EditorTextFieldProps = TextFieldProps;
+export type EditorTextFieldProps = TextFieldProps & {
+  label?: string;
+};
 
 export const EditorTextField: React.FC<EditorTextFieldProps> = ({ label, ...props }) => {
   return (
-    <Wrapper>
-      <EditorCommonLabel>{label}</EditorCommonLabel>
+    <EditorCommonField label={label}>
       <EditorTextInput {...props} />
-    </Wrapper>
+    </EditorCommonField>
   );
 };
 
 export const EditorTextInput: React.FC<TextFieldProps> = ({ ...props }) => {
   return <StyledTextField size="small" variant="outlined" fullWidth {...props} />;
 };
-
-const Wrapper = styled("div")(() => ({
-  width: "100%",
-}));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   [`.${inputBaseClasses.input}`]: {
