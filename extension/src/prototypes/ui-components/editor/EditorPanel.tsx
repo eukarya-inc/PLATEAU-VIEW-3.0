@@ -75,8 +75,7 @@ const ContentWrapper = styled("div")({
 
 const Sidebar = styled("div")({
   width: "199px",
-  height: "100%",
-  overflow: "auto",
+  height: "573px",
   display: "flex",
   flexDirection: "column",
   flexShrink: 0,
@@ -84,14 +83,18 @@ const Sidebar = styled("div")({
 });
 
 const SidebarMain = styled("div")({
-  height: "100%",
   flex: 1,
+  overflow: "auto",
 });
 
-const SidebarBottom = styled("div")({
+const SidebarBottom = styled("div")(({ theme }) => ({
   flexGrow: 0,
-  height: "auto",
-});
+  padding: theme.spacing(0.5, 1),
+  borderTop: `1px solid ${theme.palette.divider}`,
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(0.5),
+}));
 
 const Main = styled("div")(({ theme }) => ({
   height: "573px",

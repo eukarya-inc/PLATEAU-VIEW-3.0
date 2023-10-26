@@ -1,3 +1,5 @@
+import LensBlurOutlinedIcon from "@mui/icons-material/LensBlurOutlined";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
@@ -8,6 +10,7 @@ import { useDatasetById } from "../../../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../../../shared/graphql/types/catalog";
 import { layerSelectionAtom } from "../../../../layers";
 import {
+  EditorButton,
   EditorSection,
   EditorTree,
   EditorTreeItemType,
@@ -223,13 +226,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     }
   }, [draftSetting]);
 
-  const showSaveButton = useMemo(
-    () => !!dataset?.id && !!dataId && contentType !== "folder",
-    [dataset, dataId, contentType],
-  );
-
   const handleSave = useCallback(() => {
     console.log("TODO: Save setting", draftSetting);
+  }, [draftSetting]);
+
+  const handleApply = useCallback(() => {
+    console.log("TODO: Apply setting", draftSetting);
   }, [draftSetting]);
 
   return layer && dataset ? (
@@ -243,6 +245,26 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
           onItemClick={handleItemClick}
           onExpandClick={handleExpandClick}
         />
+      }
+      sidebarBottom={
+        <>
+          <EditorButton
+            startIcon={<LensBlurOutlinedIcon />}
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleApply}>
+            Apply All
+          </EditorButton>
+          <EditorButton
+            startIcon={<SaveOutlinedIcon />}
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleSave}>
+            Save All
+          </EditorButton>
+        </>
       }
       main={
         ready && (
@@ -269,8 +291,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
           </>
         )
       }
-      showSaveButton={showSaveButton}
-      onSave={handleSave}
     />
   ) : (
     <Placeholder>
