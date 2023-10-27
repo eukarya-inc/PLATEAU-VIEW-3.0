@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import { PrimitiveAtom, useAtomValue, useSetAtom } from "jotai";
 import { ChangeEvent, FC, memo, useCallback, useDeferredValue, useRef, useState } from "react";
 
-import { FieldType } from "../prototypes/view/ui-containers/editorContainers/common/fieldComponentEditor/fields";
+import { FieldType } from "../editor/containers/common/fieldComponentEditor/fields";
 import { Setting, SettingComponent } from "../shared/api/types";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import {
