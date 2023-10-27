@@ -16,6 +16,8 @@ export type EditorSectionProps = {
   main: React.ReactNode;
   header?: React.ReactNode;
   showSaveButton?: boolean;
+  showApplyButton?: boolean;
+  onApply?: () => void;
   onSave?: () => void;
 };
 
@@ -25,7 +27,9 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
   main,
   header,
   showSaveButton,
+  showApplyButton,
   onSave,
+  onApply,
 }) => {
   return (
     <ContentWrapper>
@@ -36,6 +40,17 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
       <Main>
         {header && <SectionHeader>{header}</SectionHeader>}
         <SectionContent>{main}</SectionContent>
+        {showApplyButton && (
+          <SectionAction>
+            <StyledButton
+              startIcon={<SaveOutlinedIcon />}
+              variant="contained"
+              color="primary"
+              onClick={onApply}>
+              Apply
+            </StyledButton>
+          </SectionAction>
+        )}
         {showSaveButton && (
           <SectionAction>
             <StyledButton

@@ -7,8 +7,6 @@ import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototype
 import { GeneralLayerContainer } from "../../layerContainers/general";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Properties } from "../../reearth/utils";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../../types/fieldComponents/point";
-import { useFindComponent } from "../hooks";
 import { LayerModel, LayerModelParams } from "../model";
 
 import { GENERAL_FORMAT } from "./format";
@@ -84,15 +82,6 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
   // TODO(ReEarth): Need a wireframe API
   // const showWireframe = useAtomValue(showWireframeAtom);
 
-  const pointColorAtom = useFindComponent<typeof POINT_COLOR_FIELD>(
-    componentAtoms ?? [],
-    POINT_COLOR_FIELD,
-  );
-  const pointSizeAtom = useFindComponent<typeof POINT_SIZE_FIELD>(
-    componentAtoms ?? [],
-    POINT_SIZE_FIELD,
-  );
-
   if (!url) {
     return null;
   }
@@ -110,8 +99,7 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
         // hiddenFeaturesAtom={hiddenFeaturesAtom}
         propertiesAtom={propertiesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[]}
-        pointColorAtom={pointColorAtom}
-        pointSizeAtom={pointSizeAtom}
+        componentAtoms={componentAtoms}
         // showWireframe={showWireframe}
       />
     );

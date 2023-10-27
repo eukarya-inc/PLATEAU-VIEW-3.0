@@ -23,12 +23,11 @@ const mockSetting: Setting = {
       {
         id: "1",
         name: "",
-        default: true,
         components: [
           {
             type: POINT_COLOR_FIELD,
             preset: {
-              defaultValue: `"#f0ff00"`,
+              defaultValue: "#f0ff00",
             },
             storeable: false,
           } as SettingComponent<"POINT_COLOR_FIELD">,
@@ -51,7 +50,7 @@ const ComponentItem: FC<{
   settingIndex: number;
   componentIndex: number;
   groupIndex: number;
-}> = ({ component, setting, settingIndex, componentIndex, groupIndex }) => {
+}> = ({ component, setting, componentIndex, groupIndex }) => {
   const [value, setValue] = useState({
     type: typeof component.preset?.defaultValue,
     groupIndex,
@@ -72,32 +71,29 @@ const ComponentItem: FC<{
   const apply = useCallback(() => {
     const s = settingRef.current;
 
-    updateSetting(
-      {
-        ...s,
-        fieldComponents: {
-          ...s.fieldComponents,
-          groups: s.fieldComponents?.groups?.map((g, gi) => ({
-            ...g,
-            components: g.components.map((c, ci) =>
-              deferredValue.groupIndex === gi && deferredValue.componentIndex === ci
-                ? {
-                    ...c,
-                    preset: {
-                      defaultValue:
-                        deferredValue.type === "string"
-                          ? (deferredValue.value as any)
-                          : Number(deferredValue.value) ?? 0,
-                    },
-                  }
-                : c,
-            ),
-          })),
-        },
+    updateSetting({
+      ...s,
+      fieldComponents: {
+        ...s.fieldComponents,
+        groups: s.fieldComponents?.groups?.map((g, gi) => ({
+          ...g,
+          components: g.components.map((c, ci) =>
+            deferredValue.groupIndex === gi && deferredValue.componentIndex === ci
+              ? {
+                  ...c,
+                  preset: {
+                    defaultValue:
+                      deferredValue.type === "string"
+                        ? (deferredValue.value as any)
+                        : Number(deferredValue.value) ?? 0,
+                  },
+                }
+              : c,
+          ),
+        })),
       },
-      settingIndex,
-    );
-  }, [deferredValue, settingIndex, updateSetting]);
+    });
+  }, [deferredValue, updateSetting]);
 
   return (
     <li>
