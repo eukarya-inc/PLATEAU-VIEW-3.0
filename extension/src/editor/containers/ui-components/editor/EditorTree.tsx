@@ -29,7 +29,7 @@ export const EditorTree: React.FC<EditorTreeProps> = ({
           <EditorTreeItem
             key={item.id}
             item={item}
-            level={0}
+            level={item.id === "root" ? -1 : 0}
             selected={selected}
             expanded={expanded}
             clickFolderToExpand={clickFolderToExpand}

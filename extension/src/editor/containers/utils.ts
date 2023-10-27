@@ -29,7 +29,15 @@ export const convertTemplatesToTree = (
     parent.children.push(item);
   });
 
-  return tree;
+  const treeWithRoot: EditorTreeItemType[] = [
+    {
+      id: "root",
+      name: "Root",
+      children: tree,
+    },
+  ];
+
+  return treeWithRoot;
 };
 
 const findOrCreateParent: (tree: EditorTreeItemType[], path: string) => EditorTreeItemType = (

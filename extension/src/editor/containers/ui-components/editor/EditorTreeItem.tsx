@@ -103,7 +103,7 @@ const StyledItemButton = styled(ListItemButton, {
   selected: boolean;
   expanded: boolean;
 }>(({ theme, level, selected, expanded }) => ({
-  paddingLeft: theme.spacing(0.5 + level),
+  paddingLeft: level === -1 ? theme.spacing(0.5) : theme.spacing(0.5 + level),
   paddingRight: 0,
   color: selected ? "#fff" : theme.palette.text.primary,
   paddingTop: theme.spacing(0.5),

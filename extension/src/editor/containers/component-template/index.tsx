@@ -1,9 +1,10 @@
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
-import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
+import { EditorButton, EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
 import { convertTemplatesToTree, generateID } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
@@ -29,7 +30,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
 
   const [template, updateTemplate] = useState<ComponentTemplate | undefined>();
 
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>(["root"]);
   const [selected, setSelected] = useState<string>("");
 
   const handleItemClick = useCallback(({ id, templateId }: EditorTreeSelection) => {
@@ -86,6 +87,11 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
           onItemClick={handleItemClick}
           onExpandClick={handleExpandClick}
         />
+      }
+      sidebarBottom={
+        <EditorButton startIcon={<AddOutlinedIcon />} color="primary" fullWidth>
+          New Template
+        </EditorButton>
       }
       main={
         contentType === "template" && template ? (
