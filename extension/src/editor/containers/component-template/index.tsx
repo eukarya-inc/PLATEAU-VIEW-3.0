@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect } from "react";
 
-import { EditorSection, EditorTree, EditorTreeSelection } from "../../../prototypes/ui-components";
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
+import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
 import { convertTemplatesToTree, generateID } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";

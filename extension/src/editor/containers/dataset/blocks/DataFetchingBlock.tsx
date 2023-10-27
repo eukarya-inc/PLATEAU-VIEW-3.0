@@ -9,7 +9,7 @@ import {
   EditorCommonField,
   EditorSwitch,
   EditorTextField,
-} from "../../../../prototypes/ui-components";
+} from "../../ui-components";
 
 type DataFetchingBlockProps = EditorBlockProps & {
   setting?: DraftSetting;

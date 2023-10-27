@@ -7,7 +7,7 @@ import {
   EditorBlockProps,
   EditorSelect,
   EditorTextField,
-} from "../../../../prototypes/ui-components";
+} from "../../ui-components";
 
 export type EventBlockProps = EditorBlockProps & {
   setting?: DraftSetting;

@@ -1,5 +1,6 @@
-import { EditorTreeItemType } from "../../prototypes/ui-components";
 import { ComponentTemplate, EmphasisPropertyTemplate } from "../../shared/api/types";
+
+import { EditorTreeItemType } from "./ui-components";
 
 export const convertTemplatesToTree = (
   templates: ComponentTemplate[] | EmphasisPropertyTemplate[],

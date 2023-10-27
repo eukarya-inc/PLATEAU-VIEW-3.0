@@ -1,5 +1,6 @@
 import { useCallback, useState, useRef } from "react";
 
+import { ComponentGroup } from "../../../../shared/api/types";
 import {
   ComponentGroupSplitButton,
   EditorDialog,
@@ -7,8 +8,7 @@ import {
   EditorPopperList,
   EditorPopperListItemButton,
   EditorTextField,
-} from "../../../../prototypes/ui-components";
-import { ComponentGroup } from "../../../../shared/api/types";
+} from "../../ui-components";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 type ComponentGroupItemProps = {

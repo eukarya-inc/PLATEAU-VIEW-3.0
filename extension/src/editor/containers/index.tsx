@@ -2,11 +2,10 @@ import { type FC, useState, useMemo, useCallback } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import { EditorBar, EditorPanel } from "../../prototypes/ui-components";
-
 import { EditorFieldComponentsTemplateSection } from "./component-template";
 import { EditorDatasetSection } from "./dataset";
 import { EditorInspectorEmphasisPropertyTemplateSection } from "./emphasis-property-template";
+import { EditorBar, EditorPanel } from "./ui-components";
 import useCache from "./useCache";
 
 export const PLATEAUVIEW_EDITOR_DOM_ID = "__plateauview_editor__";

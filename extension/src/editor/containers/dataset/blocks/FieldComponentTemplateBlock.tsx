@@ -2,6 +2,7 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
+import { useTemplateAPI } from "../../../../shared/api";
 import {
   BlockContentWrapper,
   EditorBlock,
@@ -9,8 +10,7 @@ import {
   EditorCommonField,
   EditorSelect,
   EditorSwitch,
-} from "../../../../prototypes/ui-components";
-import { useTemplateAPI } from "../../../../shared/api";
+} from "../../ui-components";
 
 type FieldComponentTemplateBlockProps = EditorBlockProps & {
   setting?: DraftSetting;

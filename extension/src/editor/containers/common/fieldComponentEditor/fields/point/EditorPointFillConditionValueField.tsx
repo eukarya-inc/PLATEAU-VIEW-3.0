@@ -11,7 +11,7 @@ import {
   PropertySelectField,
   PropertySwitchField,
   PropertyWrapper,
-} from "../../../../../../prototypes/ui-components";
+} from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
 type PointFillColorConditionFieldPresetRule = {

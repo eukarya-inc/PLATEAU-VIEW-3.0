@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect } from "react";
 
-import { EditorSection, EditorTree, EditorTreeSelection } from "../../../prototypes/ui-components";
 import { useTemplateAPI } from "../../../shared/api";
 import { EmphasisPropertyTemplate } from "../../../shared/api/types";
+import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
 import { convertTemplatesToTree } from "../utils";
 
 import { EmphasisPropertyTemplatePage } from "./emphasisPropertyTemplatePage";

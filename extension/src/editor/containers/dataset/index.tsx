@@ -5,19 +5,19 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
-import {
-  EditorButton,
-  EditorSection,
-  EditorTree,
-  EditorTreeItemType,
-  EditorTreeSelection,
-} from "../../../prototypes/ui-components";
 import { useSettingsAPI } from "../../../shared/api";
 import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { updateSettingAtom } from "../../../shared/states/setting";
+import {
+  EditorButton,
+  EditorSection,
+  EditorTree,
+  EditorTreeItemType,
+  EditorTreeSelection,
+} from "../ui-components";
 import { EditorCache } from "../useCache";
 import { generateID } from "../utils";
 

@@ -1,8 +1,8 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { styled } from "@mui/material";
 
-import { ComponentGroupButton } from "../../../../prototypes/ui-components";
 import { ComponentGroup } from "../../../../shared/api/types";
+import { ComponentGroupButton } from "../../ui-components";
 
 import { ComponentGroupItem } from "./ComponentGroupItem";
 

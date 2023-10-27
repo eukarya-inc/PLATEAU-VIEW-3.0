@@ -8,7 +8,7 @@ import {
   EditorBlockProps,
   EditorCommonField,
   EditorTextField,
-} from "../../../../prototypes/ui-components";
+} from "../../ui-components";
 
 type StatusBlockProps = EditorBlockProps & {
   dataset?: EditorDataset;

@@ -1,11 +1,7 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useCallback, useState, useMemo } from "react";
 
-import {
-  ComponentSelector,
-  EditorButton,
-  EditorDialog,
-} from "../../../../prototypes/ui-components";
+import { ComponentSelector, EditorButton, EditorDialog } from "../../ui-components";
 
 import { fields, fieldCatagories, type FieldType } from "./fields";
 

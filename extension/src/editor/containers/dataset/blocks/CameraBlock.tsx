@@ -9,7 +9,7 @@ import {
   EditorButton,
   BlockContentWrapper,
   FieldLineWrapper,
-} from "../../../../prototypes/ui-components";
+} from "../../ui-components";
 
 type CameraBlockProps = EditorBlockProps & {
   setting?: DraftSetting;

@@ -1,12 +1,12 @@
 import { useMemo, useState, useRef, useCallback } from "react";
 
+import { SettingComponent } from "../../../../shared/api/types";
 import {
   ComponentCard,
   EditorPopper,
   EditorPopperList,
   EditorPopperListItemButton,
-} from "../../../../prototypes/ui-components";
-import { SettingComponent } from "../../../../shared/api/types";
+} from "../../ui-components";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 import { BasicFieldProps, FieldType, fields } from "./fields";
