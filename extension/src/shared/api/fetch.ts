@@ -1,43 +1,43 @@
-export const fetchWithGet = async <V>(url: string): Promise<V> => {
+export const fetchWithGet = async <V>(url: string, token?: string): Promise<V> => {
   return await window
     .fetch(url, {
       headers: {
-        "Content-Type": "application/json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     })
     .then(toJSON);
 };
 
-export const fetchWithPost = async <D>(url: string, data: D): Promise<boolean> => {
+export const fetchWithPost = async <D>(url: string, data: D, token?: string): Promise<D> => {
   return await window
     .fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
-        "Content-Type": "application/json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     })
-    .then(checkStatusCode);
+    .then(toJSON);
 };
 
-export const fetchWithPatch = async <D>(url: string, data: D): Promise<boolean> => {
+export const fetchWithPatch = async <D>(url: string, data: D, token?: string): Promise<D> => {
   return await window
     .fetch(url, {
       method: "PATCH",
       body: JSON.stringify(data),
       headers: {
-        "Content-Type": "application/json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     })
-    .then(checkStatusCode);
+    .then(toJSON);
 };
 
-export const fetchWithDelete = async (url: string): Promise<boolean> => {
+export const fetchWithDelete = async (url: string, token?: string): Promise<boolean> => {
   return await window
     .fetch(url, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
       },
     })
     .then(checkStatusCode);

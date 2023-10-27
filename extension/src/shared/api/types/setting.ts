@@ -4,7 +4,7 @@ import { ComponentGroup } from "./component";
 import { EmphasisProperty } from "./emphasis";
 
 export type Setting = {
-  id: string;
+  id: string; // NOTE: This is set from CMS automatically.
   datasetId: string;
   dataId: string;
   general?: {

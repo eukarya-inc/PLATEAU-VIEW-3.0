@@ -3,7 +3,11 @@ import { splitAtom } from "jotai/utils";
 
 import { Setting } from "../api/types";
 
-import { removeRootLayerBySetting, updateRootLayerBySetting } from "./rootLayer";
+import {
+  removeRootLayerBySetting,
+  updateRootLayerBySetting,
+  updateRootLayerBySettings,
+} from "./rootLayer";
 
 export const settingsAtom = atom<Setting[]>([]);
 export const settingsAtomsAtom = splitAtom(settingsAtom);
@@ -34,7 +38,14 @@ export const updateSettingAtom = atom(undefined, (get, set, setting: Setting) =>
   });
   if (settingAtom) {
     set(settingAtom, setting);
+  } else {
+    set(addSettingAtom, setting);
   }
+});
+
+export const updateAllSettingAtom = atom(undefined, (_get, set, settings: Setting[]) => {
+  set(updateRootLayerBySettings, settings);
+  set(settingsAtom, settings);
 });
 
 export const filterSettingAtom = atom(

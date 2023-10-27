@@ -58,7 +58,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
 
-  const { settingsAtom } = useSettingsAPI();
+  const { settingsAtom, saveSetting } = useSettingsAPI();
   const settings = useAtomValue(settingsAtom);
 
   const layer = useAtomValue(layerSelectionAtom)?.[0];
@@ -229,14 +229,14 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     }
   }, [draftSetting]);
 
-  const handleSave = useCallback(() => {
-    console.log("TODO: Save setting");
-  }, []);
-
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
     updateSetting(draftSetting as Setting);
   }, [draftSetting, updateSetting]);
+
+  const handleSave = useCallback(() => {
+    saveSetting(draftSetting as Setting);
+  }, [saveSetting, draftSetting]);
 
   return layer && dataset ? (
     <EditorSection
