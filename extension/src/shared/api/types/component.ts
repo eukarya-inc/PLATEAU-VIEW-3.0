@@ -7,7 +7,6 @@ export type SettingComponent<T extends ComponentBase["type"] = ComponentBase["ty
 export type ComponentGroup = {
   id: string;
   name: string;
-  default?: boolean; // TODO: remove this. The first element in the array should be the default
   components: SettingComponent<ComponentBase["type"]>[];
 };
 

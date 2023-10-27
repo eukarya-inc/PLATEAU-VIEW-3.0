@@ -4,6 +4,7 @@ import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
 import { isNotNullish } from "../../prototypes/type-helpers";
+import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
 import { ComponentGroup, FeatureInspectorSettings, Setting } from "../api/types";
 import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
@@ -40,11 +41,6 @@ export type RootLayerConfig = {
   settingsAtom: WritableAtom<Setting[], [settings: Setting[]], void>;
 };
 
-// TODO: Get default component group from template
-const getDefaultComponentGroup = (): ComponentGroup => {
-  return {} as ComponentGroup;
-};
-
 // TODO: Get component groups from specific template
 const getComponentGroupsFromTemplate = (templateId: string): ComponentGroup[] | undefined => {
   console.log("TODO: Get component groups with templateId", templateId);
@@ -52,29 +48,21 @@ const getComponentGroupsFromTemplate = (templateId: string): ComponentGroup[] | 
 };
 
 const findComponentGroup = (
-  setting: Setting,
+  setting: Setting | undefined,
   currentGroupId: string | undefined,
 ): ComponentGroup | undefined => {
-  return (
-    (setting.fieldComponents?.templateId
-      ? getComponentGroupsFromTemplate(setting.fieldComponents.templateId)
-      : setting.fieldComponents?.groups
-    )?.find(g => (currentGroupId ? g.id === currentGroupId : g.default)) ??
-    getDefaultComponentGroup()
-  );
+  if (!setting) return;
+  const groups = setting.fieldComponents?.templateId
+    ? getComponentGroupsFromTemplate(setting.fieldComponents.templateId)
+    : setting.fieldComponents?.groups;
+  return currentGroupId ? groups?.find(g => g.id === currentGroupId) : groups?.[0];
 };
 
 const findSetting = (settings: Setting[], currentDataId: string | undefined) =>
-  (currentDataId ? settings.find(s => s.dataId === currentDataId) : settings[0]) ??
-  getDefaultSetting();
+  settings.find(s => s.dataId === (currentDataId ?? DEFAULT_SETTING_DATA_ID));
 
 const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
   currentDataId ? dataList.find(d => d.id === currentDataId) : dataList[0];
-
-// TODO: Set default settings
-const getDefaultSetting = (): Setting => {
-  return {} as Setting;
-};
 
 const findSettingsByData = (dataList: DatasetItem[], settings: Setting[]) => {
   return dataList
@@ -138,8 +126,8 @@ const createRootLayer = (
 
   return {
     // TODO: get settings from featureInspectorTemplate
-    featureInspector: setting.featureInspector,
-    camera: setting.general?.camera,
+    featureInspector: setting?.featureInspector,
+    camera: setting?.general?.camera,
     layer: atom(
       createViewLayerWithComponentGroup(
         datasetId,
@@ -156,6 +144,7 @@ const createRootLayer = (
 
 export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig => {
   const initialSettings = findSettingsByData(params.dataList, params.settings);
+  const initialCurrentDataId = params.currentDataId ?? params.dataList[0].id;
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer(
       params.datasetId,
@@ -163,7 +152,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       params.title,
       params.dataList,
       initialSettings,
-      params.currentDataId,
+      initialCurrentDataId,
       undefined,
       params.shareId,
       true,
@@ -200,7 +189,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
     },
   );
 
-  const currentDataIdAtom = atom<string | undefined>(params.currentDataId);
+  const currentDataIdAtom = atom<string | undefined>(initialCurrentDataId);
 
   const currentGroupIdAtom = atom<string | undefined>(undefined);
 
@@ -219,7 +208,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
           params.title,
           params.dataList,
           get(settingsPrimitiveAtom),
-          update,
+          update ?? currentDataId,
           currentGroupId,
           params.shareId,
           false,

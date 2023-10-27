@@ -7,27 +7,25 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
-import { useOptionalAtomValue } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE } from "../reearth/layers";
 import { Properties } from "../reearth/utils";
-import { PointColorField, PointSizeField } from "../types/fieldComponents/point";
-import { WritableAtomForComponent } from "../view-layers/component";
+import { ComponentAtom } from "../view-layers/component";
 
-type GeneralContainerProps = GeneralProps & {
+import { useEvaluateGeneralAppearance } from "./hooks/useEvaluateGeneralAppearance";
+
+type GeneralContainerProps = Omit<GeneralProps, "appearances"> & {
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
-  pointColorAtom?: WritableAtomForComponent<PointColorField>;
-  pointSizeAtom?: WritableAtomForComponent<PointSizeField>;
   selections?: ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[];
   hidden: boolean;
   type: LayerType;
+  componentAtoms: ComponentAtom[] | undefined;
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   onLoad,
   layerIdAtom,
-  pointColorAtom,
-  pointSizeAtom,
+  componentAtoms,
   propertiesAtom,
   hidden,
   ...props
@@ -74,8 +72,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
     [onLoad, setProperties, setLayerId],
   );
 
-  const pointColor = useOptionalAtomValue(pointColorAtom);
-  const pointSize = useOptionalAtomValue(pointSizeAtom);
+  const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
 
   const theme = useTheme();
 
@@ -83,8 +80,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
     <GeneralLayer
       {...props}
       onLoad={handleLoad}
-      pointColor={pointColor?.value}
-      pointSize={pointSize?.value ? JSON.stringify(pointSize?.value) : undefined}
+      appearances={generalAppearances}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />

@@ -21,7 +21,6 @@ export const mockSettings: Setting[] = [
       groups: [
         {
           id: "1",
-          default: true,
           name: "Default",
           components: [
             {
@@ -50,7 +49,6 @@ export const mockSettings: Setting[] = [
       groups: [
         {
           id: "1",
-          default: true,
           name: "Default",
           components: [
             {
@@ -79,7 +77,6 @@ export const mockSettings: Setting[] = [
       groups: [
         {
           id: "1",
-          default: true,
           name: "Default",
           components: [
             {
@@ -87,7 +84,7 @@ export const mockSettings: Setting[] = [
               type: POINT_COLOR_FIELD,
               storeable: false,
               preset: {
-                defaultValue: `"#0ffffff"`,
+                defaultValue: "#0fffff",
               },
             },
             {
@@ -114,7 +111,6 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
     groups: [
       {
         id: "1",
-        default: true,
         name: "Default",
         components: [
           {
@@ -141,7 +137,6 @@ export const mockFieldComponentTemplates: ComponentTemplate[] = [
     groups: [
       {
         id: "1",
-        default: true,
         name: "Default",
         components: [
           {
