@@ -1,7 +1,7 @@
 import LensBlurOutlinedIcon from "@mui/icons-material/LensBlurOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
@@ -13,9 +13,11 @@ import {
   EditorTreeSelection,
 } from "../../../prototypes/ui-components";
 import { useSettingsAPI } from "../../../shared/api";
+import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { updateSettingAtom } from "../../../shared/states/setting";
 import { EditorCache } from "../useCache";
 import { generateID } from "../utils";
 
@@ -82,7 +84,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
         id: `${dataset.id}-default`,
         name: "Default",
         property: {
-          dataId: "default",
+          dataId: DEFAULT_SETTING_DATA_ID,
           type: "folder",
         },
         children: [
@@ -90,7 +92,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
             name: "General",
             id: `${dataset.id}-default-general`,
             property: {
-              dataId: "default",
+              dataId: DEFAULT_SETTING_DATA_ID,
               type: "general",
             },
           },
@@ -98,7 +100,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
             name: "Field Components",
             id: `${dataset.id}-default-fieldComponents`,
             property: {
-              dataId: "default",
+              dataId: DEFAULT_SETTING_DATA_ID,
               type: "fieldComponents",
             },
           },
@@ -106,7 +108,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
             name: "Feature Inspector",
             id: `${dataset.id}-default-featureInspector`,
             property: {
-              dataId: "default",
+              dataId: DEFAULT_SETTING_DATA_ID,
               type: "featureInspector",
             },
           },
@@ -183,7 +185,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   }, [dataId, dataset, settings, cache]);
 
   const handleItemClick = useCallback(
-    ({ id, dataId: newDataId, type }: EditorTreeSelection) => {
+    ({ id, dataId: nextDataId, type }: EditorTreeSelection) => {
       // save cache
       if (draftSetting) {
         cache?.set(`dataset-${dataset.id}-${dataId}`, { ...draftSetting });
@@ -191,7 +193,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
       // update state
       setSelected(id);
       setContentType(type);
-      setDataId(newDataId);
+      setDataId(nextDataId);
     },
     [cache, dataset, dataId, draftSetting],
   );
@@ -231,9 +233,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     console.log("TODO: Save setting", draftSetting);
   }, [draftSetting]);
 
+  const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
-    console.log("TODO: Apply setting", draftSetting);
-  }, [draftSetting]);
+    updateSetting(draftSetting as Setting);
+  }, [draftSetting, updateSetting]);
 
   return layer && dataset ? (
     <EditorSection
