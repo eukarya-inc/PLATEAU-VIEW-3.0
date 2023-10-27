@@ -230,8 +230,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   }, [draftSetting]);
 
   const handleSave = useCallback(() => {
-    console.log("TODO: Save setting", draftSetting);
-  }, [draftSetting]);
+    console.log("TODO: Save setting");
+  }, []);
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
