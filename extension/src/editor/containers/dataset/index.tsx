@@ -2,6 +2,7 @@ import LensBlurOutlinedIcon from "@mui/icons-material/LensBlurOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
+import { cloneDeep } from "lodash-es";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
@@ -173,7 +174,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
 
     updateDraftSetting(
       cacheSetting
-        ? cacheSetting
+        ? cloneDeep(cacheSetting)
         : settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
             datasetId: dataset.id,
             dataId,
@@ -188,7 +189,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     ({ id, dataId: nextDataId, type }: EditorTreeSelection) => {
       // save cache
       if (draftSetting) {
-        cache?.set(`dataset-${dataset.id}-${dataId}`, { ...draftSetting });
+        cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
       }
       // update state
       setSelected(id);
@@ -231,12 +232,14 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
+    cache?.clear();
     updateSetting(draftSetting as Setting);
-  }, [draftSetting, updateSetting]);
+  }, [draftSetting, cache, updateSetting]);
 
   const handleSave = useCallback(() => {
+    cache?.clear();
     saveSetting(draftSetting as Setting);
-  }, [saveSetting, draftSetting]);
+  }, [saveSetting, cache, draftSetting]);
 
   return layer && dataset ? (
     <EditorSection
@@ -275,7 +278,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
           <>
             {contentType === "status" ? (
               <StatusPage dataset={dataset} />
-            ) : contentType === "general" ? (
+            ) : contentType === "general" && draftSetting ? (
               <GeneralPage
                 key={`${dataset.id}-${dataId}`}
                 dataset={dataset}

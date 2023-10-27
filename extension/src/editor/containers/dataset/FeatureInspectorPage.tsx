@@ -14,7 +14,11 @@ export const FeatureInspectorPage: React.FC<FeatureInspectorPageProps> = ({
 }) => {
   return (
     <>
-      <FeatureInspectorBasicBlock setting={setting} updateSetting={updateSetting} />
+      <FeatureInspectorBasicBlock
+        key={`${setting.datasetId}-${setting.dataId}-feature-inspector-basic`}
+        setting={setting}
+        updateSetting={updateSetting}
+      />
       <FeatureInspectorEmphasisPropertyBlock setting={setting} updateSetting={updateSetting} />
     </>
   );
