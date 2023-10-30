@@ -24,7 +24,7 @@ export const InitializeApp: FC = () => {
   useEffect(() => {
     const fetch = async () => {
       const templates = await templateClient.findAll();
-      setTemplates(templates);
+      setTemplates(Array.isArray(templates) ? templates : []);
     };
     fetch();
   }, [templateClient, setTemplates]);

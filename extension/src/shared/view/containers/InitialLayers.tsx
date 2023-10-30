@@ -4,7 +4,6 @@ import { useEffect, type FC, useMemo, useRef } from "react";
 import { useAddLayer } from "../../../prototypes/layers";
 import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
-import { useTemplateAPI } from "../../api";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
@@ -28,10 +27,10 @@ export const InitialLayers: FC = () => {
 
   // TODO: Move to a proper place
 
-  const { handleTemplateFetch } = useTemplateAPI();
-  useEffect(() => {
-    handleTemplateFetch();
-  }, [handleTemplateFetch]);
+  // const { handleTemplateFetch } = useTemplateAPI();
+  // useEffect(() => {
+  //   handleTemplateFetch();
+  // }, [handleTemplateFetch]);
 
   // TODO: Get share ID
   const shareId = undefined;

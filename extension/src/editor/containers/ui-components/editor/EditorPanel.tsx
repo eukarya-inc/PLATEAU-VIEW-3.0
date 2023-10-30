@@ -1,8 +1,8 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import { styled, Paper, PaperProps, Button } from "@mui/material";
+import { styled, Paper, PaperProps } from "@mui/material";
 import { forwardRef } from "react";
 
-// import { AutoHeight } from "../";
+import { EditorButton } from "./EditorButton";
 
 export type EditorPanelProps = PaperProps;
 
@@ -42,24 +42,24 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
         <SectionContent>{main}</SectionContent>
         {showApplyButton && (
           <SectionAction>
-            <StyledButton
+            <EditorButton
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
               color="primary"
               onClick={onApply}>
               Apply
-            </StyledButton>
+            </EditorButton>
           </SectionAction>
         )}
         {showSaveButton && (
           <SectionAction>
-            <StyledButton
+            <EditorButton
               startIcon={<SaveOutlinedIcon />}
               variant="contained"
               color="primary"
               onClick={onSave}>
               Save
-            </StyledButton>
+            </EditorButton>
           </SectionAction>
         )}
       </Main>
@@ -145,10 +145,4 @@ const SectionAction = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(0, 1),
-}));
-
-const StyledButton = styled(Button)(() => ({
-  width: "100%",
-  color: "#fff",
-  height: "32px",
 }));

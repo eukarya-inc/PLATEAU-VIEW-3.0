@@ -22,8 +22,16 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     useState<EditorEmphasisPropertyTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { emphasisPropertyTemplatesAtom } = useTemplateAPI();
-  const emphasisPropertyTemplates = useAtomValue(emphasisPropertyTemplatesAtom);
+  const { templatesAtom } = useTemplateAPI();
+  const templates = useAtomValue(templatesAtom);
+
+  const emphasisPropertyTemplates = useMemo(
+    () =>
+      templates
+        ? (templates?.filter(t => t.type === "emphasis") as EmphasisPropertyTemplate[])
+        : [],
+    [templates],
+  );
 
   const templatesTree = useMemo(
     () => convertTemplatesToTree(emphasisPropertyTemplates),

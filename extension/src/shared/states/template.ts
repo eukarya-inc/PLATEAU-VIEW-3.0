@@ -22,3 +22,14 @@ export const removeTemplateAtom = atom(
     });
   },
 );
+
+export const updateTemplateAtom = atom(undefined, (get, set, template: Template) => {
+  const templates = get(templatesAtomsAtom);
+  const templateAtom = templates.find(t => {
+    const prevTemplate = get(t);
+    return prevTemplate.id === template.id;
+  });
+  if (templateAtom) {
+    set(templateAtom, template);
+  }
+});

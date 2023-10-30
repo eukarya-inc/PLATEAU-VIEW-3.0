@@ -1,10 +1,10 @@
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
-import { EditorButton, EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
+import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
+import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
 import { convertTemplatesToTree, generateID } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
@@ -20,8 +20,14 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
   const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { componentTemplatesAtom } = useTemplateAPI();
-  const componentTemplates = useAtomValue(componentTemplatesAtom);
+  const { templatesAtom } = useTemplateAPI();
+  const templates = useAtomValue(templatesAtom);
+
+  const componentTemplates = useMemo(
+    () =>
+      templates ? (templates?.filter(t => t.type === "component") as ComponentTemplate[]) : [],
+    [templates],
+  );
 
   const templatesTree = useMemo(
     () => convertTemplatesToTree(componentTemplates),
@@ -76,6 +82,13 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
     console.log("TODO: field component template save", template);
   }, [template]);
 
+  const templateNames = useMemo(() => componentTemplates.map(t => t.name), [componentTemplates]);
+  const base = useMemo(() => "New Template", []);
+
+  const handleTemplateAdd = useCallback((newTemplateName: string) => {
+    console.log("TODO: field component template add", newTemplateName);
+  }, []);
+
   return (
     <EditorSection
       sidebarMain={
@@ -89,9 +102,11 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
         />
       }
       sidebarBottom={
-        <EditorButton startIcon={<AddOutlinedIcon />} color="primary" fullWidth>
-          New Template
-        </EditorButton>
+        <TemplateAddButton
+          templateNames={templateNames}
+          base={base}
+          onTemplateAdd={handleTemplateAdd}
+        />
       }
       main={
         contentType === "template" && template ? (
