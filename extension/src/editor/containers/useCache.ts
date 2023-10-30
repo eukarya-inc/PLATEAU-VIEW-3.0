@@ -4,6 +4,7 @@ export type EditorCache = {
   get: (id: string) => any;
   set: (id: string, content: any) => void;
   remove: (id: string) => void;
+  clear: () => void;
 };
 
 export default () => {
@@ -21,13 +22,18 @@ export default () => {
     delete editorCache.current[id];
   }, []);
 
+  const clear = useCallback(() => {
+    editorCache.current = {};
+  }, []);
+
   const cache: EditorCache = useMemo(
     () => ({
       get,
       set,
       remove,
+      clear,
     }),
-    [get, set, remove],
+    [get, set, remove, clear],
   );
 
   return cache;

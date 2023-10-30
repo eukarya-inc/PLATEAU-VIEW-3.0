@@ -21,13 +21,10 @@ export const useEvaluateGeneralAppearance = ({
   const generalAppearances: GeneralAppearances = useMemo(
     () => ({
       marker: {
+        // TODO: Use component for style
         style: pointColor || pointSize ? "point" : undefined,
-        ...(pointColor?.value
-          ? {
-              pointColor: pointColor.value,
-            }
-          : {}),
-        ...(pointSize?.value ? { pointSize: pointSize.value } : {}),
+        pointColor: pointColor?.value,
+        pointSize: pointSize?.value,
       },
     }),
     [pointColor, pointSize],

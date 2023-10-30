@@ -21,6 +21,7 @@ import { useInteractionMode } from "./hooks/useInteractionMode";
 type Props = WidgetProps<{
   geoURL?: { value: string };
   plateauURL?: { value: string };
+  plateauAccessToken?: { value: string };
   catalogURL?: { value: string };
   projectName?: { value: string };
 }>;
@@ -35,7 +36,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       geoUrl={widget.property.default.geoURL?.value}
       plateauUrl={widget.property.default.plateauURL?.value}
       catalogUrl={widget.property.default.catalogURL?.value}
-      projectId={widget.property.default.projectName?.value}>
+      projectId={widget.property.default.projectName?.value}
+      plateauToken={widget.property.default.plateauAccessToken?.value}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}

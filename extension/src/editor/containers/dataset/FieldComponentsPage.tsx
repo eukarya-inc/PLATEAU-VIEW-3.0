@@ -23,7 +23,11 @@ export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
 
   return (
     <>
-      <FieldComponentTemplateBlock setting={setting} updateSetting={updateSetting} />
+      <FieldComponentTemplateBlock
+        key={`${setting.datasetId}-${setting.dataId}-fc-template`}
+        setting={setting}
+        updateSetting={updateSetting}
+      />
       {setting.fieldComponents?.groups && (
         <FieldComponentEditor
           componentsGroups={setting.fieldComponents.groups}
