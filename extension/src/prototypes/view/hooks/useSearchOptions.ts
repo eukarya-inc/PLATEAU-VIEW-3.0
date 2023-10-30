@@ -173,9 +173,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           if (type == null || !municipalityCode) {
             return;
           }
-          const filteredSettings = settings.filter(
-            s => s.datasetId === dataset.id && datasetOption.dataset.items[0].id === s.dataId,
-          );
+          const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           if (type === BUILDING_LAYER) {
             addLayer(
               createRootLayerAtom({

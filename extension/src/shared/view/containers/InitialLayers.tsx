@@ -40,7 +40,6 @@ export const InitialLayers: FC = () => {
   settingsRef.current = settings;
   useEffect(() => {
     const remove = initialDatasets.map(d => {
-      const dataIds = d.items.map(data => data.id);
       const dataList = d.items as DatasetItem[];
       return addLayer(
         createRootLayerAtom({
@@ -50,9 +49,7 @@ export const InitialLayers: FC = () => {
           areaCode: d.wardCode || d.cityCode || d.prefectureCode,
           title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-          settings: settingsRef.current.filter(
-            s => s.datasetId === d.id && dataIds.includes(s.dataId),
-          ),
+          settings: settingsRef.current.filter(s => s.datasetId === d.id),
           shareId,
         }),
         { autoSelect: false },

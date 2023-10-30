@@ -56,9 +56,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           if (nextParams == null) {
             return;
           }
-          const filteredSettings = settings.filter(
-            s => s.datasetId === dataset.id && nextParams.id === s.dataId,
-          );
+          const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           addLayer(
             createRootLayerAtom({
               type: BUILDING_LAYER,
