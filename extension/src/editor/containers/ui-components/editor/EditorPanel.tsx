@@ -40,26 +40,28 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
       <Main>
         {header && <SectionHeader>{header}</SectionHeader>}
         <SectionContent>{main}</SectionContent>
-        {showApplyButton && (
+        {(showSaveButton || showApplyButton) && (
           <SectionAction>
-            <EditorButton
-              startIcon={<SaveOutlinedIcon />}
-              variant="contained"
-              color="primary"
-              onClick={onApply}>
-              Apply
-            </EditorButton>
-          </SectionAction>
-        )}
-        {showSaveButton && (
-          <SectionAction>
-            <EditorButton
-              startIcon={<SaveOutlinedIcon />}
-              variant="contained"
-              color="primary"
-              onClick={onSave}>
-              Save
-            </EditorButton>
+            {showApplyButton && (
+              <EditorButton
+                startIcon={<SaveOutlinedIcon />}
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={onApply}>
+                Apply
+              </EditorButton>
+            )}
+            {showSaveButton && (
+              <EditorButton
+                startIcon={<SaveOutlinedIcon />}
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={onSave}>
+                Save
+              </EditorButton>
+            )}
           </SectionAction>
         )}
       </Main>
@@ -119,7 +121,6 @@ const Main = styled("div")(({ theme }) => ({
 }));
 
 const SectionHeader = styled("div")(({ theme }) => ({
-  padding: theme.spacing(1.25, 1),
   fontSize: theme.typography.body2.fontSize,
   backgroundColor: theme.palette.background.paper,
   borderBottom: "1px solid rgba(0, 0, 0, 0.12)",
@@ -137,12 +138,13 @@ const SectionContent = styled("div")(({ theme }) => ({
 }));
 
 const SectionAction = styled("div")(({ theme }) => ({
-  height: "48px",
   backgroundColor: theme.palette.background.paper,
   borderTop: "1px solid rgba(0, 0, 0, 0.12)",
   flexShrink: 0,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  padding: theme.spacing(0, 1),
+  flexDirection: "column",
+  gap: theme.spacing(0.5),
+  padding: theme.spacing(0.5, 1),
 }));

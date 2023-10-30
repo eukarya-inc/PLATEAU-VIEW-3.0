@@ -4,8 +4,9 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
 import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
+import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
-import { convertTemplatesToTree, generateID } from "../utils";
+import { VIRTUAL_ROOT, convertTemplatesToTree, generateID, getSelectedPath } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
 
@@ -20,7 +21,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
   const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { templatesAtom } = useTemplateAPI();
+  const { templatesAtom, saveTemplate, deleteTemplate, refetchTemplates } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
 
   const componentTemplates = useMemo(
@@ -36,7 +37,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
 
   const [template, updateTemplate] = useState<ComponentTemplate | undefined>();
 
-  const [expanded, setExpanded] = useState<string[]>(["root"]);
+  const [expanded, setExpanded] = useState<string[]>([VIRTUAL_ROOT.id]);
   const [selected, setSelected] = useState<string>("");
 
   const handleItemClick = useCallback(({ id, templateId }: EditorTreeSelection) => {
@@ -78,16 +79,52 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
     }
   }, [template]);
 
-  const handleSave = useCallback(() => {
-    console.log("TODO: field component template save", template);
-  }, [template]);
-
   const templateNames = useMemo(() => componentTemplates.map(t => t.name), [componentTemplates]);
-  const base = useMemo(() => "New Template", []);
+  const base = useMemo(() => {
+    const paths = getSelectedPath(templatesTree, selected);
+    if (contentType === "template") paths.splice(-1, 1);
+    const fullPath = paths.join("/");
+    return fullPath === "" ? "" : `${fullPath}/`;
+  }, [templatesTree, selected, contentType]);
 
-  const handleTemplateAdd = useCallback((newTemplateName: string) => {
-    console.log("TODO: field component template add", newTemplateName);
-  }, []);
+  const handleTemplateAdd = useCallback(
+    async (newTemplateName: string) => {
+      await saveTemplate({
+        name: newTemplateName,
+        type: "component",
+        groups: [],
+      } as unknown as ComponentTemplate);
+      refetchTemplates();
+    },
+    [saveTemplate, refetchTemplates],
+  );
+
+  const handleTemplateSave = useCallback(async () => {
+    if (!template) return;
+    await saveTemplate(template);
+    refetchTemplates();
+  }, [template, saveTemplate, refetchTemplates]);
+
+  const handleTemplateRename = useCallback(
+    async (newTemplateName: string) => {
+      if (!template) return;
+      await saveTemplate({
+        ...template,
+        name: newTemplateName,
+      });
+      refetchTemplates();
+    },
+    [template, saveTemplate, refetchTemplates],
+  );
+
+  const handleTemplateRemove = useCallback(
+    async (templateId: string) => {
+      if (!templateId) return;
+      await deleteTemplate(templateId);
+      refetchTemplates();
+    },
+    [deleteTemplate, refetchTemplates],
+  );
 
   return (
     <EditorSection
@@ -109,13 +146,23 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
         />
       }
       main={
-        contentType === "template" && template ? (
-          <ComponentTemplatePage template={template} updateTemplate={updateTemplate} />
-        ) : null
+        contentType === "template" &&
+        template && <ComponentTemplatePage template={template} updateTemplate={updateTemplate} />
       }
-      header={template?.name}
+      header={
+        contentType === "template" &&
+        template && (
+          <TemplateHeader
+            templateId={template.id}
+            templateName={template?.name}
+            templateNames={templateNames}
+            onTemplateRename={handleTemplateRename}
+            onTemplateRemove={handleTemplateRemove}
+          />
+        )
+      }
       showSaveButton={showSaveButton}
-      onSave={handleSave}
+      onSave={handleTemplateSave}
     />
   );
 };

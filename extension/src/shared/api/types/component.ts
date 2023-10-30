@@ -16,3 +16,5 @@ export type ComponentTemplate = {
   name: string;
   groups: ComponentGroup[];
 };
+
+export type DraftComponentTemplate = { id?: string } & Omit<ComponentTemplate, "id">;

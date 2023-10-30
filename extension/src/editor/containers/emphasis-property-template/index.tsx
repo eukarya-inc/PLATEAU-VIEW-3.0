@@ -3,8 +3,10 @@ import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { EmphasisPropertyTemplate } from "../../../shared/api/types";
+import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
+import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
-import { convertTemplatesToTree } from "../utils";
+import { VIRTUAL_ROOT, convertTemplatesToTree, getSelectedPath } from "../utils";
 
 import { EmphasisPropertyTemplatePage } from "./emphasisPropertyTemplatePage";
 
@@ -22,7 +24,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     useState<EditorEmphasisPropertyTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { templatesAtom } = useTemplateAPI();
+  const { templatesAtom, saveTemplate, deleteTemplate, refetchTemplates } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
 
   const emphasisPropertyTemplates = useMemo(
@@ -40,7 +42,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
 
   const [template, updateTemplate] = useState<EmphasisPropertyTemplate | undefined>();
 
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([VIRTUAL_ROOT.id]);
   const [selected, setSelected] = useState<string>("");
 
   const handleItemClick = useCallback(({ id, templateId }: EditorTreeSelection) => {
@@ -66,9 +68,55 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     updateTemplate(emphasisPropertyTemplates.find(c => c.id === templateId));
   }, [emphasisPropertyTemplates, templateId]);
 
-  const handleSave = useCallback(() => {
-    console.log("TODO: emphasis property template save", template);
-  }, [template]);
+  const templateNames = useMemo(
+    () => emphasisPropertyTemplates.map(t => t.name),
+    [emphasisPropertyTemplates],
+  );
+  const base = useMemo(() => {
+    const paths = getSelectedPath(templatesTree, selected);
+    if (contentType === "template") paths.splice(-1, 1);
+    const fullPath = paths.join("/");
+    return fullPath === "" ? "" : `${fullPath}/`;
+  }, [templatesTree, selected, contentType]);
+
+  const handleTemplateAdd = useCallback(
+    async (newTemplateName: string) => {
+      await saveTemplate({
+        name: newTemplateName,
+        type: "emphasis",
+        properties: [],
+      } as unknown as EmphasisPropertyTemplate);
+      refetchTemplates();
+    },
+    [saveTemplate, refetchTemplates],
+  );
+
+  const handleTemplateSave = useCallback(async () => {
+    if (!template) return;
+    await saveTemplate(template);
+    refetchTemplates();
+  }, [template, saveTemplate, refetchTemplates]);
+
+  const handleTemplateRename = useCallback(
+    async (newTemplateName: string) => {
+      if (!template) return;
+      await saveTemplate({
+        ...template,
+        name: newTemplateName,
+      });
+      refetchTemplates();
+    },
+    [template, saveTemplate, refetchTemplates],
+  );
+
+  const handleTemplateRemove = useCallback(
+    async (templateId: string) => {
+      if (!templateId) return;
+      await deleteTemplate(templateId);
+      refetchTemplates();
+    },
+    [deleteTemplate, refetchTemplates],
+  );
 
   return (
     <EditorSection
@@ -82,14 +130,33 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
           onExpandClick={handleExpandClick}
         />
       }
-      main={
-        contentType === "template" && template ? (
-          <EmphasisPropertyTemplatePage template={template} updateTemplate={updateTemplate} />
-        ) : null
+      sidebarBottom={
+        <TemplateAddButton
+          templateNames={templateNames}
+          base={base}
+          onTemplateAdd={handleTemplateAdd}
+        />
       }
-      header={template?.name}
+      main={
+        contentType === "template" &&
+        template && (
+          <EmphasisPropertyTemplatePage template={template} updateTemplate={updateTemplate} />
+        )
+      }
+      header={
+        contentType === "template" &&
+        template && (
+          <TemplateHeader
+            templateId={template.id}
+            templateName={template?.name}
+            templateNames={templateNames}
+            onTemplateRename={handleTemplateRename}
+            onTemplateRemove={handleTemplateRemove}
+          />
+        )
+      }
       showSaveButton={showSaveButton}
-      onSave={handleSave}
+      onSave={handleTemplateSave}
     />
   );
 };

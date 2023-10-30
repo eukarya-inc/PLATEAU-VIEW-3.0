@@ -1,41 +1,58 @@
-import { templatesAtom } from "../../states/template";
+import { useSetAtom } from "jotai";
+import { useCallback, useState } from "react";
+
+import { templatesAtom, updateTemplateAtom } from "../../states/template";
+import { Template } from "../types";
+
+import { useTemplateClient } from "./useTemplateClient";
 
 export default () => {
+  const client = useTemplateClient();
+  const [isSaving, setIsSaving] = useState(false);
+
+  const updateTemplate = useSetAtom(updateTemplateAtom);
+  const saveTemplate = useCallback(
+    async (template: Template) => {
+      setIsSaving(true);
+      const nextTemplate = await (async () => {
+        if (template.id) {
+          return await client.update(template.id, template);
+        } else {
+          return await client.save(template);
+        }
+      })();
+
+      updateTemplate(nextTemplate);
+
+      setIsSaving(false);
+    },
+    [client, updateTemplate],
+  );
+
+  const setTemplates = useSetAtom(templatesAtom);
+  const refetchTemplates = useCallback(async () => {
+    const fetch = async () => {
+      const templates = await client.findAll();
+      console.log(templates);
+      setTemplates(Array.isArray(templates) ? templates : []);
+    };
+    fetch();
+  }, [client, setTemplates]);
+
+  const deleteTemplate = useCallback(
+    async (templateId: string) => {
+      if (!templateId) return;
+      await client.delete(templateId);
+      refetchTemplates();
+    },
+    [client, refetchTemplates],
+  );
+
   return {
+    isSaving,
     templatesAtom,
+    refetchTemplates,
+    saveTemplate,
+    deleteTemplate,
   };
 };
-
-// // TODO: REMOVE THIS FILE
-
-// import { atom, useAtom } from "jotai";
-// import { useCallback } from "react";
-
-// // import { DATA_API } from "../../constants";
-// import { mockFieldComponentTemplates, mockInspectorEmphasisPropertyTemplates } from "../mock";
-// import { ComponentTemplate, EmphasisPropertyTemplate } from "../types";
-
-// const componentTemplatesAtom = atom<ComponentTemplate[]>([]);
-// const emphasisPropertyTemplatesAtom = atom<EmphasisPropertyTemplate[]>([]);
-
-// export default () => {
-//   const [_componentTemplates, setComponentTemplates] = useAtom(componentTemplatesAtom);
-//   const [_emphasisPropertyTemplates, setEmphasisPropertyTemplates] = useAtom(
-//     emphasisPropertyTemplatesAtom,
-//   );
-
-//   const handleTemplateFetch = useCallback(async () => {
-//     // TODO: use the new settings API
-//     // const response = await fetch(`${DATA_API}/sidebar/plateauview3/template`);
-//     // const settings = await response.json();
-
-//     setComponentTemplates(mockFieldComponentTemplates);
-//     setEmphasisPropertyTemplates(mockInspectorEmphasisPropertyTemplates);
-//   }, [setComponentTemplates, setEmphasisPropertyTemplates]);
-
-//   return {
-//     componentTemplatesAtom,
-//     emphasisPropertyTemplatesAtom,
-//     handleTemplateFetch,
-//   };
-// };

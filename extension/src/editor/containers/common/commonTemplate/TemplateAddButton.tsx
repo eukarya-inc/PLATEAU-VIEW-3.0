@@ -1,7 +1,7 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { EditorButton, EditorDialog, EditorTextInput } from "../../ui-components";
+import { EditorButton, EditorDialog, EditorTextField } from "../../ui-components";
 
 type TemplateAddButtonProps = {
   base: string;
@@ -26,16 +26,26 @@ export const TemplateAddButton: React.FC<TemplateAddButtonProps> = ({
 
   const [newTemplateName, setNewTemplateName] = useState<string>(base);
 
+  useEffect(() => {
+    setNewTemplateName(base);
+  }, [base]);
+
   const handleNewTemplateNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTemplateName(e.target.value);
   }, []);
 
   const newTemplateNameInvalid = useMemo(() => {
-    return templateNames.includes(newTemplateName);
+    return (
+      templateNames.includes(newTemplateName) ||
+      newTemplateName === "" ||
+      newTemplateName.endsWith("/") ||
+      newTemplateName.split("/").some(p => p === "")
+    );
   }, [newTemplateName, templateNames]);
 
-  const handleComponentAdd = useCallback(() => {
+  const handleTemplateAdd = useCallback(() => {
     onTemplateAdd(newTemplateName);
+    setAddTemplateOpen(false);
   }, [newTemplateName, onTemplateAdd]);
 
   return (
@@ -48,15 +58,17 @@ export const TemplateAddButton: React.FC<TemplateAddButtonProps> = ({
         New Template
       </EditorButton>
       <EditorDialog
-        title="Add Template"
+        title="Create New Template"
         open={addTemplateOpen}
         fullWidth
         primaryButtonText="Add"
         onClose={handleCloseAddTemplate}
-        onSubmit={handleComponentAdd}
+        onSubmit={handleTemplateAdd}
         submitDisabled={newTemplateNameInvalid}>
-        <EditorTextInput
-          title="New Template Name"
+        <EditorTextField
+          autoFocus
+          label="Full path:"
+          fullWidth
           value={newTemplateName}
           onChange={handleNewTemplateNameChange}
         />
