@@ -33,7 +33,6 @@ export default () => {
   const refetchTemplates = useCallback(async () => {
     const fetch = async () => {
       const templates = await client.findAll();
-      console.log(templates);
       setTemplates(Array.isArray(templates) ? templates : []);
     };
     fetch();
