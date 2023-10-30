@@ -237,9 +237,20 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   }, [draftSetting, cache, updateSetting]);
 
   const handleSave = useCallback(() => {
+    // Save all settings belongs to current dataset
+    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
+      const catchId = `dataset-${dataset.id}-${id}`;
+      if (id === dataId) {
+        saveSetting(draftSetting as Setting);
+      } else {
+        const cachedSetting = cache?.get(catchId);
+        if (cachedSetting) {
+          saveSetting(cachedSetting as Setting);
+        }
+      }
+    });
     cache?.clear();
-    saveSetting(draftSetting as Setting);
-  }, [saveSetting, cache, draftSetting]);
+  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, saveSetting]);
 
   return layer && dataset ? (
     <EditorSection
