@@ -25,13 +25,6 @@ export const InitialLayers: FC = () => {
 
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
-  // TODO: Move to a proper place
-
-  // const { handleTemplateFetch } = useTemplateAPI();
-  // useEffect(() => {
-  //   handleTemplateFetch();
-  // }, [handleTemplateFetch]);
-
   // TODO: Get share ID
   const shareId = undefined;
 
