@@ -2,6 +2,7 @@ import LensBlurOutlinedIcon from "@mui/icons-material/LensBlurOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
+import { cloneDeep } from "lodash-es";
 import { useCallback, useMemo, useState, type FC, useEffect } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
@@ -58,7 +59,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
 
-  const { settingsAtom } = useSettingsAPI();
+  const { settingsAtom, saveSetting } = useSettingsAPI();
   const settings = useAtomValue(settingsAtom);
 
   const layer = useAtomValue(layerSelectionAtom)?.[0];
@@ -173,7 +174,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
 
     updateDraftSetting(
       cacheSetting
-        ? cacheSetting
+        ? cloneDeep(cacheSetting)
         : settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
             datasetId: dataset.id,
             dataId,
@@ -188,7 +189,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     ({ id, dataId: nextDataId, type }: EditorTreeSelection) => {
       // save cache
       if (draftSetting) {
-        cache?.set(`dataset-${dataset.id}-${dataId}`, { ...draftSetting });
+        cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
       }
       // update state
       setSelected(id);
@@ -229,14 +230,27 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
     }
   }, [draftSetting]);
 
-  const handleSave = useCallback(() => {
-    console.log("TODO: Save setting");
-  }, []);
-
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
+    cache?.clear();
     updateSetting(draftSetting as Setting);
-  }, [draftSetting, updateSetting]);
+  }, [draftSetting, cache, updateSetting]);
+
+  const handleSave = useCallback(() => {
+    // Save all settings belongs to current dataset
+    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
+      const catchId = `dataset-${dataset.id}-${id}`;
+      if (id === dataId) {
+        saveSetting(draftSetting as Setting);
+      } else {
+        const cachedSetting = cache?.get(catchId);
+        if (cachedSetting) {
+          saveSetting(cachedSetting as Setting);
+        }
+      }
+    });
+    cache?.clear();
+  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, saveSetting]);
 
   return layer && dataset ? (
     <EditorSection
@@ -275,7 +289,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
           <>
             {contentType === "status" ? (
               <StatusPage dataset={dataset} />
-            ) : contentType === "general" ? (
+            ) : contentType === "general" && draftSetting ? (
               <GeneralPage
                 key={`${dataset.id}-${dataId}`}
                 dataset={dataset}

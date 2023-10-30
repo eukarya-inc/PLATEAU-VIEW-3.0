@@ -2,23 +2,21 @@ import { useSetAtom } from "jotai";
 import { FC, useEffect } from "react";
 
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
-import { mockSettings } from "../../shared/api/mock";
-import { settingsAtom } from "../../shared/states/setting";
+import { updateAllSettingAtom } from "../../shared/states/setting";
 import { templatesAtom } from "../../shared/states/template";
 
 export const InitializeApp: FC = () => {
   const settingClient = useSettingClient();
   const templateClient = useTemplateClient();
 
-  const setSettings = useSetAtom(settingsAtom);
+  const updateAllSetting = useSetAtom(updateAllSettingAtom);
   useEffect(() => {
     const fetch = async () => {
-      //   const settings = await settingClient.findAll();
-      const settings = mockSettings;
-      setSettings(settings);
+      const settings = await settingClient.findAll();
+      updateAllSetting(settings);
     };
     fetch();
-  }, [settingClient, setSettings]);
+  }, [settingClient, updateAllSetting]);
 
   const setTemplates = useSetAtom(templatesAtom);
   useEffect(() => {

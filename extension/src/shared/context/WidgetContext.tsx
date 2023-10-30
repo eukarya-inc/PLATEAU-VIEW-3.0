@@ -15,6 +15,7 @@ type Props = {
   geoUrl?: string;
   plateauUrl?: string;
   projectId?: string;
+  plateauToken?: string;
   catalogUrl?: string;
 };
 
@@ -22,6 +23,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   geoUrl,
   plateauUrl,
   projectId,
+  plateauToken,
   catalogUrl,
   children,
 }) => {
@@ -38,11 +40,11 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [catalogUrl]);
 
   useEffect(() => {
-    if (!settingClient && !templateClient && plateauUrl && projectId) {
-      createSettingClient(projectId, plateauUrl);
-      createTemplateClient(projectId, plateauUrl);
+    if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
+      createSettingClient(projectId, plateauUrl, plateauToken);
+      createTemplateClient(projectId, plateauUrl, plateauToken);
     }
-  }, [projectId, plateauUrl]);
+  }, [projectId, plateauUrl, plateauToken]);
 
   if (!geoClient || !catalogClient) {
     return null;

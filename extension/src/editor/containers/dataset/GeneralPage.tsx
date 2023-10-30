@@ -7,7 +7,7 @@ import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
 type GeneralPageProps = {
   dataset?: EditorDataset;
-  setting?: DraftSetting;
+  setting: DraftSetting;
   dataId?: string;
   updateSetting?: UpdateSetting;
 };
@@ -20,10 +20,30 @@ export const GeneralPage: React.FC<GeneralPageProps> = ({
 }) => {
   return (
     <>
-      <DataBlock dataset={dataset} dataId={dataId} expanded={false} />
-      <CameraBlock setting={setting} updateSetting={updateSetting} expanded={false} />
-      <DataFetchingBlock setting={setting} updateSetting={updateSetting} expanded={false} />
-      <EventBlock setting={setting} updateSetting={updateSetting} expanded={false} />
+      <DataBlock
+        key={`${setting.datasetId}-${setting.dataId}-data`}
+        dataset={dataset}
+        dataId={dataId}
+        expanded={false}
+      />
+      <CameraBlock
+        key={`${setting.datasetId}-${setting.dataId}-camera`}
+        setting={setting}
+        updateSetting={updateSetting}
+        expanded={false}
+      />
+      <DataFetchingBlock
+        key={`${setting.datasetId}-${setting.dataId}-data-fetching`}
+        setting={setting}
+        updateSetting={updateSetting}
+        expanded={false}
+      />
+      <EventBlock
+        key={`${setting.datasetId}-${setting.dataId}-event`}
+        setting={setting}
+        updateSetting={updateSetting}
+        expanded={false}
+      />
     </>
   );
 };

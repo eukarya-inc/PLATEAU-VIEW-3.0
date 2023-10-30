@@ -44,6 +44,24 @@ export const updateRootLayerBySetting = atom(undefined, (get, set, setting: Sett
   set(layer.settingsAtom, currentSettings);
 });
 
+export const updateRootLayerBySettings = atom(undefined, (get, set, settings: Setting[]) => {
+  const rootLayers = get(rootLayersAtom);
+  const layerIds = rootLayers.map(l => l.id);
+  const settingsMap = settings.reduce((res, s) => {
+    if (layerIds.includes(s.datasetId)) {
+      res[s.datasetId] ? res[s.datasetId].push(s) : (res[s.datasetId] = [s]);
+    }
+    return res;
+  }, {} as Record<string, Setting[]>);
+
+  for (const layer of rootLayers) {
+    const settings = settingsMap[layer.id];
+    if (settings) {
+      set(layer.settingsAtom, settings);
+    }
+  }
+});
+
 export const removeRootLayerBySetting = atom(undefined, (get, set, setting: Setting) => {
   const rootLayers = get(rootLayersAtom);
   const layer = rootLayers.find(l => l.id === setting.datasetId);

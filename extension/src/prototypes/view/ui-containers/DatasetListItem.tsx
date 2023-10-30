@@ -58,9 +58,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
       return;
     }
     if (layer == null) {
-      const filteredSettings = settings.filter(
-        s => s.datasetId === dataset.id && dataset.items[0].id === s.dataId,
-      );
+      const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
       addLayer(
         createRootLayerAtom({
           type: layerType,

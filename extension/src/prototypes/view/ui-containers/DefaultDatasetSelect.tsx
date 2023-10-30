@@ -99,9 +99,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
           });
           paramsToAdd.forEach(({ datasetId, datumId }) => {
             const dataset = datasets.find(d => d.id === datasetId);
-            const filteredSettings = settings.filter(
-              s => s.datasetId === datasetId && datumId === s.dataId,
-            );
+            const filteredSettings = settings.filter(s => s.datasetId === datasetId);
             addLayer(
               createRootLayerAtom({
                 type: layerType,

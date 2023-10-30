@@ -3,9 +3,8 @@ import { isEqual } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
-import { isNotNullish } from "../../prototypes/type-helpers";
 import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
-import { ComponentGroup, FeatureInspectorSettings, Setting } from "../api/types";
+import { ComponentGroup, FeatureInspectorSettings, GeneralSetting, Setting } from "../api/types";
 import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
@@ -27,6 +26,7 @@ export type RootLayerParams = {
 };
 
 export type RootLayer = {
+  general: GeneralSetting | undefined;
   featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
   camera: CameraPosition | undefined;
   layer: PrimitiveAtom<LayerModel>;
@@ -58,24 +58,26 @@ const findComponentGroup = (
   return currentGroupId ? groups?.find(g => g.id === currentGroupId) : groups?.[0];
 };
 
-const findSetting = (settings: Setting[], currentDataId: string | undefined) =>
-  settings.find(s => s.dataId === (currentDataId ?? DEFAULT_SETTING_DATA_ID));
+const findSetting = (settings: Setting[], currentDataId: string | undefined) => {
+  const result: (Setting | undefined)[] = new Array(2); // [found setting, default setting];
+  for (const setting of settings) {
+    if (setting.dataId === currentDataId) {
+      result[0] = setting;
+    }
+    if (setting.dataId === DEFAULT_SETTING_DATA_ID) {
+      result[1] = setting;
+    }
+  }
+
+  const [setting, defaultSetting] = result;
+
+  return setting?.fieldComponents?.groups?.some(g => !!g.components.length)
+    ? setting
+    : defaultSetting;
+};
 
 const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
   currentDataId ? dataList.find(d => d.id === currentDataId) : dataList[0];
-
-const findSettingsByData = (dataList: DatasetItem[], settings: Setting[]) => {
-  return dataList
-    .map(data => {
-      const setting = settings.find(s => s.dataId === data.id);
-      if (setting) {
-        return setting;
-      } else {
-        return;
-      }
-    })
-    .filter(isNotNullish);
-};
 
 const createViewLayerWithComponentGroup = (
   datasetId: string,
@@ -126,6 +128,7 @@ const createRootLayer = (
 
   return {
     // TODO: get settings from featureInspectorTemplate
+    general: setting?.general,
     featureInspector: setting?.featureInspector,
     camera: setting?.general?.camera,
     layer: atom(
@@ -143,7 +146,7 @@ const createRootLayer = (
 };
 
 export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig => {
-  const initialSettings = findSettingsByData(params.dataList, params.settings);
+  const initialSettings = params.settings;
   const initialCurrentDataId = params.currentDataId ?? params.dataList[0].id;
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer(
@@ -164,7 +167,7 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
     get => get(settingsPrimitiveAtom),
     (get, set, settings: Setting[]) => {
       const prevSettings = get(settingsPrimitiveAtom);
-      const nextSettings = findSettingsByData(params.dataList, settings);
+      const nextSettings = settings;
 
       if (isEqual(prevSettings, nextSettings)) return;
 
