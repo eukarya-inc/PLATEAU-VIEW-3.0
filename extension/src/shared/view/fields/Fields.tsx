@@ -2,12 +2,16 @@ import { FC } from "react";
 
 import { InspectorItem } from "../../../prototypes/ui-components";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
-import { POINT_FILL_COLOR_CONDITION_FIELD } from "../../types/fieldComponents/point";
+import {
+  POINT_FILL_COLOR_CONDITION_FIELD,
+  POINT_FILL_GRADIENT_COLOR_FIELD,
+} from "../../types/fieldComponents/point";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
+import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
 
 type Props = {
   layers: readonly LayerModel[];
@@ -31,6 +35,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
           <LayerPointFillColorConditionField
             layers={layers}
             atoms={atoms as ComponentAtom<"POINT_FILL_COLOR_CONDITION_FIELD">["atom"][]}
+          />
+        </InspectorItem>
+      );
+    case POINT_FILL_GRADIENT_COLOR_FIELD:
+      return (
+        <InspectorItem>
+          <LayerPointFillGradientColorField
+            layers={layers}
+            atoms={atoms as ComponentAtom<"POINT_FILL_GRADIENT_COLOR_FIELD">["atom"][]}
           />
         </InspectorItem>
       );

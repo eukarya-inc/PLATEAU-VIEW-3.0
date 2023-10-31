@@ -2,6 +2,7 @@ import { Atom, PrimitiveAtom, SetStateAction, atom } from "jotai";
 import { splitAtom } from "jotai/utils";
 import { uniqWith } from "lodash-es";
 
+import { ColorMap } from "../../../prototypes/color-maps";
 import {
   QualitativeColor,
   QualitativeColorSet,
@@ -9,12 +10,13 @@ import {
 } from "../../../prototypes/datasets";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { LayerColorScheme } from "../../../prototypes/view-layers";
+import { COLOR_MAPS } from "../../constants";
 import { ComponentBase } from "../../types/fieldComponents";
 import {
   CONDITIONAL_COLOR_SCHEME,
-  CONDITIONAL_GRADIENT_COLOR_SCHEME,
+  GRADIENT_COLOR_SCHEME,
   ConditionalColorSchemeValue,
-  ConditionalGradientColorSchemeValue,
+  GradientColorSchemeValue,
 } from "../../types/fieldComponents/colorScheme";
 import { LayerModel } from "../../view-layers";
 
@@ -22,14 +24,24 @@ export const isColorSchemeComponent = (
   comp: ComponentBase,
 ): comp is Extract<
   ComponentBase,
-  { value?: ConditionalColorSchemeValue | ConditionalGradientColorSchemeValue }
+  { value?: ConditionalColorSchemeValue | GradientColorSchemeValue }
 > =>
   !!(
     comp.value &&
     typeof comp.value === "object" &&
     "type" in comp.value &&
-    [CONDITIONAL_COLOR_SCHEME, CONDITIONAL_GRADIENT_COLOR_SCHEME].includes(comp.value.type)
+    [CONDITIONAL_COLOR_SCHEME, GRADIENT_COLOR_SCHEME].includes(comp.value.type)
   );
+
+export const isConditionalColorSchemeComponent = (
+  comp: ComponentBase,
+): comp is Extract<ComponentBase, { value?: ConditionalColorSchemeValue }> =>
+  !!(isColorSchemeComponent(comp) && CONDITIONAL_COLOR_SCHEME === comp.value?.type);
+
+export const isGradientColorSchemeComponent = (
+  comp: ComponentBase,
+): comp is Extract<ComponentBase, { value?: GradientColorSchemeValue }> =>
+  !!(isColorSchemeComponent(comp) && GRADIENT_COLOR_SCHEME === comp.value?.type);
 
 // TODO: Support multiple color schcme if necessary
 export const makeColorSchemeForComponent = (colorSchemeAtom: Atom<LayerColorScheme | undefined>) =>
@@ -39,9 +51,9 @@ export const makeColorSchemeForComponent = (colorSchemeAtom: Atom<LayerColorSche
       case "quantitative":
         return {
           type: "quantitative" as const,
-          name: "",
-          // colorMap: get(colorScheme.colorMapAtom),
-          // colorRange: get(colorScheme.colorRangeAtom),
+          name: colorScheme.name,
+          colorMap: get(colorScheme.colorMapAtom),
+          colorRange: get(colorScheme.colorRangeAtom),
         };
       case "qualitative": {
         return {
@@ -64,19 +76,65 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       return;
     }
     const component = get(componentAtom.atom);
-    const colorScheme = component.value as
-      | ConditionalColorSchemeValue
-      | ConditionalGradientColorSchemeValue;
+    const colorScheme = component.value as ConditionalColorSchemeValue | GradientColorSchemeValue;
     switch (colorScheme.type) {
-      case CONDITIONAL_GRADIENT_COLOR_SCHEME:
+      case GRADIENT_COLOR_SCHEME: {
+        if (!isGradientColorSchemeComponent(component)) return;
+
+        const rule = component.preset?.rules?.find(rule => rule.id === colorScheme.currentRuleId);
+        const value = component.value;
+        const colorMap = COLOR_MAPS.find(
+          c => c.name === (value?.currentColorMapName ?? rule?.colorMapName),
+        );
+
+        if (!colorMap) return;
+
+        const colorRange = [
+          value?.currentMin ?? rule?.min ?? 0,
+          value?.currentMax ?? rule?.max ?? 0,
+        ];
+
         return {
           type: "quantitative" as const,
-          name: "",
-          // colorMap: get(colorScheme.colorMapAtom),
-          // colorRange: get(colorScheme.colorRangeAtom),
+          name: rule?.propertyName,
+          colorMapAtom: atom(
+            () =>
+              COLOR_MAPS.find(c => c.name === (value?.currentColorMapName ?? rule?.colorMapName)),
+            (_get, set, action: SetStateAction<ColorMap>) => {
+              const component = get(componentAtom.atom);
+              if (!isGradientColorSchemeComponent(component)) return;
+              const update = typeof action === "function" ? action(colorMap) : action;
+              set(componentAtom.atom, {
+                ...component,
+                value: {
+                  ...(component.value ?? {}),
+                  currentColorMapName: update.name,
+                } as typeof component.value,
+              });
+            },
+          ),
+          colorRangeAtom: atom(
+            () => colorRange,
+            (_get, set, action: SetStateAction<number[]>) => {
+              const update = typeof action === "function" ? action(colorRange) : action;
+              set(componentAtom.atom, {
+                ...component,
+                value: {
+                  ...(component.value ?? {}),
+                  currentMin: update[0],
+                  currentMax: update[1],
+                } as typeof component.value,
+              });
+            },
+          ),
+          valueRangeAtom: atom(
+            () => [rule?.min, rule?.max],
+            () => {},
+          ),
         } as QuantitativeColorMap;
+      }
       case CONDITIONAL_COLOR_SCHEME: {
-        if (!isColorSchemeComponent(component)) return;
+        if (!isConditionalColorSchemeComponent(component)) return;
         const rule = component.preset?.rules?.find(rule => rule.id === colorScheme.currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
         const colors = rule?.conditions

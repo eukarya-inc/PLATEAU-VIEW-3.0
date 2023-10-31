@@ -1,7 +1,13 @@
 import { SettingComponent } from "../api/types";
 import { Component } from "../types/fieldComponents";
-import { CONDITIONAL_COLOR_SCHEME } from "../types/fieldComponents/colorScheme";
-import { POINT_FILL_COLOR_CONDITION_FIELD } from "../types/fieldComponents/point";
+import {
+  CONDITIONAL_COLOR_SCHEME,
+  GRADIENT_COLOR_SCHEME,
+} from "../types/fieldComponents/colorScheme";
+import {
+  POINT_FILL_COLOR_CONDITION_FIELD,
+  POINT_FILL_GRADIENT_COLOR_FIELD,
+} from "../types/fieldComponents/point";
 import { fieldSettings } from "../view/fields/fieldSettings";
 
 export const makeComponentFieldValue = (component: SettingComponent): Component["value"] => {
@@ -11,6 +17,18 @@ export const makeComponentFieldValue = (component: SettingComponent): Component[
         type: CONDITIONAL_COLOR_SCHEME,
         currentRuleId: undefined,
         overrideRules: [],
+        storeable: {
+          omitPropertyNames: ["value.currentRuleId"],
+        },
+      };
+    }
+    case POINT_FILL_GRADIENT_COLOR_FIELD: {
+      return {
+        type: GRADIENT_COLOR_SCHEME,
+        currentRuleId: undefined,
+        currentColorMapName: undefined,
+        currentMax: undefined,
+        currentMin: undefined,
         storeable: {
           omitPropertyNames: ["value.currentRuleId"],
         },

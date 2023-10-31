@@ -1,5 +1,5 @@
 import { Button, Stack, styled, Typography } from "@mui/material";
-import { atom, useAtomValue, useSetAtom, type Getter } from "jotai";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
@@ -9,11 +9,11 @@ import {
   InspectorItem,
   ParameterList,
   QualitativeColorLegend,
+  QuantitativeColorLegend,
   SelectParameterItem,
   SliderParameterItem,
 } from "../../../prototypes/ui-components";
 import { colorSchemeSelectionAtom } from "../../../prototypes/view-layers";
-import { PlateauTilesetProperty } from "../../plateau";
 import { Component } from "../../types/fieldComponents";
 import { LayerModel } from "../../view-layers";
 import {
@@ -35,12 +35,9 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 const Legend: FC<{
   layers: readonly LayerModel[];
-}> = ({ layers }) => {
-  const colorSchemeAtom = useMemo(() => makeColorSchemeAtomForComponent(layers), [layers]);
-  const colorScheme = useAtomValue(
-    useMemo(() => makeColorSchemeForComponent(colorSchemeAtom), [colorSchemeAtom]),
-  );
-
+  colorSchemeAtom: ReturnType<typeof makeColorSchemeForComponent>;
+}> = ({ layers, colorSchemeAtom }) => {
+  const colorScheme = useAtomValue(colorSchemeAtom);
   const setSelection = useSetAtom(colorSchemeSelectionAtom);
   const handleClick = useCallback(() => {
     // Assume that every layer as the same color scheme.
@@ -55,12 +52,11 @@ const Legend: FC<{
       <Stack spacing={1} width="100%" marginY={1}>
         <Typography variant="body2">{colorScheme.name}</Typography>
         {colorScheme.type === "quantitative" && (
-          // <QuantitativeColorLegend
-          //   colorMap={colorScheme.colorMap}
-          //   min={colorScheme.colorRange[0]}
-          //   max={colorScheme.colorRange[1]}
-          // />
-          <div>TODO</div>
+          <QuantitativeColorLegend
+            colorMap={colorScheme.colorMap}
+            min={colorScheme.colorRange[0]}
+            max={colorScheme.colorRange[1]}
+          />
         )}
         {colorScheme.type === "qualitative" && (
           <QualitativeColorLegend colors={colorScheme.colors} />
@@ -69,52 +65,6 @@ const Legend: FC<{
     </StyledButton>
   );
 };
-
-// TODO: Support gradient
-function getProperty(_get: Getter, _layers: readonly LayerModel[]): PlateauTilesetProperty | null {
-  // const properties = uniqWith(
-  //   layers.map(layer => {
-  //     if (!("propertiesAtom" in layer) || !("colorPropertyAtom" in layer)) {
-  //       return undefined;
-  //     }
-  //     const properties = get(layer.propertiesAtom);
-  //     const colorProperty = get(layer.colorPropertyAtom);
-  //     return colorProperty != null
-  //       ? properties?.value?.find(({ name }) => name === colorProperty)
-  //       : undefined;
-  //   }),
-  // );
-  // const property = properties[0];
-  // if (property == null || !properties.every(other => other?.type === property.type)) {
-  //   return null;
-  // }
-  // switch (property.type) {
-  //   case "number": {
-  //     const minimum = min(
-  //       properties.map(property => {
-  //         invariant(property?.type === "number");
-  //         return property.minimum;
-  //       }),
-  //     );
-  //     const maximum = min(
-  //       properties.map(property => {
-  //         invariant(property?.type === "number");
-  //         return property.maximum;
-  //       }),
-  //     );
-  //     invariant(minimum != null);
-  //     invariant(maximum != null);
-  //     return {
-  //       ...property,
-  //       minimum,
-  //       maximum,
-  //     };
-  //   }
-  //   case "qualitative":
-  //     return property;
-  // }
-  return null;
-}
 
 export interface ColorSchemeSectionForComponentFieldProps {
   layers: readonly LayerModel[];
@@ -182,6 +132,9 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                 value: {
                   ...(componentValue.value ?? {}),
                   currentRuleId: selectedRule?.id,
+                  currentColorMapName: undefined,
+                  currentMin: undefined,
+                  currentMax: undefined,
                 },
               } as Component);
               return true;
@@ -193,57 +146,37 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
     [layers],
   );
 
-  // TODO: Support gradient
-  const colorMapAtoms = useMemo(() => {
-    // const atoms = layers.map(layer =>
-    //   "colorMapAtom" in layer ? layer.colorMapAtom : undefined,
-    // );
-    // return atoms.every(<T,>(atom: T | undefined): atom is T => atom != null) ? atoms : undefined;
-    return [];
-  }, []);
-
-  // TODO: Support gradient
-  const colorRangeAtoms = useMemo(() => {
-    // const atoms = buildingLayers.map(layer =>
-    //   "colorRangeAtom" in layer ? layer.colorRangeAtom : undefined,
-    // );
-    // return atoms.every(<T,>(atom: T | undefined): atom is T => atom != null) ? atoms : undefined;
-    return [];
-  }, []);
-
-  // TODO: Support gradient
-  const property = useAtomValue(useMemo(() => atom(get => getProperty(get, layers)), [layers]));
-
-  // TODO: Support gradient
-  // Update color range when properties change.
-  const resetColorRange = useSetAtom(
-    useMemo(
-      () =>
-        atom(null, (get, set) => {
-          if (colorRangeAtoms == null) {
-            return;
-          }
-          const property = getProperty(get, layers);
-          if (property?.type === "number") {
-            colorRangeAtoms.forEach(colorRange => {
-              set(colorRange, [property.minimum, property.maximum]);
-            });
-          }
-        }),
-      [layers, colorRangeAtoms],
-    ),
+  const colorSchemeAtom = useMemo(() => makeColorSchemeAtomForComponent(layers), [layers]);
+  const colorScheme = useAtomValue(colorSchemeAtom);
+  const colorSchemeValueAtom = useMemo(
+    () => makeColorSchemeForComponent(colorSchemeAtom),
+    [colorSchemeAtom],
   );
+
+  const colorMapAtoms = useMemo(() => {
+    return colorScheme?.type && colorScheme.type === "quantitative"
+      ? [colorScheme.colorMapAtom]
+      : undefined;
+  }, [colorScheme]);
+
+  const colorRangeAtoms = useMemo(() => {
+    return colorScheme?.type && colorScheme.type === "quantitative"
+      ? [colorScheme.colorRangeAtom]
+      : undefined;
+  }, [colorScheme]);
+
+  const valueRangeAtom = useMemo(() => {
+    return colorScheme?.type && colorScheme.type === "quantitative"
+      ? colorScheme.valueRangeAtom
+      : undefined;
+  }, [colorScheme]);
+  const valueRange = useAtomValue(useMemo(() => valueRangeAtom ?? atom([0, 0]), [valueRangeAtom]));
 
   const handleClickParameterItem = useCallback(() => {
     setRecalcPropertyItems(p => p + 1);
   }, []);
 
-  if (
-    !layers.length ||
-    colorPropertyAtoms == null ||
-    colorMapAtoms == null ||
-    colorRangeAtoms == null
-  ) {
+  if (!layers.length || colorPropertyAtoms == null) {
     return null;
   }
   return (
@@ -251,7 +184,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
       <GroupedParameterItem
         label="色分け"
         onClick={handleClickParameterItem}
-        content={<Legend layers={layers} />}>
+        content={<Legend layers={layers} colorSchemeAtom={colorSchemeValueAtom} />}>
         <InspectorItem sx={{ width: 320 }}>
           <ParameterList>
             <SelectParameterItem
@@ -260,20 +193,22 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               items={propertyItems as [string, string][]}
               layout="stack"
               displayEmpty
-              onChange={resetColorRange}
             />
-            {property?.type === "number" && (
-              <>
-                <ColorMapParameterItem label="配色" atom={colorMapAtoms} />
-                <SliderParameterItem
-                  label="値範囲"
-                  min={property.minimum}
-                  max={property.maximum}
-                  range
-                  atom={colorRangeAtoms}
-                />
-              </>
-            )}
+            {colorScheme?.type === "quantitative" &&
+              colorMapAtoms &&
+              colorRangeAtoms &&
+              valueRange && (
+                <>
+                  <ColorMapParameterItem label="配色" atom={colorMapAtoms} />
+                  <SliderParameterItem
+                    label="値範囲"
+                    min={valueRange[0]}
+                    max={valueRange[1]}
+                    range
+                    atom={colorRangeAtoms}
+                  />
+                </>
+              )}
           </ParameterList>
         </InspectorItem>
       </GroupedParameterItem>
