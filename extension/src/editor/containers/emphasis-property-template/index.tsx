@@ -24,7 +24,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     useState<EditorEmphasisPropertyTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { templatesAtom, saveTemplate, deleteTemplate, refetchTemplates } = useTemplateAPI();
+  const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
 
   const emphasisPropertyTemplates = useMemo(
@@ -86,16 +86,14 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
         type: "emphasis",
         properties: [],
       } as unknown as EmphasisPropertyTemplate);
-      refetchTemplates();
     },
-    [saveTemplate, refetchTemplates],
+    [saveTemplate],
   );
 
   const handleTemplateSave = useCallback(async () => {
     if (!template) return;
     await saveTemplate(template);
-    refetchTemplates();
-  }, [template, saveTemplate, refetchTemplates]);
+  }, [template, saveTemplate]);
 
   const handleTemplateRename = useCallback(
     async (newTemplateName: string) => {
@@ -104,18 +102,16 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
         ...template,
         name: newTemplateName,
       });
-      refetchTemplates();
     },
-    [template, saveTemplate, refetchTemplates],
+    [template, saveTemplate],
   );
 
   const handleTemplateRemove = useCallback(
     async (templateId: string) => {
       if (!templateId) return;
-      await deleteTemplate(templateId);
-      refetchTemplates();
+      await removeTemplate(templateId);
     },
-    [deleteTemplate, refetchTemplates],
+    [removeTemplate],
   );
 
   return (

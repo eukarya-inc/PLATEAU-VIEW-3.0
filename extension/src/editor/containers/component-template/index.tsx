@@ -21,7 +21,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
   const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
 
-  const { templatesAtom, saveTemplate, deleteTemplate, refetchTemplates } = useTemplateAPI();
+  const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
 
   const componentTemplates = useMemo(
@@ -94,16 +94,14 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
         type: "component",
         groups: [],
       } as unknown as ComponentTemplate);
-      refetchTemplates();
     },
-    [saveTemplate, refetchTemplates],
+    [saveTemplate],
   );
 
   const handleTemplateSave = useCallback(async () => {
     if (!template) return;
     await saveTemplate(template);
-    refetchTemplates();
-  }, [template, saveTemplate, refetchTemplates]);
+  }, [template, saveTemplate]);
 
   const handleTemplateRename = useCallback(
     async (newTemplateName: string) => {
@@ -112,18 +110,16 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
         ...template,
         name: newTemplateName,
       });
-      refetchTemplates();
     },
-    [template, saveTemplate, refetchTemplates],
+    [template, saveTemplate],
   );
 
   const handleTemplateRemove = useCallback(
     async (templateId: string) => {
       if (!templateId) return;
-      await deleteTemplate(templateId);
-      refetchTemplates();
+      await removeTemplate(templateId);
     },
-    [deleteTemplate, refetchTemplates],
+    [removeTemplate],
   );
 
   return (
