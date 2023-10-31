@@ -2,7 +2,7 @@ import type { Component, ComponentBase } from "../../types/fieldComponents";
 
 export type SettingComponent<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   id: string;
-} & Omit<Component<T>, "value" | "legendUI" | "layerUI">;
+} & Omit<Component<T>, "value">;
 
 export type ComponentGroup = {
   id: string;

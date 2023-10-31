@@ -21,9 +21,9 @@ export const ColorSetList: FC<ColorSetListProps> = ({
   const colorsAtoms = useAtomValue(colorsAtom);
   return (
     <List disablePadding {...props}>
-      {colorsAtoms.map(colorAtom => (
+      {colorsAtoms.map((colorAtom, i) => (
         <ColorSetListItem
-          key={`${colorAtom}`}
+          key={i.toString()}
           colorAtom={colorAtom}
           continuous={continuous}
           onChange={onChange}

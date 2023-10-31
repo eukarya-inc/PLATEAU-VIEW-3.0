@@ -4,8 +4,8 @@ import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
 import { flyToLayerId } from "../../../shared/reearth/utils";
+import { Fields } from "../../../shared/view/fields/Fields";
 import { ComponentAtom } from "../../../shared/view-layers/component";
-import { Fields } from "../../../shared/view-layers/Fields";
 import { layerSelectionAtom, removeLayerAtom, type LayerType } from "../../layers";
 import {
   AddressIcon,
@@ -135,7 +135,7 @@ export function LayerContent<T extends LayerType>({
       {/* <LayerHeatmapSection layers={values} /> */}
       <Divider />
       {components.map(([type, atoms]) => (
-        <Fields key={type} type={type} atoms={atoms} />
+        <Fields layers={values} key={type} type={type} atoms={atoms} />
       ))}
       {/* <InspectorItem> */}
       {/* <LayerShowWireframeSection layers={values} />

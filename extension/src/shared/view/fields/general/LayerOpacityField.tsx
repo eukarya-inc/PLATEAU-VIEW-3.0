@@ -17,7 +17,7 @@ export const LayerOpacityField: FC<LayerOpacityFieldProps> = ({ atoms }) => {
   const wrappedAtoms: [WritableAtomForComponent<number>] = useMemo(
     () => [
       atom(
-        get => (atoms[0] ? get(atoms[0]).value : 1),
+        get => (atoms[0] ? get(atoms[0]).value ?? 1 : 1),
         (get, set, update: number) => {
           if (!atoms[0]) {
             return;

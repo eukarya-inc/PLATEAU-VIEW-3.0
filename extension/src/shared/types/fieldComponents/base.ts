@@ -1,5 +1,9 @@
 export type FieldBase<T> = {
-  storeable?: boolean;
+  value?: {
+    storeable?: {
+      omitPropertyNames: string[]; // Specified properties are omited to save to local storage
+    };
+  };
   preset?: {
     defaultValue?: string | number;
   };

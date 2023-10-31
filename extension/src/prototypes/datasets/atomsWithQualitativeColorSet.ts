@@ -4,6 +4,7 @@ import { splitAtom } from "jotai/utils";
 import { type SplitAtom } from "../type-helpers";
 
 export interface QualitativeColor {
+  id?: string;
   value: string | number;
   color: string;
   name: string;

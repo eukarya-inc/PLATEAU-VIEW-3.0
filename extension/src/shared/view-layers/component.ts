@@ -11,7 +11,8 @@ import {
   storageStoreAtomWrapper,
 } from "../sharedAtoms";
 import { Component, ComponentBase } from "../types/fieldComponents";
-import { fieldSettings } from "../view/fields/fieldSettings";
+
+import { makeComponentFieldValue } from "./componentField";
 
 export type WritableAtomForComponent<T> = WritableAtom<T, [update: T], void>;
 
@@ -57,15 +58,22 @@ export const makeComponentAtoms = (
     const name = makeComponentId({ datasetId, componentType: component.type, shareId });
     const componentForAtom = {
       ...component,
-      value: component.preset?.defaultValue || fieldSettings[component.type].defaultValue,
+      value: makeComponentFieldValue(component),
     } as Component;
     // TODO: load value from shared data
     const a = sharedAtom(name, componentForAtom);
-    if (component.storeable) {
+    if (componentForAtom.value?.storeable) {
       return {
         type: component.type,
         atom: sharedAtomValue(
-          sharedStoreAtom(storageStoreAtom(a, shouldInitialize), shouldInitialize),
+          sharedStoreAtom(
+            storageStoreAtom(
+              a,
+              componentForAtom.value?.storeable.omitPropertyNames,
+              shouldInitialize,
+            ),
+            shouldInitialize,
+          ),
         ),
       };
     }

@@ -1,3 +1,5 @@
+import { USE_LOCAL_STORAGE } from "../constants";
+
 // Initialize stores for the share feature.
 let SHARED_STORE: Promise<Record<string, any>> = Promise.resolve({});
 
@@ -27,7 +29,9 @@ const makeStorageKey = (k: string) => `${STORAGE_PREFIX}_${k}`;
 export const getSharedStoreValue = async <T>(k: string): Promise<T | undefined> =>
   SHARED_STORE.then(v => v[k] as T);
 export const getStorageStoreValue = <T>(k: string): T | undefined =>
-  JSON.parse(window.localStorage.getItem(makeStorageKey(k)) ?? "null");
+  USE_LOCAL_STORAGE()
+    ? JSON.parse(window.localStorage.getItem(makeStorageKey(k)) ?? "null")
+    : undefined;
 
 export const setSharedStoreValue = <T>(k: string, v: T) => {
   SHARED_STORE.then(o => (o[k] = v));
