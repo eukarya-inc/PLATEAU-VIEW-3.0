@@ -107,9 +107,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
           for (const componentAtom of layers[0].componentAtoms) {
             const componentValue = get(componentAtom.atom);
             if (isColorSchemeComponent(componentValue)) {
-              const ruleId = componentValue.preset?.rules?.find(
-                rule => rule.id === componentValue.value?.currentRuleId,
-              )?.id;
+              const ruleId = componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
               }
@@ -126,12 +124,11 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                 typeof action === "function"
                   ? action(componentValue.value?.currentRuleId ?? null)
                   : action;
-              const selectedRule = componentValue.preset?.rules?.find(rule => rule.id === update);
               set(componentAtom.atom, {
                 ...componentValue,
                 value: {
                   ...(componentValue.value ?? {}),
-                  currentRuleId: selectedRule?.id,
+                  currentRuleId: update,
                   currentColorMapName: undefined,
                   currentMin: undefined,
                   currentMax: undefined,
