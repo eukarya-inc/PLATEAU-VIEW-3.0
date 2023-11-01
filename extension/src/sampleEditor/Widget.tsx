@@ -29,14 +29,12 @@ const mockSetting: Setting = {
             preset: {
               defaultValue: "#f0ff00",
             },
-            storeable: false,
           } as SettingComponent<"POINT_COLOR_FIELD">,
           {
             type: POINT_SIZE_FIELD,
             preset: {
               defaultValue: 100,
             },
-            storeable: false,
           } as SettingComponent<"POINT_SIZE_FIELD">,
         ],
       },

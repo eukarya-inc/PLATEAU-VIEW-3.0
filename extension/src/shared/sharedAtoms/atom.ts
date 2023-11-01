@@ -1,4 +1,5 @@
 import { WritableAtom, atom } from "jotai";
+import { omit } from "lodash-es";
 
 import {
   getSharedStoreValue,
@@ -81,13 +82,21 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
 };
 
 // For the UI setting
-export const storageStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) => {
+export const storageStoreAtom = <V>(
+  a: SharedAtom<V>,
+  omitProperyNames?: string[],
+  shouldInitialize = true,
+) => {
   const wrapped = atom(
     get => get(a),
     async (_get, set, update: (value: V, name: string) => Promise<V>) => {
       set(a, async (v, n) => {
-        setStorageStoreValue(n, await update(v, n));
-        return await update(v, n);
+        const result = await update(v, n);
+        setStorageStoreValue(
+          n,
+          typeof result === "object" && omitProperyNames ? omit(result, omitProperyNames) : result,
+        );
+        return result;
       });
     },
   );
