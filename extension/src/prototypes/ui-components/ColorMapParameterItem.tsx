@@ -2,42 +2,12 @@ import { Select, styled, type SelectChangeEvent, type SelectProps } from "@mui/m
 import { atom, useAtom, type PrimitiveAtom, type SetStateAction, WritableAtom } from "jotai";
 import { forwardRef, useCallback, useMemo, type PropsWithoutRef, type ReactNode } from "react";
 
-import {
-  colorMapCividis,
-  colorMapCrest,
-  colorMapFlare,
-  colorMapIcefire,
-  colorMapInferno,
-  colorMapMagma,
-  colorMapMako,
-  colorMapPlasma,
-  colorMapPlateau,
-  colorMapRocket,
-  colorMapTurbo,
-  colorMapViridis,
-  colorMapVlag,
-  type ColorMap,
-} from "../color-maps";
+import { COLOR_MAPS } from "../../shared/constants";
+import { type ColorMap } from "../color-maps";
 
 import { ColorMapSelectItemContent } from "./ColorMapSelectItemContent";
 import { ParameterItem, type ParameterItemProps } from "./ParameterItem";
 import { SelectItem } from "./SelectItem";
-
-const colorMaps = [
-  colorMapPlateau,
-  colorMapCividis,
-  colorMapCrest,
-  colorMapFlare,
-  colorMapIcefire,
-  colorMapInferno,
-  colorMapMagma,
-  colorMapMako,
-  colorMapPlasma,
-  colorMapRocket,
-  colorMapTurbo,
-  colorMapViridis,
-  colorMapVlag,
-];
 
 const StyledSelect = styled(Select)(({ theme }) => ({
   width: `calc(100% - ${theme.spacing(-2)})`,
@@ -90,7 +60,7 @@ export const ColorMapParameterItem = forwardRef<HTMLDivElement, ColorMapParamete
 
     const handleChange = useCallback(
       (event: SelectChangeEvent<string | null>, child: ReactNode) => {
-        const colorMap = colorMaps.find(({ name }) => name === event.target.value);
+        const colorMap = COLOR_MAPS.find(({ name }) => name === event.target.value);
         if (colorMap == null) {
           return;
         }
@@ -118,7 +88,7 @@ export const ColorMapParameterItem = forwardRef<HTMLDivElement, ColorMapParamete
               <Value>混在</Value>
             </SelectItem>
           )}
-          {colorMaps.map(colorMap => (
+          {COLOR_MAPS.map(colorMap => (
             <SelectItem key={colorMap.name} value={colorMap.name}>
               <ColorMapSelectItemContent colorMap={colorMap} />
             </SelectItem>

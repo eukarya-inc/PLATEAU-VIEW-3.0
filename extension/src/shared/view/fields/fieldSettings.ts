@@ -37,4 +37,9 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
+  POINT_FILL_GRADIENT_COLOR_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
 };

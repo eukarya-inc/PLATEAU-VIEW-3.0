@@ -1,5 +1,5 @@
 import { Select, styled, type SelectChangeEvent, type SelectProps } from "@mui/material";
-import { atom, useAtom, type PrimitiveAtom, type SetStateAction } from "jotai";
+import { atom, useAtom, type PrimitiveAtom, type SetStateAction, WritableAtom } from "jotai";
 import {
   forwardRef,
   useCallback,
@@ -26,11 +26,15 @@ const Value = styled("div")(({ theme }) => ({
   textOverflow: "ellipsis",
 }));
 
-export interface SelectParameterItemProps<T extends string | number | null = string | number | null>
-  extends PropsWithoutRef<Omit<SelectProps<T>, "value">>,
+export interface SelectParameterItemProps<
+  T extends string | number | null | undefined = string | number | null | undefined,
+> extends PropsWithoutRef<Omit<SelectProps<T>, "value">>,
     Pick<ParameterItemProps, "label" | "labelFontSize" | "description"> {
   layout?: "inline" | "stack";
-  atom: PrimitiveAtom<T> | Array<PrimitiveAtom<T>>;
+  atom:
+    | PrimitiveAtom<T>
+    | Array<PrimitiveAtom<T>>
+    | WritableAtom<T | undefined, [action: SetStateAction<T | undefined>], void>[];
   items?: ReadonlyArray<[T, ReactNode] | [T, ReactNode, Partial<SelectItemProps>]>;
 }
 
@@ -63,7 +67,7 @@ export const SelectParameterItem = forwardRef<HTMLDivElement, SelectParameterIte
                 const [value] = values;
                 return values.slice(1).every(another => another === value) ? value : MIXED;
               },
-              (_get, set, value: SetStateAction<string | number | null>) => {
+              (_get, set, value: SetStateAction<string | number | null | undefined>) => {
                 atomOrAtoms.forEach(atom => {
                   set(atom, value);
                 });

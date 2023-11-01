@@ -15,6 +15,7 @@ import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
 import { EditorPointFillConditionValueField } from "./point/EditorPointFillConditionValueField";
+import { EditorPointFillGradientValueField } from "./point/EditorPointFillGradientValueField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
@@ -78,5 +79,10 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Size",
     Component: EditorPointSizeField,
+  },
+  POINT_FILL_GRADIENT_COLOR_FIELD: {
+    category: "Point",
+    name: "Fill Color (Gradient)",
+    Component: EditorPointFillGradientValueField,
   },
 };

@@ -1,15 +1,18 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { styled } from "@mui/material";
-import { useAtom, useAtomValue, useSetAtom, type PrimitiveAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom, type PrimitiveAtom, atom } from "jotai";
 import {
   forwardRef,
   useCallback,
   type ComponentPropsWithRef,
   type ComponentType,
   type MouseEvent,
+  useMemo,
 } from "react";
 import { mergeRefs } from "react-merge-refs";
+
+import { makeColorSchemeAtomForComponent } from "../../shared/view/state/colorSchemeForComponent";
 
 import { addLayerSelectionAtom, layerSelectionAtom } from "./states";
 import { type LayerModel, type LayerProps } from "./types";
@@ -45,6 +48,11 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
       [layer.id, setSelection, addSelection],
     );
 
+    const colorSchemeAtom = useMemo(() => {
+      const generalColorScheme = makeColorSchemeAtomForComponent([layer]);
+      return atom(get => get(layer.colorSchemeAtom) || get(generalColorScheme) || null);
+    }, [layer]);
+
     const ItemComponent = itemComponent;
     return (
       <Root
@@ -58,6 +66,7 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
         {...listeners}>
         <ItemComponent
           {...layer}
+          colorSchemeAtom={colorSchemeAtom}
           index={index}
           selected={selection.includes(layer.id)}
           itemProps={{

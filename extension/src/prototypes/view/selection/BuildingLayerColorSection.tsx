@@ -160,6 +160,7 @@ export interface BuildingLayerColorSectionProps {
   layers: readonly LayerModel[];
 }
 
+// TODO: Handle as component
 export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ layers }) => {
   const buildingLayers = useMemo(
     () => layers.filter((l): l is BuildingLayerModel => l.type === BUILDING_LAYER),

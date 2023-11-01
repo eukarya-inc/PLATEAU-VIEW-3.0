@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
 import { useTemplateAPI } from "../../../../shared/api";
+import { ComponentTemplate } from "../../../../shared/api/types";
 import {
   BlockContentWrapper,
   EditorBlock,
@@ -33,8 +34,14 @@ export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockPr
     setTemplateId(e.target.value);
   }, []);
 
-  const { componentTemplatesAtom } = useTemplateAPI();
-  const componentTemplates = useAtomValue(componentTemplatesAtom);
+  const { templatesAtom } = useTemplateAPI();
+  const templates = useAtomValue(templatesAtom);
+
+  const componentTemplates = useMemo(
+    () =>
+      templates ? (templates?.filter(t => t.type === "component") as ComponentTemplate[]) : [],
+    [templates],
+  );
 
   const templateOptions = useMemo(
     () => componentTemplates.map(t => ({ label: t.name, value: t.id })),
