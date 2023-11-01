@@ -23,7 +23,7 @@ type PointFillColorConditionFieldPresetRule = {
 
 type PointFillColorConditionFieldPresetRuleCondition = {
   id: string;
-  operation?: "==" | "!=" | ">" | ">=" | "<" | "<=";
+  operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
   value?: string;
   color?: string;
   asLegend?: boolean;
@@ -337,7 +337,14 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
   );
 
   const operationOptions = useMemo(
-    () => ["==", "!=", ">", ">=", "<", "<="].map(o => ({ value: o, label: o })),
+    () => [
+      { value: ">", label: ">" },
+      { value: "<", label: "<" },
+      { value: ">=", label: ">=" },
+      { value: "<=", label: "<=" },
+      { value: "===", label: "=" },
+      { value: "!==", label: "!=" },
+    ],
     [],
   );
 
