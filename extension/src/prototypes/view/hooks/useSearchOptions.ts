@@ -8,6 +8,7 @@ import { TileFeatureIndex } from "../../../shared/plateau/layers";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
+import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
@@ -159,6 +160,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
   const datasets = useDatasetSearchOptions(options);
   const buildings = useBuildingSearchOption(options);
   const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
 
   const addLayer = useSetAtom(addLayerAtom);
   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
@@ -181,6 +183,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 type,
                 title: dataset.name,
                 settings: filteredSettings,
+                templates,
                 dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
@@ -193,6 +196,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 type,
                 title: dataset.name,
                 settings: filteredSettings,
+                templates,
                 dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
@@ -219,7 +223,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         }
       }
     },
-    [setScreenSpaceSelection, addLayer, settings],
+    [setScreenSpaceSelection, addLayer, settings, templates],
   );
 
   return {

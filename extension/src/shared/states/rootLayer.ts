@@ -73,3 +73,11 @@ export const removeRootLayerBySetting = atom(undefined, (get, set, setting: Sett
     get(layer.settingsAtom).filter(s => s.id !== setting.id),
   );
 });
+
+export const forceUpdateRootLayer = atom(undefined, (get, set) => {
+  const rootLayers = get(rootLayersAtom);
+  for (const layer of rootLayers) {
+    // Force to recreate each root layer to update templates.
+    set(layer.settingsAtom, get(layer.settingsAtom));
+  }
+});

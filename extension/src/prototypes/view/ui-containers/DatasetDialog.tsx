@@ -15,6 +15,7 @@ import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
+import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
@@ -68,6 +69,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   );
 
   const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
 
   const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
   const addLayer = useAddLayer();
@@ -84,6 +86,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
           datasetId: dataset.id,
           title: dataset.name,
           settings: filteredSettings,
+          templates,
           dataList: dataset.items as DatasetItem[],
           areaCode: municipalityCode,
         }),
@@ -91,7 +94,17 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
     } else {
       removeLayer(layer.id);
     }
-  }, [dataset, data, layer, layerType, addLayer, removeLayer, municipalityCode, settings]);
+  }, [
+    dataset,
+    data,
+    layer,
+    layerType,
+    addLayer,
+    removeLayer,
+    municipalityCode,
+    settings,
+    templates,
+  ]);
 
   return (
     <Dialog {...props}>

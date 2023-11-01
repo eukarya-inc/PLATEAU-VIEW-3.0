@@ -7,6 +7,7 @@ import invariant from "tiny-invariant";
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
+import { templatesAtom } from "../../../shared/states/template";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFilterLayers } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
@@ -51,6 +52,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     const rootLayers = useAtomValue(rootLayersAtom);
     const layers = useAtomValue(rootLayersLayersAtom);
     const settings = useAtomValue(settingsAtom);
+    const templates = useAtomValue(templatesAtom);
     // Assume that all the datasets share the same type.
     const layerType = datasetTypeLayers[datasets[0].type.code as PlateauDatasetType];
     invariant(layerType !== "BUILDING_LAYER", "Building layer is not supported.");
@@ -107,6 +109,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
                 datasetId,
                 title: dataset?.name ?? "",
                 settings: filteredSettings,
+                templates,
                 dataList: dataset?.items as DatasetItem[],
                 currentDataId: datumId,
               }),
@@ -127,6 +130,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
       addLayer,
       removeLayer,
       settings,
+      templates,
     ]);
 
     const [params, setParams] = useAtom(paramsAtom);

@@ -1,28 +1,49 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
-import { isEqual } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
 import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
-import { ComponentGroup, FeatureInspectorSettings, GeneralSetting, Setting } from "../api/types";
+import {
+  ComponentGroup,
+  ComponentTemplate,
+  FeatureInspectorSettings,
+  GeneralSetting,
+  Setting,
+  Template,
+} from "../api/types";
 import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
+import { templatesAtom } from "../states/template";
 
 import { makeComponentAtoms } from "./component";
 import { createViewLayer } from "./createViewLayer";
 
-export type RootLayerParams = {
+export type RootLayerAtomParams = {
   datasetId: string;
   type: LayerType;
   title: string;
   areaCode: string;
   settings: Setting[];
+  templates: Template[];
   dataList: DatasetItem[];
   currentDataId?: string;
   shareId?: string;
+};
+
+export type RootLayerParams = {
+  datasetId: string;
+  type: LayerType;
+  title: string;
+  dataList: DatasetItem[];
+  settings: Setting[];
+  templates: Template[];
+  currentDataId: string | undefined;
+  currentGroupId: string | undefined;
+  shareId: string | undefined;
+  shouldInitialize: boolean;
 };
 
 export type RootLayer = {
@@ -41,20 +62,13 @@ export type RootLayerConfig = {
   settingsAtom: WritableAtom<Setting[], [settings: Setting[]], void>;
 };
 
-// TODO: Get component groups from specific template
-const getComponentGroupsFromTemplate = (templateId: string): ComponentGroup[] | undefined => {
-  console.log("TODO: Get component groups with templateId", templateId);
-  return [] as ComponentGroup[];
-};
-
 const findComponentGroup = (
   setting: Setting | undefined,
+  template: ComponentTemplate | undefined,
   currentGroupId: string | undefined,
 ): ComponentGroup | undefined => {
-  if (!setting) return;
-  const groups = setting.fieldComponents?.templateId
-    ? getComponentGroupsFromTemplate(setting.fieldComponents.templateId)
-    : setting.fieldComponents?.groups;
+  const hasTemplate = setting?.fieldComponents?.useTemplate && setting?.fieldComponents?.templateId;
+  const groups = hasTemplate ? template?.groups : setting?.fieldComponents?.groups;
   return currentGroupId ? groups?.find(g => g.id === currentGroupId) : groups?.[0];
 };
 
@@ -71,9 +85,24 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
 
   const [setting, defaultSetting] = result;
 
-  return setting?.fieldComponents?.groups?.some(g => !!g.components.length)
-    ? setting
-    : defaultSetting;
+  const fieldComponents = setting?.fieldComponents;
+  const hasGroups = fieldComponents?.groups?.some(g => !!g.components.length);
+  const hasTemplate = fieldComponents?.useTemplate && !!fieldComponents.templateId;
+
+  return hasGroups || hasTemplate ? setting : defaultSetting;
+};
+
+// TODO: Get component groups from specific template
+const findComponentTemplate = (
+  setting: Setting | undefined,
+  templates: Template[],
+): ComponentTemplate | undefined => {
+  const { useTemplate, templateId } = setting?.fieldComponents ?? {};
+  if (!useTemplate || !templateId) return;
+
+  const template = templates.find(t => t.id === templateId);
+
+  return template?.type === "component" ? template : undefined;
 };
 
 const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
@@ -111,20 +140,22 @@ const createViewLayerWithComponentGroup = (
 };
 
 // TODO: Get layer from specified dataset
-const createRootLayer = (
-  datasetId: string,
-  type: LayerType,
-  title: string,
-  dataList: DatasetItem[],
-  settings: Setting[],
-  currentDataId: string | undefined,
-  currentGroupId: string | undefined,
-  shareId: string | undefined,
-  shouldInitialize: boolean,
-): RootLayer => {
+const createRootLayer = ({
+  datasetId,
+  type,
+  title,
+  dataList,
+  settings,
+  templates,
+  currentDataId,
+  currentGroupId,
+  shareId,
+  shouldInitialize,
+}: RootLayerParams): RootLayer => {
   const setting = findSetting(settings, currentDataId);
-  const componentGroup = findComponentGroup(setting, currentGroupId);
   const data = findData(dataList, currentDataId);
+  const template = findComponentTemplate(setting, templates);
+  const componentGroup = findComponentGroup(setting, template, currentGroupId);
 
   return {
     // TODO: get settings from featureInspectorTemplate
@@ -145,50 +176,49 @@ const createRootLayer = (
   };
 };
 
-export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig => {
+export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfig => {
   const initialSettings = params.settings;
+  const initialTemplates = params.templates;
   const initialCurrentDataId = params.currentDataId ?? params.dataList[0].id;
   const rootLayerAtom = atom<RootLayer>(
-    createRootLayer(
-      params.datasetId,
-      params.type,
-      params.title,
-      params.dataList,
-      initialSettings,
-      initialCurrentDataId,
-      undefined,
-      params.shareId,
-      true,
-    ),
+    createRootLayer({
+      datasetId: params.datasetId,
+      type: params.type,
+      title: params.title,
+      dataList: params.dataList,
+      settings: initialSettings,
+      templates: initialTemplates,
+      currentDataId: initialCurrentDataId,
+      currentGroupId: undefined,
+      shareId: params.shareId,
+      shouldInitialize: true,
+    }),
   );
 
   const settingsPrimitiveAtom = atom(initialSettings);
+
   const settingsAtom = atom(
     get => get(settingsPrimitiveAtom),
     (get, set, settings: Setting[]) => {
-      const prevSettings = get(settingsPrimitiveAtom);
-      const nextSettings = settings;
-
-      if (isEqual(prevSettings, nextSettings)) return;
-
       const currentDataId = get(currentDataIdAtom);
       const currentGroupId = get(currentGroupIdAtom);
 
       set(
         rootLayerAtom,
-        createRootLayer(
-          params.datasetId,
-          params.type,
-          params.title,
-          params.dataList,
-          nextSettings,
-          currentDataId,
-          currentGroupId,
-          params.shareId,
-          false,
-        ),
+        createRootLayer({
+          datasetId: params.datasetId,
+          type: params.type,
+          title: params.title,
+          dataList: params.dataList,
+          settings: settings,
+          templates: get(templatesAtom),
+          currentDataId: currentDataId,
+          currentGroupId: currentGroupId,
+          shareId: params.shareId,
+          shouldInitialize: false,
+        }),
       );
-      set(settingsPrimitiveAtom, nextSettings);
+      set(settingsPrimitiveAtom, settings);
     },
   );
 
@@ -205,17 +235,18 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       const currentGroupId = get(currentGroupIdAtom);
       set(
         rootLayerAtom,
-        createRootLayer(
-          params.datasetId,
-          params.type,
-          params.title,
-          params.dataList,
-          get(settingsPrimitiveAtom),
-          update ?? currentDataId,
-          currentGroupId,
-          params.shareId,
-          false,
-        ),
+        createRootLayer({
+          datasetId: params.datasetId,
+          type: params.type,
+          title: params.title,
+          dataList: params.dataList,
+          settings: get(settingsPrimitiveAtom),
+          templates: get(templatesAtom),
+          currentDataId: update ?? currentDataId,
+          currentGroupId: currentGroupId,
+          shareId: params.shareId,
+          shouldInitialize: false,
+        }),
       );
       set(currentDataIdAtom, () => update);
     },
@@ -231,7 +262,8 @@ export const createRootLayerAtom = (params: RootLayerParams): RootLayerConfig =>
       const currentDataId = get(currentDataIdAtom);
       const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(params.dataList, currentDataId);
-      const group = findComponentGroup(setting, update);
+      const template = findComponentTemplate(setting, get(templatesAtom));
+      const group = findComponentGroup(setting, template, update);
 
       set(
         rootLayer.layer,

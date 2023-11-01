@@ -7,6 +7,7 @@ import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
+import { templatesAtom } from "../../states/template";
 import { createRootLayerAtom } from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
@@ -22,6 +23,7 @@ export const InitialLayers: FC = () => {
   );
   const query = useDatasets(initialDatasetInput);
   const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
 
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
 
@@ -30,6 +32,9 @@ export const InitialLayers: FC = () => {
 
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+
+  const templatesRef = useRef(templates);
+  templatesRef.current = templates;
   useEffect(() => {
     const remove = initialDatasets.map(d => {
       const dataList = d.items as DatasetItem[];
@@ -42,6 +47,7 @@ export const InitialLayers: FC = () => {
           title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
           settings: settingsRef.current.filter(s => s.datasetId === d.id),
+          templates: templatesRef.current,
           shareId,
         }),
         { autoSelect: false },

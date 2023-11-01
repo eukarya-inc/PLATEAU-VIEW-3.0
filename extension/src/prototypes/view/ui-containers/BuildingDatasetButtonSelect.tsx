@@ -5,6 +5,7 @@ import { memo, useCallback, useMemo, type FC } from "react";
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
+import { templatesAtom } from "../../../shared/states/template";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { ContextButtonSelect, SelectItem } from "../../ui-components";
@@ -46,6 +47,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
       [rootLayers, dataset],
     );
     const settings = useAtomValue(settingsAtom);
+    const templates = useAtomValue(templatesAtom);
 
     const addLayer = useAddLayer();
     const removeLayer = useSetAtom(removeLayerAtom);
@@ -63,6 +65,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
               datasetId: dataset.id,
               title: dataset.name,
               settings: filteredSettings,
+              templates,
               dataList: dataset.items as DatasetItem[],
               currentDataId: nextParams.id,
               areaCode: municipalityCode,
@@ -86,7 +89,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           }
         },
       );
-    }, [rootLayer, addLayer, removeLayer, dataset, municipalityCode, settings]);
+    }, [rootLayer, addLayer, removeLayer, dataset, municipalityCode, settings, templates]);
 
     const [params, setParams] = useAtom(paramsAtom);
 
