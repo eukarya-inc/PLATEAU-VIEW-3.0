@@ -2,15 +2,6 @@ import { PointFillColorConditionFieldPreset } from "../../../editor/containers/c
 
 import { FieldBase } from "./base";
 
-export const POINT_COLOR_FIELD = "POINT_COLOR_FIELD";
-export type PointColorField = FieldBase<{
-  type: typeof POINT_COLOR_FIELD;
-  value: string;
-  preset?: {
-    defaultValue?: string;
-  };
-}>;
-
 export const POINT_SIZE_FIELD = "POINT_SIZE_FIELD";
 export type PointSizeField = FieldBase<{
   type: typeof POINT_SIZE_FIELD;
@@ -50,8 +41,4 @@ export type PointFillColorConditionField = FieldBase<{
   preset?: PointFillColorConditionFieldPreset;
 }>;
 
-export type PointFields =
-  | PointColorField
-  | PointSizeField
-  | PointFillColorValueField
-  | PointFillColorConditionField;
+export type PointFields = PointSizeField | PointFillColorValueField | PointFillColorConditionField;
