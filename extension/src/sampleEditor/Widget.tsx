@@ -11,7 +11,10 @@ import {
   settingsAtomsAtom,
   updateSettingAtom,
 } from "../shared/states/setting";
-import { POINT_COLOR_FIELD, POINT_SIZE_FIELD } from "../shared/types/fieldComponents/point";
+import {
+  POINT_FILL_COLOR_VALUE_FIELD,
+  POINT_SIZE_FIELD,
+} from "../shared/types/fieldComponents/point";
 
 // Setting for 避難施設情報（千代田区）
 const mockSetting: Setting = {
@@ -25,11 +28,11 @@ const mockSetting: Setting = {
         name: "",
         components: [
           {
-            type: POINT_COLOR_FIELD,
+            type: POINT_FILL_COLOR_VALUE_FIELD,
             preset: {
               defaultValue: "#f0ff00",
             },
-          } as SettingComponent<"POINT_COLOR_FIELD">,
+          } as SettingComponent<"POINT_FILL_COLOR_VALUE_FIELD">,
           {
             type: POINT_SIZE_FIELD,
             preset: {

@@ -16,7 +16,7 @@ import {
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
-type PointFillGradientValueFieldPresetRule = {
+type PointFillColorGradientFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
@@ -26,7 +26,7 @@ type PointFillGradientValueFieldPresetRule = {
 };
 
 export type PointFillGradientColorFieldPreset = {
-  rules?: PointFillGradientValueFieldPresetRule[];
+  rules?: PointFillColorGradientFieldPresetRule[];
 };
 
 const StyledParameterItem = styled(ParameterItem)(({ theme }) => ({
@@ -41,8 +41,8 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   marginLeft: theme.spacing(-1),
 })) as unknown as typeof Select; // For generics
 
-export const EditorPointFillGradientValueField: React.FC<
-  BasicFieldProps<"POINT_FILL_GRADIENT_COLOR_FIELD">
+export const EditorPointFillColorGradientField: React.FC<
+  BasicFieldProps<"POINT_FILL_COLOR_GRADIENT_FIELD">
 > = ({ component, onUpdate }) => {
   const [currentRuleId, setCurrentRuleId] = useState<string>();
   const [movingId, setMovingId] = useState<string>();
@@ -56,7 +56,7 @@ export const EditorPointFillGradientValueField: React.FC<
   }, [rules, currentRuleId]);
 
   const handleRuleCreate = useCallback(() => {
-    const newRule: PointFillGradientValueFieldPresetRule = {
+    const newRule: PointFillColorGradientFieldPresetRule = {
       id: generateID(),
     };
     onUpdate?.({
@@ -107,7 +107,7 @@ export const EditorPointFillGradientValueField: React.FC<
   );
 
   const handleRuleUpdate = useCallback(
-    (rule: PointFillGradientValueFieldPresetRule) => {
+    (rule: PointFillColorGradientFieldPresetRule) => {
       onUpdate?.({
         ...component,
         preset: {
@@ -187,8 +187,8 @@ export const EditorPointFillGradientValueField: React.FC<
 };
 
 type RulePanelProps = {
-  rule: PointFillGradientValueFieldPresetRule;
-  onRuleUpdate: (rule: PointFillGradientValueFieldPresetRule) => void;
+  rule: PointFillColorGradientFieldPresetRule;
+  onRuleUpdate: (rule: PointFillColorGradientFieldPresetRule) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {

@@ -4,18 +4,15 @@ import { ComponentBase } from "../../../../../shared/types/fieldComponents";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
-  FIELD_CATEGORY_POLYGON,
-  FIELD_CATEGORY_POLYLINE,
-  FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
+import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
+import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
-import { EditorPointFillConditionValueField } from "./point/EditorPointFillConditionValueField";
-import { EditorPointFillGradientValueField } from "./point/EditorPointFillGradientValueField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
@@ -24,14 +21,6 @@ export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["typ
 };
 
 export type FieldType = ComponentBase["type"];
-
-export const fieldCatagories = [
-  FIELD_CATEGORY_GENERAL,
-  FIELD_CATEGORY_POINT,
-  FIELD_CATEGORY_POLYLINE,
-  FIELD_CATEGORY_POLYGON,
-  FIELD_CATEGORY_THREE_D_TILES,
-];
 
 export const fields: {
   [key in ComponentBase["type"]]: {
@@ -73,16 +62,66 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Condition",
-    Component: EditorPointFillConditionValueField,
+    Component: EditorPointFillColorConditionField,
+  },
+  POINT_FILL_COLOR_GRADIENT_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_FILL_COLOR,
+    name: "Gradient",
+    Component: EditorPointFillColorGradientField,
   },
   POINT_SIZE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     name: "Size",
     Component: EditorPointSizeField,
   },
-  POINT_FILL_GRADIENT_COLOR_FIELD: {
-    category: "Point",
-    name: "Fill Color (Gradient)",
-    Component: EditorPointFillGradientValueField,
-  },
+};
+
+export type FieldComponentTreeItem = {
+  label: string;
+  value: string;
+  group?: string;
+  isFolder?: boolean;
+  children?: FieldComponentTreeItem[];
+};
+
+export type FieldComponentTree = FieldComponentTreeItem[];
+
+export const getFiledComponentTree = () => {
+  const tree: FieldComponentTreeItem[] = [];
+
+  Object.entries(fields).forEach(([key, { category, group, name }]) => {
+    if (!tree.find(item => item.value === category)) {
+      tree.push({
+        label: category,
+        value: category,
+        isFolder: true,
+        children: [],
+      });
+    }
+    const categoryItem = tree.find(item => item.value === category);
+    if (group && !categoryItem?.children?.find(item => item.value === group)) {
+      categoryItem?.children?.push({
+        label: group,
+        value: group,
+        isFolder: true,
+        children: [],
+      });
+    }
+    if (group) {
+      const groupItem = categoryItem?.children?.find(item => item.value === group);
+      groupItem?.children?.push({
+        label: name,
+        value: key,
+        group,
+      });
+    } else {
+      categoryItem?.children?.push({
+        label: name,
+        value: key,
+      });
+    }
+  });
+
+  return tree;
 };

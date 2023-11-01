@@ -34,7 +34,7 @@ export type PointFillColorConditionFieldPreset = {
   rules?: PointFillColorConditionFieldPresetRule[];
 };
 
-export const EditorPointFillConditionValueField: React.FC<
+export const EditorPointFillColorConditionField: React.FC<
   BasicFieldProps<"POINT_FILL_COLOR_CONDITION_FIELD">
 > = ({ component, onUpdate }) => {
   const [currentRuleId, setCurrentRuleId] = useState<string>();

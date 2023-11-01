@@ -1,17 +1,8 @@
-import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillConditionValueField";
-import { PointFillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillGradientValueField";
+import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorConditionField";
+import { PointFillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorGradientField";
 
 import { FieldBase } from "./base";
 import { ConditionalColorSchemeValue, GradientColorSchemeValue } from "./colorScheme";
-
-export const POINT_COLOR_FIELD = "POINT_COLOR_FIELD";
-export type PointColorField = FieldBase<{
-  type: typeof POINT_COLOR_FIELD;
-  value?: string;
-  preset?: {
-    defaultValue?: string;
-  };
-}>;
 
 export const POINT_SIZE_FIELD = "POINT_SIZE_FIELD";
 export type PointSizeField = FieldBase<{
@@ -25,9 +16,7 @@ export type PointSizeField = FieldBase<{
 export const POINT_FILL_COLOR_VALUE_FIELD = "POINT_FILL_COLOR_VALUE_FIELD";
 export type PointFillColorValueField = FieldBase<{
   type: typeof POINT_FILL_COLOR_VALUE_FIELD;
-  value?: {
-    color: string;
-  };
+  value?: string;
   preset?: {
     defaultValue?: string;
     asLegend?: boolean;
@@ -42,9 +31,9 @@ export type PointFillColorConditionField = FieldBase<{
   preset?: PointFillColorConditionFieldPreset;
 }>;
 
-export const POINT_FILL_GRADIENT_COLOR_FIELD = "POINT_FILL_GRADIENT_COLOR_FIELD";
+export const POINT_FILL_COLOR_GRADIENT_FIELD = "POINT_FILL_COLOR_GRADIENT_FIELD";
 export type PointFillGradientColorField = FieldBase<{
-  type: typeof POINT_FILL_GRADIENT_COLOR_FIELD;
+  type: typeof POINT_FILL_COLOR_GRADIENT_FIELD;
   value?: GradientColorSchemeValue;
   preset?: PointFillGradientColorFieldPreset;
 }>;

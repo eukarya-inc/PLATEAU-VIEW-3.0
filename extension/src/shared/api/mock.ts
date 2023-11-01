@@ -1,6 +1,5 @@
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import {
-  POINT_COLOR_FIELD,
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_VALUE_FIELD,
   POINT_SIZE_FIELD,
@@ -79,7 +78,7 @@ export const mockSettings: Setting[] = [
           components: [
             {
               id: "1",
-              type: POINT_COLOR_FIELD,
+              type: POINT_FILL_COLOR_VALUE_FIELD,
               preset: {
                 defaultValue: "#0fffff",
               },
