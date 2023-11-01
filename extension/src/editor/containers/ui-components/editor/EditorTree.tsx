@@ -1,6 +1,8 @@
 import { styled } from "@mui/material";
 import List from "@mui/material/List";
 
+import { VIRTUAL_ROOT } from "../../utils";
+
 import { EditorTreeItem, EditorTreeItemType, EditorTreeSelection } from "./EditorTreeItem";
 
 export type EditorTreeProps = {
@@ -29,7 +31,7 @@ export const EditorTree: React.FC<EditorTreeProps> = ({
           <EditorTreeItem
             key={item.id}
             item={item}
-            level={0}
+            level={item.id === VIRTUAL_ROOT.id ? -1 : 0}
             selected={selected}
             expanded={expanded}
             clickFolderToExpand={clickFolderToExpand}

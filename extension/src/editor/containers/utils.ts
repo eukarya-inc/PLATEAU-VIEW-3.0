@@ -2,6 +2,11 @@ import { ComponentTemplate, EmphasisPropertyTemplate } from "../../shared/api/ty
 
 import { EditorTreeItemType } from "./ui-components";
 
+export const VIRTUAL_ROOT = {
+  id: "__root__",
+  name: "Root",
+};
+
 export const convertTemplatesToTree = (
   templates: ComponentTemplate[] | EmphasisPropertyTemplate[],
 ) => {
@@ -29,7 +34,9 @@ export const convertTemplatesToTree = (
     parent.children.push(item);
   });
 
-  return tree;
+  const treeWithRoot: EditorTreeItemType[] = [{ ...VIRTUAL_ROOT, children: tree }];
+
+  return treeWithRoot;
 };
 
 const findOrCreateParent: (tree: EditorTreeItemType[], path: string) => EditorTreeItemType = (
@@ -57,3 +64,32 @@ const findOrCreateParent: (tree: EditorTreeItemType[], path: string) => EditorTr
 export function generateID() {
   return Date.now().toString(36) + Math.random().toString(16).slice(2);
 }
+
+export function getSelectedPath(tree: EditorTreeItemType[], selectedId: string): string[] {
+  for (let i = 0; i < tree.length; i++) {
+    const path = findPath(tree[i], selectedId, "");
+    if (path) return path.split("/");
+  }
+  return [];
+}
+
+const findPath = (
+  branch: EditorTreeItemType,
+  selectedId: string,
+  path: string,
+): string | undefined => {
+  const currentPath =
+    branch.id === VIRTUAL_ROOT.id ? "" : path ? `${path}/${branch.name}` : branch.name;
+  if (branch.id === selectedId) {
+    return currentPath;
+  }
+  if (branch.children) {
+    for (let i = 0; i < branch.children.length; i++) {
+      const path = findPath(branch.children[i], selectedId, currentPath);
+      if (path) {
+        return path;
+      }
+    }
+  }
+  return undefined;
+};

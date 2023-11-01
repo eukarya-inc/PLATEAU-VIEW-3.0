@@ -1,33 +1,60 @@
-// TODO: REMOVE THIS FILE
+import { useSetAtom } from "jotai";
+import { useCallback, useState } from "react";
 
-import { atom, useAtom } from "jotai";
-import { useCallback } from "react";
+import {
+  templatesAtom,
+  updateTemplateAtom,
+  addTemplateAtom,
+  removeTemplateByIdAtom,
+} from "../../states/template";
+import { Template } from "../types";
 
-// import { DATA_API } from "../../constants";
-import { mockFieldComponentTemplates, mockInspectorEmphasisPropertyTemplates } from "../mock";
-import { ComponentTemplate, EmphasisPropertyTemplate } from "../types";
-
-const componentTemplatesAtom = atom<ComponentTemplate[]>([]);
-const emphasisPropertyTemplatesAtom = atom<EmphasisPropertyTemplate[]>([]);
+import { useTemplateClient } from "./useTemplateClient";
 
 export default () => {
-  const [_componentTemplates, setComponentTemplates] = useAtom(componentTemplatesAtom);
-  const [_emphasisPropertyTemplates, setEmphasisPropertyTemplates] = useAtom(
-    emphasisPropertyTemplatesAtom,
+  const client = useTemplateClient();
+  const [isSaving, setIsSaving] = useState(false);
+
+  const updateTemplate = useSetAtom(updateTemplateAtom);
+  const addTemplate = useSetAtom(addTemplateAtom);
+  const saveTemplate = useCallback(
+    async (template: Template) => {
+      setIsSaving(true);
+      const isUpdate = !!template.id;
+      const nextTemplate = await (async () => {
+        if (isUpdate) {
+          return await client.update(template.id, template);
+        } else {
+          return await client.save(template);
+        }
+      })();
+
+      if (isUpdate) {
+        updateTemplate(nextTemplate);
+      } else {
+        addTemplate(nextTemplate);
+      }
+
+      setIsSaving(false);
+    },
+    [client, updateTemplate, addTemplate],
   );
 
-  const handleTemplateFetch = useCallback(async () => {
-    // TODO: use the new settings API
-    // const response = await fetch(`${DATA_API}/sidebar/plateauview3/template`);
-    // const settings = await response.json();
+  const removeTemplateById = useSetAtom(removeTemplateByIdAtom);
+  const removeTemplate = useCallback(
+    async (templateId: string) => {
+      if (!templateId) return;
+      await client.delete(templateId);
 
-    setComponentTemplates(mockFieldComponentTemplates);
-    setEmphasisPropertyTemplates(mockInspectorEmphasisPropertyTemplates);
-  }, [setComponentTemplates, setEmphasisPropertyTemplates]);
+      removeTemplateById(templateId);
+    },
+    [client, removeTemplateById],
+  );
 
   return {
-    componentTemplatesAtom,
-    emphasisPropertyTemplatesAtom,
-    handleTemplateFetch,
+    isSaving,
+    templatesAtom,
+    saveTemplate,
+    removeTemplate,
   };
 };

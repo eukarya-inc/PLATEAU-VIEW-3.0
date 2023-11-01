@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
 import { useTemplateAPI } from "../../../../shared/api";
-import { EmphasisProperty } from "../../../../shared/api/types";
+import { EmphasisProperty, EmphasisPropertyTemplate } from "../../../../shared/api/types";
 import { EmphasisPropertyEditor } from "../../common/emphasisPropertyEditor";
 import {
   BlockContentWrapper,
@@ -38,8 +38,16 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
     setTemplateId(e.target.value);
   }, []);
 
-  const { emphasisPropertyTemplatesAtom } = useTemplateAPI();
-  const emphasisPropertyTemplates = useAtomValue(emphasisPropertyTemplatesAtom);
+  const { templatesAtom } = useTemplateAPI();
+  const templates = useAtomValue(templatesAtom);
+
+  const emphasisPropertyTemplates = useMemo(
+    () =>
+      templates
+        ? (templates?.filter(t => t.type === "emphasis") as EmphasisPropertyTemplate[])
+        : [],
+    [templates],
+  );
 
   const templateOptions = useMemo(
     () => emphasisPropertyTemplates.map(t => ({ label: t.name, value: t.id })),
