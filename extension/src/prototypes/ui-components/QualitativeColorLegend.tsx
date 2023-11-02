@@ -22,7 +22,7 @@ export const QualitativeColorLegend: FC<QualitativeColorLegendProps> = ({ colors
     <Root {...props}>
       <Stack direction="row" margin={-0.5} useFlexGap flexWrap="wrap">
         {colors.map(color => (
-          <Tooltip key={color.name} title={color.name} enterDelay={0} leaveDelay={0}>
+          <Tooltip key={color.id} title={color.name} enterDelay={0} leaveDelay={0}>
             <Cell>
               <ColorIcon color={color.color} />
             </Cell>

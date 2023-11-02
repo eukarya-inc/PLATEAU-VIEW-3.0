@@ -48,8 +48,8 @@ export const ColorSetIcon = forwardRef<HTMLDivElement, ColorSetIconProps>(
   ({ colors, selected, ...props }, ref) => (
     <Root ref={ref} {...props} selected={selected}>
       <Grid>
-        {colors.slice(0, 4).map(({ value, color }) => (
-          <Item key={value} style={{ backgroundColor: color }} />
+        {colors.slice(0, 4).map(({ id, color }) => (
+          <Item key={id} style={{ backgroundColor: color }} />
         ))}
       </Grid>
     </Root>
