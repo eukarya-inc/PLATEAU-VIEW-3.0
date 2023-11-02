@@ -55,7 +55,9 @@ export const FieldComponentEditor: React.FC<FieldComponentEditorProps> = ({
           onComponentMove={handleComponentMove}
         />
       ))}
-      {currentGroup && <ComponentAddButton onComponentAdd={handleComponentAdd} />}
+      {currentGroup && (
+        <ComponentAddButton currentGroup={currentGroup} onComponentAdd={handleComponentAdd} />
+      )}
     </FieldComponentEditorWrapper>
   );
 };

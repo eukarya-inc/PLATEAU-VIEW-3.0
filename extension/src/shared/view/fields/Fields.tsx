@@ -4,7 +4,7 @@ import { InspectorItem } from "../../../prototypes/ui-components";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
-  POINT_FILL_GRADIENT_COLOR_FIELD,
+  POINT_FILL_COLOR_GRADIENT_FIELD,
 } from "../../types/fieldComponents/point";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
@@ -38,12 +38,12 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
           />
         </InspectorItem>
       );
-    case POINT_FILL_GRADIENT_COLOR_FIELD:
+    case POINT_FILL_COLOR_GRADIENT_FIELD:
       return (
         <InspectorItem>
           <LayerPointFillGradientColorField
             layers={layers}
-            atoms={atoms as ComponentAtom<"POINT_FILL_GRADIENT_COLOR_FIELD">["atom"][]}
+            atoms={atoms as ComponentAtom<"POINT_FILL_COLOR_GRADIENT_FIELD">["atom"][]}
           />
         </InspectorItem>
       );

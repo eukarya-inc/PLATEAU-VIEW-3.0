@@ -40,4 +40,4 @@ export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
   | LegendDescriptionField
-  | StyleCodeField; // | ColorSchemeField
+  | StyleCodeField;
