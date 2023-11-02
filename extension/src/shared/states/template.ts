@@ -3,6 +3,8 @@ import { splitAtom } from "jotai/utils";
 
 import { Template } from "../api/types";
 
+import { forceUpdateRootLayer } from "./rootLayer";
+
 export const templatesAtom = atom<Template[]>([]);
 export const templatesAtomsAtom = splitAtom(templatesAtom);
 
@@ -11,6 +13,7 @@ export const addTemplateAtom = atom(undefined, (_get, set, template: Template) =
     type: "insert",
     value: template,
   });
+  set(forceUpdateRootLayer);
 });
 
 export const removeTemplateAtom = atom(
@@ -20,6 +23,7 @@ export const removeTemplateAtom = atom(
       type: "remove",
       atom: template,
     });
+    set(forceUpdateRootLayer);
   },
 );
 
@@ -34,6 +38,7 @@ export const removeTemplateByIdAtom = atom(undefined, (get, set, templateId: str
       type: "remove",
       atom: templateAtom,
     });
+    set(forceUpdateRootLayer);
   }
 });
 
@@ -45,5 +50,6 @@ export const updateTemplateAtom = atom(undefined, (get, set, template: Template)
   });
   if (templateAtom) {
     set(templateAtom, template);
+    set(forceUpdateRootLayer);
   }
 });

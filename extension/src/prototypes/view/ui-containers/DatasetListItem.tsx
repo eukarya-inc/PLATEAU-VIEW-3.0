@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState, type FC, type MouseEvent, type ReactNod
 import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
+import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { DatasetTreeItem, InfoIcon, type DatasetTreeItemProps } from "../../ui-components";
@@ -47,6 +48,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   );
 
   const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
 
   const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
   const addLayer = useAddLayer();
@@ -65,6 +67,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
           datasetId: dataset.id,
           title: dataset.name,
           settings: filteredSettings,
+          templates,
           dataList: dataset.items as DatasetItem[],
           areaCode: municipalityCode,
         }),
@@ -73,7 +76,17 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     } else {
       removeLayer(layer.id);
     }
-  }, [dataset, layer, layerType, addLayer, removeLayer, smDown, municipalityCode, settings]);
+  }, [
+    dataset,
+    layer,
+    layerType,
+    addLayer,
+    removeLayer,
+    smDown,
+    municipalityCode,
+    settings,
+    templates,
+  ]);
 
   const [infoOpen, setInfoOpen] = useState(false);
   const handleInfo = useCallback((event: MouseEvent) => {
