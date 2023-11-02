@@ -1,23 +1,87 @@
-import { useEffect, useRef } from "react";
+import { useMemo, useCallback } from "react";
 
 import { BasicFieldProps } from "..";
+import {
+  PropertyBox,
+  PropertyCard,
+  PropertyInputField,
+  PropertyWrapper,
+} from "../../../../ui-components";
+
+export type PointFillColorValueFieldPreset = {
+  defaultValue?: string;
+  asLegend?: boolean;
+  legendName?: string;
+};
 
 export const EditorPointFillColorValueField: React.FC<
   BasicFieldProps<"POINT_FILL_COLOR_VALUE_FIELD">
 > = ({ component, onUpdate }) => {
-  const componentRef = useRef(component);
-  componentRef.current = component;
-  const onUpdateRef = useRef(onUpdate);
-  onUpdateRef.current = onUpdate;
+  const preset = useMemo(() => {
+    return component.preset ?? {};
+  }, [component?.preset]);
 
-  useEffect(() => {
-    onUpdateRef.current({
-      ...componentRef.current,
-      preset: {
-        defaultValue: "#f00000",
-      },
-    });
-  }, []);
+  const handleRuleUpdate = useCallback(
+    (preset: PointFillColorValueFieldPreset) => {
+      onUpdate?.({
+        ...component,
+        preset,
+      });
+    },
+    [component, onUpdate],
+  );
 
-  return <div>EditorPointFillColorValueField: {component.preset?.defaultValue}</div>;
+  return (
+    <PropertyWrapper>
+      <PropertyBox>
+        <PropertyCard
+          id={""}
+          mainPanel={<RuleMainPanel preset={preset} onRuleUpdate={handleRuleUpdate} />}
+          legendPanel={<RuleLegendPanel preset={preset} onRuleUpdate={handleRuleUpdate} />}
+        />
+      </PropertyBox>
+    </PropertyWrapper>
+  );
+};
+
+type RulePanelProps = {
+  preset: PointFillColorValueFieldPreset;
+  onRuleUpdate: (preset: PointFillColorValueFieldPreset) => void;
+};
+
+const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
+  const handleColorChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onRuleUpdate({
+        ...preset,
+        defaultValue: e.target.value,
+      });
+    },
+    [preset, onRuleUpdate],
+  );
+
+  return (
+    <PropertyInputField
+      placeholder="#FFFFFF"
+      value={preset.defaultValue ?? ""}
+      onChange={handleColorChange}
+    />
+  );
+};
+
+const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
+  const handleLegendNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onRuleUpdate({ ...preset, legendName: e.target.value });
+    },
+    [preset, onRuleUpdate],
+  );
+
+  return (
+    <PropertyInputField
+      placeholder="Display Title"
+      value={preset.legendName ?? ""}
+      onChange={handleLegendNameChange}
+    />
+  );
 };
