@@ -19,11 +19,11 @@ import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelec
 import { useInteractionMode } from "./hooks/useInteractionMode";
 
 type Props = WidgetProps<{
-  geoURL?: { value: string };
-  plateauURL?: { value: string };
-  plateauAccessToken?: { value: string };
-  catalogURL?: { value: string };
-  projectName?: { value: string };
+  geoURL?: string;
+  plateauURL?: string;
+  plateauAccessToken?: string;
+  catalogURL?: string;
+  projectName?: string;
 }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
@@ -33,11 +33,11 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
 
   return (
     <WidgetContext
-      geoUrl={widget.property.default.geoURL?.value}
-      plateauUrl={widget.property.default.plateauURL?.value}
-      catalogUrl={widget.property.default.catalogURL?.value}
-      projectId={widget.property.default.projectName?.value}
-      plateauToken={widget.property.default.plateauAccessToken?.value}>
+      geoUrl={widget.property.default.geoURL}
+      plateauUrl={widget.property.default.plateauURL}
+      catalogUrl={widget.property.default.catalogURL}
+      projectId={widget.property.default.projectName}
+      plateauToken={widget.property.default.plateauAccessToken}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
