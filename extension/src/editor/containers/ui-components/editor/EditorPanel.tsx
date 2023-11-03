@@ -15,6 +15,7 @@ export type EditorSectionProps = {
   sidebarBottom?: React.ReactNode;
   main: React.ReactNode;
   header?: React.ReactNode;
+  saveDisabled?: boolean;
   showSaveButton?: boolean;
   showApplyButton?: boolean;
   onApply?: () => void;
@@ -26,6 +27,7 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
   sidebarBottom,
   main,
   header,
+  saveDisabled,
   showSaveButton,
   showApplyButton,
   onSave,
@@ -58,6 +60,7 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
                 variant="contained"
                 color="primary"
                 fullWidth
+                disabled={saveDisabled}
                 onClick={onSave}>
                 Save
               </EditorButton>

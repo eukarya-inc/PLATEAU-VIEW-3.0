@@ -1,4 +1,4 @@
-import { type FC, useState, useMemo, useCallback } from "react";
+import { type FC, useState, useMemo, useCallback, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
@@ -6,6 +6,7 @@ import { EditorFieldComponentsTemplateSection } from "./component-template";
 import { EditorDatasetSection } from "./dataset";
 import { EditorInspectorEmphasisPropertyTemplateSection } from "./emphasis-property-template";
 import { EditorBar, EditorPanel } from "./ui-components";
+import { EditorNotice, EditorNoticeRef } from "./ui-components/editor/EditorNotice";
 import useCache from "./useCache";
 
 export const PLATEAUVIEW_EDITOR_DOM_ID = "__plateauview_editor__";
@@ -37,6 +38,8 @@ export const Editor: FC = () => {
 
   const cache = useCache();
 
+  const editorNoticeRef = useRef<EditorNoticeRef>(null);
+
   return (
     <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
       <DndProvider backend={HTML5Backend}>
@@ -47,12 +50,13 @@ export const Editor: FC = () => {
         />
         <EditorPanel>
           {editorType === "dataset" ? (
-            <EditorDatasetSection cache={cache} />
+            <EditorDatasetSection cache={cache} editorNoticeRef={editorNoticeRef} />
           ) : editorType === "fieldComponentsTemplate" ? (
-            <EditorFieldComponentsTemplateSection />
+            <EditorFieldComponentsTemplateSection editorNoticeRef={editorNoticeRef} />
           ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
-            <EditorInspectorEmphasisPropertyTemplateSection />
+            <EditorInspectorEmphasisPropertyTemplateSection editorNoticeRef={editorNoticeRef} />
           ) : null}
+          <EditorNotice ref={editorNoticeRef} />
         </EditorPanel>
       </DndProvider>
     </div>

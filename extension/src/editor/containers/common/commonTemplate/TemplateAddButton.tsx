@@ -6,12 +6,14 @@ import { EditorButton, EditorDialog, EditorTextField } from "../../ui-components
 type TemplateAddButtonProps = {
   base: string;
   templateNames: string[];
+  disabled?: boolean;
   onTemplateAdd: (name: string) => void;
 };
 
 export const TemplateAddButton: React.FC<TemplateAddButtonProps> = ({
   base,
   templateNames,
+  disabled,
   onTemplateAdd,
 }) => {
   const [addTemplateOpen, setAddTemplateOpen] = useState(false);
@@ -54,6 +56,7 @@ export const TemplateAddButton: React.FC<TemplateAddButtonProps> = ({
         startIcon={<AddOutlinedIcon />}
         color="primary"
         fullWidth
+        disabled={disabled}
         onClick={handleOpenAddTemplate}>
         New Template
       </EditorButton>
