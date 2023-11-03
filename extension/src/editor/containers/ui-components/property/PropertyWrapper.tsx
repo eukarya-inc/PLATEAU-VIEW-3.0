@@ -7,6 +7,7 @@ export const PropertyWrapper = styled("div")(() => ({
 }));
 
 export const PropertyBox = styled("div")<{ asMenu?: boolean }>(({ theme, asMenu }) => ({
+  position: "relative",
   width: asMenu ? "130px" : "100%",
   display: "flex",
   padding: theme.spacing(0.5),

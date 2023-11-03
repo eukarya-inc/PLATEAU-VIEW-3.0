@@ -140,11 +140,11 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent<typeof STYLE_CODE_FIELD>(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
 
-  const styleCode = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
+  const appearanceObject = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
 
   const generalAppearances: GeneralAppearances = useMemo(
     () =>
-      styleCode ?? {
+      appearanceObject ?? {
         marker: {
           // TODO: Use component for style
           style: pointColor || pointSize ? "point" : undefined,
@@ -155,7 +155,7 @@ export const useEvaluateGeneralAppearance = ({
           pointSize: pointSize?.value,
         },
       },
-    [styleCode, pointColor, pointSize, pointFillColorCondition, pointFillGradientColor],
+    [appearanceObject, pointColor, pointSize, pointFillColorCondition, pointFillGradientColor],
   );
 
   return generalAppearances;
@@ -163,7 +163,6 @@ export const useEvaluateGeneralAppearance = ({
 
 const getAppearanceObject = (code: string | undefined) => {
   if (!code) return undefined;
-  console.log(code);
   try {
     return JSON.parse(code) as GeneralAppearances;
   } catch (error) {
