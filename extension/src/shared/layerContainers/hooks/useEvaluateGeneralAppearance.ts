@@ -7,6 +7,7 @@ import { useOptionalAtomValue } from "../../hooks";
 import { GeneralAppearances } from "../../reearth/layers";
 import { ExpressionContainer } from "../../reearth/types/expression";
 import { Component } from "../../types/fieldComponents";
+import { STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_VALUE_FIELD,
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -135,20 +136,37 @@ export const useEvaluateGeneralAppearance = ({
     ),
   );
 
+  const styleCodeString = useOptionalAtomValue(
+    useFindComponent<typeof STYLE_CODE_FIELD>(componentAtoms ?? [], STYLE_CODE_FIELD),
+  )?.preset?.code;
+
+  const styleCode = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
+
   const generalAppearances: GeneralAppearances = useMemo(
-    () => ({
-      marker: {
-        // TODO: Use component for style
-        style: pointColor || pointSize ? "point" : undefined,
-        pointColor:
-          pointColor?.value ??
-          makeConditionalExpression(pointFillColorCondition) ??
-          makeGradientExpression(pointFillGradientColor),
-        pointSize: pointSize?.value,
+    () =>
+      styleCode ?? {
+        marker: {
+          // TODO: Use component for style
+          style: pointColor || pointSize ? "point" : undefined,
+          pointColor:
+            pointColor?.value ??
+            makeConditionalExpression(pointFillColorCondition) ??
+            makeGradientExpression(pointFillGradientColor),
+          pointSize: pointSize?.value,
+        },
       },
-    }),
-    [pointColor, pointSize, pointFillColorCondition, pointFillGradientColor],
+    [styleCode, pointColor, pointSize, pointFillColorCondition, pointFillGradientColor],
   );
 
   return generalAppearances;
+};
+
+const getAppearanceObject = (code: string | undefined) => {
+  if (!code) return undefined;
+  console.log(code);
+  try {
+    return JSON.parse(code) as GeneralAppearances;
+  } catch (error) {
+    return undefined;
+  }
 };
