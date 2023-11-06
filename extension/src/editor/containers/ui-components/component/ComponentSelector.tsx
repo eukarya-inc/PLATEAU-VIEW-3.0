@@ -4,7 +4,9 @@ import RadioButtonUncheckedOutlinedIcon from "@mui/icons-material/RadioButtonUnc
 import { styled, List, ListItemButton, svgIconClasses } from "@mui/material";
 import { useCallback, useState, useMemo, useEffect } from "react";
 
+import { STYLE_CODE_FIELD } from "../../../../shared/types/fieldComponents/general";
 import {
+  AppearanceFields,
   FieldComponentTree,
   FieldComponentTreeItem,
 } from "../../common/fieldComponentEditor/fields";
@@ -101,7 +103,8 @@ export const ComponentSelector: React.FC<ComponentSelectorProps> = ({
             selected={fieldOrGroup.value === selectedGroupOrField?.value}
             disabled={
               existFields?.includes(fieldOrGroup.value) ||
-              !!(fieldOrGroup.group && existFieldGroups?.includes(fieldOrGroup.group))
+              !!(fieldOrGroup.group && existFieldGroups?.includes(fieldOrGroup.group)) ||
+              isConflictWithStyleCode(fieldOrGroup.value, existFields)
             }>
             <StyledIcon>
               {fieldOrGroup.isFolder ? (
@@ -125,7 +128,8 @@ export const ComponentSelector: React.FC<ComponentSelectorProps> = ({
             selected={field.value === selectedField?.value}
             disabled={
               existFields?.includes(field.value) ||
-              !!(field.group && existFieldGroups?.includes(field.group))
+              !!(field.group && existFieldGroups?.includes(field.group)) ||
+              isConflictWithStyleCode(field.value, existFields)
             }>
             <StyledIcon>
               {existFields?.includes(field.value) ? (
@@ -186,3 +190,20 @@ const StyledIcon = styled("div")(({ theme }) => ({
     width: "16px",
   },
 }));
+
+const isConflictWithStyleCode = (field: string, existFields?: string[]) => {
+  if (!existFields) return false;
+  let isConflict = false;
+  if (field === STYLE_CODE_FIELD) {
+    existFields.forEach(existField => {
+      if (AppearanceFields.includes(existField)) {
+        isConflict = true;
+      }
+    });
+  } else {
+    if (existFields.includes(STYLE_CODE_FIELD) && AppearanceFields.includes(field)) {
+      isConflict = true;
+    }
+  }
+  return isConflict;
+};
