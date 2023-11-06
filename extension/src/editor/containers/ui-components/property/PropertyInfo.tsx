@@ -4,7 +4,7 @@ type PropertyPlaceHolderProps = {
   children?: React.ReactNode;
 };
 
-export const NO_SETTINGS_FOR_THIS_COMPONNET = "No settings for this component";
+export const NO_SETTINGS_FOR_THIS_COMPONNET = "No custom settings for this component";
 
 export const PropertyPlaceHolder: React.FC<PropertyPlaceHolderProps> = ({ children }) => {
   return <Wrapper>{children}</Wrapper>;
