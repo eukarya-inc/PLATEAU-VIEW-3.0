@@ -42,4 +42,8 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
+  // 3dtiles
+  TILESET_BUILDING_MODEL_COLOR: {
+    defaultValue: "",
+  },
 };
