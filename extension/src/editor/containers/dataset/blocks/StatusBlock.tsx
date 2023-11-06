@@ -18,7 +18,7 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) =
   return (
     <EditorBlock title="Status" expandable {...props}>
       <BlockContentWrapper>
-        <EditorCommonField label="Status">
+        <EditorCommonField label="Status" inline>
           <PublishStatus published={dataset?.published}>
             {dataset?.published ? "CMS公開済" : "CMS未公開"}
           </PublishStatus>

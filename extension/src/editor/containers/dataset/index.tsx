@@ -3,7 +3,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cloneDeep } from "lodash-es";
-import { useCallback, useMemo, useState, type FC, useEffect } from "react";
+import { useCallback, useMemo, useState, type FC, useEffect, RefObject } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
 import { useSettingsAPI } from "../../../shared/api";
@@ -19,6 +19,7 @@ import {
   EditorTreeItemType,
   EditorTreeSelection,
 } from "../ui-components";
+import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
 import { EditorCache } from "../useCache";
 import { generateID } from "../utils";
 
@@ -34,6 +35,7 @@ export type EditorDataset = DatasetFragmentFragment & {
 
 export type EditorDatasetSectionProps = {
   cache?: EditorCache;
+  editorNoticeRef?: RefObject<EditorNoticeRef>;
 };
 
 export type EditorDatasetConentType =
@@ -54,10 +56,11 @@ export type DraftSetting = Omit<Setting, "id"> & {
 
 export type UpdateSetting = React.Dispatch<React.SetStateAction<DraftSetting | undefined>>;
 
-export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) => {
+export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, editorNoticeRef }) => {
   const [ready, setReady] = useState(false);
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { settingsAtom, saveSetting } = useSettingsAPI();
   const settings = useAtomValue(settingsAtom);
@@ -238,19 +241,38 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
 
   const handleSave = useCallback(() => {
     // Save all settings belongs to current dataset
+    setIsSaving(true);
+    console.log("save start");
+    const savingTasks: Promise<void>[] = [];
     [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
       const catchId = `dataset-${dataset.id}-${id}`;
       if (id === dataId) {
-        saveSetting(draftSetting as Setting);
+        savingTasks.push(saveSetting(draftSetting as Setting));
       } else {
         const cachedSetting = cache?.get(catchId);
         if (cachedSetting) {
-          saveSetting(cachedSetting as Setting);
+          savingTasks.push(saveSetting(cachedSetting as Setting));
         }
       }
     });
     cache?.clear();
-  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, saveSetting]);
+    Promise.all(savingTasks)
+      .then(() => {
+        editorNoticeRef?.current?.show({
+          severity: "success",
+          message: "Save successfully.",
+        });
+      })
+      .catch(() => {
+        editorNoticeRef?.current?.show({
+          severity: "error",
+          message: "Save failed.",
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
 
   return layer && dataset ? (
     <EditorSection
@@ -279,7 +301,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache }) =
             variant="contained"
             color="primary"
             fullWidth
-            onClick={handleSave}>
+            onClick={handleSave}
+            disabled={isSaving}>
             Save All
           </EditorButton>
         </>

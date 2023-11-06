@@ -6,6 +6,7 @@ import { EmphasisPropertyTemplate } from "../../../shared/api/types";
 import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
 import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
+import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
 import { VIRTUAL_ROOT, convertTemplatesToTree, getSelectedPath } from "../utils";
 
 import { EmphasisPropertyTemplatePage } from "./emphasisPropertyTemplatePage";
@@ -19,10 +20,17 @@ export type UpdateTemplate = React.Dispatch<
   React.SetStateAction<EmphasisPropertyTemplate | undefined>
 >;
 
-export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
+type EditorInspectorEmphasisPropertyTemplateSectionProps = {
+  editorNoticeRef?: React.RefObject<EditorNoticeRef>;
+};
+
+export const EditorInspectorEmphasisPropertyTemplateSection: React.FC<
+  EditorInspectorEmphasisPropertyTemplateSectionProps
+> = ({ editorNoticeRef }) => {
   const [contentType, setContentType] =
     useState<EditorEmphasisPropertyTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
@@ -62,7 +70,10 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
     [expanded],
   );
 
-  const showSaveButton = useMemo(() => contentType === "template", [contentType]);
+  const showSaveButton = useMemo(
+    () => contentType === "template" && !!template,
+    [template, contentType],
+  );
 
   useEffect(() => {
     updateTemplate(emphasisPropertyTemplates.find(c => c.id === templateId));
@@ -81,37 +92,102 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
 
   const handleTemplateAdd = useCallback(
     async (newTemplateName: string) => {
+      setIsSaving(true);
       await saveTemplate({
         name: newTemplateName,
         type: "emphasis",
         properties: [],
-      } as unknown as EmphasisPropertyTemplate);
+      } as unknown as EmphasisPropertyTemplate)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template added!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template add failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [saveTemplate],
+    [editorNoticeRef, saveTemplate],
   );
 
   const handleTemplateSave = useCallback(async () => {
     if (!template) return;
-    await saveTemplate(template);
-  }, [template, saveTemplate]);
+    setIsSaving(true);
+    await saveTemplate(template)
+      .then(() => {
+        editorNoticeRef?.current?.show({
+          severity: "success",
+          message: "Template saved!",
+        });
+      })
+      .catch(() => {
+        editorNoticeRef?.current?.show({
+          severity: "error",
+          message: "Template save failed!",
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  }, [editorNoticeRef, template, saveTemplate]);
 
   const handleTemplateRename = useCallback(
     async (newTemplateName: string) => {
       if (!template) return;
+      setIsSaving(true);
       await saveTemplate({
         ...template,
         name: newTemplateName,
-      });
+      })
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template renamed!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template rename failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [template, saveTemplate],
+    [editorNoticeRef, template, saveTemplate],
   );
 
   const handleTemplateRemove = useCallback(
     async (templateId: string) => {
       if (!templateId) return;
-      await removeTemplate(templateId);
+      setIsSaving(true);
+      await removeTemplate(templateId)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template removed!",
+          });
+          setTemplateId(undefined);
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template remove failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [removeTemplate],
+    [editorNoticeRef, removeTemplate],
   );
 
   return (
@@ -130,6 +206,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
         <TemplateAddButton
           templateNames={templateNames}
           base={base}
+          disabled={isSaving}
           onTemplateAdd={handleTemplateAdd}
         />
       }
@@ -151,6 +228,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC = () => {
           />
         )
       }
+      saveDisabled={!template || isSaving}
       showSaveButton={showSaveButton}
       onSave={handleTemplateSave}
     />

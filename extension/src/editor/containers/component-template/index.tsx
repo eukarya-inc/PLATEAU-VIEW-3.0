@@ -1,11 +1,12 @@
 import { useAtomValue } from "jotai";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback, useEffect, RefObject } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
 import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
 import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
+import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
 import { VIRTUAL_ROOT, convertTemplatesToTree, generateID, getSelectedPath } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
@@ -17,9 +18,16 @@ export type EditorFieldComponentsTemplateItemProperty = {
 
 export type UpdateTemplate = React.Dispatch<React.SetStateAction<ComponentTemplate | undefined>>;
 
-export const EditorFieldComponentsTemplateSection: React.FC = () => {
+type EditorFieldComponentsTemplateSectionProps = {
+  editorNoticeRef?: RefObject<EditorNoticeRef>;
+};
+
+export const EditorFieldComponentsTemplateSection: React.FC<
+  EditorFieldComponentsTemplateSectionProps
+> = ({ editorNoticeRef }) => {
   const [contentType, setContentType] = useState<EditorFieldComponentsTemplateContentType>("empty");
   const [templateId, setTemplateId] = useState<string>();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
   const templates = useAtomValue(templatesAtom);
@@ -57,7 +65,10 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
     [expanded],
   );
 
-  const showSaveButton = useMemo(() => contentType === "template", [contentType]);
+  const showSaveButton = useMemo(
+    () => contentType === "template" && !!template,
+    [template, contentType],
+  );
 
   useEffect(() => {
     updateTemplate(componentTemplates.find(c => c.id === templateId));
@@ -89,37 +100,102 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
 
   const handleTemplateAdd = useCallback(
     async (newTemplateName: string) => {
+      setIsSaving(true);
       await saveTemplate({
         name: newTemplateName,
         type: "component",
         groups: [],
-      } as unknown as ComponentTemplate);
+      } as unknown as ComponentTemplate)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template added!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template add failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [saveTemplate],
+    [editorNoticeRef, saveTemplate],
   );
 
   const handleTemplateSave = useCallback(async () => {
     if (!template) return;
-    await saveTemplate(template);
-  }, [template, saveTemplate]);
+    setIsSaving(true);
+    await saveTemplate(template)
+      .then(() => {
+        editorNoticeRef?.current?.show({
+          severity: "success",
+          message: "Template saved!",
+        });
+      })
+      .catch(() => {
+        editorNoticeRef?.current?.show({
+          severity: "error",
+          message: "Template save failed!",
+        });
+      })
+      .finally(() => {
+        setIsSaving(false);
+      });
+  }, [editorNoticeRef, template, saveTemplate]);
 
   const handleTemplateRename = useCallback(
     async (newTemplateName: string) => {
       if (!template) return;
+      setIsSaving(true);
       await saveTemplate({
         ...template,
         name: newTemplateName,
-      });
+      })
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template renamed!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template rename failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [template, saveTemplate],
+    [editorNoticeRef, template, saveTemplate],
   );
 
   const handleTemplateRemove = useCallback(
     async (templateId: string) => {
       if (!templateId) return;
-      await removeTemplate(templateId);
+      setIsSaving(true);
+      await removeTemplate(templateId)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template removed!",
+          });
+          setTemplateId(undefined);
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template remove failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
     },
-    [removeTemplate],
+    [editorNoticeRef, removeTemplate],
   );
 
   return (
@@ -138,6 +214,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
         <TemplateAddButton
           templateNames={templateNames}
           base={base}
+          disabled={isSaving}
           onTemplateAdd={handleTemplateAdd}
         />
       }
@@ -157,6 +234,7 @@ export const EditorFieldComponentsTemplateSection: React.FC = () => {
           />
         )
       }
+      saveDisabled={!template || isSaving}
       showSaveButton={showSaveButton}
       onSave={handleTemplateSave}
     />
