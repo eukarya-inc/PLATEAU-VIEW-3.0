@@ -7,10 +7,13 @@ import {
   POINT_SIZE_FIELD,
 } from "../../../../../shared/types/fieldComponents/point";
 
+import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
+  FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
+  FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -80,6 +83,13 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Size",
     Component: EditorPointSizeField,
+  },
+  // 3dtiles
+  TILESET_BUILDING_MODEL_COLOR: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Building model",
+    Component: EditorTilesetBuildingModelColorField,
   },
 };
 

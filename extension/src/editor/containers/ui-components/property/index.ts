@@ -6,3 +6,4 @@ export * from "./PropertySelectField";
 export * from "./PropertySwitchField";
 export * from "./PropertyTextareaField";
 export * from "./PropertyWrapper";
+export * from "./PropertyNoSettings";
