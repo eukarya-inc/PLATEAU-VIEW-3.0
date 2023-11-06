@@ -5,6 +5,7 @@ import {
   PropertyBox,
   PropertyCard,
   PropertyInputField,
+  PropertySwitch,
   PropertyWrapper,
 } from "../../../../ui-components";
 
@@ -36,6 +37,8 @@ export const EditorPointFillColorValueField: React.FC<
       <PropertyBox>
         <PropertyCard
           id={""}
+          noMove
+          noRemove
           mainPanel={<RuleMainPanel preset={preset} onRuleUpdate={handleRuleUpdate} />}
           legendPanel={<RuleLegendPanel preset={preset} onRuleUpdate={handleRuleUpdate} />}
         />
@@ -77,11 +80,24 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => 
     [preset, onRuleUpdate],
   );
 
+  const handleAsLegendChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onRuleUpdate({
+        ...preset,
+        asLegend: e.target.checked,
+      });
+    },
+    [preset, onRuleUpdate],
+  );
+
   return (
-    <PropertyInputField
-      placeholder="Display Title"
-      value={preset.legendName ?? ""}
-      onChange={handleLegendNameChange}
-    />
+    <>
+      <PropertySwitch label="As Legend" value={preset.asLegend} onChange={handleAsLegendChange} />
+      <PropertyInputField
+        placeholder="Display Title"
+        value={preset.legendName ?? ""}
+        onChange={handleLegendNameChange}
+      />
+    </>
   );
 };

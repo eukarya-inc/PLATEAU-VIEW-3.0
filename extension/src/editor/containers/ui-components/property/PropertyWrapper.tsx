@@ -23,6 +23,7 @@ export const PropertyLineWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(0.5),
   alignItems: "center",
+  justifyContent: "space-between",
 }));
 
 type PropertyInlineWrapperProps = {

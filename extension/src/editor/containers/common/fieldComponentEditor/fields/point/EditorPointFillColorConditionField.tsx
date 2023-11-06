@@ -9,7 +9,7 @@ import {
   PropertyInputField,
   PropertyLineWrapper,
   PropertySelectField,
-  PropertySwitchField,
+  PropertySwitch,
   PropertyWrapper,
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
@@ -397,10 +397,11 @@ const ConditionLegendPanel: React.FC<ConditionPanelProps> = ({ condition, onCond
 
   return (
     <>
-      <PropertyLineWrapper>
-        As Legend
-        <PropertySwitchField value={condition.asLegend} onChange={handleAsLegendChange} />
-      </PropertyLineWrapper>
+      <PropertySwitch
+        label="As Legend"
+        value={condition.asLegend}
+        onChange={handleAsLegendChange}
+      />
       <PropertyInputField
         placeholder="Legend Name"
         value={condition.legendName ?? ""}
