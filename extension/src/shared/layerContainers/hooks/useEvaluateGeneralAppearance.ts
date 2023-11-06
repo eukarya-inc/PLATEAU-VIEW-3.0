@@ -23,7 +23,13 @@ export const makeSimpleValue = (
   comp: Component<typeof POINT_FILL_COLOR_VALUE_FIELD> | undefined,
 ): string | undefined => {
   if (!comp) return;
-  return comp.preset?.defaultValue;
+
+  switch (comp.type) {
+    case POINT_FILL_COLOR_VALUE_FIELD:
+      return comp.value?.color ?? comp.preset?.defaultValue;
+    default:
+      return comp.preset?.defaultValue;
+  }
 };
 
 export const makeConditionalExpression = (
@@ -149,7 +155,7 @@ export const useEvaluateGeneralAppearance = ({
           // TODO: Use component for style
           style: pointColor || pointSize ? "point" : undefined,
           pointColor:
-            pointColor?.value ??
+            makeSimpleValue(pointColor) ??
             makeConditionalExpression(pointFillColorCondition) ??
             makeGradientExpression(pointFillGradientColor),
           pointSize: pointSize?.value,

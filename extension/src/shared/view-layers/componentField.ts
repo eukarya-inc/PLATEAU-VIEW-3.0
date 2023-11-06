@@ -3,15 +3,23 @@ import { Component } from "../types/fieldComponents";
 import {
   CONDITIONAL_COLOR_SCHEME,
   GRADIENT_COLOR_SCHEME,
+  VALUE_COLOR_SCHEME,
 } from "../types/fieldComponents/colorScheme";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_GRADIENT_FIELD,
+  POINT_FILL_COLOR_VALUE_FIELD,
 } from "../types/fieldComponents/point";
 import { fieldSettings } from "../view/fields/fieldSettings";
 
 export const makeComponentFieldValue = (component: SettingComponent): Component["value"] => {
   switch (component.type) {
+    case POINT_FILL_COLOR_VALUE_FIELD: {
+      return {
+        type: VALUE_COLOR_SCHEME,
+        color: undefined,
+      };
+    }
     case POINT_FILL_COLOR_CONDITION_FIELD: {
       return {
         type: CONDITIONAL_COLOR_SCHEME,
