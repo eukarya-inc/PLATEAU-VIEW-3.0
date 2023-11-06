@@ -9,6 +9,14 @@ import {
   ValueColorSchemeValue,
 } from "./colorScheme";
 
+export const POINT_STYLE_FIELD = "POINT_STYLE_FIELD";
+export type PointStyleField = FieldBase<{
+  type: typeof POINT_STYLE_FIELD;
+  preset?: {
+    style?: "image" | "point";
+  };
+}>;
+
 export const POINT_SIZE_FIELD = "POINT_SIZE_FIELD";
 export type PointSizeField = FieldBase<{
   type: typeof POINT_SIZE_FIELD;
@@ -40,6 +48,7 @@ export type PointFillGradientColorField = FieldBase<{
 }>;
 
 export type PointFields =
+  | PointStyleField
   | PointSizeField
   | PointFillColorValueField
   | PointFillColorConditionField

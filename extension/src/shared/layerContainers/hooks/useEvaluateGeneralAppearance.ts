@@ -13,6 +13,7 @@ import {
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_GRADIENT_FIELD,
   POINT_SIZE_FIELD,
+  POINT_STYLE_FIELD,
 } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -120,6 +121,10 @@ export const useEvaluateGeneralAppearance = ({
 }: {
   componentAtoms: ComponentAtom[] | undefined;
 }) => {
+  const pointStyle = useOptionalAtomValue(
+    useFindComponent<typeof POINT_STYLE_FIELD>(componentAtoms ?? [], POINT_STYLE_FIELD),
+  );
+
   const pointColor = useOptionalAtomValue(
     useFindComponent<typeof POINT_FILL_COLOR_VALUE_FIELD>(
       componentAtoms ?? [],
@@ -153,7 +158,7 @@ export const useEvaluateGeneralAppearance = ({
       appearanceObject ?? {
         marker: {
           // TODO: Use component for style
-          style: pointColor || pointSize ? "point" : undefined,
+          style: pointStyle?.preset?.style ?? "image",
           pointColor:
             makeSimpleValue(pointColor) ??
             makeConditionalExpression(pointFillColorCondition) ??
@@ -161,7 +166,14 @@ export const useEvaluateGeneralAppearance = ({
           pointSize: pointSize?.value,
         },
       },
-    [appearanceObject, pointColor, pointSize, pointFillColorCondition, pointFillGradientColor],
+    [
+      appearanceObject,
+      pointColor,
+      pointSize,
+      pointFillColorCondition,
+      pointFillGradientColor,
+      pointStyle?.preset?.style,
+    ],
   );
 
   return generalAppearances;

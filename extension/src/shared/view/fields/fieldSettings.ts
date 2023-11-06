@@ -1,5 +1,8 @@
 import { Component } from "../../types/fieldComponents";
 
+// This settings object is used to generate the UI for each field.
+// It will be used in layer inspector and legend panel.
+// All filed components should be listed here but some of them may not have UI.
 export const fieldSettings: {
   [key in Component["type"]]: {
     defaultValue: string | number;
@@ -24,6 +27,9 @@ export const fieldSettings: {
     defaultValue: "",
   },
   // point
+  POINT_STYLE_FIELD: {
+    defaultValue: "image",
+  },
   POINT_SIZE_FIELD: {
     defaultValue: 100,
     hasLegendUI: true,

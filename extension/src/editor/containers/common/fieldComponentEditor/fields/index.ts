@@ -20,6 +20,7 @@ import { EditorPointFillColorConditionField } from "./point/EditorPointFillColor
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
+import { EditorPointStyleField } from "./point/EditorPointStyleField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   component: SettingComponent<T>;
@@ -75,6 +76,11 @@ export const fields: {
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Gradient",
     Component: EditorPointFillColorGradientField,
+  },
+  POINT_STYLE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Style",
+    Component: EditorPointStyleField,
   },
   POINT_SIZE_FIELD: {
     category: FIELD_CATEGORY_POINT,
