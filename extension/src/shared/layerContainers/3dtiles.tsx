@@ -11,6 +11,7 @@ import { ViewLayerModel } from "../../prototypes/view-layers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
+import { TilesetBuildingModelColorField } from "../types/fieldComponents/3dtiles";
 import { OpacityField } from "../types/fieldComponents/general";
 import { WritableAtomForComponent } from "../view-layers/component";
 
@@ -25,6 +26,7 @@ type TilesetContainerProps = TilesetProps & {
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
   opacityAtom?: WritableAtomForComponent<OpacityField>;
+  buildingModelColorAtom?: WritableAtomForComponent<TilesetBuildingModelColorField>;
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
 };
@@ -37,6 +39,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   colorPropertyAtom,
   colorSchemeAtom,
   opacityAtom,
+  buildingModelColorAtom,
   selections,
   hidden,
   ...props
@@ -101,8 +104,8 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   const colorScheme = useAtomValue(colorSchemeAtom);
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
-    colorProperty: colorProperty ?? undefined,
-    colorScheme: colorScheme ?? undefined,
+    colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
+    colorScheme: buildingModelColorAtom ? colorScheme ?? undefined : undefined,
     opacity: opacity?.value,
     selections,
   });

@@ -1,6 +1,8 @@
+import { Divider } from "@mui/material";
 import { FC } from "react";
 
 import { type LayerModel as PrototypeLayerModel } from "../../../prototypes/layers";
+import { InspectorItem } from "../../../prototypes/ui-components";
 import { BuildingLayerColorSection } from "../../../prototypes/view/selection/BuildingLayerColorSection";
 import { TILESET_BUILDING_MODEL_COLOR } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
@@ -22,27 +24,44 @@ type Props = {
 };
 
 export const Fields: FC<Props> = ({ layers, type, atoms }) => {
+  let component;
   switch (type) {
     // General
-    case OPACITY_FIELD:
-      return <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />;
+    case OPACITY_FIELD: {
+      component = <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />;
+      break;
+    }
     // Point
-    case POINT_FILL_COLOR_CONDITION_FIELD:
-      return (
+    case POINT_FILL_COLOR_CONDITION_FIELD: {
+      component = (
         <LayerPointFillColorConditionField
           layers={layers}
           atoms={atoms as ComponentAtom<"POINT_FILL_COLOR_CONDITION_FIELD">["atom"][]}
         />
       );
-    case POINT_FILL_COLOR_GRADIENT_FIELD:
-      return (
+      break;
+    }
+    case POINT_FILL_COLOR_GRADIENT_FIELD: {
+      component = (
         <LayerPointFillGradientColorField
           layers={layers}
           atoms={atoms as ComponentAtom<"POINT_FILL_COLOR_GRADIENT_FIELD">["atom"][]}
         />
       );
-    case TILESET_BUILDING_MODEL_COLOR:
-      return <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
+      break;
+    }
+    case TILESET_BUILDING_MODEL_COLOR: {
+      component = <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
+      break;
+    }
   }
-  return null;
+
+  if (!component) return null;
+
+  return (
+    <>
+      <Divider />
+      <InspectorItem>{component}</InspectorItem>
+    </>
+  );
 };

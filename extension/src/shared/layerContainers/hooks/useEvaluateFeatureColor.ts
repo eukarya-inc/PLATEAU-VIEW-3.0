@@ -28,7 +28,7 @@ export function useEvaluateFeatureColor({
   colorScheme,
   defaultColor = { r: 255, g: 255, b: 255, a: 1 },
   opacity,
-}: EvaluateTileFeatureColorParams): string | undefined {
+}: EvaluateTileFeatureColorParams = {}): string | undefined {
   const blendedDefaultColor = rgba({ ...defaultColor, a: opacity ?? defaultColor.a });
 
   const colorSetColors = useAtomValue(

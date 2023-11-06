@@ -63,6 +63,7 @@ export const sharedStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) =>
 export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
   name: string,
   a: WritableAtom<V, A, S>,
+  shouldInitialize = true,
 ) => {
   const w = atom(
     get => get(a),
@@ -72,6 +73,7 @@ export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
     },
   );
   w.onMount = set => {
+    if (!shouldInitialize) return;
     getSharedStoreValue<A>(name).then(v => {
       if (v) {
         set(...v);
@@ -110,6 +112,7 @@ export const storageStoreAtom = <V>(
 export const storageStoreAtomWrapper = <V, A extends unknown[], S>(
   name: string,
   a: WritableAtom<V, A, S>,
+  shouldInitialize = true,
 ) => {
   const w = atom(
     get => get(a),
@@ -119,6 +122,7 @@ export const storageStoreAtomWrapper = <V, A extends unknown[], S>(
     },
   );
   w.onMount = set => {
+    if (!shouldInitialize) return;
     const v = getStorageStoreValue<A>(name);
     if (v) {
       set(...v);

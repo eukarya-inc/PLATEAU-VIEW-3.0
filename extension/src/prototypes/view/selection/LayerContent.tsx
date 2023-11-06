@@ -1,17 +1,18 @@
-import { Divider, IconButton, List, Tooltip } from "@mui/material";
+import { IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jotai";
-import { Fragment, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
 import { flyToLayerId } from "../../../shared/reearth/utils";
 import { Fields } from "../../../shared/view/fields/Fields";
+import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
+import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
 import { ComponentAtom } from "../../../shared/view-layers/component";
 import { layerSelectionAtom, removeLayerAtom, type LayerType } from "../../layers";
 import {
   AddressIcon,
   InfoIcon,
   InspectorHeader,
-  InspectorItem,
   TrashIcon,
   VisibilityOffIcon,
   VisibilityOnIcon,
@@ -131,14 +132,11 @@ export function LayerContent<T extends LayerType>({
         onClose={handleClose}
       />
       <LayerHiddenFeaturesSection layers={values} />
+      <SwitchDataset layers={values} />
+      <SwitchGroup layers={values} />
       {/* <LayerHeatmapSection layers={values} /> */}
       {components.map(([type, atoms]) => (
-        <Fragment key={type}>
-          <Divider />
-          <InspectorItem>
-            <Fields layers={values} type={type} atoms={atoms} />
-          </InspectorItem>
-        </Fragment>
+        <Fields key={type} layers={values} type={type} atoms={atoms} />
       ))}
       {/* <InspectorItem> */}
       {/* <LayerShowWireframeSection layers={values} />

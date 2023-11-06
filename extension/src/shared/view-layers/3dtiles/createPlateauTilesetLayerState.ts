@@ -8,6 +8,7 @@ import { ComponentIdParams, makeComponentAtomWrapper } from "../component";
 
 export interface PlateauTilesetLayerStateParams extends Omit<ComponentIdParams, "componentType"> {
   hiddenFeatures?: readonly string[];
+  shouldInitializeAtom?: boolean;
 }
 
 export interface PlateauTilesetLayerState {
@@ -30,6 +31,7 @@ export function createPlateauTilesetLayerState(
     atom<string | null>(null),
     { ...params, componentType: "colorProperty" },
     false,
+    params.shouldInitializeAtom,
   );
 
   const originalColorMapAtom = atom<ColorMap>(colorMapPlateau);
@@ -67,11 +69,13 @@ export function createPlateauTilesetLayerState(
     wrappedOriginalColorMapAtom,
     { ...params, componentType: "colorMap" },
     true,
+    params.shouldInitializeAtom,
   );
   const colorRangeAtom = makeComponentAtomWrapper(
     atom([0, 100]),
     { ...params, componentType: "colorRange" },
     true,
+    params.shouldInitializeAtom,
   );
   const valueRangeAtom = atom(
     get => {
