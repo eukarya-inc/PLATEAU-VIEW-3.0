@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, styled, Typography } from "@mui/material";
+import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom, type Getter } from "jotai";
 import { intersection, isEqual, min, uniqWith } from "lodash-es";
 import { useCallback, useMemo, type FC, useState } from "react";
@@ -250,41 +250,36 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
     return null;
   }
   return (
-    <>
-      <Divider />
-      <InspectorItem>
-        <ParameterList>
-          <GroupedParameterItem
-            label="色分け"
-            onClick={handleClickParameterItem}
-            content={<Legend layers={buildingLayers} />}>
-            <InspectorItem sx={{ width: 320 }}>
-              <ParameterList>
-                <SelectParameterItem
-                  label="モデル属性"
-                  atom={colorPropertyAtoms}
-                  items={propertyItems}
-                  layout="stack"
-                  displayEmpty
-                  onChange={resetColorRange}
+    <ParameterList>
+      <GroupedParameterItem
+        label="色分け"
+        onClick={handleClickParameterItem}
+        content={<Legend layers={buildingLayers} />}>
+        <InspectorItem sx={{ width: 320 }}>
+          <ParameterList>
+            <SelectParameterItem
+              label="モデル属性"
+              atom={colorPropertyAtoms}
+              items={propertyItems}
+              layout="stack"
+              displayEmpty
+              onChange={resetColorRange}
+            />
+            {property?.type === "number" && (
+              <>
+                <ColorMapParameterItem label="配色" atom={colorMapAtoms} />
+                <SliderParameterItem
+                  label="値範囲"
+                  min={property.minimum}
+                  max={property.maximum}
+                  range
+                  atom={colorRangeAtoms}
                 />
-                {property?.type === "number" && (
-                  <>
-                    <ColorMapParameterItem label="配色" atom={colorMapAtoms} />
-                    <SliderParameterItem
-                      label="値範囲"
-                      min={property.minimum}
-                      max={property.maximum}
-                      range
-                      atom={colorRangeAtoms}
-                    />
-                  </>
-                )}
-              </ParameterList>
-            </InspectorItem>
-          </GroupedParameterItem>
-        </ParameterList>
-      </InspectorItem>
-    </>
+              </>
+            )}
+          </ParameterList>
+        </InspectorItem>
+      </GroupedParameterItem>
+    </ParameterList>
   );
 };

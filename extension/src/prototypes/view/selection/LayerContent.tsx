@@ -1,6 +1,6 @@
-import { IconButton, List, Tooltip } from "@mui/material";
+import { Divider, IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jotai";
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
 import { flyToLayerId } from "../../../shared/reearth/utils";
@@ -11,6 +11,7 @@ import {
   AddressIcon,
   InfoIcon,
   InspectorHeader,
+  InspectorItem,
   TrashIcon,
   VisibilityOffIcon,
   VisibilityOnIcon,
@@ -132,7 +133,12 @@ export function LayerContent<T extends LayerType>({
       <LayerHiddenFeaturesSection layers={values} />
       {/* <LayerHeatmapSection layers={values} /> */}
       {components.map(([type, atoms]) => (
-        <Fields layers={values} key={type} type={type} atoms={atoms} />
+        <Fragment key={type}>
+          <Divider />
+          <InspectorItem>
+            <Fields layers={values} type={type} atoms={atoms} />
+          </InspectorItem>
+        </Fragment>
       ))}
       {/* <InspectorItem> */}
       {/* <LayerShowWireframeSection layers={values} />
