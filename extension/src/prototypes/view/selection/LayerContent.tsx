@@ -1,4 +1,4 @@
-import { Divider, IconButton, List, Tooltip } from "@mui/material";
+import { IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jotai";
 import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -18,7 +18,6 @@ import {
 import { layerTypeIcons, layerTypeNames } from "../../view-layers";
 import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 
-import { BuildingLayerColorSection } from "./BuildingLayerColorSection";
 // import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
@@ -131,9 +130,7 @@ export function LayerContent<T extends LayerType>({
         onClose={handleClose}
       />
       <LayerHiddenFeaturesSection layers={values} />
-      <BuildingLayerColorSection layers={values} />
       {/* <LayerHeatmapSection layers={values} /> */}
-      <Divider />
       {components.map(([type, atoms]) => (
         <Fields layers={values} key={type} type={type} atoms={atoms} />
       ))}

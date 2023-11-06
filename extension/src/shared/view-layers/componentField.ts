@@ -43,6 +43,6 @@ export const makeComponentFieldValue = (component: SettingComponent): Component[
       };
     }
     default:
-      return component.preset?.defaultValue ?? fieldSettings[component.type].defaultValue;
+      return component.preset?.defaultValue ?? fieldSettings[component.type]?.defaultValue;
   }
 };

@@ -1,6 +1,9 @@
 import { FC } from "react";
 
+import { type LayerModel as PrototypeLayerModel } from "../../../prototypes/layers";
 import { InspectorItem } from "../../../prototypes/ui-components";
+import { BuildingLayerColorSection } from "../../../prototypes/view/selection/BuildingLayerColorSection";
+import { TILESET_BUILDING_MODEL_COLOR } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -45,6 +48,12 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
             layers={layers}
             atoms={atoms as ComponentAtom<"POINT_FILL_COLOR_GRADIENT_FIELD">["atom"][]}
           />
+        </InspectorItem>
+      );
+    case TILESET_BUILDING_MODEL_COLOR:
+      return (
+        <InspectorItem>
+          <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />
         </InspectorItem>
       );
   }
