@@ -17,7 +17,8 @@ import { colorSchemeSelectionAtom } from "../../../prototypes/view-layers";
 import { Component } from "../../types/fieldComponents";
 import { LayerModel } from "../../view-layers";
 import {
-  isColorSchemeComponent,
+  isConditionalColorSchemeComponent,
+  isGradientColorSchemeComponent,
   makeColorSchemeAtomForComponent,
   makeColorSchemeForComponent,
 } from "../state/colorSchemeForComponent";
@@ -83,7 +84,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
             layers[0].componentAtoms
               ?.flatMap(c => {
                 const componentValue = get(c.atom);
-                if (isColorSchemeComponent(componentValue)) {
+                if (
+                  isConditionalColorSchemeComponent(componentValue) ||
+                  isGradientColorSchemeComponent(componentValue)
+                ) {
                   return componentValue.preset?.rules?.map(rule =>
                     rule.propertyName ? rule : undefined,
                   );
@@ -106,7 +110,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
           if (!layers[0].componentAtoms) return null;
           for (const componentAtom of layers[0].componentAtoms) {
             const componentValue = get(componentAtom.atom);
-            if (isColorSchemeComponent(componentValue)) {
+            if (
+              isConditionalColorSchemeComponent(componentValue) ||
+              isGradientColorSchemeComponent(componentValue)
+            ) {
               const ruleId = componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
@@ -119,7 +126,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
           layers[0].componentAtoms?.some(componentAtom => {
             const componentValue = get(componentAtom.atom);
 
-            if (isColorSchemeComponent(componentValue)) {
+            if (
+              isConditionalColorSchemeComponent(componentValue) ||
+              isGradientColorSchemeComponent(componentValue)
+            ) {
               const update =
                 typeof action === "function"
                   ? action(componentValue.value?.currentRuleId ?? null)

@@ -17,6 +17,8 @@ import {
   GRADIENT_COLOR_SCHEME,
   ConditionalColorSchemeValue,
   GradientColorSchemeValue,
+  ValueColorSchemeValue,
+  VALUE_COLOR_SCHEME,
 } from "../../types/fieldComponents/colorScheme";
 import { LayerModel } from "../../view-layers";
 
@@ -24,19 +26,24 @@ export const isColorSchemeComponent = (
   comp: ComponentBase,
 ): comp is Extract<
   ComponentBase,
-  { value?: ConditionalColorSchemeValue | GradientColorSchemeValue }
+  { value?: ConditionalColorSchemeValue | GradientColorSchemeValue | ValueColorSchemeValue }
 > =>
   !!(
     comp.value &&
     typeof comp.value === "object" &&
     "type" in comp.value &&
-    [CONDITIONAL_COLOR_SCHEME, GRADIENT_COLOR_SCHEME].includes(comp.value.type)
+    [CONDITIONAL_COLOR_SCHEME, GRADIENT_COLOR_SCHEME, VALUE_COLOR_SCHEME].includes(comp.value.type)
   );
 
 export const isConditionalColorSchemeComponent = (
   comp: ComponentBase,
 ): comp is Extract<ComponentBase, { value?: ConditionalColorSchemeValue }> =>
   !!(isColorSchemeComponent(comp) && CONDITIONAL_COLOR_SCHEME === comp.value?.type);
+
+export const isValueColorSchemeComponent = (
+  comp: ComponentBase,
+): comp is Extract<ComponentBase, { value?: ValueColorSchemeValue }> =>
+  !!(isColorSchemeComponent(comp) && VALUE_COLOR_SCHEME === comp.value?.type);
 
 export const isGradientColorSchemeComponent = (
   comp: ComponentBase,
@@ -68,7 +75,10 @@ export const makeColorSchemeForComponent = (colorSchemeAtom: Atom<LayerColorSche
 // TODO: Support multiple color schcme if necessary
 export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =>
   atom<LayerColorScheme | undefined>(get => {
-    const componentAtom = layers[0].componentAtoms?.find(comp => {
+    const layer = layers[0];
+    if (!layer) return;
+
+    const componentAtom = layer.componentAtoms?.find(comp => {
       const value = get(comp.atom);
       return isColorSchemeComponent(value);
     });
@@ -76,7 +86,10 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       return;
     }
     const component = get(componentAtom.atom);
-    const colorScheme = component.value as ConditionalColorSchemeValue | GradientColorSchemeValue;
+    const colorScheme = component.value as
+      | ConditionalColorSchemeValue
+      | GradientColorSchemeValue
+      | ValueColorSchemeValue;
     switch (colorScheme.type) {
       case GRADIENT_COLOR_SCHEME: {
         if (!isGradientColorSchemeComponent(component)) return;
@@ -182,6 +195,38 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         return {
           type: "qualitative" as const,
           name: rule.propertyName,
+          colorsAtom: colorsAtom,
+          colorAtomsAtom: splitAtom(colorsAtom),
+        } as QualitativeColorSet;
+      }
+      case VALUE_COLOR_SCHEME: {
+        if (!isValueColorSchemeComponent(component)) return;
+        const colors = component.preset?.defaultValue
+          ? [
+              {
+                id: component.id,
+                value: component.preset.legendName ?? component.preset.defaultValue,
+                color: component.value?.color ?? component.preset.defaultValue,
+                name: component.preset.legendName ?? component.preset.defaultValue,
+              },
+            ]
+          : [];
+        const colorsAtom = atom(
+          () => colors,
+          (_get, set, action: SetStateAction<QualitativeColor[]>) => {
+            const update = typeof action === "function" ? action(colors) : action;
+            set(componentAtom.atom, {
+              ...component,
+              value: {
+                ...(component.value ?? {}),
+                color: update[0].color,
+              } as typeof component.value,
+            });
+          },
+        ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
+        return {
+          type: "qualitative" as const,
+          name: get(layer.titleAtom),
           colorsAtom: colorsAtom,
           colorAtomsAtom: splitAtom(colorsAtom),
         } as QualitativeColorSet;
