@@ -13,6 +13,8 @@ type PropertyCardProps = {
   movingId?: string;
   moveUpDisabled?: boolean;
   moveDownDisabled?: boolean;
+  noMove?: boolean;
+  noRemove?: boolean;
   mainPanel: React.ReactNode;
   layerPanel?: React.ReactNode;
   legendPanel?: React.ReactNode;
@@ -29,6 +31,8 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
   movingId,
   moveUpDisabled,
   moveDownDisabled,
+  noMove,
+  noRemove,
   mainPanel,
   layerPanel,
   legendPanel,
@@ -99,15 +103,21 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
           )}
         </CardIconButtonWrapper>
         <CardIconButtonWrapper>
-          <StyledIconButton disabled={moveUpDisabled ? 1 : 0} onClick={handleMoveUp}>
-            <ArrowUpwardOutlinedIcon />
-          </StyledIconButton>
-          <StyledIconButton disabled={moveDownDisabled ? 1 : 0} onClick={handleMoveDown}>
-            <ArrowDownwardOutlinedIcon />
-          </StyledIconButton>
-          <StyledIconButton onClick={handleRemove}>
-            <DeleteOutlinedIcon />
-          </StyledIconButton>
+          {!noMove && (
+            <StyledIconButton disabled={moveUpDisabled ? 1 : 0} onClick={handleMoveUp}>
+              <ArrowUpwardOutlinedIcon />
+            </StyledIconButton>
+          )}
+          {!noMove && (
+            <StyledIconButton disabled={moveDownDisabled ? 1 : 0} onClick={handleMoveDown}>
+              <ArrowDownwardOutlinedIcon />
+            </StyledIconButton>
+          )}
+          {!noRemove && (
+            <StyledIconButton onClick={handleRemove}>
+              <DeleteOutlinedIcon />
+            </StyledIconButton>
+          )}
         </CardIconButtonWrapper>
       </CardHeader>
       <CardConent>

@@ -32,6 +32,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
   [`.${selectClasses.select}`]: {
     padding: `${theme.spacing(0.5, 1)} !important`,
+    fontSize: theme.typography.body2.fontSize,
+    lineHeight: "1.2",
   },
 }));
 

@@ -10,11 +10,11 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   [`.${inputBaseClasses.root}`]: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius,
-    padding: 0,
+    padding: theme.spacing(0.5, 1),
   },
 
   [`.${inputBaseClasses.input}`]: {
-    padding: theme.spacing(0.5, 1),
+    padding: 0,
     fontSize: theme.typography.body2.fontSize,
   },
 }));

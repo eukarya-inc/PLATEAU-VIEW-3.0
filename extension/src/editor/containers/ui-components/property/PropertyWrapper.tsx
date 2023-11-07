@@ -23,4 +23,37 @@ export const PropertyLineWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(0.5),
   alignItems: "center",
+  justifyContent: "space-between",
+}));
+
+type PropertyInlineWrapperProps = {
+  label: string;
+  children: React.ReactNode;
+};
+export const PropertyInlineWrapper: React.FC<PropertyInlineWrapperProps> = ({
+  label,
+  children,
+}) => {
+  return (
+    <InlineWrapper>
+      <InlineLabel>{label}</InlineLabel>
+      <InlineValue>{children}</InlineValue>
+    </InlineWrapper>
+  );
+};
+
+const InlineWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  gap: theme.spacing(0.5),
+  alignItems: "center",
+}));
+
+const InlineLabel = styled("div")(({ theme }) => ({
+  width: "130px",
+  flex: "0 0 auto",
+  padding: theme.spacing(0, 0.5),
+}));
+
+const InlineValue = styled("div")(() => ({
+  flex: "1 1 auto",
 }));

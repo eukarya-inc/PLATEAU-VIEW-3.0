@@ -35,7 +35,12 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
     [component.type],
   );
   const title = useMemo(
-    () => `${fields[component.type].category} / ${fields[component.type].name}`,
+    () =>
+      fields[component.type].group
+        ? `${fields[component.type].category} / ${fields[component.type].group} / ${
+            fields[component.type].name
+          }`
+        : `${fields[component.type].category} / ${fields[component.type].name}`,
     [component.type],
   );
 
