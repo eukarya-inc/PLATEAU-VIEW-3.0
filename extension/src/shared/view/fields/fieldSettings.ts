@@ -52,4 +52,14 @@ export const fieldSettings: {
   TILESET_BUILDING_MODEL_COLOR: {
     defaultValue: "",
   },
+  TILESET_FILL_COLOR_CONDITION_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
+  TILESET_FILL_COLOR_GRADIENT_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
 };

@@ -20,7 +20,7 @@ export type GeneralFeature<P> = {
   properties: P;
 };
 
-export type GeneralAppearances = Omit<Partial<LayerAppearanceTypes>, "3dtiles">;
+export type GeneralAppearances = Partial<LayerAppearanceTypes>;
 
 export type GeneralProps = {
   url: string;
