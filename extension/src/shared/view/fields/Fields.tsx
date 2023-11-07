@@ -4,7 +4,11 @@ import { FC } from "react";
 import { type LayerModel as PrototypeLayerModel } from "../../../prototypes/layers";
 import { InspectorItem } from "../../../prototypes/ui-components";
 import { BuildingLayerColorSection } from "../../../prototypes/view/selection/BuildingLayerColorSection";
-import { TILESET_BUILDING_MODEL_COLOR } from "../../types/fieldComponents/3dtiles";
+import {
+  TILESET_BUILDING_MODEL_COLOR,
+  TILESET_FILL_COLOR_CONDITION_FIELD,
+  TILESET_FILL_COLOR_GRADIENT_FIELD,
+} from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -13,6 +17,8 @@ import {
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 
+import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
+import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
@@ -50,8 +56,27 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
       );
       break;
     }
+    // Tileset
     case TILESET_BUILDING_MODEL_COLOR: {
       component = <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
+      break;
+    }
+    case TILESET_FILL_COLOR_CONDITION_FIELD: {
+      component = (
+        <LayerTilesetFillColorConditionField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_FILL_COLOR_CONDITION_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TILESET_FILL_COLOR_GRADIENT_FIELD: {
+      component = (
+        <LayerTilesetFillGradientColorField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_FILL_COLOR_GRADIENT_FIELD">["atom"][]}
+        />
+      );
       break;
     }
   }

@@ -7,6 +7,10 @@ import { useOptionalAtomValue } from "../../hooks";
 import { GeneralAppearances } from "../../reearth/layers";
 import { ExpressionContainer } from "../../reearth/types/expression";
 import { Component } from "../../types/fieldComponents";
+import {
+  TILESET_FILL_COLOR_CONDITION_FIELD,
+  TILESET_FILL_COLOR_GRADIENT_FIELD,
+} from "../../types/fieldComponents/3dtiles";
 import { STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_VALUE_FIELD,
@@ -34,7 +38,9 @@ export const makeSimpleValue = (
 };
 
 export const makeConditionalExpression = (
-  comp: Component<typeof POINT_FILL_COLOR_CONDITION_FIELD> | undefined,
+  comp:
+    | Component<typeof POINT_FILL_COLOR_CONDITION_FIELD | typeof TILESET_FILL_COLOR_CONDITION_FIELD>
+    | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
@@ -73,7 +79,9 @@ export const makeConditionalExpression = (
 };
 
 export const makeGradientExpression = (
-  comp: Component<typeof POINT_FILL_COLOR_GRADIENT_FIELD> | undefined,
+  comp:
+    | Component<typeof POINT_FILL_COLOR_GRADIENT_FIELD | typeof TILESET_FILL_COLOR_GRADIENT_FIELD>
+    | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
@@ -121,10 +129,10 @@ export const useEvaluateGeneralAppearance = ({
 }: {
   componentAtoms: ComponentAtom[] | undefined;
 }) => {
+  // Point
   const pointStyle = useOptionalAtomValue(
     useFindComponent<typeof POINT_STYLE_FIELD>(componentAtoms ?? [], POINT_STYLE_FIELD),
   );
-
   const pointColor = useOptionalAtomValue(
     useFindComponent<typeof POINT_FILL_COLOR_VALUE_FIELD>(
       componentAtoms ?? [],
@@ -147,6 +155,21 @@ export const useEvaluateGeneralAppearance = ({
     ),
   );
 
+  // Tileset
+  const tilesetFillColorCondition = useOptionalAtomValue(
+    useFindComponent<typeof TILESET_FILL_COLOR_CONDITION_FIELD>(
+      componentAtoms ?? [],
+      TILESET_FILL_COLOR_CONDITION_FIELD,
+    ),
+  );
+  const tilesetFillGradientColor = useOptionalAtomValue(
+    useFindComponent<typeof TILESET_FILL_COLOR_GRADIENT_FIELD>(
+      componentAtoms ?? [],
+      TILESET_FILL_COLOR_GRADIENT_FIELD,
+    ),
+  );
+
+  // General
   const styleCodeString = useOptionalAtomValue(
     useFindComponent<typeof STYLE_CODE_FIELD>(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
@@ -165,14 +188,23 @@ export const useEvaluateGeneralAppearance = ({
             makeGradientExpression(pointFillGradientColor),
           pointSize: pointSize?.value,
         },
+        "3dtiles": {
+          color:
+            makeConditionalExpression(tilesetFillColorCondition) ??
+            makeGradientExpression(tilesetFillGradientColor),
+        },
       },
     [
       appearanceObject,
+      // Point
       pointColor,
       pointSize,
       pointFillColorCondition,
       pointFillGradientColor,
       pointStyle?.preset?.style,
+      // Tileset
+      tilesetFillColorCondition,
+      tilesetFillGradientColor,
     ],
   );
 

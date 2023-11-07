@@ -8,6 +8,8 @@ import {
 } from "../../../../../shared/types/fieldComponents/point";
 
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
+import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFillColorConditionField";
+import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
@@ -96,6 +98,18 @@ export const fields: {
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
     name: "Building model",
     Component: EditorTilesetBuildingModelColorField,
+  },
+  TILESET_FILL_COLOR_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Condition",
+    Component: EditorTilesetFillColorConditionField,
+  },
+  TILESET_FILL_COLOR_GRADIENT_FIELD: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Gradient",
+    Component: EditorTilesetFillColorGradientField,
   },
 };
 

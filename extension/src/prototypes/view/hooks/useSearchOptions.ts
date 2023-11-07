@@ -51,10 +51,11 @@ function useDatasetSearchOptions({
     () => areas?.filter(area => area.type === "municipality").map(area => area.code) ?? [],
     [areas],
   );
+  const tokens = useMemo(() => inputValue?.split(/ |\u3000/), [inputValue]);
   const query = useDatasets(
-    inputValue
+    tokens
       ? {
-          searchTokens: inputValue.split(/ |\u3000/),
+          searchTokens: tokens,
         }
       : municipalityCodes.length > 0
       ? {
@@ -172,7 +173,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           const dataset = datasetOption.dataset as Dataset;
           const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
           const municipalityCode = datasetOption.dataset.wardCode;
-          if (type == null || !municipalityCode) {
+          if (type == null) {
             return;
           }
           const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
