@@ -39,12 +39,17 @@ export const makeComponentAtomWrapper = <V, A extends unknown[], S>(
   a: WritableAtom<V, A, S>,
   params: ComponentIdParams,
   storeable?: boolean,
+  shouldInitialize?: boolean,
 ) => {
   const name = makeComponentId(params);
   if (storeable) {
-    return sharedStoreAtomWrapper(name, storageStoreAtomWrapper(name, a));
+    return sharedStoreAtomWrapper(
+      name,
+      storageStoreAtomWrapper(name, a, shouldInitialize),
+      shouldInitialize,
+    );
   }
-  return sharedStoreAtomWrapper(name, a);
+  return sharedStoreAtomWrapper(name, a, shouldInitialize);
 };
 
 export const makeComponentAtoms = (

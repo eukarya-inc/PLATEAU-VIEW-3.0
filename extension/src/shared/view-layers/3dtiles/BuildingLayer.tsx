@@ -10,6 +10,7 @@ import {
 } from "../../../prototypes/view-layers";
 import { TilesetLayerContainer } from "../../layerContainers/3dtiles";
 import { TILESET_FEATURE } from "../../reearth/layers";
+import { TILESET_BUILDING_MODEL_COLOR } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import { useFindComponent } from "../hooks";
 import { LayerModel, LayerModelParams } from "../model";
@@ -104,7 +105,12 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   // TODO(ReEarth): Need a wireframe API
   // const showWireframe = useAtomValue(showWireframeAtom);
 
+  // Field components
   const opacityAtom = useFindComponent<typeof OPACITY_FIELD>(componentAtoms ?? [], OPACITY_FIELD);
+  const buildingModelColorAtom = useFindComponent<typeof TILESET_BUILDING_MODEL_COLOR>(
+    componentAtoms ?? [],
+    TILESET_BUILDING_MODEL_COLOR,
+  );
 
   if (!url) {
     return null;
@@ -126,9 +132,12 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         colorSchemeAtom={colorSchemeAtom}
         colorMapAtom={colorMapAtom}
         colorRangeAtom={colorRangeAtom}
-        opacityAtom={opacityAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
         // showWireframe={showWireframe}
+
+        // Field components
+        opacityAtom={opacityAtom}
+        buildingModelColorAtom={buildingModelColorAtom}
       />
     );
   }

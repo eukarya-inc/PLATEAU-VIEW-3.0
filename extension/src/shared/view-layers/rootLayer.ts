@@ -112,6 +112,7 @@ const createViewLayerWithComponentGroup = (
   datasetId: string,
   type: LayerType,
   title: string,
+  setting: Setting | undefined,
   data: DatasetItem | undefined,
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
@@ -126,6 +127,7 @@ const createViewLayerWithComponentGroup = (
       datasetId,
       shareId,
       textured: data?.name !== "LOD1" && data?.name !== "LOD2（テクスチャなし）",
+      shouldInitializeAtom: shouldInitialize,
     }),
     componentAtoms: makeComponentAtoms(
       datasetId,
@@ -136,6 +138,9 @@ const createViewLayerWithComponentGroup = (
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
+    componentGroups: setting?.fieldComponents?.groups?.map(
+      g => [g.id, g.name] as [id: string, name: string],
+    ),
   };
 };
 
@@ -167,6 +172,7 @@ const createRootLayer = ({
         datasetId,
         type,
         title,
+        setting,
         data,
         componentGroup,
         shareId,
@@ -271,6 +277,7 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
           params.datasetId,
           params.type,
           params.title,
+          setting,
           data,
           group,
           params.shareId,

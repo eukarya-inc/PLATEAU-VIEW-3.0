@@ -11,6 +11,7 @@ export type LayerModelParams = ViewLayerModelParams & {
 export type LayerModelBase = {
   format?: DataType;
   url?: string;
+  componentGroups?: [id: string, name: string][];
   componentAtoms?: ComponentAtom[];
 };
 
