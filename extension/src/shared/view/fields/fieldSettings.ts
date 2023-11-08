@@ -48,6 +48,10 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
+  POINT_VISIBILITY_FILTER_FIELD: {
+    defaultValue: "",
+    hasLayerUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {
     defaultValue: "",
