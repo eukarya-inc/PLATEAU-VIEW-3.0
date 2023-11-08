@@ -1,11 +1,17 @@
 import { Component } from "../../types/fieldComponents";
+import {
+  CONDITIONAL_COLOR_SCHEME,
+  GRADIENT_COLOR_SCHEME,
+  VALUE_COLOR_SCHEME,
+} from "../../types/fieldComponents/colorScheme";
 
 // This settings object is used to generate the UI for each field.
 // It will be used in layer inspector and legend panel.
 // All filed components should be listed here but some of them may not have UI.
 export const fieldSettings: {
   [key in Component["type"]]: {
-    defaultValue: string | number;
+    defaultValue?: string | number;
+    value?: Component<key>["value"];
     hasLayerUI?: boolean;
     hasLegendUI?: boolean;
   };
@@ -35,16 +41,35 @@ export const fieldSettings: {
     hasLegendUI: true,
   },
   POINT_FILL_COLOR_VALUE_FIELD: {
-    defaultValue: "",
+    value: {
+      type: VALUE_COLOR_SCHEME,
+      color: undefined,
+    },
     hasLegendUI: true,
   },
   POINT_FILL_COLOR_CONDITION_FIELD: {
-    defaultValue: "",
+    value: {
+      type: CONDITIONAL_COLOR_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
     hasLegendUI: true,
     hasLayerUI: true,
   },
   POINT_FILL_COLOR_GRADIENT_FIELD: {
-    defaultValue: "",
+    value: {
+      type: GRADIENT_COLOR_SCHEME,
+      currentRuleId: undefined,
+      currentColorMapName: undefined,
+      currentMax: undefined,
+      currentMin: undefined,
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
     hasLegendUI: true,
     hasLayerUI: true,
   },
@@ -53,16 +78,30 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   // 3dtiles
-  TILESET_BUILDING_MODEL_COLOR: {
-    defaultValue: "",
-  },
+  TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {
-    defaultValue: "",
+    value: {
+      type: CONDITIONAL_COLOR_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
     hasLegendUI: true,
     hasLayerUI: true,
   },
   TILESET_FILL_COLOR_GRADIENT_FIELD: {
-    defaultValue: "",
+    value: {
+      type: GRADIENT_COLOR_SCHEME,
+      currentRuleId: undefined,
+      currentColorMapName: undefined,
+      currentMax: undefined,
+      currentMin: undefined,
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
     hasLegendUI: true,
     hasLayerUI: true,
   },
