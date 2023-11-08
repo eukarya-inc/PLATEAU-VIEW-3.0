@@ -81,3 +81,11 @@ export const forceUpdateRootLayer = atom(undefined, (get, set) => {
     set(layer.settingsAtom, get(layer.settingsAtom));
   }
 });
+
+export const findRootLayerAtom = atom(undefined, (get, _, id: string) => {
+  const rootLayers = get(rootLayersAtom);
+  const rootLayerConfig = rootLayers.find(r => r.id === id);
+  if (!rootLayerConfig) return;
+  const rootLayer = get(rootLayerConfig.rootLayerAtom);
+  return rootLayer;
+});

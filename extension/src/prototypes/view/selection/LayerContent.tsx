@@ -3,7 +3,8 @@ import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jo
 import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
-import { flyToLayerId } from "../../../shared/reearth/utils";
+import { flyToCamera, flyToLayerId } from "../../../shared/reearth/utils";
+import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { Fields } from "../../../shared/view/fields/Fields";
 import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
 import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
@@ -36,7 +37,10 @@ export function LayerContent<T extends LayerType>({
   values,
 }: LayerContentProps<T>): JSX.Element | null {
   invariant(values.length > 0);
-  const type = values[0].type;
+  const layer = values[0];
+  const type = layer.type;
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+  const rootLayer = findRootLayer(layer.id);
 
   const setSelection = useSetAtom(layerSelectionAtom);
   const handleClose = useCallback(() => {
@@ -66,10 +70,14 @@ export function LayerContent<T extends LayerType>({
   );
   const layerId = useAtomValue(layerIdAtom);
   const handleMove = useCallback(() => {
-    if (layerId) {
-      flyToLayerId(layerId);
+    const camera = rootLayer?.general?.camera;
+    if (camera) {
+      return flyToCamera(camera);
     }
-  }, [layerId]);
+    if (layerId) {
+      return flyToLayerId(layerId);
+    }
+  }, [layerId, rootLayer?.general?.camera]);
 
   const remove = useSetAtom(removeLayerAtom);
   const handleRemove = useCallback(() => {

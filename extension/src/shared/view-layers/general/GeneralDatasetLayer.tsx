@@ -1,12 +1,14 @@
 import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 
 import type { LayerProps } from "../../../prototypes/layers";
 import { ScreenSpaceSelectionEntry } from "../../../prototypes/screen-space-selection";
 import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototypes/view-layers";
 import { GeneralLayerContainer } from "../../layerContainers/general";
 import { GENERAL_FEATURE } from "../../reearth/layers";
+import { Events } from "../../reearth/types";
 import { Properties } from "../../reearth/utils";
+import { findRootLayerAtom } from "../../states/rootLayer";
 import { LayerModel, LayerModelParams } from "../model";
 
 import { GENERAL_FORMAT } from "./format";
@@ -40,6 +42,7 @@ export function createGeneralDatasetLayer(
 }
 
 export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
+  id,
   format,
   url,
   type,
@@ -70,6 +73,32 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
     setTitle(title ?? null);
   }, [title, setTitle]);
 
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+  const rootLayer = findRootLayer(id);
+  const general = rootLayer?.general;
+  const events: Events | undefined = useMemo(
+    () =>
+      general?.featureClickEvent?.eventType === "openNewTab"
+        ? {
+            select: {
+              openUrl: {
+                ...(general.featureClickEvent.urlType === "manual"
+                  ? { url: general.featureClickEvent.websiteURL }
+                  : { urlKey: general.featureClickEvent.fieldName }),
+              },
+            },
+          }
+        : undefined,
+    [general?.featureClickEvent],
+  );
+  const updateInterval = useMemo(
+    () =>
+      general?.dataFetching?.enabled
+        ? (general?.dataFetching?.timeInterval ?? 0) * 1000
+        : undefined,
+    [general?.dataFetching],
+  );
+
   // useEffect(() => {
   //   if (datum == null) {
   //     return;
@@ -85,10 +114,10 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
   if (!url) {
     return null;
   }
-  // TODO(ReEarth): Use GQL definition
   if (format && GENERAL_FORMAT.includes(format)) {
     return (
       <GeneralLayerContainer
+        id={id}
         url={url}
         format={format}
         type={type}
@@ -100,6 +129,8 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
         propertiesAtom={propertiesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[]}
         componentAtoms={componentAtoms}
+        events={events}
+        updateInterval={updateInterval}
         // showWireframe={showWireframe}
       />
     );

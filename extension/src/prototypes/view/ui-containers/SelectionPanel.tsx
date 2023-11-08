@@ -1,11 +1,12 @@
 // import { PEDESTRIAN_OBJECT } from "@takram/plateau-pedestrian";
 
 // import { SKETCH_OBJECT } from "@takram/plateau-sketch";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ResizeCallback } from "re-resizable";
 import { useCallback, type FC } from "react";
 
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
@@ -21,8 +22,12 @@ import {
 
 export const SelectionPanel: FC = () => {
   let content = null;
+
   // const contentType: "default" | "pedestrian" = "default";
   const selectionGroups = useAtomValue(selectionGroupsAtom);
+
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+
   if (selectionGroups.length === 1) {
     const [selectionGroup] = selectionGroups;
     const { type, subtype } = selectionGroup;
@@ -43,9 +48,16 @@ export const SelectionPanel: FC = () => {
           case TILESET_FEATURE:
             content = <TileFeatureContent values={selectionGroup.values} />;
             break;
-          case GENERAL_FEATURE:
+          case GENERAL_FEATURE: {
+            const rootLayer = findRootLayer(selectionGroup.values[0].datasetId);
+            if (
+              rootLayer?.general?.featureClickEvent?.eventType &&
+              rootLayer.general.featureClickEvent.eventType !== "openFeatureInspector"
+            )
+              break;
             content = <GeneralFeatureContent values={selectionGroup.values} />;
             break;
+          }
           // case PEDESTRIAN_OBJECT:
           //   content = <PedestrianLayerContent values={selectionGroup.values} />;
           //   contentType = "pedestrian";

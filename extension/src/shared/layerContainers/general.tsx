@@ -14,6 +14,7 @@ import { ComponentAtom } from "../view-layers/component";
 import { useEvaluateGeneralAppearance } from "./hooks/useEvaluateGeneralAppearance";
 
 type GeneralContainerProps = Omit<GeneralProps, "appearances"> & {
+  id: string;
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
   selections?: ScreenSpaceSelectionEntry<typeof GENERAL_FEATURE>[];
@@ -23,6 +24,7 @@ type GeneralContainerProps = Omit<GeneralProps, "appearances"> & {
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
+  id,
   onLoad,
   layerIdAtom,
   componentAtoms,
@@ -46,6 +48,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
               key: object.id,
               layerId,
               layerType: props.type,
+              datasetId: id,
             },
           }
         : undefined;
