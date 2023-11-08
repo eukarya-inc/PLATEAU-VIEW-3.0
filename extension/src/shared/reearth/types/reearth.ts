@@ -5,6 +5,7 @@ import { ReearthEventType } from "./event";
 import { InteractionMode } from "./interactionMode";
 import { Layers } from "./layer";
 import { Scene } from "./scene";
+import { Viewport } from "./viewport";
 
 // https://github.com/reearth/reearth/blob/main/web/src/beta/lib/core/Crust/Plugins/plugin_types.ts
 export type ReEarth = {
@@ -12,6 +13,7 @@ export type ReEarth = {
   readonly scene?: Scene;
   readonly interactionMode?: InteractionMode;
   readonly layers?: Layers;
+  readonly viewport?: Viewport;
   readonly on: <T extends keyof ReearthEventType>(
     type: T,
     callback: (...args: ReearthEventType[T]) => void,

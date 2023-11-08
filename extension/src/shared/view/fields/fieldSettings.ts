@@ -105,4 +105,13 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
+  TILESET_CLIPPING: {
+    value: {
+      enable: false,
+      visible: true,
+      allowEnterGround: false,
+      direction: "inside",
+    },
+    hasLayerUI: true,
+  },
 };

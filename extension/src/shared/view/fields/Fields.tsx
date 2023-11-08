@@ -6,6 +6,7 @@ import { InspectorItem } from "../../../prototypes/ui-components";
 import { BuildingLayerColorSection } from "../../../prototypes/view/selection/BuildingLayerColorSection";
 import {
   TILESET_BUILDING_MODEL_COLOR,
+  TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
 } from "../../types/fieldComponents/3dtiles";
@@ -18,6 +19,7 @@ import {
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 
+import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
@@ -86,6 +88,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerTilesetFillGradientColorField
           layers={layers}
           atoms={atoms as ComponentAtom<"TILESET_FILL_COLOR_GRADIENT_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TILESET_CLIPPING: {
+      component = (
+        <LayerTilesetClippingField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_CLIPPING">["atom"][]}
         />
       );
       break;

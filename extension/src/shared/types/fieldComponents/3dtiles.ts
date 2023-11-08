@@ -23,7 +23,19 @@ export type TilesetFillGradientColorField = FieldBase<{
   preset?: TilesetFillGradientColorFieldPreset;
 }>;
 
+export const TILESET_CLIPPING = "TILESET_CLIPPING";
+export type TilesetClippingField = FieldBase<{
+  type: typeof TILESET_CLIPPING;
+  value: {
+    enable: boolean;
+    visible: boolean;
+    allowEnterGround: boolean;
+    direction: "inside" | "outside";
+  };
+}>;
+
 export type TilesetFields =
   | TilesetBuildingModelColorField
   | TilesetFillColorConditionField
-  | TilesetFillGradientColorField;
+  | TilesetFillGradientColorField
+  | TilesetClippingField;

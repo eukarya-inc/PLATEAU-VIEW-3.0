@@ -8,6 +8,7 @@ import { GeneralAppearances } from "../../reearth/layers";
 import { ExpressionContainer } from "../../reearth/types/expression";
 import { Component } from "../../types/fieldComponents";
 import {
+  TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
 } from "../../types/fieldComponents/3dtiles";
@@ -22,6 +23,8 @@ import {
 } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
+
+import { useClippingBox } from "./useClippingBox";
 
 const DEFAULT_COLOR = "#ffffff";
 
@@ -160,53 +163,36 @@ export const useEvaluateGeneralAppearance = ({
 }) => {
   // Point
   const pointStyle = useOptionalAtomValue(
-    useFindComponent<typeof POINT_STYLE_FIELD>(componentAtoms ?? [], POINT_STYLE_FIELD),
+    useFindComponent(componentAtoms ?? [], POINT_STYLE_FIELD),
   );
   const pointColor = useOptionalAtomValue(
-    useFindComponent<typeof POINT_FILL_COLOR_VALUE_FIELD>(
-      componentAtoms ?? [],
-      POINT_FILL_COLOR_VALUE_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_VALUE_FIELD),
   );
-  const pointSize = useOptionalAtomValue(
-    useFindComponent<typeof POINT_SIZE_FIELD>(componentAtoms ?? [], POINT_SIZE_FIELD),
-  );
+  const pointSize = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], POINT_SIZE_FIELD));
   const pointFillColorCondition = useOptionalAtomValue(
-    useFindComponent<typeof POINT_FILL_COLOR_CONDITION_FIELD>(
-      componentAtoms ?? [],
-      POINT_FILL_COLOR_CONDITION_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_CONDITION_FIELD),
   );
   const pointFillGradientColor = useOptionalAtomValue(
-    useFindComponent<typeof POINT_FILL_COLOR_GRADIENT_FIELD>(
-      componentAtoms ?? [],
-      POINT_FILL_COLOR_GRADIENT_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_GRADIENT_FIELD),
   );
   const pointVisibilityFilter = useOptionalAtomValue(
-    useFindComponent<typeof POINT_VISIBILITY_FILTER_FIELD>(
-      componentAtoms ?? [],
-      POINT_VISIBILITY_FILTER_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], POINT_VISIBILITY_FILTER_FIELD),
   );
 
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
-    useFindComponent<typeof TILESET_FILL_COLOR_CONDITION_FIELD>(
-      componentAtoms ?? [],
-      TILESET_FILL_COLOR_CONDITION_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], TILESET_FILL_COLOR_CONDITION_FIELD),
   );
   const tilesetFillGradientColor = useOptionalAtomValue(
-    useFindComponent<typeof TILESET_FILL_COLOR_GRADIENT_FIELD>(
-      componentAtoms ?? [],
-      TILESET_FILL_COLOR_GRADIENT_FIELD,
-    ),
+    useFindComponent(componentAtoms ?? [], TILESET_FILL_COLOR_GRADIENT_FIELD),
+  );
+  const [clippingBox, boxAppearance] = useClippingBox(
+    useOptionalAtomValue(useFindComponent(componentAtoms ?? [], TILESET_CLIPPING)),
   );
 
   // General
   const styleCodeString = useOptionalAtomValue(
-    useFindComponent<typeof STYLE_CODE_FIELD>(componentAtoms ?? [], STYLE_CODE_FIELD),
+    useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
 
   const appearanceObject = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
@@ -228,7 +214,9 @@ export const useEvaluateGeneralAppearance = ({
           color:
             makeConditionalExpression(tilesetFillColorCondition) ??
             makeGradientExpression(tilesetFillGradientColor),
+          experimental_clipping: clippingBox,
         },
+        box: boxAppearance,
       },
     [
       appearanceObject,
@@ -242,6 +230,8 @@ export const useEvaluateGeneralAppearance = ({
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,
+      clippingBox,
+      boxAppearance,
     ],
   );
 
