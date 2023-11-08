@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef } from "react";
 
 import { LayerType } from "../../../prototypes/layers";
-import { LayerAppearanceTypes } from "../types";
+import { LayerAppearanceTypes, Events } from "../types";
 import { DataType } from "../types/layer";
 
 export const GENERAL_FEATURE = "GENERAL_FEATURE";
@@ -11,6 +11,7 @@ declare module "../../../prototypes/screen-space-selection" {
       key: string;
       layerId: string;
       layerType: LayerType;
+      datasetId: string;
     };
   }
 }
@@ -30,6 +31,8 @@ export type GeneralProps = {
   visible?: boolean;
   selectedFeatureColor?: string;
   appearances: GeneralAppearances;
+  updateInterval?: number;
+  events?: Events;
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -47,7 +50,15 @@ const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
   },
 };
 
-export const GeneralLayer: FC<GeneralProps> = ({ url, format, onLoad, visible, appearances }) => {
+export const GeneralLayer: FC<GeneralProps> = ({
+  url,
+  format,
+  onLoad,
+  visible,
+  appearances,
+  updateInterval,
+  events,
+}) => {
   const layerIdRef = useRef<string>();
   const mergedAppearances: Partial<LayerAppearanceTypes> | undefined = useMemo(
     () => ({
@@ -78,7 +89,9 @@ export const GeneralLayer: FC<GeneralProps> = ({ url, format, onLoad, visible, a
       data: {
         type: format,
         url,
+        updateInterval,
       },
+      events,
       ...mergedAppearances,
     });
 
@@ -98,11 +111,13 @@ export const GeneralLayer: FC<GeneralProps> = ({ url, format, onLoad, visible, a
       data: {
         type: format,
         url,
+        updateInterval,
       },
+      events: events ?? {},
       visible,
       ...mergedAppearances,
     });
-  }, [mergedAppearances, visible, format, url]);
+  }, [mergedAppearances, visible, format, url, events, updateInterval]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;

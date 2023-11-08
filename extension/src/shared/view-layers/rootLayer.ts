@@ -13,7 +13,6 @@ import {
 } from "../api/types";
 import { DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
-import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
 import { templatesAtom } from "../states/template";
@@ -49,7 +48,6 @@ export type RootLayerParams = {
 export type RootLayer = {
   general: GeneralSetting | undefined;
   featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
-  camera: CameraPosition | undefined;
   layer: PrimitiveAtom<LayerModel>;
 };
 
@@ -166,7 +164,6 @@ const createRootLayer = ({
     // TODO: get settings from featureInspectorTemplate
     general: setting?.general,
     featureInspector: setting?.featureInspector,
-    camera: setting?.general?.camera,
     layer: atom(
       createViewLayerWithComponentGroup(
         datasetId,
