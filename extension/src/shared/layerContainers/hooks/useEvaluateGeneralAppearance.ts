@@ -18,6 +18,7 @@ import {
   POINT_FILL_COLOR_GRADIENT_FIELD,
   POINT_SIZE_FIELD,
   POINT_STYLE_FIELD,
+  POINT_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -31,7 +32,7 @@ export const makeSimpleValue = (
 
   switch (comp.type) {
     case POINT_FILL_COLOR_VALUE_FIELD:
-      return comp.value?.color ?? comp.preset?.defaultValue;
+      return comp.value?.color || comp.preset?.defaultValue;
     default:
       return comp.preset?.defaultValue;
   }
@@ -53,7 +54,7 @@ export const makeConditionalExpression = (
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
-              const colorValue = overriddenCondition?.color ?? cond.color;
+              const colorValue = overriddenCondition?.color || cond.color;
               if (!rule.propertyName || !cond.value || !colorValue) return;
               const stringCondition = `${variable(rule.propertyName)} ${cond.operation} ${string(
                 cond.value,
@@ -124,6 +125,34 @@ export const makeGradientExpression = (
   };
 };
 
+const makeVisibilityFilterExpression = (
+  comp: Component<typeof POINT_VISIBILITY_FILTER_FIELD> | undefined,
+): ExpressionContainer | undefined => {
+  const rule = comp?.preset?.rules?.find(rule => rule.id === comp.value);
+  const property = rule?.propertyName;
+
+  if (!rule?.conditions || !property) return;
+
+  return {
+    expression: {
+      conditions: rule.conditions.reduce(
+        (res, cond) => {
+          const isNumber = !isNaN(Number(cond.value));
+          if (!cond.operation || !cond.value) return res;
+          res.unshift([
+            isNumber
+              ? `${defaultConditionalNumber(property)} ${cond.operation} ${cond.value}`
+              : `${variable(property)} ${cond.operation} ${string(cond.value)}`,
+            "true",
+          ]);
+          return res;
+        },
+        [["true", "false"]],
+      ),
+    },
+  };
+};
+
 export const useEvaluateGeneralAppearance = ({
   componentAtoms,
 }: {
@@ -152,6 +181,12 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent<typeof POINT_FILL_COLOR_GRADIENT_FIELD>(
       componentAtoms ?? [],
       POINT_FILL_COLOR_GRADIENT_FIELD,
+    ),
+  );
+  const pointVisibilityFilter = useOptionalAtomValue(
+    useFindComponent<typeof POINT_VISIBILITY_FILTER_FIELD>(
+      componentAtoms ?? [],
+      POINT_VISIBILITY_FILTER_FIELD,
     ),
   );
 
@@ -187,6 +222,7 @@ export const useEvaluateGeneralAppearance = ({
             makeConditionalExpression(pointFillColorCondition) ??
             makeGradientExpression(pointFillGradientColor),
           pointSize: pointSize?.value,
+          show: makeVisibilityFilterExpression(pointVisibilityFilter),
         },
         "3dtiles": {
           color:
@@ -202,6 +238,7 @@ export const useEvaluateGeneralAppearance = ({
       pointFillColorCondition,
       pointFillGradientColor,
       pointStyle?.preset?.style,
+      pointVisibilityFilter,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

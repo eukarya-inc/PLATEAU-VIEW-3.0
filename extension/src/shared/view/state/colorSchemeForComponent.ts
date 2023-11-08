@@ -155,13 +155,13 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             const overriddenCondition = component.value?.overrideRules.find(
               o => o.ruleId === rule.id && o.conditionId === c.id,
             );
-            const color = overriddenCondition?.color ?? c.color;
+            const color = overriddenCondition?.color || c.color;
             return c.value && color
               ? {
                   id: c.id,
                   value: c.value,
                   color: color,
-                  name: c.legendName ?? c.value,
+                  name: c.legendName || c.value,
                 }
               : undefined;
           })
@@ -205,9 +205,9 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           ? [
               {
                 id: component.id,
-                value: component.preset.legendName ?? component.preset.defaultValue,
-                color: component.value?.color ?? component.preset.defaultValue,
-                name: component.preset.legendName ?? component.preset.defaultValue,
+                value: component.preset.legendName || component.preset.defaultValue,
+                color: component.value?.color || component.preset.defaultValue,
+                name: component.preset.legendName || component.preset.defaultValue,
               },
             ]
           : [];

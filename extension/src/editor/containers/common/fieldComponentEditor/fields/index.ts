@@ -15,6 +15,7 @@ import {
   FIELD_CATEGORY_POINT,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
+  FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
@@ -26,6 +27,7 @@ import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorG
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   component: SettingComponent<T>;
@@ -91,6 +93,12 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Size",
     Component: EditorPointSizeField,
+  },
+  POINT_VISIBILITY_FILTER_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_VISIBILITY,
+    name: "Filter",
+    Component: EditorPointVisibilityFilterField,
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {
