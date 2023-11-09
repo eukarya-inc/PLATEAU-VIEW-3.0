@@ -58,6 +58,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
   appearances,
   updateInterval,
   events,
+  selectedFeatureColor,
 }) => {
   const layerIdRef = useRef<string>();
   const mergedAppearances: Partial<LayerAppearanceTypes> | undefined = useMemo(
@@ -79,8 +80,12 @@ export const GeneralLayer: FC<GeneralProps> = ({
         ...DEFAULT_APPEARNACES.polygon,
         ...(appearances.polygon ?? {}),
       },
+      "3dtiles": {
+        selectedFeatureColor,
+        ...(appearances["3dtiles"] ?? {}),
+      },
     }),
-    [appearances],
+    [appearances, selectedFeatureColor],
   );
 
   useEffect(() => {
