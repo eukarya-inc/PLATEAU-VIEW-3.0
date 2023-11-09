@@ -14,18 +14,16 @@ export interface LayerOpacityFieldProps {
 }
 
 export const LayerOpacityField: FC<LayerOpacityFieldProps> = ({ atoms }) => {
-  const wrappedAtoms: [WritableAtomForComponent<number>] = useMemo(
-    () => [
-      atom(
-        get => (atoms[0] ? get(atoms[0]).value ?? 1 : 1),
-        (get, set, update: number) => {
-          if (!atoms[0]) {
-            return;
-          }
-          set(atoms[0], { ...get(atoms[0]), value: update });
-        },
+  const wrappedAtoms: WritableAtomForComponent<number>[] = useMemo(
+    () =>
+      atoms.map(a =>
+        atom(
+          get => get(a).value ?? 1,
+          (get, set, update: number) => {
+            set(a, { ...get(a), value: update });
+          },
+        ),
       ),
-    ],
     [atoms],
   );
 
