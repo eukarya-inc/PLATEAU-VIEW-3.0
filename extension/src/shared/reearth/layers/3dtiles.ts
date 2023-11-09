@@ -1,7 +1,7 @@
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, useEffect, useRef } from "react";
 
 import { TileFeatureIndex } from "../../plateau";
-import { Cesium3DTilesAppearance, LayerAppearance } from "../types";
+import { BoxAppearance, Cesium3DTilesAppearance, LayerAppearance } from "../types";
 
 export const TILESET_FEATURE = "TILESET_FEATURE";
 
@@ -23,46 +23,19 @@ export type TilesetFeature<P> = {
 export type TilesetProps = {
   url: string;
   onLoad?: (layerId: string) => void;
-  color?: string;
-  enableShadow?: boolean;
-  show?: string | boolean;
   visible?: boolean;
-  selectedFeatureColor?: string;
-  textured?: boolean;
+  appearance: LayerAppearance<Cesium3DTilesAppearance>;
+  boxAppearance: LayerAppearance<BoxAppearance> | undefined;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({
   url,
   onLoad,
-  color,
-  enableShadow,
-  show,
   visible,
-  selectedFeatureColor,
-  textured,
+  appearance,
+  boxAppearance,
 }) => {
   const layerIdRef = useRef<string>();
-  const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
-    () => ({
-      pbr: textured,
-      ...(color
-        ? {
-            color: {
-              expression: color,
-            },
-          }
-        : {}),
-      show:
-        typeof show === "string"
-          ? {
-              expression: show,
-            }
-          : show,
-      shadows: enableShadow ? "enabled" : "disabled",
-      selectedFeatureColor,
-    }),
-    [color, enableShadow, show, selectedFeatureColor, textured],
-  );
 
   useEffect(() => {
     const layerId = window.reearth?.layers?.add?.({
@@ -73,6 +46,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
         url,
       },
       "3dtiles": appearance,
+      box: boxAppearance,
     });
 
     layerIdRef.current = layerId;
@@ -95,8 +69,9 @@ export const TilesetLayer: FC<TilesetProps> = ({
       },
       visible,
       ["3dtiles"]: appearance,
+      box: boxAppearance,
     });
-  }, [appearance, visible, url]);
+  }, [appearance, visible, url, boxAppearance]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;

@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 
 import { ColorMap } from "../../prototypes/color-maps";
 import {
@@ -11,13 +11,16 @@ import { ViewLayerModel } from "../../prototypes/view-layers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
-import { TilesetBuildingModelColorField } from "../types/fieldComponents/3dtiles";
-import { OpacityField } from "../types/fieldComponents/general";
-import { WritableAtomForComponent } from "../view-layers/component";
+import { Cesium3DTilesAppearance, LayerAppearance } from "../reearth/types";
+import { TILESET_BUILDING_MODEL_COLOR, TILESET_CLIPPING } from "../types/fieldComponents/3dtiles";
+import { OPACITY_FIELD } from "../types/fieldComponents/general";
+import { ComponentAtom } from "../view-layers/component";
+import { useFindComponent } from "../view-layers/hooks";
 
+import { useClippingBox } from "./hooks/useClippingBox";
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
 
-type TilesetContainerProps = TilesetProps & {
+type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> & {
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
@@ -25,10 +28,11 @@ type TilesetContainerProps = TilesetProps & {
   colorMapAtom: PrimitiveAtom<ColorMap>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
-  opacityAtom?: WritableAtomForComponent<OpacityField>;
-  buildingModelColorAtom?: WritableAtomForComponent<TilesetBuildingModelColorField>;
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
+  textured?: boolean;
+  show?: boolean;
+  componentAtoms: ComponentAtom[];
 };
 
 export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
@@ -38,10 +42,11 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   propertiesAtom,
   colorPropertyAtom,
   colorSchemeAtom,
-  opacityAtom,
-  buildingModelColorAtom,
+  componentAtoms,
   selections,
   hidden,
+  textured,
+  show,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -102,6 +107,14 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
 
   const colorProperty = useAtomValue(colorPropertyAtom);
   const colorScheme = useAtomValue(colorSchemeAtom);
+
+  // Field components
+  const opacityAtom = useFindComponent(componentAtoms, OPACITY_FIELD);
+  const buildingModelColorAtom = useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_COLOR);
+  const [clippingBox, boxAppearance] = useClippingBox(
+    useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
+  );
+
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
@@ -112,14 +125,38 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
 
   const theme = useTheme();
 
+  const enableShadow = !opacity || opacity.value === 1;
+
+  const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
+    () => ({
+      pbr: textured,
+      ...(color
+        ? {
+            color: {
+              expression: color,
+            },
+          }
+        : {}),
+      show:
+        typeof show === "string"
+          ? {
+              expression: show,
+            }
+          : show,
+      shadows: enableShadow ? "enabled" : "disabled",
+      selectedFeatureColor: theme.palette.primary.main,
+      experimental_clipping: clippingBox,
+    }),
+    [color, enableShadow, show, textured, theme.palette.primary.main, clippingBox],
+  );
+
   return (
     <TilesetLayer
       {...props}
       onLoad={handleLoad}
-      color={color}
-      enableShadow={!opacity || opacity.value === 1}
+      appearance={appearance}
+      boxAppearance={boxAppearance}
       visible={!hidden}
-      selectedFeatureColor={theme.palette.primary.main}
     />
   );
 };
