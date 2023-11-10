@@ -114,4 +114,10 @@ export const fieldSettings: {
     },
     hasLayerUI: true,
   },
+  TILESET_BUILDING_MODEL_FILTER: {
+    value: {
+      filters: {},
+    },
+    hasLayerUI: true,
+  },
 };

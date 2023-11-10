@@ -34,8 +34,20 @@ export type TilesetClippingField = FieldBase<{
   };
 }>;
 
+export const TILESET_BUILDING_MODEL_FILTER = "TILESET_BUILDING_MODEL_FILTER";
+export type TilesetBuildingModelFilterField = FieldBase<{
+  type: typeof TILESET_BUILDING_MODEL_FILTER;
+  value: {
+    filters: Record<
+      string,
+      { value: [min: number, max: number]; range: [min: number, max: number] }
+    >;
+  };
+}>;
+
 export type TilesetFields =
   | TilesetBuildingModelColorField
   | TilesetFillColorConditionField
   | TilesetFillGradientColorField
-  | TilesetClippingField;
+  | TilesetClippingField
+  | TilesetBuildingModelFilterField;
