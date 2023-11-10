@@ -20,6 +20,7 @@ import {
   POINT_SIZE_FIELD,
   POINT_STYLE_FIELD,
   POINT_VISIBILITY_FILTER_FIELD,
+  POINT_USE_IMAGE_VALUE_FIELD,
 } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -29,15 +30,19 @@ import { useClippingBox } from "./useClippingBox";
 const DEFAULT_COLOR = "#ffffff";
 
 export const makeSimpleValue = (
-  comp: Component<typeof POINT_FILL_COLOR_VALUE_FIELD> | undefined,
+  comp:
+    | Component<typeof POINT_FILL_COLOR_VALUE_FIELD | typeof POINT_USE_IMAGE_VALUE_FIELD>
+    | undefined,
 ): string | undefined => {
   if (!comp) return;
 
   switch (comp.type) {
     case POINT_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
-    default:
+    case POINT_USE_IMAGE_VALUE_FIELD:
       return comp.preset?.defaultValue;
+    default:
+      return undefined;
   }
 };
 
@@ -178,6 +183,9 @@ export const useEvaluateGeneralAppearance = ({
   const pointVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_VISIBILITY_FILTER_FIELD),
   );
+  const pointImageValue = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_USE_IMAGE_VALUE_FIELD),
+  );
 
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
@@ -208,6 +216,7 @@ export const useEvaluateGeneralAppearance = ({
             makeConditionalExpression(pointFillColorCondition) ??
             makeGradientExpression(pointFillGradientColor),
           pointSize: pointSize?.value,
+          image: makeSimpleValue(pointImageValue),
           show: makeVisibilityFilterExpression(pointVisibilityFilter),
         },
         "3dtiles": {
@@ -227,6 +236,7 @@ export const useEvaluateGeneralAppearance = ({
       pointFillGradientColor,
       pointStyle?.preset?.style,
       pointVisibilityFilter,
+      pointImageValue,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

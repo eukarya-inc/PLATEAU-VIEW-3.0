@@ -77,6 +77,10 @@ export const fieldSettings: {
     defaultValue: "",
     hasLayerUI: true,
   },
+  POINT_USE_IMAGE_VALUE_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {

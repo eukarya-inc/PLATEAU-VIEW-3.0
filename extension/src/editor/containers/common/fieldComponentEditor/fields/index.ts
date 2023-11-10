@@ -16,6 +16,7 @@ import {
   FIELD_CATEGORY_POINT,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
+  FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
 } from "./constants";
@@ -28,6 +29,7 @@ import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorG
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
@@ -84,6 +86,12 @@ export const fields: {
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Gradient",
     Component: EditorPointFillColorGradientField,
+  },
+  POINT_USE_IMAGE_VALUE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Value",
+    Component: EditorPointUseImageValueField,
   },
   POINT_STYLE_FIELD: {
     category: FIELD_CATEGORY_POINT,

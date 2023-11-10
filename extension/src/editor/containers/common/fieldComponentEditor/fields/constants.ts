@@ -6,6 +6,7 @@ export const FIELD_CATEGORY_THREE_D_TILES = "3d tiles";
 
 export const FIELD_GROUP_POINT_FILL_COLOR = "Fill Color";
 export const FIELD_GROUP_POINT_VISIBILITY = "Visibility";
+export const FIELD_GROUP_POINT_USE_IMAGE = "Use Image";
 
 export const FIELD_GROUP_POLYLINE_FILL_COLOR = "Fill Color";
 export const FIELD_GROUP_POLYLINE_VISIBILITY = "Visibility";
