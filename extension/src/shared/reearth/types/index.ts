@@ -5,3 +5,4 @@ export * from "./reearth";
 export * from "./scene";
 export * from "./appearance";
 export * from "./layerEvent";
+export * from "./expression";

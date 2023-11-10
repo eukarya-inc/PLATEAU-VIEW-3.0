@@ -8,6 +8,7 @@ import {
 } from "../../../../../shared/types/fieldComponents/point";
 
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
+import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFillColorConditionField";
 import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
@@ -124,6 +125,11 @@ export const fields: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     name: "Clipping",
     Component: EditorTilesetClippingField,
+  },
+  TILESET_BUILDING_MODEL_FILTER: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    name: "Filter(Building model)",
+    Component: EditorTilesetBuildingModelFilterField,
   },
 };
 

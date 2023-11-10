@@ -12,12 +12,17 @@ import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
 import { Cesium3DTilesAppearance, LayerAppearance } from "../reearth/types";
-import { TILESET_BUILDING_MODEL_COLOR, TILESET_CLIPPING } from "../types/fieldComponents/3dtiles";
+import {
+  TILESET_BUILDING_MODEL_COLOR,
+  TILESET_BUILDING_MODEL_FILTER,
+  TILESET_CLIPPING,
+} from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { ComponentAtom } from "../view-layers/component";
 import { useFindComponent } from "../view-layers/hooks";
 
 import { useClippingBox } from "./hooks/useClippingBox";
+import { useEvaluateBuildingModelFilter } from "./hooks/useEvaluateBuildingModelFilter";
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
 
 type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> & {
@@ -31,7 +36,6 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
   textured?: boolean;
-  show?: boolean;
   componentAtoms: ComponentAtom[];
 };
 
@@ -46,7 +50,6 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   selections,
   hidden,
   textured,
-  show,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -114,6 +117,9 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
   );
+  const filter = useEvaluateBuildingModelFilter(
+    useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
+  );
 
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
@@ -137,17 +143,12 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
             },
           }
         : {}),
-      show:
-        typeof show === "string"
-          ? {
-              expression: show,
-            }
-          : show,
+      show: filter,
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
     }),
-    [color, enableShadow, show, textured, theme.palette.primary.main, clippingBox],
+    [color, enableShadow, textured, theme.palette.primary.main, clippingBox, filter],
   );
 
   return (
