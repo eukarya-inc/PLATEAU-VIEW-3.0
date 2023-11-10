@@ -9,3 +9,4 @@ export * from "./PropertyWrapper";
 export * from "./PropertyInfo";
 export * from "./PropertyColorField";
 export * from "./PropertyConditionField";
+export * from "./PropertyImageField";

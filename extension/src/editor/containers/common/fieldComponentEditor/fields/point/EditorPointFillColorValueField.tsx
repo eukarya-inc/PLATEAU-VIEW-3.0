@@ -87,7 +87,11 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => 
 
   return (
     <>
-      <PropertySwitch label="As Legend" value={preset.asLegend} onChange={handleAsLegendChange} />
+      <PropertySwitch
+        label="As Legend"
+        checked={!!preset.asLegend}
+        onChange={handleAsLegendChange}
+      />
       <PropertyInputField
         placeholder="Display Title"
         value={preset.legendName ?? ""}

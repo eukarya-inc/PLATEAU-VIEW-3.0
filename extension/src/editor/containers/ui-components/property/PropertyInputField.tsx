@@ -1,6 +1,6 @@
 import { styled, TextField, TextFieldProps, inputBaseClasses } from "@mui/material";
 
-type PropertyInputFieldProps = TextFieldProps;
+export type PropertyInputFieldProps = TextFieldProps;
 
 export const PropertyInputField: React.FC<PropertyInputFieldProps> = ({ ...props }) => {
   return <StyledTextField size="small" variant="outlined" fullWidth {...props} />;

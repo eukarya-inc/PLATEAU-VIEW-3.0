@@ -28,8 +28,10 @@ import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
+import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 
@@ -100,6 +102,17 @@ export const fields: {
     name: "Value",
     Component: EditorPointUseImageValueField,
   },
+  POINT_USE_IMAGE_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Condition",
+    Component: EditorPointUseImageConditionField,
+  },
+  POINT_IMAGE_SIZE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Image Size",
+    Component: EditorPointImageSizeField,
+  },
   POINT_STYLE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     name: "Style",
@@ -107,7 +120,7 @@ export const fields: {
   },
   POINT_SIZE_FIELD: {
     category: FIELD_CATEGORY_POINT,
-    name: "Size",
+    name: "Point Size",
     Component: EditorPointSizeField,
   },
   // 3dtiles

@@ -38,7 +38,7 @@ export type MarkerAppearance = {
   pointOutlineColor?: string;
   pointOutlineWidth?: number;
   image?: string;
-  imageSize?: number;
+  imageSize?: number | "__default__"; // "__default__" is for reset since override with undefined is not allowed
   imageSizeInMeters?: boolean;
   imageHorizontalOrigin?: "left" | "center" | "right";
   imageVerticalOrigin?: "top" | "center" | "baseline" | "bottom";
