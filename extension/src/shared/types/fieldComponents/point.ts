@@ -63,6 +63,13 @@ export type PointUseImageValueField = FieldBase<{
   preset?: PointUseImageValueFieldPreset;
 }>;
 
+export const POINT_USE_IMAGE_CONDITION_FIELD = "POINT_USE_IMAGE_CONDITION_FIELD";
+export type PointUseImageConditionField = FieldBase<{
+  type: typeof POINT_USE_IMAGE_CONDITION_FIELD;
+  value?: ConditionalColorSchemeValue;
+  preset?: PointUseImageConditionFieldPreset;
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField

@@ -4,6 +4,7 @@ import { BasicFieldProps } from "..";
 import {
   PropertyBox,
   PropertyCard,
+  PropertyInlineWrapper,
   PropertyInputField,
   PropertySwitch,
   PropertyWrapper,
@@ -64,11 +65,9 @@ const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
   );
 
   return (
-    <PropertyInputField
-      placeholder="Image URL"
-      value={preset.defaultValue ?? ""}
-      onChange={handleUrlChange}
-    />
+    <PropertyInlineWrapper label="Image URL">
+      <PropertyInputField value={preset.defaultValue ?? ""} onChange={handleUrlChange} />
+    </PropertyInlineWrapper>
   );
 };
 

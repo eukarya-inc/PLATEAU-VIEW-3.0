@@ -81,6 +81,17 @@ export const fieldSettings: {
     defaultValue: "",
     hasLegendUI: true,
   },
+  POINT_USE_IMAGE_CONDITION_FIELD: {
+    value: {
+      currentRuleId: undefined,
+      overrideRules: [],
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {
