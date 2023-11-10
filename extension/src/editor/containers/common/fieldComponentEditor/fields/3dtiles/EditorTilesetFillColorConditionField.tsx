@@ -9,12 +9,10 @@ import {
   PropertyInputField,
   PropertySwitch,
   PropertyWrapper,
-} from "../../../../ui-components";
-import { PropertyColorField } from "../../../../ui-components/property/PropertyColorField";
-import {
+  PropertyColorField,
   CommonCondition,
   PropertyConditionField,
-} from "../../../../ui-components/property/PropertyConditionField";
+} from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
 type TilesetFillColorConditionFieldPresetRule = {

@@ -7,3 +7,5 @@ export * from "./PropertySwitchField";
 export * from "./PropertyTextareaField";
 export * from "./PropertyWrapper";
 export * from "./PropertyInfo";
+export * from "./PropertyColorField";
+export * from "./PropertyConditionField";

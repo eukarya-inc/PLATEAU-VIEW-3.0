@@ -7,8 +7,8 @@ import {
   PropertyInputField,
   PropertySwitch,
   PropertyWrapper,
+  PropertyColorField,
 } from "../../../../ui-components";
-import { PropertyColorField } from "../../../../ui-components/property/PropertyColorField";
 
 export type PointFillColorValueFieldPreset = {
   defaultValue?: string;
