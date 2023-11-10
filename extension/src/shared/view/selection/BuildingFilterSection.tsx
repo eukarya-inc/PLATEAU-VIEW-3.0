@@ -2,32 +2,48 @@ import { SetStateAction, atom, useAtomValue } from "jotai";
 import { intersectionWith } from "lodash-es";
 import { useMemo, type FC, useState, useCallback } from "react";
 
-import { isNotNullish } from "../../../../prototypes/type-helpers";
+import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
   GroupedParameterItem,
   InspectorItem,
   ParameterList,
   SliderParameterItem,
-} from "../../../../prototypes/ui-components";
-import { BUILDING_LAYER } from "../../../../prototypes/view-layers";
-import { PlateauTilesetProperty } from "../../../plateau";
-import { BUILDING_MODEL_FILTER_RANGE } from "../../../plateau/constants";
-import { TilesetBuildingModelFilterField } from "../../../types/fieldComponents/3dtiles";
-import { BuildingLayerModel, LayerModel } from "../../../view-layers";
-import { WritableAtomForComponent } from "../../../view-layers/component";
+} from "../../../prototypes/ui-components";
+import { BUILDING_LAYER } from "../../../prototypes/view-layers";
+import { PlateauTilesetProperty } from "../../plateau";
+import { BUILDING_MODEL_FILTER_RANGE } from "../../plateau/constants";
+import {
+  TilesetBuildingModelFilterField,
+  TilesetFloodModelFilterField,
+} from "../../types/fieldComponents/3dtiles";
+import {
+  BuildingLayerModel,
+  FLOOD_LAYER_TYPES,
+  LayerModel,
+  FloodLayerModel,
+} from "../../view-layers";
+import { WritableAtomForComponent } from "../../view-layers/component";
 
-export interface LayerTilesetBuildingModelFilterFieldProps {
+export interface BuildingFilterSectionProps {
+  label: string;
   layers: readonly LayerModel[];
-  atoms: WritableAtomForComponent<TilesetBuildingModelFilterField>[];
+  atoms: WritableAtomForComponent<TilesetBuildingModelFilterField | TilesetFloodModelFilterField>[];
+  type: Exclude<PlateauTilesetProperty["type"], "unknown">;
 }
 
-type Poperty = Extract<PlateauTilesetProperty, { type: "number" }>;
+type Poperty = Extract<PlateauTilesetProperty, { type: "qualitative" | "number" }>;
 
-export const LayerTilesetBuildingModelFilterField: FC<
-  LayerTilesetBuildingModelFilterFieldProps
-> = ({ atoms, layers }) => {
+export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
+  label,
+  atoms,
+  layers,
+  type,
+}) => {
   const buildingLayers = useMemo(
-    () => layers.filter((l): l is BuildingLayerModel => l.type === BUILDING_LAYER),
+    () =>
+      layers.filter((l): l is BuildingLayerModel | FloodLayerModel =>
+        [BUILDING_LAYER, ...FLOOD_LAYER_TYPES].includes(l.type),
+      ),
     [layers],
   );
   const [recalcPropertyItems, setRecalcPropertyItems] = useState(0);
@@ -40,7 +56,7 @@ export const LayerTilesetBuildingModelFilterField: FC<
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property => {
-                      if (property.type !== "number") return;
+                      if (property.type !== type) return;
 
                       const minimum = Math.ceil(property.minimum);
                       const maximum = Math.ceil(property.maximum);
@@ -113,10 +129,8 @@ export const LayerTilesetBuildingModelFilterField: FC<
     setRecalcPropertyItems(p => p + 1);
   }, []);
 
-  if (!propertyItems.length) return null;
-
   return (
-    <GroupedParameterItem label="フィルター（建築物）" onClick={handleClickParameterItem}>
+    <GroupedParameterItem label={label} onClick={handleClickParameterItem}>
       <InspectorItem sx={{ width: 320 }}>
         <ParameterList>
           {propertyItems.map(([prop, name]) => (

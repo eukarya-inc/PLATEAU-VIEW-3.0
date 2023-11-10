@@ -12,6 +12,8 @@ import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBu
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFillColorConditionField";
 import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
+import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
+import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
@@ -19,6 +21,7 @@ import {
   FIELD_GROUP_POINT_FILL_COLOR,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+  FIELD_GROUP_THREE_D_TILES_FILTER,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -109,6 +112,12 @@ export const fields: {
     name: "Building model",
     Component: EditorTilesetBuildingModelColorField,
   },
+  TILESET_FLOOD_MODEL_COLOR: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Flood model",
+    Component: EditorTilesetFloodModelColorField,
+  },
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
@@ -128,8 +137,15 @@ export const fields: {
   },
   TILESET_BUILDING_MODEL_FILTER: {
     category: FIELD_CATEGORY_THREE_D_TILES,
-    name: "Filter(Building model)",
+    group: FIELD_GROUP_THREE_D_TILES_FILTER,
+    name: "Building model",
     Component: EditorTilesetBuildingModelFilterField,
+  },
+  TILESET_FLOOD_MODEL_FILTER: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILTER,
+    name: "Flood model",
+    Component: EditorTilesetFloodModelFilterField,
   },
 };
 

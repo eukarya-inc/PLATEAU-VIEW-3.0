@@ -5,7 +5,8 @@ import { useCallback, useMemo, type FC, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { PlateauTilesetProperty } from "../../../shared/plateau";
-import { BuildingLayerModel } from "../../../shared/view-layers";
+import { BuildingLayerModel, FLOOD_LAYER_TYPES } from "../../../shared/view-layers";
+import { FloodLayerModel } from "../../../shared/view-layers/plateau-3dtiles/FloodLayer";
 import { type LayerModel } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
 import {
@@ -32,7 +33,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 const Legend: FC<{
-  layers: readonly BuildingLayerModel[];
+  layers: readonly (BuildingLayerModel | FloodLayerModel)[];
 }> = ({ layers }) => {
   const colorScheme = useAtomValue(
     useMemo(
@@ -163,7 +164,10 @@ export interface BuildingLayerColorSectionProps {
 // TODO: Handle as component
 export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ layers }) => {
   const buildingLayers = useMemo(
-    () => layers.filter((l): l is BuildingLayerModel => l.type === BUILDING_LAYER),
+    () =>
+      layers.filter((l): l is BuildingLayerModel | FloodLayerModel =>
+        [BUILDING_LAYER, ...FLOOD_LAYER_TYPES].includes(l.type),
+      ),
     [layers],
   );
   const [recalcPropertyItems, setRecalcPropertyItems] = useState(0);

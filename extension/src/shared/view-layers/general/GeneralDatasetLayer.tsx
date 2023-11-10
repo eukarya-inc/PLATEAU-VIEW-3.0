@@ -1,4 +1,4 @@
-import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, atom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo } from "react";
 
 import type { LayerProps } from "../../../prototypes/layers";
@@ -15,16 +15,14 @@ import { GENERAL_FORMAT } from "./format";
 import { GeneralLayerType } from "./types";
 
 export interface GeneralLayerModelParams extends LayerModelParams {
-  municipalityCode: string;
   title: string;
-  version?: string;
+  municipalityCode: string;
   type: GeneralLayerType;
 }
 
 export interface GeneralLayerModel extends LayerModel {
   municipalityCode: string;
   title: string;
-  versionAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
 }
 
@@ -36,7 +34,6 @@ export function createGeneralDatasetLayer(
     type: params.type,
     municipalityCode: params.municipalityCode,
     title: params.title,
-    versionAtom: atom(params.version ?? null),
     propertiesAtom: atom<Properties | null>(null),
   };
 }
@@ -50,15 +47,12 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
   titleAtom,
   hiddenAtom,
   layerIdAtom,
-  versionAtom,
   selections,
   propertiesAtom,
   componentAtoms,
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
-
-  const [_version, _setVersion] = useAtom(versionAtom);
 
   const setLayerId = useSetAtom(layerIdAtom);
   const handleLoad = useCallback(

@@ -2,10 +2,13 @@ import { isEqual } from "lodash-es";
 
 import { defaultConditionalNumber } from "../../helpers";
 import { ExpressionContainer } from "../../reearth/types";
-import { TilesetBuildingModelFilterField } from "../../types/fieldComponents/3dtiles";
+import {
+  TilesetBuildingModelFilterField,
+  TilesetFloodModelFilterField,
+} from "../../types/fieldComponents/3dtiles";
 
-export const useEvaluateBuildingModelFilter = (
-  component: TilesetBuildingModelFilterField | undefined,
+export const useEvaluateFilter = (
+  component: TilesetBuildingModelFilterField | TilesetFloodModelFilterField | undefined,
 ): ExpressionContainer => {
   const { filters } = component?.value || {};
 

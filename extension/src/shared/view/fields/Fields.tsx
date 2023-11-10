@@ -10,6 +10,8 @@ import {
   TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
+  TILESET_FLOOD_MODEL_COLOR,
+  TILESET_FLOOD_MODEL_FILTER,
 } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
@@ -19,8 +21,8 @@ import {
 } from "../../types/fieldComponents/point";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
+import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 
-import { LayerTilesetBuildingModelFilterField } from "./3dtiles/LayerTilesetBuildingModelFilterField";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
@@ -72,7 +74,8 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
       break;
     }
     // Tileset
-    case TILESET_BUILDING_MODEL_COLOR: {
+    case TILESET_BUILDING_MODEL_COLOR:
+    case TILESET_FLOOD_MODEL_COLOR: {
       component = <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
       break;
     }
@@ -105,9 +108,30 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     }
     case TILESET_BUILDING_MODEL_FILTER: {
       component = (
-        <LayerTilesetBuildingModelFilterField
+        <BuildingFilterSection
+          type="number"
+          label="フィルター（建物モデル）"
           layers={layers}
-          atoms={atoms as ComponentAtom<"TILESET_BUILDING_MODEL_FILTER">["atom"][]}
+          atoms={
+            atoms as ComponentAtom<
+              "TILESET_BUILDING_MODEL_FILTER" | "TILESET_FLOOD_MODEL_FILTER"
+            >["atom"][]
+          }
+        />
+      );
+      break;
+    }
+    case TILESET_FLOOD_MODEL_FILTER: {
+      component = (
+        <BuildingFilterSection
+          type="qualitative"
+          label="フィルター（浸水想定区域）"
+          layers={layers}
+          atoms={
+            atoms as ComponentAtom<
+              "TILESET_BUILDING_MODEL_FILTER" | "TILESET_FLOOD_MODEL_FILTER"
+            >["atom"][]
+          }
         />
       );
       break;
