@@ -1,22 +1,25 @@
-import { styled } from "@mui/material";
-
-type PropertyPlaceHolderProps = {
-  children?: React.ReactNode;
-};
+import { PropertyPlaceHolder } from "./PropertyPlaceHolder";
+import { PropertyBox, PropertyWrapper } from "./PropertyWrapper";
 
 export const NO_SETTINGS_FOR_THIS_COMPONNET = "No custom settings for this component";
+export const FIELD_COMPONENT_NOT_FOUND = "Field component not found";
 
-export const PropertyPlaceHolder: React.FC<PropertyPlaceHolderProps> = ({ children }) => {
-  return <Wrapper>{children}</Wrapper>;
+export const PropertyNoSettings: React.FC = () => {
+  return (
+    <PropertyWrapper>
+      <PropertyBox>
+        <PropertyPlaceHolder>{NO_SETTINGS_FOR_THIS_COMPONNET}</PropertyPlaceHolder>
+      </PropertyBox>
+    </PropertyWrapper>
+  );
 };
 
-const Wrapper = styled("div")(({ theme }) => ({
-  width: "100%",
-  minHeight: "40px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: theme.spacing(1),
-  textAlign: "center",
-  color: theme.palette.text.secondary,
-}));
+export const FieldComponentNotFound: React.FC = () => {
+  return (
+    <PropertyWrapper>
+      <PropertyBox>
+        <PropertyPlaceHolder>{FIELD_COMPONENT_NOT_FOUND}</PropertyPlaceHolder>
+      </PropertyBox>
+    </PropertyWrapper>
+  );
+};

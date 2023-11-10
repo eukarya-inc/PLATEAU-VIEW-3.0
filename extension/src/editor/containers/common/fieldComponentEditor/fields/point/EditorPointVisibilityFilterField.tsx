@@ -7,11 +7,13 @@ import {
   PropertyButton,
   PropertyCard,
   PropertyInputField,
-  PropertyLineWrapper,
-  PropertySelectField,
   PropertySwitch,
   PropertyWrapper,
 } from "../../../../ui-components";
+import {
+  CommonCondition,
+  PropertyConditionField,
+} from "../../../../ui-components/property/PropertyConditionField";
 import { generateID } from "../../../../utils";
 
 type PointVisibilityFilterFieldPresetRule = {
@@ -305,54 +307,17 @@ type ConditionPanelProps = {
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {
-  const handleOperationChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConditionChange = useCallback(
+    (newCondition: CommonCondition) => {
       onConditionUpdate({
         ...condition,
-        operation: e.target.value as PointVisibilityFilterFieldPresetRuleCondition["operation"],
+        ...newCondition,
       });
     },
     [condition, onConditionUpdate],
   );
 
-  const handleValueChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onConditionUpdate({
-        ...condition,
-        value: e.target.value,
-      });
-    },
-    [condition, onConditionUpdate],
-  );
-
-  const operationOptions = useMemo(
-    () => [
-      { value: ">", label: ">" },
-      { value: "<", label: "<" },
-      { value: ">=", label: ">=" },
-      { value: "<=", label: "<=" },
-      { value: "===", label: "=" },
-      { value: "!==", label: "!=" },
-    ],
-    [],
-  );
-
-  return (
-    <PropertyLineWrapper>
-      <PropertySelectField
-        placeholder="Operation"
-        sx={{ width: "80px" }}
-        options={operationOptions}
-        value={condition.operation ?? ""}
-        onChange={handleOperationChange}
-      />
-      <PropertyInputField
-        placeholder="Value"
-        value={condition.value ?? ""}
-        onChange={handleValueChange}
-      />
-    </PropertyLineWrapper>
-  );
+  return <PropertyConditionField condition={condition} onConditionChange={handleConditionChange} />;
 };
 
 const ConditionLegendPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {

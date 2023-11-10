@@ -8,6 +8,7 @@ import {
   PropertySwitch,
   PropertyWrapper,
 } from "../../../../ui-components";
+import { PropertyColorField } from "../../../../ui-components/property/PropertyColorField";
 
 export type PointFillColorValueFieldPreset = {
   defaultValue?: string;
@@ -54,22 +55,16 @@ type RulePanelProps = {
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
   const handleColorChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (color: string) => {
       onRuleUpdate({
         ...preset,
-        defaultValue: e.target.value,
+        defaultValue: color,
       });
     },
     [preset, onRuleUpdate],
   );
 
-  return (
-    <PropertyInputField
-      placeholder="#FFFFFF"
-      value={preset.defaultValue ?? ""}
-      onChange={handleColorChange}
-    />
-  );
+  return <PropertyColorField value={preset.defaultValue} onChange={handleColorChange} />;
 };
 
 const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {

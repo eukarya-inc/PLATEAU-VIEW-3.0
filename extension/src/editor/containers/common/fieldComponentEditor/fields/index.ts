@@ -67,6 +67,12 @@ export const fields: {
     Component: EditorStyleCodeField,
   },
   // point
+  POINT_VISIBILITY_FILTER_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_VISIBILITY,
+    name: "Filter",
+    Component: EditorPointVisibilityFilterField,
+  },
   POINT_FILL_COLOR_VALUE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
@@ -94,12 +100,6 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Size",
     Component: EditorPointSizeField,
-  },
-  POINT_VISIBILITY_FILTER_FIELD: {
-    category: FIELD_CATEGORY_POINT,
-    group: FIELD_GROUP_POINT_VISIBILITY,
-    name: "Filter",
-    Component: EditorPointVisibilityFilterField,
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {
