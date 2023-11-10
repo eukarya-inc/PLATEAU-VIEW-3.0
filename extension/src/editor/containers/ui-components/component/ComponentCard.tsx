@@ -7,6 +7,7 @@ type ComponentCardProps = {
   title: string;
   moreButtonRef?: React.RefObject<HTMLButtonElement>;
   highlight?: boolean;
+  error?: boolean;
   onMoreClick?: () => void;
   children?: React.ReactNode;
 };
@@ -15,6 +16,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
   title,
   moreButtonRef,
   highlight,
+  error,
   onMoreClick,
   children,
 }) => {
@@ -34,7 +36,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
 
   return (
     <StyledPaper highlight={highlight ? 1 : 0}>
-      <TitleBar onClick={handleTitleClick}>
+      <TitleBar onClick={handleTitleClick} error={error ? 1 : 0}>
         <ComponentTitle>
           <StyledIcon expanded={expanded ? 1 : 0} />
           {title}
@@ -58,13 +60,14 @@ const StyledPaper = styled(Paper)<{ highlight?: number }>(({ theme, highlight })
   overflow: "hidden",
 }));
 
-const TitleBar = styled("div")(() => ({
+const TitleBar = styled("div")<{ error?: number }>(({ theme, error }) => ({
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
   cursor: "pointer",
   height: "30px",
   userSelect: "none",
+  color: error ? theme.palette.error.main : "inherit",
 }));
 
 const ComponentTitle = styled("div")(({ theme }) => ({
@@ -74,13 +77,16 @@ const ComponentTitle = styled("div")(({ theme }) => ({
   gap: "2px",
 }));
 
-const StyledIcon = styled(ArrowRightIcon)<{ expanded: number }>(({ expanded }) => ({
-  display: "flex",
-  alignItems: "center",
-  width: "18px",
-  transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
-  transition: "transform 0.2s ease-in-out",
-}));
+const StyledIcon = styled(ArrowRightIcon)<{ expanded: number; error?: number }>(
+  ({ theme, expanded, error }) => ({
+    display: "flex",
+    alignItems: "center",
+    width: "18px",
+    transform: expanded ? "rotate(90deg)" : "rotate(0deg)",
+    transition: "transform 0.2s ease-in-out",
+    color: error ? theme.palette.error.main : "inherit",
+  }),
+);
 
 const StyledCollapse = styled(Collapse)(({ theme }) => ({
   backgroundColor: theme.palette.grey[100],

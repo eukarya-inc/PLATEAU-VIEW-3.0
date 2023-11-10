@@ -6,6 +6,7 @@ import {
   EditorPopper,
   EditorPopperList,
   EditorPopperListItemButton,
+  FieldComponentNotFound,
 } from "../../ui-components";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
@@ -36,13 +37,17 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
   );
   const title = useMemo(
     () =>
-      fields[component.type].group
-        ? `${fields[component.type].category} / ${fields[component.type].group} / ${
-            fields[component.type].name
-          }`
-        : `${fields[component.type].category} / ${fields[component.type].name}`,
+      fields[component.type]
+        ? fields[component.type].group
+          ? `${fields[component.type].category} / ${fields[component.type].group} / ${
+              fields[component.type].name
+            }`
+          : `${fields[component.type].category} / ${fields[component.type].name}`
+        : component.type,
     [component.type],
   );
+
+  const componentNotFound = useMemo(() => !fields[component.type], [component.type]);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -75,14 +80,19 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
     [movingComponentId, component.id],
   );
 
-  return FieldComponent ? (
+  return (
     <EditorClickAwayListener onClickAway={handleClickAway}>
       <ComponentCard
         title={title}
         moreButtonRef={anchorRef}
+        error={componentNotFound}
         onMoreClick={handleMoreClick}
         highlight={moving}>
-        <FieldComponent component={component} onUpdate={onComponentUpdate} />
+        {componentNotFound ? (
+          <FieldComponentNotFound />
+        ) : (
+          <FieldComponent component={component} onUpdate={onComponentUpdate} />
+        )}
       </ComponentCard>
       <EditorPopper
         open={menuOpen}
@@ -101,5 +111,5 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
         </EditorPopperList>
       </EditorPopper>
     </EditorClickAwayListener>
-  ) : null;
+  );
 };

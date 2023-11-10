@@ -7,10 +7,11 @@ import {
   PropertyButton,
   PropertyCard,
   PropertyInputField,
-  PropertyLineWrapper,
-  PropertySelectField,
   PropertySwitch,
   PropertyWrapper,
+  PropertyColorField,
+  CommonCondition,
+  PropertyConditionField,
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
@@ -306,70 +307,30 @@ type ConditionPanelProps = {
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {
-  const handleOperationChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConditionChange = useCallback(
+    (newCondition: CommonCondition) => {
       onConditionUpdate({
         ...condition,
-        operation: e.target.value as PointFillColorConditionFieldPresetRuleCondition["operation"],
-      });
-    },
-    [condition, onConditionUpdate],
-  );
-
-  const handleValueChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onConditionUpdate({
-        ...condition,
-        value: e.target.value,
+        ...newCondition,
       });
     },
     [condition, onConditionUpdate],
   );
 
   const handleColorChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (color: string) => {
       onConditionUpdate({
         ...condition,
-        color: e.target.value,
+        color,
       });
     },
     [condition, onConditionUpdate],
   );
 
-  const operationOptions = useMemo(
-    () => [
-      { value: ">", label: ">" },
-      { value: "<", label: "<" },
-      { value: ">=", label: ">=" },
-      { value: "<=", label: "<=" },
-      { value: "===", label: "=" },
-      { value: "!==", label: "!=" },
-    ],
-    [],
-  );
-
   return (
     <>
-      <PropertyLineWrapper>
-        IF
-        <PropertySelectField
-          placeholder="Operation"
-          sx={{ width: "80px" }}
-          options={operationOptions}
-          value={condition.operation ?? ""}
-          onChange={handleOperationChange}
-        />
-        <PropertyInputField
-          placeholder="Value"
-          value={condition.value ?? ""}
-          onChange={handleValueChange}
-        />
-      </PropertyLineWrapper>
-      <PropertyInputField
-        placeholder="#FFFFFF"
-        value={condition.color ?? ""}
-        onChange={handleColorChange}
-      />
+      <PropertyConditionField condition={condition} onConditionChange={handleConditionChange} />
+      <PropertyColorField value={condition.color} onChange={handleColorChange} />
     </>
   );
 };

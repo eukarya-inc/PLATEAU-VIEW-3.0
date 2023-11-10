@@ -52,7 +52,7 @@ export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({
   const existFieldGroups = useMemo(() => {
     const groups: string[] = [];
     currentGroup?.components.forEach(component => {
-      const group = fields[component.type].group;
+      const group = fields[component.type]?.group;
       if (group && !groups.includes(group)) {
         groups.push(group);
       }

@@ -6,6 +6,7 @@ import { InspectorItem } from "../../../prototypes/ui-components";
 import { BuildingLayerColorSection } from "../../../prototypes/view/selection/BuildingLayerColorSection";
 import {
   TILESET_BUILDING_MODEL_COLOR,
+  TILESET_BUILDING_MODEL_FILTER,
   TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
@@ -19,6 +20,7 @@ import {
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 
+import { LayerTilesetBuildingModelFilterField } from "./3dtiles/LayerTilesetBuildingModelFilterField";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
@@ -97,6 +99,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerTilesetClippingField
           layers={layers}
           atoms={atoms as ComponentAtom<"TILESET_CLIPPING">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TILESET_BUILDING_MODEL_FILTER: {
+      component = (
+        <LayerTilesetBuildingModelFilterField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_BUILDING_MODEL_FILTER">["atom"][]}
         />
       );
       break;
