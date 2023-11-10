@@ -111,6 +111,7 @@ const createViewLayerWithComponentGroup = (
   type: LayerType,
   title: string,
   setting: Setting | undefined,
+  template: ComponentTemplate | undefined,
   data: DatasetItem | undefined,
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
@@ -136,7 +137,7 @@ const createViewLayerWithComponentGroup = (
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
-    componentGroups: setting?.fieldComponents?.groups?.map(
+    componentGroups: (template ?? setting?.fieldComponents)?.groups?.map(
       g => [g.id, g.name] as [id: string, name: string],
     ),
   };
@@ -170,6 +171,7 @@ const createRootLayer = ({
         type,
         title,
         setting,
+        template,
         data,
         componentGroup,
         shareId,
@@ -275,6 +277,7 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
           params.type,
           params.title,
           setting,
+          template,
           data,
           group,
           params.shareId,
