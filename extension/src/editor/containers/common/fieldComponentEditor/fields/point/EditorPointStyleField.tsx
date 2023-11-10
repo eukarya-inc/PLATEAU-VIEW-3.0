@@ -42,7 +42,7 @@ export const EditorPointStyleField: React.FC<BasicFieldProps<"POINT_STYLE_FIELD"
         <PropertyInlineWrapper label="Style">
           <PropertySelectField
             options={pointStyleOptions}
-            value={component.preset?.style}
+            value={component.preset?.style ?? ""}
             onChange={handleStyleChange}
           />
         </PropertyInlineWrapper>
