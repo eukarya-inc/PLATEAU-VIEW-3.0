@@ -12,6 +12,7 @@ import {
   PropertyConditionField,
   PropertyImageField,
   type CommonCondition,
+  PropertyColorField,
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
@@ -27,6 +28,7 @@ type PointUseImageConditionFieldPresetRuleCondition = {
   operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
   value?: string;
   imageURL?: string;
+  imageColor?: string;
   asLegend?: boolean;
   legendName?: string;
 };
@@ -317,7 +319,7 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
     [condition, onConditionUpdate],
   );
 
-  const handleUrlChange = useCallback(
+  const handleImageUrlChange = useCallback(
     (imageURL: string) => {
       onConditionUpdate({
         ...condition,
@@ -327,10 +329,21 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
     [condition, onConditionUpdate],
   );
 
+  const handleImageColorChange = useCallback(
+    (imageColor: string) => {
+      onConditionUpdate({
+        ...condition,
+        imageColor,
+      });
+    },
+    [condition, onConditionUpdate],
+  );
+
   return (
     <>
       <PropertyConditionField condition={condition} onConditionChange={handleConditionChange} />
-      <PropertyImageField value={condition.imageURL} onChange={handleUrlChange} />
+      <PropertyImageField value={condition.imageURL} onChange={handleImageUrlChange} />
+      <PropertyColorField value={condition.imageColor} onChange={handleImageColorChange} />
     </>
   );
 };

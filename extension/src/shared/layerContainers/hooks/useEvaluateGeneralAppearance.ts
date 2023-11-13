@@ -167,7 +167,6 @@ export const makeConditionalImageExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
-  console.log(comp.preset?.rules);
   return {
     expression: {
       conditions: [
@@ -190,7 +189,44 @@ export const makeConditionalImageExpression = (
               return rule.propertyName && cond.value && imageURLValue
                 ? ([
                     numberCondition ? `${numberCondition} || ${stringCondition}` : stringCondition,
-                    imageURLValue,
+                    `"${imageURLValue}"`,
+                  ] as [string, string])
+                : undefined;
+            });
+          }) ?? []
+        ).filter(isNotNullish),
+      ],
+    },
+  };
+};
+
+export const makeConditionalImageColorExpression = (
+  comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
+): ExpressionContainer | undefined => {
+  if (!comp) return;
+  return {
+    expression: {
+      conditions: [
+        ...(
+          comp.preset?.rules?.flatMap(rule => {
+            if (rule.id !== comp.value?.currentRuleId) return;
+            const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
+            return rule.conditions?.map(cond => {
+              const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
+              const imageColorValue = overriddenCondition?.imageColor || cond.imageColor;
+              if (!rule.propertyName || !cond.value || !imageColorValue) return;
+              const stringCondition = `${variable(rule.propertyName)} ${cond.operation} ${string(
+                cond.value,
+              )}`;
+              const numberCondition = !isNaN(Number(cond.value))
+                ? `${defaultConditionalNumber(rule.propertyName)} ${cond.operation} ${number(
+                    Number(cond.value),
+                  )}`
+                : undefined;
+              return rule.propertyName && cond.value && imageColorValue
+                ? ([
+                    numberCondition ? `${numberCondition} || ${stringCondition}` : stringCondition,
+                    `color("${imageColorValue}")`,
                   ] as [string, string])
                 : undefined;
             });
@@ -264,6 +300,7 @@ export const useEvaluateGeneralAppearance = ({
           pointSize: pointSize?.value,
           image:
             makeSimpleValue(pointImageValue) ?? makeConditionalImageExpression(pointImageCondition),
+          imageColor: makeConditionalImageColorExpression(pointImageCondition),
           imageSize: pointImageSize?.preset?.defaultValue ?? "__default__",
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters ?? false,
           show: makeVisibilityFilterExpression(pointVisibilityFilter),

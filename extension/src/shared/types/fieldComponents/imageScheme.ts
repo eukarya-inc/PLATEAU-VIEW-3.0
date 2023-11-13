@@ -6,5 +6,6 @@ export type ConditionalImageSchemeValue = {
     ruleId: string;
     conditionId: string;
     imageURL: string;
+    imageColor: string;
   }[];
 };
