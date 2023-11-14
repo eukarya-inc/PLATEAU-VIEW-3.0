@@ -9,9 +9,11 @@ import {
   type ComponentType,
   type MouseEvent,
   useMemo,
+  useRef,
 } from "react";
 import { mergeRefs } from "react-merge-refs";
 
+import { MULTIPLE_SELECTABLE_TYPES } from "../../shared/view/hooks";
 import { makeColorSchemeAtomForComponent } from "../../shared/view/state/colorSchemeForComponent";
 import { makeImageSchemeAtomForComponent } from "../../shared/view/state/imageSchemaForComponent";
 
@@ -36,17 +38,25 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
 
     const [selection, setSelection] = useAtom(layerSelectionAtom);
     const addSelection = useSetAtom(addLayerSelectionAtom);
+    const selectionRef = useRef(selection);
+    selectionRef.current = selection;
     const handleMouseDown = useCallback(
       (event: MouseEvent) => {
         event.stopPropagation();
-        if (event.shiftKey) {
+        const newSelection = { id: layer.id, type: layer.type } as const;
+        if (
+          event.shiftKey &&
+          [...selectionRef.current, newSelection].every(s =>
+            MULTIPLE_SELECTABLE_TYPES.includes(s.type),
+          )
+        ) {
           // TODO: Toggle selection
-          addSelection([layer.id]);
+          addSelection([newSelection]);
         } else {
-          setSelection([layer.id]);
+          setSelection([newSelection]);
         }
       },
-      [layer.id, setSelection, addSelection],
+      [layer.id, layer.type, setSelection, addSelection],
     );
 
     const colorSchemeAtom = useMemo(() => {
@@ -75,7 +85,7 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
           colorSchemeAtom={colorSchemeAtom}
           imageSchemeAtom={imageSchemeAtom}
           index={index}
-          selected={selection.includes(layer.id)}
+          selected={selection.some(s => s.id === layer.id)}
           itemProps={{
             onMouseDown: handleMouseDown,
           }}

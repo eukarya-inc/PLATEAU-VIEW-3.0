@@ -48,7 +48,7 @@ export type SelectionType = Selection["type"];
 
 export const selectionAtom = atom((get): Selection[] => [
   ...get(layerSelectionAtom)
-    .map((id): LayerSelection | undefined => {
+    .map(({ id }): LayerSelection | undefined => {
       const layer = get(rootLayersAtom).find(l => get(get(l.rootLayerAtom).layer).id === id);
       if (layer == null) {
         console.warn(`Layer does not exit: ${id}`);

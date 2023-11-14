@@ -7,7 +7,7 @@ import { rootLayersAtom } from "../../shared/states/rootLayer";
 import { RootLayerConfig } from "../../shared/view-layers";
 import { atomsWithSelection } from "../shared-states";
 
-import { type LayerModel, type LayerPredicate } from "./types";
+import { LayerType, type LayerModel, type LayerPredicate } from "./types";
 
 // TODO: Rewrite with atomFamily perhaps?
 // export const layersAtom = atomWithReset<LayerModel[]>([]);
@@ -21,7 +21,7 @@ const {
   addAtom: addLayerSelectionAtom,
   removeAtom: removeLayerSelectionAtom,
   clearAtom: clearLayerSelectionAtom,
-} = atomsWithSelection<string>();
+} = atomsWithSelection<{ id: string; type: LayerType }>({ getKey: v => v.id });
 
 export {
   layerSelectionAtom,
@@ -49,7 +49,7 @@ export const addLayerAtom = atom(
       before: get(layerAtomsAtom)[0],
     });
     if (autoSelect) {
-      set(layerSelectionAtom, [id]);
+      set(layerSelectionAtom, [{ id, type: layer.type }]);
     }
 
     return () => {
@@ -103,7 +103,7 @@ export const removeLayerAtom = atom(null, (get, set, id: string) => {
     console.warn(`Layer does not exit: ${id}`);
     return;
   }
-  set(removeLayerSelectionAtom, [id]);
+  set(removeLayerSelectionAtom, [{ id, type: get(get(get(layerAtom).rootLayerAtom).layer).type }]);
   set(layerAtomsAtom, {
     type: "remove",
     atom: layerAtom,

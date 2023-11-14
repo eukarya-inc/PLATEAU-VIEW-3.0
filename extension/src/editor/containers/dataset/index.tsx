@@ -66,7 +66,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const settings = useAtomValue(settingsAtom);
 
   const layer = useAtomValue(layerSelectionAtom)?.[0];
-  const query = useDatasetById(layer ?? "");
+  const query = useDatasetById(layer?.id ?? "");
 
   const dataset = useMemo(() => {
     return query.data?.node;
