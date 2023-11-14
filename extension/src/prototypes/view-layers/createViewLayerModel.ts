@@ -2,12 +2,18 @@ import { atom } from "jotai";
 
 import { LayerModelBase } from "../layers";
 
-import { type ConfigurableLayerModelBase, type LayerColorScheme, type LayerTitle } from "./types";
+import {
+  type LayerImageScheme,
+  type ConfigurableLayerModelBase,
+  type LayerColorScheme,
+  type LayerTitle,
+} from "./types";
 
 export interface ViewLayerModelParams {
   id?: string;
   title?: string;
   colorScheme?: LayerColorScheme;
+  imageScheme?: LayerImageScheme;
 }
 
 export interface ViewLayerModel extends LayerModelBase {
@@ -26,5 +32,6 @@ export function createViewLayerModel(
     hiddenAtom: atom(false),
     layerIdAtom: atom<string | null>(null),
     colorSchemeAtom: atom<LayerColorScheme | null>(params.colorScheme ?? null),
+    imageSchemeAtom: atom<LayerImageScheme | null>(params.imageScheme ?? null),
   };
 }

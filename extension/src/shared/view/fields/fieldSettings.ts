@@ -4,6 +4,7 @@ import {
   GRADIENT_COLOR_SCHEME,
   VALUE_COLOR_SCHEME,
 } from "../../types/fieldComponents/colorScheme";
+import { CONDITIONAL_IMAGE_SCHEME } from "../../types/fieldComponents/imageScheme";
 
 // This settings object is used to generate the UI for each field.
 // It will be used in layer inspector and legend panel.
@@ -77,6 +78,23 @@ export const fieldSettings: {
     defaultValue: "",
     hasLayerUI: true,
   },
+  POINT_USE_IMAGE_VALUE_FIELD: {
+    defaultValue: "",
+    hasLegendUI: true,
+  },
+  POINT_USE_IMAGE_CONDITION_FIELD: {
+    value: {
+      type: CONDITIONAL_IMAGE_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
+  POINT_IMAGE_SIZE_FIELD: {},
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},

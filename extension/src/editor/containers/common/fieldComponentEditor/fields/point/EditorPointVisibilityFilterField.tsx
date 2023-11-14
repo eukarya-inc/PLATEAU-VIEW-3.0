@@ -343,7 +343,7 @@ const ConditionLegendPanel: React.FC<ConditionPanelProps> = ({ condition, onCond
     <>
       <PropertySwitch
         label="As Legend"
-        value={condition.asLegend}
+        checked={!!condition.asLegend}
         onChange={handleAsLegendChange}
       />
       <PropertyInputField

@@ -4,27 +4,27 @@ import { BasicFieldProps } from "..";
 import {
   PropertyBox,
   PropertyCard,
+  PropertyImageField,
   PropertyInputField,
   PropertySwitch,
   PropertyWrapper,
-  PropertyColorField,
 } from "../../../../ui-components";
 
-export type PointFillColorValueFieldPreset = {
+export type PointUseImageValueFieldPreset = {
   defaultValue?: string;
   asLegend?: boolean;
   legendName?: string;
 };
 
-export const EditorPointFillColorValueField: React.FC<
-  BasicFieldProps<"POINT_FILL_COLOR_VALUE_FIELD">
+export const EditorPointUseImageValueField: React.FC<
+  BasicFieldProps<"POINT_USE_IMAGE_VALUE_FIELD">
 > = ({ component, onUpdate }) => {
   const preset = useMemo(() => {
     return component.preset ?? {};
   }, [component?.preset]);
 
   const handleRuleUpdate = useCallback(
-    (preset: PointFillColorValueFieldPreset) => {
+    (preset: PointUseImageValueFieldPreset) => {
       onUpdate?.({
         ...component,
         preset,
@@ -49,22 +49,22 @@ export const EditorPointFillColorValueField: React.FC<
 };
 
 type RulePanelProps = {
-  preset: PointFillColorValueFieldPreset;
-  onRuleUpdate: (preset: PointFillColorValueFieldPreset) => void;
+  preset: PointUseImageValueFieldPreset;
+  onRuleUpdate: (preset: PointUseImageValueFieldPreset) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
-  const handleColorChange = useCallback(
-    (color: string) => {
+  const handleUrlChange = useCallback(
+    (imageURL: string) => {
       onRuleUpdate({
         ...preset,
-        defaultValue: color,
+        defaultValue: imageURL,
       });
     },
     [preset, onRuleUpdate],
   );
 
-  return <PropertyColorField value={preset.defaultValue} onChange={handleColorChange} />;
+  return <PropertyImageField value={preset.defaultValue ?? ""} onChange={handleUrlChange} />;
 };
 
 const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {

@@ -10,11 +10,13 @@ import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
+import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom } from "../states/app";
 import {
   COLOR_SCHEME_SELECTION,
+  IMAGE_SCHEME_SELECTION,
   LAYER_SELECTION,
   SCREEN_SPACE_SELECTION,
   selectionGroupsAtom,
@@ -69,6 +71,9 @@ export const SelectionPanel: FC = () => {
         break;
       case COLOR_SCHEME_SELECTION:
         content = <ColorSchemeContent values={selectionGroup.values} />;
+        break;
+      case IMAGE_SCHEME_SELECTION:
+        content = <ImageSchemeContent values={selectionGroup.values} />;
         break;
     }
   } else if (selectionGroups.length > 1) {

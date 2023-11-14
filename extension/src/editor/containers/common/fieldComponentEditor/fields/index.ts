@@ -19,6 +19,7 @@ import {
   FIELD_CATEGORY_POINT,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
+  FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
@@ -30,8 +31,11 @@ import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
+import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
+import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
@@ -95,6 +99,23 @@ export const fields: {
     name: "Gradient",
     Component: EditorPointFillColorGradientField,
   },
+  POINT_USE_IMAGE_VALUE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Value",
+    Component: EditorPointUseImageValueField,
+  },
+  POINT_USE_IMAGE_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Condition",
+    Component: EditorPointUseImageConditionField,
+  },
+  POINT_IMAGE_SIZE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Image Size",
+    Component: EditorPointImageSizeField,
+  },
   POINT_STYLE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     name: "Style",
@@ -102,7 +123,7 @@ export const fields: {
   },
   POINT_SIZE_FIELD: {
     category: FIELD_CATEGORY_POINT,
-    name: "Size",
+    name: "Point Size",
     Component: EditorPointSizeField,
   },
   // 3dtiles

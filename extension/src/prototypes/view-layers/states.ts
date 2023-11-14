@@ -145,3 +145,17 @@ export {
   removeColorSchemeSelectionAtom,
   clearColorSchemeSelectionAtom,
 };
+
+const {
+  selectionAtom: imageSchemeSelectionAtom,
+  addAtom: addImageSchemeSelectionAtom,
+  removeAtom: removeImageSchemeSelectionAtom,
+  clearAtom: clearImageSchemeSelectionAtom,
+} = atomsWithSelection<string>();
+
+export {
+  imageSchemeSelectionAtom,
+  addImageSchemeSelectionAtom,
+  removeImageSchemeSelectionAtom,
+  clearImageSchemeSelectionAtom,
+};

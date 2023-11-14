@@ -16,7 +16,7 @@ type PropertyColorFieldProps = {
 
 export const PropertyColorField: React.FC<PropertyColorFieldProps> = ({
   value,
-  disableAlpha,
+  disableAlpha = true,
   placeholder = "#FFFFFF",
   onChange,
 }) => {

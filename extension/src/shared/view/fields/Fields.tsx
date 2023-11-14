@@ -17,6 +17,7 @@ import { OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_GRADIENT_FIELD,
+  POINT_USE_IMAGE_CONDITION_FIELD,
   POINT_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/point";
 import { LayerModel } from "../../view-layers";
@@ -29,6 +30,7 @@ import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGr
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
+import { LayerPointUseImageConditionField } from "./point/LayerPointUseImageConditionField";
 import { LayerPointVisibilityFilterField } from "./point/LayerPointVisibilityFilterField";
 
 type Props = {
@@ -69,6 +71,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerPointVisibilityFilterField
           layers={layers}
           atoms={atoms as ComponentAtom<"POINT_VISIBILITY_FILTER_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case POINT_USE_IMAGE_CONDITION_FIELD: {
+      component = (
+        <LayerPointUseImageConditionField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"POINT_USE_IMAGE_CONDITION_FIELD">["atom"][]}
         />
       );
       break;
