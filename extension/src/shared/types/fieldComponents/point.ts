@@ -1,6 +1,8 @@
 import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorConditionField";
 import { PointFillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorGradientField";
 import { PointFillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorValueField";
+import { PointUseImageConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageConditionField";
+import { PointUseImageValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageValueField";
 import { PointVisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointVisibilityFilterField";
 
 import { FieldBase } from "./base";
@@ -9,6 +11,7 @@ import {
   GradientColorSchemeValue,
   ValueColorSchemeValue,
 } from "./colorScheme";
+import { ConditionalImageSchemeValue } from "./imageScheme";
 
 export const POINT_STYLE_FIELD = "POINT_STYLE_FIELD";
 export type PointStyleField = FieldBase<{
@@ -55,10 +58,36 @@ export type PointVisibilityFilterField = FieldBase<{
   preset?: PointVisibilityFilterFieldPreset;
 }>;
 
+export const POINT_USE_IMAGE_VALUE_FIELD = "POINT_USE_IMAGE_VALUE_FIELD";
+export type PointUseImageValueField = FieldBase<{
+  type: typeof POINT_USE_IMAGE_VALUE_FIELD;
+  value?: string;
+  preset?: PointUseImageValueFieldPreset;
+}>;
+
+export const POINT_USE_IMAGE_CONDITION_FIELD = "POINT_USE_IMAGE_CONDITION_FIELD";
+export type PointUseImageConditionField = FieldBase<{
+  type: typeof POINT_USE_IMAGE_CONDITION_FIELD;
+  value?: ConditionalImageSchemeValue;
+  preset?: PointUseImageConditionFieldPreset;
+}>;
+
+export const POINT_IMAGE_SIZE_FIELD = "POINT_IMAGE_SIZE_FIELD";
+export type PointImageSizeField = FieldBase<{
+  type: typeof POINT_IMAGE_SIZE_FIELD;
+  preset?: {
+    defaultValue?: number;
+    enableSizeInMeters?: boolean;
+  };
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField
   | PointFillColorValueField
   | PointFillColorConditionField
   | PointFillGradientColorField
-  | PointVisibilityFilterField;
+  | PointVisibilityFilterField
+  | PointUseImageValueField
+  | PointUseImageConditionField
+  | PointImageSizeField;

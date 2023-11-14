@@ -242,7 +242,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const handleSave = useCallback(() => {
     // Save all settings belongs to current dataset
     setIsSaving(true);
-    console.log("save start");
     const savingTasks: Promise<void>[] = [];
     [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
       const catchId = `dataset-${dataset.id}-${id}`;

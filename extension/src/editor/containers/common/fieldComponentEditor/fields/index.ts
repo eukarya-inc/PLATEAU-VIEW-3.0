@@ -12,13 +12,17 @@ import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBu
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFillColorConditionField";
 import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
+import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
+import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
+  FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+  FIELD_GROUP_THREE_D_TILES_FILTER,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -27,8 +31,11 @@ import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
+import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
+import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
@@ -92,6 +99,23 @@ export const fields: {
     name: "Gradient",
     Component: EditorPointFillColorGradientField,
   },
+  POINT_USE_IMAGE_VALUE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Value",
+    Component: EditorPointUseImageValueField,
+  },
+  POINT_USE_IMAGE_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_USE_IMAGE,
+    name: "Condition",
+    Component: EditorPointUseImageConditionField,
+  },
+  POINT_IMAGE_SIZE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Image Size",
+    Component: EditorPointImageSizeField,
+  },
   POINT_STYLE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     name: "Style",
@@ -99,7 +123,7 @@ export const fields: {
   },
   POINT_SIZE_FIELD: {
     category: FIELD_CATEGORY_POINT,
-    name: "Size",
+    name: "Point Size",
     Component: EditorPointSizeField,
   },
   // 3dtiles
@@ -108,6 +132,12 @@ export const fields: {
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
     name: "Building model",
     Component: EditorTilesetBuildingModelColorField,
+  },
+  TILESET_FLOOD_MODEL_COLOR: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Flood model",
+    Component: EditorTilesetFloodModelColorField,
   },
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_THREE_D_TILES,
@@ -128,8 +158,15 @@ export const fields: {
   },
   TILESET_BUILDING_MODEL_FILTER: {
     category: FIELD_CATEGORY_THREE_D_TILES,
-    name: "Filter(Building model)",
+    group: FIELD_GROUP_THREE_D_TILES_FILTER,
+    name: "Building model",
     Component: EditorTilesetBuildingModelFilterField,
+  },
+  TILESET_FLOOD_MODEL_FILTER: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILTER,
+    name: "Flood model",
+    Component: EditorTilesetFloodModelFilterField,
   },
 };
 

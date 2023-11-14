@@ -9,12 +9,13 @@ import {
   type ScreenSpaceSelectionType,
 } from "../../screen-space-selection";
 import { isNotNullish } from "../../type-helpers";
-import { colorSchemeSelectionAtom } from "../../view-layers";
+import { colorSchemeSelectionAtom, imageSchemeSelectionAtom } from "../../view-layers";
 
 // Layer selection
 export const LAYER_SELECTION = "LAYER_SELECTION";
 export const SCREEN_SPACE_SELECTION = "SCREEN_SPACE_SELECTION";
 export const COLOR_SCHEME_SELECTION = "COLOR_SCHEME_SELECTION";
+export const IMAGE_SCHEME_SELECTION = "IMAGE_SCHEME_SELECTION";
 
 interface LayerSelection {
   type: typeof LAYER_SELECTION;
@@ -32,7 +33,16 @@ interface ColorSchemeSelection {
   value: LayerModel;
 }
 
-export type Selection = LayerSelection | ScreenSpaceSelection | ColorSchemeSelection;
+interface ImageSchemeSelection {
+  type: typeof IMAGE_SCHEME_SELECTION;
+  value: LayerModel;
+}
+
+export type Selection =
+  | LayerSelection
+  | ScreenSpaceSelection
+  | ColorSchemeSelection
+  | ImageSchemeSelection;
 
 export type SelectionType = Selection["type"];
 
@@ -71,6 +81,20 @@ export const selectionAtom = atom((get): Selection[] => [
         : undefined;
     })
     .filter(isNotNullish),
+  ...get(imageSchemeSelectionAtom)
+    .map((id): ImageSchemeSelection | undefined => {
+      const layer = get(rootLayersLayersAtom).find(layer => layer.id === id);
+      if (layer == null) {
+        console.warn(`Layer does not exit: ${id}`);
+      }
+      return layer != null
+        ? {
+            type: IMAGE_SCHEME_SELECTION,
+            value: layer,
+          }
+        : undefined;
+    })
+    .filter(isNotNullish),
 ]);
 
 type LayerSelectionGroup = {
@@ -100,10 +124,20 @@ type ColorSchemeSelectionGroup = {
   };
 }[LayerType];
 
+type ImageSchemeSelectionGroup = {
+  type: typeof IMAGE_SCHEME_SELECTION;
+} & {
+  [K in LayerType]: {
+    subtype: K;
+    values: Array<LayerModel<K>>;
+  };
+}[LayerType];
+
 export type SelectionGroup =
   | LayerSelectionGroup
   | ScreenSpaceSelectionGroup
-  | ColorSchemeSelectionGroup;
+  | ColorSchemeSelectionGroup
+  | ImageSchemeSelectionGroup;
 
 export const selectionGroupsAtom = atom<SelectionGroup[]>(get => {
   const groups = Object.entries(groupBy(get(selectionAtom), "type")) as unknown as Array<
@@ -137,6 +171,18 @@ export const selectionGroupsAtom = atom<SelectionGroup[]>(get => {
         })) as unknown as SelectionGroup[];
       }
       case COLOR_SCHEME_SELECTION: {
+        return Object.entries(
+          groupBy(
+            values.map(({ value }) => value),
+            "type",
+          ),
+        ).map(([subtype, values]) => ({
+          type,
+          subtype,
+          values,
+        })) as unknown as SelectionGroup[];
+      }
+      case IMAGE_SCHEME_SELECTION: {
         return Object.entries(
           groupBy(
             values.map(({ value }) => value),

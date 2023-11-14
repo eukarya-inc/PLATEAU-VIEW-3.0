@@ -9,34 +9,36 @@ import {
   PropertyInputField,
   PropertySwitch,
   PropertyWrapper,
-  PropertyColorField,
-  CommonCondition,
   PropertyConditionField,
+  PropertyImageField,
+  type CommonCondition,
+  PropertyColorField,
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
-type TilesetFillColorConditionFieldPresetRule = {
+type PointUseImageConditionFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
-  conditions?: TilesetFillColorConditionFieldPresetRuleCondition[];
+  conditions?: PointUseImageConditionFieldPresetRuleCondition[];
 };
 
-type TilesetFillColorConditionFieldPresetRuleCondition = {
+type PointUseImageConditionFieldPresetRuleCondition = {
   id: string;
   operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
   value?: string;
-  color?: string;
+  imageURL?: string;
+  imageColor?: string;
   asLegend?: boolean;
   legendName?: string;
 };
 
-export type TilesetFillColorConditionFieldPreset = {
-  rules?: TilesetFillColorConditionFieldPresetRule[];
+export type PointUseImageConditionFieldPreset = {
+  rules?: PointUseImageConditionFieldPresetRule[];
 };
 
-export const EditorTilesetFillColorConditionField: React.FC<
-  BasicFieldProps<"TILESET_FILL_COLOR_CONDITION_FIELD">
+export const EditorPointUseImageConditionField: React.FC<
+  BasicFieldProps<"POINT_USE_IMAGE_CONDITION_FIELD">
 > = ({ component, onUpdate }) => {
   const [currentRuleId, setCurrentRuleId] = useState<string>();
   const [movingId, setMovingId] = useState<string>();
@@ -50,7 +52,7 @@ export const EditorTilesetFillColorConditionField: React.FC<
   }, [rules, currentRuleId]);
 
   const handleRuleCreate = useCallback(() => {
-    const newRule: TilesetFillColorConditionFieldPresetRule = {
+    const newRule: PointUseImageConditionFieldPresetRule = {
       id: generateID(),
       conditions: [],
     };
@@ -102,7 +104,7 @@ export const EditorTilesetFillColorConditionField: React.FC<
   );
 
   const handleRuleUpdate = useCallback(
-    (rule: TilesetFillColorConditionFieldPresetRule) => {
+    (rule: PointUseImageConditionFieldPresetRule) => {
       onUpdate?.({
         ...component,
         preset: {
@@ -183,7 +185,7 @@ export const EditorTilesetFillColorConditionField: React.FC<
   );
 
   const handleConditionUpdate = useCallback(
-    (condition: TilesetFillColorConditionFieldPresetRuleCondition) => {
+    (condition: PointUseImageConditionFieldPresetRuleCondition) => {
       if (!currentRule?.conditions) return;
       onUpdate?.({
         ...component,
@@ -257,8 +259,8 @@ export const EditorTilesetFillColorConditionField: React.FC<
 };
 
 type RulePanelProps = {
-  rule: TilesetFillColorConditionFieldPresetRule;
-  onRuleUpdate: (rule: TilesetFillColorConditionFieldPresetRule) => void;
+  rule: PointUseImageConditionFieldPresetRule;
+  onRuleUpdate: (rule: PointUseImageConditionFieldPresetRule) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
@@ -302,8 +304,8 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
 };
 
 type ConditionPanelProps = {
-  condition: TilesetFillColorConditionFieldPresetRuleCondition;
-  onConditionUpdate: (condition: TilesetFillColorConditionFieldPresetRuleCondition) => void;
+  condition: PointUseImageConditionFieldPresetRuleCondition;
+  onConditionUpdate: (condition: PointUseImageConditionFieldPresetRuleCondition) => void;
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {
@@ -317,11 +319,21 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
     [condition, onConditionUpdate],
   );
 
-  const handleColorChange = useCallback(
-    (color: string) => {
+  const handleImageUrlChange = useCallback(
+    (imageURL: string) => {
       onConditionUpdate({
         ...condition,
-        color,
+        imageURL,
+      });
+    },
+    [condition, onConditionUpdate],
+  );
+
+  const handleImageColorChange = useCallback(
+    (imageColor: string) => {
+      onConditionUpdate({
+        ...condition,
+        imageColor,
       });
     },
     [condition, onConditionUpdate],
@@ -330,7 +342,8 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
   return (
     <>
       <PropertyConditionField condition={condition} onConditionChange={handleConditionChange} />
-      <PropertyColorField value={condition.color} onChange={handleColorChange} />
+      <PropertyImageField value={condition.imageURL} onChange={handleImageUrlChange} />
+      <PropertyColorField value={condition.imageColor} onChange={handleImageColorChange} />
     </>
   );
 };

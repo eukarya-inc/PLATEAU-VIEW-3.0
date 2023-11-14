@@ -9,6 +9,11 @@ export type TilesetBuildingModelColorField = FieldBase<{
   type: typeof TILESET_BUILDING_MODEL_COLOR;
 }>;
 
+export const TILESET_FLOOD_MODEL_COLOR = "TILESET_FLOOD_MODEL_COLOR";
+export type TilesetFloodModelColorField = FieldBase<{
+  type: typeof TILESET_FLOOD_MODEL_COLOR;
+}>;
+
 export const TILESET_FILL_COLOR_CONDITION_FIELD = "TILESET_FILL_COLOR_CONDITION_FIELD";
 export type TilesetFillColorConditionField = FieldBase<{
   type: typeof TILESET_FILL_COLOR_CONDITION_FIELD;
@@ -45,9 +50,22 @@ export type TilesetBuildingModelFilterField = FieldBase<{
   };
 }>;
 
+export const TILESET_FLOOD_MODEL_FILTER = "TILESET_FLOOD_MODEL_FILTER";
+export type TilesetFloodModelFilterField = FieldBase<{
+  type: typeof TILESET_FLOOD_MODEL_FILTER;
+  value: {
+    filters: Record<
+      string,
+      { value: [min: number, max: number]; range: [min: number, max: number] }
+    >;
+  };
+}>;
+
 export type TilesetFields =
   | TilesetBuildingModelColorField
+  | TilesetFloodModelColorField
   | TilesetFillColorConditionField
   | TilesetFillGradientColorField
   | TilesetClippingField
-  | TilesetBuildingModelFilterField;
+  | TilesetBuildingModelFilterField
+  | TilesetFloodModelFilterField;

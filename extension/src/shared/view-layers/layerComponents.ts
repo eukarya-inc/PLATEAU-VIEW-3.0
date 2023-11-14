@@ -30,6 +30,8 @@ import {
   VEGETATION_LAYER,
 } from "../../prototypes/view-layers/layerTypes";
 
+import { FloodLayer } from "./plateau-3dtiles/FloodLayer";
+
 import { BuildingLayer, GeneralDatasetLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
@@ -43,25 +45,28 @@ export const layerComponents: LayerComponents = {
   [SKETCH_LAYER]: undefined, // SketchLayer,
 
   // Dataset layers
-  [BORDER_LAYER]: GeneralDatasetLayer,
-  [BRIDGE_LAYER]: GeneralDatasetLayer, // BridgeLayer,
+  // Building model
   [BUILDING_LAYER]: BuildingLayer,
+  // Flood model
+  [HIGH_TIDE_RISK_LAYER]: FloodLayer,
+  [INLAND_FLOODING_RISK_LAYER]: FloodLayer,
+  [RIVER_FLOODING_RISK_LAYER]: FloodLayer,
+  [TSUNAMI_RISK_LAYER]: FloodLayer,
+  // General
+  [BORDER_LAYER]: GeneralDatasetLayer,
+  [BRIDGE_LAYER]: GeneralDatasetLayer,
   [CITY_FURNITURE_LAYER]: GeneralDatasetLayer,
   [EMERGENCY_ROUTE_LAYER]: GeneralDatasetLayer,
   [GENERIC_CITY_OBJECT_LAYER]: GeneralDatasetLayer,
-  [HIGH_TIDE_RISK_LAYER]: GeneralDatasetLayer,
-  [INLAND_FLOODING_RISK_LAYER]: GeneralDatasetLayer,
-  [LAND_USE_LAYER]: GeneralDatasetLayer, // LandUseLayer,
+  [LAND_USE_LAYER]: GeneralDatasetLayer,
   [LANDMARK_LAYER]: GeneralDatasetLayer,
-  [LAND_SLIDE_RISK_LAYER]: GeneralDatasetLayer, // LandSlideRiskLayer,
+  [LAND_SLIDE_RISK_LAYER]: GeneralDatasetLayer,
   [PARK_LAYER]: GeneralDatasetLayer,
   [RAILWAY_LAYER]: GeneralDatasetLayer,
-  [RIVER_FLOODING_RISK_LAYER]: GeneralDatasetLayer, // RiverFloodingRiskLayer,
-  [ROAD_LAYER]: GeneralDatasetLayer, // RoadLayer,
+  [ROAD_LAYER]: GeneralDatasetLayer,
   [SHELTER_LAYER]: GeneralDatasetLayer,
   [STATION_LAYER]: GeneralDatasetLayer,
-  [TSUNAMI_RISK_LAYER]: GeneralDatasetLayer,
-  [URBAN_PLANNING_LAYER]: GeneralDatasetLayer, // UrbanPlanningLayer,
+  [URBAN_PLANNING_LAYER]: GeneralDatasetLayer,
   [USE_CASE_LAYER]: GeneralDatasetLayer,
   [VEGETATION_LAYER]: GeneralDatasetLayer,
 };

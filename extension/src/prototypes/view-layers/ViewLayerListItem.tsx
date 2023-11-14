@@ -4,10 +4,10 @@ import { memo, useCallback, useMemo, type FC, type SyntheticEvent } from "react"
 
 import { flyToLayerId } from "../../shared/reearth/utils";
 import { removeLayerAtom, type LayerProps, type LayerType } from "../layers";
-import { ColorMapIcon, ColorSetIcon, LayerListItem } from "../ui-components";
+import { ColorMapIcon, ColorSetIcon, ImageIconSetIcon, LayerListItem } from "../ui-components";
 
 import { layerTypeIcons } from "./layerTypeIcons";
-import { colorSchemeSelectionAtom } from "./states";
+import { colorSchemeSelectionAtom, imageSchemeSelectionAtom } from "./states";
 
 function stopPropagation(event: SyntheticEvent): void {
   event.stopPropagation();
@@ -75,6 +75,23 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       setColorSchemeSelection([id]);
     }, [id, setColorSchemeSelection]);
 
+    const imageScheme = useAtomValue(props.imageSchemeAtom);
+    const imageIcons = useAtomValue(
+      useMemo(
+        () =>
+          atom(get => (imageScheme?.type === "imageIcon" ? get(imageScheme.imageIconsAtom) : null)),
+        [imageScheme],
+      ),
+    );
+    const [imageSchemeSelection, setImageSchemeSelection] = useAtom(imageSchemeSelectionAtom);
+    const imageSchemeSelected = useMemo(
+      () => imageSchemeSelection.includes(id),
+      [id, imageSchemeSelection],
+    );
+    const handleImageSchemeClick = useCallback(() => {
+      setImageSchemeSelection([id]);
+    }, [id, setImageSchemeSelection]);
+
     return (
       <LayerListItem
         {...itemProps}
@@ -103,6 +120,16 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
                 onDoubleClick={stopPropagation}
                 onClick={handleColorSchemeClick}>
                 <ColorSetIcon colors={colorSetColors} selected={colorSchemeSelected} />
+              </IconButton>
+            </Tooltip>
+          ) : imageIcons != null ? (
+            <Tooltip title={imageScheme?.name}>
+              <IconButton
+                aria-label={imageScheme?.name}
+                onMouseDown={stopPropagation}
+                onDoubleClick={stopPropagation}
+                onClick={handleImageSchemeClick}>
+                <ImageIconSetIcon imageIcons={imageIcons} selected={imageSchemeSelected} />
               </IconButton>
             </Tooltip>
           ) : undefined

@@ -30,8 +30,12 @@ import {
   VEGETATION_LAYER,
 } from "../../prototypes/view-layers";
 
-import { createBuildingLayer, type BuildingLayerModelParams } from "./3dtiles/BuildingLayer";
 import { GeneralLayerModelParams, createGeneralDatasetLayer } from "./general";
+import {
+  createBuildingLayer,
+  type BuildingLayerModelParams,
+} from "./plateau-3dtiles/BuildingLayer";
+import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/FloodLayer";
 // import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
 // import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
 // import { createLandUseLayer, type LandUseLayerModelParams } from "./LandUseLayer";
@@ -89,26 +93,29 @@ export function createViewLayer<T extends LayerType>(
     case SKETCH_LAYER: return undefined // createSketchLayer(params as SketchLayerModelParams)
 
     // Dataset layers
-    case BORDER_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createBorderLayer(params)
-    case BRIDGE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createBridgeLayer(params as BridgeLayerModelParams)
+    // Building model
     case BUILDING_LAYER: return createBuildingLayer(params as BuildingLayerModelParams)
-    case CITY_FURNITURE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createCityFurnitureLayer(params)
-    case EMERGENCY_ROUTE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createEmergencyRouteLayer(params)
-    case GENERIC_CITY_OBJECT_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createGenericCityObjectLayer(params)
-    case HIGH_TIDE_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createHighTideRiskLayer(params)
-    case INLAND_FLOODING_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createInlandFloodingRiskLayer(params)
-    case LAND_USE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createLandUseLayer(params as LandUseLayerModelParams)
-    case LANDMARK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createLandmarkLayer(params)
-    case LAND_SLIDE_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createLandSlideRiskLayer(params as LandSlideRiskLayerModelParams)
-    case PARK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createParkLayer(params)
-    case RAILWAY_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createRailwayLayer(params)
-    case RIVER_FLOODING_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createRiverFloodingRiskLayer(params as RiverFloodingRiskLayerModelParams)
-    case ROAD_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createRoadLayer(params as RoadLayerModelParams)
-    case SHELTER_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createShelterLayer(params)
-    case STATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createStationLayer(params)
-    case TSUNAMI_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createTsunamiRiskLayer(params)
-    case URBAN_PLANNING_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createUrbanPlanningLayer(params as UrbanPlanningLayerModelParams)
-    case USE_CASE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createUseCaseLayer(params)
-    case VEGETATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams) // createVegetationLayer(params)
+    // Flood model
+    case INLAND_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    case HIGH_TIDE_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    case RIVER_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    case TSUNAMI_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    // General
+    case BORDER_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case BRIDGE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case CITY_FURNITURE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case EMERGENCY_ROUTE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case GENERIC_CITY_OBJECT_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case LAND_USE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case LANDMARK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case LAND_SLIDE_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case PARK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case RAILWAY_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case ROAD_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case SHELTER_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case STATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case URBAN_PLANNING_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case USE_CASE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case VEGETATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
   }
 }
