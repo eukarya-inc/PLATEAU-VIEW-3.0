@@ -13,7 +13,8 @@ const qualitativeProperties: QualitativeProperty[] = [
       // For building layers
       propertyName.endsWith("浸水ランク") ||
       // For river flooding risk layers
-      propertyName === "rank_code",
+      propertyName === "rank_code" ||
+      propertyName === "rank_org_code",
     colorSet: floodRankColorSet,
   },
 ];
@@ -28,6 +29,8 @@ export type PlateauTilesetProperty = { name: string } & (
   | {
       type: "qualitative";
       colorSet: QualitativeColorSet;
+      minimum: number;
+      maximum: number;
     }
 );
 
@@ -61,6 +64,8 @@ export class PlateauTilesetProperties extends Properties {
               name,
               type: "qualitative" as const,
               colorSet: qualitativeProperty.colorSet,
+              minimum: value.minimum,
+              maximum: value.maximum,
             };
           }
           return {

@@ -22,8 +22,8 @@ import { ComponentAtom } from "../view-layers/component";
 import { useFindComponent } from "../view-layers/hooks";
 
 import { useClippingBox } from "./hooks/useClippingBox";
-import { useEvaluateBuildingModelFilter } from "./hooks/useEvaluateBuildingModelFilter";
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
+import { useEvaluateFilter } from "./hooks/useEvaluateFilter";
 
 type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> & {
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
@@ -39,7 +39,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   componentAtoms: ComponentAtom[];
 };
 
-export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
+export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   onLoad,
   layerIdAtom,
   featureIndexAtom,
@@ -117,7 +117,7 @@ export const TilesetLayerContainer: FC<TilesetContainerProps> = ({
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
   );
-  const filter = useEvaluateBuildingModelFilter(
+  const filter = useEvaluateFilter(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
   );
 

@@ -25,7 +25,7 @@ export type TilesetProps = {
   onLoad?: (layerId: string) => void;
   visible?: boolean;
   appearance: LayerAppearance<Cesium3DTilesAppearance>;
-  boxAppearance: LayerAppearance<BoxAppearance> | undefined;
+  boxAppearance?: LayerAppearance<BoxAppearance>;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({

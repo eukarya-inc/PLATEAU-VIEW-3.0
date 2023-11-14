@@ -14,3 +14,4 @@ export const FIELD_GROUP_POLYGON_FILL_COLOR = "Fill Color";
 export const FIELD_GROUP_POLYGON_VISIBILITY = "Visibility";
 
 export const FIELD_GROUP_THREE_D_TILES_FILL_COLOR = "Color";
+export const FIELD_GROUP_THREE_D_TILES_FILTER = "Filter";

@@ -79,6 +79,7 @@ export const fieldSettings: {
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
+  TILESET_FLOOD_MODEL_COLOR: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     value: {
       type: CONDITIONAL_COLOR_SCHEME,
@@ -115,6 +116,12 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   TILESET_BUILDING_MODEL_FILTER: {
+    value: {
+      filters: {},
+    },
+    hasLayerUI: true,
+  },
+  TILESET_FLOOD_MODEL_FILTER: {
     value: {
       filters: {},
     },

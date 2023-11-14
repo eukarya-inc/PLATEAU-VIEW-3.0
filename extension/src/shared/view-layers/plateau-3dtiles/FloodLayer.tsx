@@ -1,14 +1,10 @@
-import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect } from "react";
 
 import type { LayerProps } from "../../../prototypes/layers";
 import { ScreenSpaceSelectionEntry } from "../../../prototypes/screen-space-selection";
-import {
-  createViewLayerModel,
-  BUILDING_LAYER,
-  ConfigurableLayerModel,
-} from "../../../prototypes/view-layers";
-import { TilesetLayerContainer } from "../../layerContainers/3dtiles";
+import { createViewLayerModel, ConfigurableLayerModel } from "../../../prototypes/view-layers";
+import { FloodModelLayerContainer } from "../../layerContainers/floodModel";
 import { TILESET_FEATURE } from "../../reearth/layers";
 import { LayerModel, LayerModelParams } from "../model";
 
@@ -17,50 +13,38 @@ import {
   PlateauTilesetLayerStateParams,
   createPlateauTilesetLayerState,
 } from "./createPlateauTilesetLayerState";
+import { FloodLayerType } from "./types";
 
-export interface BuildingLayerModelParams extends LayerModelParams, PlateauTilesetLayerStateParams {
-  municipalityCode: string;
+export interface FloodLayerModelParams extends LayerModelParams, PlateauTilesetLayerStateParams {
   title: string;
-  version?: string;
-  lod?: number;
-  textured: boolean;
+  type: FloodLayerType;
+  municipalityCode: string;
 }
 
-export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
-  municipalityCode: string;
+export interface FloodLayerModel extends LayerModel, PlateauTilesetLayerState {
   title: string;
-  versionAtom: PrimitiveAtom<string | null>;
-  lodAtom: PrimitiveAtom<number | null>;
-  showWireframeAtom: PrimitiveAtom<boolean>;
-  textured: boolean;
+  municipalityCode: string;
 }
 
-export function createBuildingLayer(
-  params: BuildingLayerModelParams,
-): ConfigurableLayerModel<BuildingLayerModel> {
+export function createFloodLayer(
+  params: FloodLayerModelParams,
+): ConfigurableLayerModel<FloodLayerModel> {
   return {
     ...createViewLayerModel(params),
     ...createPlateauTilesetLayerState(params),
-    type: BUILDING_LAYER,
-    textured: params.textured,
-    municipalityCode: params.municipalityCode,
+    type: params.type,
     title: params.title,
-    versionAtom: atom(params.version ?? null),
-    lodAtom: atom(params.lod ?? null),
-    showWireframeAtom: atom(false),
+    municipalityCode: params.municipalityCode,
   };
 }
 
-export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
+export const FloodLayer: FC<LayerProps<FloodLayerType>> = ({
   format,
   url,
   title,
-  textured,
   titleAtom,
   hiddenAtom,
   layerIdAtom,
-  versionAtom,
-  lodAtom,
   featureIndexAtom,
   selections,
   // hiddenFeaturesAtom,
@@ -73,9 +57,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
-
-  const [_version, _setVersion] = useAtom(versionAtom);
-  const [_lod, _setLod] = useAtom(lodAtom);
 
   const setLayerId = useSetAtom(layerIdAtom);
   const handleLoad = useCallback(
@@ -90,30 +71,16 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
     setTitle(title ?? null);
   }, [title, setTitle]);
 
-  // useEffect(() => {
-  //   if (datum == null) {
-  //     return;
-  //   }
-  //   setVersion(datum.version);
-  //   setLod(datum.lod);
-  //   setTextured(datum.textured);
-  // }, [setVersion, setLod, setTextured, datum]);
-
-  // TODO(ReEarth): Need a wireframe API
-  // const showWireframe = useAtomValue(showWireframeAtom);
-
   if (!url) {
     return null;
   }
-  // TODO(ReEarth): Use GQL definition
-  if (format === "3dtiles" /* PlateauDatasetFormat.Cesium3DTiles */) {
+  if (format === "3dtiles") {
     return (
-      <TilesetLayerContainer
+      <FloodModelLayerContainer
         url={url}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
         hidden={hidden}
-        textured={textured}
         // component={PlateauBuildingTileset}
         featureIndexAtom={featureIndexAtom}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}
@@ -123,8 +90,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         colorMapAtom={colorMapAtom}
         colorRangeAtom={colorRangeAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
-        // showWireframe={showWireframe}
-
         // Field components
         componentAtoms={componentAtoms ?? []}
       />
