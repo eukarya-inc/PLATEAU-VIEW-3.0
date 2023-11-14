@@ -1,5 +1,6 @@
 // import { Button, Stack, styled, Typography } from "@mui/material";
-import { atom, useAtomValue } from "jotai";
+import { Button, Stack, Typography, styled } from "@mui/material";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
@@ -9,13 +10,54 @@ import {
   ParameterList,
   SelectParameterItem,
 } from "../../../prototypes/ui-components";
+import { ImageIconLegend } from "../../../prototypes/ui-components/ImageIconLegend";
+import { imageSchemeSelectionAtom } from "../../../prototypes/view-layers";
 import { Component } from "../../types/fieldComponents";
 import { LayerModel } from "../../view-layers";
-import { isConditionalImageSchemeComponent } from "../state/imageSchemaForComponent";
+import {
+  isConditionalImageSchemeComponent,
+  makeImageSchemeAtomForComponent,
+  makeImageSchemeForComponent,
+} from "../state/imageSchemaForComponent";
 
 export interface ImageSchemeSectionForComponentFieldProps {
   layers: readonly LayerModel[];
 }
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  ...theme.typography.body2,
+  display: "block",
+  width: `calc(100% + ${theme.spacing(2)})`,
+  margin: 0,
+  padding: `0 ${theme.spacing(1)}`,
+  marginLeft: theme.spacing(-1),
+  marginRight: theme.spacing(-1),
+  textAlign: "left",
+}));
+
+const Legend: FC<{
+  layers: readonly LayerModel[];
+  imageSchemeAtom: ReturnType<typeof makeImageSchemeForComponent>;
+}> = ({ layers, imageSchemeAtom }) => {
+  const imageScheme = useAtomValue(imageSchemeAtom);
+  const setSelection = useSetAtom(imageSchemeSelectionAtom);
+  const handleClick = useCallback(() => {
+    // Assume that every layer as the same image scheme.
+    setSelection([layers[0].id]);
+  }, [layers, setSelection]);
+
+  if (imageScheme == null) {
+    return null;
+  }
+  return (
+    <StyledButton variant="text" onClick={handleClick}>
+      <Stack spacing={1} width="100%" marginY={1}>
+        <Typography variant="body2">{imageScheme.name}</Typography>
+        <ImageIconLegend imageIcons={imageScheme.imageIcons} />
+      </Stack>
+    </StyledButton>
+  );
+};
 
 // TODO: Handle as component
 export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForComponentFieldProps> = ({
@@ -87,6 +129,12 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
     [layers],
   );
 
+  const imageSchemeAtom = useMemo(() => makeImageSchemeAtomForComponent(layers), [layers]);
+  const imageSchemeValueAtom = useMemo(
+    () => makeImageSchemeForComponent(imageSchemeAtom),
+    [imageSchemeAtom],
+  );
+
   const handleClickParameterItem = useCallback(() => {
     setRecalcPropertyItems(p => p + 1);
   }, []);
@@ -98,7 +146,10 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
   // TODO: Add Image legend
   return (
     <ParameterList>
-      <GroupedParameterItem label="色分け" onClick={handleClickParameterItem}>
+      <GroupedParameterItem
+        label="色分け"
+        onClick={handleClickParameterItem}
+        content={<Legend layers={layers} imageSchemeAtom={imageSchemeValueAtom} />}>
         <InspectorItem sx={{ width: 320 }}>
           <ParameterList>
             <SelectParameterItem
