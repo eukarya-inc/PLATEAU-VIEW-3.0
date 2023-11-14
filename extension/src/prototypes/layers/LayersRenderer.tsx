@@ -32,7 +32,7 @@ const LayerRenderer: FC<LayerRendererProps> = ({ components, index, layerAtom, s
       <Component
         {...layer}
         index={index}
-        selected={layerSelection.includes(layer.id)}
+        selected={layerSelection.some(s => s.id === layer.id)}
         selections={filteredSelections}
       />
     </Suspense>

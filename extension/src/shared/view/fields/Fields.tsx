@@ -19,6 +19,7 @@ import {
 } from "../../types/fieldComponents/point";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
+import { useIsMultipleSelectableField } from "../hooks/useIsMultipleSelectableField";
 
 import { LayerTilesetBuildingModelFilterField } from "./3dtiles/LayerTilesetBuildingModelFilterField";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
@@ -36,6 +37,11 @@ type Props = {
 };
 
 export const Fields: FC<Props> = ({ layers, type, atoms }) => {
+  const isMutipleSelectable = useIsMultipleSelectableField({ layers, type });
+  if (!isMutipleSelectable) {
+    return;
+  }
+
   let component;
   switch (type) {
     // General

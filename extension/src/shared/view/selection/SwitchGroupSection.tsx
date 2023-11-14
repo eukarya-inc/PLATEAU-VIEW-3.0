@@ -37,7 +37,7 @@ export const SwitchGroup: FC<SwitchGroupProps> = ({ layers }) => {
     [rootLayer, propertyItems],
   );
 
-  if (!layers.length || propertyAtoms == null || !propertyItems || propertyItems.length <= 1) {
+  if (layers.length !== 1 || propertyAtoms == null || !propertyItems || propertyItems.length <= 1) {
     return null;
   }
   return (

@@ -48,7 +48,13 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
 
   const tilesetLayers = useAtomValue(highlightedTilesetLayersAtom);
   const tilsetLayerIdsAtom = useMemo(
-    () => atom(get => tilesetLayers.map(l => get(get(l.rootLayerAtom).layer).id)),
+    () =>
+      atom(get =>
+        tilesetLayers.map(l => {
+          const v = get(get(l.rootLayerAtom).layer);
+          return { id: v.id, type: v.type } as const;
+        }),
+      ),
     [tilesetLayers],
   );
   const tilsetLayerIds = useAtomValue(tilsetLayerIdsAtom);

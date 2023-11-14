@@ -183,7 +183,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
     setRecalcPropertyItems(p => p + 1);
   }, []);
 
-  if (!layers.length || colorPropertyAtoms == null) {
+  if (layers.length !== 1 || colorPropertyAtoms == null) {
     return null;
   }
   return (
