@@ -9,7 +9,7 @@ import { ComponentAtom } from "../../view-layers/component";
 export const MULTIPLE_SELECTABLE_FIELDS: ComponentBase["type"][] = [
   TILESET_BUILDING_MODEL_COLOR,
   OPACITY_FIELD,
-] as const;
+];
 export const MULTIPLE_SELECTABLE_TYPES: LayerType[] = [BUILDING_LAYER];
 
 export const useIsMultipleSelectableField = ({

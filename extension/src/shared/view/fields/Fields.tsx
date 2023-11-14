@@ -39,7 +39,7 @@ type Props = {
 export const Fields: FC<Props> = ({ layers, type, atoms }) => {
   const isMutipleSelectable = useIsMultipleSelectableField({ layers, type });
   if (!isMutipleSelectable) {
-    return;
+    return null;
   }
 
   let component;
