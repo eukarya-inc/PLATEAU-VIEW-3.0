@@ -76,6 +76,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   );
 
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
+  const generalData = useEvaluateGeneralData({ componentAtoms });
 
   const theme = useTheme();
 

@@ -22,6 +22,7 @@ export type GeneralFeature<P> = {
 };
 
 export type GeneralAppearances = Partial<LayerAppearanceTypes>;
+export type GeneralData = 
 
 export type GeneralProps = {
   url: string;

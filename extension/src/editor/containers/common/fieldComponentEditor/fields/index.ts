@@ -24,6 +24,7 @@ import {
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
 } from "./constants";
+import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
@@ -73,6 +74,11 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Style Code",
     Component: EditorStyleCodeField,
+  },
+  APPLY_TIME_VALUE_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Apply Time Value",
+    Component: EditorApplyTimeValueField,
   },
   // point
   POINT_VISIBILITY_FILTER_FIELD: {

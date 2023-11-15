@@ -36,8 +36,17 @@ export type StyleCodeField = FieldBase<{
   };
 }>;
 
+export const APPLY_TIME_VALUE_FIELD = "APPLY_TIME_VALUE_FIELD";
+export type ApplyTimeValueField = FieldBase<{
+  type: typeof APPLY_TIME_VALUE_FIELD;
+  preset?: {
+    timeProperty?: string;
+  };
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
   | LegendDescriptionField
-  | StyleCodeField;
+  | StyleCodeField
+  | ApplyTimeValueField;

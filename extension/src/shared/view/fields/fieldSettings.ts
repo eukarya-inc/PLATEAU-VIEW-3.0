@@ -33,6 +33,7 @@ export const fieldSettings: {
   STYLE_CODE_FIELD: {
     defaultValue: "",
   },
+  APPLY_TIME_VALUE_FIELD: {},
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
