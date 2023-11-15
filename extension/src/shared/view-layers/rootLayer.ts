@@ -135,7 +135,7 @@ const createViewLayerWithComponentGroup = (
       shouldInitialize,
     ),
     id: datasetId,
-    format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
+    format: data?.format ? REEARTH_DATA_FORMATS[data.format] : "gtfs",
     url: data?.url,
     componentGroups: (template ?? setting?.fieldComponents)?.groups?.map(
       g => [g.id, g.name] as [id: string, name: string],
