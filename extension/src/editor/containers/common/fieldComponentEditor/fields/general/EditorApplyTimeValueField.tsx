@@ -19,7 +19,7 @@ export const EditorApplyTimeValueField: React.FC<BasicFieldProps<"APPLY_TIME_VAL
         ...component,
         preset: {
           ...component.preset,
-          timeProperty: e.target.value,
+          propertyName: e.target.value,
         },
       });
     },
@@ -31,7 +31,7 @@ export const EditorApplyTimeValueField: React.FC<BasicFieldProps<"APPLY_TIME_VAL
       <PropertyBox>
         <PropertyInlineWrapper label="Time Property">
           <PropertyInputField
-            value={component?.preset?.timeProperty ?? ""}
+            value={component?.preset?.propertyName ?? ""}
             placeholder="Property Name"
             onChange={handleChange}
           />

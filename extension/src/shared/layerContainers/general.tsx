@@ -12,8 +12,9 @@ import { Properties } from "../reearth/utils";
 import { ComponentAtom } from "../view-layers/component";
 
 import { useEvaluateGeneralAppearance } from "./hooks/useEvaluateGeneralAppearance";
+import { useEvaluateGeneralData } from "./hooks/useEvaluateGeneralData";
 
-type GeneralContainerProps = Omit<GeneralProps, "appearances"> & {
+type GeneralContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & {
   id: string;
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<Properties | null>;
@@ -85,6 +86,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
       {...props}
       onLoad={handleLoad}
       appearances={generalAppearances}
+      appendData={generalData}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />
