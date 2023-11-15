@@ -23,6 +23,7 @@ import {
   POINT_USE_IMAGE_VALUE_FIELD,
   POINT_USE_IMAGE_CONDITION_FIELD,
   POINT_IMAGE_SIZE_FIELD,
+  POINT_USE_3D_MODEL,
 } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -268,6 +269,9 @@ export const useEvaluateGeneralAppearance = ({
   const pointImageSize = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_IMAGE_SIZE_FIELD),
   );
+  const pointModel = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_USE_3D_MODEL),
+  );
 
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
@@ -301,10 +305,16 @@ export const useEvaluateGeneralAppearance = ({
           image:
             makeSimpleValue(pointImageValue) ?? makeConditionalImageExpression(pointImageCondition),
           imageColor: makeConditionalImageColorExpression(pointImageCondition),
-          imageSize: pointImageSize?.preset?.defaultValue ?? "__default__",
-          imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters ?? false,
+          imageSize: pointImageSize?.preset?.defaultValue,
+          imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
           show: makeVisibilityFilterExpression(pointVisibilityFilter),
         },
+        model: pointModel?.preset
+          ? {
+              url: pointModel.preset.url,
+              scale: pointModel.preset.size,
+            }
+          : undefined,
         "3dtiles": {
           color:
             makeConditionalExpression(tilesetFillColorCondition) ??
@@ -325,6 +335,7 @@ export const useEvaluateGeneralAppearance = ({
       pointImageValue,
       pointImageCondition,
       pointImageSize?.preset,
+      pointModel?.preset,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

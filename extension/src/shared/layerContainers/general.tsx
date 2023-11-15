@@ -7,7 +7,7 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
-import { GeneralProps, GeneralLayer, GENERAL_FEATURE } from "../reearth/layers";
+import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
 import { Properties } from "../reearth/utils";
 import { ComponentAtom } from "../view-layers/component";
 
@@ -30,6 +30,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   componentAtoms,
   propertiesAtom,
   hidden,
+  format,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
@@ -79,9 +80,21 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   const theme = useTheme();
 
+  if (format === "gtfs") {
+    return (
+      <GTFSLayer
+        {...props}
+        onLoad={handleLoad}
+        appearances={generalAppearances}
+        visible={!hidden}
+      />
+    );
+  }
+
   return (
     <GeneralLayer
       {...props}
+      format={format}
       onLoad={handleLoad}
       appearances={generalAppearances}
       visible={!hidden}

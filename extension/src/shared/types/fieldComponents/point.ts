@@ -81,6 +81,15 @@ export type PointImageSizeField = FieldBase<{
   };
 }>;
 
+export const POINT_USE_3D_MODEL = "POINT_USE_3D_MODEL";
+export type PointUse3DModelField = FieldBase<{
+  type: typeof POINT_USE_3D_MODEL;
+  preset?: {
+    url?: string;
+    size?: number;
+  };
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField
@@ -90,4 +99,5 @@ export type PointFields =
   | PointVisibilityFilterField
   | PointUseImageValueField
   | PointUseImageConditionField
-  | PointImageSizeField;
+  | PointImageSizeField
+  | PointUse3DModelField;
