@@ -19,7 +19,9 @@ const DEFAULT_APPEARNACES: GTFSAppearances = {
     near: 1000,
     heightReference: "clamp",
   },
-  model: {},
+  model: {
+    heightReference: "clamp",
+  },
 };
 
 export const GTFSLayer: FC<GTFSProps> = ({ url, onLoad, visible, appearances, updateInterval }) => {
