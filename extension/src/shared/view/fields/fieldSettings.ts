@@ -96,6 +96,7 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   POINT_IMAGE_SIZE_FIELD: {},
+  POINT_USE_3D_MODEL: {},
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},

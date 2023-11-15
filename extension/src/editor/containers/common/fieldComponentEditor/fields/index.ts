@@ -35,6 +35,7 @@ import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValu
 import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
+import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
@@ -131,6 +132,11 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Point Size",
     Component: EditorPointSizeField,
+  },
+  POINT_USE_3D_MODEL: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Use 3D Model",
+    Component: EditorPointUse3DModelField,
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {

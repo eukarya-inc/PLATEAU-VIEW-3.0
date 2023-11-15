@@ -1,6 +1,7 @@
-import { FC, useEffect, useMemo, useRef } from "react";
+import { FC, useMemo } from "react";
 
 import { LayerType } from "../../../prototypes/layers";
+import { useLayer } from "../hooks";
 import { LayerAppearanceTypes, Events } from "../types";
 import { Data, DataType } from "../types/layer";
 
@@ -28,7 +29,6 @@ export type GeneralProps = {
   url: string;
   format: DataType;
   onLoad?: (layerId: string) => void;
-  show?: string | boolean;
   visible?: boolean;
   selectedFeatureColor?: string;
   appearances: GeneralAppearances;
@@ -63,7 +63,6 @@ export const GeneralLayer: FC<GeneralProps> = ({
   events,
   selectedFeatureColor,
 }) => {
-  const layerIdRef = useRef<string>();
   const mergedAppearances: Partial<LayerAppearanceTypes> | undefined = useMemo(
     () => ({
       ...appearances,
@@ -91,53 +90,22 @@ export const GeneralLayer: FC<GeneralProps> = ({
     [appearances, selectedFeatureColor],
   );
 
-  useEffect(() => {
-    const layerId = window.reearth?.layers?.add?.({
-      type: "simple",
-      data: {
-        type: format,
-        url,
-        updateInterval,
-        ...appendData,
-      },
-      events,
-      ...mergedAppearances,
-    });
+  const data: Data = useMemo(
+    () => ({
+      type: format,
+      url,
+      updateInterval,
+    }),
+    [url, updateInterval, format],
+  );
 
-    layerIdRef.current = layerId;
-
-    return () => {
-      if (!layerId) return;
-      window.reearth?.layers?.delete?.(layerId);
-    };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
-    const layerId = layerIdRef.current;
-    if (!layerId) return;
-
-    window.reearth?.layers?.override?.(layerId, {
-      data: {
-        type: format,
-        url,
-        updateInterval,
-        ...appendData,
-      },
-      events: events ?? {},
-      visible,
-      ...mergedAppearances,
-    });
-  }, [mergedAppearances, visible, format, url, events, updateInterval, appendData]);
-
-  useEffect(() => {
-    const layerId = layerIdRef.current;
-    if (!layerId) return;
-    setTimeout(() => {
-      if (layerId) {
-        onLoad?.(layerId);
-      }
-    }, 0);
-  }, [onLoad, url]);
+  useLayer({
+    data,
+    visible,
+    events: events ?? {},
+    appearances: mergedAppearances,
+    onLoad,
+  });
 
   return null;
 };
