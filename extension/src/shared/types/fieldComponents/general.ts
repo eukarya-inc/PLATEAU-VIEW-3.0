@@ -1,3 +1,5 @@
+import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
+
 import { FieldBase } from "./base";
 
 export const OPACITY_FIELD = "OPACITY_FIELD";
@@ -47,9 +49,20 @@ export type ApplyTimeValueField = FieldBase<{
   };
 }>;
 
+export const TIMELINE_CUSTOMIZED_FIELD = "TIMELINE_CUSTOMIZED_FIELD";
+export type TimelineCustomizedField = FieldBase<{
+  type: typeof TIMELINE_CUSTOMIZED_FIELD;
+  value?: {
+    isPlaying?: boolean;
+    speed?: number;
+  };
+  preset?: EditorTimelineCustomizedFieldPreset;
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
   | LegendDescriptionField
   | StyleCodeField
-  | ApplyTimeValueField;
+  | ApplyTimeValueField
+  | TimelineCustomizedField;

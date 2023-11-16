@@ -23,12 +23,14 @@ import {
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
+  FILED_GROUP_GENERAL_TIMELINE,
 } from "./constants";
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
+import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
 import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
@@ -81,6 +83,12 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Apply Time Value",
     Component: EditorApplyTimeValueField,
+  },
+  TIMELINE_CUSTOMIZED_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    group: FILED_GROUP_GENERAL_TIMELINE,
+    name: "Customized",
+    Component: EditorTimelineCustomizedField,
   },
   // point
   POINT_VISIBILITY_FILTER_FIELD: {

@@ -38,6 +38,13 @@ export const fieldSettings: {
       timeBasedDisplay: false,
     },
   },
+  TIMELINE_CUSTOMIZED_FIELD: {
+    value: {
+      isPlaying: false,
+      speed: 1,
+    },
+    hasLayerUI: true,
+  },
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
