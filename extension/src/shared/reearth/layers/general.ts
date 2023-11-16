@@ -13,6 +13,7 @@ declare module "../../../prototypes/screen-space-selection" {
       layerId: string;
       layerType: LayerType;
       datasetId: string;
+      properties: any | undefined;
     };
   }
 }

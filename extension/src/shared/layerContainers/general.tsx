@@ -57,6 +57,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
               layerId,
               layerType: props.type,
               datasetId: id,
+              properties: "properties" in object ? object.properties : undefined,
             },
           }
         : undefined;

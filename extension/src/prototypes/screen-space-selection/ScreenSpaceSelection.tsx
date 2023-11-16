@@ -75,6 +75,9 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options
           }
           break;
         }
+        case "imagery": {
+          objects = [event.object];
+        }
       }
       // scene.groundPrimitives.show = showGroundPrimitives;
       ({ replace, add, remove })[event.action](objects);

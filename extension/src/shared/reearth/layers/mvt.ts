@@ -102,6 +102,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
       type: "mvt",
       url,
       layers,
+      jsonProperties: ["attributes"],
     }),
     [url, layers],
   );
