@@ -1,16 +1,16 @@
 import { type FC } from "react";
 
-import { PointVisibilityFilterField } from "../../../types/fieldComponents/point";
+import { PolygonVisibilityFilterField } from "../../../types/fieldComponents/polygon";
 import { LayerModel } from "../../../view-layers";
 import { WritableAtomForComponent } from "../../../view-layers/component";
 import { LayerVisibilityFilterField } from "../common/LayerPolygonVisibilityFilterField";
 
-export interface LayerPointVisibilityFilterFieldProps {
+export interface LayerPolygonVisibilityFilterFieldProps {
   layers: readonly LayerModel[];
-  atoms: WritableAtomForComponent<PointVisibilityFilterField>[];
+  atoms: WritableAtomForComponent<PolygonVisibilityFilterField>[];
 }
 
-export const LayerPointVisibilityFilterField: FC<LayerPointVisibilityFilterFieldProps> = ({
+export const LayerPolygonVisibilityFilterField: FC<LayerPolygonVisibilityFilterFieldProps> = ({
   layers,
   atoms,
 }) => {

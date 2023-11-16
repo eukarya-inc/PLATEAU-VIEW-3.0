@@ -1,5 +1,6 @@
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 
 import { FieldBase } from "./base";
 import { ConditionalColorSchemeValue, ValueColorSchemeValue } from "./colorScheme";
@@ -34,8 +35,16 @@ export type PolygonFillColorConditionField = FieldBase<{
   preset?: FillColorConditionFieldPreset;
 }>;
 
+export const POLYGON_VISIBILITY_FILTER_FIELD = "POLYGON_VISIBILITY_FILTER_FIELD";
+export type PolygonVisibilityFilterField = FieldBase<{
+  type: typeof POLYGON_VISIBILITY_FILTER_FIELD;
+  value?: string;
+  preset?: VisibilityFilterFieldPreset;
+}>;
+
 export type PolygonFields =
   | PolygonStrokeColorField
   | PolygonStrokeWeightField
   | PolygonFillColorConditionField
-  | PolygonFillColorValueField;
+  | PolygonFillColorValueField
+  | PolygonVisibilityFilterField;

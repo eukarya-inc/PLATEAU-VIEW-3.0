@@ -30,6 +30,7 @@ import {
   POLYGON_FILL_COLOR_VALUE_FIELD,
   POLYGON_STROKE_COLOR_FIELD,
   POLYGON_STROKE_WEIGHT_FIELD,
+  POLYGON_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/polygon";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -156,9 +157,12 @@ export const makeGradientExpression = (
 };
 
 const makeVisibilityFilterExpression = (
-  comp: Component<typeof POINT_VISIBILITY_FILTER_FIELD> | undefined,
+  comp:
+    | Component<typeof POINT_VISIBILITY_FILTER_FIELD | typeof POLYGON_VISIBILITY_FILTER_FIELD>
+    | undefined,
 ): ExpressionContainer | undefined => {
-  const rule = comp?.preset?.rules?.find(rule => rule.id === comp.value);
+  const rule =
+    comp?.preset?.rules?.find(rule => rule.id === comp.value) ?? comp?.preset?.rules?.[0];
   const property = rule?.propertyName;
 
   if (!rule?.conditions || !property) return;
@@ -305,6 +309,9 @@ export const useEvaluateGeneralAppearance = ({
   const polygonFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
   );
+  const polygonVisibilityFilter = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_FILTER_FIELD),
+  );
 
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
@@ -348,6 +355,7 @@ export const useEvaluateGeneralAppearance = ({
           strokeColor: polygonStrokeColor?.preset?.defaultValue,
           strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
           stroke: !!polygonStrokeColor || !!polygonStrokeWeight,
+          show: makeVisibilityFilterExpression(polygonVisibilityFilter),
         },
         model: pointModel?.preset
           ? {
@@ -381,6 +389,7 @@ export const useEvaluateGeneralAppearance = ({
       polygonFillColorCondition,
       polygonStrokeColor,
       polygonStrokeWeight,
+      polygonVisibilityFilter,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

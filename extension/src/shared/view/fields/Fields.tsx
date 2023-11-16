@@ -20,7 +20,10 @@ import {
   POINT_USE_IMAGE_CONDITION_FIELD,
   POINT_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/point";
-import { POLYGON_FILL_COLOR_CONDITION_FIELD } from "../../types/fieldComponents/polygon";
+import {
+  POLYGON_FILL_COLOR_CONDITION_FIELD,
+  POLYGON_VISIBILITY_FILTER_FIELD,
+} from "../../types/fieldComponents/polygon";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 import { useIsMultipleSelectableField } from "../hooks/useIsMultipleSelectableField";
@@ -29,6 +32,7 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
+import { LayerVisibilityFilterField } from "./common/LayerPolygonVisibilityFilterField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
@@ -98,6 +102,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerPolygonFillColorConditionField
           layers={layers}
           atoms={atoms as ComponentAtom<"POLYGON_FILL_COLOR_CONDITION_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case POLYGON_VISIBILITY_FILTER_FIELD: {
+      component = (
+        <LayerVisibilityFilterField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"POLYGON_VISIBILITY_FILTER_FIELD">["atom"][]}
         />
       );
       break;

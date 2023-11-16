@@ -118,6 +118,10 @@ export const fieldSettings: {
   },
   POLYGON_STROKE_COLOR_FIELD: {},
   POLYGON_STROKE_WEIGHT_FIELD: {},
+  POLYGON_VISIBILITY_FILTER_FIELD: {
+    defaultValue: "",
+    hasLayerUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
