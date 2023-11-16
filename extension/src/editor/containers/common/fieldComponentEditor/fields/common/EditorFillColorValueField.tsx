@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, ReactElement } from "react";
 
 import { BasicFieldProps } from "..";
 import {
@@ -10,21 +10,24 @@ import {
   PropertyColorField,
 } from "../../../../ui-components";
 
-export type PointFillColorValueFieldPreset = {
+type SupportedFieldTypes = "POINT_FILL_COLOR_VALUE_FIELD" | "POLYGON_FILL_COLOR_VALUE_FIELD";
+
+export type FillColorValueFieldPreset = {
   defaultValue?: string;
   asLegend?: boolean;
   legendName?: string;
 };
 
-export const EditorPointFillColorValueField: React.FC<
-  BasicFieldProps<"POINT_FILL_COLOR_VALUE_FIELD">
-> = ({ component, onUpdate }) => {
+export const EditorFillColorValueField = ({
+  component,
+  onUpdate,
+}: BasicFieldProps<SupportedFieldTypes>): ReactElement | null => {
   const preset = useMemo(() => {
-    return component.preset ?? {};
-  }, [component?.preset]);
+    return component?.preset ?? {};
+  }, [component]);
 
   const handleRuleUpdate = useCallback(
-    (preset: PointFillColorValueFieldPreset) => {
+    (preset: FillColorValueFieldPreset) => {
       onUpdate?.({
         ...component,
         preset,
@@ -49,8 +52,8 @@ export const EditorPointFillColorValueField: React.FC<
 };
 
 type RulePanelProps = {
-  preset: PointFillColorValueFieldPreset;
-  onRuleUpdate: (preset: PointFillColorValueFieldPreset) => void;
+  preset: FillColorValueFieldPreset;
+  onRuleUpdate: (preset: FillColorValueFieldPreset) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {

@@ -1,6 +1,6 @@
 import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
+import { useCallback, useMemo, type FC, useState, SetStateAction, useEffect } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
@@ -69,11 +69,14 @@ const Legend: FC<{
 
 export interface ColorSchemeSectionForComponentFieldProps {
   layers: readonly LayerModel[];
+  useNone?: boolean;
 }
 
 // TODO: Handle as component
+// TODO: Support multiple selection if necessary
 export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForComponentFieldProps> = ({
   layers,
+  useNone = true,
 }) => {
   const [recalcPropertyItems, setRecalcPropertyItems] = useState(0);
   const propertyItems = useAtomValue(
@@ -94,9 +97,13 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                 }
               })
               .filter(isNotNullish) ?? [];
+          const defaultItems: [null, string][] = useNone ? [[null, "なし"]] : [];
           return [
-            [null, "なし"],
-            ...rules.map((rule): [string, string] => [rule.id, rule.propertyName ?? ""]),
+            ...defaultItems,
+            ...rules.map((rule): [string, string] => [
+              rule.id,
+              rule.legendName ?? rule.propertyName ?? "",
+            ]),
           ];
         }),
       [layers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
@@ -182,6 +189,14 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
   const handleClickParameterItem = useCallback(() => {
     setRecalcPropertyItems(p => p + 1);
   }, []);
+
+  const setColorProperty = useSetAtom(colorPropertyAtoms[0]);
+  // Intialize currentRuleId if it doesn't use `none` as default.
+  useEffect(() => {
+    if (useNone) return;
+    const [id] = propertyItems[0];
+    setColorProperty(id);
+  }, [layers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (layers.length !== 1 || colorPropertyAtoms == null) {
     return null;

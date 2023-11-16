@@ -9,12 +9,22 @@ export type LayerHookOptions = {
   visible?: boolean;
   events?: Events;
   onLoad?: (layerId: string) => void;
+  loading?: boolean;
 };
 
-export const useLayer = ({ data, appearances, visible, events, onLoad }: LayerHookOptions) => {
+export const useLayer = ({
+  data,
+  appearances,
+  visible,
+  events,
+  onLoad,
+  loading,
+}: LayerHookOptions) => {
   const layerIdRef = useRef<string>();
 
   useEffect(() => {
+    if (loading) return;
+
     const layerId = window.reearth?.layers?.add?.({
       type: "simple",
       data: data,
@@ -28,7 +38,7 @@ export const useLayer = ({ data, appearances, visible, events, onLoad }: LayerHo
       if (!layerId) return;
       window.reearth?.layers?.delete?.(layerId);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     const layerId = layerIdRef.current;

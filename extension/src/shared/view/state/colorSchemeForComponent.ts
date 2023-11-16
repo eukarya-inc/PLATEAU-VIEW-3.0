@@ -109,7 +109,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
 
         return {
           type: "quantitative" as const,
-          name: rule?.propertyName,
+          name: rule?.legendName || rule?.propertyName,
           colorMapAtom: atom(
             () =>
               COLOR_MAPS.find(c => c.name === (value?.currentColorMapName ?? rule?.colorMapName)),
@@ -194,7 +194,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
         return {
           type: "qualitative" as const,
-          name: rule.propertyName,
+          name: rule.legendName || rule.propertyName,
           colorsAtom: colorsAtom,
           colorAtomsAtom: splitAtom(colorsAtom),
         } as QualitativeColorSet;

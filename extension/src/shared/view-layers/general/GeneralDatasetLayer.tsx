@@ -44,12 +44,14 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
   url,
   type,
   title,
+  layers,
   titleAtom,
   hiddenAtom,
   layerIdAtom,
   selections,
   propertiesAtom,
   componentAtoms,
+  cameraAtom,
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
@@ -114,9 +116,11 @@ export const GeneralDatasetLayer: FC<LayerProps<GeneralLayerType>> = ({
         id={id}
         url={url}
         format={format}
+        layers={layers}
         type={type}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
+        cameraAtom={cameraAtom}
         hidden={hidden}
         // component={PlateauBuildingTileset}
         // hiddenFeaturesAtom={hiddenFeaturesAtom}

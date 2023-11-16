@@ -2,6 +2,7 @@
 
 import { Event } from "../../shared/helpers";
 import { MouseEvent } from "../../shared/reearth/types";
+import { DataType } from "../../shared/reearth/types/layer";
 
 import {
   type ScreenSpaceSelectionEvent,
@@ -26,6 +27,13 @@ const rectangleEvent = {
     width: 0,
     height: 0,
   },
+} satisfies ScreenSpaceSelectionEvent;
+
+const IMAGERY_LAYER_TYPE: DataType[] = ["mvt", "wms"];
+const imageryEvent = {
+  type: "imagery",
+  action: "replace" as ScreenSpaceSelectionEventAction,
+  object: {},
 } satisfies ScreenSpaceSelectionEvent;
 
 function actionForModifier(keyName?: string): ScreenSpaceSelectionEventAction {
@@ -54,6 +62,7 @@ export class ScreenSpaceSelectionHandler {
     window.addEventListener("keydown", this.handleKeyDown);
 
     // TODO(reearth): Support event with `shift` key
+    window.reearth?.on?.("select", this.handleSelect);
     window.reearth?.on?.("mousedown", this.handleMouseDown);
     window.reearth?.on?.("mouseup", this.handleMouseUp);
     window.reearth?.on?.("mousemove", this.handleMouseMove);
@@ -62,6 +71,7 @@ export class ScreenSpaceSelectionHandler {
   destroy(): void {
     window.removeEventListener("keydown", this.handleKeyDown);
 
+    window.reearth?.off?.("select", this.handleSelect);
     window.reearth?.off?.("mousedown", this.handleMouseDown);
     window.reearth?.off?.("mouseup", this.handleMouseUp);
     window.reearth?.off?.("mousemove", this.handleMouseMove);
@@ -87,6 +97,19 @@ export class ScreenSpaceSelectionHandler {
     pointEvent.x = position[0];
     pointEvent.y = position[1];
     this.change.dispatch(pointEvent);
+  };
+
+  private readonly handleSelect = (layerId?: string): void => {
+    if (this.disabled || this.moving || !layerId) {
+      return;
+    }
+    const l = window.reearth?.layers?.findById?.(layerId);
+    const type = l?.type === "simple" ? l.data?.type : undefined;
+    if (!type || !IMAGERY_LAYER_TYPE.includes(type)) return;
+
+    imageryEvent.action = "replace";
+    imageryEvent.object = { ...window.reearth?.layers?.selectedFeature, layerId } ?? {};
+    this.change.dispatch(imageryEvent);
   };
 
   private readonly handleMouseDown = (event: MouseEvent): void => {

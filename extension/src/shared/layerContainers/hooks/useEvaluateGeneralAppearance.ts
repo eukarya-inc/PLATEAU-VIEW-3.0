@@ -25,6 +25,12 @@ import {
   POINT_IMAGE_SIZE_FIELD,
   POINT_USE_3D_MODEL,
 } from "../../types/fieldComponents/point";
+import {
+  POLYGON_FILL_COLOR_CONDITION_FIELD,
+  POLYGON_FILL_COLOR_VALUE_FIELD,
+  POLYGON_STROKE_COLOR_FIELD,
+  POLYGON_STROKE_WEIGHT_FIELD,
+} from "../../types/fieldComponents/polygon";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
 
@@ -34,24 +40,37 @@ const DEFAULT_COLOR = "#ffffff";
 
 export const makeSimpleValue = (
   comp:
-    | Component<typeof POINT_FILL_COLOR_VALUE_FIELD | typeof POINT_USE_IMAGE_VALUE_FIELD>
+    | Component<
+        | typeof POINT_FILL_COLOR_VALUE_FIELD
+        | typeof POINT_USE_IMAGE_VALUE_FIELD
+        | typeof POLYGON_FILL_COLOR_VALUE_FIELD
+        | typeof POLYGON_STROKE_COLOR_FIELD
+      >
     | undefined,
 ): string | undefined => {
   if (!comp) return;
 
   switch (comp.type) {
+    // Point
     case POINT_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
     case POINT_USE_IMAGE_VALUE_FIELD:
       return comp.preset?.defaultValue;
+    // Polygon
+    case POLYGON_FILL_COLOR_VALUE_FIELD:
+      return comp.value?.color || comp.preset?.defaultValue;
     default:
-      return undefined;
+      return comp.preset?.defaultValue;
   }
 };
 
 export const makeConditionalExpression = (
   comp:
-    | Component<typeof POINT_FILL_COLOR_CONDITION_FIELD | typeof TILESET_FILL_COLOR_CONDITION_FIELD>
+    | Component<
+        | typeof POINT_FILL_COLOR_CONDITION_FIELD
+        | typeof TILESET_FILL_COLOR_CONDITION_FIELD
+        | typeof POLYGON_FILL_COLOR_CONDITION_FIELD
+      >
     | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
@@ -273,6 +292,20 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], POINT_USE_3D_MODEL),
   );
 
+  // Polygon
+  const polygonColor = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_VALUE_FIELD),
+  );
+  const polygonStrokeWeight = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_STROKE_WEIGHT_FIELD),
+  );
+  const polygonStrokeColor = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_STROKE_COLOR_FIELD),
+  );
+  const polygonFillColorCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
+  );
+
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], TILESET_FILL_COLOR_CONDITION_FIELD),
@@ -309,6 +342,13 @@ export const useEvaluateGeneralAppearance = ({
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
           show: makeVisibilityFilterExpression(pointVisibilityFilter),
         },
+        polygon: {
+          fillColor:
+            makeSimpleValue(polygonColor) ?? makeConditionalExpression(polygonFillColorCondition),
+          strokeColor: polygonStrokeColor?.preset?.defaultValue,
+          strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
+          stroke: !!polygonStrokeColor || !!polygonStrokeWeight,
+        },
         model: pointModel?.preset
           ? {
               url: pointModel.preset.url,
@@ -336,6 +376,11 @@ export const useEvaluateGeneralAppearance = ({
       pointImageCondition,
       pointImageSize?.preset,
       pointModel?.preset,
+      // Polygon
+      polygonColor,
+      polygonFillColorCondition,
+      polygonStrokeColor,
+      polygonStrokeWeight,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

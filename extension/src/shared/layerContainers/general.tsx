@@ -7,7 +7,10 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
+import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
+import { MVTLayer } from "../reearth/layers/mvt";
+import { CameraPosition } from "../reearth/types";
 import { Properties } from "../reearth/utils";
 import { ComponentAtom } from "../view-layers/component";
 
@@ -21,6 +24,8 @@ type GeneralContainerProps = Omit<GeneralProps, "appearances"> & {
   hidden: boolean;
   type: LayerType;
   componentAtoms: ComponentAtom[] | undefined;
+  layers?: string[];
+  cameraAtom?: PrimitiveAtom<CameraPosition | undefined>;
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
@@ -31,9 +36,11 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   propertiesAtom,
   hidden,
   format,
+  cameraAtom,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
+  const [, setCamera] = useAtom(useOptionalPrimitiveAtom(cameraAtom));
 
   useScreenSpaceSelectionResponder({
     type: GENERAL_FEATURE,
@@ -50,6 +57,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
               layerId,
               layerType: props.type,
               datasetId: id,
+              properties: "properties" in object ? object.properties : undefined,
             },
           }
         : undefined;
@@ -68,12 +76,16 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   const setProperties = useSetAtom(propertiesAtom);
   const handleLoad = useCallback(
-    (layerId: string) => {
+    (layerId: string, camera?: CameraPosition) => {
       onLoad?.(layerId);
       setLayerId(layerId);
       setProperties(new Properties(layerId));
+
+      if (camera) {
+        setCamera(camera);
+      }
     },
-    [onLoad, setProperties, setLayerId],
+    [onLoad, setProperties, setLayerId, setCamera],
   );
 
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
@@ -88,6 +100,12 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
         appearances={generalAppearances}
         visible={!hidden}
       />
+    );
+  }
+
+  if (format === "mvt") {
+    return (
+      <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
     );
   }
 

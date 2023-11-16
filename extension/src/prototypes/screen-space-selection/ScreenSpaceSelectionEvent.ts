@@ -1,4 +1,4 @@
-export type ScreenSpaceSelectionEventType = "point" | "rectangle";
+export type ScreenSpaceSelectionEventType = "point" | "rectangle" | "imagery";
 export type ScreenSpaceSelectionEventAction = "replace" | "add" | "remove";
 
 interface ScreenSpaceSelectionEventBase {
@@ -26,8 +26,14 @@ export interface RectangleScreenSpaceSelectionEvent extends ScreenSpaceSelection
   rectangle: Rectangle;
 }
 
+export interface ImageryScreenSpaceSelectionEvent extends ScreenSpaceSelectionEventBase {
+  type: "imagery";
+  object: any;
+}
+
 export type ScreenSpaceSelectionEvent =
   | PointScreenSpaceSelectionEvent
-  | RectangleScreenSpaceSelectionEvent;
+  | RectangleScreenSpaceSelectionEvent
+  | ImageryScreenSpaceSelectionEvent;
 
 export type ScreenSpaceSelectionEventHandler = (event: ScreenSpaceSelectionEvent) => void;
