@@ -96,6 +96,28 @@ export const fieldSettings: {
   },
   POINT_IMAGE_SIZE_FIELD: {},
   POINT_USE_3D_MODEL: {},
+  // Polygon
+  POLYGON_FILL_COLOR_VALUE_FIELD: {
+    value: {
+      type: VALUE_COLOR_SCHEME,
+      color: undefined,
+    },
+    hasLegendUI: true,
+  },
+  POLYGON_FILL_COLOR_CONDITION_FIELD: {
+    value: {
+      type: CONDITIONAL_COLOR_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
+  POLYGON_STROKE_COLOR_FIELD: {},
+  POLYGON_STROKE_WEIGHT_FIELD: {},
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},

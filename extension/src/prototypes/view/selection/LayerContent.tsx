@@ -3,6 +3,7 @@ import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jo
 import { useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
+import { useOptionalAtomValue } from "../../../shared/hooks";
 import { flyToCamera, flyToLayerId } from "../../../shared/reearth/utils";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { Fields } from "../../../shared/view/fields/Fields";
@@ -64,20 +65,20 @@ export function LayerContent<T extends LayerType>({
     setHidden(value => !value);
   }, [setHidden]);
 
-  const layerIdAtom = useMemo(
-    () => atom(get => (values.length === 1 ? get(values[0].layerIdAtom) : null)),
-    [values],
-  );
-  const layerId = useAtomValue(layerIdAtom);
+  const layerId = useAtomValue(layer.layerIdAtom);
+  const layerCamera = useOptionalAtomValue(layer.cameraAtom);
   const handleMove = useCallback(() => {
     const camera = rootLayer?.general?.camera;
     if (camera) {
       return flyToCamera(camera);
     }
+    if (layerCamera) {
+      return flyToCamera(layerCamera);
+    }
     if (layerId) {
       return flyToLayerId(layerId);
     }
-  }, [layerId, rootLayer?.general?.camera]);
+  }, [layerId, layerCamera, rootLayer?.general?.camera]);
 
   const remove = useSetAtom(removeLayerAtom);
   const handleRemove = useCallback(() => {

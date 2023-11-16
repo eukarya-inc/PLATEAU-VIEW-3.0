@@ -72,19 +72,19 @@ export type LookAtDestination = {
 /** Represents the camera position and state */
 export type CameraPosition = {
   /** degrees */
-  lat: number;
+  lat?: number;
   /** degrees */
-  lng: number;
+  lng?: number;
   /** meters */
-  height: number;
+  height?: number;
   /** radians */
-  heading: number;
+  heading?: number;
   /** radians */
-  pitch: number;
+  pitch?: number;
   /** radians */
-  roll: number;
+  roll?: number;
   /** Field of view expressed in radians */
-  fov: number;
+  fov?: number;
 };
 
 export type CameraOptions = {

@@ -20,6 +20,7 @@ import {
   POINT_USE_IMAGE_CONDITION_FIELD,
   POINT_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/point";
+import { POLYGON_FILL_COLOR_CONDITION_FIELD } from "../../types/fieldComponents/polygon";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 import { useIsMultipleSelectableField } from "../hooks/useIsMultipleSelectableField";
@@ -33,6 +34,7 @@ import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorCo
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
 import { LayerPointUseImageConditionField } from "./point/LayerPointUseImageConditionField";
 import { LayerPointVisibilityFilterField } from "./point/LayerPointVisibilityFilterField";
+import { LayerPolygonFillColorConditionField } from "./polygon/LayerPolygonFillColorConditionField";
 
 type Props = {
   layers: readonly LayerModel[];
@@ -86,6 +88,16 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerPointUseImageConditionField
           layers={layers}
           atoms={atoms as ComponentAtom<"POINT_USE_IMAGE_CONDITION_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    // Polygon
+    case POLYGON_FILL_COLOR_CONDITION_FIELD: {
+      component = (
+        <LayerPolygonFillColorConditionField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"POLYGON_FILL_COLOR_CONDITION_FIELD">["atom"][]}
         />
       );
       break;
