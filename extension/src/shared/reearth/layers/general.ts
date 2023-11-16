@@ -95,8 +95,9 @@ export const GeneralLayer: FC<GeneralProps> = ({
       type: format,
       url,
       updateInterval,
+      ...appendData,
     }),
-    [url, updateInterval, format],
+    [url, updateInterval, format, appendData],
   );
 
   useLayer({

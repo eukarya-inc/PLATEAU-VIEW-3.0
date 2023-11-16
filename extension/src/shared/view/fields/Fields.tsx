@@ -13,7 +13,7 @@ import {
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
 } from "../../types/fieldComponents/3dtiles";
-import { OPACITY_FIELD } from "../../types/fieldComponents/general";
+import { APPLY_TIME_VALUE_FIELD, OPACITY_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_GRADIENT_FIELD,
@@ -28,6 +28,7 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
+import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
@@ -51,6 +52,14 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     // General
     case OPACITY_FIELD: {
       component = <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />;
+      break;
+    }
+    case APPLY_TIME_VALUE_FIELD: {
+      component = (
+        <LayerApplyTimeValueField
+          atoms={atoms as ComponentAtom<"APPLY_TIME_VALUE_FIELD">["atom"][]}
+        />
+      );
       break;
     }
     // Point

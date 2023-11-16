@@ -1,3 +1,4 @@
+import { PointConvertFromCSVFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointConvertFromCSVField";
 import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorConditionField";
 import { PointFillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorGradientField";
 import { PointFillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorValueField";
@@ -90,6 +91,12 @@ export type PointUse3DModelField = FieldBase<{
   };
 }>;
 
+export const POINT_CONVERT_FROM_CSV = "POINT_CONVERT_FROM_CSV";
+export type PointConvertFromCSVField = FieldBase<{
+  type: typeof POINT_CONVERT_FROM_CSV;
+  preset?: PointConvertFromCSVFieldPreset;
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField
@@ -100,4 +107,5 @@ export type PointFields =
   | PointUseImageValueField
   | PointUseImageConditionField
   | PointImageSizeField
-  | PointUse3DModelField;
+  | PointUse3DModelField
+  | PointConvertFromCSVField;

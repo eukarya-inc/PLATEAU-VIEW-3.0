@@ -96,7 +96,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               .filter(isNotNullish) ?? [];
           return [
             [null, "なし"],
-            ...rules.map((rule): [string, string] => [rule.id, rule.propertyName ?? ""]),
+            ...rules.map((rule): [string, string] => [
+              rule.id,
+              rule.legendName ?? rule.propertyName ?? "",
+            ]),
           ];
         }),
       [layers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps

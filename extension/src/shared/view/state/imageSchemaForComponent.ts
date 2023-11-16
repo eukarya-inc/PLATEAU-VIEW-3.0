@@ -108,7 +108,7 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         ) as unknown as PrimitiveAtom<ImageIcon[]>;
         return {
           type: "imageIcon" as const,
-          name: rule.propertyName,
+          name: rule.legendName ?? rule.propertyName,
           imageIconsAtom: imageIconsAtom,
           imageIconAtomsAtom: splitAtom(imageIconsAtom),
         } as ImageIconSet;

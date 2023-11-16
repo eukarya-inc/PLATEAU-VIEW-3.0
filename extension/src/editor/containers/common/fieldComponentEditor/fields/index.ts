@@ -29,6 +29,7 @@ import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionFie
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
+import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
 import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
@@ -137,6 +138,11 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Use 3D Model",
     Component: EditorPointUse3DModelField,
+  },
+  POINT_CONVERT_FROM_CSV: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Convert from CSV",
+    Component: EditorPointConvertFromCSVField,
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {

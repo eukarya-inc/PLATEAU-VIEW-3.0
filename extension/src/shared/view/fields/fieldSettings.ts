@@ -33,7 +33,11 @@ export const fieldSettings: {
   STYLE_CODE_FIELD: {
     defaultValue: "",
   },
-  APPLY_TIME_VALUE_FIELD: {},
+  APPLY_TIME_VALUE_FIELD: {
+    value: {
+      timeBasedDisplay: false,
+    },
+  },
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
@@ -97,6 +101,7 @@ export const fieldSettings: {
   },
   POINT_IMAGE_SIZE_FIELD: {},
   POINT_USE_3D_MODEL: {},
+  POINT_CONVERT_FROM_CSV: {},
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
