@@ -100,7 +100,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
           const defaultItems: [null, string][] = useNone ? [[null, "なし"]] : [];
           return [
             ...defaultItems,
-            ...rules.map((rule): [string, string] => [rule.id, rule.propertyName ?? ""]),
+            ...rules.map((rule): [string, string] => [
+              rule.id,
+              rule.legendName ?? rule.propertyName ?? "",
+            ]),
           ];
         }),
       [layers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
