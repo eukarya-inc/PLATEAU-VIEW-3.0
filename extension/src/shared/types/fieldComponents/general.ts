@@ -52,11 +52,12 @@ export type ApplyTimeValueField = FieldBase<{
 export const TIMELINE_CUSTOMIZED_FIELD = "TIMELINE_CUSTOMIZED_FIELD";
 export type TimelineCustomizedField = FieldBase<{
   type: typeof TIMELINE_CUSTOMIZED_FIELD;
-  value?: {
-    isPlaying?: boolean;
-    speed?: number;
-  };
   preset?: EditorTimelineCustomizedFieldPreset;
+}>;
+
+export const TIMELINE_MONTH_FIELD = "TIMELINE_MONTH_FIELD";
+export type TimelineMonthField = FieldBase<{
+  type: typeof TIMELINE_MONTH_FIELD;
 }>;
 
 export type GeneralFields =
@@ -65,4 +66,5 @@ export type GeneralFields =
   | LegendDescriptionField
   | StyleCodeField
   | ApplyTimeValueField
-  | TimelineCustomizedField;
+  | TimelineCustomizedField
+  | TimelineMonthField;

@@ -7,6 +7,10 @@ import { ParameterList } from "../../../../prototypes/ui-components";
 import { ApplyTimeValueField } from "../../../types/fieldComponents/general";
 import { WritableAtomForComponent } from "../../../view-layers/component";
 
+const StyledFormGroup = styled(FormGroup)`
+  padding: 4px 8px;
+`;
+
 const SwitchFormControlLabel = styled(FormControlLabel)`
   justify-content: end;
   & > .MuiFormControlLabel-label {
@@ -37,7 +41,7 @@ export const LayerApplyTimeValueField: FC<LayerApplyTimeValueFieldProps> = ({ at
 
   return (
     <ParameterList>
-      <FormGroup>
+      <StyledFormGroup>
         <SwitchFormControlLabel
           checked={component.value?.timeBasedDisplay}
           labelPlacement="start"
@@ -45,7 +49,7 @@ export const LayerApplyTimeValueField: FC<LayerApplyTimeValueFieldProps> = ({ at
           label={"Time Based Display"}
           onChange={handleTimeBasedDisplayChange}
         />
-      </FormGroup>
+      </StyledFormGroup>
     </ParameterList>
   );
 };

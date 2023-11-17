@@ -17,6 +17,7 @@ import {
   APPLY_TIME_VALUE_FIELD,
   OPACITY_FIELD,
   TIMELINE_CUSTOMIZED_FIELD,
+  TIMELINE_MONTH_FIELD,
 } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -35,6 +36,7 @@ import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGr
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerTimelineCustomizedField } from "./general/LayerTimelineCustomizedField";
+import { LayerTimelineMonthField } from "./general/LayerTimelineMonthField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
 import { LayerPointUseImageConditionField } from "./point/LayerPointUseImageConditionField";
@@ -72,6 +74,12 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerTimelineCustomizedField
           atoms={atoms as ComponentAtom<"TIMELINE_CUSTOMIZED_FIELD">["atom"][]}
         />
+      );
+      break;
+    }
+    case TIMELINE_MONTH_FIELD: {
+      component = (
+        <LayerTimelineMonthField atoms={atoms as ComponentAtom<"TIMELINE_MONTH_FIELD">["atom"][]} />
       );
       break;
     }

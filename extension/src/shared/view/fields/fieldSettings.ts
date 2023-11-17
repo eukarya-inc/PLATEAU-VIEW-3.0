@@ -39,10 +39,9 @@ export const fieldSettings: {
     },
   },
   TIMELINE_CUSTOMIZED_FIELD: {
-    value: {
-      isPlaying: false,
-      speed: 1,
-    },
+    hasLayerUI: true,
+  },
+  TIMELINE_MONTH_FIELD: {
     hasLayerUI: true,
   },
   // point

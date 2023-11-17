@@ -31,6 +31,7 @@ import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionF
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
+import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
 import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
 import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
 import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
@@ -89,6 +90,12 @@ export const fields: {
     group: FILED_GROUP_GENERAL_TIMELINE,
     name: "Customized",
     Component: EditorTimelineCustomizedField,
+  },
+  TIMELINE_MONTH_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    group: FILED_GROUP_GENERAL_TIMELINE,
+    name: "Month",
+    Component: EditorTimelineMonthField,
   },
   // point
   POINT_VISIBILITY_FILTER_FIELD: {
