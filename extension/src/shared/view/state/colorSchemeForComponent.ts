@@ -214,9 +214,9 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           ? [
               {
                 id: component.id,
-                value: component.preset.legendName || component.preset.defaultValue,
+                value: component.preset.defaultValue,
                 color: component.value?.color || component.preset.defaultValue,
-                name: component.preset.legendName || component.preset.defaultValue,
+                name: component.preset.legendName ?? "",
               },
             ]
           : [];
@@ -233,12 +233,14 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             });
           },
         ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
-        return {
-          type: "qualitative" as const,
-          name: get(layer.titleAtom),
-          colorsAtom: colorsAtom,
-          colorAtomsAtom: splitAtom(colorsAtom),
-        } as QualitativeColorSet;
+        return component.preset?.asLegend
+          ? ({
+              type: "qualitative" as const,
+              name: get(layer.titleAtom),
+              colorsAtom: colorsAtom,
+              colorAtomsAtom: splitAtom(colorsAtom),
+            } as QualitativeColorSet)
+          : undefined;
       }
     }
   });

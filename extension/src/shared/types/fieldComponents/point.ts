@@ -11,7 +11,7 @@ import {
   GradientColorSchemeValue,
   ValueColorSchemeValue,
 } from "./colorScheme";
-import { ConditionalImageSchemeValue } from "./imageScheme";
+import { ConditionalImageSchemeValue, ValueImageSchemeValue } from "./imageScheme";
 
 export const POINT_STYLE_FIELD = "POINT_STYLE_FIELD";
 export type PointStyleField = FieldBase<{
@@ -61,7 +61,7 @@ export type PointVisibilityFilterField = FieldBase<{
 export const POINT_USE_IMAGE_VALUE_FIELD = "POINT_USE_IMAGE_VALUE_FIELD";
 export type PointUseImageValueField = FieldBase<{
   type: typeof POINT_USE_IMAGE_VALUE_FIELD;
-  value?: string;
+  value?: ValueImageSchemeValue;
   preset?: PointUseImageValueFieldPreset;
 }>;
 
