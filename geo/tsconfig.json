@@ -19,5 +19,16 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
+    "paths": {
+      "@prototypes/plateau-nest-vector-tile": [
+        "src/prototypes/nest-vector-tile/src/index.ts"
+      ],
+      "@prototypes/plateau-vector-map-style": [
+        "src/prototypes/vector-map-style/src/index.ts"
+      ],
+      "@prototypes/plateau-nest-cesium": [
+        "src/prototypes/nest-cesium/src/index.ts"
+      ]
+    }
   }
 }

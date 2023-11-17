@@ -6,7 +6,10 @@ import { Areas, Area } from "../dto/areas";
 
 interface AreaCodes {
   prefectures: Record<string, string>;
-  municipalities: Record<string, string | [string, string] | [string, string[]]>;
+  municipalities: Record<
+    string,
+    string | [string, string] | [string, string[]]
+  >;
 }
 
 type AreaRadii = Record<string, number>;
@@ -14,13 +17,20 @@ type AreaRadii = Record<string, number>;
 let areaCodesPromise: Promise<AreaCodes>;
 let areaRadiiPromise: Promise<AreaRadii>;
 
-async function getAreas(code: string, includeRadii = false): Promise<Area[] | undefined> {
+async function getAreas(
+  code: string,
+  includeRadii = false
+): Promise<Area[] | undefined> {
   const [areaCodes, areaRadii] = await Promise.all([
     areaCodesPromise ??
-      (areaCodesPromise = import("../assets/areaCodes.json") as unknown as Promise<AreaCodes>),
+      (areaCodesPromise = import(
+        "../assets/areaCodes.json"
+      ) as unknown as Promise<AreaCodes>),
     includeRadii
       ? areaRadiiPromise ??
-        (areaRadiiPromise = import("../assets/areaRadii.json") as unknown as Promise<AreaRadii>)
+        (areaRadiiPromise = import(
+          "../assets/areaRadii.json"
+        ) as unknown as Promise<AreaRadii>)
       : undefined,
   ]);
 
@@ -64,7 +74,7 @@ export class AreasResolver {
   async areas(
     @Args("longitude") longitude: number,
     @Args("latitude") latitude: number,
-    @Args("includeRadii", { defaultValue: false }) includeRadii: boolean,
+    @Args("includeRadii", { defaultValue: false }) includeRadii: boolean
   ): Promise<Areas> {
     try {
       const { data } = await axios.get(
@@ -74,7 +84,7 @@ export class AreasResolver {
             lon: longitude,
             lat: latitude,
           },
-        },
+        }
       );
       const municipalityCode = data.results?.muniCd;
       const name = data.results?.lv01Nm;
