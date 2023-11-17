@@ -17,6 +17,7 @@ import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFlood
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
 import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
+import { EditorVisibilityFilterField } from "./common/EditorVisibilityFilterField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
@@ -26,6 +27,7 @@ import {
   FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_POLYGON_FILL_COLOR,
+  FIELD_GROUP_POLYGON_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
 } from "./constants";
@@ -39,7 +41,6 @@ import { EditorPointStyleField } from "./point/EditorPointStyleField";
 import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
-import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
 import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
 import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
 
@@ -84,7 +85,9 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_VISIBILITY,
     name: "Filter",
-    Component: EditorPointVisibilityFilterField,
+    Component: EditorVisibilityFilterField as React.FC<
+      BasicFieldProps<"POINT_VISIBILITY_FILTER_FIELD">
+    >,
   },
   POINT_FILL_COLOR_VALUE_FIELD: {
     category: FIELD_CATEGORY_POINT,
@@ -165,6 +168,14 @@ export const fields: {
     name: "Condition",
     Component: EditorFillColorConditionField as React.FC<
       BasicFieldProps<"POLYGON_FILL_COLOR_CONDITION_FIELD">
+    >,
+  },
+  POLYGON_VISIBILITY_FILTER_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    group: FIELD_GROUP_POLYGON_VISIBILITY,
+    name: "Filter",
+    Component: EditorVisibilityFilterField as React.FC<
+      BasicFieldProps<"POLYGON_VISIBILITY_FILTER_FIELD">
     >,
   },
   // 3dtiles
