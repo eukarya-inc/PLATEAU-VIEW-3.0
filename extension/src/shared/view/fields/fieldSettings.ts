@@ -53,6 +53,7 @@ export const fieldSettings: {
       type: CONDITIONAL_COLOR_SCHEME,
       currentRuleId: undefined,
       overrideRules: [],
+      useDefault: true,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -67,6 +68,7 @@ export const fieldSettings: {
       currentColorMapName: undefined,
       currentMax: undefined,
       currentMin: undefined,
+      useDefault: true,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -109,6 +111,7 @@ export const fieldSettings: {
       type: CONDITIONAL_COLOR_SCHEME,
       currentRuleId: undefined,
       overrideRules: [],
+      useDefault: true,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -130,6 +133,7 @@ export const fieldSettings: {
       type: CONDITIONAL_COLOR_SCHEME,
       currentRuleId: undefined,
       overrideRules: [],
+      useDefault: false,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -144,6 +148,7 @@ export const fieldSettings: {
       currentColorMapName: undefined,
       currentMax: undefined,
       currentMin: undefined,
+      useDefault: false,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },

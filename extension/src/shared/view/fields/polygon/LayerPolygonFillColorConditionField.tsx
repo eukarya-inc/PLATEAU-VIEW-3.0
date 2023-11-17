@@ -18,5 +18,5 @@ export const LayerPolygonFillColorConditionField: FC<LayerPolygonFillColorCondit
     return null;
   }
 
-  return <ColorSchemeSectionForComponentField layers={layers} useNone={false} />;
+  return <ColorSchemeSectionForComponentField layers={layers} />;
 };

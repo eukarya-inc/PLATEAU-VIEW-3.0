@@ -76,12 +76,16 @@ export const makeConditionalExpression = (
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
+  const currentRuleId = comp.value?.useDefault
+    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id
+    : comp.value?.currentRuleId;
+
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
@@ -119,7 +123,10 @@ export const makeGradientExpression = (
 
   const preset = comp.preset;
   const value = comp.value;
-  const rule = preset?.rules?.find(r => r.id === value?.currentRuleId);
+  const currentRuleId = comp.value?.useDefault
+    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id
+    : comp.value?.currentRuleId;
+  const rule = preset?.rules?.find(r => r.id === currentRuleId);
 
   const conditions: [string, string][] = [["true", color(DEFAULT_COLOR, 1)]];
 
@@ -191,12 +198,13 @@ export const makeConditionalImageExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
+  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id;
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
@@ -228,12 +236,13 @@ export const makeConditionalImageColorExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
+  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id;
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);

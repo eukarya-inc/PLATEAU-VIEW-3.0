@@ -79,10 +79,7 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
                 }
               })
               .filter(isNotNullish) ?? [];
-          return [
-            [null, "なし"],
-            ...rules.map((rule): [string, string] => [rule.id, rule.propertyName ?? ""]),
-          ];
+          return rules.map((rule): [string, string] => [rule.id, rule.propertyName ?? ""]);
         }),
       [layers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
     ),
@@ -96,7 +93,9 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
           for (const componentAtom of layers[0].componentAtoms) {
             const componentValue = get(componentAtom.atom);
             if (isConditionalImageSchemeComponent(componentValue)) {
-              const ruleId = componentValue.value?.currentRuleId;
+              const currentRuleId =
+                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id;
+              const ruleId = currentRuleId;
               if (ruleId) {
                 return ruleId;
               }
@@ -109,10 +108,9 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
             const componentValue = get(componentAtom.atom);
 
             if (isConditionalImageSchemeComponent(componentValue)) {
-              const update =
-                typeof action === "function"
-                  ? action(componentValue.value?.currentRuleId ?? null)
-                  : action;
+              const currentRuleId =
+                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id;
+              const update = typeof action === "function" ? action(currentRuleId ?? null) : action;
               set(componentAtom.atom, {
                 ...componentValue,
                 value: {

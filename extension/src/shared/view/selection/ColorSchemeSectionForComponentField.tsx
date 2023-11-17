@@ -1,6 +1,6 @@
 import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useMemo, type FC, useState, SetStateAction, useEffect } from "react";
+import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
@@ -76,13 +76,13 @@ export interface ColorSchemeSectionForComponentFieldProps {
 // TODO: Support multiple selection if necessary
 export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForComponentFieldProps> = ({
   layers,
-  useNone = true,
 }) => {
   const [recalcPropertyItems, setRecalcPropertyItems] = useState(0);
   const propertyItems = useAtomValue(
     useMemo(
       () =>
         atom((get): Array<[null, string] | [string, string]> => {
+          let useNone = true;
           const rules =
             layers[0].componentAtoms
               ?.flatMap(c => {
@@ -91,6 +91,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                   isConditionalColorSchemeComponent(componentValue) ||
                   isGradientColorSchemeComponent(componentValue)
                 ) {
+                  useNone = !componentValue.value?.useDefault;
                   return componentValue.preset?.rules?.map(rule =>
                     rule.propertyName ? rule : undefined,
                   );
@@ -121,7 +122,9 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isConditionalColorSchemeComponent(componentValue) ||
               isGradientColorSchemeComponent(componentValue)
             ) {
-              const ruleId = componentValue.value?.currentRuleId;
+              const ruleId = componentValue.value?.useDefault
+                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id
+                : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
               }
@@ -189,14 +192,6 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
   const handleClickParameterItem = useCallback(() => {
     setRecalcPropertyItems(p => p + 1);
   }, []);
-
-  const setColorProperty = useSetAtom(colorPropertyAtoms[0]);
-  // Intialize currentRuleId if it doesn't use `none` as default.
-  useEffect(() => {
-    if (useNone) return;
-    const [id] = propertyItems[0];
-    setColorProperty(id);
-  }, [layers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (layers.length !== 1 || colorPropertyAtoms == null) {
     return null;
