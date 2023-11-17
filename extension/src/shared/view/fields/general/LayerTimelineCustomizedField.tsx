@@ -9,5 +9,5 @@ export interface LayerTimelineCustomizedFieldProps {
 
 export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps> = ({ atoms }) => {
   const [component, setComponent] = useAtom(atoms[0]);
-  return null;
+  return <></>;
 };
