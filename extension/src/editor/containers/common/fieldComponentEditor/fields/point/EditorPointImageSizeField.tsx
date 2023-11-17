@@ -9,24 +9,26 @@ import {
   PropertySwitch,
   PropertyWrapper,
 } from "../../../../ui-components";
+import { useNumberFieldState } from "../../hooksUtils";
 
 export const EditorPointImageSizeField: React.FC<BasicFieldProps<"POINT_IMAGE_SIZE_FIELD">> = ({
   component,
   onUpdate,
 }) => {
-  const handleSizeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const numberSize = Number(e.target.value);
-      if (isNaN(numberSize)) return;
-      onUpdate({
-        ...component,
-        preset: {
-          ...component.preset,
-          defaultValue: numberSize,
-        },
-      });
-    },
-    [component, onUpdate],
+  const [size, handleSizeChange] = useNumberFieldState(
+    component.preset?.defaultValue,
+    useCallback(
+      v => {
+        onUpdate({
+          ...component,
+          preset: {
+            ...component.preset,
+            defaultValue: v,
+          },
+        });
+      },
+      [component, onUpdate],
+    ),
   );
 
   const handleEnableSizeInMetersChange = useCallback(
@@ -53,7 +55,7 @@ export const EditorPointImageSizeField: React.FC<BasicFieldProps<"POINT_IMAGE_SI
         <PropertyInlineWrapper label="Image Size">
           <PropertyInputField
             placeholder="Value"
-            value={component.preset?.defaultValue ?? ""}
+            value={size}
             onChange={handleSizeChange}
             type="number"
             InputProps={{

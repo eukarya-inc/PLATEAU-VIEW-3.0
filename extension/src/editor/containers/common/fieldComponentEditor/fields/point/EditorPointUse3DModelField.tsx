@@ -7,6 +7,7 @@ import {
   PropertyInputField,
   PropertyWrapper,
 } from "../../../../ui-components";
+import { useNumberFieldState } from "../../hooksUtils";
 
 export const EditorPointUse3DModelField: React.FC<BasicFieldProps<"POINT_USE_3D_MODEL">> = ({
   component,
@@ -24,20 +25,23 @@ export const EditorPointUse3DModelField: React.FC<BasicFieldProps<"POINT_USE_3D_
     },
     [component, onUpdate],
   );
-  const handleSizeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const numberSize = Number(e.target.value);
-      if (isNaN(numberSize)) return;
-      onUpdate({
-        ...component,
-        preset: {
-          ...component.preset,
-          size: numberSize,
-        },
-      });
-    },
-    [component, onUpdate],
+
+  const [size, handleSizeChange] = useNumberFieldState(
+    component.preset?.size,
+    useCallback(
+      v => {
+        onUpdate({
+          ...component,
+          preset: {
+            ...component.preset,
+            size: v,
+          },
+        });
+      },
+      [component, onUpdate],
+    ),
   );
+
   return (
     <PropertyWrapper>
       <PropertyBox>
@@ -51,7 +55,7 @@ export const EditorPointUse3DModelField: React.FC<BasicFieldProps<"POINT_USE_3D_
         <PropertyInlineWrapper label="Size">
           <PropertyInputField
             placeholder="Value"
-            value={component.preset?.size ?? ""}
+            value={size}
             onChange={handleSizeChange}
             type="number"
           />

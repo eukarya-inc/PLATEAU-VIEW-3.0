@@ -8,23 +8,25 @@ import {
   PropertyInputField,
   PropertyWrapper,
 } from "../../../../ui-components";
+import { useNumberFieldState } from "../../hooksUtils";
 
 export const EditorPolygonStrokeWeightField: React.FC<
   BasicFieldProps<"POLYGON_STROKE_WEIGHT_FIELD">
 > = ({ component, onUpdate }) => {
-  const handleSizeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const numberSize = Number(e.target.value);
-      if (isNaN(numberSize)) return;
-      onUpdate({
-        ...component,
-        preset: {
-          ...component.preset,
-          defaultValue: numberSize,
-        },
-      });
-    },
-    [component, onUpdate],
+  const [value, handleChangeValue] = useNumberFieldState(
+    component.preset?.defaultValue,
+    useCallback(
+      v => {
+        onUpdate({
+          ...component,
+          preset: {
+            ...component.preset,
+            defaultValue: v,
+          },
+        });
+      },
+      [component, onUpdate],
+    ),
   );
   return (
     <PropertyWrapper>
@@ -32,8 +34,8 @@ export const EditorPolygonStrokeWeightField: React.FC<
         <PropertyInlineWrapper label="Stroke Weight">
           <PropertyInputField
             placeholder="Value"
-            value={component.preset?.defaultValue ?? ""}
-            onChange={handleSizeChange}
+            value={value}
+            onChange={handleChangeValue}
             type="number"
             InputProps={{
               endAdornment: <InputAdornment position="end">px</InputAdornment>,
