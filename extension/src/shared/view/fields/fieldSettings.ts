@@ -125,6 +125,32 @@ export const fieldSettings: {
     defaultValue: "",
     hasLayerUI: true,
   },
+  // Polygon
+  POLYLINE_FILL_COLOR_VALUE_FIELD: {
+    value: {
+      type: VALUE_COLOR_SCHEME,
+      color: undefined,
+    },
+    hasLegendUI: true,
+  },
+  POLYLINE_FILL_COLOR_CONDITION_FIELD: {
+    value: {
+      type: CONDITIONAL_COLOR_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      useDefault: true,
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
+  POLYLINE_STROKE_WEIGHT_FIELD: {},
+  POLYLINE_VISIBILITY_FILTER_FIELD: {
+    defaultValue: "",
+    hasLayerUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},

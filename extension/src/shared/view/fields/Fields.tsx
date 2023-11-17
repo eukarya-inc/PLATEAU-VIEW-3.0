@@ -24,6 +24,10 @@ import {
   POLYGON_FILL_COLOR_CONDITION_FIELD,
   POLYGON_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/polygon";
+import {
+  POLYLINE_FILL_COLOR_CONDITION_FIELD,
+  POLYLINE_VISIBILITY_FILTER_FIELD,
+} from "../../types/fieldComponents/polyline";
 import { LayerModel } from "../../view-layers";
 import { ComponentAtom } from "../../view-layers/component";
 import { useIsMultipleSelectableField } from "../hooks/useIsMultipleSelectableField";
@@ -32,13 +36,15 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
-import { LayerVisibilityFilterField } from "./common/LayerPolygonVisibilityFilterField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
 import { LayerPointUseImageConditionField } from "./point/LayerPointUseImageConditionField";
 import { LayerPointVisibilityFilterField } from "./point/LayerPointVisibilityFilterField";
 import { LayerPolygonFillColorConditionField } from "./polygon/LayerPolygonFillColorConditionField";
+import { LayerPolygonVisibilityFilterField } from "./polygon/LayerPolygonVisibilityFilterField";
+import { LayerPolylineFillColorConditionField } from "./polyline/LayerPolylineFillColorConditionField";
+import { LayerPolylineVisibilityFilterField } from "./polyline/LayerPolylineVisibilityFilterField";
 
 type Props = {
   layers: readonly LayerModel[];
@@ -96,6 +102,25 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
       );
       break;
     }
+    // Polyline
+    case POLYLINE_FILL_COLOR_CONDITION_FIELD: {
+      component = (
+        <LayerPolylineFillColorConditionField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"POLYLINE_FILL_COLOR_CONDITION_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case POLYLINE_VISIBILITY_FILTER_FIELD: {
+      component = (
+        <LayerPolylineVisibilityFilterField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"POLYLINE_VISIBILITY_FILTER_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
     // Polygon
     case POLYGON_FILL_COLOR_CONDITION_FIELD: {
       component = (
@@ -108,7 +133,7 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     }
     case POLYGON_VISIBILITY_FILTER_FIELD: {
       component = (
-        <LayerVisibilityFilterField
+        <LayerPolygonVisibilityFilterField
           layers={layers}
           atoms={atoms as ComponentAtom<"POLYGON_VISIBILITY_FILTER_FIELD">["atom"][]}
         />
