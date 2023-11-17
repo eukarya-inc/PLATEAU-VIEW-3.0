@@ -64,6 +64,7 @@ export const fieldSettings: {
       type: CONDITIONAL_COLOR_SCHEME,
       currentRuleId: undefined,
       overrideRules: [],
+      useDefault: true,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -78,6 +79,7 @@ export const fieldSettings: {
       currentColorMapName: undefined,
       currentMax: undefined,
       currentMin: undefined,
+      useDefault: true,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -108,6 +110,33 @@ export const fieldSettings: {
   POINT_IMAGE_SIZE_FIELD: {},
   POINT_USE_3D_MODEL: {},
   POINT_CONVERT_FROM_CSV: {},
+  // Polygon
+  POLYGON_FILL_COLOR_VALUE_FIELD: {
+    value: {
+      type: VALUE_COLOR_SCHEME,
+      color: undefined,
+    },
+    hasLegendUI: true,
+  },
+  POLYGON_FILL_COLOR_CONDITION_FIELD: {
+    value: {
+      type: CONDITIONAL_COLOR_SCHEME,
+      currentRuleId: undefined,
+      overrideRules: [],
+      useDefault: true,
+      storeable: {
+        omitPropertyNames: ["value.currentRuleId"],
+      },
+    },
+    hasLegendUI: true,
+    hasLayerUI: true,
+  },
+  POLYGON_STROKE_COLOR_FIELD: {},
+  POLYGON_STROKE_WEIGHT_FIELD: {},
+  POLYGON_VISIBILITY_FILTER_FIELD: {
+    defaultValue: "",
+    hasLayerUI: true,
+  },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
@@ -116,6 +145,7 @@ export const fieldSettings: {
       type: CONDITIONAL_COLOR_SCHEME,
       currentRuleId: undefined,
       overrideRules: [],
+      useDefault: false,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },
@@ -130,6 +160,7 @@ export const fieldSettings: {
       currentColorMapName: undefined,
       currentMax: undefined,
       currentMin: undefined,
+      useDefault: false,
       storeable: {
         omitPropertyNames: ["value.currentRuleId"],
       },

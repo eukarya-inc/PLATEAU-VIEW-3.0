@@ -94,7 +94,10 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       case GRADIENT_COLOR_SCHEME: {
         if (!isGradientColorSchemeComponent(component)) return;
 
-        const rule = component.preset?.rules?.find(rule => rule.id === colorScheme.currentRuleId);
+        const currentRuleId = colorScheme.useDefault
+          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+          : colorScheme.currentRuleId;
+        const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         const value = component.value;
         const colorMap = COLOR_MAPS.find(
           c => c.name === (value?.currentColorMapName ?? rule?.colorMapName),
@@ -109,7 +112,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
 
         return {
           type: "quantitative" as const,
-          name: rule?.legendName ?? rule?.propertyName,
+          name: rule?.legendName || rule?.propertyName,
           colorMapAtom: atom(
             () =>
               COLOR_MAPS.find(c => c.name === (value?.currentColorMapName ?? rule?.colorMapName)),
@@ -148,7 +151,11 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       }
       case CONDITIONAL_COLOR_SCHEME: {
         if (!isConditionalColorSchemeComponent(component)) return;
-        const rule = component.preset?.rules?.find(rule => rule.id === colorScheme.currentRuleId);
+
+        const currentRuleId = colorScheme.useDefault
+          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+          : colorScheme.currentRuleId;
+        const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
         const colors = rule?.conditions
           ?.map((c): QualitativeColor | undefined => {
@@ -170,7 +177,9 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           () => colors,
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
             const update = typeof action === "function" ? action(colors) : action;
-            const currentRuleId = component.value?.currentRuleId;
+            const currentRuleId = colorScheme.useDefault
+              ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+              : colorScheme.currentRuleId;
             set(componentAtom.atom, {
               ...component,
               value: {
@@ -194,7 +203,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
         return {
           type: "qualitative" as const,
-          name: rule.legendName ?? rule.propertyName,
+          name: rule.legendName || rule.propertyName,
           colorsAtom: colorsAtom,
           colorAtomsAtom: splitAtom(colorsAtom),
         } as QualitativeColorSet;

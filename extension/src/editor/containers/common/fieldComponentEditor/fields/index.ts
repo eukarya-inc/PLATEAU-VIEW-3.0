@@ -14,13 +14,20 @@ import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFil
 import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
+import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
+import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
+import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
+import { EditorVisibilityFilterField } from "./common/EditorVisibilityFilterField";
 import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
+  FIELD_CATEGORY_POLYGON,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
   FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
+  FIELD_GROUP_POLYGON_FILL_COLOR,
+  FIELD_GROUP_POLYGON_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
   FILED_GROUP_GENERAL_TIMELINE,
@@ -33,16 +40,14 @@ import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
 import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
 import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
-import { EditorPointFillColorConditionField } from "./point/EditorPointFillColorConditionField";
-import { EditorPointFillColorGradientField } from "./point/EditorPointFillColorGradientField";
-import { EditorPointFillColorValueField } from "./point/EditorPointFillColorValueField";
 import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
 import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
-import { EditorPointVisibilityFilterField } from "./point/EditorPointVisibilityFilterField";
+import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
+import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   component: SettingComponent<T>;
@@ -102,25 +107,31 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_VISIBILITY,
     name: "Filter",
-    Component: EditorPointVisibilityFilterField,
+    Component: EditorVisibilityFilterField as React.FC<
+      BasicFieldProps<"POINT_VISIBILITY_FILTER_FIELD">
+    >,
   },
   POINT_FILL_COLOR_VALUE_FIELD: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Value",
-    Component: EditorPointFillColorValueField,
+    Component: EditorFillColorValueField as React.FC<
+      BasicFieldProps<"POINT_FILL_COLOR_VALUE_FIELD">
+    >,
   },
   POINT_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Condition",
-    Component: EditorPointFillColorConditionField,
+    Component: EditorFillColorConditionField as React.FC<
+      BasicFieldProps<"POINT_FILL_COLOR_CONDITION_FIELD">
+    >,
   },
   POINT_FILL_COLOR_GRADIENT_FIELD: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Gradient",
-    Component: EditorPointFillColorGradientField,
+    Component: EditorFillColorGradientField,
   },
   POINT_USE_IMAGE_VALUE_FIELD: {
     category: FIELD_CATEGORY_POINT,
@@ -158,6 +169,41 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Convert from CSV",
     Component: EditorPointConvertFromCSVField,
+  },
+  // Polygon
+  POLYGON_STROKE_COLOR_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Stroke Color",
+    Component: EditorPolygonStrokeColorField,
+  },
+  POLYGON_STROKE_WEIGHT_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Stroke Weight",
+    Component: EditorPolygonStrokeWeightField,
+  },
+  POLYGON_FILL_COLOR_VALUE_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    group: FIELD_GROUP_POLYGON_FILL_COLOR,
+    name: "Value",
+    Component: EditorFillColorValueField as React.FC<
+      BasicFieldProps<"POLYGON_FILL_COLOR_VALUE_FIELD">
+    >,
+  },
+  POLYGON_FILL_COLOR_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    group: FIELD_GROUP_POLYGON_FILL_COLOR,
+    name: "Condition",
+    Component: EditorFillColorConditionField as React.FC<
+      BasicFieldProps<"POLYGON_FILL_COLOR_CONDITION_FIELD">
+    >,
+  },
+  POLYGON_VISIBILITY_FILTER_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    group: FIELD_GROUP_POLYGON_VISIBILITY,
+    name: "Filter",
+    Component: EditorVisibilityFilterField as React.FC<
+      BasicFieldProps<"POLYGON_VISIBILITY_FILTER_FIELD">
+    >,
   },
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {

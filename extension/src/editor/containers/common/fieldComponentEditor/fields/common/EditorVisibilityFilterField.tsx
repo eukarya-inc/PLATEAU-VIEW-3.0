@@ -14,14 +14,14 @@ import {
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
-type PointVisibilityFilterFieldPresetRule = {
+type VisibilityFilterFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
-  conditions?: PointVisibilityFilterFieldPresetRuleCondition[];
+  conditions?: VisibilityFilterFieldPresetRuleCondition[];
 };
 
-type PointVisibilityFilterFieldPresetRuleCondition = {
+type VisibilityFilterFieldPresetRuleCondition = {
   id: string;
   operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
   value?: string;
@@ -29,13 +29,16 @@ type PointVisibilityFilterFieldPresetRuleCondition = {
   legendName?: string;
 };
 
-export type PointVisibilityFilterFieldPreset = {
-  rules?: PointVisibilityFilterFieldPresetRule[];
+export type VisibilityFilterFieldPreset = {
+  rules?: VisibilityFilterFieldPresetRule[];
 };
 
-export const EditorPointVisibilityFilterField: React.FC<
-  BasicFieldProps<"POINT_VISIBILITY_FILTER_FIELD">
-> = ({ component, onUpdate }) => {
+type SupportedFieldTypes = "POINT_VISIBILITY_FILTER_FIELD" | "POLYGON_VISIBILITY_FILTER_FIELD";
+
+export const EditorVisibilityFilterField: React.FC<BasicFieldProps<SupportedFieldTypes>> = ({
+  component,
+  onUpdate,
+}) => {
   const [currentRuleId, setCurrentRuleId] = useState<string>();
   const [movingId, setMovingId] = useState<string>();
 
@@ -48,7 +51,7 @@ export const EditorPointVisibilityFilterField: React.FC<
   }, [rules, currentRuleId]);
 
   const handleRuleCreate = useCallback(() => {
-    const newRule: PointVisibilityFilterFieldPresetRule = {
+    const newRule: VisibilityFilterFieldPresetRule = {
       id: generateID(),
       conditions: [],
     };
@@ -100,7 +103,7 @@ export const EditorPointVisibilityFilterField: React.FC<
   );
 
   const handleRuleUpdate = useCallback(
-    (rule: PointVisibilityFilterFieldPresetRule) => {
+    (rule: VisibilityFilterFieldPresetRule) => {
       onUpdate?.({
         ...component,
         preset: {
@@ -181,7 +184,7 @@ export const EditorPointVisibilityFilterField: React.FC<
   );
 
   const handleConditionUpdate = useCallback(
-    (condition: PointVisibilityFilterFieldPresetRuleCondition) => {
+    (condition: VisibilityFilterFieldPresetRuleCondition) => {
       if (!currentRule?.conditions) return;
       onUpdate?.({
         ...component,
@@ -255,8 +258,8 @@ export const EditorPointVisibilityFilterField: React.FC<
 };
 
 type RulePanelProps = {
-  rule: PointVisibilityFilterFieldPresetRule;
-  onRuleUpdate: (rule: PointVisibilityFilterFieldPresetRule) => void;
+  rule: VisibilityFilterFieldPresetRule;
+  onRuleUpdate: (rule: VisibilityFilterFieldPresetRule) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
@@ -300,8 +303,8 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
 };
 
 type ConditionPanelProps = {
-  condition: PointVisibilityFilterFieldPresetRuleCondition;
-  onConditionUpdate: (condition: PointVisibilityFilterFieldPresetRuleCondition) => void;
+  condition: VisibilityFilterFieldPresetRuleCondition;
+  onConditionUpdate: (condition: VisibilityFilterFieldPresetRuleCondition) => void;
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {

@@ -1,10 +1,10 @@
+import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
+import { FillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
+import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 import { PointConvertFromCSVFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointConvertFromCSVField";
-import { PointFillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorConditionField";
-import { PointFillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorGradientField";
-import { PointFillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointFillColorValueField";
 import { PointUseImageConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageConditionField";
 import { PointUseImageValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageValueField";
-import { PointVisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointVisibilityFilterField";
 
 import { FieldBase } from "./base";
 import {
@@ -35,28 +35,28 @@ export const POINT_FILL_COLOR_VALUE_FIELD = "POINT_FILL_COLOR_VALUE_FIELD";
 export type PointFillColorValueField = FieldBase<{
   type: typeof POINT_FILL_COLOR_VALUE_FIELD;
   value?: ValueColorSchemeValue;
-  preset?: PointFillColorValueFieldPreset;
+  preset?: FillColorValueFieldPreset;
 }>;
 
 export const POINT_FILL_COLOR_CONDITION_FIELD = "POINT_FILL_COLOR_CONDITION_FIELD";
 export type PointFillColorConditionField = FieldBase<{
   type: typeof POINT_FILL_COLOR_CONDITION_FIELD;
   value?: ConditionalColorSchemeValue;
-  preset?: PointFillColorConditionFieldPreset;
+  preset?: FillColorConditionFieldPreset;
 }>;
 
 export const POINT_FILL_COLOR_GRADIENT_FIELD = "POINT_FILL_COLOR_GRADIENT_FIELD";
 export type PointFillGradientColorField = FieldBase<{
   type: typeof POINT_FILL_COLOR_GRADIENT_FIELD;
   value?: GradientColorSchemeValue;
-  preset?: PointFillGradientColorFieldPreset;
+  preset?: FillGradientColorFieldPreset;
 }>;
 
 export const POINT_VISIBILITY_FILTER_FIELD = "POINT_VISIBILITY_FILTER_FIELD";
 export type PointVisibilityFilterField = FieldBase<{
   type: typeof POINT_VISIBILITY_FILTER_FIELD;
   value?: string;
-  preset?: PointVisibilityFilterFieldPreset;
+  preset?: VisibilityFilterFieldPreset;
 }>;
 
 export const POINT_USE_IMAGE_VALUE_FIELD = "POINT_USE_IMAGE_VALUE_FIELD";

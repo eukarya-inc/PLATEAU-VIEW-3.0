@@ -24,6 +24,9 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
   values,
 }) => {
   const features = useMemo(() => {
+    if (values.every(v => !!v.properties)) {
+      return values;
+    }
     const layersMap = values.reduce((res, v) => {
       if (!res[v.layerId]) {
         res[v.layerId] = [];

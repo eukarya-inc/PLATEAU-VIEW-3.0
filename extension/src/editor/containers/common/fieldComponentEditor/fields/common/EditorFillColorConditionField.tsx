@@ -1,5 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, ReactElement } from "react";
 
 import { BasicFieldProps } from "..";
 import {
@@ -15,14 +15,14 @@ import {
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
 
-type PointFillColorConditionFieldPresetRule = {
+type FillColorConditionFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
-  conditions?: PointFillColorConditionFieldPresetRuleCondition[];
+  conditions?: FillColorConditionFieldPresetRuleCondition[];
 };
 
-type PointFillColorConditionFieldPresetRuleCondition = {
+type FillColorConditionFieldPresetRuleCondition = {
   id: string;
   operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
   value?: string;
@@ -31,26 +31,31 @@ type PointFillColorConditionFieldPresetRuleCondition = {
   legendName?: string;
 };
 
-export type PointFillColorConditionFieldPreset = {
-  rules?: PointFillColorConditionFieldPresetRule[];
+export type FillColorConditionFieldPreset = {
+  rules?: FillColorConditionFieldPresetRule[];
 };
 
-export const EditorPointFillColorConditionField: React.FC<
-  BasicFieldProps<"POINT_FILL_COLOR_CONDITION_FIELD">
-> = ({ component, onUpdate }) => {
+type SupportedFieldTypes =
+  | "POINT_FILL_COLOR_CONDITION_FIELD"
+  | "POLYGON_FILL_COLOR_CONDITION_FIELD";
+
+export const EditorFillColorConditionField = ({
+  component,
+  onUpdate,
+}: BasicFieldProps<SupportedFieldTypes>): ReactElement | null => {
   const [currentRuleId, setCurrentRuleId] = useState<string>();
   const [movingId, setMovingId] = useState<string>();
 
   const rules = useMemo(() => {
     return component?.preset?.rules ?? [];
-  }, [component?.preset]);
+  }, [component]);
 
   const currentRule = useMemo(() => {
     return rules.find(r => r.id === currentRuleId);
   }, [rules, currentRuleId]);
 
   const handleRuleCreate = useCallback(() => {
-    const newRule: PointFillColorConditionFieldPresetRule = {
+    const newRule: FillColorConditionFieldPresetRule = {
       id: generateID(),
       conditions: [],
     };
@@ -102,7 +107,7 @@ export const EditorPointFillColorConditionField: React.FC<
   );
 
   const handleRuleUpdate = useCallback(
-    (rule: PointFillColorConditionFieldPresetRule) => {
+    (rule: FillColorConditionFieldPresetRule) => {
       onUpdate?.({
         ...component,
         preset: {
@@ -183,7 +188,7 @@ export const EditorPointFillColorConditionField: React.FC<
   );
 
   const handleConditionUpdate = useCallback(
-    (condition: PointFillColorConditionFieldPresetRuleCondition) => {
+    (condition: FillColorConditionFieldPresetRuleCondition) => {
       if (!currentRule?.conditions) return;
       onUpdate?.({
         ...component,
@@ -257,8 +262,8 @@ export const EditorPointFillColorConditionField: React.FC<
 };
 
 type RulePanelProps = {
-  rule: PointFillColorConditionFieldPresetRule;
-  onRuleUpdate: (rule: PointFillColorConditionFieldPresetRule) => void;
+  rule: FillColorConditionFieldPresetRule;
+  onRuleUpdate: (rule: FillColorConditionFieldPresetRule) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
@@ -302,8 +307,8 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
 };
 
 type ConditionPanelProps = {
-  condition: PointFillColorConditionFieldPresetRuleCondition;
-  onConditionUpdate: (condition: PointFillColorConditionFieldPresetRuleCondition) => void;
+  condition: FillColorConditionFieldPresetRuleCondition;
+  onConditionUpdate: (condition: FillColorConditionFieldPresetRuleCondition) => void;
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {

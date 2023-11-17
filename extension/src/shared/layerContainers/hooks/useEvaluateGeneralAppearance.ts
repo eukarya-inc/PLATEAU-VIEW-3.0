@@ -25,6 +25,13 @@ import {
   POINT_IMAGE_SIZE_FIELD,
   POINT_USE_3D_MODEL,
 } from "../../types/fieldComponents/point";
+import {
+  POLYGON_FILL_COLOR_CONDITION_FIELD,
+  POLYGON_FILL_COLOR_VALUE_FIELD,
+  POLYGON_STROKE_COLOR_FIELD,
+  POLYGON_STROKE_WEIGHT_FIELD,
+  POLYGON_VISIBILITY_FILTER_FIELD,
+} from "../../types/fieldComponents/polygon";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
 
@@ -34,34 +41,51 @@ const DEFAULT_COLOR = "#ffffff";
 
 export const makeSimpleValue = (
   comp:
-    | Component<typeof POINT_FILL_COLOR_VALUE_FIELD | typeof POINT_USE_IMAGE_VALUE_FIELD>
+    | Component<
+        | typeof POINT_FILL_COLOR_VALUE_FIELD
+        | typeof POINT_USE_IMAGE_VALUE_FIELD
+        | typeof POLYGON_FILL_COLOR_VALUE_FIELD
+        | typeof POLYGON_STROKE_COLOR_FIELD
+      >
     | undefined,
 ): string | undefined => {
   if (!comp) return;
 
   switch (comp.type) {
+    // Point
     case POINT_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
     case POINT_USE_IMAGE_VALUE_FIELD:
       return comp.preset?.defaultValue;
+    // Polygon
+    case POLYGON_FILL_COLOR_VALUE_FIELD:
+      return comp.value?.color || comp.preset?.defaultValue;
     default:
-      return undefined;
+      return comp.preset?.defaultValue;
   }
 };
 
 export const makeConditionalExpression = (
   comp:
-    | Component<typeof POINT_FILL_COLOR_CONDITION_FIELD | typeof TILESET_FILL_COLOR_CONDITION_FIELD>
+    | Component<
+        | typeof POINT_FILL_COLOR_CONDITION_FIELD
+        | typeof TILESET_FILL_COLOR_CONDITION_FIELD
+        | typeof POLYGON_FILL_COLOR_CONDITION_FIELD
+      >
     | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
+
+  const currentRuleId = comp.value?.useDefault
+    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id
+    : comp.value?.currentRuleId;
 
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
@@ -99,7 +123,10 @@ export const makeGradientExpression = (
 
   const preset = comp.preset;
   const value = comp.value;
-  const rule = preset?.rules?.find(r => r.id === value?.currentRuleId);
+  const currentRuleId = comp.value?.useDefault
+    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id
+    : comp.value?.currentRuleId;
+  const rule = preset?.rules?.find(r => r.id === currentRuleId);
 
   const conditions: [string, string][] = [["true", color(DEFAULT_COLOR, 1)]];
 
@@ -137,9 +164,12 @@ export const makeGradientExpression = (
 };
 
 const makeVisibilityFilterExpression = (
-  comp: Component<typeof POINT_VISIBILITY_FILTER_FIELD> | undefined,
+  comp:
+    | Component<typeof POINT_VISIBILITY_FILTER_FIELD | typeof POLYGON_VISIBILITY_FILTER_FIELD>
+    | undefined,
 ): ExpressionContainer | undefined => {
-  const rule = comp?.preset?.rules?.find(rule => rule.id === comp.value);
+  const rule =
+    comp?.preset?.rules?.find(rule => rule.id === comp.value) ?? comp?.preset?.rules?.[0];
   const property = rule?.propertyName;
 
   if (!rule?.conditions || !property) return;
@@ -168,12 +198,13 @@ export const makeConditionalImageExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
+  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id;
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
@@ -205,12 +236,13 @@ export const makeConditionalImageColorExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
+  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id;
   return {
     expression: {
       conditions: [
         ...(
           comp.preset?.rules?.flatMap(rule => {
-            if (rule.id !== comp.value?.currentRuleId) return;
+            if (rule.id !== currentRuleId) return;
             const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
@@ -273,6 +305,23 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], POINT_USE_3D_MODEL),
   );
 
+  // Polygon
+  const polygonColor = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_VALUE_FIELD),
+  );
+  const polygonStrokeWeight = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_STROKE_WEIGHT_FIELD),
+  );
+  const polygonStrokeColor = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_STROKE_COLOR_FIELD),
+  );
+  const polygonFillColorCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
+  );
+  const polygonVisibilityFilter = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_FILTER_FIELD),
+  );
+
   // Tileset
   const tilesetFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], TILESET_FILL_COLOR_CONDITION_FIELD),
@@ -309,6 +358,14 @@ export const useEvaluateGeneralAppearance = ({
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
           show: makeVisibilityFilterExpression(pointVisibilityFilter),
         },
+        polygon: {
+          fillColor:
+            makeSimpleValue(polygonColor) ?? makeConditionalExpression(polygonFillColorCondition),
+          strokeColor: polygonStrokeColor?.preset?.defaultValue,
+          strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
+          stroke: !!polygonStrokeColor || !!polygonStrokeWeight,
+          show: makeVisibilityFilterExpression(polygonVisibilityFilter),
+        },
         model: pointModel?.preset
           ? {
               url: pointModel.preset.url,
@@ -336,6 +393,12 @@ export const useEvaluateGeneralAppearance = ({
       pointImageCondition,
       pointImageSize?.preset,
       pointModel?.preset,
+      // Polygon
+      polygonColor,
+      polygonFillColorCondition,
+      polygonStrokeColor,
+      polygonStrokeWeight,
+      polygonVisibilityFilter,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

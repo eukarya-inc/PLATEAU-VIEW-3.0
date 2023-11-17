@@ -69,9 +69,11 @@ const Legend: FC<{
 
 export interface ColorSchemeSectionForComponentFieldProps {
   layers: readonly LayerModel[];
+  useNone?: boolean;
 }
 
 // TODO: Handle as component
+// TODO: Support multiple selection if necessary
 export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForComponentFieldProps> = ({
   layers,
 }) => {
@@ -80,6 +82,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
     useMemo(
       () =>
         atom((get): Array<[null, string] | [string, string]> => {
+          let useNone = true;
           const rules =
             layers[0].componentAtoms
               ?.flatMap(c => {
@@ -88,14 +91,16 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                   isConditionalColorSchemeComponent(componentValue) ||
                   isGradientColorSchemeComponent(componentValue)
                 ) {
+                  useNone = !componentValue.value?.useDefault;
                   return componentValue.preset?.rules?.map(rule =>
                     rule.propertyName ? rule : undefined,
                   );
                 }
               })
               .filter(isNotNullish) ?? [];
+          const defaultItems: [null, string][] = useNone ? [[null, "なし"]] : [];
           return [
-            [null, "なし"],
+            ...defaultItems,
             ...rules.map((rule): [string, string] => [
               rule.id,
               rule.legendName ?? rule.propertyName ?? "",
@@ -117,7 +122,9 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isConditionalColorSchemeComponent(componentValue) ||
               isGradientColorSchemeComponent(componentValue)
             ) {
-              const ruleId = componentValue.value?.currentRuleId;
+              const ruleId = componentValue.value?.useDefault
+                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id
+                : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
               }

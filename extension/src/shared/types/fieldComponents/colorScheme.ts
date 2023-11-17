@@ -13,6 +13,7 @@ export type ConditionalColorSchemeValue = {
     conditionId: string;
     color: string;
   }[];
+  useDefault: boolean; // Whether use first rule as default rule or not. Otherwise default will be "none".
 };
 
 export const GRADIENT_COLOR_SCHEME = "GRADIENT_COLOR_SCHEME";
@@ -22,4 +23,5 @@ export type GradientColorSchemeValue = {
   currentColorMapName: string | undefined;
   currentMin: number | undefined;
   currentMax: number | undefined;
+  useDefault: boolean; // Whether use first rule as default rule or not. Otherwise default will be "none".
 };
