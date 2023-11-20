@@ -3,7 +3,7 @@ import { type FC } from "react";
 import { PointVisibilityFilterField } from "../../../types/fieldComponents/point";
 import { LayerModel } from "../../../view-layers";
 import { WritableAtomForComponent } from "../../../view-layers/component";
-import { LayerVisibilityFilterField } from "../common/LayerPolygonVisibilityFilterField";
+import { LayerVisibilityFilterField } from "../common/LayerVisibilityFilterField";
 
 export interface LayerPointVisibilityFilterFieldProps {
   layers: readonly LayerModel[];

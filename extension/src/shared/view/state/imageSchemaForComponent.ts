@@ -9,18 +9,28 @@ import { ComponentBase } from "../../types/fieldComponents";
 import {
   CONDITIONAL_IMAGE_SCHEME,
   ConditionalImageSchemeValue,
+  VALUE_IMAGE_SCHEME,
+  ValueImageSchemeValue,
 } from "../../types/fieldComponents/imageScheme";
 import { LayerModel } from "../../view-layers";
 
 export const isImageSchemeComponent = (
   comp: ComponentBase,
-): comp is Extract<ComponentBase, { value?: ConditionalImageSchemeValue }> =>
+): comp is Extract<
+  ComponentBase,
+  { value?: ValueImageSchemeValue | ConditionalImageSchemeValue }
+> =>
   !!(
     comp.value &&
     typeof comp.value === "object" &&
     "type" in comp.value &&
-    [CONDITIONAL_IMAGE_SCHEME].includes(comp.value.type)
+    [VALUE_IMAGE_SCHEME, CONDITIONAL_IMAGE_SCHEME].includes(comp.value.type)
   );
+
+export const isValueImageSchemeComponent = (
+  comp: ComponentBase,
+): comp is Extract<ComponentBase, { value?: ValueImageSchemeValue }> =>
+  !!(isImageSchemeComponent(comp) && VALUE_IMAGE_SCHEME === comp.value?.type);
 
 export const isConditionalImageSchemeComponent = (
   comp: ComponentBase,
@@ -54,7 +64,7 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       return;
     }
     const component = get(componentAtom.atom);
-    const imageScheme = component.value as ConditionalImageSchemeValue;
+    const imageScheme = component.value as ValueImageSchemeValue | ConditionalImageSchemeValue;
 
     switch (imageScheme.type) {
       case CONDITIONAL_IMAGE_SCHEME: {
@@ -64,6 +74,8 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         if (!rule?.propertyName || !rule.conditions) return;
         const imageIcons = rule?.conditions
           ?.map((c): ImageIcon | undefined => {
+            if (!c.asLegend) return;
+
             const overriddenCondition = component.value?.overrideRules.find(
               o => o.ruleId === rule.id && o.conditionId === c.id,
             );
@@ -107,12 +119,51 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             });
           },
         ) as unknown as PrimitiveAtom<ImageIcon[]>;
-        return {
-          type: "imageIcon" as const,
-          name: rule.legendName ?? rule.propertyName,
-          imageIconsAtom: imageIconsAtom,
-          imageIconAtomsAtom: splitAtom(imageIconsAtom),
-        } as ImageIconSet;
+        return imageIcons.length
+          ? ({
+              type: "imageIcon" as const,
+              name: rule.propertyName,
+              imageIconsAtom: imageIconsAtom,
+              imageIconAtomsAtom: splitAtom(imageIconsAtom),
+            } as ImageIconSet)
+          : undefined;
+      }
+      case VALUE_IMAGE_SCHEME: {
+        if (!isValueImageSchemeComponent(component)) return;
+        const imageIcons = component.preset?.defaultValue
+          ? [
+              {
+                id: component.id,
+                value: component.preset.defaultValue,
+                imageUrl: component.preset.defaultValue,
+                // TODO: Use setting value
+                imageColor: "#ffffff", // color: component.preset.imageColor
+                name: component.preset.legendName ?? "",
+              },
+            ]
+          : [];
+        const imageIconsAtom = atom(
+          () => imageIcons,
+          (_get, set, action: SetStateAction<ImageIcon[]>) => {
+            const update = typeof action === "function" ? action(imageIcons) : action;
+            set(componentAtom.atom, {
+              ...component,
+              value: {
+                ...(component.value ?? {}),
+                imageUrl: update[0].imageUrl,
+                imageColor: update[0].imageColor,
+              } as typeof component.value,
+            });
+          },
+        ) as unknown as PrimitiveAtom<ImageIcon[]>; // For compat
+        return component.preset?.asLegend
+          ? ({
+              type: "imageIcon" as const,
+              name: get(layer.titleAtom),
+              imageIconsAtom: imageIconsAtom,
+              imageIconAtomsAtom: splitAtom(imageIconsAtom),
+            } as ImageIconSet)
+          : undefined;
       }
     }
   });

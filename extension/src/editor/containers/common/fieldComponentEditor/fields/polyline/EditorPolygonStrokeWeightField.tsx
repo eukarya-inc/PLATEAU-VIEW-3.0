@@ -10,10 +10,9 @@ import {
 } from "../../../../ui-components";
 import { useNumberFieldState } from "../../hooksUtils";
 
-export const EditorPointSizeField: React.FC<BasicFieldProps<"POINT_SIZE_FIELD">> = ({
-  component,
-  onUpdate,
-}) => {
+export const EditorPolylineStrokeWeightField: React.FC<
+  BasicFieldProps<"POLYLINE_STROKE_WEIGHT_FIELD">
+> = ({ component, onUpdate }) => {
   const [size, handleSizeChange] = useNumberFieldState(
     component.preset?.defaultValue,
     useCallback(
@@ -32,7 +31,7 @@ export const EditorPointSizeField: React.FC<BasicFieldProps<"POINT_SIZE_FIELD">>
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <PropertyInlineWrapper label="Point Size">
+        <PropertyInlineWrapper label="Stroke Weight">
           <PropertyInputField
             placeholder="Value"
             value={size}

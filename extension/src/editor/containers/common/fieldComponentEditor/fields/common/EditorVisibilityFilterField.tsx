@@ -33,7 +33,10 @@ export type VisibilityFilterFieldPreset = {
   rules?: VisibilityFilterFieldPresetRule[];
 };
 
-type SupportedFieldTypes = "POINT_VISIBILITY_FILTER_FIELD" | "POLYGON_VISIBILITY_FILTER_FIELD";
+type SupportedFieldTypes =
+  | "POINT_VISIBILITY_FILTER_FIELD"
+  | "POLYLINE_VISIBILITY_FILTER_FIELD"
+  | "POLYGON_VISIBILITY_FILTER_FIELD";
 
 export const EditorVisibilityFilterField: React.FC<BasicFieldProps<SupportedFieldTypes>> = ({
   component,
