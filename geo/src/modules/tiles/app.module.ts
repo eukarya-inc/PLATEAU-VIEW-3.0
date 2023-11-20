@@ -1,13 +1,16 @@
 import { Module } from "@nestjs/common";
-
-import { VectorTileModule } from "../../prototypes/nest-vector-tile/src/index";
-import { darkStyle, lightStyle } from "../../prototypes/vector-map-style/src/index";
+import { VectorTileModule } from "@prototypes/nest-vector-tile";
+import { darkStyle, lightStyle } from "@prototypes/vector-map-style";
 
 import { TileAppController } from "./app.controller";
 import { TileAppService } from "./app.service";
 
 @Module({
   imports: [
+    // Cache disabled for now
+    VectorTileModule.forRoot({
+      disableCache: true,
+    }),
     // maximumLevel must be +1 of imagery layer's maximum level because tiles
     // are rendered with pixel ratio 2.
     VectorTileModule.forFeature({

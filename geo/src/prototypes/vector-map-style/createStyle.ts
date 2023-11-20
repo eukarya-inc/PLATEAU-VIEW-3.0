@@ -188,7 +188,7 @@ const additionalLayers: readonly AdditionalLayer[] = [
       layer: {
         id: `railwayCenterline${index}`,
       },
-    })
+    }),
   ),
   ...[...Array(5)].map(
     (_, index): AdditionalLayer => ({
@@ -197,13 +197,13 @@ const additionalLayers: readonly AdditionalLayer[] = [
       layer: {
         id: `鉄道中心線橋ククリ白${index}`,
       },
-    })
+    }),
   ),
   ...[...Array(5)].map(
     (_, index): AdditionalLayer => ({
       source: `鉄道中心線旗竿${index}`,
       after: `鉄道中心線旗竿${index}`,
-      layer: (source) => {
+      layer: source => {
         invariant(source.type === "line");
         invariant(source.filter != null);
         return {
@@ -216,7 +216,7 @@ const additionalLayers: readonly AdditionalLayer[] = [
           ],
         };
       },
-    })
+    }),
   ),
   {
     source: "軌道の中心線",
@@ -229,15 +229,12 @@ const additionalLayers: readonly AdditionalLayer[] = [
 
 const base = createStyleBase(additionalLayers);
 
-base.layers.forEach((layer) => {
+base.layers.forEach(layer => {
   if (layer.id.startsWith("鉄道中心線橋ククリ白")) {
     invariant(layer.type === "line");
     invariant(layer.filter != null);
     // Exclude JR and railways at the stations.
-    layer.filter.push(
-      ["!=", ["get", "vt_rtcode"], "JR"],
-      ["!=", ["get", "vt_sngldbl"], "駅部分"]
-    );
+    layer.filter.push(["!=", ["get", "vt_rtcode"], "JR"], ["!=", ["get", "vt_sngldbl"], "駅部分"]);
   }
   if (layer.id === "道路中心線色0") {
     invariant(layer.type === "line");
@@ -284,7 +281,7 @@ export function createStyle(layerStyles: LayerStyles): Style {
   return {
     ...base,
     layers: layerOrder
-      .map((layerId) => {
+      .map(layerId => {
         const layer = base.layers.find(({ id }) => id === layerId);
         if (layer == null) {
           throw new Error(`Layer not found: ${layerId}`);

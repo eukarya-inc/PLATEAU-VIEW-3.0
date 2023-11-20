@@ -7,9 +7,7 @@ export interface LandWaterStylesOptions {
   seaRouteColor?: string;
 }
 
-export function createLandWaterStyles(
-  options: LandWaterStylesOptions
-): LayerStyles {
+export function createLandWaterStyles(options: LandWaterStylesOptions): LayerStyles {
   return {
     background: {
       paint: {

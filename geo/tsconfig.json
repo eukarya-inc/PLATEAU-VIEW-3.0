@@ -1,35 +1,29 @@
 {
   "compilerOptions": {
-    "module": "Node16",
-    "declaration": true,
+    "module": "CommonJS",
+    "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    // "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "lib": ["es2021", "dom"],
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": false,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     // TODO: This is not working as of now
     "paths": {
-      "@prototypes/plateau-nest-vector-tile": [
-        "src/prototypes/nest-vector-tile/src/index.ts"
-      ],
-      "@prototypes/plateau-vector-map-style": [
-        "src/prototypes/vector-map-style/src/index.ts"
-      ],
-      "@prototypes/plateau-nest-cesium": [
-        "src/prototypes/nest-cesium/src/index.ts"
-      ]
+      "@prototypes/*": ["src/prototypes/*"]
     }
   }
 }

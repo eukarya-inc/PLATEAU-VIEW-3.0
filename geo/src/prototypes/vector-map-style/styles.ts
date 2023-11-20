@@ -23,7 +23,7 @@ export const lightStyle = createStyle(
     railwayBackgroundColor: gray(0.92),
     railwayJrDashColor: gray(1),
     stationColor: gray(0.6),
-  })
+  }),
 );
 
 export const darkStyle = createStyle(
@@ -43,5 +43,5 @@ export const darkStyle = createStyle(
     railwayBackgroundColor: gray(0.15),
     railwayJrDashColor: gray(0.15),
     stationColor: gray(0.4),
-  })
+  }),
 );

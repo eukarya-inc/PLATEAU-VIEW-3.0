@@ -23,7 +23,7 @@ export function createVectorTileController(options: VectorTileOptions): Type {
     constructor(
       private readonly service: VectorTileService,
       @Inject(VECTOR_TILE_MODULE_OPTIONS)
-      private readonly options: VectorTileModuleOptions
+      private readonly options: VectorTileModuleOptions,
     ) {}
 
     @Get(":level/:x/:y.:format")
@@ -32,7 +32,7 @@ export function createVectorTileController(options: VectorTileOptions): Type {
       @Param("y", ParseIntPipe) y: number,
       @Param("level", ParseIntPipe) level: number,
       @Param("format", TileFormatValidationPipe) format: TileFormat,
-      @Res({ passthrough: true }) res: Response
+      @Res({ passthrough: true }) res: Response,
     ): Promise<StreamableFile | undefined> {
       const result = await this.service.renderTile({ x, y, level }, { format });
       if (result == null) {

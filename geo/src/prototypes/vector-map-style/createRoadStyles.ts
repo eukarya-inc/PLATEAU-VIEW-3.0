@@ -155,11 +155,7 @@ export function createRoadStyles(options: RoadStylesOptions): LayerStyles {
           ["exponential", 2],
           ["zoom"],
           10,
-          [
-            "+",
-            ["*", ["var", "width"], 1 / 2 ** (23 - 10)],
-            ["var", "outlineWidth"],
-          ],
+          ["+", ["*", ["var", "width"], 1 / 2 ** (23 - 10)], ["var", "outlineWidth"]],
           23,
           ["+", ["var", "width"], ["var", "outlineWidth"]],
         ],

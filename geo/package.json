@@ -51,6 +51,7 @@
     "@types/lodash": "^4.14.201",
     "@types/mapbox-gl": "^2.7.18",
     "@types/node": "^20.3.1",
+    "@types/reflect-metadata": "^0.1.0",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
@@ -84,5 +85,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }

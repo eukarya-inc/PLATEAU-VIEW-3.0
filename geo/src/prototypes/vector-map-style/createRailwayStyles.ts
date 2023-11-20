@@ -44,12 +44,7 @@ const width: Expression = [
     300,
     0,
   ],
-  [
-    "case",
-    ["in", ["get", "vt_sngldbl"], ["literal", ["複線以上", "駅部分"]]],
-    2,
-    1,
-  ],
+  ["case", ["in", ["get", "vt_sngldbl"], ["literal", ["複線以上", "駅部分"]]], 2, 1],
 ];
 
 export interface RailwayStylesOptions {
@@ -59,9 +54,7 @@ export interface RailwayStylesOptions {
   stationColor: string;
 }
 
-export function createRailwayStyles(
-  options: RailwayStylesOptions
-): LayerStyles {
+export function createRailwayStyles(options: RailwayStylesOptions): LayerStyles {
   const simplifiedStyle: LineLayerStyle = {
     minZoom: null,
     paint: {

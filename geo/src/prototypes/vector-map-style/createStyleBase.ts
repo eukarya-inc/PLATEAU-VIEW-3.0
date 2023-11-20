@@ -12,22 +12,18 @@ export type AdditionalLayer =
   | {
       source: string;
       after: string;
-      layer:
-        | SetRequired<Partial<AnyLayer>, "id">
-        | ((source: AnyLayer) => AnyLayer);
+      layer: SetRequired<Partial<AnyLayer>, "id"> | ((source: AnyLayer) => AnyLayer);
     };
 
-export function createStyleBase(
-  additionalLayers?: readonly AdditionalLayer[]
-): Style {
+export function createStyleBase(additionalLayers?: readonly AdditionalLayer[]): Style {
   const style = { ...(rawStyle as Style) };
 
   // Remove data sources to reduce unused requests.
   delete style.sprite;
   delete style.glyphs;
 
-  const layers = [...style.layers];
-  additionalLayers?.forEach((params) => {
+  const layers = [...(style?.layers ?? [])] as AnyLayer[];
+  additionalLayers?.forEach(params => {
     const afterIndex = layers.findIndex(({ id }) => id === params.after);
     if (afterIndex === -1) {
       throw new Error(`Layer not found: ${params.after}`);

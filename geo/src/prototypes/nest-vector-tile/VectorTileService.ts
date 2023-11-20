@@ -2,18 +2,16 @@ import { Readable } from "stream";
 
 import { Map, type MapOptions, type ResourceKind } from "@maplibre/maplibre-gl-native";
 import { Inject, Injectable } from "@nestjs/common";
-
 // import {
 //   TileCacheService,
 //   type Coordinates,
 //   type RenderTileOptions,
 // } from "@prototypes/plateau-nest-tile-cache";
+import { CESIUM, type Cesium } from "@prototypes/nest-cesium";
 import axios from "axios";
 import { createPool, type Pool } from "generic-pool";
 import { type CustomLayerInterface, type Style } from "mapbox-gl";
 import sharp, { type Sharp } from "sharp";
-
-import { CESIUM, type Cesium } from "../../nest-cesium/src/index";
 
 import { VECTOR_TILE_MAP_STYLE, VECTOR_TILE_OPTIONS } from "./constants";
 import { type Coordinates } from "./interfaces/Coordinates";
@@ -115,7 +113,7 @@ export class VectorTileService {
     if (coords.level < this.options.minimumDataLevel || coords.level > this.options.maximumLevel) {
       return undefined;
     }
-    // Implement cache later
+    // TODO: Implement cache later
     // const cache = await this.cacheService.findOne(this.options.path, coords);
     // if (cache != null) {
     //   return cache;

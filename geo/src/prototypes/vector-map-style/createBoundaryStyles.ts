@@ -6,15 +6,12 @@ export interface BoundaryStylesOptions {
   prefectureBoundaryColor?: string;
 }
 
-export function createBoundaryStyles(
-  options: BoundaryStylesOptions
-): LayerStyles {
+export function createBoundaryStyles(options: BoundaryStylesOptions): LayerStyles {
   const dasharray = [2, 2, 0.01, 2];
   return {
     "行政区画界線25000所属界（所属を明示する境界線）": {
       paint: {
-        "line-color":
-          options.municipalityBoundaryColor ?? options.boundaryColor,
+        "line-color": options.municipalityBoundaryColor ?? options.boundaryColor,
         "line-width": 1,
         "line-dasharray": dasharray,
       },
@@ -25,8 +22,7 @@ export function createBoundaryStyles(
     },
     行政区画界線25000市区町村界: {
       paint: {
-        "line-color":
-          options.municipalityBoundaryColor ?? options.boundaryColor,
+        "line-color": options.municipalityBoundaryColor ?? options.boundaryColor,
         "line-width": 1,
         "line-dasharray": dasharray,
       },
