@@ -5,10 +5,14 @@ import { useMemo, useCallback, ChangeEventHandler, ReactElement } from "react";
 import { ParameterItem, ParameterList } from "../../../../prototypes/ui-components";
 import { PointVisibilityFilterField } from "../../../types/fieldComponents/point";
 import { PolygonVisibilityFilterField } from "../../../types/fieldComponents/polygon";
+import { PolylineVisibilityFilterField } from "../../../types/fieldComponents/polyline";
 import { LayerModel } from "../../../view-layers";
 import { WritableAtomForComponent } from "../../../view-layers/component";
 
-type SupportFields = PointVisibilityFilterField | PolygonVisibilityFilterField;
+type SupportFields =
+  | PointVisibilityFilterField
+  | PolylineVisibilityFilterField
+  | PolygonVisibilityFilterField;
 
 export interface LayerVisibilityFilterFieldProps<T extends SupportFields> {
   layers: readonly LayerModel[];

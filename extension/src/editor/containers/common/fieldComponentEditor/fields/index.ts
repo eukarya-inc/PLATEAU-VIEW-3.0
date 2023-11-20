@@ -22,12 +22,15 @@ import {
   FIELD_CATEGORY_GENERAL,
   FIELD_CATEGORY_POINT,
   FIELD_CATEGORY_POLYGON,
+  FIELD_CATEGORY_POLYLINE,
   FIELD_CATEGORY_THREE_D_TILES,
   FIELD_GROUP_POINT_FILL_COLOR,
   FIELD_GROUP_POINT_USE_IMAGE,
   FIELD_GROUP_POINT_VISIBILITY,
   FIELD_GROUP_POLYGON_FILL_COLOR,
   FIELD_GROUP_POLYGON_VISIBILITY,
+  FIELD_GROUP_POLYLINE_FILL_COLOR,
+  FIELD_GROUP_POLYLINE_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
 } from "./constants";
@@ -43,6 +46,7 @@ import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageCo
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
 import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
+import { EditorPolylineStrokeWeightField } from "./polyline/EditorPolygonStrokeWeightField";
 
 export type BasicFieldProps<T extends ComponentBase["type"] = ComponentBase["type"]> = {
   component: SettingComponent<T>;
@@ -142,6 +146,36 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Use 3D Model",
     Component: EditorPointUse3DModelField,
+  },
+  // Polyline
+  POLYLINE_STROKE_WEIGHT_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    name: "Stroke Weight",
+    Component: EditorPolylineStrokeWeightField,
+  },
+  POLYLINE_FILL_COLOR_VALUE_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    group: FIELD_GROUP_POLYLINE_FILL_COLOR,
+    name: "Value",
+    Component: EditorFillColorValueField as React.FC<
+      BasicFieldProps<"POLYLINE_FILL_COLOR_VALUE_FIELD">
+    >,
+  },
+  POLYLINE_FILL_COLOR_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    group: FIELD_GROUP_POLYLINE_FILL_COLOR,
+    name: "Condition",
+    Component: EditorFillColorConditionField as React.FC<
+      BasicFieldProps<"POLYLINE_FILL_COLOR_CONDITION_FIELD">
+    >,
+  },
+  POLYLINE_VISIBILITY_FILTER_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    group: FIELD_GROUP_POLYLINE_VISIBILITY,
+    name: "Filter",
+    Component: EditorVisibilityFilterField as React.FC<
+      BasicFieldProps<"POLYLINE_VISIBILITY_FILTER_FIELD">
+    >,
   },
   // Polygon
   POLYGON_STROKE_COLOR_FIELD: {

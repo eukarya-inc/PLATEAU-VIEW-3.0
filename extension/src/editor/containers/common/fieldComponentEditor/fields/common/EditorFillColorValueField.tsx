@@ -10,7 +10,10 @@ import {
   PropertyColorField,
 } from "../../../../ui-components";
 
-type SupportedFieldTypes = "POINT_FILL_COLOR_VALUE_FIELD" | "POLYGON_FILL_COLOR_VALUE_FIELD";
+type SupportedFieldTypes =
+  | "POINT_FILL_COLOR_VALUE_FIELD"
+  | "POLYLINE_FILL_COLOR_VALUE_FIELD"
+  | "POLYGON_FILL_COLOR_VALUE_FIELD";
 
 export type FillColorValueFieldPreset = {
   defaultValue?: string;
