@@ -34,6 +34,8 @@ import {
   FIELD_GROUP_POLYLINE_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
+  FieldGroupTypes,
+  fieldGroupTitles,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -59,7 +61,7 @@ export type FieldType = ComponentBase["type"];
 export const fields: {
   [key in ComponentBase["type"]]: {
     category: string;
-    group?: string;
+    group?: FieldGroupTypes;
     name: string;
     Component: React.FC<BasicFieldProps<key>>;
   };
@@ -284,7 +286,7 @@ export const fields: {
 export type FieldComponentTreeItem = {
   label: string;
   value: string;
-  group?: string;
+  group?: FieldGroupTypes;
   isFolder?: boolean;
   children?: FieldComponentTreeItem[];
 };
@@ -306,7 +308,7 @@ export const getFiledComponentTree = () => {
     const categoryItem = tree.find(item => item.value === category);
     if (group && !categoryItem?.children?.find(item => item.value === group)) {
       categoryItem?.children?.push({
-        label: group,
+        label: fieldGroupTitles[group],
         value: group,
         isFolder: true,
         children: [],
