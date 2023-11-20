@@ -1,6 +1,7 @@
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 import { PointUseImageConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageConditionField";
 import { PointUseImageValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageValueField";
@@ -51,6 +52,12 @@ export type PointFillGradientColorField = FieldBase<{
   preset?: FillGradientColorFieldPreset;
 }>;
 
+export const POINT_VISIBILITY_CONDITION_FIELD = "POINT_VISIBILITY_CONDITION_FIELD";
+export type PointVisibilityConditionField = FieldBase<{
+  type: typeof POINT_VISIBILITY_CONDITION_FIELD;
+  preset?: VisibilityConditionFieldPreset;
+}>;
+
 export const POINT_VISIBILITY_FILTER_FIELD = "POINT_VISIBILITY_FILTER_FIELD";
 export type PointVisibilityFilterField = FieldBase<{
   type: typeof POINT_VISIBILITY_FILTER_FIELD;
@@ -96,6 +103,7 @@ export type PointFields =
   | PointFillColorValueField
   | PointFillColorConditionField
   | PointFillGradientColorField
+  | PointVisibilityConditionField
   | PointVisibilityFilterField
   | PointUseImageValueField
   | PointUseImageConditionField

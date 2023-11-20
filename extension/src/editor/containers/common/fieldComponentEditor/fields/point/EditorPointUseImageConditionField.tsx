@@ -14,6 +14,7 @@ import {
   type CommonCondition,
   PropertyColorField,
 } from "../../../../ui-components";
+import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
 import { generateID } from "../../../../utils";
 
 type PointUseImageConditionFieldPresetRule = {
@@ -25,7 +26,7 @@ type PointUseImageConditionFieldPresetRule = {
 
 type PointUseImageConditionFieldPresetRuleCondition = {
   id: string;
-  operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
+  operation?: OperationValue;
   value?: string;
   imageURL?: string;
   imageColor?: string;

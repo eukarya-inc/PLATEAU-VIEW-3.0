@@ -79,6 +79,7 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
+  POINT_VISIBILITY_CONDITION_FIELD: {},
   POINT_VISIBILITY_FILTER_FIELD: {
     defaultValue: "",
     hasLayerUI: true,
@@ -128,6 +129,7 @@ export const fieldSettings: {
   },
   POLYGON_STROKE_COLOR_FIELD: {},
   POLYGON_STROKE_WEIGHT_FIELD: {},
+  POLYGON_VISIBILITY_CONDITION_FIELD: {},
   POLYGON_VISIBILITY_FILTER_FIELD: {
     defaultValue: "",
     hasLayerUI: true,
@@ -154,6 +156,7 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   POLYLINE_STROKE_WEIGHT_FIELD: {},
+  POLYLINE_VISIBILITY_CONDITION_FIELD: {},
   POLYLINE_VISIBILITY_FILTER_FIELD: {
     defaultValue: "",
     hasLayerUI: true,

@@ -17,6 +17,7 @@ import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFlood
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
 import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
+import { EditorVisibilityConditionField } from "./common/EditorVisibilityConditionField";
 import { EditorVisibilityFilterField } from "./common/EditorVisibilityFilterField";
 import {
   FIELD_CATEGORY_GENERAL,
@@ -33,6 +34,8 @@ import {
   FIELD_GROUP_POLYLINE_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
+  FieldGroupTypes,
+  fieldGroupTitles,
 } from "./constants";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -58,7 +61,7 @@ export type FieldType = ComponentBase["type"];
 export const fields: {
   [key in ComponentBase["type"]]: {
     category: string;
-    group?: string;
+    group?: FieldGroupTypes;
     name: string;
     Component: React.FC<BasicFieldProps<key>>;
   };
@@ -85,6 +88,14 @@ export const fields: {
     Component: EditorStyleCodeField,
   },
   // point
+  POINT_VISIBILITY_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    group: FIELD_GROUP_POINT_VISIBILITY,
+    name: "Condition",
+    Component: EditorVisibilityConditionField as React.FC<
+      BasicFieldProps<"POINT_VISIBILITY_CONDITION_FIELD">
+    >,
+  },
   POINT_VISIBILITY_FILTER_FIELD: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_VISIBILITY,
@@ -169,6 +180,14 @@ export const fields: {
       BasicFieldProps<"POLYLINE_FILL_COLOR_CONDITION_FIELD">
     >,
   },
+  POLYLINE_VISIBILITY_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    group: FIELD_GROUP_POLYLINE_VISIBILITY,
+    name: "Condition",
+    Component: EditorVisibilityConditionField as React.FC<
+      BasicFieldProps<"POLYLINE_VISIBILITY_CONDITION_FIELD">
+    >,
+  },
   POLYLINE_VISIBILITY_FILTER_FIELD: {
     category: FIELD_CATEGORY_POLYLINE,
     group: FIELD_GROUP_POLYLINE_VISIBILITY,
@@ -210,6 +229,14 @@ export const fields: {
     name: "Filter",
     Component: EditorVisibilityFilterField as React.FC<
       BasicFieldProps<"POLYGON_VISIBILITY_FILTER_FIELD">
+    >,
+  },
+  POLYGON_VISIBILITY_CONDITION_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    group: FIELD_GROUP_POLYGON_VISIBILITY,
+    name: "Condition",
+    Component: EditorVisibilityConditionField as React.FC<
+      BasicFieldProps<"POLYGON_VISIBILITY_CONDITION_FIELD">
     >,
   },
   // 3dtiles
@@ -259,7 +286,7 @@ export const fields: {
 export type FieldComponentTreeItem = {
   label: string;
   value: string;
-  group?: string;
+  group?: FieldGroupTypes;
   isFolder?: boolean;
   children?: FieldComponentTreeItem[];
 };
@@ -281,7 +308,7 @@ export const getFiledComponentTree = () => {
     const categoryItem = tree.find(item => item.value === category);
     if (group && !categoryItem?.children?.find(item => item.value === group)) {
       categoryItem?.children?.push({
-        label: group,
+        label: fieldGroupTitles[group],
         value: group,
         isFolder: true,
         children: [],
