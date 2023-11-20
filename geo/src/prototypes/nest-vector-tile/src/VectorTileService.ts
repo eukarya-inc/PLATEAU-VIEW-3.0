@@ -1,12 +1,7 @@
 import { Readable } from "stream";
 
-import {
-  Map,
-  type MapOptions,
-  type ResourceKind,
-} from "@maplibre/maplibre-gl-native";
+import { Map, type MapOptions, type ResourceKind } from "@maplibre/maplibre-gl-native";
 import { Inject, Injectable } from "@nestjs/common";
-import { CESIUM, type Cesium } from "@prototypes/plateau-nest-cesium";
 
 // import {
 //   TileCacheService,
@@ -17,6 +12,8 @@ import axios from "axios";
 import { createPool, type Pool } from "generic-pool";
 import { type CustomLayerInterface, type Style } from "mapbox-gl";
 import sharp, { type Sharp } from "sharp";
+
+import { CESIUM, type Cesium } from "../../nest-cesium/src/index";
 
 import { VECTOR_TILE_MAP_STYLE, VECTOR_TILE_OPTIONS } from "./constants";
 import { type Coordinates } from "./interfaces/Coordinates";
@@ -43,10 +40,7 @@ type MapStyle = Omit<Style, "layers"> & {
   layers: Array<Exclude<Style["layers"][number], CustomLayerInterface>>;
 };
 
-function requestTile(
-  req: MapRequest,
-  callback: Parameters<MapOptions["request"]>[1]
-): void {
+function requestTile(req: MapRequest, callback: Parameters<MapOptions["request"]>[1]): void {
   (async () => {
     try {
       const { data: arrayBuffer } = await axios<ArrayBuffer>(req.url, {
@@ -62,7 +56,7 @@ function requestTile(
         callback(new Error("Unknown error"));
       }
     }
-  })().catch((error) => {
+  })().catch(error => {
     callback(error);
   });
 }
@@ -82,7 +76,7 @@ export class VectorTileService {
     @Inject(VECTOR_TILE_MAP_STYLE)
     private readonly mapStyle: MapStyle,
     @Inject(CESIUM)
-    private readonly cesium: Cesium
+    private readonly cesium: Cesium,
   ) {
     this.mapPool = createPool(
       {
@@ -91,11 +85,11 @@ export class VectorTileService {
           map.load(this.mapStyle);
           return map;
         },
-        destroy: async (map) => {
+        destroy: async map => {
           map.release();
         },
       },
-      { max: 32 }
+      { max: 32 },
     );
   }
 
@@ -116,12 +110,9 @@ export class VectorTileService {
 
   async renderTile(
     coords: Coordinates,
-    options?: RenderTileOptions
+    options?: RenderTileOptions,
   ): Promise<Readable | string | undefined> {
-    if (
-      coords.level < this.options.minimumDataLevel ||
-      coords.level > this.options.maximumLevel
-    ) {
+    if (coords.level < this.options.minimumDataLevel || coords.level > this.options.maximumLevel) {
       return undefined;
     }
     // Implement cache later
@@ -147,10 +138,7 @@ export class VectorTileService {
 
     const buffer = await this.renderMap({
       zoom: level,
-      center: [
-        toDegrees((rectangle.east + rectangle.west) / 2),
-        toDegrees(latitude),
-      ],
+      center: [toDegrees((rectangle.east + rectangle.west) / 2), toDegrees(latitude)],
     });
     const tileSize = this.options.tileSize ?? 512;
     const image = sharp(buffer, {

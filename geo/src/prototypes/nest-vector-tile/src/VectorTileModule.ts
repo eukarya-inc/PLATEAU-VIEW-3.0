@@ -1,7 +1,8 @@
 import { readFile } from "fs/promises";
 
 import { Module, type DynamicModule } from "@nestjs/common";
-import { CesiumModule } from "@prototypes/plateau-nest-cesium";
+
+import { CesiumModule } from "../../nest-cesium/src/index";
 
 import { VECTOR_TILE_MAP_STYLE, VECTOR_TILE_OPTIONS } from "./constants";
 import { createVectorTileController } from "./createVectorTileController";

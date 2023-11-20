@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
-import { VectorTileModule } from "@prototypes/plateau-nest-vector-tile";
-import { darkStyle, lightStyle } from "@prototypes/plateau-vector-map-style";
+
+import { VectorTileModule } from "../../prototypes/nest-vector-tile/src/index";
+import { darkStyle, lightStyle } from "../../prototypes/vector-map-style/src/index";
 
 import { TileAppController } from "./app.controller";
 import { TileAppService } from "./app.service";
