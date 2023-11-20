@@ -1,5 +1,6 @@
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 
 import { FieldBase } from "./base";
@@ -27,6 +28,12 @@ export type PolylineFillColorConditionField = FieldBase<{
   preset?: FillColorConditionFieldPreset;
 }>;
 
+export const POLYLINE_VISIBILITY_CONDITION_FIELD = "POLYLINE_VISIBILITY_CONDITION_FIELD";
+export type PolylineVisibilityConditionField = FieldBase<{
+  type: typeof POLYLINE_VISIBILITY_CONDITION_FIELD;
+  preset?: VisibilityConditionFieldPreset;
+}>;
+
 export const POLYLINE_VISIBILITY_FILTER_FIELD = "POLYLINE_VISIBILITY_FILTER_FIELD";
 export type PolylineVisibilityFilterField = FieldBase<{
   type: typeof POLYLINE_VISIBILITY_FILTER_FIELD;
@@ -38,4 +45,5 @@ export type PolylineFields =
   | PolylineStrokeWeightField
   | PolylineFillColorConditionField
   | PolylineFillColorValueField
+  | PolylineVisibilityConditionField
   | PolylineVisibilityFilterField;

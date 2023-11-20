@@ -1,20 +1,11 @@
 import { useCallback } from "react";
 
 import { PropertyInputField } from "./PropertyInputField";
-import { PropertySelectField } from "./PropertySelectField";
+import { OperationValue, PropertyOperationSelectField } from "./PropertyOperationSelectField";
 import { PropertyLineWrapper } from "./PropertyWrapper";
 
-const operationOptions = [
-  { value: ">", label: ">" },
-  { value: "<", label: "<" },
-  { value: ">=", label: ">=" },
-  { value: "<=", label: "<=" },
-  { value: "===", label: "=" },
-  { value: "!==", label: "!=" },
-];
-
 export type CommonCondition = {
-  operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
+  operation?: OperationValue;
   value?: string;
 };
 
@@ -28,10 +19,10 @@ export const PropertyConditionField: React.FC<PropertyConditionFieldProps> = ({
   onConditionChange,
 }) => {
   const handleOperationChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (v: OperationValue) => {
       onConditionChange({
         ...condition,
-        operation: e.target.value as CommonCondition["operation"],
+        operation: v,
       });
     },
     [condition, onConditionChange],
@@ -50,11 +41,8 @@ export const PropertyConditionField: React.FC<PropertyConditionFieldProps> = ({
   return (
     <PropertyLineWrapper>
       IF
-      <PropertySelectField
-        placeholder="Operation"
-        sx={{ width: "80px" }}
-        options={operationOptions}
-        value={condition.operation ?? ""}
+      <PropertyOperationSelectField
+        operation={condition.operation}
         onChange={handleOperationChange}
       />
       <PropertyInputField

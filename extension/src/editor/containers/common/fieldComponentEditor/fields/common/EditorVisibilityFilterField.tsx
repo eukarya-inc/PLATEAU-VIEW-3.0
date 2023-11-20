@@ -12,6 +12,7 @@ import {
   CommonCondition,
   PropertyConditionField,
 } from "../../../../ui-components";
+import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
 import { generateID } from "../../../../utils";
 
 type VisibilityFilterFieldPresetRule = {
@@ -23,7 +24,7 @@ type VisibilityFilterFieldPresetRule = {
 
 type VisibilityFilterFieldPresetRuleCondition = {
   id: string;
-  operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
+  operation?: OperationValue;
   value?: string;
   asLegend?: boolean;
   legendName?: string;
