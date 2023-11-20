@@ -2,6 +2,7 @@ import { ClickAwayListener, Popper, styled, useTheme, type PopperProps } from "@
 import { omit } from "lodash";
 import { useCallback, useState, type FC, type ReactNode } from "react";
 
+import { Z_INDEX_WAS } from "../../shared/reearth/constants/style";
 import { isNotFalse } from "../type-helpers";
 
 const Arrow = styled("div")(({ theme }) => {
@@ -97,7 +98,7 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
   const theme = useTheme();
   return (
     <Popper
-      style={{ zIndex: 1 }}
+      style={{ zIndex: Z_INDEX_WAS }}
       // WORKAROUND: Accept popover props.
       {...(omit(props, ["anchorPosition", "anchorReference"]) as PopperProps)}
       modifiers={[
