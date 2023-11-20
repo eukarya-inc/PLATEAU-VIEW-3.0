@@ -1,5 +1,5 @@
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import { useMemo, useCallback, ReactElement } from "react";
+import { useMemo, useCallback, ReactElement, useState } from "react";
 
 import { BasicFieldProps } from "..";
 import {
@@ -43,12 +43,12 @@ export const EditorVisibilityConditionField = ({
   }, [component?.preset]);
 
   const handleConditionUpdate = useCallback(
-    (rule: VisibilityConditionFieldPresetCondition) => {
+    (condition: VisibilityConditionFieldPresetCondition) => {
       onUpdate?.({
         ...component,
         preset: {
           ...component?.preset,
-          conditions: conditions.map(r => (r.id === rule.id ? rule : r)),
+          conditions: conditions.map(c => (c.id === condition.id ? condition : c)),
         },
       });
     },
@@ -56,25 +56,65 @@ export const EditorVisibilityConditionField = ({
   );
 
   const handleConditionCreate = useCallback(() => {
-    const newRule: VisibilityConditionFieldPresetCondition = {
+    const newCondition: VisibilityConditionFieldPresetCondition = {
       id: generateID(),
     };
     onUpdate?.({
       ...component,
       preset: {
         ...component?.preset,
-        conditions: [...conditions, newRule],
+        conditions: [...conditions, newCondition],
       },
     });
   }, [component, conditions, onUpdate]);
 
+  const handleConditionRemove = useCallback(
+    (id: string) => {
+      onUpdate?.({
+        ...component,
+        preset: {
+          ...component?.preset,
+          conditions: conditions.filter(c => c.id !== id),
+        },
+      });
+    },
+    [component, conditions, onUpdate],
+  );
+
+  const [movingId, setMovingId] = useState<string>();
+  const handleConditionMove = useCallback(
+    (id: string, direction: "up" | "down") => {
+      const index = conditions.findIndex(c => c.id === id);
+      if (index === -1) return;
+      setMovingId(id);
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= conditions.length) return;
+      const newConditions = [...conditions];
+      newConditions.splice(index, 1);
+      newConditions.splice(newIndex, 0, conditions[index]);
+      onUpdate?.({
+        ...component,
+        preset: {
+          ...component?.preset,
+          conditions: newConditions,
+        },
+      });
+    },
+    [component, conditions, onUpdate],
+  );
+
   return (
     <PropertyWrapper>
       <PropertyBox>
-        {conditions.map(condition => (
+        {conditions.map((condition, index) => (
           <PropertyCard
             id={condition.id}
             key={condition.id}
+            movingId={movingId}
+            moveUpDisabled={index === 0}
+            moveDownDisabled={index === conditions.length - 1}
+            onMove={handleConditionMove}
+            onRemove={handleConditionRemove}
             mainPanel={
               <ConditionPanel condition={condition} onConditionUpdate={handleConditionUpdate} />
             }
