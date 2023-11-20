@@ -159,6 +159,8 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         if (!rule?.propertyName || !rule.conditions) return;
         const colors = rule?.conditions
           ?.map((c): QualitativeColor | undefined => {
+            if (!c.asLegend) return;
+
             const overriddenCondition = component.value?.overrideRules.find(
               o => o.ruleId === rule.id && o.conditionId === c.id,
             );
@@ -201,12 +203,14 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             });
           },
         ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
-        return {
-          type: "qualitative" as const,
-          name: rule.legendName || rule.propertyName,
-          colorsAtom: colorsAtom,
-          colorAtomsAtom: splitAtom(colorsAtom),
-        } as QualitativeColorSet;
+        return colors.length
+          ? ({
+              type: "qualitative" as const,
+              name: rule.legendName || rule.propertyName,
+              colorsAtom: colorsAtom,
+              colorAtomsAtom: splitAtom(colorsAtom),
+            } as QualitativeColorSet)
+          : undefined;
       }
       case VALUE_COLOR_SCHEME: {
         if (!isValueColorSchemeComponent(component)) return;

@@ -64,6 +64,8 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         if (!rule?.propertyName || !rule.conditions) return;
         const imageIcons = rule?.conditions
           ?.map((c): ImageIcon | undefined => {
+            if (!c.asLegend) return;
+
             const overriddenCondition = component.value?.overrideRules.find(
               o => o.ruleId === rule.id && o.conditionId === c.id,
             );
@@ -107,12 +109,14 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             });
           },
         ) as unknown as PrimitiveAtom<ImageIcon[]>;
-        return {
-          type: "imageIcon" as const,
-          name: rule.propertyName,
-          imageIconsAtom: imageIconsAtom,
-          imageIconAtomsAtom: splitAtom(imageIconsAtom),
-        } as ImageIconSet;
+        return imageIcons.length
+          ? ({
+              type: "imageIcon" as const,
+              name: rule.propertyName,
+              imageIconsAtom: imageIconsAtom,
+              imageIconAtomsAtom: splitAtom(imageIconsAtom),
+            } as ImageIconSet)
+          : undefined;
       }
     }
   });
