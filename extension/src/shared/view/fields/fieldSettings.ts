@@ -4,7 +4,10 @@ import {
   GRADIENT_COLOR_SCHEME,
   VALUE_COLOR_SCHEME,
 } from "../../types/fieldComponents/colorScheme";
-import { CONDITIONAL_IMAGE_SCHEME } from "../../types/fieldComponents/imageScheme";
+import {
+  CONDITIONAL_IMAGE_SCHEME,
+  VALUE_IMAGE_SCHEME,
+} from "../../types/fieldComponents/imageScheme";
 
 // This settings object is used to generate the UI for each field.
 // It will be used in layer inspector and legend panel.
@@ -81,7 +84,11 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   POINT_USE_IMAGE_VALUE_FIELD: {
-    defaultValue: "",
+    value: {
+      type: VALUE_IMAGE_SCHEME,
+      imageColor: undefined,
+      imageURL: undefined,
+    },
     hasLegendUI: true,
   },
   POINT_USE_IMAGE_CONDITION_FIELD: {
