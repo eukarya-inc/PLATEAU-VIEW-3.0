@@ -15,6 +15,7 @@ import {
   PropertyWrapper,
 } from "../../../../ui-components";
 import { generateID } from "../../../../utils";
+import { useNumberFieldState } from "../../hooksUtils";
 
 type FillColorGradientFieldPresetRule = {
   id: string;
@@ -205,28 +206,30 @@ const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
     [rule, onRuleUpdate],
   );
 
-  const [minText, setMinText] = useState(rule.min?.toString());
-  const handleMinChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setMinText(e.target.value);
-      onRuleUpdate({
-        ...rule,
-        min: Number(e.target.value) ?? 0,
-      });
-    },
-    [rule, onRuleUpdate],
+  const [minText, handleMinChange] = useNumberFieldState(
+    rule.min,
+    useCallback(
+      v => {
+        onRuleUpdate({
+          ...rule,
+          min: v ?? 0,
+        });
+      },
+      [rule, onRuleUpdate],
+    ),
   );
 
-  const [maxText, setMaxText] = useState(rule.max?.toString());
-  const handleMaxChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setMaxText(e.target.value);
-      onRuleUpdate({
-        ...rule,
-        max: Number(e.target.value) ?? 0,
-      });
-    },
-    [rule, onRuleUpdate],
+  const [maxText, handleMaxChange] = useNumberFieldState(
+    rule.max,
+    useCallback(
+      v => {
+        onRuleUpdate({
+          ...rule,
+          max: v ?? 0,
+        });
+      },
+      [rule, onRuleUpdate],
+    ),
   );
 
   return (
