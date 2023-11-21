@@ -52,7 +52,6 @@ export const makeSimpleValue = (
   comp:
     | Component<
         | typeof POINT_FILL_COLOR_VALUE_FIELD
-        | typeof POINT_USE_IMAGE_VALUE_FIELD
         | typeof POLYLINE_FILL_COLOR_VALUE_FIELD
         | typeof POLYGON_FILL_COLOR_VALUE_FIELD
         | typeof POLYGON_STROKE_COLOR_FIELD
@@ -65,8 +64,6 @@ export const makeSimpleValue = (
     // Point
     case POINT_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
-    case POINT_USE_IMAGE_VALUE_FIELD:
-      return comp.preset?.defaultValue;
     // Polyline
     case POLYLINE_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
@@ -424,10 +421,13 @@ export const useEvaluateGeneralAppearance = ({
             makeSimpleValue(pointColor) ??
             makeConditionalExpression(pointFillColorCondition) ??
             makeGradientExpression(pointFillGradientColor),
-          pointSize: pointSize?.value,
+          pointSize: pointSize?.preset?.defaultValue,
           image:
-            makeSimpleValue(pointImageValue) ?? makeConditionalImageExpression(pointImageCondition),
-          imageColor: makeConditionalImageColorExpression(pointImageCondition),
+            pointImageValue?.preset?.imageURL ??
+            makeConditionalImageExpression(pointImageCondition),
+          imageColor:
+            pointImageValue?.preset?.imageColor ??
+            makeConditionalImageColorExpression(pointImageCondition),
           imageSize: pointImageSize?.preset?.defaultValue,
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
           show:

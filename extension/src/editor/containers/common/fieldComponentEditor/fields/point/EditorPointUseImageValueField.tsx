@@ -4,6 +4,7 @@ import { BasicFieldProps } from "..";
 import {
   PropertyBox,
   PropertyCard,
+  PropertyColorField,
   PropertyImageField,
   PropertyInputField,
   PropertySwitch,
@@ -11,7 +12,8 @@ import {
 } from "../../../../ui-components";
 
 export type PointUseImageValueFieldPreset = {
-  defaultValue?: string;
+  imageURL?: string;
+  imageColor?: string;
   asLegend?: boolean;
   legendName?: string;
 };
@@ -54,17 +56,32 @@ type RulePanelProps = {
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
-  const handleUrlChange = useCallback(
+  const handleImageUrlChange = useCallback(
     (imageURL: string) => {
       onRuleUpdate({
         ...preset,
-        defaultValue: imageURL,
+        imageURL,
       });
     },
     [preset, onRuleUpdate],
   );
 
-  return <PropertyImageField value={preset.defaultValue ?? ""} onChange={handleUrlChange} />;
+  const handleImageColorChange = useCallback(
+    (imageColor: string) => {
+      onRuleUpdate({
+        ...preset,
+        imageColor,
+      });
+    },
+    [preset, onRuleUpdate],
+  );
+
+  return (
+    <>
+      <PropertyImageField value={preset.imageURL ?? ""} onChange={handleImageUrlChange} />
+      <PropertyColorField value={preset.imageColor ?? ""} onChange={handleImageColorChange} />
+    </>
+  );
 };
 
 const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
