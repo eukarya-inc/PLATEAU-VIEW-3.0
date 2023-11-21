@@ -1,14 +1,18 @@
-import { intersection } from "lodash";
+import { useAtomValue, useSetAtom } from "jotai";
+import { uniqBy } from "lodash-es";
 import { useMemo, type FC } from "react";
 
-import { isNotNullish } from "../../../prototypes/type-helpers";
+import { useFindLayer, LayerModel } from "../../../prototypes/layers";
 import { ParameterList, PropertyParameterItem } from "../../../prototypes/ui-components";
 import {
   type SCREEN_SPACE_SELECTION,
   type SelectionGroup,
 } from "../../../prototypes/view/states/selection";
+import { makePropertyForFeatureInspector } from "../../plateau/featureInspector";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
+import { findRootLayerAtom, rootLayersLayersAtom } from "../../states/rootLayer";
+import { RootLayer } from "../../view-layers";
 
 export interface GeneralFeaturePropertiesSectionProps {
   values: (SelectionGroup & {
@@ -17,55 +21,62 @@ export interface GeneralFeaturePropertiesSectionProps {
   })["values"];
 }
 
-const excludedPropertyNames = ["LOD1立ち上げに使用する高さ"];
+// 方法
+// 1. JSONPathから値を取得
+// 2. JSONPathのNodeを取得
+// 3. Display nameがない場合、Nodeを使ってAttributeMapから翻訳結果を取得
+// 4. rootFields用に、Nodeを使って該当のpropertyを消す
+// 5. getRootFieldsから値を取得(変換されたpropertiesを渡す)
+// 6. getAttributesから値を取得(変換していないattributesをそのまま渡す)
 
 // TODO(reearth): Support CZML description HTML
 export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSectionProps> = ({
   values,
 }) => {
-  const features = useMemo(() => {
-    if (values.every(v => !!v.properties)) {
-      return values;
-    }
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+  const rootLayersLayers = useAtomValue(rootLayersLayersAtom);
+  const findLayer = useFindLayer();
+  const layers = useMemo(() => {
     const layersMap = values.reduce((res, v) => {
       if (!res[v.layerId]) {
         res[v.layerId] = [];
       }
-      res[v.layerId].push(v.key);
+      res[v.layerId].push({ featureId: v.key, properties: v.properties });
       return res;
-    }, {} as { [layerId: string]: string[] });
+    }, {} as { [layerId: string]: { featureId: string; properties: any }[] });
     return Object.keys(layersMap).reduce((res, layerId) => {
-      const featureIds = layersMap[layerId];
-      const fs = window.reearth?.layers?.findFeaturesByIds?.(layerId, featureIds);
-      return res.concat(fs ?? []);
-    }, [] as Feature[]);
-  }, [values]);
-
-  const properties = useMemo(
-    () =>
-      intersection(...features.map(feature => Object.keys(feature.properties ?? {})))
-        .filter(name => !name.startsWith("_") && !excludedPropertyNames.includes(name))
-        .map(name => ({
-          name,
-          values: features.map(feature => feature.properties[name]).filter(isNotNullish),
-        }))
-        .filter(({ values }) => {
-          if (values.length === 0) {
-            return false;
-          }
-          const type = typeof values[0];
-          if (type !== "string" && type !== "number" && type !== "object") {
-            return false;
-          }
-          return (
-            values.length === features.length &&
-            // eslint-disable-next-line valid-typeof
-            values.slice(1).every(value => typeof value === type)
+      const mapValues = layersMap[layerId];
+      const hasProperties = mapValues.every(v => !!v.properties);
+      const features = hasProperties
+        ? mapValues
+        : uniqBy(
+            window.reearth?.layers?.findFeaturesByIds?.(
+              layerId,
+              mapValues.map(v => v.featureId),
+            ) ?? [],
+            "id",
           );
-        })
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [features],
-  );
+
+      const rootLayer = findRootLayer(layerId);
+      const layer = findLayer(rootLayersLayers, (l, get) => get(l.layerIdAtom) === layerId);
+
+      res.push({ features: features ?? [], rootLayer, layer });
+      return res;
+    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayer | undefined }[]);
+  }, [values, findLayer, findRootLayer, rootLayersLayers]);
+
+  const properties = useMemo(() => {
+    // TODO: Replace properties by JSONPath
+    return layers.reduce((res, { features, rootLayer, layer }) => {
+      return res.concat(
+        ...makePropertyForFeatureInspector({
+          features,
+          layer,
+          featureInspector: rootLayer?.featureInspector,
+        }),
+      );
+    }, [] as Feature["properties"][]);
+  }, [layers]);
 
   return (
     <ParameterList>

@@ -1,9 +1,13 @@
-import { intersection } from "lodash";
+import { useAtomValue, useSetAtom } from "jotai";
+import { intersectionBy, uniqBy } from "lodash-es";
 import { useMemo, type FC } from "react";
 
+import { makePropertyForFeatureInspector } from "../../../shared/plateau/featureInspector";
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { Feature } from "../../../shared/reearth/types/layer";
-import { isNotNullish } from "../../type-helpers";
+import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { RootLayer } from "../../../shared/view-layers";
+import { LayerModel, useFindLayer } from "../../layers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { type SCREEN_SPACE_SELECTION, type SelectionGroup } from "../states/selection";
 
@@ -14,10 +18,12 @@ export interface TileFeaturePropertiesSectionProps {
   })["values"];
 }
 
-const excludedPropertyNames = ["LOD1立ち上げに使用する高さ"];
-
 export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps> = ({ values }) => {
-  const features = useMemo(() => {
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+  const rootLayersLayers = useAtomValue(rootLayersLayersAtom);
+  const findLayer = useFindLayer();
+
+  const layers = useMemo(() => {
     const layersMap = values.reduce((res, v) => {
       if (!res[v.layerId]) {
         res[v.layerId] = [];
@@ -27,36 +33,32 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
     }, {} as { [layerId: string]: string[] });
     return Object.keys(layersMap).reduce((res, layerId) => {
       const featureIds = layersMap[layerId];
-      const fs = window.reearth?.layers?.findFeaturesByIds?.(layerId, featureIds);
-      return res.concat(fs ?? []);
-    }, [] as Feature[]);
-  }, [values]);
+      const fs = uniqBy(
+        window.reearth?.layers?.findFeaturesByIds?.(layerId, featureIds) ?? [],
+        "id",
+      );
 
-  const properties = useMemo(
-    () =>
-      intersection(...features.map(feature => Object.keys(feature.properties ?? {})))
-        .filter(name => !name.startsWith("_") && !excludedPropertyNames.includes(name))
-        .map(name => ({
-          name,
-          values: features.map(feature => feature.properties[name]).filter(isNotNullish),
-        }))
-        .filter(({ values }) => {
-          if (values.length === 0) {
-            return false;
-          }
-          const type = typeof values[0];
-          if (type !== "string" && type !== "number" && type !== "object") {
-            return false;
-          }
-          return (
-            values.length === features.length &&
-            // eslint-disable-next-line valid-typeof
-            values.slice(1).every(value => typeof value === type)
-          );
-        })
-        .sort((a, b) => a.name.localeCompare(b.name)),
-    [features],
-  );
+      const rootLayer = findRootLayer(layerId);
+      const layer = findLayer(rootLayersLayers, (l, get) => get(l.layerIdAtom) === layerId);
+
+      return res.concat({ features: fs ?? [], layer, rootLayer });
+    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayer | undefined }[]);
+  }, [values, findLayer, findRootLayer, rootLayersLayers]);
+
+  const properties = useMemo(() => {
+    // TODO: Replace properties by JSONPath
+    const properties = layers.reduce((res, { features, rootLayer, layer }) => {
+      return res.concat(
+        ...makePropertyForFeatureInspector({
+          features,
+          layer,
+          featureInspector: rootLayer?.featureInspector,
+        }),
+      );
+    }, [] as Feature["properties"][]);
+
+    return intersectionBy(properties, "name");
+  }, [layers]);
 
   return (
     <ParameterList>

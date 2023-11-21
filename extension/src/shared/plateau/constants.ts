@@ -24,3 +24,10 @@ export const BUILDING_MODEL_FILTER_RANGE: Record<string, [min: number, max: numb
   // Building age
   ["建築年"]: [1850, new Date().getFullYear()],
 };
+
+export const FEATURE_PROPERTIES_CONFIG = [
+  {
+    property: "attributes",
+    name: "全ての属性",
+  },
+];
