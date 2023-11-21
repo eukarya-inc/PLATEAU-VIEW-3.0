@@ -16,6 +16,7 @@ import { HealthModule } from "./modules/health.module";
       cache: "bounded",
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       sortSchema: true,
+      include: [HealthModule, AreasModule],
     }),
     HealthModule,
     AreasModule,

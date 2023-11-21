@@ -9,8 +9,7 @@ import { TileAppModule } from "./modules/tiles/app.module";
     ConfigModule.forRoot({
       envFilePath: ".env",
     }),
-    // TODO: Fix this
-    // GraphQLAppModule,
+    GraphQLAppModule,
     TileAppModule,
   ],
   controllers: [],
