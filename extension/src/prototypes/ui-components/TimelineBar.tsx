@@ -18,7 +18,7 @@ type Duration = {
 const defaultFullWidth = 248;
 const minTickWidth = 5;
 const endPadding = 30;
-const labelWidth = 50;
+const labelWidth = 60;
 
 const tickGroupSettings = [
   { name: "second", ms: 1000 },
@@ -27,18 +27,65 @@ const tickGroupSettings = [
   { name: "halfhour", ms: 1800000 },
   { name: "hour", ms: 3600000 },
   { name: "day", ms: 86400000 },
-  { name: "month", ms: 2592000000 },
-  { name: "year", ms: 31536000000 },
+  { name: "month", ms: 2419200000 }, // 28 days, should not use this ms in tick calc since month is not fixed
+  { name: "year", ms: 31536000000 }, // 365 days, should not use this ms in tick calc since year is not fixed
 ];
 
-const getTicks = (duration: Duration, fullWidth: number, msStep: number) => {
+const getTicks = (
+  duration: Duration,
+  fullWidth: number,
+  msStep: number,
+  name: string,
+  timezone: string,
+) => {
   if (duration.msDuration <= msStep) return [];
   const stepPx = fullWidth / (duration.msDuration / msStep);
   if (stepPx < minTickWidth) return [];
   const ticks: { left: number; ms: number }[] = [];
-  const start = msStep - (duration.msStart % msStep);
-  for (let t = duration.msStart + start; t <= duration.msEnd; t += msStep) {
-    ticks.push({ left: ((t - duration.msStart) / duration.msDuration) * 100, ms: t });
+  if (name === "month") {
+    const date = new Date(duration.msStart);
+    date.setMonth(date.getMonth() + 1);
+    date.setDate(1);
+    date.setHours(Number(timezone) + (-localTimezoneOffset / 60 - Number(timezone)));
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    // Need to check the start since we consider timezone in hours
+    if (date.getTime() < duration.msStart) date.setMonth(date.getMonth() + 1);
+    while (date.getTime() < duration.msEnd) {
+      const ms = date.getTime();
+      ticks.push({
+        left: ((ms - duration.msStart) / duration.msDuration) * 100,
+        ms,
+      });
+      date.setMonth(date.getMonth() + 1);
+    }
+  } else if (name === "year") {
+    const date = new Date(duration.msStart);
+    date.setFullYear(date.getFullYear() + 1);
+    date.setMonth(0);
+    date.setDate(1);
+    date.setHours(Number(timezone) + (-localTimezoneOffset / 60 - Number(timezone)));
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+
+    // Need to check the start since we consider timezone in hours
+    if (date.getTime() < duration.msStart) date.setFullYear(date.getFullYear() + 1);
+    while (date.getTime() < duration.msEnd) {
+      const ms = date.getTime();
+      ticks.push({
+        left: ((ms - duration.msStart) / duration.msDuration) * 100,
+        ms,
+      });
+      date.setFullYear(date.getFullYear() + 1);
+    }
+  } else {
+    const start = msStep - (duration.msStart % msStep);
+    for (let t = duration.msStart + start; t <= duration.msEnd; t += msStep) {
+      ticks.push({ left: ((t - duration.msStart) / duration.msDuration) * 100, ms: t });
+    }
   }
   return ticks;
 };
@@ -47,9 +94,10 @@ type LabelProps = {
   date: Date;
   left: number;
   timezone: string;
+  level?: number;
 };
-const Label: React.FC<LabelProps> = ({ date, left }) => {
-  const [dateString, timeString] = formatDate(date);
+const Label: React.FC<LabelProps> = ({ date, left, level }) => {
+  const [dateString, timeString] = formatDate(date, level && level >= 7 ? "year" : "normal");
   return (
     <StyledLabel left={left}>
       <DateLabel>{dateString}</DateLabel>
@@ -107,7 +155,7 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
   const tickGroups = useMemo(() => {
     let innerMaxLevel = 0;
     const tg = tickGroupSettings.map((type, i) => {
-      const ticks = getTicks(duration, fullWidth, type.ms);
+      const ticks = getTicks(duration, fullWidth, type.ms, type.name, timezone);
       if (ticks.length > 0 && i > innerMaxLevel) innerMaxLevel = i;
       return {
         ticks,
@@ -116,7 +164,7 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
     });
     setMaxLevel(innerMaxLevel);
     return tg;
-  }, [duration, fullWidth]);
+  }, [duration, fullWidth, timezone]);
 
   const dynamicMaxLevelLabels = useMemo(() => {
     let startPx = labelWidth / 2;
@@ -126,7 +174,7 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
       const tick = tickGroups[maxLevel].ticks[i];
       const labelStartPx = (tick.left / 100) * fullWidth - labelWidth / 2;
       if (labelStartPx > startPx && labelStartPx + labelWidth < endPx) {
-        startPx = labelStartPx;
+        startPx = labelStartPx + labelWidth;
         labels.push({ left: tick.left, date: new Date(tick.ms) });
       }
     }
@@ -146,10 +194,16 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
           })}
         </TrackWrapper>
         <LabelWrapper>
-          <Label date={new Date(duration.msStart)} left={0} timezone={timezone} />
-          <Label date={new Date(duration.msEnd)} left={100} timezone={timezone} />
+          <Label date={new Date(duration.msStart)} left={0} timezone={timezone} level={maxLevel} />
+          <Label date={new Date(duration.msEnd)} left={100} timezone={timezone} level={maxLevel} />
           {dynamicMaxLevelLabels.map((label, i) => (
-            <Label key={i} date={label.date} left={label.left} timezone={timezone} />
+            <Label
+              key={i}
+              date={label.date}
+              left={label.left}
+              timezone={timezone}
+              level={maxLevel}
+            />
           ))}
         </LabelWrapper>
         <StyledSlider
@@ -251,17 +305,20 @@ const getDateWithTimezone = (date: Date, timezone: string) => {
 };
 
 // Need to remove effect of local timezone to display correct date.
-const formatDate = (date: Date) => {
+const formatDate = (date: Date, type: "year" | "normal" = "normal") => {
   const timezoneOffset = localTimezoneOffset * 60 * 1000;
   const dateWithoutLocalTimezone = new Date(date.getTime() + timezoneOffset);
+  const yyyy = dateWithoutLocalTimezone.getFullYear();
   const mm = dateWithoutLocalTimezone.getMonth() + 1;
   const dd = dateWithoutLocalTimezone.getDate();
   const HH = dateWithoutLocalTimezone.getHours();
   const MM = dateWithoutLocalTimezone.getMinutes();
   const SS = dateWithoutLocalTimezone.getSeconds();
 
-  return [
-    `${mm < 10 ? "0" + mm : mm}月${dd < 10 ? "0" + dd : dd}日`,
-    `${HH < 10 ? "0" + HH : HH}:${MM < 10 ? "0" + MM : MM}:${SS < 10 ? "0" + SS : SS}`,
-  ];
+  return type === "year"
+    ? [`${yyyy}年`, `${mm < 10 ? "0" + mm : mm}月${dd < 10 ? "0" + dd : dd}日`]
+    : [
+        `${mm < 10 ? "0" + mm : mm}月${dd < 10 ? "0" + dd : dd}日`,
+        `${HH < 10 ? "0" + HH : HH}:${MM < 10 ? "0" + MM : MM}:${SS < 10 ? "0" + SS : SS}`,
+      ];
 };
