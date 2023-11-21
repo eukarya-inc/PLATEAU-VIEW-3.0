@@ -411,12 +411,14 @@ export const useEvaluateGeneralAppearance = ({
 
   const appearanceObject = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
 
+  console.log(pointImageValue);
+
   const generalAppearances: GeneralAppearances = useMemo(
     () =>
       appearanceObject ?? {
         marker: {
           // TODO: Use component for style
-          style: pointStyle?.preset?.style ?? "image",
+          style: pointStyle?.preset?.style,
           pointColor:
             makeSimpleValue(pointColor) ??
             makeConditionalExpression(pointFillColorCondition) ??
@@ -473,13 +475,13 @@ export const useEvaluateGeneralAppearance = ({
       pointSize,
       pointFillColorCondition,
       pointFillGradientColor,
-      pointStyle?.preset,
+      pointStyle,
       pointVisibilityCondition,
       pointVisibilityFilter,
       pointImageValue,
       pointImageCondition,
-      pointImageSize?.preset,
-      pointModel?.preset,
+      pointImageSize,
+      pointModel,
       // Polyline
       polylineColor,
       polylineFillColorCondition,
