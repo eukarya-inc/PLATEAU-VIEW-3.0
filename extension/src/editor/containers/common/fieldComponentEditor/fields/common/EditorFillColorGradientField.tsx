@@ -149,7 +149,7 @@ export const EditorFillColorGradientField = ({
 
   return (
     <PropertyWrapper>
-      <PropertyBox asMenu>
+      <PropertyBox asMenu halfWidth>
         {rules.map((rule, index) => (
           <PropertyCard
             key={rule.id}
