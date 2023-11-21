@@ -1,4 +1,4 @@
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Snackbar, styled } from "@mui/material";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 export type EditorNoticeRef = {
@@ -7,6 +7,10 @@ export type EditorNoticeRef = {
     message: string;
   }) => void;
 };
+
+const StyledSnackbar = styled(Snackbar)(() => ({
+  position: "absolute",
+}));
 
 export const EditorNotice = forwardRef((_, ref) => {
   const [open, setOpen] = useState(false);
@@ -32,7 +36,7 @@ export const EditorNotice = forwardRef((_, ref) => {
   }));
 
   return (
-    <Snackbar
+    <StyledSnackbar
       open={open}
       autoHideDuration={3000}
       onClose={handleClose}
@@ -40,6 +44,6 @@ export const EditorNotice = forwardRef((_, ref) => {
       <Alert severity={severity} sx={{ width: "100%" }}>
         {message}
       </Alert>
-    </Snackbar>
+    </StyledSnackbar>
   );
 });

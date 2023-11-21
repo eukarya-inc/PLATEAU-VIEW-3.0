@@ -24,18 +24,21 @@ import {
   POINT_USE_IMAGE_CONDITION_FIELD,
   POINT_IMAGE_SIZE_FIELD,
   POINT_USE_3D_MODEL,
+  POINT_VISIBILITY_CONDITION_FIELD,
 } from "../../types/fieldComponents/point";
 import {
   POLYGON_FILL_COLOR_CONDITION_FIELD,
   POLYGON_FILL_COLOR_VALUE_FIELD,
   POLYGON_STROKE_COLOR_FIELD,
   POLYGON_STROKE_WEIGHT_FIELD,
+  POLYGON_VISIBILITY_CONDITION_FIELD,
   POLYGON_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/polygon";
 import {
   POLYLINE_FILL_COLOR_CONDITION_FIELD,
   POLYLINE_FILL_COLOR_VALUE_FIELD,
   POLYLINE_STROKE_WEIGHT_FIELD,
+  POLYLINE_VISIBILITY_CONDITION_FIELD,
   POLYLINE_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/polyline";
 import { ComponentAtom } from "../../view-layers/component";
@@ -174,6 +177,39 @@ export const makeGradientExpression = (
   };
 };
 
+const makeVisibilityConditionExpression = (
+  comp:
+    | Component<
+        | typeof POINT_VISIBILITY_CONDITION_FIELD
+        | typeof POLYLINE_VISIBILITY_CONDITION_FIELD
+        | typeof POLYGON_VISIBILITY_CONDITION_FIELD
+      >
+    | undefined,
+): ExpressionContainer | undefined => {
+  const conditions = comp?.preset?.conditions;
+
+  if (!conditions) return;
+
+  return {
+    expression: {
+      conditions: conditions.reduce(
+        (res, cond) => {
+          const isNumber = !isNaN(Number(cond.value));
+          if (!cond.operation || !cond.value || !cond.propertyName) return res;
+          res.unshift([
+            isNumber
+              ? `${defaultConditionalNumber(cond.propertyName)} ${cond.operation} ${cond.value}`
+              : `${variable(cond.propertyName)} ${cond.operation} ${string(cond.value)}`,
+            cond.show ? "true" : "false",
+          ]);
+          return res;
+        },
+        [["true", "false"]],
+      ),
+    },
+  };
+};
+
 const makeVisibilityFilterExpression = (
   comp:
     | Component<
@@ -304,6 +340,9 @@ export const useEvaluateGeneralAppearance = ({
   const pointFillGradientColor = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_GRADIENT_FIELD),
   );
+  const pointVisibilityCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_VISIBILITY_CONDITION_FIELD),
+  );
   const pointVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_VISIBILITY_FILTER_FIELD),
   );
@@ -330,6 +369,9 @@ export const useEvaluateGeneralAppearance = ({
   const polylineFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYLINE_FILL_COLOR_CONDITION_FIELD),
   );
+  const polylineVisibilityCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYLINE_VISIBILITY_CONDITION_FIELD),
+  );
   const polylineVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYLINE_VISIBILITY_FILTER_FIELD),
   );
@@ -346,6 +388,9 @@ export const useEvaluateGeneralAppearance = ({
   );
   const polygonFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
+  );
+  const polygonVisibilityCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_CONDITION_FIELD),
   );
   const polygonVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_FILTER_FIELD),
@@ -385,13 +430,17 @@ export const useEvaluateGeneralAppearance = ({
           imageColor: makeConditionalImageColorExpression(pointImageCondition),
           imageSize: pointImageSize?.preset?.defaultValue,
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
-          show: makeVisibilityFilterExpression(pointVisibilityFilter),
+          show:
+            makeVisibilityFilterExpression(pointVisibilityFilter) ??
+            makeVisibilityConditionExpression(pointVisibilityCondition),
         },
         polyline: {
           strokeColor:
             makeSimpleValue(polylineColor) ?? makeConditionalExpression(polylineFillColorCondition),
           strokeWidth: polylineStrokeWeight?.preset?.defaultValue,
-          show: makeVisibilityFilterExpression(polylineVisibilityFilter),
+          show:
+            makeVisibilityFilterExpression(polylineVisibilityFilter) ??
+            makeVisibilityConditionExpression(polylineVisibilityCondition),
         },
         polygon: {
           fillColor:
@@ -399,7 +448,9 @@ export const useEvaluateGeneralAppearance = ({
           strokeColor: polygonStrokeColor?.preset?.defaultValue,
           strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
           stroke: !!polygonStrokeColor || !!polygonStrokeWeight,
-          show: makeVisibilityFilterExpression(polygonVisibilityFilter),
+          show:
+            makeVisibilityFilterExpression(polygonVisibilityFilter) ??
+            makeVisibilityConditionExpression(polygonVisibilityCondition),
         },
         model: pointModel?.preset
           ? {
@@ -423,6 +474,7 @@ export const useEvaluateGeneralAppearance = ({
       pointFillColorCondition,
       pointFillGradientColor,
       pointStyle?.preset,
+      pointVisibilityCondition,
       pointVisibilityFilter,
       pointImageValue,
       pointImageCondition,
@@ -432,12 +484,14 @@ export const useEvaluateGeneralAppearance = ({
       polylineColor,
       polylineFillColorCondition,
       polylineStrokeWeight,
+      polylineVisibilityCondition,
       polylineVisibilityFilter,
       // Polygon
       polygonColor,
       polygonFillColorCondition,
       polygonStrokeColor,
       polygonStrokeWeight,
+      polygonVisibilityCondition,
       polygonVisibilityFilter,
       // Tileset
       tilesetFillColorCondition,

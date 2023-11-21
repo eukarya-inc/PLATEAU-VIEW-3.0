@@ -11,6 +11,7 @@ import {
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 import { BasicFieldProps, FieldType, fields } from "./fields";
+import { FieldGroupTypes, fieldGroupTitles } from "./fields/constants";
 
 type ComponentItemProps = {
   component: SettingComponent<FieldType>;
@@ -39,9 +40,9 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
     () =>
       fields[component.type]
         ? fields[component.type].group
-          ? `${fields[component.type].category} / ${fields[component.type].group} / ${
-              fields[component.type].name
-            }`
+          ? `${fields[component.type].category} / ${
+              fieldGroupTitles[fields[component.type].group as FieldGroupTypes]
+            } / ${fields[component.type].name}`
           : `${fields[component.type].category} / ${fields[component.type].name}`
         : component.type,
     [component.type],

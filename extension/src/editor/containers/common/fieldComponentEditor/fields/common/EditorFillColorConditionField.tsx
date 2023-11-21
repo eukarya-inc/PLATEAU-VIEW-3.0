@@ -13,6 +13,7 @@ import {
   CommonCondition,
   PropertyConditionField,
 } from "../../../../ui-components";
+import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
 import { generateID } from "../../../../utils";
 
 type FillColorConditionFieldPresetRule = {
@@ -24,7 +25,7 @@ type FillColorConditionFieldPresetRule = {
 
 type FillColorConditionFieldPresetRuleCondition = {
   id: string;
-  operation?: "=" | "!=" | ">" | ">=" | "<" | "<=";
+  operation?: OperationValue;
   value?: string;
   color?: string;
   asLegend?: boolean;
