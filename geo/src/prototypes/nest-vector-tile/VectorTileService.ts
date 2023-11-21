@@ -147,7 +147,7 @@ export class VectorTileService {
       },
     });
 
-    return Readable.from(await applyFormat(image, options?.format).toBuffer());
+    return await Readable.from(await applyFormat(image, options?.format).toBuffer());
     // TODO: Implement the cache later
     // return await this.cacheService.createOne(image, this.options.path, coords, options);
   }
