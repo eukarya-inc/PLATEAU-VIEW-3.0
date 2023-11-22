@@ -8,10 +8,12 @@ import { useCallback, type FC } from "react";
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
+import { ComponentAtom } from "../../../shared/view-layers/component";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
+import { LegendDescriptionSection } from "../selection/LegendDescriptionSection";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom } from "../states/app";
 import {
@@ -29,6 +31,13 @@ export const SelectionPanel: FC = () => {
   const selectionGroups = useAtomValue(selectionGroupsAtom);
 
   const findRootLayer = useSetAtom(findRootLayerAtom);
+
+  const legendComponentAtom =
+    (selectionGroups[0]?.type === COLOR_SCHEME_SELECTION ||
+      selectionGroups[0]?.type === IMAGE_SCHEME_SELECTION) &&
+    (selectionGroups[0]?.values[0]?.componentAtoms?.find(
+      c => c.type === "LEGEND_DESCRIPTION_FIELD",
+    ) as ComponentAtom<"LEGEND_DESCRIPTION_FIELD"> | undefined);
 
   if (selectionGroups.length === 1) {
     const [selectionGroup] = selectionGroups;
@@ -70,10 +79,24 @@ export const SelectionPanel: FC = () => {
         }
         break;
       case COLOR_SCHEME_SELECTION:
-        content = <ColorSchemeContent values={selectionGroup.values} />;
+        content = (
+          <>
+            <ColorSchemeContent values={selectionGroup.values} />
+            {!!legendComponentAtom && (
+              <LegendDescriptionSection componentAtom={legendComponentAtom} />
+            )}
+          </>
+        );
         break;
       case IMAGE_SCHEME_SELECTION:
-        content = <ImageSchemeContent values={selectionGroup.values} />;
+        content = (
+          <>
+            <ImageSchemeContent values={selectionGroup.values} />
+            {!!legendComponentAtom && (
+              <LegendDescriptionSection componentAtom={legendComponentAtom} />
+            )}
+          </>
+        );
         break;
     }
   } else if (selectionGroups.length > 1) {
