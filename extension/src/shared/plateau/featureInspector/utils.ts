@@ -36,18 +36,18 @@ export const makePropertyForFeatureInspector = ({
     (!builtin && featureInspector?.basic?.displayType === "auto") ||
     featureInspector?.basic?.displayType === "propertyList";
 
-  const convertedFeatureInspectorProperties = featureInspector?.emphasisProperty?.properties?.map(
-    p => {
-      // NOTE: This process is really slow when a lot of features are selected, because JSON Path will be parsed by each feature.
-      const nodes = features
-        .flatMap(f => (p.jsonPath ? parseJsonPathAsNodes(f.properties, p.jsonPath) : undefined))
-        .filter(isNotNullish);
-      return {
-        ...p,
-        nodes,
-      };
-    },
-  );
+  const convertedFeatureInspectorProperties = shouldUseSettingProperty
+    ? featureInspector?.emphasisProperty?.properties?.map(p => {
+        // NOTE: This process is really slow when a lot of features are selected, because JSON Path will be parsed by each feature.
+        const nodes = features
+          .flatMap(f => (p.jsonPath ? parseJsonPathAsNodes(f.properties, p.jsonPath) : undefined))
+          .filter(isNotNullish);
+        return {
+          ...p,
+          nodes,
+        };
+      })
+    : [];
   const settingRootPropertyNames = convertedFeatureInspectorProperties
     ?.map(p =>
       p.nodes.length === features.length
@@ -56,23 +56,20 @@ export const makePropertyForFeatureInspector = ({
     )
     .filter(isNotNullish);
   const settingRootProperties =
-    // Don't support multiple feature
-    shouldUseSettingProperty
-      ? convertedFeatureInspectorProperties
-          ?.map(p => {
-            const lastPathName = p.nodes[0]?.path
-              .slice()
-              .reverse()
-              .find((key): key is string => isNaN(Number(key))); // Find string key
-            const label = lastPathName ? getAttributeLabel(lastPathName) : undefined;
-            return {
-              name: p.displayName || label || lastPathName,
-              // TODO: Evaluate `process` in here.
-              values: p.nodes.map(n => n?.value).filter(isNotNullish),
-            };
-          })
-          .filter(({ values }) => !!values.length) ?? []
-      : [];
+    convertedFeatureInspectorProperties
+      ?.map(p => {
+        const lastPathName = p.nodes[0]?.path
+          .slice()
+          .reverse()
+          .find((key): key is string => isNaN(Number(key))); // Find string key
+        const label = lastPathName ? getAttributeLabel(lastPathName) : undefined;
+        return {
+          name: p.displayName || label || lastPathName,
+          // TODO: Evaluate `process` in here.
+          values: p.nodes.map(n => n?.value).filter(isNotNullish),
+        };
+      })
+      .filter(({ values }) => !!values.length) ?? [];
 
   // Built-in root properties
   const datasetType = layer ? layerDatasetTypes[layer.type] : undefined;

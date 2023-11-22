@@ -1,5 +1,6 @@
 gml:id,ID
 bldg:Building,建築物
+name,名称
 gml:description,説明
 gml:name,名称
 gml:boundedBy,範囲
@@ -90,8 +91,12 @@ uro:keyTenants,核テナント
 uro:availability,利用可能性
 uro:BuildingRiverFloodingRiskAttribute,洪水浸水リスク
 uro:description,設定等名称
-uro:rank,浸水ランク
-uro:rankOrg,浸水ランク（独自分類）
+uro:rank,ランク
+rank,ランク
+rank_code,ランクコード
+uro:rankOrg,ランク（独自分類）
+rank_org,ランク（独自分類）
+rank_org_code,ランクコード（独自分類）
 uro:depth,浸水深
 uro:adminType,指定機関
 uro:scale,規模
