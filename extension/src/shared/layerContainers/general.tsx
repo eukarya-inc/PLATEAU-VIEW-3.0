@@ -10,6 +10,7 @@ import {
 import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
 import { MVTLayer } from "../reearth/layers/mvt";
+import { WMSLayer } from "../reearth/layers/wms";
 import { CameraPosition } from "../reearth/types";
 import { Properties } from "../reearth/utils";
 import { ComponentAtom } from "../view-layers/component";
@@ -108,6 +109,12 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   if (format === "mvt") {
     return (
       <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
+    );
+  }
+
+  if (format === "wms") {
+    return (
+      <WMSLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
     );
   }
 

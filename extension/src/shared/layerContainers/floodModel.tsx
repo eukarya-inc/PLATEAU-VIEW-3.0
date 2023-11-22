@@ -24,6 +24,7 @@ import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
 import { useEvaluateFilter } from "./hooks/useEvaluateFilter";
 
 type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> & {
+  id: string;
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   layerIdAtom: PrimitiveAtom<string | null>;
   propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
@@ -37,6 +38,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
 };
 
 export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
+  id,
   onLoad,
   layerIdAtom,
   featureIndexAtom,
@@ -65,6 +67,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
               key: object.id,
               layerId,
               featureIndex,
+              datasetId: id,
             },
           }
         : undefined;

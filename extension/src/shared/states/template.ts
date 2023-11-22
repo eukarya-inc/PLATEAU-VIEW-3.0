@@ -53,3 +53,8 @@ export const updateTemplateAtom = atom(undefined, (get, set, template: Template)
     set(forceUpdateRootLayer);
   }
 });
+
+export const updateAllTemplateAtom = atom(undefined, (_get, set, templates: Template[]) => {
+  set(templatesAtom, templates);
+  set(forceUpdateRootLayer);
+});
