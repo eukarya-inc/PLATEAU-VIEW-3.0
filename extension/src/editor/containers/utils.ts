@@ -61,10 +61,6 @@ const findOrCreateParent: (tree: EditorTreeItemType[], path: string) => EditorTr
   return findOrCreateParent(parent.children, paths.slice(1).join("/"));
 };
 
-export function generateID() {
-  return Date.now().toString(36) + Math.random().toString(16).slice(2);
-}
-
 export function getSelectedPath(tree: EditorTreeItemType[], selectedId: string): string[] {
   for (let i = 0; i < tree.length; i++) {
     const path = findPath(tree[i], selectedId, "");

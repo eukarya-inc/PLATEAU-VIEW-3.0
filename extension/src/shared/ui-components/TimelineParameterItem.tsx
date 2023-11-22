@@ -2,12 +2,11 @@
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { styled, IconButton, Select, Typography, SelectChangeEvent } from "@mui/material";
-import { useAtom } from "jotai";
+import { PrimitiveAtom, useAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { activeTimelineComponentIdAtom } from "../../shared/view/state/timeline";
+import { SelectItem } from "../../prototypes/ui-components/SelectItem";
 
-import { SelectItem } from "./SelectItem";
 import TimelineBar from "./TimelineBar";
 
 type TimelineParameterItemProps = {
@@ -16,6 +15,14 @@ type TimelineParameterItemProps = {
   current?: string;
   end?: string;
   timezone?: string;
+  activeIdAtom: PrimitiveAtom<string>;
+  onPlay?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
+  onPlayReverse?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
+  onPause?: () => void;
+  onJump?: (props: { start: Date; stop: Date; current: Date }) => void;
+  onSetSpeed?: (speed: number) => void;
+  onTickEventAdd?: (callback: (date: Date) => void) => void;
+  onTickEventRemove?: (callback: (date: Date) => void) => void;
 };
 
 const Timeline = styled("div")(() => ({
@@ -94,6 +101,14 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   current,
   end,
   timezone = "+9",
+  activeIdAtom,
+  onPlay,
+  onPlayReverse,
+  onPause,
+  onJump,
+  onSetSpeed,
+  onTickEventAdd,
+  onTickEventRemove,
 }) => {
   const startDate = useMemo(() => new Date(start ?? ""), [start]);
   const endDate = useMemo(() => new Date(end ?? ""), [end]);
@@ -103,9 +118,7 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
     setCurrentDate(new Date(current ?? ""));
   }, [current]);
 
-  const [activeTimelineComponentId, setActiveTimelineComponentId] = useAtom(
-    activeTimelineComponentIdAtom,
-  );
+  const [activeTimelineComponentId, setActiveTimelineComponentId] = useAtom(activeIdAtom);
 
   const isActive = useRef(false);
   const [playState, setPlayState] = useState<"play" | "pause" | "reverse" | undefined>(undefined);
@@ -116,50 +129,44 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
     (event: SelectChangeEvent<number>) => {
       setSpeed(Number(event.target.value));
       if (playState === "play" || playState === "reverse") {
-        window.reearth?.clock?.setSpeed?.(
-          (playState === "reverse" ? -1 : 1) * Number(event.target.value),
-        );
+        onSetSpeed?.((playState === "reverse" ? -1 : 1) * Number(event.target.value));
       }
     },
-    [playState],
+    [playState, onSetSpeed],
   );
 
   const handlePlay = useCallback(() => {
     setActiveTimelineComponentId(id);
     if (currentDate >= endDate) return;
-
     setPlayState("play");
     isActive.current = true;
-    window.reearth?.clock?.setTime?.({
+    onPlay?.({
       start: startDate,
       stop: endDate,
       current: currentDate,
+      speed,
     });
-    window.reearth?.clock?.setSpeed?.(speed);
-    window.reearth?.clock?.play?.();
-  }, [startDate, endDate, currentDate, speed, id, setActiveTimelineComponentId]);
+  }, [startDate, endDate, currentDate, speed, id, onPlay, setActiveTimelineComponentId]);
 
   const handlePause = useCallback(() => {
     setActiveTimelineComponentId(id);
     setPlayState("pause");
     isActive.current = true;
-    window.reearth?.clock?.pause?.();
-  }, [id, setActiveTimelineComponentId]);
+    onPause?.();
+  }, [id, onPause, setActiveTimelineComponentId]);
 
   const handlePlayReverse = useCallback(() => {
     setActiveTimelineComponentId(id);
     if (currentDate <= startDate) return;
-
     setPlayState("reverse");
     isActive.current = true;
-    window.reearth?.clock?.setTime?.({
+    onPlayReverse?.({
       start: startDate,
       stop: endDate,
       current: currentDate,
+      speed,
     });
-    window.reearth?.clock?.setSpeed?.(-speed);
-    window.reearth?.clock?.play?.();
-  }, [startDate, endDate, currentDate, speed, id, setActiveTimelineComponentId]);
+  }, [startDate, endDate, currentDate, speed, id, onPlayReverse, setActiveTimelineComponentId]);
 
   const handleJumpTime = useCallback(
     (_: Event, value: number | number[]) => {
@@ -167,15 +174,14 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
         setActiveTimelineComponentId(id);
         setPlayState("pause");
         isActive.current = true;
-        window.reearth?.clock?.pause?.();
-        window.reearth?.clock?.setTime?.({
+        onJump?.({
           start: startDate,
           stop: endDate,
           current: new Date(value),
         });
       }
     },
-    [id, startDate, endDate, setActiveTimelineComponentId],
+    [id, startDate, endDate, onJump, setActiveTimelineComponentId],
   );
 
   const stateRef = useRef({ endDate, startDate, playState, handlePause });
@@ -194,16 +200,15 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   }, []);
 
   useEffect(() => {
-    window.reearth?.clock?.setRangeType?.("clamped");
-    window.reearth?.on?.("tick", onTick);
+    onTickEventAdd?.(onTick);
     return () => {
       if (isActive.current) {
-        setActiveTimelineComponentId(undefined);
-        window.reearth?.clock?.pause?.();
+        setActiveTimelineComponentId("");
+        onPause?.();
       }
-      window.reearth?.off?.("tick", onTick);
+      onTickEventRemove?.(onTick);
     };
-  }, [onTick, setActiveTimelineComponentId]);
+  }, [onTick, onPause, onTickEventAdd, onTickEventRemove, setActiveTimelineComponentId]);
 
   useEffect(() => {
     isActive.current = activeTimelineComponentId === id;

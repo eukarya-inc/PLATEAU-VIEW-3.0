@@ -2,10 +2,12 @@ import { useAtom } from "jotai";
 import { FC, useMemo } from "react";
 
 import { ParameterItem, ParameterList } from "../../../../prototypes/ui-components";
-import { TimelineParameterItem } from "../../../../prototypes/ui-components/TimelineParameterItem";
+import { useTimeline } from "../../../reearth/hooks/useTimeline";
 import { TimelineMonthField } from "../../../types/fieldComponents/general";
+import { TimelineParameterItem } from "../../../ui-components/TimelineParameterItem";
+import { generateID } from "../../../utils/id";
 import { WritableAtomForComponent } from "../../../view-layers/component";
-import { generateID } from "../../utils";
+import { activeTimelineComponentIdAtom } from "../../state/timeline";
 
 export interface LayerTimelineMonthFieldProps {
   atoms: WritableAtomForComponent<TimelineMonthField>[];
@@ -28,6 +30,16 @@ export const LayerTimelineMonthField: FC<LayerTimelineMonthFieldProps> = ({ atom
 
   const id = useMemo(() => component.id ?? generateID(), [component.id]);
 
+  const {
+    handleTimelinePlay,
+    handleTimelinePlayReverse,
+    handleTimelinePause,
+    handleTimelineJump,
+    handleTimelineSetSpeed,
+    handleTimelineOnTickEventAdd,
+    handleTimelineOnTickEventRemove,
+  } = useTimeline();
+
   return (
     <ParameterList>
       <ParameterItem label="タイムライン">
@@ -38,6 +50,14 @@ export const LayerTimelineMonthField: FC<LayerTimelineMonthFieldProps> = ({ atom
             current={start}
             end={end}
             timezone={timezone}
+            activeIdAtom={activeTimelineComponentIdAtom}
+            onPlay={handleTimelinePlay}
+            onPlayReverse={handleTimelinePlayReverse}
+            onPause={handleTimelinePause}
+            onJump={handleTimelineJump}
+            onSetSpeed={handleTimelineSetSpeed}
+            onTickEventAdd={handleTimelineOnTickEventAdd}
+            onTickEventRemove={handleTimelineOnTickEventRemove}
           />
         )}
       </ParameterItem>

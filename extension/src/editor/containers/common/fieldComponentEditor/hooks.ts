@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 
 import { ComponentGroup, SettingComponent } from "../../../../shared/api/types";
-import { generateID } from "../../utils";
+import { generateID } from "../../../../shared/utils/id";
 
 import { FieldType } from "./fields";
 

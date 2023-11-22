@@ -2,6 +2,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useState, useMemo, useCallback, useEffect } from "react";
 
 import { BasicFieldProps } from "..";
+import { generateID } from "../../../../../../shared/utils/id";
 import {
   PropertyBox,
   PropertyButton,
@@ -15,7 +16,6 @@ import {
   PropertyColorField,
 } from "../../../../ui-components";
 import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
-import { generateID } from "../../../../utils";
 
 type PointUseImageConditionFieldPresetRule = {
   id: string;

@@ -15,34 +15,36 @@ type Duration = {
   msDuration: number;
 };
 
+type TickUnit = "second" | "min" | "tenmin" | "halfhour" | "hour" | "day" | "month" | "year";
+
 const defaultFullWidth = 248;
 const minTickWidth = 5;
 const endPadding = 30;
 const labelWidth = 60;
 
-const tickGroupSettings = [
-  { name: "second", ms: 1000 },
-  { name: "min", ms: 60000 },
-  { name: "tenmin", ms: 600000 },
-  { name: "halfhour", ms: 1800000 },
-  { name: "hour", ms: 3600000 },
-  { name: "day", ms: 86400000 },
-  { name: "month", ms: 2419200000 }, // 28 days, should not use this ms in tick calc since month is not fixed
-  { name: "year", ms: 31536000000 }, // 365 days, should not use this ms in tick calc since year is not fixed
+const tickGroupSettings: { unit: TickUnit; ms: number }[] = [
+  { unit: "second", ms: 1000 },
+  { unit: "min", ms: 60000 },
+  { unit: "tenmin", ms: 600000 },
+  { unit: "halfhour", ms: 1800000 },
+  { unit: "hour", ms: 3600000 },
+  { unit: "day", ms: 86400000 },
+  { unit: "month", ms: 2419200000 }, // 28 days, should not use this ms in tick calc since month is not fixed
+  { unit: "year", ms: 31536000000 }, // 365 days, should not use this ms in tick calc since year is not fixed
 ];
 
 const getTicks = (
   duration: Duration,
   fullWidth: number,
   msStep: number,
-  name: string,
+  unit: TickUnit,
   timezone: string,
 ) => {
   if (duration.msDuration <= msStep) return [];
   const stepPx = fullWidth / (duration.msDuration / msStep);
   if (stepPx < minTickWidth) return [];
   const ticks: { left: number; ms: number }[] = [];
-  if (name === "month") {
+  if (unit === "month") {
     const date = new Date(duration.msStart);
     date.setMonth(date.getMonth() + 1);
     date.setDate(1);
@@ -61,7 +63,7 @@ const getTicks = (
       });
       date.setMonth(date.getMonth() + 1);
     }
-  } else if (name === "year") {
+  } else if (unit === "year") {
     const date = new Date(duration.msStart);
     date.setFullYear(date.getFullYear() + 1);
     date.setMonth(0);
@@ -114,7 +116,6 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
   onChange,
 }) => {
   const [fullWidth, setFullWidth] = useState(defaultFullWidth);
-  const [maxLevel, setMaxLevel] = useState(0);
 
   const duration: Duration = useMemo(() => {
     const msStart = getDateWithTimezone(startDate, timezone).getTime();
@@ -152,18 +153,17 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
     };
   }, [trackWrapperRef]);
 
-  const tickGroups = useMemo(() => {
+  const [tickGroups, maxLevel] = useMemo(() => {
     let innerMaxLevel = 0;
     const tg = tickGroupSettings.map((type, i) => {
-      const ticks = getTicks(duration, fullWidth, type.ms, type.name, timezone);
+      const ticks = getTicks(duration, fullWidth, type.ms, type.unit, timezone);
       if (ticks.length > 0 && i > innerMaxLevel) innerMaxLevel = i;
       return {
         ticks,
-        name: type.name,
+        unit: type.unit,
       };
     });
-    setMaxLevel(innerMaxLevel);
-    return tg;
+    return [tg, innerMaxLevel];
   }, [duration, fullWidth, timezone]);
 
   const dynamicMaxLevelLabels = useMemo(() => {
@@ -189,7 +189,7 @@ const TimelineBar: React.FC<TimelineBarProps> = ({
           <Tick key="end" left={100} level={4} />
           {tickGroups.map((tickGroup, level) => {
             return tickGroup.ticks.map((t, i) => (
-              <Tick key={`${tickGroup.name}-${i}`} left={t.left} level={3 - (maxLevel - level)} />
+              <Tick key={`${tickGroup.unit}-${i}`} left={t.left} level={3 - (maxLevel - level)} />
             ));
           })}
         </TrackWrapper>
