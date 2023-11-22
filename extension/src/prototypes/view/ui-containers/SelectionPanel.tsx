@@ -8,7 +8,6 @@ import { useCallback, type FC } from "react";
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
-import { ComponentAtom } from "../../../shared/view-layers/component";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
@@ -31,13 +30,6 @@ export const SelectionPanel: FC = () => {
   const selectionGroups = useAtomValue(selectionGroupsAtom);
 
   const findRootLayer = useSetAtom(findRootLayerAtom);
-
-  const legendComponentAtom =
-    (selectionGroups[0]?.type === COLOR_SCHEME_SELECTION ||
-      selectionGroups[0]?.type === IMAGE_SCHEME_SELECTION) &&
-    (selectionGroups[0]?.values[0]?.componentAtoms?.find(
-      c => c.type === "LEGEND_DESCRIPTION_FIELD",
-    ) as ComponentAtom<"LEGEND_DESCRIPTION_FIELD"> | undefined);
 
   if (selectionGroups.length === 1) {
     const [selectionGroup] = selectionGroups;
@@ -82,9 +74,7 @@ export const SelectionPanel: FC = () => {
         content = (
           <>
             <ColorSchemeContent values={selectionGroup.values} />
-            {!!legendComponentAtom && (
-              <LegendDescriptionSection componentAtom={legendComponentAtom} />
-            )}
+            <LegendDescriptionSection values={selectionGroup.values} />
           </>
         );
         break;
@@ -92,9 +82,7 @@ export const SelectionPanel: FC = () => {
         content = (
           <>
             <ImageSchemeContent values={selectionGroup.values} />
-            {!!legendComponentAtom && (
-              <LegendDescriptionSection componentAtom={legendComponentAtom} />
-            )}
+            <LegendDescriptionSection values={selectionGroup.values} />
           </>
         );
         break;

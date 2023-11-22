@@ -21,11 +21,11 @@ export interface LayerLayerDescriptionFieldProps {
 
 export const LayerLayerDescriptionField: FC<LayerLayerDescriptionFieldProps> = ({ atoms }) => {
   const [component] = useAtom(atoms[0]);
-  return (
+  return component.preset?.description ? (
     <ParameterList>
       <Wrapper>
         <Markdown skipHtml>{component.preset?.description}</Markdown>
       </Wrapper>
     </ParameterList>
-  );
+  ) : null;
 };

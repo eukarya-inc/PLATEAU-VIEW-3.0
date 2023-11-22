@@ -1,9 +1,15 @@
 import { styled } from "@mui/material";
-import { atom, useAtomValue } from "jotai";
-import { FC, useMemo } from "react";
+import { FC } from "react";
 import Markdown from "react-markdown";
 
-import { ComponentAtom } from "../../../shared/view-layers/component";
+import { useOptionalAtomValue } from "../../../shared/hooks";
+import { LEGEND_DESCRIPTION_FIELD } from "../../../shared/types/fieldComponents/general";
+import { useFindComponent } from "../../../shared/view-layers/hooks";
+import {
+  COLOR_SCHEME_SELECTION,
+  IMAGE_SCHEME_SELECTION,
+  SelectionGroup,
+} from "../states/selection";
 
 const Wrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 2),
@@ -14,23 +20,22 @@ const Wrapper = styled("div")(({ theme }) => ({
 }));
 
 export interface LegendDescriptionSectionProps {
-  componentAtom: ComponentAtom<"LEGEND_DESCRIPTION_FIELD">;
+  values: (SelectionGroup & {
+    type: typeof COLOR_SCHEME_SELECTION | typeof IMAGE_SCHEME_SELECTION;
+  })["values"];
 }
 
-export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ componentAtom }) => {
-  const description = useAtomValue(
-    useMemo(
-      () =>
-        atom(get => {
-          return get(componentAtom.atom).preset?.description;
-        }),
-      [componentAtom],
-    ),
+export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ values }) => {
+  const legendDescriptionAtom = useFindComponent(
+    values[0].componentAtoms ?? [],
+    LEGEND_DESCRIPTION_FIELD,
   );
 
-  return (
+  const legendDescription = useOptionalAtomValue(legendDescriptionAtom);
+
+  return legendDescription?.preset?.description ? (
     <Wrapper>
-      <Markdown skipHtml>{description}</Markdown>
+      <Markdown skipHtml>{legendDescription?.preset?.description}</Markdown>
     </Wrapper>
-  );
+  ) : null;
 };
