@@ -10,8 +10,6 @@ import {
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
-import { EditorTilesetFillColorConditionField } from "./3dtiles/EditorTilesetFillColorConditionField";
-import { EditorTilesetFillColorGradientField } from "./3dtiles/EditorTilesetFillColorGradientField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
@@ -124,7 +122,9 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     group: FIELD_GROUP_POINT_FILL_COLOR,
     name: "Gradient",
-    Component: EditorFillColorGradientField,
+    Component: EditorFillColorGradientField as React.FC<
+      BasicFieldProps<"POINT_FILL_COLOR_GRADIENT_FIELD">
+    >,
   },
   POINT_USE_IMAGE_VALUE_FIELD: {
     category: FIELD_CATEGORY_POINT,
@@ -256,13 +256,17 @@ export const fields: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
     name: "Condition",
-    Component: EditorTilesetFillColorConditionField,
+    Component: EditorFillColorConditionField as React.FC<
+      BasicFieldProps<"TILESET_FILL_COLOR_CONDITION_FIELD">
+    >,
   },
   TILESET_FILL_COLOR_GRADIENT_FIELD: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
     name: "Gradient",
-    Component: EditorTilesetFillColorGradientField,
+    Component: EditorFillColorGradientField as React.FC<
+      BasicFieldProps<"TILESET_FILL_COLOR_GRADIENT_FIELD">
+    >,
   },
   TILESET_CLIPPING: {
     category: FIELD_CATEGORY_THREE_D_TILES,

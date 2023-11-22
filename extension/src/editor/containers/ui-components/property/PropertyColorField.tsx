@@ -23,7 +23,7 @@ export const PropertyColorField: React.FC<PropertyColorFieldProps> = ({
   const [pickerOpen, setPickerOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
 
-  const handleChangeComplete = (color: any) => {
+  const handleChange = (color: any) => {
     const alphaHex = color.rgb.a !== 1 ? Math.round(color.rgb.a * 255).toString(16) : "";
     onChange(`${color.hex}${alphaHex}`);
   };
@@ -47,7 +47,8 @@ export const PropertyColorField: React.FC<PropertyColorFieldProps> = ({
           <ChromePicker
             color={value}
             disableAlpha={disableAlpha}
-            onChangeComplete={handleChangeComplete}
+            onChange={handleChange}
+            onChangeComplete={handleChange}
           />
         </EditorPopper>
       </Wrapper>

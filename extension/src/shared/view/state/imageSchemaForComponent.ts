@@ -130,14 +130,13 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       }
       case VALUE_IMAGE_SCHEME: {
         if (!isValueImageSchemeComponent(component)) return;
-        const imageIcons = component.preset?.defaultValue
+        const imageIcons = component.preset?.imageURL
           ? [
               {
                 id: component.id,
-                value: component.preset.defaultValue,
-                imageUrl: component.preset.defaultValue,
-                // TODO: Use setting value
-                imageColor: "#ffffff", // color: component.preset.imageColor
+                value: component.preset.imageURL,
+                imageUrl: component.preset.imageURL,
+                imageColor: component.preset.imageColor,
                 name: component.preset.legendName ?? "",
               },
             ]

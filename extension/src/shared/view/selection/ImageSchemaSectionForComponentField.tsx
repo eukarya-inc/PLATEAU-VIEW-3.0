@@ -1,4 +1,3 @@
-// import { Button, Stack, styled, Typography } from "@mui/material";
 import { Button, Stack, Typography, styled } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
@@ -141,7 +140,6 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
     return null;
   }
 
-  // TODO: Add Image legend
   return (
     <ParameterList>
       <GroupedParameterItem
