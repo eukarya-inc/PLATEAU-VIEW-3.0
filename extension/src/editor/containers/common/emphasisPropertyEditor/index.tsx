@@ -3,8 +3,8 @@ import { styled } from "@mui/material";
 import { useCallback } from "react";
 
 import { EmphasisProperty } from "../../../../shared/api/types";
+import { generateID } from "../../../../shared/utils/id";
 import { EditorButton } from "../../ui-components";
-import { generateID } from "../../utils";
 
 import { EmphasisPropertyHeader } from "./EmphasisPropertyHeader";
 import { EmphasisPropertyItem } from "./EmphasisPropertyItem";

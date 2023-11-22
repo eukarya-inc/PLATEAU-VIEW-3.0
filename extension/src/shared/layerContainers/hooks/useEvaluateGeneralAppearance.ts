@@ -111,10 +111,10 @@ export const makeConditionalExpression = (
                   )}`
                 : undefined;
               return rule.propertyName && cond.value && colorValue
-                ? ([
-                    numberCondition ? `${numberCondition} || ${stringCondition}` : stringCondition,
-                    color(colorValue, 1),
-                  ] as [string, string])
+                ? ([numberCondition ? numberCondition : stringCondition, color(colorValue, 1)] as [
+                    string,
+                    string,
+                  ])
                 : undefined;
             });
           }) ?? []

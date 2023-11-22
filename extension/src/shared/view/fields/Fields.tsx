@@ -13,7 +13,13 @@ import {
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
 } from "../../types/fieldComponents/3dtiles";
-import { LAYER_DESCRIPTION_FIELD, OPACITY_FIELD } from "../../types/fieldComponents/general";
+import {
+  LAYER_DESCRIPTION_FIELD,
+  APPLY_TIME_VALUE_FIELD,
+  OPACITY_FIELD,
+  TIMELINE_CUSTOMIZED_FIELD,
+  TIMELINE_MONTH_FIELD,
+} from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
   POINT_FILL_COLOR_GRADIENT_FIELD,
@@ -36,8 +42,11 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
+import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
 import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
+import { LayerTimelineCustomizedField } from "./general/LayerTimelineCustomizedField";
+import { LayerTimelineMonthField } from "./general/LayerTimelineMonthField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
 import { LayerPointFillGradientColorField } from "./point/LayerPointFillGradientColorField";
 import { LayerPointUseImageConditionField } from "./point/LayerPointUseImageConditionField";
@@ -71,6 +80,28 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerLayerDescriptionField
           atoms={atoms as ComponentAtom<"LAYER_DESCRIPTION_FIELD">["atom"][]}
         />
+      );
+      break;
+    }
+    case APPLY_TIME_VALUE_FIELD: {
+      component = (
+        <LayerApplyTimeValueField
+          atoms={atoms as ComponentAtom<"APPLY_TIME_VALUE_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TIMELINE_CUSTOMIZED_FIELD: {
+      component = (
+        <LayerTimelineCustomizedField
+          atoms={atoms as ComponentAtom<"TIMELINE_CUSTOMIZED_FIELD">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TIMELINE_MONTH_FIELD: {
+      component = (
+        <LayerTimelineMonthField atoms={atoms as ComponentAtom<"TIMELINE_MONTH_FIELD">["atom"][]} />
       );
       break;
     }

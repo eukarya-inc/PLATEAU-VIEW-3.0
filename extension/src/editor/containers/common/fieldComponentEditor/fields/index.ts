@@ -32,13 +32,18 @@ import {
   FIELD_GROUP_POLYLINE_VISIBILITY,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
+  FILED_GROUP_GENERAL_TIMELINE,
   FieldGroupTypes,
   fieldGroupTitles,
 } from "./constants";
+import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
+import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
+import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
+import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
 import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
@@ -84,6 +89,23 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Style Code",
     Component: EditorStyleCodeField,
+  },
+  APPLY_TIME_VALUE_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Apply Time Value",
+    Component: EditorApplyTimeValueField,
+  },
+  TIMELINE_CUSTOMIZED_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    group: FILED_GROUP_GENERAL_TIMELINE,
+    name: "Customized",
+    Component: EditorTimelineCustomizedField,
+  },
+  TIMELINE_MONTH_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    group: FILED_GROUP_GENERAL_TIMELINE,
+    name: "Month",
+    Component: EditorTimelineMonthField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {
@@ -157,6 +179,11 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Use 3D Model",
     Component: EditorPointUse3DModelField,
+  },
+  POINT_CONVERT_FROM_CSV: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Convert from CSV",
+    Component: EditorPointConvertFromCSVField,
   },
   // Polyline
   POLYLINE_STROKE_WEIGHT_FIELD: {

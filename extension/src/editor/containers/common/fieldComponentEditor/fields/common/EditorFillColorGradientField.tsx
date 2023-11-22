@@ -6,6 +6,7 @@ import { BasicFieldProps } from "..";
 import { ParameterItem, SelectItem } from "../../../../../../prototypes/ui-components";
 import { ColorMapSelectItemContent } from "../../../../../../prototypes/ui-components/ColorMapSelectItemContent";
 import { COLOR_MAPS } from "../../../../../../shared/constants";
+import { generateID } from "../../../../../../shared/utils/id";
 import {
   PropertyBox,
   PropertyButton,
@@ -14,7 +15,6 @@ import {
   PropertyLineWrapper,
   PropertyWrapper,
 } from "../../../../ui-components";
-import { generateID } from "../../../../utils";
 import { useNumberFieldState } from "../../hooksUtils";
 
 type FillColorGradientFieldPresetRule = {

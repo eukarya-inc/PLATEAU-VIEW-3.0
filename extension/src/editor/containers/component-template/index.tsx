@@ -3,11 +3,12 @@ import { useMemo, useState, useCallback, useEffect, RefObject } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { ComponentTemplate } from "../../../shared/api/types";
+import { generateID } from "../../../shared/utils/id";
 import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
 import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
 import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
-import { VIRTUAL_ROOT, convertTemplatesToTree, generateID, getSelectedPath } from "../utils";
+import { VIRTUAL_ROOT, convertTemplatesToTree, getSelectedPath } from "../utils";
 
 import { ComponentTemplatePage } from "./ComponentTemplatePage";
 

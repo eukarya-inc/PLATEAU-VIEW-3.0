@@ -1,6 +1,7 @@
 // NOTE: Pealse add exact type to this type when you use something API from plugin_types.ts.
 
 import { Camera } from "./camera";
+import { Clock } from "./clock";
 import { ReearthEventType } from "./event";
 import { InteractionMode } from "./interactionMode";
 import { Layers } from "./layer";
@@ -11,6 +12,7 @@ import { Viewport } from "./viewport";
 export type ReEarth = {
   readonly camera?: Camera;
   readonly scene?: Scene;
+  readonly clock?: Clock;
   readonly interactionMode?: InteractionMode;
   readonly layers?: Layers;
   readonly viewport?: Viewport;
