@@ -41,9 +41,6 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
 
       const layer = findLayer(rootLayersLayers, l => l.id === datasetId);
       const rootLayer = findRootLayer(datasetId ?? "");
-
-      console.log("LAYER: ", layer, datasetId, rootLayer, values, layerId);
-
       return res.concat({ features: fs ?? [], layer, rootLayer });
     }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayer }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
