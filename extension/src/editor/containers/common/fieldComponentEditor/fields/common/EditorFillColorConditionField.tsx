@@ -39,7 +39,8 @@ export type FillColorConditionFieldPreset = {
 type SupportedFieldTypes =
   | "POINT_FILL_COLOR_CONDITION_FIELD"
   | "POLYLINE_FILL_COLOR_CONDITION_FIELD"
-  | "POLYGON_FILL_COLOR_CONDITION_FIELD";
+  | "POLYGON_FILL_COLOR_CONDITION_FIELD"
+  | "TILESET_FILL_COLOR_CONDITION_FIELD";
 
 export const EditorFillColorConditionField = ({
   component,
