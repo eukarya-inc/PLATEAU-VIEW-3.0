@@ -3,18 +3,21 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useState, type FC, useMemo } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
-import { layerSelectionAtom } from "../../layers";
+import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { findLayerAtom, layerSelectionAtom } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import {
-  BuildingIcon,
   InspectorHeader,
   LayerIcon,
   VisibilityOffIcon,
   VisibilityOnIcon,
 } from "../../ui-components";
 import {
+  BUILDING_LAYER,
   hideFeaturesAtom,
   highlightedTilesetLayersAtom,
+  layerTypeIcons,
+  layerTypeNames,
   showFeaturesAtom,
 } from "../../view-layers";
 import { type SCREEN_SPACE_SELECTION, type SelectionGroup } from "../states/selection";
@@ -63,27 +66,54 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
     setLayerSelection(tilsetLayerIds);
   }, [tilsetLayerIds, setLayerSelection]);
 
+  const findRootLayer = useSetAtom(findRootLayerAtom);
+  const findLayer = useSetAtom(findLayerAtom);
+  const rootLayers = useAtomValue(rootLayersLayersAtom);
+  const [layer, rootLayer] = useMemo(() => {
+    // All `layerId` of `values` should be same
+    const datasetId = values[0].datasetId;
+    return [findLayer(rootLayers, l => l.id === datasetId), findRootLayer(datasetId)];
+  }, [findRootLayer, values, rootLayers, findLayer]);
+
+  const isBuildingModel = layer?.type === BUILDING_LAYER;
+  const defaultTitle = layer ? layerTypeNames[layer.type] : "";
+  const Icon = layer ? layerTypeIcons[layer.type] : undefined;
+
+  const title = useMemo(() => {
+    if (rootLayer?.featureInspector?.basic?.titleType === "custom") {
+      return rootLayer?.featureInspector?.basic?.customTitle ?? defaultTitle;
+    }
+
+    if (isBuildingModel) {
+      return `${values.length}個の${defaultTitle}`;
+    }
+
+    return defaultTitle;
+  }, [rootLayer, values, isBuildingModel, defaultTitle]);
+
   return (
     <List disablePadding>
       <InspectorHeader
         // TODO: Change name and icon according to the feature type.
-        title={`${values.length}個の建築物`}
-        iconComponent={BuildingIcon}
+        title={title}
+        iconComponent={Icon}
         actions={
-          <>
-            <Tooltip title="レイヤーを選択">
-              <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
-                <LayerIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={hidden ? "表示" : "隠す"}>
-              <IconButton
-                aria-label={hidden ? "表示" : "隠す"}
-                onClick={hidden ? handleShow : handleHide}>
-                {hidden ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
-              </IconButton>
-            </Tooltip>
-          </>
+          isBuildingModel ? (
+            <>
+              <Tooltip title="レイヤーを選択">
+                <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
+                  <LayerIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title={hidden ? "表示" : "隠す"}>
+                <IconButton
+                  aria-label={hidden ? "表示" : "隠す"}
+                  onClick={hidden ? handleShow : handleHide}>
+                  {hidden ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : undefined
         }
         onClose={handleClose}
       />

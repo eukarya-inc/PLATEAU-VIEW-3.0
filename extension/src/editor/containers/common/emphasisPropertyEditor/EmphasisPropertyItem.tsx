@@ -47,9 +47,9 @@ export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
     [propertyItem, onPropertyUpdate],
   );
 
-  const handleConditionChange = useCallback(
+  const handleProcessChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onPropertyUpdate({ ...propertyItem, condition: e.target.value });
+      onPropertyUpdate({ ...propertyItem, process: e.target.value });
     },
     [propertyItem, onPropertyUpdate],
   );
@@ -73,13 +73,6 @@ export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
       <VisibleWrapper onClick={handleVisibleChange}>
         {propertyItem.visible ? <VisibilityOutlinedIcon /> : <VisibilityOffOutlinedIcon />}
       </VisibleWrapper>
-      <NameWrapper>
-        <PropertyInputField
-          value={propertyItem.displayName}
-          fullWidth
-          onChange={handleDisplayNameChange}
-        />
-      </NameWrapper>
       <PathWrapper>
         <PropertyInputField
           value={propertyItem.jsonPath}
@@ -87,13 +80,16 @@ export const EmphasisPropertyItem: React.FC<EmphasisPropertyItemProps> = ({
           onChange={handleJsonPathChange}
         />
       </PathWrapper>
-      <ConditionWrapper>
+      <NameWrapper>
         <PropertyInputField
-          value={propertyItem.condition}
+          value={propertyItem.displayName}
           fullWidth
-          onChange={handleConditionChange}
+          onChange={handleDisplayNameChange}
         />
-      </ConditionWrapper>
+      </NameWrapper>
+      <ProcessWrapper>
+        <PropertyInputField value={propertyItem.process} fullWidth onChange={handleProcessChange} />
+      </ProcessWrapper>
       <IconWrapper onClick={handleRemove}>
         <DeleteOutlinedIcon />
       </IconWrapper>
@@ -133,6 +129,6 @@ export const PathWrapper = styled("div")(() => ({
   flex: 1,
 }));
 
-export const ConditionWrapper = styled("div")(() => ({
+export const ProcessWrapper = styled("div")(() => ({
   flex: 1,
 }));

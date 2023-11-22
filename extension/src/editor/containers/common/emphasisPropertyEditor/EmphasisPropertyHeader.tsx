@@ -6,7 +6,7 @@ import {
   VisibleWrapper,
   NameWrapper,
   PathWrapper,
-  ConditionWrapper,
+  ProcessWrapper,
 } from "./EmphasisPropertyItem";
 
 export const EmphasisPropertyHeader: React.FC = () => {
@@ -14,9 +14,9 @@ export const EmphasisPropertyHeader: React.FC = () => {
     <StyledPropertyItemWrapper>
       <IconWrapper />
       <VisibleWrapper />
-      <NameWrapper>Display Name</NameWrapper>
       <PathWrapper>JSON Path</PathWrapper>
-      <ConditionWrapper>Condition</ConditionWrapper>
+      <NameWrapper>Display Name</NameWrapper>
+      <ProcessWrapper>Process</ProcessWrapper>
       <IconWrapper />
     </StyledPropertyItemWrapper>
   );

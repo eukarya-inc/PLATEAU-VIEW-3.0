@@ -12,7 +12,6 @@ import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerAtom } from "../../../shared/view-layers";
 import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
-import { isNotNullish } from "../../type-helpers";
 import { type SearchOption } from "../../ui-components";
 import { BUILDING_LAYER } from "../../view-layers";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
@@ -26,6 +25,7 @@ export interface DatasetSearchOption extends SearchOption {
 }
 
 export interface BuildingSearchOption extends SearchOption /* , earchableFeatureRecord */ {
+  datasetId: string;
   type: "building";
   featureIndex: TileFeatureIndex;
   lat?: number;
@@ -108,8 +108,8 @@ function useBuildingSearchOption({
             .filter(
               (layer): layer is LayerModel<typeof BUILDING_LAYER> => layer.type === BUILDING_LAYER,
             )
-            .map(layer => get(layer.featureIndexAtom))
-            .filter(isNotNullish),
+            .map(layer => [layer.id, get(layer.featureIndexAtom)] as const)
+            .filter((v): v is [string, TileFeatureIndex] => !!v[1]),
         ),
       [layers],
     ),
@@ -124,7 +124,7 @@ function useBuildingSearchOption({
       if (skip) {
         return [];
       }
-      return featureIndices.flatMap(featureIndex => {
+      return featureIndices.flatMap(([id, featureIndex]) => {
         const fs =
           window.reearth?.layers?.findFeaturesByIds?.(
             featureIndex.layerId,
@@ -138,6 +138,7 @@ function useBuildingSearchOption({
               name: f?.properties?.["名称"],
               featureIndex,
               id: f?.id,
+              datasetId: id,
             });
             addedIds.push(f.id);
           }
@@ -217,6 +218,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
                 layerId: buildingOption.featureIndex.layerId,
                 featureIndex: buildingOption.featureIndex,
                 key: buildingOption.id,
+                datasetId: buildingOption.datasetId,
               },
             },
           ]);

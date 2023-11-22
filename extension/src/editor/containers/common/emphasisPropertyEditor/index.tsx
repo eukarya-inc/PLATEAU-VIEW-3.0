@@ -27,7 +27,7 @@ export const EmphasisPropertyEditor: React.FC<EmphasisPropertyEditorProps> = ({
         displayName: "",
         jsonPath: "",
         visible: true,
-        condition: "",
+        process: "",
       },
     ]);
   }, [properties, onPropertiesUpdate]);

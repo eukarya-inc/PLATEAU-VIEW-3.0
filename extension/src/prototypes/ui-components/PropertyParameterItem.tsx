@@ -17,8 +17,10 @@ import {
 import { median } from "d3";
 import { atom, useAtom } from "jotai";
 import { atomFamily } from "jotai/utils";
-import { groupBy, max, mean, min, round } from "lodash";
-import { forwardRef, useCallback, type ComponentPropsWithRef, type FC } from "react";
+import { groupBy, max, mean, min, round, intersection } from "lodash-es";
+import { forwardRef, useCallback, type ComponentPropsWithRef, type FC, useMemo } from "react";
+
+import { isNotNullish } from "../type-helpers";
 
 import { TreeArrowCollapsedIcon } from "./icons/TreeArrowCollapsedIcon";
 import { TreeArrowExpandedIcon } from "./icons/TreeArrowExpandedIcon";
@@ -47,8 +49,9 @@ const StyledTable = styled(Table)(({ theme }) => ({
 }));
 
 export interface PropertySet {
+  id?: string;
   name: string;
-  values: string[] | number[] | object[];
+  values: string[] | number[] | PropertySet[];
 }
 
 const StringValue: FC<{
@@ -129,6 +132,40 @@ const NumberValue: FC<{
   );
 };
 
+const ObjectValue: FC<{ id: string; name: string; values: object[]; level?: number }> = ({
+  id,
+  name,
+  values,
+  level,
+}) => {
+  const properties = useMemo(() => {
+    return intersection(...values.map(v => Object.keys(v ?? {})))
+      .filter(name => !name.startsWith("_"))
+      .map(name => ({
+        name,
+        values: values.map(v => (v as Record<string, unknown>)[name]).filter(isNotNullish),
+      }))
+      .filter(({ values: nextValues }) => {
+        if (nextValues.length === 0) {
+          return false;
+        }
+        const type = typeof nextValues[0];
+        if (type !== "string" && type !== "number" && type !== "object") {
+          return false;
+        }
+        return (
+          nextValues.length === values.length &&
+          // eslint-disable-next-line valid-typeof
+          nextValues.slice(1).every(value => typeof value === type)
+        );
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [values]);
+  return (
+    <PropertyGroup id={id} name={name} properties={properties as PropertySet[]} level={level} />
+  );
+};
+
 const PropertyNameCell = styled(TableCell)<{
   level?: number;
 }>(({ theme, level }) => ({
@@ -140,26 +177,32 @@ const PropertyNameCell = styled(TableCell)<{
 const Property: FC<{
   property: PropertySet;
   level?: number;
-}> = ({ property: { name, values }, level }) => (
-  <TableRow>
-    <PropertyNameCell variant="head" width="50%" level={level}>
-      {name.replaceAll("_", " ")}
-    </PropertyNameCell>
-    <TableCell width="50%">
-      {typeof values[0] === "string" ? (
-        <StringValue name={name} values={values as string[]} />
-      ) : typeof values[0] === "number" ? (
-        <NumberValue name={name} values={values as number[]} />
-      ) : null}
-    </TableCell>
-  </TableRow>
-);
+}> = ({ property: { id, name, values }, level }) => {
+  const isPrimitive = ["string", "number"].includes(typeof values[0]);
+  return isPrimitive ? (
+    <TableRow>
+      <PropertyNameCell variant="head" width="50%" level={level}>
+        {name.replaceAll("_", " ")}
+      </PropertyNameCell>
+      <TableCell width="50%">
+        {typeof values[0] === "string" ? (
+          <StringValue name={name} values={values as string[]} />
+        ) : typeof values[0] === "number" ? (
+          <NumberValue name={name} values={values as number[]} />
+        ) : null}
+      </TableCell>
+    </TableRow>
+  ) : (
+    <ObjectValue id={id ?? name} name={name} values={values as object[]} level={level} />
+  );
+};
 
 const groupExpandedAtomFamily = atomFamily(() => atom(false));
 
-const PropertyGroupCell = styled(TableCell)({
+const PropertyGroupCell = styled(TableCell)<{ level: number }>(({ theme, level }) => ({
   borderBottomWidth: 0,
-});
+  paddingLeft: theme.spacing(level * 2.5 + 2),
+}));
 
 const PropertyGroupName = styled("div")(({ theme }) => ({
   position: "relative",
@@ -174,10 +217,12 @@ const TreeArrowButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const PropertyGroup: FC<{
+  id?: string;
   name: string;
   properties: readonly PropertySet[];
-}> = ({ name, properties }) => {
-  const expandedAtom = groupExpandedAtomFamily(name);
+  level?: number;
+}> = ({ id = "", name, properties, level = 0 }) => {
+  const expandedAtom = groupExpandedAtomFamily(id ?? name);
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleClick = useCallback(() => {
     setExpanded(value => !value);
@@ -185,7 +230,7 @@ const PropertyGroup: FC<{
   return (
     <>
       <TableRow>
-        <PropertyGroupCell variant="head" colSpan={2}>
+        <PropertyGroupCell variant="head" colSpan={2} level={level}>
           <PropertyGroupName>
             <TreeArrowButton size="small" onClick={handleClick}>
               {expanded ? <TreeArrowExpandedIcon /> : <TreeArrowCollapsedIcon />}
@@ -204,9 +249,10 @@ const PropertyGroup: FC<{
                     key={property.name}
                     property={{
                       ...property,
-                      name: property.name.slice(name.length + 1),
+                      id: id + property.name,
+                      name: property.name,
                     }}
-                    level={1}
+                    level={level + 1}
                   />
                 ))}
               </TableBody>
@@ -237,7 +283,7 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
               properties.length === 1 ? (
                 <Property key={properties[0].name} property={properties[0]} />
               ) : (
-                <PropertyGroup key={name} name={name} properties={properties} />
+                <PropertyGroup key={name} name={name} id={name} properties={properties} />
               ),
             )}
           </TableBody>

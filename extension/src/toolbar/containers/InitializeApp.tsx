@@ -3,7 +3,7 @@ import { FC, useEffect } from "react";
 
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { updateAllSettingAtom } from "../../shared/states/setting";
-import { templatesAtom } from "../../shared/states/template";
+import { updateAllTemplateAtom } from "../../shared/states/template";
 
 export const InitializeApp: FC = () => {
   const settingClient = useSettingClient();
@@ -18,14 +18,14 @@ export const InitializeApp: FC = () => {
     fetch();
   }, [settingClient, updateAllSetting]);
 
-  const setTemplates = useSetAtom(templatesAtom);
+  const updateAllTemplate = useSetAtom(updateAllTemplateAtom);
   useEffect(() => {
     const fetch = async () => {
       const templates = await templateClient.findAll();
-      setTemplates(Array.isArray(templates) ? templates : []);
+      updateAllTemplate(Array.isArray(templates) ? templates : []);
     };
     fetch();
-  }, [templateClient, setTemplates]);
+  }, [templateClient, updateAllTemplate]);
 
   return null;
 };

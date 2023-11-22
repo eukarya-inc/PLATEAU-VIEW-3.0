@@ -153,7 +153,7 @@ export const mockInspectorEmphasisPropertyTemplates: EmphasisPropertyTemplate[] 
         id: "1",
         displayName: "名称",
         jsonPath: "name",
-        condition: "",
+        process: "",
         visible: true,
       },
     ],

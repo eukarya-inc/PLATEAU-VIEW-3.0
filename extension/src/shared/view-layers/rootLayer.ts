@@ -6,6 +6,7 @@ import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
 import {
   ComponentGroup,
   ComponentTemplate,
+  EmphasisPropertyTemplate,
   FeatureInspectorSettings,
   GeneralSetting,
   Setting,
@@ -91,7 +92,6 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
   return hasGroups || hasTemplate ? setting : defaultSetting;
 };
 
-// TODO: Get component groups from specific template
 const findComponentTemplate = (
   setting: Setting | undefined,
   templates: Template[],
@@ -102,6 +102,18 @@ const findComponentTemplate = (
   const template = templates.find(t => t.id === templateId);
 
   return template?.type === "component" ? template : undefined;
+};
+
+const findEmphasisPropertyTemplate = (
+  featureInspector: FeatureInspectorSettings | undefined,
+  templates: Template[],
+): EmphasisPropertyTemplate | undefined => {
+  const { useTemplate, templateId } = featureInspector?.emphasisProperty ?? {};
+  if (!useTemplate || !templateId) return;
+
+  const template = templates.find(t => t.id === templateId);
+
+  return template?.type === "emphasis" ? template : undefined;
 };
 
 const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
@@ -161,20 +173,32 @@ const createRootLayer = ({
 }: RootLayerParams): RootLayer => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
-  const template = findComponentTemplate(setting, templates);
-  const componentGroup = findComponentGroup(setting, template, currentGroupId);
+  const componentTemplate = findComponentTemplate(setting, templates);
+  const emphasisPropertyTemplate = findEmphasisPropertyTemplate(
+    setting?.featureInspector,
+    templates,
+  );
+  const componentGroup = findComponentGroup(setting, componentTemplate, currentGroupId);
 
   return {
     // TODO: get settings from featureInspectorTemplate
     general: setting?.general,
-    featureInspector: setting?.featureInspector,
+    featureInspector: setting?.featureInspector
+      ? {
+          ...setting.featureInspector,
+          emphasisProperty: {
+            ...(setting.featureInspector.emphasisProperty ?? {}),
+            properties: emphasisPropertyTemplate?.properties,
+          },
+        }
+      : undefined,
     layer: atom(
       createViewLayerWithComponentGroup(
         datasetId,
         type,
         title,
         setting,
-        template,
+        componentTemplate,
         data,
         componentGroup,
         shareId,
