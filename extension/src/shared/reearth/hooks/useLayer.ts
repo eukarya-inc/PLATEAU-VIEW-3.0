@@ -29,7 +29,6 @@ export const useLayer = ({
       type: "simple",
       data: data,
       events,
-      ...appearances,
     });
 
     layerIdRef.current = layerId;
