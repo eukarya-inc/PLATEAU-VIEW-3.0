@@ -202,10 +202,10 @@ function floodFields(properties: Properties): any {
     | undefined;
   if (!Array.isArray(fld)) {
     return {
-      ランク: get(properties, "rank"),
-      ランクコード: get(properties, "rank_code"),
-      [`ランク（独自）`]: get(properties, "rankOrg"),
-      [`ランクコード（独自）`]: get(properties, "rankOrg_code"),
+      浸水ランク: get(properties, "rank"),
+      浸水ランクコード: get(properties, "rank_code"),
+      [`浸水ランク（独自）`]: get(properties, "rankOrg"),
+      [`浸水ランクコード（独自）`]: get(properties, "rankOrg_code"),
     };
   }
 
