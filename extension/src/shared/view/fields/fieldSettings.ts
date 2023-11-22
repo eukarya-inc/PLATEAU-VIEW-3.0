@@ -36,6 +36,17 @@ export const fieldSettings: {
   STYLE_CODE_FIELD: {
     defaultValue: "",
   },
+  APPLY_TIME_VALUE_FIELD: {
+    value: {
+      timeBasedDisplay: false,
+    },
+  },
+  TIMELINE_CUSTOMIZED_FIELD: {
+    hasLayerUI: true,
+  },
+  TIMELINE_MONTH_FIELD: {
+    hasLayerUI: true,
+  },
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
@@ -106,6 +117,7 @@ export const fieldSettings: {
   },
   POINT_IMAGE_SIZE_FIELD: {},
   POINT_USE_3D_MODEL: {},
+  POINT_CONVERT_FROM_CSV: {},
   // Polygon
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     value: {

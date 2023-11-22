@@ -2,6 +2,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useMemo, useCallback, ReactElement, useState } from "react";
 
 import { BasicFieldProps } from "..";
+import { generateID } from "../../../../../../shared/utils/id";
 import {
   PropertyBox,
   PropertyInputField,
@@ -15,7 +16,6 @@ import {
   OperationValue,
   PropertyOperationSelectField,
 } from "../../../../ui-components/property/PropertyOperationSelectField";
-import { generateID } from "../../../../utils";
 
 type SupportedFieldTypes =
   | "POINT_VISIBILITY_CONDITION_FIELD"

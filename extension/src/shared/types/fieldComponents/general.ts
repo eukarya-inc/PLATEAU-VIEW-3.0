@@ -1,3 +1,5 @@
+import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
+
 import { FieldBase } from "./base";
 
 export const OPACITY_FIELD = "OPACITY_FIELD";
@@ -36,8 +38,33 @@ export type StyleCodeField = FieldBase<{
   };
 }>;
 
+export const APPLY_TIME_VALUE_FIELD = "APPLY_TIME_VALUE_FIELD";
+export type ApplyTimeValueField = FieldBase<{
+  type: typeof APPLY_TIME_VALUE_FIELD;
+  value?: {
+    timeBasedDisplay?: boolean;
+  };
+  preset?: {
+    propertyName?: string;
+  };
+}>;
+
+export const TIMELINE_CUSTOMIZED_FIELD = "TIMELINE_CUSTOMIZED_FIELD";
+export type TimelineCustomizedField = FieldBase<{
+  type: typeof TIMELINE_CUSTOMIZED_FIELD;
+  preset?: EditorTimelineCustomizedFieldPreset;
+}>;
+
+export const TIMELINE_MONTH_FIELD = "TIMELINE_MONTH_FIELD";
+export type TimelineMonthField = FieldBase<{
+  type: typeof TIMELINE_MONTH_FIELD;
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
   | LegendDescriptionField
-  | StyleCodeField;
+  | StyleCodeField
+  | ApplyTimeValueField
+  | TimelineCustomizedField
+  | TimelineMonthField;

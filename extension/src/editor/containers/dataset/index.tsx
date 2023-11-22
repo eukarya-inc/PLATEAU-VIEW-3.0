@@ -12,6 +12,7 @@ import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { updateSettingAtom } from "../../../shared/states/setting";
+import { generateID } from "../../../shared/utils/id";
 import {
   EditorButton,
   EditorSection,
@@ -21,7 +22,6 @@ import {
 } from "../ui-components";
 import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
 import { EditorCache } from "../useCache";
-import { generateID } from "../utils";
 
 import { FeatureInspectorPage } from "./FeatureInspectorPage";
 import { FieldComponentsPage } from "./FieldComponentsPage";

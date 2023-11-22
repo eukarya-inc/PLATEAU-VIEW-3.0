@@ -24,6 +24,7 @@ export type GeneralFeature<P> = {
 };
 
 export type GeneralAppearances = Partial<LayerAppearanceTypes>;
+export type GeneralData = Partial<Data>;
 
 export type GeneralProps = {
   url: string;
@@ -32,6 +33,7 @@ export type GeneralProps = {
   visible?: boolean;
   selectedFeatureColor?: string;
   appearances: GeneralAppearances;
+  appendData: GeneralData;
   updateInterval?: number;
   events?: Events;
 };
@@ -57,6 +59,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
   onLoad,
   visible,
   appearances,
+  appendData,
   updateInterval,
   events,
   selectedFeatureColor,
@@ -93,8 +96,9 @@ export const GeneralLayer: FC<GeneralProps> = ({
       type: format,
       url,
       updateInterval,
+      ...appendData,
     }),
-    [url, updateInterval, format],
+    [url, updateInterval, format, appendData],
   );
 
   useLayer({
