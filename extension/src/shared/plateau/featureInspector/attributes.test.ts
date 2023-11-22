@@ -235,7 +235,7 @@ test("attributesMap", () => {
 
 test("name", () => {
   expect(name({ attributes: { "gml:name": "aaaaaa" } }, "htd", "bbbbbb")).toEqual({
-    name: "aaaaaa",
+    名称: "aaaaaa",
   });
   expect(name({ attributes: { "gml:name": "01" } }, "bldg", "bbbbbb")).toEqual({ 名称: "01" });
   expect(
@@ -244,7 +244,7 @@ test("name", () => {
       "htd",
       "高潮浸水想定区域モデル 有明海沿岸（小城市）",
     ),
-  ).toEqual({ name: "有明海沿岸高潮浸水想定区域図" });
+  ).toEqual({ 名称: "有明海沿岸高潮浸水想定区域図" });
   expect(
     name(
       { attributes: { "gml:name": "" } },

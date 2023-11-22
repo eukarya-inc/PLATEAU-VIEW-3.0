@@ -19,8 +19,8 @@ export interface TileFeaturePropertiesSectionProps {
 }
 
 export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps> = ({ values }) => {
-  const findRootLayer = useSetAtom(findRootLayerAtom);
   const rootLayersLayers = useAtomValue(rootLayersLayersAtom);
+  const findRootLayer = useSetAtom(findRootLayerAtom);
   const findLayer = useFindLayer();
 
   const layers = useMemo(() => {
@@ -32,27 +32,31 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
       return res;
     }, {} as { [layerId: string]: string[] });
     return Object.keys(layersMap).reduce((res, layerId) => {
+      const datasetId = values.find(v => v.layerId === layerId)?.datasetId;
       const featureIds = layersMap[layerId];
       const fs = uniqBy(
         window.reearth?.layers?.findFeaturesByIds?.(layerId, featureIds) ?? [],
         "id",
       );
 
-      const rootLayer = findRootLayer(layerId);
-      const layer = findLayer(rootLayersLayers, (l, get) => get(l.layerIdAtom) === layerId);
+      const layer = findLayer(rootLayersLayers, l => l.id === datasetId);
+      const rootLayer = findRootLayer(datasetId ?? "");
+
+      console.log("LAYER: ", layer, datasetId, rootLayer, values, layerId);
 
       return res.concat({ features: fs ?? [], layer, rootLayer });
-    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayer | undefined }[]);
+    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayer }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
-    const properties = layers.reduce((res, { features, rootLayer, layer }) => {
+    const properties = layers.reduce((res, { features, layer, rootLayer }) => {
       return res.concat(
         ...makePropertyForFeatureInspector({
           features,
           layer,
           featureInspector: rootLayer?.featureInspector,
+          builtin: true,
         }),
       );
     }, [] as Feature["properties"][]);

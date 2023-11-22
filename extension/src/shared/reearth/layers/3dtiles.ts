@@ -13,6 +13,7 @@ declare module "../../../prototypes/screen-space-selection" {
       key: string;
       layerId: string;
       featureIndex: TileFeatureIndex;
+      datasetId: string;
     };
   }
 }

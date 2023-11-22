@@ -15,6 +15,8 @@ attributesData
     attributesMap.set(l[0], l[1]);
   });
 
+export const getAttributeLabel = (key: string) => attributesMap?.get(key);
+
 export function getAttributes(attributes: Json, mode?: "both" | "label" | "key"): Json {
   if (!attributes || typeof attributes !== "object") return attributes;
   return walk(attributes, attributesMap);
@@ -134,6 +136,7 @@ export function getRootFields(properties: Properties, dataType?: string, fld?: F
     ]),
 
     ...floodFields(properties),
+
     土砂災害警戒区域: get(properties, [
       "attributes",
       "uro:BuildingLandSlideRiskAttribute",
@@ -175,10 +178,10 @@ export function name(
     if (title && gmlName && !isNaN(Number(gmlName))) {
       // 浸水想定区域データで、gml:nameが数字になってしまっているデータのためのワークアラウンド
       const name = fldName(title, dataType, datasetName);
-      if (name) return { name };
+      if (name) return { 名称: name };
     }
 
-    if (gmlName) return { name: gmlName };
+    if (gmlName) return { 名称: gmlName };
     return;
   }
 
@@ -197,7 +200,14 @@ function floodFields(properties: Properties): any {
   const fld = get(properties, ["attributes", "uro:BuildingRiverFloodingRiskAttribute"]) as
     | BuildingRiverFloodingRiskAttribute[]
     | undefined;
-  if (!Array.isArray(fld)) return {};
+  if (!Array.isArray(fld)) {
+    return {
+      ランク: get(properties, "rank"),
+      ランクコード: get(properties, "rank_code"),
+      [`ランク（独自）`]: get(properties, "rankOrg"),
+      [`ランクコード（独自）`]: get(properties, "rankOrg_code"),
+    };
+  }
 
   return Object.fromEntries(
     fld

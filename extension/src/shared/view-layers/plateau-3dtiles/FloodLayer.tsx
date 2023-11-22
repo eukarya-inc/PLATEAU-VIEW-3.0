@@ -39,6 +39,7 @@ export function createFloodLayer(
 }
 
 export const FloodLayer: FC<LayerProps<FloodLayerType>> = ({
+  id,
   format,
   url,
   title,
@@ -77,6 +78,7 @@ export const FloodLayer: FC<LayerProps<FloodLayerType>> = ({
   if (format === "3dtiles") {
     return (
       <FloodModelLayerContainer
+        id={id}
         url={url}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}

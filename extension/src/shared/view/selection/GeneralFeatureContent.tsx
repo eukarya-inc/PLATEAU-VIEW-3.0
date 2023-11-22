@@ -1,6 +1,6 @@
 import { Divider, List } from "@mui/material";
 import { useSetAtom } from "jotai";
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, useMemo } from "react";
 
 import { screenSpaceSelectionAtom } from "../../../prototypes/screen-space-selection";
 import { InspectorHeader } from "../../../prototypes/ui-components";
@@ -10,6 +10,7 @@ import {
 } from "../../../prototypes/view/states/selection";
 import { layerTypeIcons, layerTypeNames } from "../../../prototypes/view-layers";
 import { GENERAL_FEATURE } from "../../reearth/layers";
+import { findRootLayerAtom } from "../../states/rootLayer";
 
 import { GeneralFeaturePropertiesSection } from "./GeneralFeaturePropertiesSection";
 
@@ -21,11 +22,22 @@ export interface GeneralFeatureContentProps {
 }
 
 export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({ values }) => {
+  const findRootLayer = useSetAtom(findRootLayerAtom);
   const setSelection = useSetAtom(screenSpaceSelectionAtom);
   const handleClose = useCallback(() => {
     setSelection([]);
   }, [setSelection]);
   const type = values[0].layerType;
+  const rootLayer = useMemo(() => {
+    const datasetId = values[0].datasetId;
+    return findRootLayer(datasetId);
+  }, [findRootLayer, values]);
+  const title = useMemo(() => {
+    if (rootLayer?.featureInspector?.basic?.titleType === "custom") {
+      return rootLayer?.featureInspector?.basic?.customTitle ?? layerTypeNames[type];
+    }
+    return layerTypeNames[type];
+  }, [rootLayer, type]);
 
   // TODO(reearth): Support hiding feature
   // const [hidden, setHidden] = useState(false);
@@ -55,7 +67,7 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({ values }
   return (
     <List disablePadding>
       <InspectorHeader
-        title={layerTypeNames[type]}
+        title={title}
         iconComponent={layerTypeIcons[type]}
         // TODO(reearth): Support highlight layer if necessary
         // actions={

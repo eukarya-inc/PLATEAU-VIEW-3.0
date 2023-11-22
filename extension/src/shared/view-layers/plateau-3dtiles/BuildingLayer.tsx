@@ -52,6 +52,7 @@ export function createBuildingLayer(
 }
 
 export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
+  id,
   format,
   url,
   title,
@@ -109,6 +110,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   if (format === "3dtiles" /* PlateauDatasetFormat.Cesium3DTiles */) {
     return (
       <BuildingModelLayerContainer
+        id={id}
         url={url}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}

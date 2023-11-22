@@ -21,14 +21,6 @@ export interface GeneralFeaturePropertiesSectionProps {
   })["values"];
 }
 
-// 方法
-// 1. JSONPathから値を取得
-// 2. JSONPathのNodeを取得
-// 3. Display nameがない場合、Nodeを使ってAttributeMapから翻訳結果を取得
-// 4. rootFields用に、Nodeを使って該当のpropertyを消す
-// 5. getRootFieldsから値を取得(変換されたpropertiesを渡す)
-// 6. getAttributesから値を取得(変換していないattributesをそのまま渡す)
-
 // TODO(reearth): Support CZML description HTML
 export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSectionProps> = ({
   values,
@@ -45,6 +37,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
       return res;
     }, {} as { [layerId: string]: { featureId: string; properties: any }[] });
     return Object.keys(layersMap).reduce((res, layerId) => {
+      const datasetId = values.find(v => v.layerId === layerId)?.datasetId;
       const mapValues = layersMap[layerId];
       const hasProperties = mapValues.every(v => !!v.properties);
       const features = hasProperties
@@ -57,8 +50,8 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
             "id",
           );
 
-      const rootLayer = findRootLayer(layerId);
-      const layer = findLayer(rootLayersLayers, (l, get) => get(l.layerIdAtom) === layerId);
+      const layer = findLayer(rootLayersLayers, l => l.id === datasetId);
+      const rootLayer = findRootLayer(datasetId ?? "");
 
       res.push({ features: features ?? [], rootLayer, layer });
       return res;
