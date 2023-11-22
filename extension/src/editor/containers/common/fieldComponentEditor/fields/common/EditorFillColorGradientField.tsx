@@ -42,7 +42,7 @@ const StyledSelect = styled(Select)(({ theme }) => ({
   marginLeft: theme.spacing(-1),
 })) as unknown as typeof Select; // For generics
 
-type SupportedFieldTypes = "POINT_FILL_COLOR_GRADIENT_FIELD";
+type SupportedFieldTypes = "POINT_FILL_COLOR_GRADIENT_FIELD" | "TILESET_FILL_COLOR_GRADIENT_FIELD";
 
 export const EditorFillColorGradientField = ({
   component,
