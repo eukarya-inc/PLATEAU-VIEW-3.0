@@ -411,8 +411,6 @@ export const useEvaluateGeneralAppearance = ({
 
   const appearanceObject = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
 
-  console.log(pointImageValue);
-
   const generalAppearances: GeneralAppearances = useMemo(
     () =>
       appearanceObject ?? {
