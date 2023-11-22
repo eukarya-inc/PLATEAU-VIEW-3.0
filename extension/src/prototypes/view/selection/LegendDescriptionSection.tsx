@@ -8,6 +8,9 @@ import { ComponentAtom } from "../../../shared/view-layers/component";
 const Wrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 2),
   fontSize: theme.typography.body2.fontSize,
+  [`img`]: {
+    maxWidth: "100%",
+  },
 }));
 
 export interface LegendDescriptionSectionProps {

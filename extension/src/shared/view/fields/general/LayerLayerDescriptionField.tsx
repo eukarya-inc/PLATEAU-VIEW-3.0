@@ -10,6 +10,9 @@ import { WritableAtomForComponent } from "../../../view-layers/component";
 const Wrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1),
   fontSize: theme.typography.body2.fontSize,
+  [`img`]: {
+    maxWidth: "100%",
+  },
 }));
 
 export interface LayerLayerDescriptionFieldProps {
