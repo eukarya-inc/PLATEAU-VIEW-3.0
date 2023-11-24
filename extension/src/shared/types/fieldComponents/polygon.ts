@@ -1,5 +1,7 @@
+import { ClassificationTypeFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorClassificationTypeField";
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { HeightReferenceFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorHeightReferenceField";
 import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 
@@ -49,10 +51,24 @@ export type PolygonVisibilityFilterField = FieldBase<{
   preset?: VisibilityFilterFieldPreset;
 }>;
 
+export const POLYGON_HEIGHT_REFERENCE_FIELD = "POLYGON_HEIGHT_REFERENCE_FIELD";
+export type PolygonHeightReferenceField = FieldBase<{
+  type: typeof POLYGON_HEIGHT_REFERENCE_FIELD;
+  preset?: HeightReferenceFieldPreset;
+}>;
+
+export const POLYGON_CLASSIFICATION_TYPE_FIELD = "POLYGON_CLASSIFICATION_TYPE_FIELD";
+export type PolygonClassificationTypeField = FieldBase<{
+  type: typeof POLYGON_CLASSIFICATION_TYPE_FIELD;
+  preset?: ClassificationTypeFieldPreset;
+}>;
+
 export type PolygonFields =
   | PolygonStrokeColorField
   | PolygonStrokeWeightField
   | PolygonFillColorConditionField
   | PolygonFillColorValueField
   | PolygonVisibilityConditionField
-  | PolygonVisibilityFilterField;
+  | PolygonVisibilityFilterField
+  | PolygonHeightReferenceField
+  | PolygonClassificationTypeField;
