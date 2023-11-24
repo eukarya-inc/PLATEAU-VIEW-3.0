@@ -118,6 +118,7 @@ export const fieldSettings: {
   POINT_IMAGE_SIZE_FIELD: {},
   POINT_USE_3D_MODEL: {},
   POINT_CONVERT_FROM_CSV: {},
+  POINT_USE_LABEL_FIELD: {},
   // Polygon
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     value: {

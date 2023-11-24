@@ -6,6 +6,7 @@ import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/f
 import { PointConvertFromCSVFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointConvertFromCSVField";
 import { PointUseImageConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageConditionField";
 import { PointUseImageValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseImageValueField";
+import { PointUseLabelFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointUseLabelField";
 
 import { FieldBase } from "./base";
 import {
@@ -104,6 +105,12 @@ export type PointConvertFromCSVField = FieldBase<{
   preset?: PointConvertFromCSVFieldPreset;
 }>;
 
+export const POINT_USE_LABEL_FIELD = "POINT_USE_LABEL_FIELD";
+export type PointUseLabelField = FieldBase<{
+  type: typeof POINT_USE_LABEL_FIELD;
+  preset?: PointUseLabelFieldPreset;
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField
@@ -116,4 +123,5 @@ export type PointFields =
   | PointUseImageConditionField
   | PointImageSizeField
   | PointUse3DModelField
-  | PointConvertFromCSVField;
+  | PointConvertFromCSVField
+  | PointUseLabelField;
