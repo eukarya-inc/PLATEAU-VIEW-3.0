@@ -12,7 +12,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC } from "react";
 
 import { useDatasetById } from "../../../shared/graphql";
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
+import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
@@ -82,12 +82,9 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
       const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
       addLayer(
         createRootLayerAtom({
-          type: layerType,
-          datasetId: dataset.id,
-          title: dataset.name,
+          dataset,
           settings: filteredSettings,
           templates,
-          dataList: dataset.items as DatasetItem[],
           areaCode: municipalityCode,
         }),
       );

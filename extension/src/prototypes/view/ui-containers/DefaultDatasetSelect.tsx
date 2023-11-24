@@ -4,7 +4,7 @@ import { differenceBy } from "lodash";
 import { memo, useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
+import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
@@ -102,15 +102,15 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
           paramsToAdd.forEach(({ datasetId, datumId }) => {
             const dataset = datasets.find(d => d.id === datasetId);
             const filteredSettings = settings.filter(s => s.datasetId === datasetId);
+            if (!dataset) {
+              return;
+            }
             addLayer(
               createRootLayerAtom({
-                type: layerType,
+                dataset,
                 areaCode: municipalityCode,
-                datasetId,
-                title: dataset?.name ?? "",
                 settings: filteredSettings,
                 templates,
-                dataList: dataset?.items as DatasetItem[],
                 currentDataId: datumId,
               }),
             );

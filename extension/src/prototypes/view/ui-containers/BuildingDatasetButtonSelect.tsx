@@ -2,14 +2,13 @@ import { Stack, Typography, type SelectChangeEvent } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type Getter, type SetStateAction } from "jotai";
 import { memo, useCallback, useMemo, type FC } from "react";
 
-import { DatasetFragmentFragment, DatasetItem } from "../../../shared/graphql/types/catalog";
+import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { ContextButtonSelect, SelectItem } from "../../ui-components";
-import { BUILDING_LAYER } from "../../view-layers";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { PlateauDatasetType } from "../constants/plateau";
 import { showDataFormatsAtom } from "../states/app";
@@ -61,12 +60,9 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           addLayer(
             createRootLayerAtom({
-              type: BUILDING_LAYER,
-              datasetId: dataset.id,
-              title: dataset.name,
+              dataset,
               settings: filteredSettings,
               templates,
-              dataList: dataset.items as DatasetItem[],
               currentDataId: nextParams.id,
               areaCode: municipalityCode,
               // version: nextParams.version ?? undefined,
