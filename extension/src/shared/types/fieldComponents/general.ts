@@ -1,3 +1,4 @@
+import { DatasetStoryFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorDatasetStoryField";
 import { LinkButtonFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorLinkButtonField";
 import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
 
@@ -67,6 +68,12 @@ export type LinkButtonField = FieldBase<{
   preset: LinkButtonFieldPreset;
 }>;
 
+export const DATASET_STORY_FIELD = "DATASET_STORY_FIELD";
+export type DatasetStoryField = FieldBase<{
+  type: typeof DATASET_STORY_FIELD;
+  preset: DatasetStoryFieldPreset;
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
@@ -75,4 +82,5 @@ export type GeneralFields =
   | ApplyTimeValueField
   | TimelineCustomizedField
   | TimelineMonthField
-  | LinkButtonField;
+  | LinkButtonField
+  | DatasetStoryField;

@@ -17,4 +17,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     padding: 0,
     fontSize: theme.typography.body2.fontSize,
   },
+
+  [`input::-webkit-outer-spin-button, input::-webkit-inner-spin-button`]: {
+    display: "none",
+  },
 }));

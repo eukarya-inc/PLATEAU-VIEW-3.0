@@ -10,3 +10,4 @@ export * from "./PropertyInfo";
 export * from "./PropertyColorField";
 export * from "./PropertyConditionField";
 export * from "./PropertyImageField";
+export * from "./PropertyCameraInput";

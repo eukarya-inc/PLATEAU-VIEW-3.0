@@ -1,7 +1,7 @@
 import { useAtom, type PrimitiveAtom } from "jotai";
 import { useCallback, type FC } from "react";
 
-import { useCameraZoom } from "../../../shared/reearth/hooks/useCameraZoom";
+import { useCameraZoom } from "../../../shared/reearth/hooks/useCamera";
 import {
   AppIconButton,
   KeyboardMovementIcon,

@@ -33,6 +33,7 @@ import {
   fieldGroupTitles,
 } from "./constants";
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
+import { EditorDatasetStoryField } from "./general/EditorDatasetStoryField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorLinkButtonField } from "./general/EditorLinkButtonField";
@@ -109,6 +110,11 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Link Button",
     Component: EditorLinkButtonField,
+  },
+  DATASET_STORY_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Dataset Story",
+    Component: EditorDatasetStoryField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {
