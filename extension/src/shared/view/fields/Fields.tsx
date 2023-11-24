@@ -14,6 +14,7 @@ import {
   TILESET_FLOOD_MODEL_FILTER,
 } from "../../types/fieldComponents/3dtiles";
 import {
+  LAYER_DESCRIPTION_FIELD,
   APPLY_TIME_VALUE_FIELD,
   LINK_BUTTON_FIELD,
   OPACITY_FIELD,
@@ -43,6 +44,7 @@ import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
+import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
 import { LayerLinkButtonField } from "./general/LayerLinkButtonField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerTimelineCustomizedField } from "./general/LayerTimelineCustomizedField";
@@ -73,6 +75,14 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     // General
     case OPACITY_FIELD: {
       component = <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />;
+      break;
+    }
+    case LAYER_DESCRIPTION_FIELD: {
+      component = (
+        <LayerLayerDescriptionField
+          atoms={atoms as ComponentAtom<"LAYER_DESCRIPTION_FIELD">["atom"][]}
+        />
+      );
       break;
     }
     case APPLY_TIME_VALUE_FIELD: {

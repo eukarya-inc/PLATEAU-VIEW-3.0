@@ -4,7 +4,7 @@ type PropertyTextareaFieldProps = TextFieldProps;
 
 export const PropertyTextareaField: React.FC<PropertyTextareaFieldProps> = ({ ...props }) => {
   return (
-    <StyledTextField size="small" variant="outlined" fullWidth multiline rows={4} {...props} />
+    <StyledTextField size="small" variant="outlined" fullWidth multiline minRows={5} {...props} />
   );
 };
 

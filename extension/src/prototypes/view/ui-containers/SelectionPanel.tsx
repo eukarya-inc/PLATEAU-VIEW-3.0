@@ -12,6 +12,7 @@ import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
+import { LegendDescriptionSection } from "../selection/LegendDescriptionSection";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom } from "../states/app";
 import {
@@ -70,10 +71,20 @@ export const SelectionPanel: FC = () => {
         }
         break;
       case COLOR_SCHEME_SELECTION:
-        content = <ColorSchemeContent values={selectionGroup.values} />;
+        content = (
+          <>
+            <ColorSchemeContent values={selectionGroup.values} />
+            <LegendDescriptionSection values={selectionGroup.values} />
+          </>
+        );
         break;
       case IMAGE_SCHEME_SELECTION:
-        content = <ImageSchemeContent values={selectionGroup.values} />;
+        content = (
+          <>
+            <ImageSchemeContent values={selectionGroup.values} />
+            <LegendDescriptionSection values={selectionGroup.values} />
+          </>
+        );
         break;
     }
   } else if (selectionGroups.length > 1) {
