@@ -419,7 +419,6 @@ export const useEvaluateGeneralAppearance = ({
     () =>
       merge({}, appearanceObject, {
         marker: {
-          // TODO: Use component for style
           style: pointStyle?.preset?.style,
           pointColor:
             makeSimpleValue(pointColor) ??
