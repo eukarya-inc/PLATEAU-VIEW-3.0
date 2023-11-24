@@ -25,6 +25,7 @@ import {
   POINT_IMAGE_SIZE_FIELD,
   POINT_USE_3D_MODEL,
   POINT_VISIBILITY_CONDITION_FIELD,
+  POINT_USE_LABEL_FIELD,
   POINT_HEIGHT_REFERENCE_FIELD,
 } from "../../types/fieldComponents/point";
 import {
@@ -360,6 +361,9 @@ export const useEvaluateGeneralAppearance = ({
   const pointModel = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_USE_3D_MODEL),
   );
+  const pointLabel = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_USE_LABEL_FIELD),
+  );
   const pointHeightReference = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_HEIGHT_REFERENCE_FIELD),
   );
@@ -453,6 +457,18 @@ export const useEvaluateGeneralAppearance = ({
           show:
             makeVisibilityFilterExpression(pointVisibilityFilter) ??
             makeVisibilityConditionExpression(pointVisibilityCondition),
+          label: pointLabel?.preset?.textExpression ? true : undefined,
+          labelText: pointLabel?.preset?.textExpression
+            ? { expression: pointLabel.preset.textExpression }
+            : undefined,
+          labelTypography: {
+            fontSize: pointLabel?.preset?.fontSize,
+            color: pointLabel?.preset?.fontColor,
+          },
+          labelBackground: pointLabel?.preset?.background,
+          labelBackgroundColor: pointLabel?.preset?.backgroundColor,
+          height: pointLabel?.preset?.height,
+          extrude: pointLabel?.preset?.extruded,
           heightReference: pointHeightReference?.preset?.defaultValue,
         },
         polyline: {
@@ -507,6 +523,7 @@ export const useEvaluateGeneralAppearance = ({
       pointImageCondition,
       pointImageSize,
       pointModel,
+      pointLabel,
       pointHeightReference,
       // Polyline
       polylineColor,

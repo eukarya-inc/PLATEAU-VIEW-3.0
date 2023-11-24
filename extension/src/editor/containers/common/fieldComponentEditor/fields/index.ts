@@ -53,6 +53,7 @@ import { EditorPointStyleField } from "./point/EditorPointStyleField";
 import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
+import { EditorPointUseLabelField } from "./point/EditorPointUseLabelField";
 import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
 import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
 import { EditorPolylineStrokeWeightField } from "./polyline/EditorPolygonStrokeWeightField";
@@ -187,6 +188,11 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Use 3D Model",
     Component: EditorPointUse3DModelField,
+  },
+  POINT_USE_LABEL_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Use Label",
+    Component: EditorPointUseLabelField,
   },
   POINT_CONVERT_FROM_CSV: {
     category: FIELD_CATEGORY_POINT,
