@@ -1,5 +1,7 @@
+import { ClassificationTypeFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorClassificationTypeField";
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { HeightReferenceFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorHeightReferenceField";
 import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 
@@ -41,9 +43,23 @@ export type PolylineVisibilityFilterField = FieldBase<{
   preset?: VisibilityFilterFieldPreset;
 }>;
 
+export const POLYLINE_HEIGHT_REFERENCE_FIELD = "POLYLINE_HEIGHT_REFERENCE_FIELD";
+export type PolylineHeightReferenceField = FieldBase<{
+  type: typeof POLYLINE_HEIGHT_REFERENCE_FIELD;
+  preset?: HeightReferenceFieldPreset;
+}>;
+
+export const POLYLINE_CLASSIFICATION_TYPE_FIELD = "POLYLINE_CLASSIFICATION_TYPE_FIELD";
+export type PolylineClassificationTypeField = FieldBase<{
+  type: typeof POLYLINE_CLASSIFICATION_TYPE_FIELD;
+  preset?: ClassificationTypeFieldPreset;
+}>;
+
 export type PolylineFields =
   | PolylineStrokeWeightField
   | PolylineFillColorConditionField
   | PolylineFillColorValueField
   | PolylineVisibilityConditionField
-  | PolylineVisibilityFilterField;
+  | PolylineVisibilityFilterField
+  | PolylineHeightReferenceField
+  | PolylineClassificationTypeField;

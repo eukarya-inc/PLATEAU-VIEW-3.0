@@ -1,3 +1,4 @@
+import { LinkButtonFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorLinkButtonField";
 import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
 
 import { FieldBase } from "./base";
@@ -60,6 +61,12 @@ export type TimelineMonthField = FieldBase<{
   type: typeof TIMELINE_MONTH_FIELD;
 }>;
 
+export const LINK_BUTTON_FIELD = "LINK_BUTTON_FIELD";
+export type LinkButtonField = FieldBase<{
+  type: typeof LINK_BUTTON_FIELD;
+  preset: LinkButtonFieldPreset;
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
@@ -67,4 +74,5 @@ export type GeneralFields =
   | StyleCodeField
   | ApplyTimeValueField
   | TimelineCustomizedField
-  | TimelineMonthField;
+  | TimelineMonthField
+  | LinkButtonField;
