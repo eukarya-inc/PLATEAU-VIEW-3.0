@@ -15,6 +15,7 @@ import {
 } from "../../types/fieldComponents/3dtiles";
 import {
   APPLY_TIME_VALUE_FIELD,
+  LINK_BUTTON_FIELD,
   OPACITY_FIELD,
   TIMELINE_CUSTOMIZED_FIELD,
   TIMELINE_MONTH_FIELD,
@@ -42,6 +43,7 @@ import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
+import { LayerLinkButtonField } from "./general/LayerLinkButtonField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
 import { LayerTimelineCustomizedField } from "./general/LayerTimelineCustomizedField";
 import { LayerTimelineMonthField } from "./general/LayerTimelineMonthField";
@@ -92,6 +94,12 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case TIMELINE_MONTH_FIELD: {
       component = (
         <LayerTimelineMonthField atoms={atoms as ComponentAtom<"TIMELINE_MONTH_FIELD">["atom"][]} />
+      );
+      break;
+    }
+    case LINK_BUTTON_FIELD: {
+      component = (
+        <LayerLinkButtonField atoms={atoms as ComponentAtom<"LINK_BUTTON_FIELD">["atom"][]} />
       );
       break;
     }

@@ -39,6 +39,7 @@ import {
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
+import { EditorLinkButtonField } from "./general/EditorLinkButtonField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
@@ -106,6 +107,11 @@ export const fields: {
     group: FILED_GROUP_GENERAL_TIMELINE,
     name: "Month",
     Component: EditorTimelineMonthField,
+  },
+  LINK_BUTTON_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Link Button",
+    Component: EditorLinkButtonField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {

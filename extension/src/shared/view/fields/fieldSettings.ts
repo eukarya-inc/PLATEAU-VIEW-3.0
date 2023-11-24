@@ -47,6 +47,7 @@ export const fieldSettings: {
   TIMELINE_MONTH_FIELD: {
     hasLayerUI: true,
   },
+  LINK_BUTTON_FIELD: {},
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
