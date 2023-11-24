@@ -430,14 +430,14 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
 
-  const appearanceObject = useMemo(
+  const appearanceObjectFromStyleCode = useMemo(
     () => getAppearanceObject(styleCodeString) ?? {},
     [styleCodeString],
   );
 
   const generalAppearances: GeneralAppearances = useMemo(
     () =>
-      merge({}, appearanceObject, {
+      merge({}, appearanceObjectFromStyleCode, {
         marker: {
           style: pointStyle?.preset?.style,
           pointColor:
@@ -497,7 +497,7 @@ export const useEvaluateGeneralAppearance = ({
         box: boxAppearance,
       }),
     [
-      appearanceObject,
+      appearanceObjectFromStyleCode,
       // Point
       pointColor,
       pointSize,
