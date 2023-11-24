@@ -7,7 +7,6 @@ import {
   PropertyWrapper,
 } from "../../../../ui-components/property";
 
-// TODO: Add markdown support
 export const EditorLayerDescriptionField: React.FC<BasicFieldProps<"LAYER_DESCRIPTION_FIELD">> = ({
   component,
   onUpdate,
