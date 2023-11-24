@@ -12,9 +12,11 @@ import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBu
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
+import { EditorCLassificationTypeField } from "./common/EditorClassificationTypeField";
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
 import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
+import { EditorHeightReferenceField } from "./common/EditorHeightReferenceField";
 import { EditorVisibilityConditionField } from "./common/EditorVisibilityConditionField";
 import { EditorVisibilityFilterField } from "./common/EditorVisibilityFilterField";
 import {
@@ -39,6 +41,7 @@ import {
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
+import { EditorLinkButtonField } from "./general/EditorLinkButtonField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
@@ -107,6 +110,11 @@ export const fields: {
     group: FILED_GROUP_GENERAL_TIMELINE,
     name: "Month",
     Component: EditorTimelineMonthField,
+  },
+  LINK_BUTTON_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Link Button",
+    Component: EditorLinkButtonField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {
@@ -191,6 +199,13 @@ export const fields: {
     name: "Convert from CSV",
     Component: EditorPointConvertFromCSVField,
   },
+  POINT_HEIGHT_REFERENCE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Height Reference",
+    Component: EditorHeightReferenceField as React.FC<
+      BasicFieldProps<"POINT_HEIGHT_REFERENCE_FIELD">
+    >,
+  },
   // Polyline
   POLYLINE_STROKE_WEIGHT_FIELD: {
     category: FIELD_CATEGORY_POLYLINE,
@@ -227,6 +242,20 @@ export const fields: {
     name: "Filter",
     Component: EditorVisibilityFilterField as React.FC<
       BasicFieldProps<"POLYLINE_VISIBILITY_FILTER_FIELD">
+    >,
+  },
+  POLYLINE_HEIGHT_REFERENCE_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    name: "Height Reference",
+    Component: EditorHeightReferenceField as React.FC<
+      BasicFieldProps<"POLYLINE_HEIGHT_REFERENCE_FIELD">
+    >,
+  },
+  POLYLINE_CLASSIFICATION_TYPE_FIELD: {
+    category: FIELD_CATEGORY_POLYLINE,
+    name: "Classification Type",
+    Component: EditorCLassificationTypeField as React.FC<
+      BasicFieldProps<"POLYLINE_CLASSIFICATION_TYPE_FIELD">
     >,
   },
   // Polygon
@@ -270,6 +299,20 @@ export const fields: {
     name: "Condition",
     Component: EditorVisibilityConditionField as React.FC<
       BasicFieldProps<"POLYGON_VISIBILITY_CONDITION_FIELD">
+    >,
+  },
+  POLYGON_HEIGHT_REFERENCE_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Height Reference",
+    Component: EditorHeightReferenceField as React.FC<
+      BasicFieldProps<"POLYGON_HEIGHT_REFERENCE_FIELD">
+    >,
+  },
+  POLYGON_CLASSIFICATION_TYPE_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Classification Type",
+    Component: EditorCLassificationTypeField as React.FC<
+      BasicFieldProps<"POLYGON_CLASSIFICATION_TYPE_FIELD">
     >,
   },
   // 3dtiles

@@ -1,6 +1,7 @@
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
 import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { HeightReferenceFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorHeightReferenceField";
 import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 import { PointConvertFromCSVFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/point/EditorPointConvertFromCSVField";
@@ -111,6 +112,12 @@ export type PointUseLabelField = FieldBase<{
   preset?: PointUseLabelFieldPreset;
 }>;
 
+export const POINT_HEIGHT_REFERENCE_FIELD = "POINT_HEIGHT_REFERENCE_FIELD";
+export type PointHeightReferenceField = FieldBase<{
+  type: typeof POINT_HEIGHT_REFERENCE_FIELD;
+  preset?: HeightReferenceFieldPreset;
+}>;
+
 export type PointFields =
   | PointStyleField
   | PointSizeField
@@ -124,4 +131,5 @@ export type PointFields =
   | PointImageSizeField
   | PointUse3DModelField
   | PointConvertFromCSVField
-  | PointUseLabelField;
+  | PointUseLabelField
+  | PointHeightReferenceField;

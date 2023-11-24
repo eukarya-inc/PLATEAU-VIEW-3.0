@@ -26,18 +26,23 @@ import {
   POINT_USE_3D_MODEL,
   POINT_VISIBILITY_CONDITION_FIELD,
   POINT_USE_LABEL_FIELD,
+  POINT_HEIGHT_REFERENCE_FIELD,
 } from "../../types/fieldComponents/point";
 import {
+  POLYGON_CLASSIFICATION_TYPE_FIELD,
   POLYGON_FILL_COLOR_CONDITION_FIELD,
   POLYGON_FILL_COLOR_VALUE_FIELD,
+  POLYGON_HEIGHT_REFERENCE_FIELD,
   POLYGON_STROKE_COLOR_FIELD,
   POLYGON_STROKE_WEIGHT_FIELD,
   POLYGON_VISIBILITY_CONDITION_FIELD,
   POLYGON_VISIBILITY_FILTER_FIELD,
 } from "../../types/fieldComponents/polygon";
 import {
+  POLYLINE_CLASSIFICATION_TYPE_FIELD,
   POLYLINE_FILL_COLOR_CONDITION_FIELD,
   POLYLINE_FILL_COLOR_VALUE_FIELD,
+  POLYLINE_HEIGHT_REFERENCE_FIELD,
   POLYLINE_STROKE_WEIGHT_FIELD,
   POLYLINE_VISIBILITY_CONDITION_FIELD,
   POLYLINE_VISIBILITY_FILTER_FIELD,
@@ -359,6 +364,9 @@ export const useEvaluateGeneralAppearance = ({
   const pointLabel = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_USE_LABEL_FIELD),
   );
+  const pointHeightReference = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_HEIGHT_REFERENCE_FIELD),
+  );
 
   // Polyline
   const polylineColor = useOptionalAtomValue(
@@ -375,6 +383,12 @@ export const useEvaluateGeneralAppearance = ({
   );
   const polylineVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYLINE_VISIBILITY_FILTER_FIELD),
+  );
+  const polylineHeightReference = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYLINE_HEIGHT_REFERENCE_FIELD),
+  );
+  const polylineClassificationType = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYLINE_CLASSIFICATION_TYPE_FIELD),
   );
 
   // Polygon
@@ -395,6 +409,12 @@ export const useEvaluateGeneralAppearance = ({
   );
   const polygonVisibilityFilter = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_FILTER_FIELD),
+  );
+  const polygonHeightReference = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_HEIGHT_REFERENCE_FIELD),
+  );
+  const polygonClassificationType = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_CLASSIFICATION_TYPE_FIELD),
   );
 
   // Tileset
@@ -449,6 +469,7 @@ export const useEvaluateGeneralAppearance = ({
           labelBackgroundColor: pointLabel?.preset?.backgroundColor,
           height: pointLabel?.preset?.height,
           extrude: pointLabel?.preset?.extruded,
+          heightReference: pointHeightReference?.preset?.defaultValue,
         },
         polyline: {
           strokeColor:
@@ -457,6 +478,10 @@ export const useEvaluateGeneralAppearance = ({
           show:
             makeVisibilityFilterExpression(polylineVisibilityFilter) ??
             makeVisibilityConditionExpression(polylineVisibilityCondition),
+          clampToGround: polylineHeightReference?.preset?.defaultValue
+            ? polylineHeightReference.preset.defaultValue === "clamp"
+            : undefined,
+          classificationType: polylineClassificationType?.preset?.defaultValue,
         },
         polygon: {
           fillColor:
@@ -467,6 +492,8 @@ export const useEvaluateGeneralAppearance = ({
           show:
             makeVisibilityFilterExpression(polygonVisibilityFilter) ??
             makeVisibilityConditionExpression(polygonVisibilityCondition),
+          heightReference: polygonHeightReference?.preset?.defaultValue,
+          classificationType: polygonClassificationType?.preset?.defaultValue,
         },
         model: pointModel?.preset
           ? {
@@ -497,12 +524,15 @@ export const useEvaluateGeneralAppearance = ({
       pointImageSize,
       pointModel,
       pointLabel,
+      pointHeightReference,
       // Polyline
       polylineColor,
       polylineFillColorCondition,
       polylineStrokeWeight,
       polylineVisibilityCondition,
       polylineVisibilityFilter,
+      polylineHeightReference,
+      polylineClassificationType,
       // Polygon
       polygonColor,
       polygonFillColorCondition,
@@ -510,6 +540,8 @@ export const useEvaluateGeneralAppearance = ({
       polygonStrokeWeight,
       polygonVisibilityCondition,
       polygonVisibilityFilter,
+      polygonHeightReference,
+      polygonClassificationType,
       // Tileset
       tilesetFillColorCondition,
       tilesetFillGradientColor,

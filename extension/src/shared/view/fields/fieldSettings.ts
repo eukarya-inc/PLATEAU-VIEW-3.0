@@ -47,6 +47,7 @@ export const fieldSettings: {
   TIMELINE_MONTH_FIELD: {
     hasLayerUI: true,
   },
+  LINK_BUTTON_FIELD: {},
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
@@ -119,6 +120,7 @@ export const fieldSettings: {
   POINT_USE_3D_MODEL: {},
   POINT_CONVERT_FROM_CSV: {},
   POINT_USE_LABEL_FIELD: {},
+  POINT_HEIGHT_REFERENCE_FIELD: {},
   // Polygon
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     value: {
@@ -147,6 +149,8 @@ export const fieldSettings: {
     defaultValue: "",
     hasLayerUI: true,
   },
+  POLYLINE_HEIGHT_REFERENCE_FIELD: {},
+  POLYLINE_CLASSIFICATION_TYPE_FIELD: {},
   // Polygon
   POLYLINE_FILL_COLOR_VALUE_FIELD: {
     value: {
@@ -174,6 +178,8 @@ export const fieldSettings: {
     defaultValue: "",
     hasLayerUI: true,
   },
+  POLYGON_HEIGHT_REFERENCE_FIELD: {},
+  POLYGON_CLASSIFICATION_TYPE_FIELD: {},
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
