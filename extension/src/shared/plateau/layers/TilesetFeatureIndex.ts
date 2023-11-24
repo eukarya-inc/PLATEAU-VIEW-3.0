@@ -33,6 +33,10 @@ export class TileFeatureIndex {
     return this._layerId;
   }
 
+  has(id: string) {
+    return this._selectedFeatureIds.has(id);
+  }
+
   select(features: string[]) {
     for (const f of features) {
       this._selectedFeatureIds.add(f);

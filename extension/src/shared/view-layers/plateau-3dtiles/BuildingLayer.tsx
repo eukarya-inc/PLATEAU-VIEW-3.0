@@ -64,6 +64,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   lodAtom,
   featureIndexAtom,
   selections,
+  hiddenFeaturesAtom,
   // hiddenFeaturesAtom,
   propertiesAtom,
   colorPropertyAtom,
@@ -118,7 +119,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         textured={textured}
         // component={PlateauBuildingTileset}
         featureIndexAtom={featureIndexAtom}
-        // hiddenFeaturesAtom={hiddenFeaturesAtom}
+        hiddenFeaturesAtom={hiddenFeaturesAtom}
         propertiesAtom={propertiesAtom}
         colorPropertyAtom={colorPropertyAtom}
         colorSchemeAtom={colorSchemeAtom}
