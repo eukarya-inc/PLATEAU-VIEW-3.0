@@ -2,7 +2,6 @@ import { useAtomValue } from "jotai";
 import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
-import { datasetTypeLayers } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
@@ -40,11 +39,8 @@ export const InitialLayers: FC = () => {
       const dataList = d.items as DatasetItem[];
       return addLayer(
         createRootLayerAtom({
-          type: datasetTypeLayers[d.type.code as PlateauDatasetType],
-          datasetId: d.id,
-          dataList,
+          dataset: d,
           areaCode: d.wardCode || d.cityCode || d.prefectureCode,
-          title: d.name,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
           settings: settingsRef.current.filter(s => s.datasetId === d.id),
           templates: templatesRef.current,

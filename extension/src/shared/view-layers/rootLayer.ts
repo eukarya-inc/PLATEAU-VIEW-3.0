@@ -2,6 +2,8 @@ import { PrimitiveAtom, WritableAtom, atom } from "jotai";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
+import { datasetTypeLayers } from "../../prototypes/view/constants/datasetTypeLayers";
+import { PlateauDatasetType } from "../../prototypes/view/constants/plateau";
 import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
 import {
   ComponentGroup,
@@ -12,7 +14,7 @@ import {
   Setting,
   Template,
 } from "../api/types";
-import { DatasetItem } from "../graphql/types/catalog";
+import { DatasetFragmentFragment, DatasetItem } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
@@ -23,15 +25,12 @@ import { makeComponentAtoms } from "./component";
 import { createViewLayer } from "./createViewLayer";
 
 export type RootLayerAtomParams = {
-  datasetId: string;
-  type: LayerType;
-  title: string;
   areaCode: string;
   settings: Setting[];
   templates: Template[];
-  dataList: DatasetItem[];
   currentDataId?: string;
   shareId?: string;
+  dataset: DatasetFragmentFragment;
 };
 
 export type RootLayerParams = {
@@ -60,6 +59,7 @@ export type RootLayerConfig = {
   currentGroupIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
   currentDataIdAtom: WritableAtom<string | undefined, [update: string | undefined], void>;
   settingsAtom: WritableAtom<Setting[], [settings: Setting[]], void>;
+  rawDataset: DatasetFragmentFragment;
 };
 
 const findComponentGroup = (
@@ -209,15 +209,19 @@ const createRootLayer = ({
 };
 
 export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfig => {
+  const dataset = params.dataset;
+  const dataList = dataset.items as DatasetItem[];
+  const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
-  const initialCurrentDataId = params.currentDataId ?? params.dataList[0].id;
+  const initialCurrentDataId = params.currentDataId ?? dataList[0].id;
   const rootLayerAtom = atom<RootLayer>(
     createRootLayer({
-      datasetId: params.datasetId,
-      type: params.type,
-      title: params.title,
-      dataList: params.dataList,
+      datasetId: dataset.id,
+      type,
+      title: dataset.name,
+      dataList,
       settings: initialSettings,
       templates: initialTemplates,
       currentDataId: initialCurrentDataId,
@@ -238,10 +242,10 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
       set(
         rootLayerAtom,
         createRootLayer({
-          datasetId: params.datasetId,
-          type: params.type,
-          title: params.title,
-          dataList: params.dataList,
+          datasetId: dataset.id,
+          type,
+          title: dataset.name,
+          dataList,
           settings: settings,
           templates: get(templatesAtom),
           currentDataId: currentDataId,
@@ -268,10 +272,10 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
       set(
         rootLayerAtom,
         createRootLayer({
-          datasetId: params.datasetId,
-          type: params.type,
-          title: params.title,
-          dataList: params.dataList,
+          datasetId: dataset.id,
+          type,
+          title: dataset.name,
+          dataList,
           settings: get(settingsPrimitiveAtom),
           templates: get(templatesAtom),
           currentDataId: update ?? currentDataId,
@@ -293,16 +297,16 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
       const rootLayer = get(rootLayerAtom);
       const currentDataId = get(currentDataIdAtom);
       const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
-      const data = findData(params.dataList, currentDataId);
+      const data = findData(dataList, currentDataId);
       const template = findComponentTemplate(setting, get(templatesAtom));
       const group = findComponentGroup(setting, template, update);
 
       set(
         rootLayer.layer,
         createViewLayerWithComponentGroup(
-          params.datasetId,
-          params.type,
-          params.title,
+          dataset.id,
+          type,
+          dataset.name,
           setting,
           template,
           data,
@@ -315,7 +319,7 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
     },
   );
 
-  const shareableCurrentDataIdName = `${params.datasetId}_${CURRENT_DATA_ID}${
+  const shareableCurrentDataIdName = `${dataset.id}_${CURRENT_DATA_ID}${
     params.shareId ? `_${params.shareId}` : ""
   }`;
   const shareableCurrentDataIdAtom = sharedStoreAtomWrapper(
@@ -323,7 +327,7 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
     currentDataIdAtomAtom,
   );
 
-  const shareableCurrentComponentGroupIdName = `${params.datasetId}_${CURRENT_COMPONENT_GROUP_ID}${
+  const shareableCurrentComponentGroupIdName = `${dataset.id}_${CURRENT_COMPONENT_GROUP_ID}${
     params.shareId ? `_${params.shareId}` : ""
   }`;
   const shareableCurrentGroupIdAtom = sharedStoreAtomWrapper(
@@ -332,7 +336,7 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
   );
 
   return {
-    id: params.datasetId,
+    id: dataset.id,
     areaCode: params.areaCode,
     rootLayerAtom: atom(
       get => get(rootLayerAtom),
@@ -341,5 +345,6 @@ export const createRootLayerAtom = (params: RootLayerAtomParams): RootLayerConfi
     currentDataIdAtom: shareableCurrentDataIdAtom,
     currentGroupIdAtom: shareableCurrentGroupIdAtom,
     settingsAtom,
+    rawDataset: dataset,
   };
 };

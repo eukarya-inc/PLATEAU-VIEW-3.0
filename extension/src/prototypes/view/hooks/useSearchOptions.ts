@@ -181,12 +181,9 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           if (type === BUILDING_LAYER) {
             addLayer(
               createRootLayerAtom({
-                datasetId: dataset.id,
-                type,
-                title: dataset.name,
+                dataset,
                 settings: filteredSettings,
                 templates,
-                dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
               }),
@@ -194,12 +191,9 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           } else {
             addLayer(
               createRootLayerAtom({
-                datasetId: datasetOption.dataset.id,
-                type,
-                title: dataset.name,
+                dataset,
                 settings: filteredSettings,
                 templates,
-                dataList: dataset.items,
                 areaCode: municipalityCode,
                 currentDataId: datasetOption.dataset.items[0].id,
               }),
