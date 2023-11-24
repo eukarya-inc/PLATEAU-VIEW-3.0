@@ -1,3 +1,4 @@
+import { merge } from "lodash-es";
 import { useMemo } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
@@ -409,11 +410,14 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
 
-  const appearanceObject = useMemo(() => getAppearanceObject(styleCodeString), [styleCodeString]);
+  const appearanceObject = useMemo(
+    () => getAppearanceObject(styleCodeString) ?? {},
+    [styleCodeString],
+  );
 
   const generalAppearances: GeneralAppearances = useMemo(
     () =>
-      appearanceObject ?? {
+      merge({}, appearanceObject, {
         marker: {
           // TODO: Use component for style
           style: pointStyle?.preset?.style,
@@ -465,7 +469,7 @@ export const useEvaluateGeneralAppearance = ({
           experimental_clipping: clippingBox,
         },
         box: boxAppearance,
-      },
+      }),
     [
       appearanceObject,
       // Point
