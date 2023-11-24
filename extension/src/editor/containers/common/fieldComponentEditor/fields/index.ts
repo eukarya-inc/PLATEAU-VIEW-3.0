@@ -1,11 +1,5 @@
 import { SettingComponent } from "../../../../../shared/api/types";
 import { ComponentBase } from "../../../../../shared/types/fieldComponents";
-import {
-  POINT_FILL_COLOR_CONDITION_FIELD,
-  POINT_FILL_COLOR_GRADIENT_FIELD,
-  POINT_FILL_COLOR_VALUE_FIELD,
-  POINT_SIZE_FIELD,
-} from "../../../../../shared/types/fieldComponents/point";
 
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
@@ -411,12 +405,3 @@ export const getFiledComponentTree = () => {
 
   return tree;
 };
-
-// Specal rule for style code field
-// Style code field is conflict with these fields
-export const AppearanceFields = [
-  POINT_FILL_COLOR_VALUE_FIELD,
-  POINT_FILL_COLOR_CONDITION_FIELD,
-  POINT_FILL_COLOR_GRADIENT_FIELD,
-  POINT_SIZE_FIELD,
-];
