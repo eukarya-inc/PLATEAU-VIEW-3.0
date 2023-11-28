@@ -6,11 +6,11 @@ import { TileAppModule } from "./modules/tiles/app.module";
 
 @Module({
   imports: [
-    GraphQLAppModule,
-    TileAppModule,
     ConfigModule.forRoot({
       envFilePath: ".env",
     }),
+    GraphQLAppModule,
+    TileAppModule,
   ],
   controllers: [],
   providers: [],
