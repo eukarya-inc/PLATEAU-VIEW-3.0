@@ -138,7 +138,9 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
             },
           }
         : {}),
-      show: filter,
+      show: {
+        expression: filter,
+      },
       shadows: "disabled",
       selectedFeatureColor: theme.palette.primary.main,
     }),

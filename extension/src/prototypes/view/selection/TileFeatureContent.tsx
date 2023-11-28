@@ -1,6 +1,6 @@
 import { Divider, IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useState, type FC, useMemo } from "react";
+import { useCallback, useState, type FC, useMemo, useEffect } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
@@ -90,6 +90,10 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
 
     return defaultTitle;
   }, [rootLayer, values, isBuildingModel, defaultTitle]);
+
+  useEffect(() => {
+    setHidden(false);
+  }, [values]);
 
   return (
     <List disablePadding>
