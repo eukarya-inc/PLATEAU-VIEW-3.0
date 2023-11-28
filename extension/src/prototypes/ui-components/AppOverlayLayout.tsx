@@ -1,5 +1,5 @@
 import { styled } from "@mui/material";
-import { atom, useSetAtom, type Atom } from "jotai";
+import { atom, type Atom, useSetAtom } from "jotai";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { createContext, memo, useEffect, useMemo, useRef, type FC, type ReactNode } from "react";
 import invariant from "tiny-invariant";
@@ -7,6 +7,8 @@ import invariant from "tiny-invariant";
 import { DarkThemeOverride } from "./DarkThemeOverride";
 
 import "overlayscrollbars/overlayscrollbars.css";
+
+const HEADER_HEIGHT = 81;
 
 const Root = styled("div", {
   shouldForwardProp: prop => prop !== "hidden",
@@ -21,7 +23,7 @@ const Root = styled("div", {
   position: "absolute",
   inset: 0,
   top: 0,
-  minHeight: 81,
+  minHeight: HEADER_HEIGHT,
   pointerEvents: "none",
   "& > *": {
     direction: "ltr",
@@ -156,10 +158,14 @@ const BottomRightColumn = styled("div")({
 
 export interface AppOverlayLayoutContextValue {
   maxMainHeightAtom: Atom<number>;
+  gridHeightAtom: Atom<number>;
+  searchHeaderHeight: number;
 }
 
 export const AppOverlayLayoutContext = createContext<AppOverlayLayoutContextValue>({
   maxMainHeightAtom: atom(0),
+  gridHeightAtom: atom(0),
+  searchHeaderHeight: 0,
 });
 
 export interface AppOverlayLayoutProps {
@@ -189,26 +195,39 @@ export const AppOverlayLayout: FC<AppOverlayLayoutProps> = memo(
     developer,
   }) => {
     const maxMainHeightAtom = useMemo(() => atom(0), []);
+    const gridHeightAtom = useMemo(() => atom(0), []);
     const setMaxMainHeight = useSetAtom(maxMainHeightAtom);
+    const setGridHeight = useSetAtom(gridHeightAtom);
 
+    const rootRef = useRef<HTMLDivElement>(null);
     const mainRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
+      invariant(rootRef.current != null);
       invariant(mainRef.current != null);
+      setGridHeight(rootRef.current.getBoundingClientRect().height);
       setMaxMainHeight(mainRef.current.getBoundingClientRect().height);
-      const observer = new ResizeObserver(([entry]) => {
+      const observerForRoot = new ResizeObserver(([entry]) => {
+        setGridHeight(entry.contentRect.height);
+      });
+      observerForRoot.observe(rootRef.current);
+      const observerForMain = new ResizeObserver(([entry]) => {
         setMaxMainHeight(entry.contentRect.height);
       });
-      observer.observe(mainRef.current);
+      observerForMain.observe(mainRef.current);
       return () => {
-        observer.disconnect();
+        observerForRoot.disconnect();
+        observerForMain.disconnect();
       };
-    }, [setMaxMainHeight]);
+    }, [setMaxMainHeight, setGridHeight]);
 
-    const contextValue = useMemo(() => ({ maxMainHeightAtom }), [maxMainHeightAtom]);
+    const contextValue = useMemo(
+      () => ({ maxMainHeightAtom, gridHeightAtom, searchHeaderHeight: HEADER_HEIGHT + 8 }),
+      [maxMainHeightAtom, gridHeightAtom],
+    );
 
     return (
       <AppOverlayLayoutContext.Provider value={contextValue}>
-        <Root hidden={hidden}>
+        <Root ref={rootRef} hidden={hidden}>
           <RootColumn>
             <RootGrid spacing={spacing}>
               <SizeContainer ref={mainRef}>
