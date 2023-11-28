@@ -12,7 +12,7 @@ import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
-import { LegendDescriptionSection } from "../selection/LegendDescriptionSection";
+import { LegendDescriptionSection } from "../../../shared/view/selection/LegendDescriptionSection";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom } from "../states/app";
 import {

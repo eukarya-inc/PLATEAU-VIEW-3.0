@@ -48,6 +48,7 @@ export const fieldSettings: {
     hasLayerUI: true,
   },
   LINK_BUTTON_FIELD: {},
+  DATASET_STORY_FIELD: {},
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",

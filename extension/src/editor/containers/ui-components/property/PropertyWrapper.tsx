@@ -28,14 +28,11 @@ export const PropertyLineWrapper = styled("div")(({ theme }) => ({
   justifyContent: "space-between",
 }));
 
-type PropertyInlineWrapperProps = {
+type PropertyItemProps = {
   label: string;
   children: React.ReactNode;
 };
-export const PropertyInlineWrapper: React.FC<PropertyInlineWrapperProps> = ({
-  label,
-  children,
-}) => {
+export const PropertyInlineWrapper: React.FC<PropertyItemProps> = ({ label, children }) => {
   return (
     <InlineWrapper>
       <InlineLabel>{label}</InlineLabel>
@@ -58,4 +55,27 @@ const InlineLabel = styled("div")(({ theme }) => ({
 
 const InlineValue = styled("div")(() => ({
   flex: "1 1 auto",
+}));
+
+export const PropertyItemWrapper: React.FC<PropertyItemProps> = ({ label, children }) => {
+  return (
+    <ItemWrapper>
+      <Label>{label}</Label>
+      <Content>{children}</Content>
+    </ItemWrapper>
+  );
+};
+
+const ItemWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(0.5),
+}));
+
+const Label = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0),
+}));
+
+const Content = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0),
 }));

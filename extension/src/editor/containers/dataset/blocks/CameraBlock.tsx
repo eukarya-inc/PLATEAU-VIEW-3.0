@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
+import { useCamera } from "../../../../shared/reearth/hooks";
 import {
   EditorBlock,
   EditorBlockProps,
@@ -23,6 +24,7 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
   const [heading, setHeading] = useState<number | string>(setting?.general?.camera?.heading ?? "");
   const [pitch, setPitch] = useState<number | string>(setting?.general?.camera?.pitch ?? "");
   const [roll, setRoll] = useState<number | string>(setting?.general?.camera?.roll ?? "");
+  const { getCameraPosition } = useCamera();
 
   useEffect(() => {
     updateSetting?.(s => {
@@ -62,12 +64,12 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
                   heading: numberHeading,
                   pitch: numberPitch,
                   roll: numberRoll,
-                  fov: window.reearth?.camera?.position?.fov ?? 1.04,
+                  fov: getCameraPosition()?.fov ?? 1.04,
                 },
         },
       };
     });
-  }, [latitude, longitude, altitude, heading, pitch, roll, updateSetting]);
+  }, [latitude, longitude, altitude, heading, pitch, roll, updateSetting, getCameraPosition]);
 
   const handleClearCamera = useCallback(() => {
     setLatitude("");
@@ -79,7 +81,7 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
   }, []);
 
   const handleCapture = useCallback(() => {
-    const cameraPosition = window.reearth?.camera?.position;
+    const cameraPosition = getCameraPosition();
     if (!cameraPosition) return;
     setLatitude(cameraPosition.lat ?? "");
     setLongitude(cameraPosition.lng ?? "");
@@ -87,7 +89,7 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
     setHeading(cameraPosition.heading ?? "");
     setPitch(cameraPosition.pitch ?? "");
     setRoll(cameraPosition.roll ?? "");
-  }, []);
+  }, [getCameraPosition]);
 
   return (
     <EditorBlock title="Camera" expandable {...props}>
