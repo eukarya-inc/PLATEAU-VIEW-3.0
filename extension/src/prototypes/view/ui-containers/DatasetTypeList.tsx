@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { atomWithReset } from "jotai/utils";
 import { useCallback, type FC } from "react";
 
-import { useAreaDatasets, useAreas } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
@@ -40,6 +40,24 @@ const MunicipalityItem: FC<{
           key={dataset.id}
           municipalityCode={municipality.code}
           dataset={dataset}
+          label={dataset.name}
+        />
+      ))}
+    </DatasetTreeItem>
+  );
+};
+
+const GlobalItem: FC<{}> = () => {
+  const query = useDatasets({
+    includeTypes: ["global"],
+  });
+  return (
+    <DatasetTreeItem nodeId="global" label={datasetTypeNames.global} loading={query.loading}>
+      {query.data?.datasets?.map(dataset => (
+        <DatasetListItem
+          key={dataset.id}
+          dataset={dataset}
+          municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
           label={dataset.name}
         />
       ))}
@@ -89,6 +107,7 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType }> = ({ datasetType 
       nodeId={datasetType}
       label={datasetTypeNames[datasetType]}
       loading={query.loading}>
+      {datasetType === PlateauDatasetType.UseCase && <GlobalItem />}
       {query.data?.areas.map(
         prefecture =>
           prefecture.__typename === "Prefecture" && (

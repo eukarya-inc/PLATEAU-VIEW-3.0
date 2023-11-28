@@ -4,9 +4,10 @@ import { groupBy } from "lodash";
 import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { useAreaDatasets, useAreas } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
+import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
@@ -42,6 +43,24 @@ const DatasetGroup: FC<{
       municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
       label={datasets[0].type.name}
     />
+  );
+};
+
+const GlobalItem: FC<{}> = () => {
+  const query = useDatasets({
+    includeTypes: ["global"],
+  });
+  return (
+    <DatasetTreeItem nodeId="global" label={datasetTypeNames.global} loading={query.loading}>
+      {query.data?.datasets?.map(dataset => (
+        <DatasetListItem
+          key={dataset.id}
+          dataset={dataset}
+          municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+          label={dataset.name}
+        />
+      ))}
+    </DatasetTreeItem>
   );
 };
 
@@ -141,6 +160,7 @@ export const DatasetAreaList: FC = () => {
     <DatasetTreeView expanded={expanded} onNodeToggle={handleNodeToggle}>
       {/* TODO: Suport heat-map */}
       {/* <RegionalMeshItem /> */}
+      <GlobalItem />
       {query.data?.areas.map(
         prefecture =>
           prefecture.__typename === "Prefecture" && (

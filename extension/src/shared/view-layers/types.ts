@@ -5,6 +5,7 @@ import {
   CITY_FURNITURE_LAYER,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
+  GLOBAL_LAYER,
   HEATMAP_LAYER,
   HIGH_TIDE_RISK_LAYER,
   INLAND_FLOODING_RISK_LAYER,
@@ -48,6 +49,7 @@ export interface LayerModelOverrides {
   [CITY_FURNITURE_LAYER]: GeneralLayerModel; // CityFurnitureLayerModel
   [EMERGENCY_ROUTE_LAYER]: GeneralLayerModel; // EmergencyRouteLayerModel
   [GENERIC_CITY_OBJECT_LAYER]: GeneralLayerModel; // GenericLayerModel
+  [GLOBAL_LAYER]: GeneralLayerModel;
   [LAND_USE_LAYER]: GeneralLayerModel; // LandUseLayerModel;
   [LANDMARK_LAYER]: GeneralLayerModel; // LandmarkLayerModel
   [LAND_SLIDE_RISK_LAYER]: GeneralLayerModel; // LandSlideRiskLayerModel;

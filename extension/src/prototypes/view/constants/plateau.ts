@@ -4,6 +4,7 @@ export enum PlateauDatasetType {
   Building = "bldg",
   CityFurniture = "frn",
   EmergencyRoute = "emergency_route",
+  Global = "global",
   GenericCityObject = "gen",
   HighTideRisk = "htd",
   InlandFloodingRisk = "ifld",
