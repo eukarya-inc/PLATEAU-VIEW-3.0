@@ -7,15 +7,8 @@ import { ParameterList } from "../../../../prototypes/ui-components";
 import { useCamera } from "../../../reearth/hooks";
 import { CameraPosition } from "../../../reearth/types";
 import { DatasetStoryField } from "../../../types/fieldComponents/general";
+import { CommonContentWrapper } from "../../../ui-components/CommonContentWrapper";
 import { WritableAtomForComponent } from "../../../view-layers/component";
-
-const Wrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(1),
-  fontSize: theme.typography.body2.fontSize,
-  [`img`]: {
-    maxWidth: "100%",
-  },
-}));
 
 const PaginationWrapper = styled("div")(() => ({
   display: "flex",
@@ -50,7 +43,7 @@ export const LayerDatasetStoryField: FC<LayerDatasetStoryFieldProps> = ({ atoms 
 
   return component?.preset?.pages?.length > 0 ? (
     <ParameterList>
-      <Wrapper>
+      <CommonContentWrapper>
         <Markdown skipHtml>{component.preset.pages[currentPage].content}</Markdown>
         <PaginationWrapper>
           <StyledPagination
@@ -62,8 +55,9 @@ export const LayerDatasetStoryField: FC<LayerDatasetStoryFieldProps> = ({ atoms 
             boundaryCount={1}
             onChange={handleChange}
           />
+          s
         </PaginationWrapper>
-      </Wrapper>
+      </CommonContentWrapper>
     </ParameterList>
   ) : null;
 };

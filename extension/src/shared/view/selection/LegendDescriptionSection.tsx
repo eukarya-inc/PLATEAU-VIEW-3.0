@@ -1,23 +1,15 @@
-import { styled } from "@mui/material";
 import { FC } from "react";
 import Markdown from "react-markdown";
 
-import { useOptionalAtomValue } from "../../../shared/hooks";
-import { LEGEND_DESCRIPTION_FIELD } from "../../../shared/types/fieldComponents/general";
-import { useFindComponent } from "../../../shared/view-layers/hooks";
 import {
   COLOR_SCHEME_SELECTION,
   IMAGE_SCHEME_SELECTION,
   SelectionGroup,
-} from "../states/selection";
-
-const Wrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(1, 2),
-  fontSize: theme.typography.body2.fontSize,
-  [`img`]: {
-    maxWidth: "100%",
-  },
-}));
+} from "../../../prototypes/view/states/selection";
+import { useOptionalAtomValue } from "../../hooks";
+import { LEGEND_DESCRIPTION_FIELD } from "../../types/fieldComponents/general";
+import { CommonContentWrapper } from "../../ui-components/CommonContentWrapper";
+import { useFindComponent } from "../../view-layers/hooks";
 
 export interface LegendDescriptionSectionProps {
   values: (SelectionGroup & {
@@ -34,8 +26,8 @@ export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ va
   const legendDescription = useOptionalAtomValue(legendDescriptionAtom);
 
   return legendDescription?.preset?.description ? (
-    <Wrapper>
+    <CommonContentWrapper>
       <Markdown skipHtml>{legendDescription?.preset?.description}</Markdown>
-    </Wrapper>
+    </CommonContentWrapper>
   ) : null;
 };
