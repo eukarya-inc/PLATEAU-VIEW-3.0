@@ -8,10 +8,11 @@ import {
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
 import { ViewLayerModel } from "../../prototypes/view-layers";
+import { string, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
-import { Cesium3DTilesAppearance, LayerAppearance } from "../reearth/types";
+import { Cesium3DTilesAppearance, ConditionsExpression, LayerAppearance } from "../reearth/types";
 import {
   TILESET_BUILDING_MODEL_COLOR,
   TILESET_BUILDING_MODEL_FILTER,
@@ -32,6 +33,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: PrimitiveAtom<ColorMap>;
+  hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
@@ -51,6 +53,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   componentAtoms,
   selections,
   hidden,
+  hiddenFeaturesAtom,
   textured,
   ...props
 }) => {
@@ -120,8 +123,18 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
   );
+
   const filter = useEvaluateFilter(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
+  );
+
+  const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
+  const hiddenFeaturesConditions: ConditionsExpression = useMemo(
+    () => ({
+      conditions:
+        hiddenFeatures?.map(f => [`${variable("gml_id")} ===  ${string(f)}`, "false"]) ?? [],
+    }),
+    [hiddenFeatures],
   );
 
   const opacity = useOptionalAtomValue(opacityAtom);
@@ -146,12 +159,24 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
             },
           }
         : {}),
-      show: filter,
+      show: {
+        expression: {
+          conditions: [...hiddenFeaturesConditions.conditions, ...filter.conditions],
+        },
+      },
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
     }),
-    [color, enableShadow, textured, theme.palette.primary.main, clippingBox, filter],
+    [
+      color,
+      enableShadow,
+      textured,
+      theme.palette.primary.main,
+      clippingBox,
+      filter,
+      hiddenFeaturesConditions.conditions,
+    ],
   );
 
   return (
