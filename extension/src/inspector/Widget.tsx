@@ -6,7 +6,7 @@ import { WidgetContext } from "../shared/context/WidgetContext";
 export const Widget = memo(function WidgetPresenter() {
   return (
     <WidgetContext>
-      <AppOverlay type="aside" />
+      <AppOverlay type="aside" width={320} height={0} />
     </WidgetContext>
   );
 });

@@ -1,10 +1,10 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { atomWithReset } from "jotai/utils";
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, useContext } from "react";
 
 import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
-import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
+import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
@@ -130,8 +130,15 @@ export const DatasetTypeList: FC = () => {
     },
     [setExpanded],
   );
+
+  const { gridHeightAtom, searchHeaderHeight } = useContext(AppOverlayLayoutContext);
+  const gridHeight = useAtomValue(gridHeightAtom);
+
   return (
-    <DatasetTreeView expanded={expanded} onNodeToggle={handleNodeToggle}>
+    <DatasetTreeView
+      expanded={expanded}
+      onNodeToggle={handleNodeToggle}
+      maxHeight={gridHeight - searchHeaderHeight}>
       {datasetTypeOrder.map(datasetType => (
         <DatasetTypeItem key={datasetType} datasetType={datasetType} />
       ))}
