@@ -4,12 +4,14 @@ import { type FC } from "react";
 
 import { TreeArrowCollapsedIcon, TreeArrowExpandedIcon } from "./icons";
 
-const StyledTreeView = styled(TreeView)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  marginBottom: theme.spacing(1),
+const StyledTreeView = styled(TreeView)<{ maxHeight?: number }>(({ theme, maxHeight }) => ({
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(1),
+  boxSizing: "border-box",
+  maxHeight,
 }));
 
-export type DatasetTreeViewProps = TreeViewProps;
+export type DatasetTreeViewProps = TreeViewProps & { maxHeight?: number };
 
 export const DatasetTreeView: FC<DatasetTreeViewProps> = props => (
   <StyledTreeView

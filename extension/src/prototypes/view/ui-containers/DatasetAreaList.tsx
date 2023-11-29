@@ -1,12 +1,12 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { atomWithReset } from "jotai/utils";
 import { groupBy } from "lodash";
-import { useCallback, useMemo, type FC } from "react";
+import { useCallback, useMemo, type FC, useContext } from "react";
 import invariant from "tiny-invariant";
 
 import { useAreaDatasets, useAreas } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
-import { DatasetTreeItem, DatasetTreeView } from "../../ui-components";
+import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
@@ -137,8 +137,14 @@ export const DatasetAreaList: FC = () => {
     },
     [setExpanded],
   );
+  const { gridHeightAtom, searchHeaderHeight } = useContext(AppOverlayLayoutContext);
+  const gridHeight = useAtomValue(gridHeightAtom);
+
   return (
-    <DatasetTreeView expanded={expanded} onNodeToggle={handleNodeToggle}>
+    <DatasetTreeView
+      expanded={expanded}
+      onNodeToggle={handleNodeToggle}
+      maxHeight={gridHeight - searchHeaderHeight}>
       {/* TODO: Suport heat-map */}
       {/* <RegionalMeshItem /> */}
       {query.data?.areas.map(
