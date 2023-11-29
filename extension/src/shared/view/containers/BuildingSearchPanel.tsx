@@ -116,11 +116,12 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     setTab(value);
   }, []);
 
+  const [triggerUpdate, setTriggerUpdate] = useState(0);
   const properties = useOptionalAtomValue(
     useMemo(() => {
       if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer)) return;
       return layer.propertiesAtom as PrimitiveAtom<PlateauTilesetProperties | null>;
-    }, [layer]),
+    }, [layer, triggerUpdate]), // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const featureIndex = useOptionalAtomValue(
@@ -240,6 +241,10 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   }, [setSearchedFeatures]);
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    setTriggerUpdate(v => v + 1);
+  }, [state]);
 
   if (!allFeatures || !groups) return null;
 
