@@ -19,7 +19,6 @@ export const DateControlButton: FC = () => {
         title="日時"
         selected={popoverProps.open}
         disableTooltip={popoverProps.open}
-        disabled
         {...bindTrigger(popupState)}>
         <ClockIcon />
       </AppIconButton>

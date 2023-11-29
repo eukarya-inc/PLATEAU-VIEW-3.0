@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { CameraOptions, CameraPosition } from "../types";
+import { CameraOptions, CameraPosition, LatLngHeight } from "../types";
 
 export interface CameraZoom {
   zoomIn: () => void;
@@ -24,6 +24,12 @@ export function useCameraZoom(): CameraZoom {
 export function useCamera(): {
   flyTo: (camera: CameraPosition) => void;
   getCameraPosition: () => CameraPosition | undefined;
+  getCameraFovInfo: (options?: { withTerrain?: boolean; calcViewSize?: boolean }) =>
+    | {
+        center?: LatLngHeight;
+        viewSize?: number;
+      }
+    | undefined;
 } {
   const getCameraPosition = useCallback(() => {
     return window.reearth?.camera?.position;
@@ -33,8 +39,26 @@ export function useCamera(): {
     window.reearth?.camera?.flyTo(camera, options ?? { duration: 2 });
   }, []);
 
+  const getCameraFovInfo = useCallback(
+    (
+      options:
+        | {
+            withTerrain?: boolean;
+            calcViewSize?: boolean;
+          }
+        | undefined,
+    ) => {
+      return window.reearth?.camera?.getFovInfo({
+        withTerrain: options?.withTerrain ?? true,
+        calcViewSize: options?.calcViewSize ?? false,
+      });
+    },
+    [],
+  );
+
   return {
     flyTo,
     getCameraPosition,
+    getCameraFovInfo,
   };
 }

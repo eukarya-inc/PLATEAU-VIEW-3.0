@@ -1,6 +1,10 @@
 import { useCallback, useEffect } from "react";
 
 export const useTimeline = () => {
+  const getTimeline = useCallback(() => {
+    return window.reearth?.clock;
+  }, []);
+
   const handleTimelinePlay = useCallback(
     ({
       start,
@@ -81,6 +85,7 @@ export const useTimeline = () => {
   }, []);
 
   return {
+    getTimeline,
     handleTimelinePlay,
     handleTimelinePlayReverse,
     handleTimelinePause,
