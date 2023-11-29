@@ -1,100 +1,107 @@
-// FIXME
-// import { Cartesian3, Cartographic, Math as CesiumMath, JulianDate } from "@cesium/engine";
-
-// import { useCameraEvent, useCesium, useClockTick } from "@takram/plateau-cesium";
-// import { getCameraEllipsoidIntersection } from "@takram/plateau-cesium-helpers";
-// import { startOfMinute } from "date-fns";
-// import { useCallback, useLayoutEffect, useState, type FC } from "react";
 import { styled } from "@mui/material";
-import { useState, type FC } from "react";
+import { useAtom } from "jotai";
+import { useState, type FC, useCallback, useLayoutEffect, useEffect } from "react";
 
+import { useCamera, useReEarthEvent } from "../../../shared/reearth/hooks";
+import { useTimeline } from "../../../shared/reearth/hooks/useTimeline";
+import { activeTimelineComponentIdAtom } from "../../../shared/view/state/timeline";
 import { DateControl, FloatingPanel } from "../../ui-components";
-
-// FIXME
-// const cartesianScratch = new Cartesian3();
-// const cartographicScratch = new Cartographic();
 
 const Root = styled(FloatingPanel)({
   width: 640,
 });
 
-export const DateControlPanel: FC = () => {
-  // FIXME
-  // const clock = useCesium(({ clock }) => clock, { indirect: true });
-  // const scene = useCesium(({ scene }) => scene, { indirect: true });
+// Use JST for UI
+const timezone = "9";
 
+export const DateControlPanel: FC = () => {
   const [date, _setDate] = useState<Date>();
   const [coords, _setCoords] = useState<{
     longitude: number;
     latitude: number;
   }>();
 
-  // FIXME
-  // const handleClockChange = useCallback(() => {
-  //   if (clock == null) {
-  //     return;
-  //   }
-  //   setDate(prevValue => {
-  //     const nextValue = startOfMinute(JulianDate.toDate(clock.currentTime));
-  //     return prevValue == null || +nextValue !== +prevValue ? nextValue : prevValue;
-  //   });
-  // }, [clock]);
+  const [_, setActiveTimelineComponentId] = useAtom(activeTimelineComponentIdAtom);
 
-  // useClockTick(handleClockChange);
+  const { getCameraFovInfo } = useCamera();
 
-  // const handleCameraChange = useCallback(() => {
-  //   if (scene == null) {
-  //     return;
-  //   }
-  //   try {
-  //     getCameraEllipsoidIntersection(scene, cartesianScratch);
-  //     const ellipsoid = scene.globe.ellipsoid;
-  //     const cartographic = Cartographic.fromCartesian(
-  //       cartesianScratch,
-  //       ellipsoid,
-  //       cartographicScratch,
-  //     );
-  //     if (cartographic == null) {
-  //       return;
-  //     }
-  //     setCoords({
-  //       longitude: CesiumMath.toDegrees(cartographic.longitude),
-  //       latitude: CesiumMath.toDegrees(cartographic.latitude),
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // }, [scene]);
+  const updateCroods = useCallback(() => {
+    const fovInfo = getCameraFovInfo();
+    if (fovInfo?.center) {
+      _setCoords({
+        longitude: fovInfo.center.lng,
+        latitude: fovInfo.center.lat,
+      });
+    }
+  }, [getCameraFovInfo]);
 
-  // useCameraEvent("changed", handleCameraChange);
+  useReEarthEvent("cameramove", updateCroods);
 
-  // useLayoutEffect(() => {
-  //   handleClockChange();
-  //   handleCameraChange();
-  // }, [handleClockChange, handleCameraChange]);
+  const {
+    getTimeline,
+    handleTimelineJump,
+    handleTimelineOnTickEventAdd,
+    handleTimelineOnTickEventRemove,
+  } = useTimeline();
 
-  // const handleChange = useCallback(
-  //   (event: unknown, date: Date) => {
-  //     if (clock == null) {
-  //       return;
-  //     }
-  //     setDate(date);
-  //     JulianDate.fromDate(date, clock.currentTime);
-  //   },
-  //   [clock],
-  // );
+  useLayoutEffect(() => {
+    updateCroods();
+    const timeline = getTimeline();
+    if (timeline?.currentTime) {
+      _setDate(timeline.currentTime);
+    }
+  }, [updateCroods, getTimeline]);
 
-  if (date == null || coords == null) {
+  const handleTick = useCallback((date: Date) => {
+    _setDate(date);
+  }, []);
+
+  useEffect(() => {
+    handleTimelineOnTickEventAdd(handleTick);
+    return () => {
+      handleTimelineOnTickEventRemove(handleTick);
+    };
+  }, [handleTimelineOnTickEventAdd, handleTimelineOnTickEventRemove, handleTick]);
+
+  const handleChange = useCallback(
+    (_: unknown, date: Date) => {
+      const dateWithoutTimezone = recoverDateFromTimezone(date, timezone);
+      _setDate(dateWithoutTimezone);
+      handleTimelineJump({
+        start: dateWithoutTimezone,
+        stop: dateWithoutTimezone,
+        current: dateWithoutTimezone,
+      });
+      setActiveTimelineComponentId("daytime");
+    },
+    [handleTimelineJump, setActiveTimelineComponentId],
+  );
+
+  const [dateWithTimezone, setDateWithTimezone] = useState<Date>();
+  useLayoutEffect(() => {
+    if (date) {
+      setDateWithTimezone(getDateWithTimezone(date, timezone));
+    }
+  }, [date]);
+
+  if (dateWithTimezone == null || coords == null) {
     return null;
   }
   return (
     <Root>
-      <DateControl
-        date={date}
-        {...coords}
-        // FIXME
-        // onChange={handleChange}
-      />
+      <DateControl date={dateWithTimezone} {...coords} onChange={handleChange} />
     </Root>
   );
+};
+
+const localTimezoneOffset = new Date().getTimezoneOffset();
+
+const getDateWithTimezone = (date: Date, timezone: string) => {
+  const timezoneOffset = (localTimezoneOffset + Number(timezone) * 60) * 60 * 1000;
+  return new Date(date.getTime() + timezoneOffset);
+};
+
+const recoverDateFromTimezone = (date: Date, timezone: string) => {
+  const timezoneOffset = (localTimezoneOffset + Number(timezone) * 60) * 60 * 1000;
+  return new Date(date.getTime() - timezoneOffset);
 };

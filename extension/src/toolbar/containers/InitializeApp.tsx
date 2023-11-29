@@ -1,7 +1,8 @@
 import { useSetAtom } from "jotai";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useLayoutEffect } from "react";
 
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
+import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
 import { updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
 
@@ -26,6 +27,15 @@ export const InitializeApp: FC = () => {
     };
     fetch();
   }, [templateClient, updateAllTemplate]);
+
+  // Initialze clock to 10am JST of current date
+  const { handleTimelineJump } = useTimeline();
+  useLayoutEffect(() => {
+    const timezone = 9; // JST
+    const now = new Date();
+    now.setUTCHours(10 - timezone, 0, 0, 0);
+    handleTimelineJump({ start: now, stop: now, current: now });
+  }, [handleTimelineJump]);
 
   return null;
 };
