@@ -9,6 +9,7 @@ export const datasetTypeNames: Record<PlateauDatasetType, string> = {
   [PlateauDatasetType.RiverFloodingRisk]: "洪水浸水想定区域",
   [PlateauDatasetType.CityFurniture]: "都市設備",
   [PlateauDatasetType.GenericCityObject]: "汎用都市オブジェクトモデル",
+  [PlateauDatasetType.Global]: "全球データ",
   [PlateauDatasetType.HighTideRisk]: "高潮浸水想定区域",
   [PlateauDatasetType.InlandFloodingRisk]: "内水浸水想定区域",
   [PlateauDatasetType.Landmark]: "ランドマーク",

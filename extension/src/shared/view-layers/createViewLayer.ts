@@ -10,6 +10,7 @@ import {
   CITY_FURNITURE_LAYER,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
+  GLOBAL_LAYER,
   HEATMAP_LAYER,
   HIGH_TIDE_RISK_LAYER,
   INLAND_FLOODING_RISK_LAYER,
@@ -61,6 +62,7 @@ type ViewLayerModelParams<T extends LayerType> =
   T extends typeof CITY_FURNITURE_LAYER ? GeneralLayerModelParams : // CityFurnitureLayerModelParams
   T extends typeof EMERGENCY_ROUTE_LAYER ? GeneralLayerModelParams : // EmergencyRouteLayerModelParams
   T extends typeof GENERIC_CITY_OBJECT_LAYER ? GeneralLayerModelParams : // GenericLayerModelParams
+  T extends typeof GLOBAL_LAYER ? GeneralLayerModelParams : // GenericLayerModelParams
   T extends typeof HIGH_TIDE_RISK_LAYER ? GeneralLayerModelParams : // HighTideRiskLayerModelParams
   T extends typeof INLAND_FLOODING_RISK_LAYER ? GeneralLayerModelParams : // InlandFloodingRiskLayerModelParams
   T extends typeof LAND_USE_LAYER ? GeneralLayerModelParams : // LandUseLayerModelParams :
@@ -106,6 +108,7 @@ export function createViewLayer<T extends LayerType>(
     case CITY_FURNITURE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case EMERGENCY_ROUTE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case GENERIC_CITY_OBJECT_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    case GLOBAL_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case LAND_USE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case LANDMARK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case LAND_SLIDE_RISK_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
