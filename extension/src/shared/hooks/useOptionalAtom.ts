@@ -1,4 +1,5 @@
-import { Atom, PrimitiveAtom, atom, useAtomValue } from "jotai";
+import { Atom, PrimitiveAtom, SetStateAction, atom, useAtomValue } from "jotai";
+import { isFunction } from "lodash-es";
 import { useMemo } from "react";
 
 export const useOptionalAtom = <V>(valueAtom: Atom<V> | undefined) => {
@@ -26,8 +27,9 @@ export const useOptionalPrimitiveAtom = <V>(valueAtom: PrimitiveAtom<V> | undefi
         }
         return get(valueAtom);
       },
-      (_get, set, update: V) => {
+      (get, set, action: SetStateAction<V>) => {
         if (!valueAtom) return;
+        const update = isFunction(action) ? action(get(valueAtom)) : action;
         set(valueAtom, update);
       },
     );

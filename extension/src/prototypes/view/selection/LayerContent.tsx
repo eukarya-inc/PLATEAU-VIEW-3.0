@@ -1,25 +1,29 @@
 import { IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jotai";
-import { MouseEvent, useCallback, useMemo, useState } from "react";
+import { anchorRef, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
+import { MouseEvent, MouseEventHandler, useCallback, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { flyToCamera, flyToLayerId } from "../../../shared/reearth/utils";
 import { findRootLayerAtom, rootLayersAtom } from "../../../shared/states/rootLayer";
+import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSearchPanel";
 import { Fields } from "../../../shared/view/fields/Fields";
 import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
 import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
+import { BuildingLayerModel } from "../../../shared/view-layers";
 import { ComponentAtom } from "../../../shared/view-layers/component";
-import { layerSelectionAtom, removeLayerAtom, type LayerType } from "../../layers";
+import { layerSelectionAtom, removeLayerAtom, type LayerType, LayerModel } from "../../layers";
 import {
   AddressIcon,
   InfoIcon,
   InspectorHeader,
+  SearchIcon,
   TrashIcon,
   VisibilityOffIcon,
   VisibilityOnIcon,
 } from "../../ui-components";
-import { layerTypeIcons, layerTypeNames } from "../../view-layers";
+import { BUILDING_LAYER, layerTypeIcons, layerTypeNames } from "../../view-layers";
 import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 import { DatasetDialog } from "../ui-containers/DatasetDialog";
 
@@ -40,6 +44,9 @@ export function LayerContent<T extends LayerType>({
   values,
 }: LayerContentProps<T>): JSX.Element | null {
   invariant(values.length > 0);
+  const buildingLayers = (values as LayerModel[]).filter(
+    (v): v is BuildingLayerModel => v.type === BUILDING_LAYER,
+  );
   const layer = values[0];
   const type = layer.type;
   const findRootLayer = useSetAtom(findRootLayerAtom);
@@ -118,10 +125,24 @@ export function LayerContent<T extends LayerType>({
     setInfoOpen(false);
   }, []);
 
+  const buildingSearchPanelId = "BuildingSearchPanel";
+  const buildingSearchPanelState = usePopupState({
+    variant: "popover",
+    popupId: buildingSearchPanelId,
+  });
+  const buildingSearchPanelRef = anchorRef(buildingSearchPanelState);
+  const handleBuildingSearchPanelClick: MouseEventHandler<HTMLButtonElement> = useCallback(
+    _e => {
+      buildingSearchPanelState.open();
+    },
+    [buildingSearchPanelState],
+  );
+
   return (
     <>
       <List disablePadding>
         <InspectorHeader
+          actionsRef={buildingSearchPanelRef}
           title={
             values.length === 1
               ? `${layerTypeNames[type]}レイヤー`
@@ -142,6 +163,16 @@ export function LayerContent<T extends LayerType>({
                   </IconButton>
                 </span>
               </Tooltip>
+              {buildingLayers.length !== 0 && (
+                <Tooltip title="検索">
+                  <IconButton
+                    {...bindTrigger(buildingSearchPanelState)}
+                    aria-label="検索"
+                    onClick={handleBuildingSearchPanelClick}>
+                    <SearchIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
               <Tooltip title="出典">
                 <span>
                   <IconButton
@@ -180,6 +211,9 @@ export function LayerContent<T extends LayerType>({
           municipalityCode={rootLayerConfig.areaCode}
           onClose={handleInfoClose}
         />
+      )}
+      {buildingLayers.length !== 0 && (
+        <BuildingSearchPanel state={buildingSearchPanelState} layer={layer} layerId={layerId} />
       )}
     </>
   );

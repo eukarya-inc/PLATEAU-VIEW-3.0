@@ -14,6 +14,7 @@ import {
   type FC,
   type MouseEvent,
   type ReactNode,
+  RefObject,
 } from "react";
 import invariant from "tiny-invariant";
 
@@ -32,6 +33,7 @@ const StyledEntityTitle = styled(EntityTitle)(({ theme }) => ({
 
 export interface InspectorHeaderProps extends EntityTitleProps {
   actions?: ReactNode;
+  actionsRef?: RefObject<HTMLDivElement> | ((el: Element | null) => void);
   minInlineWidth?: number;
   onClose?: (event: MouseEvent<HTMLButtonElement>) => void;
 }
@@ -39,6 +41,7 @@ export interface InspectorHeaderProps extends EntityTitleProps {
 export const InspectorHeader: FC<InspectorHeaderProps> = ({
   actions,
   minInlineWidth = 540,
+  actionsRef,
   onClose,
   ...props
 }) => {
@@ -81,7 +84,7 @@ export const InspectorHeader: FC<InspectorHeaderProps> = ({
       {actions != null && !inline && (
         <>
           <Divider />
-          <InspectorActions>{actions}</InspectorActions>
+          <InspectorActions ref={actionsRef}>{actions}</InspectorActions>
         </>
       )}
     </Root>
