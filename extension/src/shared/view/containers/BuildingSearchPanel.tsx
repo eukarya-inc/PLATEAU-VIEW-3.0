@@ -13,7 +13,7 @@ import {
 import { PrimitiveAtom, useAtom } from "jotai";
 import { get, uniq, uniqBy } from "lodash-es";
 import { PopupState, bindPopover } from "material-ui-popup-state/hooks";
-import { FC, useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
@@ -116,12 +116,12 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     setTab(value);
   }, []);
 
-  const [triggerUpdate, setTriggerUpdate] = useState(0);
+  const triggerUpdateRef = useRef(0);
   const properties = useOptionalAtomValue(
     useMemo(() => {
       if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer)) return;
       return layer.propertiesAtom as PrimitiveAtom<PlateauTilesetProperties | null>;
-    }, [layer, triggerUpdate]), // eslint-disable-line react-hooks/exhaustive-deps
+    }, [layer, triggerUpdateRef.current]), // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const featureIndex = useOptionalAtomValue(
@@ -148,7 +148,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const allFeatures = useMemo(
     () =>
       window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? []),
-    [layerId, featureIndex],
+    [layerId, featureIndex, triggerUpdateRef.current], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const groups = useMemo(() => {
@@ -242,9 +242,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    setTriggerUpdate(v => v + 1);
-  }, [state]);
+  triggerUpdateRef.current += 1;
 
   if (!allFeatures || !groups) return null;
 
