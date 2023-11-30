@@ -1,4 +1,4 @@
-import { FC, memo, useEffect } from "react";
+import { FC, memo } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
@@ -9,7 +9,6 @@ import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoo
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { WidgetContext } from "../shared/context/WidgetContext";
-import { useHealth } from "../shared/graphql";
 import { WidgetProps } from "../shared/types/widget";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import { layerComponents } from "../shared/view-layers/layerComponents";
@@ -27,7 +26,6 @@ type Props = WidgetProps<{
 }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
-  useHealthCheck();
   useInteractionMode();
   useAttachScreenSpaceSelection();
 
@@ -58,19 +56,3 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
     </WidgetContext>
   );
 });
-
-// For debug
-const useHealthCheck = () => {
-  /* eslint-disable react-hooks/rules-of-hooks */
-  if (!import.meta.env.DEV) {
-    return;
-  }
-  const { data, loading } = useHealth("123");
-  useEffect(() => {
-    if (loading) {
-      console.log("Loading health...");
-    } else {
-      console.log("Health has been completed: ", data);
-    }
-  }, [loading, data]);
-};
