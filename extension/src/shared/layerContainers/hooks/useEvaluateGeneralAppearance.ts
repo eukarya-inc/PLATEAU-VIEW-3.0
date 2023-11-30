@@ -325,6 +325,19 @@ export const makeConditionalImageColorExpression = (
   };
 };
 
+export const makeLabelTextExpression = (
+  comp: Component<typeof POINT_USE_LABEL_FIELD> | undefined,
+): ExpressionContainer | string | undefined => {
+  if (!comp) return;
+  const textExpression = comp.preset?.textExpression;
+  if (!textExpression?.startsWith("=")) return textExpression;
+  return {
+    expression: {
+      conditions: [["true", textExpression.substring(1)]],
+    },
+  };
+};
+
 export const useEvaluateGeneralAppearance = ({
   componentAtoms,
 }: {
@@ -461,9 +474,7 @@ export const useEvaluateGeneralAppearance = ({
             makeVisibilityFilterExpression(pointVisibilityFilter) ??
             makeVisibilityConditionExpression(pointVisibilityCondition),
           label: pointLabel?.preset?.textExpression ? true : undefined,
-          labelText: pointLabel?.preset?.textExpression
-            ? { expression: pointLabel.preset.textExpression }
-            : undefined,
+          labelText: makeLabelTextExpression(pointLabel),
           labelTypography: {
             fontSize: pointLabel?.preset?.fontSize,
             color: pointLabel?.preset?.fontColor,
