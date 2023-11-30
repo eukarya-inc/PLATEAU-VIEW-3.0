@@ -154,7 +154,7 @@ export const MultipleSelectSearch: FC<Props> = ({
     openOnFocus: true,
     getOptionLabel: option => option.label,
     onChange,
-    value: values,
+    value: values ?? [],
   });
 
   const List =
