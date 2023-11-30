@@ -19,6 +19,7 @@ import {
   TILESET_CLIPPING,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
+import { SearchedFeatures } from "../view-layers";
 import { ComponentAtom } from "../view-layers/component";
 import { useFindComponent } from "../view-layers/hooks";
 
@@ -34,6 +35,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: PrimitiveAtom<ColorMap>;
   hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
+  searchedFeaturesAtom: PrimitiveAtom<SearchedFeatures | null>;
   colorRangeAtom: PrimitiveAtom<number[]>;
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
@@ -54,6 +56,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   selections,
   hidden,
   hiddenFeaturesAtom,
+  searchedFeaturesAtom,
   textured,
   ...props
 }) => {
@@ -137,6 +140,24 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     [hiddenFeatures],
   );
 
+  const searchedFeatures = useAtomValue(searchedFeaturesAtom);
+  const shownSearchedFeaturesConditions: ConditionsExpression | undefined = useMemo(
+    () =>
+      searchedFeatures?.onlyShow
+        ? {
+            conditions: [
+              ...(searchedFeatures?.features?.map(
+                f => [`${variable("gml_id")} ===  ${string(f)}`, "true"] as [string, string],
+              ) ?? []),
+              ...hiddenFeaturesConditions.conditions,
+              ...(filter.conditions[0].every(c => c === "true") ? [] : filter.conditions),
+              ["true", "false"],
+            ],
+          }
+        : undefined,
+    [searchedFeatures, hiddenFeaturesConditions, filter],
+  );
+
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
@@ -161,7 +182,9 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
         : {}),
       show: {
         expression: {
-          conditions: [...hiddenFeaturesConditions.conditions, ...filter.conditions],
+          conditions: shownSearchedFeaturesConditions
+            ? [...shownSearchedFeaturesConditions.conditions]
+            : [...hiddenFeaturesConditions.conditions, ...filter.conditions],
         },
       },
       shadows: enableShadow ? "enabled" : "disabled",
@@ -174,8 +197,9 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       textured,
       theme.palette.primary.main,
       clippingBox,
-      filter,
+      filter.conditions,
       hiddenFeaturesConditions.conditions,
+      shownSearchedFeaturesConditions,
     ],
   );
 

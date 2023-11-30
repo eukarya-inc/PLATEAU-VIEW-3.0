@@ -11,10 +11,18 @@ export interface PlateauTilesetLayerStateParams extends Omit<ComponentIdParams, 
   shouldInitializeAtom?: boolean;
 }
 
+export type SearchedFeatures = {
+  features: string[];
+  onlyShow: boolean;
+  highlight: boolean;
+  selectedIndices: number[];
+};
+
 export interface PlateauTilesetLayerState {
   isPlateauTilesetLayer: true;
   featureIndexAtom: PrimitiveAtom<TileFeatureIndex | null>;
   hiddenFeaturesAtom: PrimitiveAtom<readonly string[] | null>;
+  searchedFeaturesAtom: PrimitiveAtom<SearchedFeatures | null>;
   propertiesAtom: PrimitiveAtom<PlateauTilesetProperties | null>;
   colorPropertyAtom: PrimitiveAtom<string | null>;
   colorMapAtom: WritableAtom<ColorMap<ColorMapType>, [SetStateAction<ColorMap>], void>;
@@ -108,6 +116,7 @@ export function createPlateauTilesetLayerState(
   return {
     isPlateauTilesetLayer: true,
     featureIndexAtom: atom<TileFeatureIndex | null>(null),
+    searchedFeaturesAtom: atom<SearchedFeatures | null>(null),
     hiddenFeaturesAtom: atom<readonly string[] | null>(params.hiddenFeatures ?? null),
     propertiesAtom,
     colorPropertyAtom,

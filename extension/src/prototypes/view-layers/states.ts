@@ -18,6 +18,10 @@ export const tilesetLayersAtom = atom(get =>
   get(rootLayersAtom).filter(layer => get(get(layer.rootLayerAtom).layer)),
 );
 
+export const tilesetLayersLayersAtom = atom(get =>
+  get(rootLayersAtom).map(layer => get(get(layer.rootLayerAtom).layer)),
+);
+
 // export const pedestrianLayersAtom = atom(get =>
 //   get(layersAtom).filter((layer): layer is PedestrianLayerModel => layer.type === PEDESTRIAN_LAYER),
 // );

@@ -65,6 +65,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   featureIndexAtom,
   selections,
   hiddenFeaturesAtom,
+  searchedFeaturesAtom,
   // hiddenFeaturesAtom,
   propertiesAtom,
   colorPropertyAtom,
@@ -125,6 +126,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         colorSchemeAtom={colorSchemeAtom}
         colorMapAtom={colorMapAtom}
         colorRangeAtom={colorRangeAtom}
+        searchedFeaturesAtom={searchedFeaturesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
         // showWireframe={showWireframe}
 
