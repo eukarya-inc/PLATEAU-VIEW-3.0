@@ -219,6 +219,9 @@ export type CommonFeature<T extends "feature" | "computedFeature"> = {
   geometry?: Geometry;
   interval?: TimeInterval;
   properties?: any;
+  metaData?: {
+    description?: string;
+  };
   range?: DataRange;
 };
 

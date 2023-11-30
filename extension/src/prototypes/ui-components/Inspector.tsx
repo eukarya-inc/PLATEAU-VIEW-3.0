@@ -28,13 +28,25 @@ const ScrollableRoundedBox = styled(Scrollable)(({ theme }) => ({
 
 export interface InspectorProps extends Omit<PaperProps, "onResize"> {
   defaultWidth?: number;
+  scrollable?: boolean;
   onResize?: ResizeCallback;
   onResizeStart?: ResizeStartCallback;
   onResizeStop?: ResizeCallback;
 }
 
 export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
-  ({ defaultWidth = 360, onResize, onResizeStart, onResizeStop, children, ...props }, ref) => (
+  (
+    {
+      defaultWidth = 360,
+      onResize,
+      onResizeStart,
+      onResizeStop,
+      children,
+      scrollable = true,
+      ...props
+    },
+    ref,
+  ) => (
     <AutoHeight>
       <StyledPaper ref={ref} {...props}>
         <Resizable
@@ -51,7 +63,7 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
           onResize={onResize}
           onResizeStart={onResizeStart}
           onResizeStop={onResizeStop}>
-          <ScrollableRoundedBox defer>{children}</ScrollableRoundedBox>
+          {scrollable ? <ScrollableRoundedBox defer>{children}</ScrollableRoundedBox> : children}
         </Resizable>
       </StyledPaper>
     </AutoHeight>

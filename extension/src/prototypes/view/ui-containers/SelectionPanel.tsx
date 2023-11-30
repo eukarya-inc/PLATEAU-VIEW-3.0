@@ -7,12 +7,15 @@ import { useCallback, type FC } from "react";
 
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
-import { GeneralFeatureContent } from "../../../shared/view/selection/GeneralFeatureContent";
+import {
+  GeneralFeatureContent,
+  getGeneralFeatureInformation,
+} from "../../../shared/view/selection/GeneralFeatureContent";
+import { LegendDescriptionSection } from "../../../shared/view/selection/LegendDescriptionSection";
 import { Inspector } from "../../ui-components";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
-import { LegendDescriptionSection } from "../../../shared/view/selection/LegendDescriptionSection";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom } from "../states/app";
 import {
@@ -25,6 +28,7 @@ import {
 
 export const SelectionPanel: FC = () => {
   let content = null;
+  let useScrollable = undefined;
 
   // const contentType: "default" | "pedestrian" = "default";
   const selectionGroups = useAtomValue(selectionGroupsAtom);
@@ -54,11 +58,25 @@ export const SelectionPanel: FC = () => {
           case GENERAL_FEATURE: {
             const rootLayer = findRootLayer(selectionGroup.values[0].datasetId);
             if (
-              rootLayer?.general?.featureClickEvent?.eventType &&
-              rootLayer.general.featureClickEvent.eventType !== "openFeatureInspector"
+              !rootLayer ||
+              (rootLayer.general?.featureClickEvent?.eventType &&
+                rootLayer.general.featureClickEvent.eventType !== "openFeatureInspector")
             )
               break;
-            content = <GeneralFeatureContent values={selectionGroup.values} />;
+            const { scrollable, firstFeature, displayType } = getGeneralFeatureInformation({
+              values: selectionGroup.values,
+              rootLayer,
+            });
+            content = (
+              <GeneralFeatureContent
+                rootLayer={rootLayer}
+                values={selectionGroup.values}
+                firstFeature={firstFeature}
+                displayType={displayType}
+              />
+            );
+            useScrollable = scrollable;
+
             break;
           }
           // case PEDESTRIAN_OBJECT:
@@ -123,7 +141,11 @@ export const SelectionPanel: FC = () => {
   //   );
   // }
   return (
-    <Inspector key="default" defaultWidth={inspectorWidth} onResizeStop={handleResizeStop}>
+    <Inspector
+      key="default"
+      defaultWidth={inspectorWidth}
+      onResizeStop={handleResizeStop}
+      scrollable={useScrollable}>
       <div>{content}</div>
     </Inspector>
   );
