@@ -43,13 +43,12 @@ export const DescriptionFeatureContent: React.FC<Props> = ({ html, additionalHei
       frameWindow.document.head.append(style);
     }
     // Update the content of the existing or new style element
-    style.textContent = `body { color:${
-      theme.typography.body1.color ?? getComputedStyle(frame).color
-    }; 
-    font-family: ${theme.typography.body1.fontFamily ?? getComputedStyle(frame).fontFamily};
-    font-size: ${theme.typography.body1.fontSize}; } a { color:${
-      theme.typography.body1.color ?? getComputedStyle(frame).color
-    };}`;
+    style.textContent = `
+    html { font-size: 16px }
+    body, body * { color:${theme.typography.body2.color ?? getComputedStyle(frame).color}; 
+    font-family: ${theme.typography.body2.fontFamily ?? getComputedStyle(frame).fontFamily};
+    font-size: ${theme.typography.body2.fontSize}; } 
+    a { color:${theme.typography.body2.color ?? getComputedStyle(frame).color};}`;
 
     const resize = () => {
       const height = frameWindow.document.documentElement.scrollHeight;
