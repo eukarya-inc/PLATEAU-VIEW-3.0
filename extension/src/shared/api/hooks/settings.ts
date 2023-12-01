@@ -15,12 +15,20 @@ export default () => {
   const saveSetting = useCallback(
     async (setting: Setting) => {
       setIsSaving(true);
+
+      const settings = await client.findAll();
+      const existSetting = settings.find(
+        s => s.datasetId === setting.datasetId && s.dataId === setting.dataId,
+      );
+
       const nextSetting = await (async () => {
+        if (existSetting) {
+          return await client.update(existSetting.id, setting);
+        }
         if (setting.id) {
           return await client.update(setting.id, setting);
-        } else {
-          return await client.save(setting);
         }
+        return await client.save(setting);
       })();
 
       updateSetting(nextSetting);

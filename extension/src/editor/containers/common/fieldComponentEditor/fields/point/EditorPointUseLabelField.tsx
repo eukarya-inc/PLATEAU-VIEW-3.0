@@ -167,7 +167,7 @@ export const EditorPointUseLabelField: React.FC<BasicFieldProps<"POINT_USE_LABEL
             onChange={handleHeightChange}
             type="number"
             InputProps={{
-              endAdornment: <InputAdornment position="end">px</InputAdornment>,
+              endAdornment: <InputAdornment position="end">meter</InputAdornment>,
             }}
           />
         </PropertyInlineWrapper>
