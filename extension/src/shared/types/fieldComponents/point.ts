@@ -34,6 +34,15 @@ export type PointSizeField = FieldBase<{
   };
 }>;
 
+export const POINT_STROKE_FIELD = "POINT_STROKE_FIELD";
+export type PointStrokeField = FieldBase<{
+  type: typeof POINT_STROKE_FIELD;
+  preset?: {
+    color?: string;
+    width?: number;
+  };
+}>;
+
 export const POINT_FILL_COLOR_VALUE_FIELD = "POINT_FILL_COLOR_VALUE_FIELD";
 export type PointFillColorValueField = FieldBase<{
   type: typeof POINT_FILL_COLOR_VALUE_FIELD;
@@ -121,6 +130,7 @@ export type PointHeightReferenceField = FieldBase<{
 export type PointFields =
   | PointStyleField
   | PointSizeField
+  | PointStrokeField
   | PointFillColorValueField
   | PointFillColorConditionField
   | PointFillGradientColorField
