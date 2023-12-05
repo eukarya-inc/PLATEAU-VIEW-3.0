@@ -1,13 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  type ArgumentMetadata,
-  type PipeTransform,
-} from "@nestjs/common";
+import { BadRequestException, Injectable, type PipeTransform } from "@nestjs/common";
 
 @Injectable()
 export class TileFormatValidationPipe implements PipeTransform {
-  transform(value: unknown, metadata: ArgumentMetadata): string {
+  transform(value: unknown): string {
     if (value !== "png" && value !== "webp") {
       throw new BadRequestException("Invalid format");
     }
