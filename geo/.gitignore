@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+# Exclude the local file cache
+/cache
 
 # Logs
 logs
