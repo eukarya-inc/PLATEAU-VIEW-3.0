@@ -18,13 +18,13 @@ const main = async () => {
   const view3Template = await fetchView3Template();
 
   const convertedView3Templates = convertTemplate(view2Template, view3Template);
-  const newView3Templates = await postView3Template(convertedView3Templates);
+  await postView3Template(convertedView3Templates);
 
   const convertedView3Data = convertData(
     view2Data,
     view2Datacatalog.filter(d => d.type_en === "usecase"),
     view3Data,
-    newView3Templates,
+    convertedView3Templates,
   );
   await postView3Data(convertedView3Data as View3Setting[]);
 };
