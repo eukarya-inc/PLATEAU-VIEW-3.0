@@ -8,6 +8,7 @@ import {
 } from "../types/view3";
 
 import { convertComponentGroups } from "./components";
+import { convertGeneral } from "./components/general";
 import { getView2ID, setView2ID } from "./id";
 
 export const convertData = (
@@ -34,6 +35,7 @@ export const convertData = (
       id: prevView3Setting?.id,
       datasetId: `d_${data.dataID}`,
       dataId: DEFAULT_SETTING_DATA_ID,
+      general: convertGeneral(data.components),
       fieldComponents: {
         useTemplate: !!view3Template?.id,
         templateId: view3Template?.id,
