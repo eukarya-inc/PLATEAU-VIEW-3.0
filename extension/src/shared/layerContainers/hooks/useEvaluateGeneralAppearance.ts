@@ -28,6 +28,7 @@ import {
   POINT_VISIBILITY_CONDITION_FIELD,
   POINT_USE_LABEL_FIELD,
   POINT_HEIGHT_REFERENCE_FIELD,
+  POINT_STROKE_FIELD,
 } from "../../types/fieldComponents/point";
 import {
   POLYGON_CLASSIFICATION_TYPE_FIELD,
@@ -351,6 +352,9 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_VALUE_FIELD),
   );
   const pointSize = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], POINT_SIZE_FIELD));
+  const pointStroke = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POINT_STROKE_FIELD),
+  );
   const pointFillColorCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POINT_FILL_COLOR_CONDITION_FIELD),
   );
@@ -462,6 +466,8 @@ export const useEvaluateGeneralAppearance = ({
             makeConditionalExpression(pointFillColorCondition) ??
             makeGradientExpression(pointFillGradientColor),
           pointSize: pointSize?.preset?.defaultValue,
+          pointOutlineColor: pointStroke?.preset?.color,
+          pointOutlineWidth: pointStroke?.preset?.width,
           image:
             pointImageValue?.preset?.imageURL ??
             makeConditionalImageExpression(pointImageCondition),
@@ -528,6 +534,7 @@ export const useEvaluateGeneralAppearance = ({
       // Point
       pointColor,
       pointSize,
+      pointStroke,
       pointFillColorCondition,
       pointFillGradientColor,
       pointStyle,
