@@ -2,21 +2,16 @@ import { Readable } from "stream";
 
 import { Map, type MapOptions, type ResourceKind } from "@maplibre/maplibre-gl-native";
 import { Inject, Injectable } from "@nestjs/common";
-// import {
-//   TileCacheService,
-//   type Coordinates,
-//   type RenderTileOptions,
-// } from "@prototypes/plateau-nest-tile-cache";
 import { CESIUM, type Cesium } from "@prototypes/nest-cesium";
+import { TileCacheService } from "@prototypes/nest-tile-cache";
 import axios from "axios";
 import { createPool, type Pool } from "generic-pool";
 import { type CustomLayerInterface, type Style } from "mapbox-gl";
-import sharp, { type Sharp } from "sharp";
+import sharp from "sharp";
 
 import { VECTOR_TILE_MAP_STYLE, VECTOR_TILE_OPTIONS } from "./constants";
 import { type Coordinates } from "./interfaces/Coordinates";
 import { type RenderTileOptions } from "./interfaces/RenderTileOptions";
-import { type TileFormat } from "./interfaces/TileFormat";
 import { VectorTileOptions } from "./interfaces/VectorTileOptions";
 
 interface MapRequest {
@@ -59,10 +54,6 @@ function requestTile(req: MapRequest, callback: Parameters<MapOptions["request"]
   });
 }
 
-function applyFormat(image: Sharp, format?: TileFormat): Sharp {
-  return format === "webp" ? image.webp({ lossless: true }) : image.png();
-}
-
 @Injectable()
 export class VectorTileService {
   mapPool: Pool<Map>;
@@ -70,11 +61,11 @@ export class VectorTileService {
   constructor(
     @Inject(VECTOR_TILE_OPTIONS)
     private readonly options: VectorTileOptions,
-    // private readonly cacheService: TileCacheService,
     @Inject(VECTOR_TILE_MAP_STYLE)
     private readonly mapStyle: MapStyle,
     @Inject(CESIUM)
     private readonly cesium: Cesium,
+    private readonly cacheService: TileCacheService,
   ) {
     this.mapPool = createPool(
       {
@@ -113,11 +104,11 @@ export class VectorTileService {
     if (coords.level < this.options.minimumDataLevel || coords.level > this.options.maximumLevel) {
       return undefined;
     }
-    // TODO: Implement cache later
-    // const cache = await this.cacheService.findOne(this.options.path, coords);
-    // if (cache != null) {
-    //   return cache;
-    // }
+
+    const cache = await this.cacheService.findOne(this.options.path, coords);
+    if (cache != null) {
+      return cache;
+    }
 
     const {
       Cartesian3,
@@ -147,8 +138,6 @@ export class VectorTileService {
       },
     });
 
-    return await Readable.from(await applyFormat(image, options?.format).toBuffer());
-    // TODO: Implement the cache later
-    // return await this.cacheService.createOne(image, this.options.path, coords, options);
+    return await this.cacheService.createOne(image, this.options.path, coords, options);
   }
 }

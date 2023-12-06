@@ -2,6 +2,7 @@
 import { useAtomValue } from "jotai";
 import { useMemo, type FC } from "react";
 
+import { GEO_API_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
 import { type ColorMode } from "../../shared-states";
 import { enableTerrainLightingAtom } from "../states/app";
@@ -35,7 +36,22 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
   //   layer?.sendToBack();
   // }, [layer]);
 
-  const tiles = useMemo(() => [{ id: "default", tile_type: "stamen_toner" }], []);
+  const tiles = useMemo(
+    () => [
+      colorMode === "light"
+        ? {
+            id: "gsi_mvt_tile_light",
+            tile_type: "url",
+            tile_url: `${GEO_API_URL}/light-map/{z}/{x}/{y}.png`,
+          }
+        : {
+            id: "gsi_mvt_tile_dark",
+            tile_type: "url",
+            tile_url: `${GEO_API_URL}/dark-map/{z}/{x}/{y}.png`,
+          },
+    ],
+    [colorMode],
+  );
 
   return (
     <Scene

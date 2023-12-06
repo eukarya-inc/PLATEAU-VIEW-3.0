@@ -9,6 +9,7 @@ import {
   createTemplateClient,
   templateClient,
 } from "../api/clients";
+import { GEO_API_URL, setGeoApiUrl } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
 type Props = {
@@ -28,6 +29,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   children,
 }) => {
   useEffect(() => {
+    if (!GEO_API_URL && geoUrl) {
+      setGeoApiUrl(geoUrl);
+    }
+  }, [geoUrl]);
+
+  useEffect(() => {
     if (!geoClient && geoUrl) {
       createGeoClient(geoUrl);
     }
@@ -46,7 +53,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [projectId, plateauUrl, plateauToken]);
 
-  if (!geoClient || !catalogClient) {
+  if (!geoClient || !catalogClient || !GEO_API_URL) {
     return null;
   }
 
