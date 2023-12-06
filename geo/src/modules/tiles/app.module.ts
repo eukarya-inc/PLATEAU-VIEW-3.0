@@ -20,7 +20,7 @@ import { TileAppService } from "./app.service";
     // Cache disabled for now.This is for browser level cache.
     // TODO: Make this true when everything is tested properly
     VectorTileModule.forRoot({
-      disableCache: true,
+      disableCache: process.env.TILE_CACHE_ROOT == null || process.env.TILE_CACHE_ROOT === "",
     }),
     // maximumLevel must be +1 of imagery layer's maximum level because tiles
     // are rendered with pixel ratio 2.
