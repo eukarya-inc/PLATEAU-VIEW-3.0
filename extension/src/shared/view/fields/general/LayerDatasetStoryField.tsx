@@ -39,7 +39,7 @@ export const LayerDatasetStoryField: FC<LayerDatasetStoryFieldProps> = ({ atoms 
     if (component?.preset?.pages?.[currentPage]?.camera) {
       flyTo(component.preset.pages[currentPage].camera as CameraPosition);
     }
-  }, [component.preset.pages, currentPage, flyTo]);
+  }, [component, component.preset.pages, currentPage, flyTo]);
 
   return component?.preset?.pages?.length > 0 ? (
     <ParameterList>
@@ -55,7 +55,6 @@ export const LayerDatasetStoryField: FC<LayerDatasetStoryFieldProps> = ({ atoms 
             boundaryCount={1}
             onChange={handleChange}
           />
-          s
         </PaginationWrapper>
       </CommonContentWrapper>
     </ParameterList>
