@@ -113,6 +113,18 @@ resource "google_compute_url_map" "cms" {
     name            = "path-matcher-4"
   }
 
+  host_rule {
+    hosts = [
+      local.geo_domain,
+    ]
+    path_matcher = "path-matcher-5"
+  }
+
+  path_matcher {
+    default_service = google_compute_backend_service.plateauview_geo.self_link
+    name            = "path-matcher-5"
+  }
+
 }
 
 resource "google_compute_backend_bucket" "assets_backend" {
@@ -260,6 +272,48 @@ resource "google_compute_backend_service" "cms_worker" {
   }
 
   name             = "cms-worker-backend"
+  port_name        = "http"
+  protocol         = "HTTPS"
+  session_affinity = "NONE"
+  timeout_sec      = "30"
+}
+
+resource "google_compute_region_network_endpoint_group" "plateauview_geo" {
+  name                  = "${var.service_prefix}-plateauview-geo-neg"
+  network_endpoint_type = "SERVERLESS"
+  region                = "asia-northeast1"
+  cloud_run {
+    service = google_cloud_run_service.plateauview_geo.name
+  }
+}
+
+resource "google_compute_backend_service" "plateauview_geo" {
+  affinity_cookie_ttl_sec = "0"
+  enable_cdn              = true
+
+  backend {
+    balancing_mode               = "UTILIZATION"
+    capacity_scaler              = "0"
+    group                        = google_compute_region_network_endpoint_group.plateauview_geo.id
+    max_connections              = "0"
+    max_connections_per_endpoint = "0"
+    max_connections_per_instance = "0"
+    max_rate                     = "0"
+    max_rate_per_endpoint        = "0"
+    max_rate_per_instance        = "0"
+    max_utilization              = "0"
+  }
+
+  connection_draining_timeout_sec = "0"
+  description                     = "plateauview-geo-neg"
+  load_balancing_scheme           = "EXTERNAL"
+
+  log_config {
+    enable      = "true"
+    sample_rate = "1"
+  }
+
+  name             = "plateauview-geo-backend"
   port_name        = "http"
   protocol         = "HTTPS"
   session_affinity = "NONE"
