@@ -55,7 +55,6 @@ export const LayerDatasetStoryField: FC<LayerDatasetStoryFieldProps> = ({ atoms 
             boundaryCount={1}
             onChange={handleChange}
           />
-          s
         </PaginationWrapper>
       </CommonContentWrapper>
     </ParameterList>

@@ -23,12 +23,12 @@ export const PropertyCameraInput: React.FC<PropertyCameraInputProps> = ({ value,
 
   useEffect(() => {
     onChange?.({
-      lat: latitude === "" ? NaN : Number(latitude),
-      lng: longitude === "" ? NaN : Number(longitude),
-      height: altitude === "" ? NaN : Number(altitude),
-      heading: heading === "" ? NaN : Number(heading),
-      pitch: pitch === "" ? NaN : Number(pitch),
-      roll: roll === "" ? NaN : Number(roll),
+      lat: latitude === "" ? undefined : Number(latitude),
+      lng: longitude === "" ? undefined : Number(longitude),
+      height: altitude === "" ? undefined : Number(altitude),
+      heading: heading === "" ? undefined : Number(heading),
+      pitch: pitch === "" ? undefined : Number(pitch),
+      roll: roll === "" ? undefined : Number(roll),
       fov: getCameraPosition()?.fov ?? 1.04,
     });
   }, [latitude, longitude, altitude, heading, pitch, roll, getCameraPosition, onChange]);
