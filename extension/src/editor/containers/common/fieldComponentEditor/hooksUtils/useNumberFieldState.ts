@@ -4,7 +4,9 @@ export const useNumberFieldState = (
   initialValue: number | undefined,
   onUpdate: (value: number) => void,
 ): [string, (e: React.ChangeEvent<HTMLInputElement>) => void] => {
-  const [value, setValue] = useState(initialValue ? initialValue.toString() : "");
+  const [value, setValue] = useState(() =>
+    initialValue !== undefined && initialValue !== null ? initialValue.toString() : "",
+  );
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(e.target.value);
