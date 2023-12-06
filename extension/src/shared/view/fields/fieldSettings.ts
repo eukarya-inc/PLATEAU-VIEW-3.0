@@ -122,6 +122,7 @@ export const fieldSettings: {
   POINT_CONVERT_FROM_CSV: {},
   POINT_USE_LABEL_FIELD: {},
   POINT_HEIGHT_REFERENCE_FIELD: {},
+  POINT_STROKE_FIELD: {},
   // Polygon
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     value: {

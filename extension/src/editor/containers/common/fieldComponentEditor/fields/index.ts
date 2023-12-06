@@ -44,6 +44,7 @@ import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
 import { EditorPointConvertFromCSVField } from "./point/EditorPointConvertFromCSVField";
 import { EditorPointImageSizeField } from "./point/EditorPointImageSizeField";
 import { EditorPointSizeField } from "./point/EditorPointSizeField";
+import { EditorPointStrokeField } from "./point/EditorPointStrokeField";
 import { EditorPointStyleField } from "./point/EditorPointStyleField";
 import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
@@ -183,6 +184,11 @@ export const fields: {
     category: FIELD_CATEGORY_POINT,
     name: "Point Size",
     Component: EditorPointSizeField,
+  },
+  POINT_STROKE_FIELD: {
+    category: FIELD_CATEGORY_POINT,
+    name: "Point Stroke",
+    Component: EditorPointStrokeField,
   },
   POINT_USE_3D_MODEL: {
     category: FIELD_CATEGORY_POINT,

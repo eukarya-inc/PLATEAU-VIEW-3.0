@@ -7,7 +7,8 @@ import { TileAppModule } from "./modules/tiles/app.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ".env",
+      isGlobal: true,
+      cache: true,
     }),
     GraphQLAppModule,
     TileAppModule,

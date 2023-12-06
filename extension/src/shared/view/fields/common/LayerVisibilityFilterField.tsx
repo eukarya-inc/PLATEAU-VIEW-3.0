@@ -33,7 +33,7 @@ export const LayerVisibilityFilterField = <T extends SupportFields>({
   );
 
   const overriddenRuleId = component.value;
-  const currentRuleId = overriddenRuleId || items[0][0];
+  const currentRuleId = overriddenRuleId || items?.[0]?.[0];
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
     e => {
