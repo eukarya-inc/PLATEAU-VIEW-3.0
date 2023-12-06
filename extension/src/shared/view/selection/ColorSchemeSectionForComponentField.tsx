@@ -202,7 +202,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
         label="色分け"
         onClick={handleClickParameterItem}
         content={<Legend layers={layers} colorSchemeAtom={colorSchemeValueAtom} />}>
-        <InspectorItem sx={{ width: 320 }}>
+        <InspectorItem sx={{ width: 320 }} level={2}>
           <ParameterList>
             <SelectParameterItem
               label="モデル属性"

@@ -1,4 +1,4 @@
-import { Paper, styled, type PaperProps } from "@mui/material";
+import { Paper, styled, type PaperProps, useTheme, useMediaQuery } from "@mui/material";
 import { Resizable, type ResizeCallback, type ResizeStartCallback } from "re-resizable";
 import { forwardRef } from "react";
 
@@ -46,26 +46,40 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
       ...props
     },
     ref,
-  ) => (
-    <AutoHeight>
-      <StyledPaper ref={ref} {...props}>
-        <Resizable
-          as={ResizableRoot}
-          defaultSize={{
-            width: defaultWidth,
-            height: "auto",
-          }}
-          minWidth={320}
-          enable={{
-            left: true,
-            right: true,
-          }}
-          onResize={onResize}
-          onResizeStart={onResizeStart}
-          onResizeStop={onResizeStop}>
-          {scrollable ? <ScrollableRoundedBox defer>{children}</ScrollableRoundedBox> : children}
-        </Resizable>
-      </StyledPaper>
-    </AutoHeight>
-  ),
+  ) => {
+    const theme = useTheme();
+    const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
+    return (
+      <AutoHeight>
+        <StyledPaper ref={ref} {...props}>
+          {smDown ? (
+            <ScrollableRoundedBox defer sx={{ width: "calc(100vw - 12px)" }}>
+              {children}
+            </ScrollableRoundedBox>
+          ) : (
+            <Resizable
+              as={ResizableRoot}
+              defaultSize={{
+                width: defaultWidth,
+                height: "auto",
+              }}
+              minWidth={320}
+              enable={{
+                left: true,
+                right: true,
+              }}
+              onResize={onResize}
+              onResizeStart={onResizeStart}
+              onResizeStop={onResizeStop}>
+              {scrollable ? (
+                <ScrollableRoundedBox defer>{children}</ScrollableRoundedBox>
+              ) : (
+                children
+              )}
+            </Resizable>
+          )}
+        </StyledPaper>
+      </AutoHeight>
+    );
+  },
 );

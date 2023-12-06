@@ -75,7 +75,7 @@ export const LayerTilesetClippingField: FC<LayerTilesetClippingFieldProps> = ({ 
 
   return (
     <GroupedParameterItem label="クリッピング">
-      <InspectorItem sx={{ width: 320 }}>
+      <InspectorItem sx={{ width: 320 }} level={2}>
         <ParameterList>
           <FormGroup>
             <SwitchFormControlLabel

@@ -149,7 +149,7 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
         label="色分け"
         onClick={handleClickParameterItem}
         content={<Legend layers={layers} imageSchemeAtom={imageSchemeValueAtom} />}>
-        <InspectorItem sx={{ width: 320 }}>
+        <InspectorItem sx={{ width: 320 }} level={2}>
           <ParameterList>
             <SelectParameterItem
               label="モデル属性"

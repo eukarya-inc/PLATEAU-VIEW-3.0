@@ -54,7 +54,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
   const handleClick = useCallback(() => {
     if (layerType == null) {
       return;

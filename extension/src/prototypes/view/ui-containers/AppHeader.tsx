@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { type FC } from "react";
 
@@ -14,22 +15,32 @@ import { ToolButtons } from "./ToolButtons";
 
 export const AppHeader: FC = () => {
   const hidden = useAtomValue(hideAppOverlayAtom);
+  const theme = useTheme();
+  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
   if (hidden) {
     return null;
   }
   return (
     <AppBar>
       <MainMenuButton />
-      <Space size={2} />
-      <ToolButtons />
-      <Space />
+      {!smDown && (
+        <>
+          <Space size={2} />
+          <ToolButtons />
+        </>
+      )}
+      <Space flexible={smDown} />
       <SettingsButton />
       <DateControlButton />
       <EnvironmentSelect />
-      <Space flexible />
-      <LocationBreadcrumbs />
-      <Space flexible />
-      <CameraButtons />
+      {!smDown && (
+        <>
+          <Space flexible />
+          <LocationBreadcrumbs />
+          <Space flexible />
+        </>
+      )}
+      {!smDown && <CameraButtons />}
     </AppBar>
   );
 };

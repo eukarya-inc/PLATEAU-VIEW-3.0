@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { type FC } from "react";
 
@@ -17,6 +18,8 @@ type Props = {
 
 export const AppOverlay: FC<Props> = ({ type, width, height }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
+  const theme = useTheme();
+  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
   return (
     <>
       <AppOverlayLayout
@@ -25,7 +28,7 @@ export const AppOverlay: FC<Props> = ({ type, width, height }) => {
         aside={type === "aside" ? <SelectionPanel /> : null}
         // developer={<DeveloperPanels />}
       />
-      <Spacer width={width} height={height} hidden={hidden} />
+      {!smDown && <Spacer width={width} height={height} hidden={hidden} />}
     </>
   );
 };
