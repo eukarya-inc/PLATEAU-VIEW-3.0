@@ -10,6 +10,7 @@ jobs:
       extension: ${{ steps.extension.outputs.any_changed }}
       server: ${{ steps.server.outputs.any_changed }}
       geo: ${{ steps.server.outputs.any_changed }}
+      tools: ${{ steps.tools.outputs.any_changed }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -20,7 +21,6 @@ jobs:
         with:
           files: |
             extension
-            .github/workflows/ci.yml
             .github/workflows/ci-extension.yml
             .github/workflows/ci-extension-version-update.yml
             .github/workflows/deploy-extension-dev.yml
@@ -31,18 +31,23 @@ jobs:
         with:
           files: |
             server
-            .github/workflows/ci.yml
             .github/workflows/ci-server.yml
             .github/workflows/build-server.yml
             .github/workflows/deploy-server-dev.yml
             .github/workflows/deploy-server-prod.yml
+      - name: changed files for tools
+        id: tools
+        uses: tj-actions/changed-files@v36
+        with:
+          files: |
+            tools
+            .github/workflows/ci-tools.yml
       - name: changed files for geo
         id: geo
         uses: tj-actions/changed-files@v36
         with:
           files: |
             geo
-            .github/workflows/ci.yml
             .github/workflows/ci-geo.yml
             .github/workflows/build-geo.yml
             .github/workflows/deploy-geo-dev.yml
@@ -57,23 +62,30 @@ jobs:
     needs:
       - prepare
       # - ci-extension-version-update
-    if: ${{ success() && needs.prepare.outputs.extension == 'true' }}
+    if: needs.prepare.outputs.extension == 'true'
     uses: ./.github/workflows/ci-extension.yml
   ci-server:
     needs: prepare
     if: needs.prepare.outputs.server == 'true'
     uses: ./.github/workflows/ci-server.yml
+  ci-tools:
+    needs: prepare
+    if: needs.prepare.outputs.tools == 'true'
+    uses: ./.github/workflows/ci-tools.yml
+    with:
+      release_tools: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
   ci-geo:
     needs: prepare
-    if: ${{ success() && needs.prepare.outputs.geo == 'true' }}
+    if: needs.prepare.outputs.geo == 'true'
     uses: ./.github/workflows/ci-geo.yml
   ci:
     runs-on: ubuntu-latest
     needs:
       - ci-extension
       - ci-server
+      - ci-tools
       - ci-geo
-    if: "!failure()"
+    if: '!failure()'
     steps:
       - run: echo OK
   deploy-extension-dev:
