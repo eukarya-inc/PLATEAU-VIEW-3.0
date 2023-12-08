@@ -95,7 +95,7 @@ jobs:
       - run: echo OK
   deploy-extension-dev:
     needs: ci-extension
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -116,7 +116,7 @@ jobs:
   #         event-type: deploy-server-dev
   build-geo:
     needs: ci-geo
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-geo.yml
   deploy-geo-dev:
     needs: build-geo
