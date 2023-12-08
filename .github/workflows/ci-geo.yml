@@ -24,7 +24,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - name: Install
-        run: yarn install --ignore-script # Need --ignore-script option due to @maplibre/maplibre-gl-native causes error in post process.
+        run: yarn install --ignore-scripts # Need --ignore-script option due to @maplibre/maplibre-gl-native causes error in post process.
       - name: eslint
         run: yarn run lint
       - name: test
