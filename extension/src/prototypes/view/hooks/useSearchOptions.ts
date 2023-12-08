@@ -9,7 +9,7 @@ import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import { type SearchOption } from "../../ui-components";
@@ -180,7 +180,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           if (type === BUILDING_LAYER) {
             addLayer(
-              createRootLayerAtom({
+              createRootLayerForDatasetAtom({
                 dataset,
                 settings: filteredSettings,
                 templates,
@@ -190,7 +190,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
             );
           } else {
             addLayer(
-              createRootLayerAtom({
+              createRootLayerForDatasetAtom({
                 dataset,
                 settings: filteredSettings,
                 templates,

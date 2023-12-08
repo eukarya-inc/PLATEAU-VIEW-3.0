@@ -11,7 +11,7 @@ import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSea
 import { Fields } from "../../../shared/view/fields/Fields";
 import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
 import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
-import { BuildingLayerModel } from "../../../shared/view-layers";
+import { BuildingLayerModel, RootLayerConfigForDataset } from "../../../shared/view-layers";
 import { ComponentAtom } from "../../../shared/view-layers/component";
 import { layerSelectionAtom, removeLayerAtom, type LayerType, LayerModel } from "../../layers";
 import {
@@ -54,7 +54,10 @@ export function LayerContent<T extends LayerType>({
 
   const rootLayerConfigs = useAtomValue(rootLayersAtom);
   const rootLayerConfig = useMemo(
-    () => rootLayerConfigs.find(c => c.id === layer.id),
+    () =>
+      rootLayerConfigs.find(
+        (c): c is RootLayerConfigForDataset => c.type === "dataset" && c.id === layer.id,
+      ),
     [rootLayerConfigs, layer],
   );
 

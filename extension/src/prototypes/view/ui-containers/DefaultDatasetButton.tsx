@@ -5,7 +5,7 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFindLayer } from "../../layers";
 import { ContextButton } from "../../ui-components";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
@@ -46,7 +46,7 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
       if (layer == null) {
         const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
         addLayer(
-          createRootLayerAtom({
+          createRootLayerForDatasetAtom({
             dataset,
             settings: filteredSettings,
             templates,
