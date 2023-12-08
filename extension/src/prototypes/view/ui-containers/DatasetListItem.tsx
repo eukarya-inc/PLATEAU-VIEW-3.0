@@ -6,7 +6,7 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { DatasetTreeItem, InfoIcon, type DatasetTreeItemProps } from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
@@ -62,7 +62,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     if (layer == null) {
       const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
       addLayer(
-        createRootLayerAtom({
+        createRootLayerForDatasetAtom({
           dataset,
           settings: filteredSettings,
           templates,

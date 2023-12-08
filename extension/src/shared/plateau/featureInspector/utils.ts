@@ -6,7 +6,7 @@ import { isNotNullish } from "../../../prototypes/type-helpers";
 import { layerDatasetTypes } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { datasetTypeNames } from "../../../prototypes/view/constants/datasetTypeNames";
 import { Feature } from "../../reearth/types/layer";
-import { RootLayer } from "../../view-layers";
+import { RootLayerForDataset } from "../../view-layers";
 
 import { getAttributeLabel, getAttributes, getRootFields } from "./attributes";
 
@@ -27,7 +27,7 @@ export const makePropertyForFeatureInspector = ({
   layer,
   builtin,
 }: {
-  featureInspector?: RootLayer["featureInspector"];
+  featureInspector?: RootLayerForDataset["featureInspector"];
   layer: LayerModel | undefined;
   features: Pick<Feature, "properties">[];
   builtin?: boolean;
