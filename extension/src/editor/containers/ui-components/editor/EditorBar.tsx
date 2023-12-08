@@ -72,6 +72,9 @@ const StyledSelectItem = styled(SelectItem)(({ theme }) => ({
   "&:last-of-type": {
     marginBottom: theme.spacing(1),
   },
+  [theme.breakpoints.up("mobile")]: {
+    minHeight: "auto",
+  },
 })) as typeof SelectItem;
 
 interface EditorTypeSelectItem {

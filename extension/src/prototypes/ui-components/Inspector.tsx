@@ -53,7 +53,7 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
       <AutoHeight>
         <StyledPaper ref={ref} {...props}>
           {smDown ? (
-            <ScrollableRoundedBox defer sx={{ width: "calc(100vw - 12px)" }}>
+            <ScrollableRoundedBox defer sx={{ width: `calc(100vw - ${theme.spacing(2)})` }}>
               {children}
             </ScrollableRoundedBox>
           ) : (

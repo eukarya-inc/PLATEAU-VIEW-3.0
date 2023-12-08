@@ -54,3 +54,4 @@ export * from "./VisibilityOffIcon";
 export * from "./VisibilityOffSmallIcon";
 export * from "./VisibilityOnIcon";
 export * from "./VisibilityOnSmallIcon";
+export * from "./ListIcon";

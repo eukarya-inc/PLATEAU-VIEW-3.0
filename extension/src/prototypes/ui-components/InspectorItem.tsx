@@ -11,7 +11,7 @@ const Root = styled("div", {
     padding: theme.spacing(1),
   }),
   [theme.breakpoints.down("mobile")]: {
-    width: `calc(100vw - 12px - ${theme.spacing(2 * level)})`,
+    width: `calc(100vw - ${theme.spacing(2)} - ${theme.spacing(2 * level)})`,
   },
 }));
 

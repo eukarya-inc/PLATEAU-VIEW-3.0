@@ -111,7 +111,7 @@ const Main = styled("main", {
     flexShrink: 0,
   },
   [theme.breakpoints.down("mobile")]: {
-    width: `calc(100vw - 12px)`,
+    width: `calc(100vw - ${theme.spacing(2)})`,
   },
 }));
 
@@ -134,7 +134,7 @@ const Context = styled("aside", {
     marginTop: 0,
   },
   [theme.breakpoints.down("mobile")]: {
-    width: `calc(100vw - 12px)`,
+    width: `calc(100vw - ${theme.spacing(2)})`,
   },
 }));
 

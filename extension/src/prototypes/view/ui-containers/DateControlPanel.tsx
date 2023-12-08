@@ -7,9 +7,12 @@ import { useTimeline } from "../../../shared/reearth/hooks/useTimeline";
 import { activeTimelineComponentIdAtom } from "../../../shared/view/state/timeline";
 import { DateControl, FloatingPanel } from "../../ui-components";
 
-const Root = styled(FloatingPanel)({
+const Root = styled(FloatingPanel)(({ theme }) => ({
   width: 640,
-});
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(2)})`,
+  },
+}));
 
 // Use JST for UI
 const timezone = "9";
