@@ -3,6 +3,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      action_type:
+        description: 'Action type'
+        required: true
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -62,21 +67,21 @@ jobs:
     needs:
       - prepare
       # - ci-extension-version-update
-    if: needs.prepare.outputs.extension == 'true'
+    if: needs.prepare.outputs.extension == 'true' || github.event.inputs.action_type == 'extension'
     uses: ./.github/workflows/ci-extension.yml
   ci-server:
     needs: prepare
-    if: needs.prepare.outputs.server == 'true'
+    if: needs.prepare.outputs.server == 'true' || github.event.inputs.action_type == 'server'
     uses: ./.github/workflows/ci-server.yml
   ci-tools:
     needs: prepare
-    if: needs.prepare.outputs.tools == 'true'
+    if: needs.prepare.outputs.tools == 'true' || github.event.inputs.action_type == 'tools'
     uses: ./.github/workflows/ci-tools.yml
     with:
       release_tools: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
   ci-geo:
     needs: prepare
-    if: needs.prepare.outputs.geo == 'true'
+    if: needs.prepare.outputs.geo == 'true' || github.event.inputs.action_type == 'geo'
     uses: ./.github/workflows/ci-geo.yml
   ci:
     runs-on: ubuntu-latest
