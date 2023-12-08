@@ -9,11 +9,12 @@ import {
   createTemplateClient,
   templateClient,
 } from "../api/clients";
-import { GEO_API_URL, setGeoApiUrl } from "../constants";
+import { GEO_API_URL, GSI_TILE_URL, setGISTileURL, setGeoApiUrl } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
 type Props = {
   geoUrl?: string;
+  gsiTileURL?: string;
   plateauUrl?: string;
   projectId?: string;
   plateauToken?: string;
@@ -22,6 +23,7 @@ type Props = {
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   geoUrl,
+  gsiTileURL,
   plateauUrl,
   projectId,
   plateauToken,
@@ -33,6 +35,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setGeoApiUrl(geoUrl);
     }
   }, [geoUrl]);
+
+  useEffect(() => {
+    if (!GSI_TILE_URL && gsiTileURL) {
+      setGISTileURL(gsiTileURL);
+    }
+  }, [gsiTileURL]);
 
   useEffect(() => {
     if (!geoClient && geoUrl) {
@@ -53,7 +61,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [projectId, plateauUrl, plateauToken]);
 
-  if (!geoClient || !catalogClient || !GEO_API_URL) {
+  if (!geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
     return null;
   }
 

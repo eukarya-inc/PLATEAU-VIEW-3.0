@@ -42,6 +42,11 @@ const yml = {
                 title: "GeoサーバーバックエンドURL",
               },
               {
+                id: "gsiTileURL",
+                type: "string",
+                title: "地理院地図タイルURL",
+              },
+              {
                 id: "projectName",
                 type: "string",
                 title: "プロジェクト名",

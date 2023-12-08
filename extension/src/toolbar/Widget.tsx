@@ -19,6 +19,7 @@ import { useInteractionMode } from "./hooks/useInteractionMode";
 
 type Props = WidgetProps<{
   geoURL?: string;
+  gsiTileURL?: string;
   plateauURL?: string;
   plateauAccessToken?: string;
   catalogURL?: string;
@@ -32,6 +33,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   return (
     <WidgetContext
       geoUrl={widget.property.default.geoURL}
+      gsiTileURL={widget.property.default.gsiTileURL}
       plateauUrl={widget.property.default.plateauURL}
       catalogUrl={widget.property.default.catalogURL}
       projectId={widget.property.default.projectName}
