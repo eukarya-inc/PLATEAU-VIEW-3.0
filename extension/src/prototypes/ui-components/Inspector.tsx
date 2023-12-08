@@ -48,11 +48,11 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
     ref,
   ) => {
     const theme = useTheme();
-    const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
+    const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
     return (
       <AutoHeight>
         <StyledPaper ref={ref} {...props}>
-          {smDown ? (
+          {isMobile ? (
             <ScrollableRoundedBox defer sx={{ width: `calc(100vw - ${theme.spacing(2)})` }}>
               {children}
             </ScrollableRoundedBox>

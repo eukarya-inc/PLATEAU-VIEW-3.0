@@ -36,12 +36,15 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   },
 }));
 
-const Content = styled("div")(() => ({
+const Content = styled("div")(({ theme }) => ({
   width: 320,
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(4)})`,
+  },
 }));
 
-const SearchContent = styled("div")(() => ({
-  margin: "8px 8px 16px 8px",
+const SearchContent = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 1, 2, 1),
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -60,8 +63,9 @@ const SearchConditionList = styled(List)(() => ({
   padding: 0,
 }));
 
-const SearchConditionListItem = styled(ListItem)(() => ({
+const SearchConditionListItem = styled(ListItem)(({ theme }) => ({
   width: "100%",
+  padding: theme.spacing(1),
 }));
 
 const ResultLabel = styled("div")(({ theme }) => ({
@@ -259,7 +263,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       }}>
       <InspectorHeader title={"データを検索"} onClose={state.close} />
       <Divider />
-      <StyledTabs value={deferredTab} onChange={handleTabChange} sx={{ width: 320 }}>
+      <StyledTabs value={deferredTab} onChange={handleTabChange} sx={{ width: "100%" }}>
         <Tab label="条件" />
         <Tab label="結果" />
       </StyledTabs>

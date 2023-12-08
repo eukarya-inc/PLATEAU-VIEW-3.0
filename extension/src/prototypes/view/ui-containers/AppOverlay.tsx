@@ -19,7 +19,7 @@ type Props = {
 export const AppOverlay: FC<Props> = ({ type, width, height }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   return (
     <>
       <AppOverlayLayout
@@ -28,7 +28,7 @@ export const AppOverlay: FC<Props> = ({ type, width, height }) => {
         aside={type === "aside" ? <SelectionPanel /> : null}
         // developer={<DeveloperPanels />}
       />
-      {!smDown && <Spacer width={width} height={height} hidden={hidden} />}
+      {!isMobile && <Spacer width={width} height={height} hidden={hidden} />}
     </>
   );
 };

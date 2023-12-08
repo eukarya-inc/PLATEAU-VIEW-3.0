@@ -280,7 +280,7 @@ const Graph: FC<
   const y = scaleY(getAltitude(date, observer));
 
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const color = theme.palette.text.primary;
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -324,7 +324,7 @@ const Graph: FC<
       />
       <circle cx={x} cy={y} r={5} fill={theme.palette.primary.main} stroke="none" />
       <XAxis height={height} date={date} scale={scaleX} />
-      {!smDown && <YAxis width={width} scale={scaleY} />}
+      {!isMobile && <YAxis width={width} scale={scaleY} />}
     </svg>
   );
 };

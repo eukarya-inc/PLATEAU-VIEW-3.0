@@ -24,7 +24,7 @@ import {
   type SyntheticEvent,
   useMemo,
   useId,
-  useEffect,
+  memo,
 } from "react";
 import invariant from "tiny-invariant";
 
@@ -87,11 +87,35 @@ const generateYears = () => {
   for (let i = currentYear; i >= 1900; i -= 1) {
     years.push(i);
   }
-  console.log(years);
   return years;
 };
 
 const yearOptions = generateYears();
+
+const YearSelector = ({
+  year,
+  onChange,
+}: {
+  year: string;
+  onChange: (event: SelectChangeEvent) => void;
+}) => {
+  return (
+    <Select
+      value={year}
+      size="small"
+      autoWidth
+      MenuProps={{ sx: { maxHeight: 330 } }}
+      onChange={onChange}>
+      {yearOptions.map(year => (
+        <StyledMenuItem key={year} value={`${year}`}>
+          {year}
+        </StyledMenuItem>
+      ))}
+    </Select>
+  );
+};
+
+const MemoizedYearSelector = memo(YearSelector);
 
 export interface DateControlProps
   extends Omit<ComponentPropsWithRef<typeof Root>, "children" | "onChange">,
@@ -159,10 +183,6 @@ export const DateControl = forwardRef<HTMLDivElement, DateControlProps>(
 
     const year = useMemo(() => `${date.getFullYear()}`, [date]);
 
-    useEffect(() => {
-      console.log(2);
-    }, [year]);
-
     const id = useId();
     const popupState = usePopupState({
       variant: "popover",
@@ -186,19 +206,7 @@ export const DateControl = forwardRef<HTMLDivElement, DateControlProps>(
                 : { direction: "column", spacing: 0.5 })}>
               <DateWrapper>
                 <SelectWrapper>
-                  <Select
-                    key={1}
-                    value={year}
-                    size="small"
-                    // autoWidth
-                    // MenuProps={{ sx: { maxHeight: 330 } }}
-                    onChange={handleYearChange}>
-                    {yearOptions.map(year => (
-                      <StyledMenuItem key={year} value={`${year}`}>
-                        {year}
-                      </StyledMenuItem>
-                    ))}
-                  </Select>
+                  <MemoizedYearSelector year={year} onChange={handleYearChange} />
                 </SelectWrapper>
                 <DateText>{format(date, "年M'月'd'日'")}</DateText>
               </DateWrapper>

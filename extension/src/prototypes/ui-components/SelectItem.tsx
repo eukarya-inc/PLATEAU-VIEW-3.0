@@ -29,6 +29,7 @@ const StyledMenuItem = styled(MenuItem, {
       fontSize: 16,
     },
   },
+  minHeight: "auto",
 }));
 
 export const SelectItem = forwardRef<

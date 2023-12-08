@@ -16,31 +16,31 @@ import { ToolButtons } from "./ToolButtons";
 export const AppHeader: FC = () => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("mobile"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   if (hidden) {
     return null;
   }
   return (
     <AppBar>
       <MainMenuButton />
-      {!smDown && (
+      {!isMobile && (
         <>
           <Space size={2} />
           <ToolButtons />
         </>
       )}
-      <Space flexible={smDown} />
+      <Space flexible={isMobile} />
       <SettingsButton />
       <DateControlButton />
       <EnvironmentSelect />
-      {!smDown && (
+      {!isMobile && (
         <>
           <Space flexible />
           <LocationBreadcrumbs />
           <Space flexible />
         </>
       )}
-      {!smDown && <CameraButtons />}
+      {!isMobile && <CameraButtons />}
     </AppBar>
   );
 };
