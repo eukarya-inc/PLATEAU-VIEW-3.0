@@ -23,7 +23,7 @@ import { templatesAtom } from "../states/template";
 import { generateID } from "../utils/id";
 
 import { makeComponentAtoms } from "./component";
-import { createViewLayer } from "./createViewLayer";
+import { ViewLayerModelParams, createViewLayer } from "./createViewLayer";
 
 export type RootLayerForDatasetAtomParams = {
   areaCode: string;
@@ -47,13 +47,13 @@ export type RootLayerForDatasetParams = {
   shouldInitialize: boolean;
 };
 
-export type RootLayerForLayerAtomParams = {
+export type RootLayerForLayerAtomParams<T extends LayerType> = {
   id?: string;
-  type: LayerType;
+  type: T;
   title: string;
   shareId: string | undefined;
   shouldInitialize: boolean;
-};
+} & ViewLayerModelParams<T>;
 
 export type RootLayerForDataset = {
   type: "dataset";
@@ -62,9 +62,9 @@ export type RootLayerForDataset = {
   layer: PrimitiveAtom<LayerModel>;
 };
 
-export type RootLayerForLayer = {
+export type RootLayerForLayer<T extends LayerType = LayerType> = {
   type: "layer";
-  layer: PrimitiveAtom<LayerModel>;
+  layer: PrimitiveAtom<LayerModel<T>>;
 };
 
 export type RootLayerConfigForDataset = {
@@ -376,25 +376,26 @@ export const createRootLayerForDatasetAtom = (
   };
 };
 
-export const createRootLayerForLayerAtom = ({
+export const createRootLayerForLayerAtom = <T extends LayerType>({
   id,
   type,
   title,
   shareId,
   shouldInitialize,
-}: RootLayerForLayerAtomParams): RootLayerConfig => {
-  const rootLayer: RootLayerForLayer = {
+  ...props
+}: RootLayerForLayerAtomParams<T>): RootLayerConfig => {
+  const rootLayer: RootLayerForLayer<T> = {
     type: "layer",
     layer: atom({
       id: id ?? generateID(),
-      ...createViewLayer({
-        type,
-        municipalityCode: "",
+      ...(createViewLayer({
+        type: type as LayerType,
         title,
         datasetId: undefined,
         shareId,
         shouldInitializeAtom: shouldInitialize,
-      }),
+        ...props,
+      }) as LayerModel<T>),
     }),
   };
   return {
@@ -402,6 +403,6 @@ export const createRootLayerForLayerAtom = ({
     rootLayerAtom: atom(
       () => rootLayer,
       () => {}, // readonly
-    ),
+    ) as unknown as PrimitiveAtom<RootLayerForLayer>,
   };
 };
