@@ -30,16 +30,13 @@ export type GeneralFeatureContentProps = {
 export const getGeneralFeatureInformation = ({ rootLayer, values }: GeneralFeatureContentProps) => {
   const firstFeature = window.reearth?.layers?.findFeatureById?.(values[0].layerId, values[0].key);
 
-  const hasProperties = !!firstFeature?.properties;
   const hasDescription = !!firstFeature?.metaData?.description;
   const displayType =
     !rootLayer.featureInspector?.basic?.displayType ||
     rootLayer.featureInspector?.basic?.displayType === "auto"
       ? hasDescription
         ? "CZMLDescription"
-        : hasProperties
-        ? "propertyList"
-        : undefined
+        : "propertyList"
       : rootLayer.featureInspector?.basic?.displayType;
   return { scrollable: displayType !== "CZMLDescription", firstFeature, displayType };
 };

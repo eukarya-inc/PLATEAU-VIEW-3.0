@@ -8,16 +8,19 @@ import { TileAppService } from "./app.service";
 
 @Module({
   imports: [
-    TileCacheModule.forRoot({
-      // TODO: Make this come from process.env.. Facing issue with configModule
-      // process.env.TILE_CACHE_ROOT comes as undefined - https://stackoverflow.com/questions/67482900/nestjs-not-reading-environmental-variables
-      cacheRoot: "cache",
+    TileCacheModule.forRootAsync({
+      // if you don't use useFactory process.env.TILE_CACHE_ROOT will be undefined.
+      // source: https://stackoverflow.com/questions/67482900/nestjs-not-reading-environmental-variables
+      useFactory: () => {
+        return {
+          cacheRoot: process.env.TILE_CACHE_ROOT !== "" ? process.env.TILE_CACHE_ROOT : undefined,
+        };
+      },
     }),
-    // Cache disabled for now
-    // This is for browser level cache.
+    // Cache disabled for now.This is for browser level cache.
     // TODO: Make this true when everything is tested properly
     VectorTileModule.forRoot({
-      disableCache: true,
+      disableCache: process.env.TILE_CACHE_ROOT == null || process.env.TILE_CACHE_ROOT === "",
     }),
     // maximumLevel must be +1 of imagery layer's maximum level because tiles
     // are rendered with pixel ratio 2.

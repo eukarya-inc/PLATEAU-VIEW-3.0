@@ -2,6 +2,7 @@
 import { useAtomValue } from "jotai";
 import { useMemo, type FC } from "react";
 
+import { GSI_TILE_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
 import { type ColorMode } from "../../shared-states";
 import { enableTerrainLightingAtom } from "../states/app";
@@ -35,21 +36,37 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
   //   layer?.sendToBack();
   // }, [layer]);
 
-  const tiles = useMemo(() => [{ id: "default", tile_type: "stamen_toner" }], []);
+  const tiles = useMemo(
+    () => [
+      colorMode === "light"
+        ? {
+            id: "gsi_mvt_tile_light",
+            tile_type: "url",
+            tile_url: `${GSI_TILE_URL}/light-map/{z}/{x}/{y}.png`,
+          }
+        : {
+            id: "gsi_mvt_tile_dark",
+            tile_type: "url",
+            tile_url: `${GSI_TILE_URL}/dark-map/{z}/{x}/{y}.png`,
+          },
+    ],
+    [colorMode],
+  );
 
   return (
     <Scene
       // TODO: Define in theme
       // TODO: Swap background when view is ready
-      globeBaseColor={colorMode === "light" ? "#f7f7f7" : "#000000"}
+      globeBaseColor={colorMode === "light" ? "#bfbfbf" : "#000000"}
       enableGlobeLighting={enableTerrainLighting}
-      lightIntensity={10}
-      shadowDarkness={colorMode === "light" ? 0.7 : 0.3}
+      lightIntensity={colorMode === "light" ? 3 : 14}
+      shadowDarkness={colorMode === "light" ? 1 : 0.3}
       imageBasedLightingIntensity={1}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       showSkyBox={false}
       atmosphereSaturationShift={-1}
       groundAtmosphereBrightnessShift={2}
+      globeImageBasedLightingFactor={colorMode === "light" ? 0.6 : 0.7}
       // TODO(ReEarth): Use Takram's tile
       // TODO(ReEarth): Support tile brightness
       tiles={tiles}
