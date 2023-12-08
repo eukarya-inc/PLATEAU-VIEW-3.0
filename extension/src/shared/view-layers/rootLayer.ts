@@ -8,7 +8,7 @@ import { DEFAULT_SETTING_DATA_ID } from "../api/constants";
 import {
   ComponentGroup,
   ComponentTemplate,
-  EmphasisPropertyTemplate,
+  EmphasisProperty,
   FeatureInspectorSettings,
   GeneralSetting,
   Setting,
@@ -104,16 +104,16 @@ const findComponentTemplate = (
   return template?.type === "component" ? template : undefined;
 };
 
-const findEmphasisPropertyTemplate = (
+const findEmphasisProperties = (
   featureInspector: FeatureInspectorSettings | undefined,
   templates: Template[],
-): EmphasisPropertyTemplate | undefined => {
-  const { useTemplate, templateId } = featureInspector?.emphasisProperty ?? {};
-  if (!useTemplate || !templateId) return;
+): EmphasisProperty[] | undefined => {
+  const { useTemplate, templateId, properties } = featureInspector?.emphasisProperty ?? {};
+  if (!useTemplate || !templateId) return properties;
 
   const template = templates.find(t => t.id === templateId);
 
-  return template?.type === "emphasis" ? template : undefined;
+  return template?.type === "emphasis" ? template.properties : undefined;
 };
 
 const findData = (dataList: DatasetItem[], currentDataId: string | undefined) =>
@@ -174,10 +174,7 @@ const createRootLayer = ({
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
   const componentTemplate = findComponentTemplate(setting, templates);
-  const emphasisPropertyTemplate = findEmphasisPropertyTemplate(
-    setting?.featureInspector,
-    templates,
-  );
+  const emphasisProperties = findEmphasisProperties(setting?.featureInspector, templates);
   const componentGroup = findComponentGroup(setting, componentTemplate, currentGroupId);
 
   return {
@@ -188,7 +185,7 @@ const createRootLayer = ({
           ...setting.featureInspector,
           emphasisProperty: {
             ...(setting.featureInspector.emphasisProperty ?? {}),
-            properties: emphasisPropertyTemplate?.properties,
+            properties: emphasisProperties,
           },
         }
       : undefined,

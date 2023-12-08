@@ -168,7 +168,11 @@ export const EditorDatasetStoryField: React.FC<BasicFieldProps<"DATASET_STORY_FI
               onChange={handleCameraChange}
             />
             <PropertyItemWrapper label="Content">
-              <PropertyTextareaField value={currentPage?.content} onChange={handleContentChange} />
+              <PropertyTextareaField
+                key={currentPage.id}
+                value={currentPage?.content ?? ""}
+                onChange={handleContentChange}
+              />
             </PropertyItemWrapper>
           </>
         )}

@@ -7,6 +7,7 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
+import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
 import { string, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
@@ -158,17 +159,21 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     [searchedFeatures, hiddenFeaturesConditions, filter],
   );
 
+  const colorMode = useAtomValue(colorModeAtom);
+
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
     colorScheme: buildingModelColorAtom ? colorScheme ?? undefined : undefined,
     opacity: opacity?.value,
     selections,
+    defaultColor:
+      colorMode === "light" ? { r: 255, g: 255, b: 255, a: 1 } : { r: 68, g: 68, b: 68, a: 1 },
   });
 
   const theme = useTheme();
 
-  const enableShadow = !opacity || opacity.value === 1;
+  const enableShadow = !opacity?.value || opacity.value === 1;
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({

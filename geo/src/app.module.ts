@@ -11,7 +11,7 @@ import { TileAppModule } from "./modules/tiles/app.module";
       cache: true,
     }),
     GraphQLAppModule,
-    TileAppModule,
+    ...(process.env.ENABLE_TILE_SERVER ? [TileAppModule] : []),
   ],
   controllers: [],
   providers: [],
