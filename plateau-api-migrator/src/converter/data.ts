@@ -30,15 +30,20 @@ export const convertData = (
       ? view3Templates.find(t => getView2ID(t) === templateField.templateID)
       : undefined;
 
-    const prevView3Setting = view3Settings.find(s => getView2ID(s) === data.id);
+    const datasetId = `d_${data.dataID}`;
+    const dataId = DEFAULT_SETTING_DATA_ID;
+
+    const prevView3Setting = view3Settings.find(
+      s => s.datasetId === datasetId && s.dataId === dataId,
+    );
     const convertedView3Setting: Partial<View3Setting> = {
-      id: prevView3Setting?.id,
-      datasetId: `d_${data.dataID}`,
-      dataId: DEFAULT_SETTING_DATA_ID,
+      id: prevView3Setting?.id ?? "",
+      datasetId,
+      dataId,
       general: convertGeneral(data.components),
       fieldComponents: {
         useTemplate: !!view3Template?.id,
-        templateId: view3Template?.id,
+        templateId: view3Template?.id ?? "",
         groups: convertComponentGroups(data.components) as View3ComponentGroup[],
       },
     };
