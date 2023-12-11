@@ -6,9 +6,15 @@ import {
   styled,
   selectClasses,
   svgIconClasses,
+  useTheme,
+  useMediaQuery,
+  Popover,
+  Box,
+  IconButton,
 } from "@mui/material";
 import { endOfYear, format, set, startOfDay, startOfYear } from "date-fns";
 import { omit } from "lodash";
+import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import {
   forwardRef,
   useCallback,
@@ -17,18 +23,29 @@ import {
   type MouseEvent,
   type SyntheticEvent,
   useMemo,
+  useId,
+  memo,
 } from "react";
 import invariant from "tiny-invariant";
 
 import { DateControlList } from "./DateControlList";
 import { DateControlSliderGraph } from "./DateControlSliderGraph";
 import { DateSlider } from "./DateSlider";
+import { ListIcon } from "./icons";
 import { useDateControlState, type DateControlStateParams } from "./useDateControlState";
 
 const Root = styled("div")(({ theme }) => ({
   padding: theme.spacing(3),
   paddingRight: theme.spacing(6),
   paddingBottom: theme.spacing(5),
+  [theme.breakpoints.down("mobile")]: {
+    paddingTop: theme.spacing(2),
+    paddingRight: theme.spacing(3),
+    width: `calc(100vw - ${theme.spacing(2)})`,
+  },
+  ["&, *"]: {
+    boxSizing: "border-box",
+  },
 }));
 
 const DateWrapper = styled("div")(() => ({
@@ -37,6 +54,7 @@ const DateWrapper = styled("div")(() => ({
 }));
 
 const SelectWrapper = styled("div")(({ theme }) => ({
+  position: "relative",
   [`& .${selectClasses.select}`]: {
     padding: `${theme.spacing(0, 0.5)} !important`,
   },
@@ -54,6 +72,50 @@ const TimeText = styled("div")(({ theme }) => ({
   ...theme.typography.h4,
   fontVariantNumeric: "tabular-nums",
 }));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  marginRight: theme.spacing(-1),
+}));
+
+const StyledMenuItem = styled(MenuItem)(() => ({
+  minHeight: "auto",
+}));
+
+const generateYears = () => {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let i = currentYear; i >= 1900; i -= 1) {
+    years.push(i);
+  }
+  return years;
+};
+
+const yearOptions = generateYears();
+
+const YearSelector = ({
+  year,
+  onChange,
+}: {
+  year: string;
+  onChange: (event: SelectChangeEvent) => void;
+}) => {
+  return (
+    <Select
+      value={year}
+      size="small"
+      autoWidth
+      MenuProps={{ sx: { maxHeight: 330 } }}
+      onChange={onChange}>
+      {yearOptions.map(year => (
+        <StyledMenuItem key={year} value={`${year}`}>
+          {year}
+        </StyledMenuItem>
+      ))}
+    </Select>
+  );
+};
+
+const MemoizedYearSelector = memo(YearSelector);
 
 export interface DateControlProps
   extends Omit<ComponentPropsWithRef<typeof Root>, "children" | "onChange">,
@@ -120,52 +182,75 @@ export const DateControl = forwardRef<HTMLDivElement, DateControlProps>(
     );
 
     const year = useMemo(() => `${date.getFullYear()}`, [date]);
-    const yearOptions = useMemo(() => {
-      const currentYear = date.getFullYear();
-      const years = [];
-      for (let i = currentYear; i >= 1900; i -= 1) {
-        years.push(i);
-      }
-      return years;
-    }, [date]);
 
+    const id = useId();
+    const popupState = usePopupState({
+      variant: "popover",
+      popupId: id,
+    });
+
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
     return (
       <Root ref={ref} {...props}>
-        <Stack direction="row" spacing={3} width="100%">
-          <Stack spacing={2} width={200}>
-            <Stack spacing={0.5}>
+        <Stack
+          width="100%"
+          {...(isMobile ? { direction: "column", spacing: 1 } : { direction: "row", spacing: 3 })}>
+          <Stack
+            {...(isMobile
+              ? { direction: "row", justifyContent: "space-between" }
+              : { direction: "column", spacing: 2, width: 200 })}>
+            <Stack
+              {...(isMobile
+                ? { direction: "row", spacing: 2, alignItems: "center" }
+                : { direction: "column", spacing: 0.5 })}>
               <DateWrapper>
                 <SelectWrapper>
-                  <Select
-                    value={year}
-                    size="small"
-                    autoWidth
-                    MenuProps={{ sx: { maxHeight: 330 } }}
-                    onChange={handleYearChange}>
-                    {yearOptions.map(year => (
-                      <MenuItem key={year} value={`${year}`}>
-                        {year}
-                      </MenuItem>
-                    ))}
-                  </Select>
+                  <MemoizedYearSelector year={year} onChange={handleYearChange} />
                 </SelectWrapper>
                 <DateText>{format(date, "年M'月'd'日'")}</DateText>
               </DateWrapper>
-
               <TimeText>{format(date, "H:mm")}</TimeText>
             </Stack>
-            <DateControlList
-              {...omit(state, ["dateAtom", "observerAtom"])}
-              onChange={handleListChange}
-            />
+            {!isMobile ? (
+              <DateControlList
+                {...omit(state, ["dateAtom", "observerAtom"])}
+                onChange={handleListChange}
+              />
+            ) : (
+              <>
+                <StyledIconButton {...bindTrigger(popupState)}>
+                  <ListIcon fontSize="medium" />
+                </StyledIconButton>
+                <Popover
+                  {...bindPopover(popupState)}
+                  anchorOrigin={{
+                    horizontal: "right",
+                    vertical: "bottom",
+                  }}
+                  transformOrigin={{
+                    horizontal: "right",
+                    vertical: "top",
+                  }}>
+                  <Box width={200} padding={2} boxSizing={"border-box"}>
+                    <DateControlList
+                      {...omit(state, ["dateAtom", "observerAtom"])}
+                      onChange={handleListChange}
+                    />
+                  </Box>
+                </Popover>
+              </>
+            )}
           </Stack>
           <Stack width="100%" spacing={2}>
-            <DateSlider
-              min={+startOfYear(date)}
-              max={+startOfDay(endOfYear(date))}
-              value={+startOfDay(date)}
-              onChange={handleSliderChange}
-            />
+            <div>
+              <DateSlider
+                min={+startOfYear(date)}
+                max={+startOfDay(endOfYear(date))}
+                value={+startOfDay(date)}
+                onChange={handleSliderChange}
+              />
+            </div>
             <DateControlSliderGraph {...state} onChange={handleGraphSliderChange} />
           </Stack>
         </Stack>
@@ -173,3 +258,5 @@ export const DateControl = forwardRef<HTMLDivElement, DateControlProps>(
     );
   },
 );
+
+// const YearSelector: React.FC<{ year: number; onChange: (year: number) => void }> = ({

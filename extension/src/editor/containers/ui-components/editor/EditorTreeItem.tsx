@@ -110,6 +110,7 @@ const StyledItemButton = styled(ListItemButton, {
   paddingBottom: theme.spacing(0.5),
   borderRadius: "4px",
   height: "auto",
+  backgroundColor: selected ? `${theme.palette.primary.main} !important` : "transparent",
 
   [`.${listItemIconClasses.root}`]: {
     minWidth: "20px",

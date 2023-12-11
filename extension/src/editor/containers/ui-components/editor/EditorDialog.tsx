@@ -34,7 +34,7 @@ export const EditorDialog: React.FC<EditorDialogProps> = ({
   ...props
 }) => {
   return (
-    <StyledDialog open={open} onClose={onClose} maxWidth="xs" {...props}>
+    <StyledDialog open={open} onClose={onClose} maxWidth="mobile" {...props}>
       {title && <StyledDialogTitle>{title}</StyledDialogTitle>}
       <StyledDialogContent>
         {description && <DialogContentText>{description}</DialogContentText>}

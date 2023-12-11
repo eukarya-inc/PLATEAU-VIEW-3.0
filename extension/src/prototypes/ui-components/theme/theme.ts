@@ -37,6 +37,15 @@ declare module "@mui/material/styles" {
   interface TypographyVariantsOptions {
     small?: CSSProperties;
   }
+
+  interface BreakpointOverrides {
+    xs: false;
+    sm: false;
+    md: false;
+    lg: false;
+    xl: false;
+    mobile: true;
+  }
 }
 
 declare module "@mui/material/Typography" {
@@ -56,9 +65,9 @@ export const themeOptions: ThemeOptions = {
       main: "#00bebe",
     },
     secondary: grey,
-    action: {
-      selectedOpacity: 0.88,
-    },
+    // action: {
+    //   selectedOpacity: 0.16,
+    // },
   },
   typography: {
     fontSize: 14,
@@ -123,6 +132,11 @@ export const themeOptions: ThemeOptions = {
     small: {
       fontSize: theme.typography.pxToRem(9.83),
       lineHeight: 1.2,
+    },
+  },
+  breakpoints: {
+    values: {
+      mobile: 768,
     },
   },
   components: {

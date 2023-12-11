@@ -19,6 +19,7 @@ const Root = styled("div", {
     borderColor: alpha(color, 0.9),
     backgroundColor: alpha(color, 0.25),
     pointerEvents: "none",
+    display: "none",
   };
 });
 

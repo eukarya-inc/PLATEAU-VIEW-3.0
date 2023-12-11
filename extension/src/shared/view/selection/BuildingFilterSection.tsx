@@ -131,7 +131,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
 
   return (
     <GroupedParameterItem label={label} onClick={handleClickParameterItem}>
-      <InspectorItem sx={{ width: 320 }}>
+      <InspectorItem sx={{ width: 320 }} level={2}>
         <ParameterList>
           {propertyItems.map(([prop, name]) => (
             <SliderParameterItem

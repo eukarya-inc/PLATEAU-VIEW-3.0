@@ -1,4 +1,4 @@
-import { styled, useTheme } from "@mui/material";
+import { styled, useMediaQuery, useTheme } from "@mui/material";
 import { Body, Equator, Horizon, type Observer } from "astronomy-engine";
 import { area as createArea, line as createLine, scaleLinear, type ScaleLinear } from "d3";
 import { endOfDay, set, startOfDay } from "date-fns";
@@ -280,6 +280,7 @@ const Graph: FC<
   const y = scaleY(getAltitude(date, observer));
 
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const color = theme.palette.text.primary;
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
@@ -323,7 +324,7 @@ const Graph: FC<
       />
       <circle cx={x} cy={y} r={5} fill={theme.palette.primary.main} stroke="none" />
       <XAxis height={height} date={date} scale={scaleX} />
-      <YAxis width={width} scale={scaleY} />
+      {!isMobile && <YAxis width={width} scale={scaleY} />}
     </svg>
   );
 };

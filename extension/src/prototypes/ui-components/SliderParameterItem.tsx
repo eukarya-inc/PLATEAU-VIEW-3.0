@@ -51,6 +51,7 @@ const Value = styled("div")(({ theme }) => ({
 }));
 
 const PopoverContent = styled("div")(({ theme }) => ({
+  boxSizing: "border-box",
   padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
 }));
 

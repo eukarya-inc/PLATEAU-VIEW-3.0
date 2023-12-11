@@ -54,7 +54,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const handleClick = useCallback(() => {
     if (layerType == null) {
       return;
@@ -68,7 +68,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
           templates,
           areaCode: municipalityCode,
         }),
-        { autoSelect: !smDown },
+        { autoSelect: !isMobile },
       );
     } else {
       removeLayer(layer.id);
@@ -79,7 +79,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     layerType,
     addLayer,
     removeLayer,
-    smDown,
+    isMobile,
     municipalityCode,
     settings,
     templates,

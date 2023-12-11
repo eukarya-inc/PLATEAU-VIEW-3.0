@@ -13,6 +13,10 @@ import { nativeResolutionEnabledAtom } from "../states/graphics";
 const Root = styled(FloatingPanel)(({ theme }) => ({
   width: 360,
   padding: theme.spacing(1),
+  [theme.breakpoints.down("mobile")]: {
+    boxSizing: "border-box",
+    width: `calc(100vw - ${theme.spacing(2)})`,
+  },
 }));
 
 const Title = styled("div")(({ theme }) => ({
