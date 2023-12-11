@@ -73,12 +73,20 @@ export const useAttachScreenSpaceSelection = () => {
     [tilesetLayersSelections, selectionsLayers],
   );
 
+  const isTileset = useMemo(() => {
+    const selectedLayerId = selections[0]?.value?.layerId;
+    if (!selectedLayerId) return true;
+    const layer = window.reearth?.layers?.findById?.(selections[0]?.value?.layerId);
+    if (layer?.type !== "simple" || !layer.data?.type) return true;
+    return layer.data.type === "3dtiles";
+  }, [selections]);
+
   const prevLayersRef = useRef(layers);
   useEffect(() => {
-    if (isEqual(prevLayersRef.current, layers)) return;
+    if (isEqual(prevLayersRef.current, layers) || !isTileset) return;
     requestAnimationFrame(() => {
       window.reearth?.layers?.selectFeatures?.(layers);
       prevLayersRef.current = layers;
     });
-  }, [layers]);
+  }, [layers, isTileset]);
 };
