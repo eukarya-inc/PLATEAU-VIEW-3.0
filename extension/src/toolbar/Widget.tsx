@@ -15,7 +15,6 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
-import { useInteractionMode } from "./hooks/useInteractionMode";
 
 type Props = WidgetProps<{
   geoURL?: string;
@@ -27,7 +26,6 @@ type Props = WidgetProps<{
 }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
-  useInteractionMode();
   useAttachScreenSpaceSelection();
 
   return (

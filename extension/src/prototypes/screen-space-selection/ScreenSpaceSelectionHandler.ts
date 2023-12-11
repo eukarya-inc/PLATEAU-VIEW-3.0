@@ -55,6 +55,7 @@ export class ScreenSpaceSelectionHandler {
   private downing?: boolean = false;
 
   #disabled = false;
+  #allowClickWhenDisabled = false;
 
   constructor() {
     // const handler = new ScreenSpaceEventHandler(scene.canvas);
@@ -85,12 +86,20 @@ export class ScreenSpaceSelectionHandler {
     this.#disabled = value;
   }
 
+  get allowClickWhenDisabled(): boolean {
+    return this.#allowClickWhenDisabled;
+  }
+
+  set allowClickWhenDisabled(value: boolean) {
+    this.#allowClickWhenDisabled = value;
+  }
+
   private handleKeyDown(e: KeyboardEvent) {
     this.currentKeyName = e.key;
   }
 
   private readonly handleClick = (position: [x: number, y: number], keyName?: string): void => {
-    if (this.disabled || this.moving) {
+    if ((this.disabled && !this.allowClickWhenDisabled) || this.moving) {
       return;
     }
     pointEvent.action = actionForModifier(keyName);
@@ -100,7 +109,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleSelect = (layerId?: string): void => {
-    if (this.disabled || this.moving || !layerId) {
+    if ((this.disabled && !this.allowClickWhenDisabled) || this.moving || !layerId) {
       return;
     }
     const l = window.reearth?.layers?.findById?.(layerId);
@@ -113,7 +122,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseDown = (event: MouseEvent): void => {
-    if (this.disabled) {
+    if (this.disabled && !this.allowClickWhenDisabled) {
       return;
     }
     // TODO(ReEarth): Support selecting multiple feature
@@ -122,7 +131,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseUp = (event: MouseEvent): void => {
-    if (this.disabled) {
+    if (this.disabled && !this.allowClickWhenDisabled) {
       return;
     }
 
@@ -139,6 +148,10 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseMove = (event: MouseEvent, indeterminate = true): void => {
+    // Need to set moving so that when mouse up on mobile it won't be a click.
+    if (this.allowClickWhenDisabled) {
+      this.moving = true;
+    }
     if (this.disabled) {
       return;
     }

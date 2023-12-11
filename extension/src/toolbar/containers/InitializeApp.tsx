@@ -5,6 +5,7 @@ import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
 import { updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
+import { useInteractionMode } from "../hooks/useInteractionMode";
 
 export const InitializeApp: FC = () => {
   const settingClient = useSettingClient();
@@ -36,6 +37,8 @@ export const InitializeApp: FC = () => {
     now.setUTCHours(10 - timezone, 0, 0, 0);
     handleTimelineJump({ start: now, stop: now, current: now });
   }, [handleTimelineJump]);
+
+  useInteractionMode();
 
   return null;
 };
