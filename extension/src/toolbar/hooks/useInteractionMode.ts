@@ -20,7 +20,11 @@ export const useInteractionMode = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"), { noSsr: true });
   useEffect(() => {
-    setInteractionMode(tool && !isMobile ? TOOL_TO_INTERACTIONMODE[tool.type] : "default");
-    // setInteractionMode("default");
+    // There's no tools support on mobile.
+    if (isMobile) {
+      setInteractionMode("default");
+    } else if (tool) {
+      setInteractionMode(TOOL_TO_INTERACTIONMODE[tool.type]);
+    }
   }, [tool, isMobile, setInteractionMode]);
 };
