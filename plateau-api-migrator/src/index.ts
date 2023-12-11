@@ -9,8 +9,8 @@ import {
   fetchView2Template,
   fetchView3Data,
   fetchView3Template,
-  postView3Data,
-  postView3Template,
+  // postView3Data,
+  // postView3Template,
 } from "./fetch";
 import { RawDataCatalogItem } from "./types/view2";
 import { Setting as View3Setting } from "./types/view3";
@@ -20,14 +20,12 @@ type CSVForDataSetting = {
   prefecture?: string;
   city?: string;
   ward?: string;
-  itemNames?: string[];
 };
 const CSV_FOR_DATA_SETTING_HEADERS: (keyof CSVForDataSetting)[] = [
   "name",
   "prefecture",
   "city",
   "ward",
-  "itemNames",
 ];
 
 const makeCSVForDataSetting = (
@@ -43,7 +41,6 @@ const makeCSVForDataSetting = (
       prefecture: datacatalog.pref,
       city: datacatalog.city,
       ward: datacatalog.ward,
-      itemNames: datacatalog.config?.data?.map(d => d.name),
     };
     csvDatas.push(csvData);
   }
@@ -54,7 +51,7 @@ const makeCSVForDataSetting = (
         res.push(
           CSV_FOR_DATA_SETTING_HEADERS.map(header => {
             const v = csv[header];
-            return typeof v === "string" ? v : v?.join("|");
+            return v ?? "";
           }).filter(isNotNullish),
         );
         return res;
@@ -78,7 +75,7 @@ const main = async () => {
 
   console.log("Converting templates...");
   const convertedView3Templates = convertTemplate(view2Template, view3Template);
-  await postView3Template(convertedView3Templates);
+  // await postView3Template(convertedView3Templates);
   console.log("Saved templates...");
 
   console.log("Converting setting data...");
@@ -88,7 +85,7 @@ const main = async () => {
     view3Data,
     convertedView3Templates,
   );
-  await postView3Data(convertedView3Data as View3Setting[]);
+  // await postView3Data(convertedView3Data as View3Setting[]);
   console.log("Saved setting data...");
 
   console.log("Making CSV...");
