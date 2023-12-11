@@ -21,6 +21,20 @@ const parseJsonPathAsNodes = (obj: any, path: string) => {
   }
 };
 
+// `process` should be like `[from (|| from), to]`
+export const parseProcess = (process: string | undefined) => {
+  if (!process) return;
+  if (!process.startsWith("[") || !process.endsWith("]")) return;
+  const splitProcess = process.slice(1, -1).split(/ ?, ?/);
+  if (splitProcess.length !== 2) return;
+  const conditions = splitProcess[0].split(/ ?\|\| ?/);
+  const result = splitProcess[1];
+  return {
+    conditions,
+    result,
+  };
+};
+
 export const makePropertyForFeatureInspector = ({
   features,
   featureInspector,
@@ -58,6 +72,7 @@ export const makePropertyForFeatureInspector = ({
   const settingRootProperties =
     convertedFeatureInspectorProperties
       ?.map(p => {
+        if (!p.visible) return;
         const lastPathName = p.nodes[0]?.path
           .slice()
           .reverse()
@@ -66,10 +81,25 @@ export const makePropertyForFeatureInspector = ({
         return {
           name: p.displayName || label || lastPathName,
           // TODO: Evaluate `process` in here.
-          values: p.nodes.map(n => n?.value).filter(isNotNullish),
+          values: p.nodes
+            .map(n => {
+              if (!n) return;
+
+              const parsedProcess = parseProcess(p.process);
+              if (!parsedProcess) return n.value;
+
+              const match = parsedProcess?.conditions.some(cond => {
+                if (isNaN(Number(cond))) {
+                  return n.value === cond;
+                }
+                return n.value === Number(cond) || n.value === cond;
+              });
+              return match ? parsedProcess.result : n.value;
+            })
+            .filter(isNotNullish),
         };
       })
-      .filter(({ values }) => !!values.length) ?? [];
+      .filter(v => v && !!v.values.length) ?? [];
 
   // Built-in root properties
   const datasetType = layer ? layerDatasetTypes[layer.type] : undefined;
