@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { FirestoreModule } from "@prototypes/nest-firestore";
 import { TerrainTileModule } from "@prototypes/nest-terrain-tile";
 import { TileCacheModule } from "@prototypes/nest-tile-cache";
 import { VectorTileModule } from "@prototypes/nest-vector-tile";
@@ -9,6 +10,9 @@ import { TileAppService } from "./app.service";
 
 @Module({
   imports: [
+    FirestoreModule.forRoot({
+      rootPath: "api",
+    }),
     TileCacheModule.forRootAsync({
       // if you don't use useFactory process.env.TILE_CACHE_ROOT will be undefined.
       // source: https://stackoverflow.com/questions/67482900/nestjs-not-reading-environmental-variables
@@ -40,10 +44,7 @@ import { TileAppService } from "./app.service";
     }),
     TerrainTileModule.forRoot({
       path: "terrain",
-      disableCache: true,
-      // disableCache:
-      //   process.env.TILE_CACHE_ROOT == null ||
-      //   process.env.TILE_CACHE_ROOT === ''
+      disableCache: process.env.TILE_CACHE_ROOT == null || process.env.TILE_CACHE_ROOT === "",
     }),
   ],
   controllers: [TileAppController],

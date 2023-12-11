@@ -200,19 +200,18 @@ export class TerrainTileService {
     if (coords.level > 15) {
       return;
     }
-    // TODO: Implement cache
-    // const [cache, discarded] = await Promise.all([
-    //   this.cacheService.findOne(this.options.path, coords),
-    //   this.cacheService.isDiscarded(this.options.path, coords),
-    // ]);
-    // if (cache != null || discarded) {
-    //   return cache;
-    // }
+    const [cache, discarded] = await Promise.all([
+      this.cacheService.findOne(this.options.path, coords),
+      this.cacheService.isDiscarded(this.options.path, coords),
+    ]);
+    if (cache != null || discarded) {
+      return cache;
+    }
     const result = await this.requestTile(coords);
-    // if (result == null) {
-    //   await this.cacheService.discardOne(this.options.path, coords);
-    //   return;
-    // }
+    if (result == null) {
+      await this.cacheService.discardOne(this.options.path, coords);
+      return;
+    }
 
     const image = sharp(result, {
       raw: {
