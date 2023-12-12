@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { FirestoreModule } from "@prototypes/nest-firestore";
-import { TerrainTileModule } from "@prototypes/nest-terrain-tile";
 import { TileCacheModule } from "@prototypes/nest-tile-cache";
 import { VectorTileModule } from "@prototypes/nest-vector-tile";
 import { darkStyle, lightStyle } from "@prototypes/vector-map-style";
@@ -41,10 +40,6 @@ import { TileAppService } from "./app.service";
       maximumLevel: 23,
       minimumDataLevel: 4,
       maximumDataLevel: 16,
-    }),
-    TerrainTileModule.forRoot({
-      path: "terrain",
-      disableCache: process.env.TILE_CACHE_ROOT == null || process.env.TILE_CACHE_ROOT === "",
     }),
   ],
   controllers: [TileAppController],
