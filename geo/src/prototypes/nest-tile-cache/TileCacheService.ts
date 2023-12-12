@@ -1,8 +1,9 @@
 import { Readable } from "stream";
 
+import { Firestore } from "@google-cloud/firestore";
 import { Inject, Injectable } from "@nestjs/common";
-import { type Coordinates } from "@prototypes/nest-vector-tile/interfaces/Coordinates";
-import { type TileFormat } from "@prototypes/nest-vector-tile/interfaces/TileFormat";
+import { FIRESTORE } from "@prototypes/nest-firestore";
+import { type Coordinates, type TileFormat } from "@prototypes/type-helpers";
 import { type Sharp } from "sharp";
 import invariant from "tiny-invariant";
 
@@ -17,11 +18,33 @@ function applyFormat(image: Sharp, format: TileFormat): Sharp {
   return format === "webp" ? image.webp({ lossless: true }) : image.png();
 }
 
+function makeDocumentId(path: string, { x, y, level }: Coordinates): string {
+  return `tiles/${path}/discarded/${level}:${x}:${y}`;
+}
+
+function getParents(coords: Coordinates): Coordinates[] {
+  const divisor = 2 ** coords.level;
+  const x = coords.x / divisor;
+  const y = coords.y / divisor;
+  const parents: Coordinates[] = [];
+  for (let level = coords.level - 1; level >= 0; --level) {
+    const scale = 2 ** level;
+    parents.push({
+      x: Math.floor(x * scale),
+      y: Math.floor(y * scale),
+      level,
+    });
+  }
+  return parents;
+}
+
 @Injectable()
 export class TileCacheService {
   constructor(
     @Inject(TILE_CACHE)
     private readonly cache: TileCache | undefined,
+    @Inject(FIRESTORE)
+    private readonly firestore: Firestore,
   ) {}
 
   async findOne(
@@ -38,7 +61,6 @@ export class TileCacheService {
     coords: Coordinates,
     { format = "webp" }: RenderTileOptions = {},
   ): Promise<Readable | string | undefined> {
-    console.log(this.cache);
     if (this.cache != null) {
       (async () => {
         invariant(this.cache != null);
@@ -49,5 +71,28 @@ export class TileCacheService {
       });
     }
     return Readable.from(await applyFormat(image, format).toBuffer());
+  }
+
+  async isDiscarded(path: string, coords: Coordinates): Promise<boolean> {
+    if (this.cache == null) {
+      return false;
+    }
+    const docs = await this.firestore.getAll(
+      ...[coords, ...getParents(coords)].map(coords =>
+        this.firestore.doc(makeDocumentId(path, coords)),
+      ),
+    );
+    return docs.some(doc => doc.exists);
+  }
+
+  async discardOne(path: string, coords: Coordinates): Promise<void> {
+    if (this.cache == null) {
+      return;
+    }
+    const doc = await this.firestore.doc(makeDocumentId(path, coords)).get();
+    if (doc.exists) {
+      return;
+    }
+    await doc.ref.set({ path, ...coords });
   }
 }

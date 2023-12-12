@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
 import { GraphQLAppModule } from "./modules/graphql/app.module";
+import { TerrainModule } from "./modules/terrain/app.module";
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GraphQLAppModule } from "./modules/graphql/app.module";
       ? // eslint-disable-next-line @typescript-eslint/no-var-requires
         [require("./modules/tiles/app.module").TileAppModule]
       : []),
+    TerrainModule,
   ],
   controllers: [],
   providers: [],

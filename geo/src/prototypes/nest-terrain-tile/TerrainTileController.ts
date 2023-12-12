@@ -8,21 +8,20 @@ import {
   StreamableFile,
   type Type,
 } from "@nestjs/common";
-import { type TileFormat, TileFormatValidationPipe } from "@prototypes/type-helpers";
-import { type Response } from "express";
+import { TileFormat, TileFormatValidationPipe } from "@prototypes/type-helpers";
+import { Response } from "express";
 
-import { VECTOR_TILE_MODULE_OPTIONS } from "./constants";
-import { VectorTileModuleOptions } from "./interfaces/VectorTileModuleOptions";
-import { type VectorTileOptions } from "./interfaces/VectorTileOptions";
-import { VectorTileService } from "./VectorTileService";
+import { TERRAIN_TILE_MODULE_OPTIONS } from "./constants";
+import { type TerrainTileModuleOptions } from "./interfaces/TerrainTileModuleOptions";
+import { TerrainTileService } from "./TerrainTileService";
 
-export function createVectorTileController(options: VectorTileOptions): Type {
+export function createTerrainTileController(options: TerrainTileModuleOptions): Type {
   @Controller(options.path)
-  class VectorTileController {
+  class TerrainTileController {
     constructor(
-      private readonly service: VectorTileService,
-      @Inject(VECTOR_TILE_MODULE_OPTIONS)
-      private readonly options: VectorTileModuleOptions,
+      private readonly service: TerrainTileService,
+      @Inject(TERRAIN_TILE_MODULE_OPTIONS)
+      private readonly options: TerrainTileModuleOptions,
     ) {}
 
     @Get(":level/:x/:y.:format")
@@ -35,11 +34,11 @@ export function createVectorTileController(options: VectorTileOptions): Type {
     ): Promise<StreamableFile | undefined> {
       const result = await this.service.renderTile({ x, y, level }, { format });
       if (result == null) {
-        return undefined;
+        return;
       }
       if (typeof result === "string") {
         res.redirect(result);
-        return undefined;
+        return;
       }
       res.set({
         "Content-Type": `image/${format}`,
@@ -53,5 +52,5 @@ export function createVectorTileController(options: VectorTileOptions): Type {
     }
   }
 
-  return VectorTileController;
+  return TerrainTileController;
 }

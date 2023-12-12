@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { FirestoreModule } from "@prototypes/nest-firestore";
 import { TileCacheModule } from "@prototypes/nest-tile-cache";
 import { VectorTileModule } from "@prototypes/nest-vector-tile";
 import { darkStyle, lightStyle } from "@prototypes/vector-map-style";
@@ -8,6 +9,9 @@ import { TileAppService } from "./app.service";
 
 @Module({
   imports: [
+    FirestoreModule.forRoot({
+      rootPath: "api",
+    }),
     TileCacheModule.forRootAsync({
       // if you don't use useFactory process.env.TILE_CACHE_ROOT will be undefined.
       // source: https://stackoverflow.com/questions/67482900/nestjs-not-reading-environmental-variables
@@ -17,8 +21,7 @@ import { TileAppService } from "./app.service";
         };
       },
     }),
-    // Cache disabled for now.This is for browser level cache.
-    // TODO: Make this true when everything is tested properly
+    // This is for browser level cache.
     VectorTileModule.forRoot({
       disableCache: process.env.TILE_CACHE_ROOT == null || process.env.TILE_CACHE_ROOT === "",
     }),

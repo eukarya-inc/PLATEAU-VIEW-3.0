@@ -3,8 +3,7 @@ import { open } from "fs/promises";
 import path from "path";
 import { type Readable } from "stream";
 
-import { type TileFormat } from "@prototypes/nest-vector-tile//interfaces/TileFormat";
-import { type Coordinates } from "@prototypes/nest-vector-tile/interfaces/Coordinates";
+import { type TileFormat, type Coordinates } from "@prototypes/type-helpers";
 import { mkdirp } from "mkdirp";
 import { type Sharp } from "sharp";
 
