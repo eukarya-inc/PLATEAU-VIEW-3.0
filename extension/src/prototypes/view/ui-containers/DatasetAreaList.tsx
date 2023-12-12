@@ -163,7 +163,7 @@ export const DatasetAreaList: FC = () => {
     <DatasetTreeView
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
-      maxHeight={gridHeight - searchHeaderHeight}>
+      maxheight={gridHeight - searchHeaderHeight}>
       {/* TODO: Suport heat-map */}
       {/* <RegionalMeshItem /> */}
       <GlobalItem />

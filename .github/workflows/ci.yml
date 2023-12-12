@@ -3,13 +3,18 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      action_type:
+        description: 'Action type'
+        required: true
 jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
       extension: ${{ steps.extension.outputs.any_changed }}
       server: ${{ steps.server.outputs.any_changed }}
-      geo: ${{ steps.server.outputs.any_changed }}
+      geo: ${{ steps.geo.outputs.any_changed }}
       tools: ${{ steps.tools.outputs.any_changed }}
     steps:
       - uses: actions/checkout@v3
@@ -62,21 +67,21 @@ jobs:
     needs:
       - prepare
       # - ci-extension-version-update
-    if: needs.prepare.outputs.extension == 'true'
+    if: needs.prepare.outputs.extension == 'true' || github.event.inputs.action_type == 'extension'
     uses: ./.github/workflows/ci-extension.yml
   ci-server:
     needs: prepare
-    if: needs.prepare.outputs.server == 'true'
+    if: needs.prepare.outputs.server == 'true' || github.event.inputs.action_type == 'server'
     uses: ./.github/workflows/ci-server.yml
   ci-tools:
     needs: prepare
-    if: needs.prepare.outputs.tools == 'true'
+    if: needs.prepare.outputs.tools == 'true' || github.event.inputs.action_type == 'tools'
     uses: ./.github/workflows/ci-tools.yml
     with:
       release_tools: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
   ci-geo:
     needs: prepare
-    if: needs.prepare.outputs.geo == 'true'
+    if: needs.prepare.outputs.geo == 'true' || github.event.inputs.action_type == 'geo'
     uses: ./.github/workflows/ci-geo.yml
   ci:
     runs-on: ubuntu-latest
@@ -90,7 +95,7 @@ jobs:
       - run: echo OK
   deploy-extension-dev:
     needs: ci-extension
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -111,7 +116,7 @@ jobs:
   #         event-type: deploy-server-dev
   build-geo:
     needs: ci-geo
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-geo.yml
   deploy-geo-dev:
     needs: build-geo

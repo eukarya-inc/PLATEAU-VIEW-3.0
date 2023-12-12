@@ -6,7 +6,10 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
+import {
+  RootLayerConfigForDataset,
+  createRootLayerForDatasetAtom,
+} from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { ContextButtonSelect, SelectItem } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
@@ -17,7 +20,7 @@ interface Params {
   id?: string;
 }
 
-function createParams(get: Getter, rootLayer: RootLayerConfig): Params {
+function createParams(get: Getter, rootLayer: RootLayerConfigForDataset): Params {
   return {
     id: get(rootLayer.currentDataIdAtom),
   };
@@ -42,7 +45,10 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
   ({ dataset, municipalityCode, disabled }) => {
     const rootLayers = useAtomValue(rootLayersAtom);
     const rootLayer = useMemo(
-      () => rootLayers.find(l => l.id === dataset.id),
+      () =>
+        rootLayers.find(
+          (l): l is RootLayerConfigForDataset => l.type === "dataset" && l.id === dataset.id,
+        ),
       [rootLayers, dataset],
     );
     const settings = useAtomValue(settingsAtom);
@@ -59,7 +65,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
           }
           const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           addLayer(
-            createRootLayerAtom({
+            createRootLayerForDatasetAtom({
               dataset,
               settings: filteredSettings,
               templates,

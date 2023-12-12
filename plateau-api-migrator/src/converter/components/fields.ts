@@ -212,7 +212,7 @@ export const CONVERT_FIELDS: {
       }),
     ];
     switch (options?.featureType) {
-      case "point":
+      case "marker":
         return {
           type: POINT_VISIBILITY_FILTER_FIELD,
           preset: {
@@ -261,7 +261,7 @@ export const CONVERT_FIELDS: {
       defaultValue: c.heightReferenceType,
     };
     switch (options?.featureType) {
-      case "point":
+      case "marker":
         return {
           type: POINT_HEIGHT_REFERENCE_FIELD,
           preset,

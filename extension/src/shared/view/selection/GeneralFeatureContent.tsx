@@ -12,13 +12,13 @@ import { layerTypeIcons, layerTypeNames } from "../../../prototypes/view-layers"
 import { FeatureInspectorSettings } from "../../api/types";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
-import { RootLayer } from "../../view-layers";
+import { RootLayerForDataset } from "../../view-layers";
 
 import { DescriptionFeatureContent } from "./DescriptionFeatureContent";
 import { GeneralFeaturePropertiesSection } from "./GeneralFeaturePropertiesSection";
 
 export type GeneralFeatureContentProps = {
-  rootLayer: RootLayer;
+  rootLayer: RootLayerForDataset;
   values: (SelectionGroup & {
     type: typeof SCREEN_SPACE_SELECTION;
     subtype: typeof GENERAL_FEATURE;

@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { type FC } from "react";
 
@@ -11,5 +12,13 @@ export type ScreenSpaceSelectionProps = Omit<PlateauScreenSpaceSelectionProps, "
 
 export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = props => {
   const tool = useAtomValue(toolAtom);
-  return <PlateauScreenSpaceSelection {...props} disabled={tool?.type !== "select"} />;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+  return (
+    <PlateauScreenSpaceSelection
+      {...props}
+      disabled={tool?.type !== "select"}
+      allowClickWhenDisabled={isMobile}
+    />
+  );
 };

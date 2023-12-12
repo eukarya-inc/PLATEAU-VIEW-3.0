@@ -50,7 +50,7 @@ import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/Flood
 // import { createUrbanPlanningLayer, type UrbanPlanningLayerModelParams } from "./UrbanPlanningLayer";
 
 // prettier-ignore
-type ViewLayerModelParams<T extends LayerType> =
+export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof HEATMAP_LAYER ? never : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? never : // PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? never : // SketchLayerModelParams :

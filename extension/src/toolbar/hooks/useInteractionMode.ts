@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 
@@ -16,9 +17,14 @@ const TOOL_TO_INTERACTIONMODE: Record<ToolType, InteractionModeType> = {
 export const useInteractionMode = () => {
   const tool = useAtomValue(toolAtom);
   const setInteractionMode = useSetAtom(reearthInteractionModeAtom);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"), { noSsr: true });
   useEffect(() => {
-    if (tool) {
+    // There's no tools support on mobile.
+    if (isMobile) {
+      setInteractionMode("default");
+    } else if (tool) {
       setInteractionMode(TOOL_TO_INTERACTIONMODE[tool.type]);
     }
-  }, [tool, setInteractionMode]);
+  }, [tool, isMobile, setInteractionMode]);
 };

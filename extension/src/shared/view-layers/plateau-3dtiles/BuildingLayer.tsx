@@ -23,7 +23,7 @@ export interface BuildingLayerModelParams extends LayerModelParams, PlateauTiles
   title: string;
   version?: string;
   lod?: number;
-  textured: boolean;
+  textured?: boolean;
 }
 
 export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
@@ -42,7 +42,7 @@ export function createBuildingLayer(
     ...createViewLayerModel(params),
     ...createPlateauTilesetLayerState(params),
     type: BUILDING_LAYER,
-    textured: params.textured,
+    textured: !!params.textured,
     municipalityCode: params.municipalityCode,
     title: params.title,
     versionAtom: atom(params.version ?? null),

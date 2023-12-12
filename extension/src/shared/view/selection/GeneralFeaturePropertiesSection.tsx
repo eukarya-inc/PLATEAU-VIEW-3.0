@@ -12,7 +12,7 @@ import { makePropertyForFeatureInspector } from "../../plateau/featureInspector"
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../states/rootLayer";
-import { RootLayer } from "../../view-layers";
+import { RootLayerForDataset } from "../../view-layers";
 
 export interface GeneralFeaturePropertiesSectionProps {
   values: (SelectionGroup & {
@@ -55,7 +55,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
 
       res.push({ features: features ?? [], rootLayer, layer });
       return res;
-    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayer | undefined }[]);
+    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayerForDataset | undefined }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
   const properties = useMemo(() => {

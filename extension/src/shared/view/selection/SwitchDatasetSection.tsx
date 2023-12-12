@@ -5,7 +5,7 @@ import { useMemo, type FC, SetStateAction } from "react";
 import { InspectorItem, SelectParameterItem } from "../../../prototypes/ui-components";
 import { useDatasetById } from "../../graphql";
 import { rootLayersAtom } from "../../states/rootLayer";
-import { LayerModel } from "../../view-layers";
+import { LayerModel, RootLayerConfigForDataset } from "../../view-layers";
 
 export interface SwitchDatasetProps {
   layers: readonly LayerModel[];
@@ -17,7 +17,13 @@ export const SwitchDataset: FC<SwitchDatasetProps> = ({ layers }) => {
   const { data } = useDatasetById(layer.id);
   const propertyItems = useMemo(() => data.node?.items.map(item => [item.id, item.name]), [data]);
   const rootLayers = useAtomValue(rootLayersAtom);
-  const rootLayer = useMemo(() => rootLayers.find(r => r.id === layer.id), [rootLayers, layer]);
+  const rootLayer = useMemo(
+    () =>
+      rootLayers.find(
+        (r): r is RootLayerConfigForDataset => r.type === "dataset" && r.id === layer.id,
+      ),
+    [rootLayers, layer],
+  );
 
   const propertyAtoms = useMemo(
     () => [

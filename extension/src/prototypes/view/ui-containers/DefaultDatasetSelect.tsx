@@ -8,7 +8,10 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { RootLayerConfig, createRootLayerAtom } from "../../../shared/view-layers";
+import {
+  RootLayerConfigForDataset,
+  createRootLayerForDatasetAtom,
+} from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFilterLayers } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
 import { ContextSelect, SelectGroupItem, SelectItem } from "../../ui-components";
@@ -22,7 +25,7 @@ interface Params {
   datumId: string;
 }
 
-function createParamsArray(get: Getter, layers: readonly RootLayerConfig[]): Params[] {
+function createParamsArray(get: Getter, layers: readonly RootLayerConfigForDataset[]): Params[] {
   return layers
     .map(({ id, currentDataIdAtom }) => {
       const datumId = get(currentDataIdAtom);
@@ -68,8 +71,10 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     );
     const filteredRootLayers = useMemo(
       () =>
-        rootLayers.filter(l =>
-          filteredLayers.find(f => l.id === f.id && l.areaCode === municipalityCode),
+        rootLayers.filter(
+          (l): l is RootLayerConfigForDataset =>
+            l.type === "dataset" &&
+            !!filteredLayers.find(f => l.id === f.id && l.areaCode === municipalityCode),
         ),
       [rootLayers, filteredLayers, municipalityCode],
     );
@@ -106,7 +111,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
               return;
             }
             addLayer(
-              createRootLayerAtom({
+              createRootLayerForDatasetAtom({
                 dataset,
                 areaCode: municipalityCode,
                 settings: filteredSettings,

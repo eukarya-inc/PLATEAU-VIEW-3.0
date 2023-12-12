@@ -64,10 +64,9 @@ const RootColumn = styled("div")(() => ({
 
 const RootGrid = styled("div", {
   shouldForwardProp: prop => prop !== "spacing",
-})<{ spacing?: number }>(({ theme, spacing = 0 }) => ({
+})<{ spacing?: number }>(() => ({
   display: "grid",
   gridTemplateColumns: "1fr",
-  gridColumnGap: theme.spacing(spacing),
   gridAutoFlow: "column",
   gridAutoColumns: "",
   // margin: theme.spacing(spacing),
@@ -111,6 +110,9 @@ const Main = styled("main", {
     flexBasis: mainWidth,
     flexShrink: 0,
   },
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(2)})`,
+  },
 }));
 
 const Context = styled("aside", {
@@ -130,6 +132,9 @@ const Context = styled("aside", {
   [`@container (min-width: calc(${mainWidth + contextWidth}px + ${theme.spacing(spacing)}))`]: {
     width: "auto",
     marginTop: 0,
+  },
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(2)})`,
   },
 }));
 

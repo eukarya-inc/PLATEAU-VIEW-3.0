@@ -7,7 +7,7 @@ import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
 import { templatesAtom } from "../../states/template";
-import { createRootLayerAtom } from "../../view-layers/rootLayer";
+import { createRootLayerForDatasetAtom } from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
@@ -38,7 +38,7 @@ export const InitialLayers: FC = () => {
     const remove = initialDatasets.map(d => {
       const dataList = d.items as DatasetItem[];
       return addLayer(
-        createRootLayerAtom({
+        createRootLayerForDatasetAtom({
           dataset: d,
           areaCode: d.wardCode || d.cityCode || d.prefectureCode,
           currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
@@ -51,7 +51,7 @@ export const InitialLayers: FC = () => {
     });
     // const remove = [
     // addLayer(
-    //   createRootLayerAtom({
+    //   createRootLayerForDatasetAtom({
     //     type: BUILDING_LAYER,
     //     municipalityCode: "13101",
     //     version: "2020",

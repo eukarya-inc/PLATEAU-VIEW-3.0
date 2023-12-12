@@ -2,6 +2,7 @@ import { atom } from "jotai";
 import { groupBy } from "lodash";
 
 import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { RootLayerAtom } from "../../../shared/view-layers";
 import { layerSelectionAtom, type LayerModel, type LayerType } from "../../layers";
 import {
   screenSpaceSelectionAtom,
@@ -49,14 +50,16 @@ export type SelectionType = Selection["type"];
 export const selectionAtom = atom((get): Selection[] => [
   ...get(layerSelectionAtom)
     .map(({ id }): LayerSelection | undefined => {
-      const layer = get(rootLayersAtom).find(l => get(get(l.rootLayerAtom).layer).id === id);
+      const layer = get(rootLayersAtom).find(
+        l => get(get(l.rootLayerAtom as RootLayerAtom).layer).id === id,
+      );
       if (layer == null) {
         console.warn(`Layer does not exit: ${id}`);
       }
       return layer != null
         ? {
             type: LAYER_SELECTION,
-            value: get(get(layer.rootLayerAtom).layer),
+            value: get(get(layer.rootLayerAtom as RootLayerAtom).layer),
           }
         : undefined;
     })

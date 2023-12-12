@@ -18,6 +18,7 @@ const StyledTreeItem = styled(TreeItem, {
     minHeight: `calc(${theme.spacing(3)} + 12px)`,
     paddingTop: 6,
     paddingBottom: 6,
+    boxSizing: "border-box",
   },
   [`&  .${treeItemClasses.content} .${treeItemClasses.iconContainer}`]: {
     width: 24,

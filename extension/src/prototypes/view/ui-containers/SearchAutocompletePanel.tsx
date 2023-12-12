@@ -1,4 +1,13 @@
-import { ClickAwayListener, Divider, styled, Tab, tabClasses, Tabs } from "@mui/material";
+import {
+  ClickAwayListener,
+  Divider,
+  styled,
+  Tab,
+  tabClasses,
+  Tabs,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useAtomValue } from "jotai";
 import {
   useCallback,
@@ -153,6 +162,9 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
   const maxMainHeight = useAtomValue(maxMainHeightAtom);
 
   const platform = useAtomValue(platformAtom);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <FloatingPanel>
@@ -173,7 +185,10 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
             children
           ) : (
             <StyledScrollable>
-              <StyledTabs value={deferredTab} onChange={handleTabChange}>
+              <StyledTabs
+                value={deferredTab}
+                variant={isMobile ? "fullWidth" : "standard"}
+                onChange={handleTabChange}>
                 <Tab label="検索" />
                 <Tab label="都道府県" />
                 <Tab label="カテゴリー" />
