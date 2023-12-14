@@ -1,6 +1,8 @@
+import { LngLatHeight } from "./value";
+
 export type Camera = {
   /** Current camera position */
-  readonly position: Partial<CameraPosition> | undefined;
+  readonly position: CameraPosition | undefined;
   //   readonly viewport: Rect | undefined;
   readonly zoomIn: (amount: number, options?: CameraOptions) => void;
   readonly zoomOut: (amount: number, options?: CameraOptions) => void;
@@ -29,7 +31,7 @@ export type Camera = {
   ) => void;
   readonly getFovInfo: (options: { withTerrain?: boolean; calcViewSize?: boolean }) =>
     | {
-        center?: LatLngHeight;
+        center?: LngLatHeight;
         viewSize?: number;
       }
     | undefined;
@@ -67,6 +69,8 @@ export type LookAtDestination = {
   range?: number;
   /** Radian */
   fov?: number;
+  /** Meters */
+  radius?: number;
 };
 
 /** Represents the camera position and state */
@@ -85,6 +89,8 @@ export type CameraPosition = {
   roll?: number;
   /** Field of view expressed in radians */
   fov?: number;
+  /** Aspect ratio of frustum */
+  aspectRatio?: number;
 };
 
 export type CameraOptions = {
@@ -92,10 +98,4 @@ export type CameraOptions = {
   duration?: number;
   easing?: (time: number) => number;
   withoutAnimation?: boolean;
-};
-
-export type LatLngHeight = {
-  lat: number;
-  lng: number;
-  height: number;
 };

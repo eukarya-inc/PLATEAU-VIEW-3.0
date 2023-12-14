@@ -1,6 +1,7 @@
 // import { PEDESTRIAN_OBJECT } from "@takram/plateau-pedestrian";
 
 // import { SKETCH_OBJECT } from "@takram/plateau-sketch";
+import { useTheme } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ResizeCallback } from "re-resizable";
 import { useCallback, type FC } from "react";
@@ -12,12 +13,15 @@ import {
   getGeneralFeatureInformation,
 } from "../../../shared/view/selection/GeneralFeatureContent";
 import { LegendDescriptionSection } from "../../../shared/view/selection/LegendDescriptionSection";
+import { PEDESTRIAN_OBJECT } from "../../pedestrian";
 import { Inspector } from "../../ui-components";
+import { PEDESTRIAN_LAYER } from "../../view-layers";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
+import { PedestrianLayerContent } from "../selection/PedestrianLayerContent";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
-import { inspectorWidthAtom } from "../states/app";
+import { inspectorWidthAtom, pedestrianInspectorWidthAtom, viewportWidthAtom } from "../states/app";
 import {
   COLOR_SCHEME_SELECTION,
   IMAGE_SCHEME_SELECTION,
@@ -30,7 +34,7 @@ export const SelectionPanel: FC = () => {
   let content = null;
   let useScrollable = undefined;
 
-  // const contentType: "default" | "pedestrian" = "default";
+  let contentType: "default" | "pedestrian" = "default";
   const selectionGroups = useAtomValue(selectionGroupsAtom);
 
   const findRootLayer = useSetAtom(findRootLayerAtom);
@@ -41,10 +45,10 @@ export const SelectionPanel: FC = () => {
     switch (type) {
       case LAYER_SELECTION:
         switch (subtype) {
-          // case PEDESTRIAN_LAYER:
-          //   content = <PedestrianLayerContent values={selectionGroup.values} />;
-          //   contentType = "pedestrian";
-          //   break;
+          case PEDESTRIAN_LAYER:
+            content = <PedestrianLayerContent values={selectionGroup.values} />;
+            contentType = "pedestrian";
+            break;
           default:
             content = <LayerContent values={selectionGroup.values} />;
             break;
@@ -79,10 +83,10 @@ export const SelectionPanel: FC = () => {
 
             break;
           }
-          // case PEDESTRIAN_OBJECT:
-          //   content = <PedestrianLayerContent values={selectionGroup.values} />;
-          //   contentType = "pedestrian";
-          //   break;
+          case PEDESTRIAN_OBJECT:
+            content = <PedestrianLayerContent values={selectionGroup.values} />;
+            contentType = "pedestrian";
+            break;
           // case SKETCH_OBJECT:
           //   content = <SketchObjectContent values={selectionGroup.values} />;
           //   break;
@@ -117,29 +121,34 @@ export const SelectionPanel: FC = () => {
     [setInspectorWidth],
   );
 
-  // const [pedestrianInspectorWidth, setPedestrianInspectorWidth] = useAtom(
-  //   pedestrianInspectorWidthAtom,
-  // );
-  // const handlePedestrianResizeStop: ResizeCallback = useCallback(
-  //   (_event, _direction, _element, delta) => {
-  //     setPedestrianInspectorWidth(prevValue => prevValue + delta.width);
-  //   },
-  //   [setPedestrianInspectorWidth],
-  // );
+  const [pedestrianInspectorWidth, setPedestrianInspectorWidth] = useAtom(
+    pedestrianInspectorWidthAtom,
+  );
+  const handlePedestrianResizeStop: ResizeCallback = useCallback(
+    (_event, _direction, _element, delta) => {
+      setPedestrianInspectorWidth(prevValue => prevValue + delta.width);
+    },
+    [setPedestrianInspectorWidth],
+  );
+
+  const viewportWidth = useAtomValue(viewportWidthAtom);
+  const theme = useTheme();
+  const maxWidth = viewportWidth != null ? viewportWidth - parseFloat(theme.spacing(2)) : undefined;
 
   if (content == null) {
     return null;
   }
-  // if (contentType === "pedestrian") {
-  //   return (
-  //     <Inspector
-  //       key="pedestrian"
-  //       defaultWidth={pedestrianInspectorWidth}
-  //       onResizeStop={handlePedestrianResizeStop}>
-  //       <div>{content}</div>
-  //     </Inspector>
-  //   );
-  // }
+  if (contentType === "pedestrian") {
+    return (
+      <Inspector
+        key="pedestrian"
+        defaultWidth={pedestrianInspectorWidth}
+        maxWidth={maxWidth}
+        onResizeStop={handlePedestrianResizeStop}>
+        <div>{content}</div>
+      </Inspector>
+    );
+  }
   return (
     <Inspector
       key="default"

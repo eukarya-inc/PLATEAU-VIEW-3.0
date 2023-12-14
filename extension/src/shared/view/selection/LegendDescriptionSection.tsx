@@ -1,11 +1,13 @@
 import { FC } from "react";
 import Markdown from "react-markdown";
 
+import { LayerModel, LayerType } from "../../../prototypes/layers";
 import {
   COLOR_SCHEME_SELECTION,
   IMAGE_SCHEME_SELECTION,
   SelectionGroup,
 } from "../../../prototypes/view/states/selection";
+import { PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue } from "../../hooks";
 import { LEGEND_DESCRIPTION_FIELD } from "../../types/fieldComponents/general";
 import { CommonContentWrapper } from "../../ui-components/CommonContentWrapper";
@@ -18,8 +20,9 @@ export interface LegendDescriptionSectionProps {
 }
 
 export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ values }) => {
+  const layer = values[0] as LayerModel<Exclude<LayerType, typeof PEDESTRIAN_LAYER>>;
   const legendDescriptionAtom = useFindComponent(
-    values[0].componentAtoms ?? [],
+    layer.componentAtoms ?? [],
     LEGEND_DESCRIPTION_FIELD,
   );
 

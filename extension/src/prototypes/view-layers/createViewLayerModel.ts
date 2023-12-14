@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 
+import { XYZ } from "../../shared/reearth/types";
 import { LayerModelBase } from "../layers";
 
 import {
@@ -31,6 +32,7 @@ export function createViewLayerModel(
     loadingAtom: atom(false),
     hiddenAtom: atom(false),
     layerIdAtom: atom<string | null>(null),
+    boundingSphereAtom: atom<XYZ | null>(null),
     colorSchemeAtom: atom<LayerColorScheme | null>(params.colorScheme ?? null),
     imageSchemeAtom: atom<LayerImageScheme | null>(params.imageScheme ?? null),
   };

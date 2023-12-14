@@ -9,7 +9,14 @@ import {
   createTemplateClient,
   templateClient,
 } from "../api/clients";
-import { GEO_API_URL, GSI_TILE_URL, setGISTileURL, setGeoApiUrl } from "../constants";
+import {
+  GEO_API_URL,
+  GOOGLE_STREET_VIEW_API_KEY,
+  GSI_TILE_URL,
+  setGISTileURL,
+  setGeoApiUrl,
+  setGoogleStreetViewAPIKey,
+} from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
 type Props = {
@@ -19,6 +26,7 @@ type Props = {
   projectId?: string;
   plateauToken?: string;
   catalogUrl?: string;
+  googleStreetViewAPIKey?: string;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -28,6 +36,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   projectId,
   plateauToken,
   catalogUrl,
+  googleStreetViewAPIKey,
   children,
 }) => {
   useEffect(() => {
@@ -41,6 +50,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setGISTileURL(gsiTileURL);
     }
   }, [gsiTileURL]);
+
+  useEffect(() => {
+    if (!GOOGLE_STREET_VIEW_API_KEY && googleStreetViewAPIKey) {
+      setGoogleStreetViewAPIKey(googleStreetViewAPIKey);
+    }
+  }, [googleStreetViewAPIKey]);
 
   useEffect(() => {
     if (!geoClient && geoUrl) {

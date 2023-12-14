@@ -1,22 +1,21 @@
-export type LatLng = {
+import { CameraPosition } from "./camera";
+
+export type LngLat = {
   lat: number;
   lng: number;
 };
 
-export type LatLngHeight = {
+export type LngLatHeight = {
   lat: number;
   lng: number;
   height: number;
 };
 
-export type Camera = {
-  lat: number;
-  lng: number;
-  height: number;
-  heading: number;
-  pitch: number;
-  roll: number;
-  fov: number;
+export type XYZ = {
+  x: number;
+  y: number;
+  z: number;
+  radius?: number;
 };
 
 export type Typography = {
@@ -30,9 +29,9 @@ export type Typography = {
   underline?: boolean;
 };
 
-export type Coordinates = LatLngHeight[];
+export type Coordinates = LngLatHeight[];
 
-export type Polygon = LatLngHeight[][];
+export type Polygon = LngLatHeight[][];
 
 export type Rect = {
   west: number;
@@ -43,7 +42,7 @@ export type Rect = {
 
 // Ideal for plugin developers, but it's hard to implement it with Cesium
 export type Plane = {
-  location: LatLngHeight;
+  location: LngLatHeight;
   width: number;
   height: number;
   length: number;
@@ -65,7 +64,7 @@ export type EXPERIMENTAL_clipping = {
   }[];
   visible?: boolean;
   // for compat
-  location?: LatLngHeight;
+  location?: LngLatHeight;
   coordinates?: number[];
   /**
    * x-axis
@@ -90,10 +89,10 @@ export type ValueTypes = {
   string: string;
   number: number;
   bool: boolean;
-  latlng: LatLng;
-  latlngheight: LatLngHeight;
+  latlng: LngLat;
+  latlngheight: LngLatHeight;
   url: string;
-  camera: Camera;
+  camera: CameraPosition;
   typography: Typography;
   coordinates: Coordinates;
   polygon: Polygon;

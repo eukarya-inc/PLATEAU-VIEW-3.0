@@ -2,6 +2,7 @@ import { Atom, PrimitiveAtom } from "jotai";
 import { type SetOptional } from "type-fest";
 
 import { type LayerModelBase } from "../../prototypes/layers";
+import { XYZ } from "../../shared/reearth/types";
 import { LayerModelOverrides as ReEarthLayerModelOverrides } from "../../shared/view-layers";
 import {
   type ImageIconSet,
@@ -28,6 +29,7 @@ declare module "../layers" {
     titleAtom: PrimitiveAtom<LayerTitle | null>;
     loadingAtom: PrimitiveAtom<boolean>;
     hiddenAtom: PrimitiveAtom<boolean>;
+    boundingSphereAtom: PrimitiveAtom<XYZ | null>;
     // NOTE: Use layerId instead of boundingSphereAtom for ReEarth
     layerIdAtom: PrimitiveAtom<string | null>;
     colorSchemeAtom: Atom<LayerColorScheme | null>;

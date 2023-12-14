@@ -39,7 +39,9 @@ export const useAttachScreenSpaceSelection = () => {
   const selectionsLayers = useMemo(
     () =>
       selections.reduce((res, s) => {
-        let layerIndex = res.findIndex(v => v.layerId === s.value.layerId);
+        if (typeof s?.value === "string") return res;
+        const layerId = s.value.layerId;
+        let layerIndex = res.findIndex(v => v.layerId === layerId);
         if (layerIndex === -1) {
           layerIndex =
             res.push({
@@ -74,9 +76,11 @@ export const useAttachScreenSpaceSelection = () => {
   );
 
   const isTileset = useMemo(() => {
-    const selectedLayerId = selections[0]?.value?.layerId;
+    const s = selections[0];
+    if (typeof s?.value === "string") return false;
+    const selectedLayerId = s?.value?.layerId;
     if (!selectedLayerId) return true;
-    const layer = window.reearth?.layers?.findById?.(selections[0]?.value?.layerId);
+    const layer = window.reearth?.layers?.findById?.(s?.value?.layerId);
     if (layer?.type !== "simple" || !layer.data?.type) return true;
     return layer.data.type === "3dtiles";
   }, [selections]);

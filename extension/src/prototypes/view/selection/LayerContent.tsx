@@ -5,7 +5,7 @@ import { MouseEvent, MouseEventHandler, useCallback, useMemo, useState } from "r
 import invariant from "tiny-invariant";
 
 import { useOptionalAtomValue } from "../../../shared/hooks";
-import { flyToCamera, flyToLayerId } from "../../../shared/reearth/utils";
+import { flyToCamera, flyToLayerId, lookAtXYZ } from "../../../shared/reearth/utils";
 import { findRootLayerAtom, rootLayersAtom } from "../../../shared/states/rootLayer";
 import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSearchPanel";
 import { Fields } from "../../../shared/view/fields/Fields";
@@ -23,7 +23,12 @@ import {
   VisibilityOffIcon,
   VisibilityOnIcon,
 } from "../../ui-components";
-import { BUILDING_LAYER, layerTypeIcons, layerTypeNames } from "../../view-layers";
+import {
+  BUILDING_LAYER,
+  PEDESTRIAN_LAYER,
+  layerTypeIcons,
+  layerTypeNames,
+} from "../../view-layers";
 import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 import { DatasetDialog } from "../ui-containers/DatasetDialog";
 
@@ -33,21 +38,23 @@ import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
 // import { LayerSketchSection } from "./LayerSketchSection";
 
-export interface LayerContentProps<T extends LayerType> {
+type SupportedLayerType = Exclude<LayerType, typeof PEDESTRIAN_LAYER>;
+
+export interface LayerContentProps<T extends SupportedLayerType> {
   values: (SelectionGroup & {
     type: typeof LAYER_SELECTION;
     subtype: T;
   })["values"];
 }
 
-export function LayerContent<T extends LayerType>({
+export function LayerContent<T extends SupportedLayerType>({
   values,
 }: LayerContentProps<T>): JSX.Element | null {
   invariant(values.length > 0);
   const buildingLayers = (values as LayerModel[]).filter(
     (v): v is BuildingLayerModel => v.type === BUILDING_LAYER,
   );
-  const layer = values[0];
+  const layer = values[0] as LayerModel<SupportedLayerType>;
   const type = layer.type;
   const findRootLayer = useSetAtom(findRootLayerAtom);
   const rootLayer = findRootLayer(layer.id);
@@ -85,6 +92,7 @@ export function LayerContent<T extends LayerType>({
 
   const layerId = useAtomValue(layer.layerIdAtom);
   const layerCamera = useOptionalAtomValue(layer.cameraAtom);
+  const boundingSphere = useAtomValue(layer.boundingSphereAtom);
   const handleMove = useCallback(() => {
     const camera = rootLayer?.general?.camera;
     if (camera) {
@@ -93,10 +101,13 @@ export function LayerContent<T extends LayerType>({
     if (layerCamera) {
       return flyToCamera(layerCamera);
     }
+    if (boundingSphere) {
+      return lookAtXYZ(boundingSphere);
+    }
     if (layerId) {
       return flyToLayerId(layerId);
     }
-  }, [layerId, layerCamera, rootLayer?.general?.camera]);
+  }, [layerId, layerCamera, rootLayer?.general?.camera, boundingSphere]);
 
   const remove = useSetAtom(removeLayerAtom);
   const handleRemove = useCallback(() => {
@@ -108,6 +119,8 @@ export function LayerContent<T extends LayerType>({
   const components = useMemo(() => {
     const result: { [K in ComponentAtom["type"]]?: ComponentAtom["atom"][] } = {};
     for (const layer of values) {
+      if (!("componentAtoms" in layer)) continue;
+
       for (const componentAtom of layer.componentAtoms ?? []) {
         if (result[componentAtom.type]) {
           result[componentAtom.type]?.push(componentAtom.atom);

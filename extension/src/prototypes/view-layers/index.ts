@@ -5,3 +5,4 @@ export * from "./states";
 export * from "./types";
 export * from "./ViewLayerListItem";
 export * from "./layerTypeNames";
+export * from "./PedestrianLayer";
