@@ -1,7 +1,7 @@
 // import { BoundingSphere } from "@cesium/engine";
 import { atom } from "jotai";
 
-import { compose } from "../cesium-helpers";
+import { composeIdentifier } from "../cesium-helpers";
 import { atomsWithSelection, atomsWithSelectionTransform } from "../shared-states";
 
 // import { type ScreenSpaceSelectionHandler } from "./ScreenSpaceSelectionHandler";
@@ -43,7 +43,7 @@ function transform(object: object): ScreenSpaceSelectionEntry | undefined {
 const selectionAtoms = atomsWithSelection<ScreenSpaceSelectionEntry>({
   getKey: value => {
     // Don't remove type assertion.
-    return compose({
+    return composeIdentifier({
       type: value.type,
       key:
         typeof value.value === "object"

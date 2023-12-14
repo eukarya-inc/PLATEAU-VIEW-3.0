@@ -2,7 +2,9 @@ import { IconButton, Tooltip } from "@mui/material";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { memo, useCallback, useMemo, type FC, type SyntheticEvent } from "react";
 
-import { flyToLayerId } from "../../shared/reearth/utils";
+import { useOptionalAtomValue } from "../../shared/hooks";
+import { flyToCamera, flyToLayerId, lookAtXYZ } from "../../shared/reearth/utils";
+import { findRootLayerAtom } from "../../shared/states/rootLayer";
 import { removeLayerAtom, type LayerProps, type LayerType } from "../layers";
 import { ColorMapIcon, ColorSetIcon, ImageIconSetIcon, LayerListItem } from "../ui-components";
 
@@ -17,8 +19,17 @@ export type ViewLayerListItemProps<T extends LayerType = LayerType> = LayerProps
 
 export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
   (props: ViewLayerListItemProps) => {
-    const { id, type, selected, titleAtom, loadingAtom, hiddenAtom, layerIdAtom, itemProps } =
-      props;
+    const {
+      id,
+      type,
+      selected,
+      titleAtom,
+      loadingAtom,
+      hiddenAtom,
+      layerIdAtom,
+      boundingSphereAtom,
+      itemProps,
+    } = props;
 
     const title = useAtomValue(titleAtom);
     const loading = useAtomValue(loadingAtom);
@@ -30,13 +41,29 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
     // );
     // const highlighted = useAtomValue(highlightedAtom);
 
+    const findRootLayer = useSetAtom(findRootLayerAtom);
+    const rootLayer = findRootLayer(props.id);
+
     const layerId = useAtomValue(layerIdAtom);
+    const layerCamera = useOptionalAtomValue(
+      useMemo(() => ("cameraAtom" in props ? props.cameraAtom : undefined), [props]),
+    );
+    const boundingSphere = useAtomValue(boundingSphereAtom);
     const handleDoubleClick = useCallback(() => {
-      if (!layerId) {
-        return;
+      const camera = rootLayer?.general?.camera;
+      if (camera) {
+        return flyToCamera(camera);
       }
-      flyToLayerId(layerId);
-    }, [layerId]);
+      if (layerCamera) {
+        return flyToCamera(layerCamera);
+      }
+      if (boundingSphere) {
+        return lookAtXYZ(boundingSphere);
+      }
+      if (layerId) {
+        return flyToLayerId(layerId);
+      }
+    }, [layerId, rootLayer?.general?.camera, layerCamera, boundingSphere]);
 
     const [hidden, setHidden] = useAtom(hiddenAtom);
     const handleToggleHidden = useCallback(() => {

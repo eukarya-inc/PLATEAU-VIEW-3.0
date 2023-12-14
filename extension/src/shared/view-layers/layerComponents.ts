@@ -3,6 +3,7 @@
 // import { LandSlideRiskLayer } from "./LandSlideRiskLayer";
 // import { LandUseLayer } from "./LandUseLayer";
 import { type LayerComponents } from "../../prototypes/layers";
+import { PedestrianLayer } from "../../prototypes/view-layers";
 import {
   BORDER_LAYER,
   BRIDGE_LAYER,
@@ -42,7 +43,7 @@ import { BuildingLayer, GeneralDatasetLayer } from ".";
 
 export const layerComponents: LayerComponents = {
   [HEATMAP_LAYER]: undefined, // HeatmapLayer,
-  [PEDESTRIAN_LAYER]: undefined, // PedestrianLayer,
+  [PEDESTRIAN_LAYER]: PedestrianLayer,
   [SKETCH_LAYER]: undefined, // SketchLayer,
 
   // Dataset layers

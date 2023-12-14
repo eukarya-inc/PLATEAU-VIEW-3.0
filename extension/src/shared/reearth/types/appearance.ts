@@ -1,12 +1,7 @@
+import { Camera } from "./camera";
 import type { ExpressionContainer } from "./expression";
 import { Feature } from "./layer";
-import type {
-  Camera,
-  ClassificationType,
-  EXPERIMENTAL_clipping,
-  LatLng,
-  Typography,
-} from "./value";
+import type { ClassificationType, EXPERIMENTAL_clipping, LngLat, Typography } from "./value";
 
 export type LayerAppearance<T> = {
   [K in keyof T]?: T[K] | LayerAppearance<T[K]> | ExpressionContainer;
@@ -159,7 +154,7 @@ export type Cesium3DTilesAppearance = {
 
 export type LegacyPhotooverlayAppearance = {
   show?: boolean;
-  location?: LatLng;
+  location?: LngLat;
   height?: number;
   heightReference?: "none" | "clamp" | "relative";
   camera?: Camera; // You may also update the field name in storytelling widget

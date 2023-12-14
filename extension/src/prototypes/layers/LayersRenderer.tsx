@@ -19,7 +19,10 @@ const LayerRenderer: FC<LayerRendererProps> = ({ components, index, layerAtom, s
   const layerId = useAtomValue(layer.layerIdAtom);
   const layerSelection = useAtomValue(layerSelectionAtom);
   const filteredSelections = useMemo(
-    () => selections?.filter(v => layerId === v.value.layerId),
+    () =>
+      selections?.filter(
+        v => typeof v.value !== "string" && "layerId" in v.value && layerId === v.value.layerId,
+      ),
     [layerId, selections],
   );
 

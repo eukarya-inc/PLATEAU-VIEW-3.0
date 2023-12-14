@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { BoxAppearance, LatLngHeight } from "../../reearth/types";
+import { BoxAppearance, LngLatHeight } from "../../reearth/types";
 import { EXPERIMENTAL_clipping } from "../../reearth/types/value";
 import { TilesetClippingField } from "../../types/fieldComponents/3dtiles";
 
@@ -29,7 +29,7 @@ export const useClippingBox = (
   component: TilesetClippingField | undefined,
 ): [EXPERIMENTAL_clipping | undefined, BoxAppearance | undefined] => {
   const { enable, visible, allowEnterGround, direction } = component?.value || {};
-  const location: LatLngHeight | undefined = useMemo(() => {
+  const location: LngLatHeight | undefined = useMemo(() => {
     if (!enable) return;
 
     const viewport = window.reearth?.viewport;

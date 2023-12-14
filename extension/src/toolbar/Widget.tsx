@@ -3,6 +3,7 @@ import { FC, memo } from "react";
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame } from "../prototypes/ui-components";
 import { Environments } from "../prototypes/view/containers/Environments";
+import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
 import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
@@ -23,6 +24,7 @@ type Props = WidgetProps<{
   plateauAccessToken?: string;
   catalogURL?: string;
   projectName?: string;
+  googleStreetViewAPIKey?: string;
 }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
@@ -35,7 +37,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       plateauUrl={widget.property.default.plateauURL}
       catalogUrl={widget.property.default.catalogURL}
       projectId={widget.property.default.projectName}
-      plateauToken={widget.property.default.plateauAccessToken}>
+      plateauToken={widget.property.default.plateauAccessToken}
+      googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
@@ -53,6 +56,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       <SelectionCoordinator />
       <ScreenSpaceSelection />
       <ReverseGeocoding />
+      <PedestrianTool />
     </WidgetContext>
   );
 });

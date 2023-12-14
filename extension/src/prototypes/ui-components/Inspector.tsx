@@ -1,5 +1,10 @@
 import { Paper, styled, type PaperProps, useTheme, useMediaQuery } from "@mui/material";
-import { Resizable, type ResizeCallback, type ResizeStartCallback } from "re-resizable";
+import {
+  Resizable,
+  ResizableProps,
+  type ResizeCallback,
+  type ResizeStartCallback,
+} from "re-resizable";
 import { forwardRef } from "react";
 
 import { AutoHeight } from "./AutoHeight";
@@ -26,7 +31,9 @@ const ScrollableRoundedBox = styled(Scrollable)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
 }));
 
-export interface InspectorProps extends Omit<PaperProps, "onResize"> {
+export interface InspectorProps
+  extends Omit<PaperProps, "onResize">,
+    Pick<ResizableProps, "maxWidth" | "onResize" | "onResizeStart" | "onResizeStop"> {
   defaultWidth?: number;
   scrollable?: boolean;
   onResize?: ResizeCallback;

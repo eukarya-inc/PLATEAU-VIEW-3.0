@@ -106,10 +106,12 @@ export const makePropertyForFeatureInspector = ({
   const rawBuiltInRootProperties = !shouldUseSettingProperty
     ? features
         .map(f =>
-          getRootFields(f.properties, datasetType, {
-            name: layer?.title,
-            datasetName: datasetType ? datasetTypeNames[datasetType] : undefined,
-          }),
+          layer && "title" in layer
+            ? getRootFields(f.properties, datasetType, {
+                name: layer?.title,
+                datasetName: datasetType ? datasetTypeNames[datasetType] : undefined,
+              })
+            : undefined,
         )
         .filter(v => !!v && !!Object.keys(v).length)
     : [];

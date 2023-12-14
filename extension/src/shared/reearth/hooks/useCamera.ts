@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { CameraOptions, CameraPosition, LatLngHeight } from "../types";
+import { CameraOptions, CameraPosition, LngLatHeight } from "../types";
 
 export interface CameraZoom {
   zoomIn: () => void;
@@ -26,7 +26,7 @@ export function useCamera(): {
   getCameraPosition: () => CameraPosition | undefined;
   getCameraFovInfo: (options?: { withTerrain?: boolean; calcViewSize?: boolean }) =>
     | {
-        center?: LatLngHeight;
+        center?: LngLatHeight;
         viewSize?: number;
       }
     | undefined;

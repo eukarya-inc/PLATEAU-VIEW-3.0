@@ -38,7 +38,6 @@ export class TileCacheService {
     coords: Coordinates,
     { format = "webp" }: RenderTileOptions = {},
   ): Promise<Readable | string | undefined> {
-    console.log(this.cache);
     if (this.cache != null) {
       (async () => {
         invariant(this.cache != null);

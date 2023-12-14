@@ -22,9 +22,9 @@ export type ComponentAtom<T extends ComponentBase["type"] = ComponentBase["type"
 };
 
 export type ComponentIdParams = {
-  datasetId: string | undefined;
-  shareId: string | undefined;
-  componentType: string | undefined;
+  datasetId?: string;
+  shareId?: string;
+  componentType?: string;
 };
 
 export const makeComponentId = ({ datasetId, componentType, shareId }: ComponentIdParams) => {

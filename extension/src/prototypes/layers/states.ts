@@ -71,7 +71,7 @@ export const addLayerAtom = atom(
           ).id === id,
       );
       if (layerAtom == null) {
-        console.warn(`Layer does not exit: ${id}`);
+        console.warn(`Layer does not exist: ${id}`);
         return;
       }
       set(layerAtomsAtom, {

@@ -50,9 +50,9 @@ export type RootLayerForDatasetParams = {
 export type RootLayerForLayerAtomParams<T extends LayerType> = {
   id?: string;
   type: T;
-  title: string;
-  shareId: string | undefined;
-  shouldInitialize: boolean;
+  title?: string;
+  shareId?: string;
+  shouldInitialize?: boolean;
 } & ViewLayerModelParams<T>;
 
 export type RootLayerForDataset = {
@@ -63,6 +63,7 @@ export type RootLayerForDataset = {
 };
 
 export type RootLayerForLayer<T extends LayerType = LayerType> = {
+  id: string;
   type: "layer";
   layer: PrimitiveAtom<LayerModel<T>>;
 };
@@ -384,15 +385,18 @@ export const createRootLayerForLayerAtom = <T extends LayerType>({
   shouldInitialize,
   ...props
 }: RootLayerForLayerAtomParams<T>): RootLayerConfig => {
+  const rootLayerId = id ?? generateID();
   const rootLayer: RootLayerForLayer<T> = {
+    id: rootLayerId,
     type: "layer",
     layer: atom({
-      id: id ?? generateID(),
       ...(createViewLayer({
+        id: rootLayerId,
         type: type as LayerType,
-        title,
+        title: title ?? "",
         datasetId: undefined,
         shareId,
+        municipalityCode: "",
         shouldInitializeAtom: shouldInitialize,
         ...props,
       }) as LayerModel<T>),
