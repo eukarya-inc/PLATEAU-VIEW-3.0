@@ -35,6 +35,7 @@ export type Camera = {
         viewSize?: number;
       }
     | undefined;
+  readonly setView: (camera: CameraPosition) => void;
 };
 
 export type FlyToDestination = {

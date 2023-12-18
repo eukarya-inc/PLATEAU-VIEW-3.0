@@ -1,88 +1,104 @@
-// import { useTheme } from "@mui/material";
-// import { animate, useMotionValue, usePresence } from "framer-motion";
-import { type FC } from "react";
+import { useTheme } from "@mui/material";
+import { hexToRgb } from "@mui/system";
+import { animate, useMotionValue, usePresence } from "framer-motion";
+import { useMemo, type FC, useEffect, useState } from "react";
 
-// import { useConstant } from "../react-helpers";
+import {
+  PedestrianEllipseAppearances,
+  PedestrianEllipseLayer,
+} from "../../shared/reearth/layers/pedestrian/ellipse";
+import { XYZ } from "../../shared/reearth/types";
 
 import { type MotionPosition } from "./useMotionPosition";
 
 export interface LevitationCircleProps {
   motionPosition: MotionPosition;
-  offset?: [lng: number, lat: number, height: number];
+  offset?: XYZ;
   radius?: number;
 }
 
-export const LevitationCircle: FC<LevitationCircleProps> = () =>
-  // {
-  // motionPosition,
-  // offset = [0, 0, 0],
-  // radius = 100,
-  // },
-  {
-    // const scene = useCesium(({ scene }) => scene);
+export const LevitationCircle: FC<LevitationCircleProps> = ({
+  motionPosition,
+  offset,
+  radius = 100,
+}) => {
+  const motionLevitation = useMotionValue(0);
+  const [present, safeToRemove] = usePresence();
+  useEffect(() => {
+    return animate(motionLevitation, present ? 1 : 0, {
+      type: "tween",
+      duration: 0.2,
+      onComplete: () => {
+        if (!present) {
+          safeToRemove();
+        }
+      },
+    }).stop;
+  }, [motionLevitation, present, safeToRemove]);
 
-    // const motionLevitation = useMotionValue(0);
-    // const [present, safeToRemove] = usePresence();
-    // useEffect(() => {
-    //   return animate(motionLevitation, present ? 1 : 0, {
-    //     type: "tween",
-    //     duration: 0.2,
-    //     onComplete: () => {
-    //       if (!present) {
-    //         safeToRemove();
-    //       }
-    //     },
-    //   }).stop;
-    // }, [motionLevitation, present, safeToRemove]);
+  const [levitation, setLevitation] = useState(0);
+  useEffect(() => {
+    return motionLevitation.on("change", latest => {
+      setLevitation(latest);
+    });
+  }, [motionLevitation]);
 
-    // useEffect(() => {
-    //   return motionLevitation.on("renderRequest", () => {
-    //     scene.requestRender();
-    //   });
-    // }, [scene, motionLevitation]);
+  const [trigger, setTrigger] = useState({});
+  useEffect(() => {
+    return motionPosition.on("renderRequest", () => {
+      requestAnimationFrame(() => {
+        setTrigger({});
+      });
+    });
+  }, [motionPosition]);
 
-    // const positionPropertyCallback = (): Cartesian3 | undefined => {
-    //   const position = Cartesian3.fromElements(...motionPosition.get(), positionScratch);
-    //   const result = Cartesian3.add(position, offset, position);
-    //   if (result.equals(Cartesian3.ZERO)) {
-    //     // Entity requires non-zero magnitude position.
-    //     return undefined;
-    //   }
-    //   return result;
-    // };
-    // const positionPropertyCallbackRef = useRef(positionPropertyCallback);
-    // positionPropertyCallbackRef.current = positionPropertyCallback;
+  const coordinates = useMemo(() => {
+    const [posX, posY, posZ] = motionPosition.get();
+    const nextPosition = [
+      posX + (offset?.x || 0),
+      posY + (offset?.y || 0),
+      posZ + (offset?.z || 0),
+    ] as const;
+    if (nextPosition.every(v => v === 0)) {
+      // Entity requires non-zero magnitude position.
+      return undefined;
+    }
+    const result = window.reearth?.scene?.toLngLatHeight?.(
+      posX + (offset?.x || 0),
+      posY + (offset?.y || 0),
+      posZ + (offset?.z || 0),
+      { useGlobeEllipsoid: true },
+    ) ?? [0, 0, 0];
+    return result;
+  }, [trigger, motionPosition, offset]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // const positionProperty = useConstant(
-    //   () =>
-    //     new CallbackProperty(
-    //       () => positionPropertyCallbackRef.current(),
-    //       false,
-    //     ) as unknown as PositionProperty,
-    // );
+  const semiAxisProperty = useMemo(() => Math.max(0.1, levitation * radius), [radius, levitation]);
 
-    // const semiAxisProperty = useMemo(
-    //   () => new CallbackProperty(() => Math.max(0.1, motionLevitation.get() * radius), false),
-    //   [radius, motionLevitation],
-    // );
+  const theme = useTheme();
 
-    // const theme = useTheme();
-    // const entityOptions = useMemo(
-    //   (): EntityProps => ({
-    //     position: positionProperty,
-    //     ellipse: {
-    //       semiMajorAxis: semiAxisProperty,
-    //       semiMinorAxis: semiAxisProperty,
-    //       fill: true,
-    //       material: new ColorMaterialProperty(
-    //         Color.fromCssColorString(theme.palette.primary.main).withAlpha(0.2),
-    //       ),
-    //       classificationType: ClassificationType.BOTH,
-    //     },
-    //   }),
-    //   [theme, positionProperty, semiAxisProperty],
-    // );
+  const color = useMemo(() => {
+    const rgb = hexToRgb(theme.palette.primary.main)
+      .slice("rgb(".length, -")".length)
+      .split(/, |,/)
+      .map(Number);
+    return `rgba(${[...rgb, 0.2].join(",")})`;
+  }, [theme]);
 
-    // return <Entity {...entityOptions} />;
-    return null;
-  };
+  const appearances: PedestrianEllipseAppearances = useMemo(
+    () => ({
+      ellipse: {
+        radius: semiAxisProperty,
+        fill: true,
+        fillColor: color,
+        classificationType: "both",
+      },
+    }),
+    [color, semiAxisProperty],
+  );
+
+  return (
+    coordinates && (
+      <PedestrianEllipseLayer useTransition appearances={appearances} coordinates={coordinates} />
+    )
+  );
+};

@@ -16,9 +16,12 @@ export const PedestrianTool: FC<PedestrianToolProps> = ({ onCreate }) => {
   useReEarthEvent(
     "mousemove",
     useCallback(
-      ({ x, y, height }) => {
-        if (!x || !y) return;
-        motionPosition.setPosition({ x, y, z: height ?? 0 });
+      ({ lng, lat, height }) => {
+        if (!lng || !lat) return;
+        const [x, y, z] = window.reearth?.scene?.toXYZ(lng, lat, height ?? 0, {
+          useGlobeEllipsoid: true,
+        }) ?? [0, 0, 0];
+        motionPosition.setPosition({ x, y, z });
       },
       [motionPosition],
     ),

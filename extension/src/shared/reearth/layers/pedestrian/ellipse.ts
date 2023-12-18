@@ -4,38 +4,35 @@ import { useLayer } from "../../hooks";
 import { LayerAppearanceTypes } from "../../types";
 import { Data } from "../../types/layer";
 
-export type PedestrianMarkerAppearances = Partial<
-  Pick<LayerAppearanceTypes, "marker" | "transition">
+export type PedestrianEllipseAppearances = Partial<
+  Pick<LayerAppearanceTypes, "ellipse" | "transition">
 >;
 
-export type PedestrianMarkerProps = {
-  id: string;
+export type PedestrianEllipseProps = {
   coordinates: [lng: number, lat: number, height: number];
   onLoad?: (layerId: string) => void;
   visible?: boolean;
   useTransition: boolean;
-  appearances: PedestrianMarkerAppearances;
+  appearances: PedestrianEllipseAppearances;
 };
 
-export const PEDESTRIAN_MARKER_ID_PROPERTY = "pedestrianID";
-
-export const PedestrianMarkerLayer: FC<PedestrianMarkerProps> = ({
-  id,
+export const PedestrianEllipseLayer: FC<PedestrianEllipseProps> = ({
   coordinates,
   onLoad,
   visible,
   useTransition,
   appearances,
 }) => {
-  const mergedAppearances: PedestrianMarkerAppearances | undefined = useMemo(
+  const mergedAppearances: PedestrianEllipseAppearances | undefined = useMemo(
     () => ({
       ...appearances,
-      marker: {
-        ...(appearances.marker ?? {}),
+      ellipse: {
+        ...(appearances.ellipse ?? {}),
       },
       transition: {
         useTransition,
         translate: coordinates,
+        ...(appearances.transition ?? {}),
       },
     }),
     [appearances, coordinates, useTransition],
@@ -47,16 +44,13 @@ export const PedestrianMarkerLayer: FC<PedestrianMarkerProps> = ({
       type: "geojson",
       value: {
         type: "Feature",
-        properties: {
-          [PEDESTRIAN_MARKER_ID_PROPERTY]: id,
-        },
         geometry: {
           coordinates: initialCoordinatesRef.current,
           type: "Point",
         },
       },
     }),
-    [id],
+    [],
   );
 
   useLayer({
