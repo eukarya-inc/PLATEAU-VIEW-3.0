@@ -96,9 +96,7 @@ export const LevitationCircle: FC<LevitationCircleProps> = ({
     [color, semiAxisProperty],
   );
 
-  return (
-    coordinates && (
-      <PedestrianEllipseLayer useTransition appearances={appearances} coordinates={coordinates} />
-    )
-  );
+  return coordinates ? (
+    <PedestrianEllipseLayer useTransition appearances={appearances} coordinates={coordinates} />
+  ) : null;
 };
