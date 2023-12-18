@@ -18,14 +18,18 @@ export type AppearanceTypes = {
   model: ModelAppearance;
   "3dtiles": Cesium3DTilesAppearance;
   ellipsoid: EllipsoidAppearance;
+  ellipse: EllipseAppearance;
   box: BoxAppearance;
   photooverlay: LegacyPhotooverlayAppearance;
   resource: ResourceAppearance;
   raster: RasterAppearance;
+  frustum: FrustumAppearance;
+  transition: TransitionAppearance;
 };
 
 export type MarkerAppearance = {
   show?: boolean;
+  height?: number;
   heightReference?: "none" | "clamp" | "relative";
   style?: "none" | "point" | "image";
   pointSize?: number;
@@ -63,6 +67,8 @@ export type MarkerAppearance = {
   extrude?: boolean;
   near?: number;
   far?: number;
+  pixelOffset?: [number, number];
+  eyeOffset?: [number, number, number];
 };
 
 export type PolylineAppearance = {
@@ -102,6 +108,18 @@ export type EllipsoidAppearance = {
   far?: number;
 };
 
+export type EllipseAppearance = {
+  show?: boolean;
+  heightReference?: "none" | "clamp" | "relative";
+  classificationType?: ClassificationType;
+  shadows?: "disabled" | "enabled" | "cast_only" | "receive_only";
+  radius?: number;
+  fill?: boolean;
+  fillColor?: string;
+  near?: number;
+  far?: number;
+};
+
 export type ModelAppearance = {
   show?: boolean;
   model?: string; // For compat
@@ -129,6 +147,15 @@ export type ModelAppearance = {
   specularEnvironmentMaps?: string;
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;
+};
+
+export type FrustumAppearance = {
+  show?: boolean;
+  color?: string;
+  opacity?: number;
+  zoom?: number;
+  aspectRatio?: number;
+  length?: number;
 };
 
 export type Cesium3DTilesAppearance = {
@@ -224,4 +251,11 @@ export type BoxAppearance = {
   activeEdgeIndex?: number; // 0 ~ 11
   near?: number;
   far?: number;
+};
+
+export type TransitionAppearance = {
+  useTransition?: boolean;
+  translate?: [lng: number, lat: number, height: number];
+  rotate?: [heading: number, pitch: number, roll: number];
+  scale?: [x: number, y: number, z: number];
 };

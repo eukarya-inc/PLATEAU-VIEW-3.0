@@ -14,6 +14,7 @@ import {
   type HeadingPitch,
   type Location,
   type PEDESTRIAN_OBJECT,
+  streetViewAtom,
 } from "../../pedestrian";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import {
@@ -87,7 +88,6 @@ export const StreetViewContent: FC<{
     zoomAtom: layer.zoomAtom,
     synchronizedAtom: layer.synchronizedAtom,
   });
-
   const [pano, setPano] = useAtom(layer.panoAtom);
   const location = useAtomValue(layer.locationAtom);
   const headingPitch = useAtomValue(layer.headingPitchAtom);
@@ -210,6 +210,12 @@ export const Content: FC<{
       containerRef.current.style.aspectRatio = `${aspectRatio}`;
     }
   }, []);
+
+  console.log("render: ", window.reearth?.camera?.position?.aspectRatio);
+  // NOTE: We are using Suepense to wait loading StreetView,
+  // but Suspense re-render the component automatically after StreetView is loaded.
+  // So we need to re-render manually.
+  useAtomValue(streetViewAtom);
 
   useEffect(() => {
     handleZoomChange();

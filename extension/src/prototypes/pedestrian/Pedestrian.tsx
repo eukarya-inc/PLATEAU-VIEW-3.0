@@ -1,10 +1,12 @@
 // import { DndContext, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtomValue } from "jotai";
 import { nanoid } from "nanoid";
-import { useMemo, type FC, useState } from "react";
+import { useMemo, type FC, useState, useCallback } from "react";
 
 import { PEDESTRIAN_MARKER_ID_PROPERTY } from "../../shared/reearth/layers";
+import { XYZ } from "../../shared/reearth/types";
 import { composeIdentifier, matchIdentifier } from "../cesium-helpers";
 import { layerSelectionAtom } from "../layers";
 import { useConstant } from "../react-helpers";
@@ -42,7 +44,7 @@ export const Pedestrian: FC<PedestrianProps> = ({
   headingPitch,
   zoom,
   hideFrustum = false,
-  // onChange,
+  onChange,
 }) => {
   const defaultId = useConstant(() => nanoid());
   const objectId = composeIdentifier({
@@ -94,45 +96,44 @@ export const Pedestrian: FC<PedestrianProps> = ({
     ),
   );
 
-  // const [dragKey, setDragKey] = useState(0);
-  const [levitated, _setLevitated] = useState(false);
-  // const handleDragStart = useCallback((event: DragStartEvent) => {
-  //   setLevitated(true);
-  // }, []);
-  // const handleDragEnd = useCallback(
-  //   (event: DragEndEvent) => {
-  //     const referenceLocation = location;
-  //     const offset = event.active.data.current;
-  //     invariant(offset instanceof Cartesian3);
-  //     const position = Cartesian3.fromDegrees(
-  //       referenceLocation.longitude,
-  //       referenceLocation.latitude,
-  //       referenceLocation.height,
-  //       scene.globe.ellipsoid,
-  //       cartesianScratch,
-  //     );
-  //     Cartesian3.add(position, offset, position);
-  //     const cartographic = Cartographic.fromCartesian(
-  //       position,
-  //       scene.globe.ellipsoid,
-  //       cartographicScratch,
-  //     );
-  //     setDragKey(Math.random());
-  //     setLevitated(false);
-  //     onChange?.({
-  //       longitude: CesiumMath.toDegrees(cartographic.longitude),
-  //       latitude: CesiumMath.toDegrees(cartographic.latitude),
-  //       height: referenceLocation.height,
-  //     });
-  //   },
-  //   [location, onChange, scene],
-  // );
+  const [dragKey, setDragKey] = useState(0);
+  const [levitated, setLevitated] = useState(false);
+  const handleDragStart = useCallback((_event: DragStartEvent) => {
+    setLevitated(true);
+  }, []);
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const referenceLocation = location;
+      const offset = event.active.data.current as XYZ;
+      const position = window.reearth?.scene?.toXYZ(
+        referenceLocation.longitude,
+        referenceLocation.latitude,
+        referenceLocation.height ?? 0,
+        { useGlobeEllipsoid: true },
+      ) ?? [0, 0, 0];
+      const nextPosition = [
+        position[0] + offset.x,
+        position[1] + offset.y,
+        position[2] + offset.z,
+      ] as const;
+      const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight(...nextPosition, {
+        useGlobeEllipsoid: true,
+      }) ?? [0, 0, 0];
+      setDragKey(Math.random());
+      setLevitated(false);
+      onChange?.({
+        longitude: lng,
+        latitude: lat,
+        height: height,
+      });
+    },
+    [location, onChange],
+  );
 
   return (
-    // <DndContext autoScroll={false} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-    <>
+    <DndContext autoScroll={false} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <PedestrianObject
-        // key={dragKey}
+        key={dragKey}
         id={objectId}
         location={location}
         selected={selected}
@@ -140,10 +141,14 @@ export const Pedestrian: FC<PedestrianProps> = ({
       />
       <AnimatePresence>
         {selected && !levitated && !hideFrustum && headingPitch != null && zoom != null && (
-          <StreetViewFrustum location={location} headingPitch={headingPitch} zoom={zoom} />
+          <StreetViewFrustum
+            key={dragKey}
+            location={location}
+            headingPitch={headingPitch}
+            zoom={zoom}
+          />
         )}
       </AnimatePresence>
-    </>
-    // </DndContext>
+    </DndContext>
   );
 };

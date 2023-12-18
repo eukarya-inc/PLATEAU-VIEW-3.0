@@ -1,14 +1,12 @@
-// import { useTheme } from "@mui/material";
-// import { animate, useMotionValue, usePresence } from "framer-motion";
-import { type FC } from "react";
-// import invariant from "tiny-invariant";
+import { useTheme } from "@mui/material";
+import { animate, useMotionValue, useMotionValueEvent, usePresence } from "framer-motion";
+import { useEffect, type FC, useMemo, useCallback, useState } from "react";
 
-// import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
-// import { createQuaternionFromHeadingPitch } from "./createQuaternionFromHeadingPitch";
-// import { FrustumAppearance } from "./FrustumAppearance";
-// import { getFieldOfViewSeparate } from "./getFieldOfView";
+import { PedestrianFrustumAppearances, PedestrianFrustumLayer } from "../../shared/reearth/layers";
+
+import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
 import { type HeadingPitch, type Location } from "./types";
-// import { useMotionPosition } from "./useMotionPosition";
+import { useMotionPosition } from "./useMotionPosition";
 
 interface StreetViewFrustumProps {
   location: Location;
@@ -18,137 +16,75 @@ interface StreetViewFrustumProps {
   length?: number;
 }
 
-// const colorGeometryAttribute = new GeometryAttribute({
-//   componentDatatype: ComponentDatatype.UNSIGNED_BYTE,
-//   componentsPerAttribute: 3,
-//   normalize: true,
-//   values: new Uint8Array(
-//     // Colors of vertices adjacent to the near plane are 255. 0 otherwise.
-//     [
-//       0xff, 0xff, 0xff, 0xff, 0, 0, 0, 0, 0, 0xff, 0xff, 0, 0, 0xff, 0xff, 0, 0xff, 0, 0, 0xff,
-//       0xff, 0, 0, 0xff,
-//     ].flatMap(value => [value, value, value]),
-//   ),
-// });
+export const StreetViewFrustum: FC<StreetViewFrustumProps> = ({
+  location,
+  headingPitch,
+  zoom,
+  aspectRatio = 3 / 2,
+  length = 200,
+}) => {
+  const theme = useTheme();
 
-export const StreetViewFrustum: FC<StreetViewFrustumProps> = () =>
-  // {
-  // location,
-  // headingPitch,
-  // zoom,
-  // aspectRatio = 3 / 2,
-  // length = 200,
-  // }
-  {
-    // const geometryInstance = useMemo(() => {
-    //   const geometry = FrustumGeometry.createGeometry(
-    //     new FrustumGeometry({
-    //       frustum: new PerspectiveFrustum({
-    //         fov: CesiumMath.PI_OVER_TWO,
-    //         aspectRatio: 1,
-    //         near: 0.0001,
-    //         far: 1,
-    //       }),
-    //       origin: Cartesian3.ZERO,
-    //       orientation: Quaternion.IDENTITY,
-    //       vertexFormat: FrustumAppearance.VERTEX_FORMAT,
-    //     }),
-    //   );
-    //   invariant(geometry != null);
-    //   geometry.attributes.color = colorGeometryAttribute;
-    //   return new GeometryInstance({ geometry });
-    // }, []);
+  const [ready, setReady] = useState(false);
+  const handleLoad = useCallback(() => {
+    setReady(true);
+  }, []);
 
-    // const theme = useTheme();
+  const motionVisibility = useMotionValue(0);
+  const [present, safeToRemove] = usePresence();
+  useEffect(() => {
+    if (!ready) return;
+    return animate(motionVisibility, present ? 1 : 0, {
+      type: "tween",
+      ease: "easeOut",
+      duration: 0.2,
+      onComplete: () => {
+        if (!present) {
+          safeToRemove();
+        }
+      },
+    }).stop;
+  }, [motionVisibility, present, safeToRemove, ready]);
 
-    // const primitives = useCesium(({ scene }) => scene.primitives);
-    // const primitive = useInstance({
-    //   owner: primitives,
-    //   keys: [geometryInstance],
-    //   create: () =>
-    //     new Primitive({
-    //       geometryInstances: geometryInstance,
-    //       asynchronous: false,
-    //       appearance: new FrustumAppearance({
-    //         color: Color.fromCssColorString(theme.palette.primary.main),
-    //       }),
-    //     }),
-    //   transferOwnership: (primitive, primitives) => {
-    //     primitives.add(primitive);
-    //     return () => {
-    //       primitives.remove(primitive);
-    //     };
-    //   },
-    // });
+  const [opacity, setOpacity] = useState(0);
+  useMotionValueEvent(motionVisibility, "change", latest => {
+    return setOpacity(latest);
+  });
 
-    // const scene = useCesium(({ scene }) => scene);
-    // scene.requestRender();
+  const position = useMemo(() => computeCartographicToCartesian(location), [location]);
+  const motionPosition = useMotionPosition(position);
 
-    // useEffect(() => {
-    //   return () => {
-    //     scene.requestRender();
-    //   };
-    // }, [scene]);
+  useEffect(() => {
+    return motionPosition.animatePosition(position);
+  }, [position, motionPosition]);
 
-    // const motionVisibility = useMotionValue(0);
-    // const ready = usePrimitiveReady(primitive);
-    // const [present, safeToRemove] = usePresence();
-    // useEffect(() => {
-    //   if (!ready) {
-    //     return;
-    //   }
-    //   return animate(motionVisibility, present ? 1 : 0, {
-    //     type: "tween",
-    //     ease: "easeOut",
-    //     duration: 0.2,
-    //     onComplete: () => {
-    //       if (!present) {
-    //         safeToRemove();
-    //       }
-    //     },
-    //   }).stop;
-    // }, [primitive, motionVisibility, ready, present, safeToRemove]);
+  const coordinates = useMemo(() => {
+    return (window.reearth?.scene?.toLngLatHeight(...motionPosition.get(), {
+      useGlobeEllipsoid: true,
+    }) ?? [0, 0, 0]) as [lng: number, lat: number, height: number];
+  }, [motionPosition]);
+  const frustumAppearance: PedestrianFrustumAppearances = useMemo(
+    () => ({
+      frustum: {
+        color: theme.palette.primary.main,
+        opacity,
+        zoom,
+        length,
+        aspectRatio,
+      },
+      transition: {
+        rotate: [headingPitch.heading, headingPitch.pitch, 0],
+      },
+    }),
+    [theme, zoom, length, aspectRatio, headingPitch, opacity],
+  );
 
-    // useEffect(() => {
-    //   return motionVisibility.on("renderRequest", () => {
-    //     scene.requestRender();
-    //   });
-    // }, [scene, motionVisibility]);
-
-    // const position = useMemo(
-    //   () => computeCartographicToCartesian(scene, location),
-    //   [scene, location],
-    // );
-    // const motionPosition = useMotionPosition(position);
-
-    // useEffect(() => {
-    //   return motionPosition.animatePosition(position);
-    // }, [position, motionPosition]);
-
-    // useEffect(() => {
-    //   return motionPosition.on("renderRequest", () => {
-    //     scene.requestRender();
-    //   });
-    // }, [scene, motionPosition]);
-
-    // usePreRender(() => {
-    //   const visibility = motionVisibility.get();
-    //   primitive.appearance.material.uniforms.opacity = visibility;
-
-    //   const position = Cartesian3.fromElements(...motionPosition.get(), positionScratch);
-    //   const rotation = createQuaternionFromHeadingPitch(headingPitch, position, rotationScratch);
-    //   const fov = getFieldOfViewSeparate(scene.camera, zoom);
-    //   const farWidth = (Math.tan(fov.x / 2) / TAN_PI_OVER_FOUR) * length;
-    //   scaleScratch.x = (visibility * farWidth) / aspectRatio;
-    //   scaleScratch.y = visibility * farWidth;
-    //   scaleScratch.z = visibility * length;
-    //   Matrix4.fromTranslationQuaternionRotationScale(
-    //     position,
-    //     rotation,
-    //     scaleScratch,
-    //     primitive.modelMatrix,
-    //   );
-    // });
-
-    return null;
-  };
+  return (
+    <PedestrianFrustumLayer
+      useTransition
+      coordinates={coordinates}
+      appearances={frustumAppearance}
+      onLoad={handleLoad}
+    />
+  );
+};
