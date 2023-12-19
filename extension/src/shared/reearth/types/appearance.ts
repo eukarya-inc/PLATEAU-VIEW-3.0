@@ -1,7 +1,14 @@
 import { Camera } from "./camera";
 import type { ExpressionContainer } from "./expression";
 import { Feature } from "./layer";
-import type { ClassificationType, EXPERIMENTAL_clipping, LngLat, Typography } from "./value";
+import type {
+  LUT,
+  Bound,
+  ClassificationType,
+  EXPERIMENTAL_clipping,
+  LngLat,
+  Typography,
+} from "./value";
 
 export type LayerAppearance<T> = {
   [K in keyof T]?: T[K] | LayerAppearance<T[K]> | ExpressionContainer;
@@ -25,6 +32,7 @@ export type AppearanceTypes = {
   raster: RasterAppearance;
   frustum: FrustumAppearance;
   transition: TransitionAppearance;
+  heatMap: HeatMapAppearance;
 };
 
 export type MarkerAppearance = {
@@ -258,4 +266,20 @@ export type TransitionAppearance = {
   translate?: [lng: number, lat: number, height: number];
   rotate?: [heading: number, pitch: number, roll: number];
   scale?: [x: number, y: number, z: number];
+};
+
+export type HeatMapAppearance = {
+  valueMap: string;
+  bounds: Bound;
+  colorMap?: LUT;
+  cropBounds?: Bound;
+  width?: number;
+  height?: number;
+  minValue?: number;
+  maxValue?: number;
+  opacity?: number;
+  contourSpacing?: number;
+  contourThickness?: number;
+  contourAlpha?: number;
+  logarithmic?: boolean;
 };
