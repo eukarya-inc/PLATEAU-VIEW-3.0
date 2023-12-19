@@ -29,6 +29,16 @@ export type Typography = {
   underline?: boolean;
 };
 
+export type Bound = {
+  east: number;
+  north: number;
+  south: number;
+  west: number;
+};
+
+export type ColorTuple = [number, number, number];
+export type LUT = readonly ColorTuple[];
+
 export type Coordinates = LngLatHeight[];
 
 export type Polygon = LngLatHeight[][];

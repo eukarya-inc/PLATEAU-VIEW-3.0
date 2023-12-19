@@ -32,8 +32,7 @@ import {
 import { type LAYER_SELECTION, type SelectionGroup } from "../states/selection";
 import { DatasetDialog } from "../ui-containers/DatasetDialog";
 
-// import { LayerHeatmapSection } from "./LayerHeatmapSection";
-
+import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
 // import { LayerSketchSection } from "./LayerSketchSection";
@@ -91,7 +90,8 @@ export function LayerContent<T extends SupportedLayerType>({
   }, [setHidden]);
 
   const layerId = useAtomValue(layer.layerIdAtom);
-  const layerCamera = useOptionalAtomValue(layer.cameraAtom);
+  const cameraAtom = useMemo(() => ("cameraAtom" in layer ? layer.cameraAtom : undefined), [layer]);
+  const layerCamera = useOptionalAtomValue(cameraAtom);
   const boundingSphere = useAtomValue(layer.boundingSphereAtom);
   const handleMove = useCallback(() => {
     const camera = rootLayer?.general?.camera;
@@ -211,7 +211,7 @@ export function LayerContent<T extends SupportedLayerType>({
         <LayerHiddenFeaturesSection layers={values} />
         <SwitchDataset layers={values} />
         <SwitchGroup layers={values} />
-        {/* <LayerHeatmapSection layers={values} /> */}
+        <LayerHeatmapSection layers={values} />
         {components.map(([type, atoms]) => (
           <Fields key={type} layers={values} type={type} atoms={atoms} />
         ))}
