@@ -82,12 +82,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }
 
   return (
-    <SnackbarProvider maxSnack={1}>
-      <ApolloProvider client={catalogClient}>
-        <ApolloProvider client={geoClient}>
-          <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
-        </ApolloProvider>
+    <ApolloProvider client={catalogClient}>
+      <ApolloProvider client={geoClient}>
+        <ThemeProvider theme={lightTheme}>
+          <SnackbarProvider maxSnack={1}>{children}</SnackbarProvider>
+        </ThemeProvider>
       </ApolloProvider>
-    </SnackbarProvider>
+    </ApolloProvider>
   );
 };
