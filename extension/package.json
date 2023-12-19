@@ -44,6 +44,7 @@
     "lodash-es": "4.17.21",
     "material-ui-popup-state": "5.0.9",
     "moji": "0.5.1",
+    "notistack": "^3.0.1",
     "overlayscrollbars": "2.3.0",
     "overlayscrollbars-react": "0.5.2",
     "re-resizable": "6.9.11",

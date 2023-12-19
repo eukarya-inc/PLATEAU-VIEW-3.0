@@ -9,6 +9,7 @@ import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceS
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
+import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { WidgetProps } from "../shared/types/widget";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
@@ -52,6 +53,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       </Suspense> */}
       <Environments />
       <ToolMachineEvents />
+      <Notifications />
       <InitialLayers />
       <SelectionCoordinator />
       <ScreenSpaceSelection />
