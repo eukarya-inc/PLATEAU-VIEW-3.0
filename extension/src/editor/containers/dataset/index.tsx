@@ -6,6 +6,7 @@ import { cloneDeep } from "lodash-es";
 import { useCallback, useMemo, useState, type FC, useEffect, RefObject } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
+import { highlightedLayersAtom } from "../../../prototypes/view-layers";
 import { useSettingsAPI } from "../../../shared/api";
 import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
@@ -65,7 +66,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const { settingsAtom, saveSetting } = useSettingsAPI();
   const settings = useAtomValue(settingsAtom);
 
-  const layer = useAtomValue(layerSelectionAtom)?.[0];
+  const highlightedLayer = useAtomValue(highlightedLayersAtom)?.[0];
+  const selectedLayer = useAtomValue(layerSelectionAtom)?.[0];
+  const layer = selectedLayer ?? highlightedLayer;
   const query = useDatasetById(layer?.id ?? "");
 
   const dataset = useMemo(() => {

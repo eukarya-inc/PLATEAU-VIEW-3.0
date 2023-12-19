@@ -9,7 +9,11 @@ import { removeLayerAtom, type LayerProps, type LayerType } from "../layers";
 import { ColorMapIcon, ColorSetIcon, ImageIconSetIcon, LayerListItem } from "../ui-components";
 
 import { layerTypeIcons } from "./layerTypeIcons";
-import { colorSchemeSelectionAtom, imageSchemeSelectionAtom } from "./states";
+import {
+  colorSchemeSelectionAtom,
+  highlightedLayersAtom,
+  imageSchemeSelectionAtom,
+} from "./states";
 
 function stopPropagation(event: SyntheticEvent): void {
   event.stopPropagation();
@@ -34,12 +38,11 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
     const title = useAtomValue(titleAtom);
     const loading = useAtomValue(loadingAtom);
 
-    // TODO(ReEarth): Support selected feature
-    // const highlightedAtom = useMemo(
-    //   () => atom(get => get(highlightedLayersAtom).some(layer => layer.id === id)),
-    //   [id],
-    // );
-    // const highlighted = useAtomValue(highlightedAtom);
+    const highlightedAtom = useMemo(
+      () => atom(get => get(highlightedLayersAtom).some(layer => layer.id === id)),
+      [id],
+    );
+    const highlighted = useAtomValue(highlightedAtom);
 
     const findRootLayer = useSetAtom(findRootLayerAtom);
     const rootLayer = findRootLayer(props.id);
@@ -124,7 +127,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
         {...itemProps}
         title={title ?? undefined}
         iconComponent={layerTypeIcons[type]}
-        // highlighted={highlighted}
+        highlighted={highlighted}
         selected={selected}
         loading={loading}
         hidden={hidden}
