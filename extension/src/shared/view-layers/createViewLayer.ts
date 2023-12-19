@@ -8,11 +8,13 @@ import {
   BRIDGE_LAYER,
   BUILDING_LAYER,
   CITY_FURNITURE_LAYER,
+  createHeatmapLayer,
   createPedestrianLayer,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
   GLOBAL_LAYER,
   HEATMAP_LAYER,
+  HeatmapLayerModelParams,
   HIGH_TIDE_RISK_LAYER,
   INLAND_FLOODING_RISK_LAYER,
   LAND_SLIDE_RISK_LAYER,
@@ -53,7 +55,7 @@ import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/Flood
 
 // prettier-ignore
 export type ViewLayerModelParams<T extends LayerType> =
-  T extends typeof HEATMAP_LAYER ? never : // HeatmapLayerModelParams :
+  T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? never : // SketchLayerModelParams :
 
@@ -92,7 +94,7 @@ export function createViewLayer<T extends LayerType>(
 ): SetOptional<LayerModel, "id"> | undefined {
   // prettier-ignore
   switch (params.type) {
-    case HEATMAP_LAYER: return undefined // createHeatmapLayer(params as HeatmapLayerModelParams)
+    case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return undefined // createSketchLayer(params as SketchLayerModelParams)
 

@@ -45,7 +45,7 @@ export const SwitchDataset: FC<SwitchDatasetProps> = ({ layers }) => {
     [rootLayer],
   );
 
-  if (layers.length !== 1 || propertyAtoms == null || data.node?.items.length <= 1) {
+  if (layers.length !== 1 || propertyAtoms == null || !rootLayer || data.node?.items.length <= 1) {
     return null;
   }
   return (

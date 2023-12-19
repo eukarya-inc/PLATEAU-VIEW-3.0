@@ -8,6 +8,7 @@ import {
   GLOBAL_LAYER,
   HEATMAP_LAYER,
   HIGH_TIDE_RISK_LAYER,
+  HeatmapLayerModel,
   INLAND_FLOODING_RISK_LAYER,
   LANDMARK_LAYER,
   LAND_SLIDE_RISK_LAYER,
@@ -32,7 +33,7 @@ import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
 
 export interface LayerModelOverrides {
-  [HEATMAP_LAYER]: never; // HeatmapLayerModel;
+  [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: never; // SketchLayerModel;
 
