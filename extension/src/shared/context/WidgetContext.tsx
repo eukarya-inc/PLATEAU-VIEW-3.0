@@ -1,5 +1,6 @@
 import { ApolloProvider } from "@apollo/client";
 import { ThemeProvider } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 import { FC, PropsWithChildren, useEffect } from "react";
 
 import { lightTheme } from "../../prototypes/ui-components";
@@ -83,7 +84,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   return (
     <ApolloProvider client={catalogClient}>
       <ApolloProvider client={geoClient}>
-        <ThemeProvider theme={lightTheme}>{children}</ThemeProvider>
+        <ThemeProvider theme={lightTheme}>
+          <SnackbarProvider maxSnack={1}>{children}</SnackbarProvider>
+        </ThemeProvider>
       </ApolloProvider>
     </ApolloProvider>
   );
