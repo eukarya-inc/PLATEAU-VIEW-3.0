@@ -3,11 +3,17 @@ import { atom } from "jotai";
 import { fromPairs, uniq, without } from "lodash-es";
 import invariant from "tiny-invariant";
 
-import { rootLayersAtom } from "../../shared/states/rootLayer";
+import { rootLayersAtom, rootLayersLayersAtom } from "../../shared/states/rootLayer";
 import { RootLayerAtom } from "../../shared/view-layers";
+import { parseIdentifier } from "../cesium-helpers";
 import { featureSelectionAtom } from "../datasets";
+import { LayerModel } from "../layers";
+import { PEDESTRIAN_OBJECT } from "../pedestrian";
+import { screenSpaceSelectionAtom } from "../screen-space-selection";
 import { atomsWithSelection } from "../shared-states";
 import { isNotNullish } from "../type-helpers";
+
+import { PEDESTRIAN_LAYER } from "./layerTypes";
 
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
 // import { type PedestrianLayerModel } from "./PedestrianLayer";
@@ -51,8 +57,25 @@ export const highlightedTilesetLayersAtom = atom(get => {
 // });
 
 export const highlightedLayersAtom = atom(get => {
-  // TODO: Support other types of selection.
-  return [...get(highlightedTilesetLayersAtom) /* ...get(highlightedPedestrianLayersAtom) */];
+  const screenSpaceSelection = get(screenSpaceSelectionAtom);
+  const layers = get(rootLayersLayersAtom);
+  const result: LayerModel[] = [];
+  for (const layer of layers) {
+    const layerId = get(layer.layerIdAtom);
+    const selection = screenSpaceSelection.some(v => {
+      switch (v.type) {
+        case PEDESTRIAN_OBJECT:
+          return layer.type === PEDESTRIAN_LAYER && layer.id === parseIdentifier(v.value).key;
+        default:
+          return layerId === v.value.layerId;
+      }
+    });
+    if (selection) {
+      result.push(layer);
+    }
+  }
+
+  return result;
 });
 
 export const featureIndicesAtom = atom(get => {
