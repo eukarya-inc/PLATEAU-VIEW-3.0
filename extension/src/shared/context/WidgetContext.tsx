@@ -72,8 +72,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
-      createSettingClient(projectId, plateauUrl, plateauToken);
-      createTemplateClient(projectId, plateauUrl, plateauToken);
+      const sidebar = `${plateauUrl}/sidebar`;
+      createSettingClient(projectId, sidebar, plateauToken);
+      createTemplateClient(projectId, sidebar, plateauToken);
     }
   }, [projectId, plateauUrl, plateauToken]);
 
