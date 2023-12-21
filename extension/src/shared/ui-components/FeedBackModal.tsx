@@ -1,3 +1,6 @@
+import { FormControl } from "@mui/base/FormControl";
+import { Input, inputClasses } from "@mui/base/Input";
+import { TextareaAutosize } from "@mui/base/TextareaAutosize";
 import CancelIcon from "@mui/icons-material/Cancel";
 import {
   Box,
@@ -11,20 +14,11 @@ import {
   styled,
 } from "@mui/material";
 import { useAtom } from "jotai";
+import { useState } from "react";
 
+import { HelperText } from "../../prototypes/ui-components/HelperText";
+import { Label } from "../../prototypes/ui-components/InputLabel";
 import { showFeedbackModalAtom } from "../../prototypes/view/states/app";
-
-export const InputGroup: React.FC<{
-  label: string;
-  children: React.ReactNode;
-}> = ({ label, children }) => {
-  return (
-    <InputGroupWrapper>
-      <Label>{label}</Label>
-      {children}
-    </InputGroupWrapper>
-  );
-};
 
 const style = {
   position: "absolute" as const,
@@ -40,6 +34,18 @@ const style = {
 
 const FeedBackModal: React.FC = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [comment, setComment] = useState("");
+  const [attachMapReview, setAttachMapReview] = useState(false);
+
+  const handleSubmit = () => {
+    setName("");
+    setEmail("");
+    setComment("");
+    setAttachMapReview(false);
+    setShowFeedbackModal(false);
+  };
 
   return (
     <Modal
@@ -51,11 +57,12 @@ const FeedBackModal: React.FC = () => {
           フィードバック{" "}
           <IconButton
             aria-label="close"
-            onClick={value => setShowFeedbackModal(!value)}
+            onClick={() => setShowFeedbackModal(false)}
             sx={{ position: "absolute", top: 10, right: 10 }}>
             <CancelIcon />
           </IconButton>
         </Typography>
+
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
           <Link href="https://www.mlit.go.jp/plateau/" underline="none">
             PLATEAU
@@ -65,68 +72,76 @@ const FeedBackModal: React.FC = () => {
           3D都市モデルを整備し、
           そのユースケースを創出。さらにこれをオープンデータとして公開することで、誰もが自由に都市のデータを引き出し、活用できるようになる。
         </Typography>
-        <InputGroup label="お名前">
-          <Input type="text" placeholder="お名前" value={"value"} onChange={() => {}} />
-        </InputGroup>
-        <InputGroup label="メールアドレス">
-          <Input
-            required
-            type="text"
+        <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1.5 }}>
+          ご意見をお聞かせください
+        </Typography>
+        <FormControl defaultValue="">
+          <Label>お名前</Label>
+          <StyledInput placeholder="お名前" value={name} onChange={e => setName(e.target.value)} />
+        </FormControl>
+        <FormControl defaultValue="" required>
+          <Label>メールアドレス</Label>
+          <StyledInput
             placeholder="メールアドレス"
-            value={"value"}
-            onChange={() => {}}
+            value={email}
+            onChange={e => setEmail(e.target.value)}
           />
-        </InputGroup>
-        <InputGroup label="コメントまたは質問">
-          <TextArea
-            required
+          <HelperText />
+        </FormControl>
+        <FormControl defaultValue="" required>
+          <Label>コメントまたは質問</Label>
+          <StyledTextArea
             placeholder="コメントまたは質問"
-            rows={8}
-            value={"value"}
-            onChange={() => {}}
+            value={comment}
+            minRows={3}
+            onChange={e => setComment(e.target.value)}
           />
-        </InputGroup>
-        <FormControlLabel required control={<Checkbox />} label="マップレビューを添付する" />
-        <StyledButton>送信</StyledButton>
+          <HelperText />
+        </FormControl>
+        <FormControlLabel
+          required
+          control={
+            <Checkbox
+              checked={attachMapReview}
+              onChange={() => setAttachMapReview(!attachMapReview)}
+            />
+          }
+          label="マップレビューを添付する"
+        />
+        <StyledButton type="submit" onClick={handleSubmit}>
+          送信
+        </StyledButton>
       </Box>
     </Modal>
   );
 };
 
-const InputGroupWrapper = styled("div")(() => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: 8,
-}));
+const StyledInput = styled(Input)(
+  () => `
+    .${inputClasses.input} {
+      width: 94%;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 4px;
+      background: #f3f3f3;
+      border: 1px solid #f3f3f3;
+      margin-bottom: 12px;
+      outline: none;
+    }
+  `,
+);
 
-const Label = styled("label")(() => ({
-  fontSize: "0.85rem",
-  fontWeight: "400",
-  paddingTop: "12px",
-}));
-
-const Input = styled("input")(() => ({
-  flex: "auto",
-  background: "#F3F3F3",
-  border: "1px solid #F3F3F3",
+const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
+  background: "#f3f3f3",
+  width: "94%",
+  border: "1px solid #f3f3f3",
+  color: theme.palette.text.primary,
   borderRadius: "4px",
   outline: "none",
-  padding: "8px 10px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-}));
-
-const TextArea = styled("textarea")(() => ({
-  flex: "auto",
-  background: "#F3F3F3",
-  border: "1px solid #F3F3F3",
-  borderRadius: "4px",
-  outline: "none",
-  padding: "8px 10px",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
+  padding: "8px 12px",
+  fontSize: "0.875rem",
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
