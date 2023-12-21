@@ -39,7 +39,7 @@ jobs:
       - name: Extract
         run: tar -xvf reearth-web.tar.gz
       - name: Deploy
-        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^cloud/.*$|^reearth_config\\.json$|^extension/*$" -dr reearth-web/ ${{ env.GCS_DEST }}
+        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^cloud/.*$|^reearth_config\\.json$|^extension/.*$" -dr reearth-web/ ${{ env.GCS_DEST }}
       # TODO: purge CDN cache
   deploy_server:
     runs-on: ubuntu-latest

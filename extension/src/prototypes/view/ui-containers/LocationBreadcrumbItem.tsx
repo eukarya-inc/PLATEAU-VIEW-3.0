@@ -28,18 +28,15 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
     if (!datasets) {
       return;
     }
-    const isPrefecture = area.code.length === 2;
-    const isCity = area.code.length === 5 && area.code.endsWith("00");
-    const isWard = area.code.length === 5 && !area.code.endsWith("00");
     const groups = Object.entries(
       groupBy(
         datasets.filter(d =>
-          isPrefecture
-            ? !d.cityCode && area.code === d.prefectureCode
-            : isCity
-            ? !d.wardCode && d.cityCode === area.code
-            : isWard
-            ? d.wardCode && d.wardCode === area.code
+          !d.cityCode
+            ? area.code === d.prefectureCode
+            : !d.wardCode
+            ? d.cityCode === area.code
+            : d.wardCode
+            ? d.wardCode === area.code
             : false,
         ),
         d => d.type.code,

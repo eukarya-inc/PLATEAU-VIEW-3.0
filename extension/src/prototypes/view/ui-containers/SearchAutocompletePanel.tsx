@@ -1,6 +1,7 @@
 import {
   ClickAwayListener,
   Divider,
+  FilterOptionsState,
   styled,
   Tab,
   tabClasses,
@@ -60,6 +61,16 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
     minHeight: theme.spacing(5),
   },
 }));
+
+function filterOptions(
+  options: SearchOption[],
+  state: FilterOptionsState<SearchOption>,
+): SearchOption[] {
+  const tokens = state.inputValue.split(/\s+/).filter(value => value.length > 0);
+  return tokens.length > 0
+    ? options.filter(option => tokens.some(token => state.getOptionLabel(option).includes(token)))
+    : options;
+}
 
 export interface SearchAutocompletePanelProps {
   children?: ReactNode;
@@ -172,6 +183,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
           inputRef={textFieldRef}
           placeholder="データセット、建築物、住所を検索"
           options={options}
+          filterOptions={filterOptions}
           filters={filters}
           maxHeight={maxMainHeight}
           onFocus={handleFocus}

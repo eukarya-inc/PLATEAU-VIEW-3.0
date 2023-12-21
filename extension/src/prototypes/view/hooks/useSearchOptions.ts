@@ -51,9 +51,9 @@ function useDatasetSearchOptions({
     () => areas?.filter(area => area.type === "municipality").map(area => area.code) ?? [],
     [areas],
   );
-  const tokens = useMemo(() => inputValue?.split(/ |\u3000/), [inputValue]);
+  const tokens = useMemo(() => inputValue?.split(/\s+/).filter(Boolean), [inputValue]);
   const query = useDatasets(
-    tokens
+    tokens?.length
       ? {
           searchTokens: tokens,
         }

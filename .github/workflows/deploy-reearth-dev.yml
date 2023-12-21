@@ -47,7 +47,7 @@ jobs:
           echo $SOURCE > $APP_PATH
           echo $SOURCE > $PUBLISH_PATH
       - name: Deploy
-        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^cloud/.*$|^reearth_config\\.json$|^extension/*$" -dr reearth-web/ ${{ env.GCS_DEST }}
+        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^cloud/.*$|^reearth_config\\.json$|^extension/.*$" -dr reearth-web/ ${{ env.GCS_DEST }}
       - name: Pack web
         run: |
           rm reearth-web.tar.gz
