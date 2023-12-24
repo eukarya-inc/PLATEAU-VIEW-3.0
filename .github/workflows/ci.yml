@@ -17,12 +17,12 @@ jobs:
       geo: ${{ steps.geo.outputs.any_changed }}
       tools: ${{ steps.tools.outputs.any_changed }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: changed files for extension
         id: extension
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             extension
@@ -32,7 +32,7 @@ jobs:
             .github/workflows/deploy-extension-prod.yml
       - name: changed files for server
         id: server
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             server
@@ -42,14 +42,14 @@ jobs:
             .github/workflows/deploy-server-prod.yml
       - name: changed files for tools
         id: tools
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             tools
             .github/workflows/ci-tools.yml
       - name: changed files for geo
         id: geo
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v41
         with:
           files: |
             geo
