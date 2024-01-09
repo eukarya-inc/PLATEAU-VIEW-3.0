@@ -13,12 +13,8 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-import { useAtom } from "jotai";
-import { useState } from "react";
-
-import { HelperText } from "../../prototypes/ui-components/HelperText";
-import { Label } from "../../prototypes/ui-components/InputLabel";
-import { showFeedbackModalAtom } from "../../prototypes/view/states/app";
+import { red } from "@mui/material/colors";
+import { useCallback, useMemo, useState } from "react";
 
 const style = {
   position: "absolute" as const,
@@ -32,24 +28,65 @@ const style = {
   padding: "18px 22px",
 };
 
-const FeedBackModal: React.FC = () => {
-  const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
+export type Props = {
+  show: boolean;
+  setShowFeedbackModal: (show: boolean) => void;
+  onSubmit: (params: {
+    name: string;
+    email: string;
+    comment: string;
+    attachMapReview: boolean;
+  }) => void;
+};
+
+const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
   const [attachMapReview, setAttachMapReview] = useState(false);
 
-  const handleSubmit = () => {
+  const handleFeedBackModalForm = useCallback(() => {
     setName("");
     setEmail("");
     setComment("");
     setAttachMapReview(false);
     setShowFeedbackModal(false);
+  }, [setShowFeedbackModal]);
+
+  const handleSubmit = async () => {
+    const params = { name, email, comment, attachMapReview };
+    try {
+      await onSubmit(params);
+      handleFeedBackModalForm();
+    } catch {
+      // if any Error occur;
+    }
   };
+
+  const handleSetName = useCallback((value: string) => {
+    setName(value);
+  }, []);
+
+  const handleSetEmail = useCallback((value: string) => {
+    setEmail(value);
+  }, []);
+
+  const handleSetComment = useCallback((value: string) => {
+    setComment(value);
+  }, []);
+
+  const handleSetAttachedMap = useCallback((value: boolean) => {
+    setAttachMapReview(value);
+  }, []);
+
+  const disabled = useMemo(() => {
+    if (comment && email) return false;
+    return true;
+  }, [comment, email]);
 
   return (
     <Modal
-      open={showFeedbackModal}
+      open={show}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description">
       <Box sx={style}>
@@ -57,7 +94,7 @@ const FeedBackModal: React.FC = () => {
           フィードバック{" "}
           <IconButton
             aria-label="close"
-            onClick={() => setShowFeedbackModal(false)}
+            onClick={handleFeedBackModalForm}
             sx={{ position: "absolute", top: 10, right: 10 }}>
             <CancelIcon />
           </IconButton>
@@ -77,38 +114,43 @@ const FeedBackModal: React.FC = () => {
         </Typography>
         <FormControl defaultValue="">
           <Label>お名前</Label>
-          <StyledInput placeholder="お名前" value={name} onChange={e => setName(e.target.value)} />
+          <StyledInput
+            placeholder="お名前"
+            value={name}
+            onChange={e => handleSetName(e.target.value)}
+          />
         </FormControl>
-        <FormControl defaultValue="" required>
-          <Label>メールアドレス</Label>
+        <FormControl defaultValue="">
+          <Label>
+            メールアドレス ( <Required>必須</Required> )
+          </Label>
           <StyledInput
             placeholder="メールアドレス"
             value={email}
-            onChange={e => setEmail(e.target.value)}
+            onChange={e => handleSetEmail(e.target.value)}
           />
-          <HelperText />
         </FormControl>
-        <FormControl defaultValue="" required>
-          <Label>コメントまたは質問</Label>
+        <FormControl defaultValue="">
+          <Label>
+            コメントまたは質問 ( <Required>必須</Required> )
+          </Label>
           <StyledTextArea
             placeholder="コメントまたは質問"
             value={comment}
             minRows={3}
-            onChange={e => setComment(e.target.value)}
+            onChange={e => handleSetComment(e.target.value)}
           />
-          <HelperText />
         </FormControl>
         <FormControlLabel
-          required
           control={
             <Checkbox
               checked={attachMapReview}
-              onChange={() => setAttachMapReview(!attachMapReview)}
+              onChange={() => handleSetAttachedMap(!attachMapReview)}
             />
           }
           label="マップレビューを添付する"
         />
-        <StyledButton type="submit" onClick={handleSubmit}>
+        <StyledButton disabled={disabled} type="submit" onClick={handleSubmit}>
           送信
         </StyledButton>
       </Box>
@@ -117,7 +159,7 @@ const FeedBackModal: React.FC = () => {
 };
 
 const StyledInput = styled(Input)(
-  () => `
+  ({ theme }) => `
     .${inputClasses.input} {
       width: 94%;
       font-size: 0.875rem;
@@ -125,8 +167,8 @@ const StyledInput = styled(Input)(
       line-height: 1.5;
       padding: 8px 12px;
       border-radius: 4px;
-      background: #f3f3f3;
-      border: 1px solid #f3f3f3;
+      background: ${theme.palette.grey[50]};
+      border: 1px solid ${theme.palette.grey[50]};
       margin-bottom: 12px;
       outline: none;
     }
@@ -134,9 +176,9 @@ const StyledInput = styled(Input)(
 );
 
 const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
-  background: "#f3f3f3",
+  background: theme.palette.grey[50],
   width: "94%",
-  border: "1px solid #f3f3f3",
+  border: `1px solid ${theme.palette.grey[50]}`,
   color: theme.palette.text.primary,
   borderRadius: "4px",
   outline: "none",
@@ -144,13 +186,25 @@ const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
   fontSize: "0.875rem",
 }));
 
-const StyledButton = styled(Button)(({ theme }) => ({
+const Label = styled("div")(() => ({
+  fontSize: "0.875rem",
+  marginBottom: "10px",
+}));
+
+const Required = styled("span")(() => ({
+  color: red[500],
+}));
+
+const StyledButton = styled(Button)(({ theme, disabled }) => ({
   display: "flex",
   padding: theme.spacing(1),
   color: theme.palette.text.primary,
-  backgroundColor: "#f3f3f3",
+  backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
   borderRadius: "4px",
   marginLeft: "auto",
+  "&:hover": {
+    backgroundColor: !disabled && theme.palette.primary.main,
+  },
 }));
 
 export default FeedBackModal;

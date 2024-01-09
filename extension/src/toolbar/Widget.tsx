@@ -12,8 +12,8 @@ import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { WidgetProps } from "../shared/types/widget";
-import FeedBackModal from "../shared/ui-components/FeedBackModal";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
+import FeedBack from "../shared/view/ui-container/Feedback";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
@@ -60,7 +60,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       <ScreenSpaceSelection />
       <ReverseGeocoding />
       <PedestrianTool />
-      <FeedBackModal />
+      <FeedBack />
     </WidgetContext>
   );
 });
