@@ -99,8 +99,8 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
     skip: !focused,
   });
   const options = useMemo(
-    () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.addresses],
-    [searchOptions.datasets, searchOptions.buildings, searchOptions.addresses],
+    () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.areas],
+    [searchOptions.datasets, searchOptions.buildings, searchOptions.areas],
   );
 
   const selectOption = searchOptions.select;
@@ -209,7 +209,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                 <SearchList
                   datasets={searchOptions.datasets}
                   buildings={searchOptions.buildings}
-                  addresses={searchOptions.addresses}
+                  areas={searchOptions.areas}
                   onOptionSelect={handleOptionSelect}
                   onFiltersChange={handleFiltersChange}
                 />
