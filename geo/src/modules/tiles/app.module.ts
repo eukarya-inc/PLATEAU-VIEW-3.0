@@ -11,6 +11,7 @@ import { TileAppService } from "./app.service";
   imports: [
     FirestoreModule.forRoot({
       rootPath: "api",
+      projectId: process.env.GOOGLE_PROJECT_ID !== "" ? process.env.GOOGLE_PROJECT_ID : undefined,
     }),
     TileCacheModule.forRootAsync({
       // if you don't use useFactory process.env.TILE_CACHE_ROOT will be undefined.

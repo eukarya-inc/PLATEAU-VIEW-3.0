@@ -7,6 +7,7 @@ import { TileCacheModule } from "@prototypes/nest-tile-cache";
   imports: [
     FirestoreCoreModule.forRoot({
       rootPath: "api",
+      projectId: process.env.GOOGLE_PROJECT_ID !== "" ? process.env.GOOGLE_PROJECT_ID : undefined,
     }),
     TileCacheModule.forRootAsync({
       // if you don't use useFactory process.env.TILE_CACHE_ROOT will be undefined.
