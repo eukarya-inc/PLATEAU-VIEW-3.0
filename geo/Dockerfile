@@ -13,4 +13,4 @@ ENV NODE_ENV=production
 
 RUN yarn run build
 
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "./dist/main.js" ]
