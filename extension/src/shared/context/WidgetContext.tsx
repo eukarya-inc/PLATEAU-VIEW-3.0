@@ -65,10 +65,10 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [geoUrl]);
 
   useEffect(() => {
-    if (!catalogClient && catalogUrl) {
-      createCatalogClient(catalogUrl);
+    if (!catalogClient && catalogUrl && plateauToken) {
+      createCatalogClient(catalogUrl, plateauToken);
     }
-  }, [catalogUrl]);
+  }, [catalogUrl, plateauToken]);
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
