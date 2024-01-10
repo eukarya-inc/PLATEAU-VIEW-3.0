@@ -40,6 +40,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
 }) => {
+  const inEditor = !!window.reearth?.scene?.inEditor;
   useEffect(() => {
     if (!GEO_API_URL && geoUrl) {
       setGeoApiUrl(geoUrl);
@@ -65,10 +66,10 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [geoUrl]);
 
   useEffect(() => {
-    if (!catalogClient && catalogUrl && plateauToken) {
-      createCatalogClient(catalogUrl, plateauToken);
+    if (!catalogClient && catalogUrl) {
+      createCatalogClient(catalogUrl, inEditor ? plateauToken : undefined);
     }
-  }, [catalogUrl, plateauToken]);
+  }, [catalogUrl, plateauToken, inEditor]);
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
