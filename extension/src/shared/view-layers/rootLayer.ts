@@ -14,7 +14,7 @@ import {
   Setting,
   Template,
 } from "../api/types";
-import { DatasetFragmentFragment, DatasetItem } from "../graphql/types/catalog";
+import { DatasetFragmentFragment, DatasetItem, DatasetType } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
@@ -36,6 +36,7 @@ export type RootLayerForDatasetAtomParams = {
 
 export type RootLayerForDatasetParams = {
   datasetId: string;
+  datasetType: DatasetType;
   type: LayerType;
   title: string;
   dataList: DatasetItem[];
@@ -93,8 +94,7 @@ const findComponentGroup = (
   template: ComponentTemplate | undefined,
   currentGroupId: string | undefined,
 ): ComponentGroup | undefined => {
-  const hasTemplate = setting?.fieldComponents?.useTemplate && setting?.fieldComponents?.templateId;
-  const groups = hasTemplate ? template?.groups : setting?.fieldComponents?.groups;
+  const groups = template ? template.groups : setting?.fieldComponents?.groups;
   return currentGroupId ? groups?.find(g => g.id === currentGroupId) : groups?.[0];
 };
 
@@ -121,11 +121,19 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
 const findComponentTemplate = (
   setting: Setting | undefined,
   templates: Template[],
+  dataName: string | undefined,
 ): ComponentTemplate | undefined => {
   const { useTemplate, templateId } = setting?.fieldComponents ?? {};
-  if (!useTemplate || !templateId) return;
 
-  const template = templates.find(t => t.id === templateId);
+  // Default template
+  const templateWithName = dataName
+    ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
+    : undefined;
+
+  if ((!useTemplate || !templateId) && !templateWithName) return;
+
+  const template =
+    !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
 
   return template?.type === "component" ? template : undefined;
 };
@@ -133,11 +141,19 @@ const findComponentTemplate = (
 const findEmphasisProperties = (
   featureInspector: FeatureInspectorSettings | undefined,
   templates: Template[],
+  dataName: string | undefined,
 ): EmphasisProperty[] | undefined => {
   const { useTemplate, templateId, properties } = featureInspector?.emphasisProperty ?? {};
-  if (!useTemplate || !templateId) return properties;
 
-  const template = templates.find(t => t.id === templateId);
+  // Default template
+  const templateWithName = dataName
+    ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
+    : undefined;
+
+  if ((!useTemplate || !templateId) && !templateWithName) return properties;
+
+  const template =
+    !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
 
   return template?.type === "emphasis" ? template.properties : undefined;
 };
@@ -188,6 +204,7 @@ const createRootLayerForDataset = ({
   datasetId,
   type,
   title,
+  datasetType,
   dataList,
   settings,
   templates,
@@ -198,8 +215,12 @@ const createRootLayerForDataset = ({
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
-  const componentTemplate = findComponentTemplate(setting, templates);
-  const emphasisProperties = findEmphasisProperties(setting?.featureInspector, templates);
+  const componentTemplate = findComponentTemplate(setting, templates, datasetType.name);
+  const emphasisProperties = findEmphasisProperties(
+    setting?.featureInspector,
+    templates,
+    datasetType.name,
+  );
   const componentGroup = findComponentGroup(setting, componentTemplate, currentGroupId);
 
   return {
@@ -246,6 +267,7 @@ export const createRootLayerForDatasetAtom = (
       datasetId: dataset.id,
       type,
       title: dataset.name,
+      datasetType: dataset.type,
       dataList,
       settings: initialSettings,
       templates: initialTemplates,
@@ -270,6 +292,7 @@ export const createRootLayerForDatasetAtom = (
           datasetId: dataset.id,
           type,
           title: dataset.name,
+          datasetType: dataset.type,
           dataList,
           settings: settings,
           templates: get(templatesAtom),
@@ -300,6 +323,7 @@ export const createRootLayerForDatasetAtom = (
           datasetId: dataset.id,
           type,
           title: dataset.name,
+          datasetType: dataset.type,
           dataList,
           settings: get(settingsPrimitiveAtom),
           templates: get(templatesAtom),
@@ -325,7 +349,7 @@ export const createRootLayerForDatasetAtom = (
       const currentDataId = get(currentDataIdAtom);
       const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(dataList, currentDataId);
-      const template = findComponentTemplate(setting, get(templatesAtom));
+      const template = findComponentTemplate(setting, get(templatesAtom), dataset.type.name);
       const group = findComponentGroup(setting, template, update);
 
       set(
@@ -343,6 +367,7 @@ export const createRootLayerForDatasetAtom = (
         ),
       );
       set(currentGroupIdAtom, () => update);
+      return;
     },
   );
 
