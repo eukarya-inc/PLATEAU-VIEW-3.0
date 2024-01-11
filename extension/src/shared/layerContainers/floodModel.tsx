@@ -17,6 +17,7 @@ import {
   TILESET_FLOOD_MODEL_FILTER,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
+import { hexToRGBArray } from "../utils";
 import { ComponentAtom } from "../view-layers/component";
 import { useFindComponent } from "../view-layers/hooks";
 
@@ -118,19 +119,27 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_FLOOD_MODEL_FILTER)),
   );
 
+  const theme = useTheme();
+
+  const primaryRGB = useMemo(() => hexToRGBArray(theme.palette.primary.main), [theme]);
+
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
     colorProperty: floodModelColorAtom ? colorProperty ?? undefined : undefined,
     colorScheme: floodModelColorAtom ? colorScheme ?? undefined : undefined,
     opacity: opacity?.value,
     selections,
+    defaultColor: {
+      r: primaryRGB[0],
+      g: primaryRGB[1],
+      b: primaryRGB[2],
+      a: 1,
+    },
   });
-
-  const theme = useTheme();
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: !colorProperty,
+      pbr: false,
       ...(color
         ? {
             color: {
@@ -144,7 +153,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: "disabled",
       selectedFeatureColor: theme.palette.primary.main,
     }),
-    [color, theme.palette.primary.main, filter, colorProperty],
+    [color, theme.palette.primary.main, filter],
   );
 
   return <TilesetLayer {...props} onLoad={handleLoad} appearance={appearance} visible={!hidden} />;

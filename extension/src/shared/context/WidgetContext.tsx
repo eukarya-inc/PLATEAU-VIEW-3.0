@@ -19,6 +19,7 @@ import {
   setGoogleStreetViewAPIKey,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
+import { inEditor } from "../reearth/utils";
 
 type Props = {
   geoUrl?: string;
@@ -40,7 +41,6 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
 }) => {
-  const inEditor = !!window.reearth?.scene?.inEditor;
   useEffect(() => {
     if (!GEO_API_URL && geoUrl) {
       setGeoApiUrl(geoUrl);
@@ -67,9 +67,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
 
   useEffect(() => {
     if (!catalogClient && catalogUrl) {
-      createCatalogClient(catalogUrl, inEditor ? plateauToken : undefined);
+      createCatalogClient(catalogUrl, inEditor() ? plateauToken : undefined);
     }
-  }, [catalogUrl, plateauToken, inEditor]);
+  }, [catalogUrl, plateauToken]);
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
