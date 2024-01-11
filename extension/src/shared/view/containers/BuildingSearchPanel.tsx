@@ -246,7 +246,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  triggerUpdateRef.current += 1;
+  if (state.isOpen) {
+    triggerUpdateRef.current += 1;
+  }
 
   if (!allFeatures || !groups) return null;
 
