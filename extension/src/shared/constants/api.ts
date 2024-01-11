@@ -12,3 +12,8 @@ export let GOOGLE_STREET_VIEW_API_KEY: string | undefined;
 export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
+
+export let IS_EDITOR_MODE: boolean | undefined;
+export const setIsEditorMode = (v: boolean) => {
+  IS_EDITOR_MODE = v;
+};

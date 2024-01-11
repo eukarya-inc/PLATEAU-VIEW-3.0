@@ -14,9 +14,11 @@ import {
   GEO_API_URL,
   GOOGLE_STREET_VIEW_API_KEY,
   GSI_TILE_URL,
+  IS_EDITOR_MODE,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
+  setIsEditorMode,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { inEditor } from "../reearth/utils";
@@ -29,6 +31,7 @@ type Props = {
   plateauToken?: string;
   catalogUrl?: string;
   googleStreetViewAPIKey?: string;
+  isEditorMode?: boolean;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -39,6 +42,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   plateauToken,
   catalogUrl,
   googleStreetViewAPIKey,
+  isEditorMode,
   children,
 }) => {
   useEffect(() => {
@@ -58,6 +62,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setGoogleStreetViewAPIKey(googleStreetViewAPIKey);
     }
   }, [googleStreetViewAPIKey]);
+
+  useEffect(() => {
+    if (!IS_EDITOR_MODE) {
+      setIsEditorMode(!!isEditorMode);
+    }
+  }, [isEditorMode]);
 
   useEffect(() => {
     if (!geoClient && geoUrl) {

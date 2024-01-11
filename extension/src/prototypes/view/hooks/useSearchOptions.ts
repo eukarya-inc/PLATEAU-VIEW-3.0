@@ -3,10 +3,11 @@ import { debounce } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
+import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { useDatasets, useEstatAreasLazy } from "../../../shared/graphql";
 import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
-import { flyToBBox, inEditor } from "../../../shared/reearth/utils";
+import { flyToBBox } from "../../../shared/reearth/utils";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
@@ -76,7 +77,6 @@ function useDatasetSearchOptions({
     if (skip) {
       return [];
     }
-    const isInEditor = inEditor();
     return (
       query.data?.datasets
         .filter(dataset => {
@@ -90,7 +90,7 @@ function useDatasetSearchOptions({
         })
         .map(dataset => ({
           type: "dataset" as const,
-          name: isInEditor && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
+          name: IS_EDITOR_MODE && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
           index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
             dataset.ward?.name ?? ""
           }`,

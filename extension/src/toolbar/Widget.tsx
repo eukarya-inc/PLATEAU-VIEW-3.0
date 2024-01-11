@@ -27,6 +27,7 @@ type Props = WidgetProps<{
   catalogURL?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
+  isEditorMode?: boolean;
 }>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
@@ -40,7 +41,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       catalogUrl={widget.property.default.catalogURL}
       projectId={widget.property.default.projectName}
       plateauToken={widget.property.default.plateauAccessToken}
-      googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}>
+      googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+      isEditorMode={widget.property.default.isEditorMode}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
