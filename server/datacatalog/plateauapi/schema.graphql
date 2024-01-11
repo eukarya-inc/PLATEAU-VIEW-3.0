@@ -1,4 +1,5 @@
 # Base
+scalar Any
 
 """
 IDを持つオブジェクト。nodeまたはnodesクエリでIDを指定して検索可能です。
@@ -13,7 +14,7 @@ interface Node {
 """
 行政コードを表す文字列。
 都道府県の場合は、2桁の数字で構成された文字列です。
-自治体の場合は、先頭に2桁の都道府県コードを含む、6桁の数字で構成された文字列です。
+自治体の場合は、先頭に2桁の都道府県コードを含む、5桁の数字で構成された文字列です。
 """
 scalar AreaCode
 
@@ -26,9 +27,13 @@ scalar AreaCode
 interface Area implements Node {
   id: ID!
   """
+  地域の種類
+  """
+  type: AreaType!
+  """
   地域コード。行政コードや市区町村コードとも呼ばれます。
   都道府県の場合は二桁の数字から成る文字列です。
-  市区町村の場合は、先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  市区町村の場合は、先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   code: AreaCode!
   """
@@ -41,11 +46,30 @@ interface Area implements Node {
   datasets(input: DatasetsInput): [Dataset!]!
 }
 
+enum AreaType {
+  """
+  都道府県
+  """
+  PREFECTURE
+  """
+  市町村
+  """
+  CITY
+  """
+  区（政令指定都市のみ）
+  """
+  WARD
+}
+
 """
 都道府県
 """
 type Prefecture implements Area & Node {
   id: ID!
+  """
+  地域の種類
+  """
+  type: AreaType!
   """
   都道府県コード。2桁の数字から成る文字列です。
   """
@@ -70,7 +94,11 @@ type Prefecture implements Area & Node {
 type City implements Area & Node {
   id: ID!
   """
-  市区町村コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  地域の種類
+  """
+  type: AreaType!
+  """
+  市区町村コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   code: AreaCode!
   """
@@ -105,7 +133,11 @@ type City implements Area & Node {
 type Ward implements Area & Node {
   id: ID!
   """
-  区コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  種類
+  """
+  type: AreaType!
+  """
+  区コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   code: AreaCode!
   """
@@ -125,7 +157,7 @@ type Ward implements Area & Node {
   """
   cityId: ID!
   """
-  区が属する市のコード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  区が属する市のコード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   cityCode: AreaCode!
   """
@@ -232,17 +264,17 @@ interface Dataset implements Node {
   """
   データセットが属する都道府県のID。
   """
-  prefectureId: ID!
+  prefectureId: ID
   """
   データセットが属する都道府県コード。2桁の数字から成る文字列です。
   """
-  prefectureCode: AreaCode!
+  prefectureCode: AreaCode
   """
   データセットが属する市のID。
   """
   cityId: ID
   """
-  データセットが属する市コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する市コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   cityCode: AreaCode
   """
@@ -250,7 +282,7 @@ interface Dataset implements Node {
   """
   wardId: ID
   """
-  データセットが属する区コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する区コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   wardCode: AreaCode
   """
@@ -281,6 +313,10 @@ interface Dataset implements Node {
   データセットのアイテム。
   """
   items: [DatasetItem!]!
+  """
+  管理者用
+  """
+  admin: Any
 }
 
 """
@@ -378,6 +414,10 @@ interface DatasetType implements Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
+  """
+  datasets(input: DatasetsInput): [Dataset!]!
 }
 
 """
@@ -428,17 +468,17 @@ type PlateauDataset implements Dataset & Node {
   """
   データセットが属する都道府県のID。
   """
-  prefectureId: ID!
+  prefectureId: ID
   """
   データセットが属する都道府県コード。2桁の数字から成る文字列です。
   """
-  prefectureCode: AreaCode!
+  prefectureCode: AreaCode
   """
   データセットが属する市のID。
   """
   cityId: ID
   """
-  データセットが属する市コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する市コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   cityCode: AreaCode
   """
@@ -446,7 +486,7 @@ type PlateauDataset implements Dataset & Node {
   """
   wardId: ID
   """
-  データセットが属する区コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する区コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   wardCode: AreaCode
   """
@@ -478,17 +518,17 @@ type PlateauDataset implements Dataset & Node {
   """
   items: [PlateauDatasetItem!]!
   """
-  データセットが準拠するPLATEAU都市モデルの仕様のID。
+  管理者用
   """
-  plateauSpecId: ID!
+  admin: Any
   """
-  データセットが準拠するPLATEAU都市モデルの仕様の名称。
+  データセットが準拠するPLATEAU都市モデルの仕様のマイナーバージョンへのID。
   """
-  plateauSpecName: String!
+  plateauSpecMinorId: ID!
   """
   データセットが準拠するPLATEAU都市モデルの仕様。
   """
-  plateauSpec: PlateauSpecMinor!
+  plateauSpecMinor: PlateauSpecMinor!
   """
   河川。地物型が洪水浸水想定区域モデル（fld）の場合のみ存在します。
   """
@@ -617,10 +657,6 @@ type PlateauDatasetType implements DatasetType & Node {
   """
   plateauSpecId: ID!
   """
-  データセットの種類が属するPLATEAU都市モデルの仕様の名称。
-  """
-  plateauSpecName: String!
-  """
   データセットの種類が属するPLATEAU都市モデルの仕様。
   """
   plateauSpec: PlateauSpec
@@ -632,6 +668,10 @@ type PlateauDatasetType implements DatasetType & Node {
   洪水・高潮・津波・内水浸水想定区域モデルを表す種類かどうか。河川などの情報が利用可能です。
   """
   flood: Boolean!
+  """
+  データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
+  """
+  datasets(input: DatasetsInput): [PlateauDataset!]!
 }
 
 # related dataset
@@ -665,17 +705,17 @@ type RelatedDataset implements Dataset & Node {
   """
   データセットが属する都道府県のID。
   """
-  prefectureId: ID!
+  prefectureId: ID
   """
   データセットが属する都道府県コード。2桁の数字から成る文字列です。
   """
-  prefectureCode: AreaCode!
+  prefectureCode: AreaCode
   """
   データセットが属する市のID。
   """
   cityId: ID
   """
-  データセットが属する市コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する市コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   cityCode: AreaCode
   """
@@ -683,7 +723,7 @@ type RelatedDataset implements Dataset & Node {
   """
   wardId: ID
   """
-  データセットが属する区コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する区コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   wardCode: AreaCode
   """
@@ -714,6 +754,10 @@ type RelatedDataset implements Dataset & Node {
   データセットのアイテム。
   """
   items: [RelatedDatasetItem!]!
+  """
+  管理者用
+  """
+  admin: Any
 }
 
 """
@@ -765,6 +809,10 @@ type RelatedDatasetType implements DatasetType & Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
+  """
+  datasets(input: DatasetsInput): [RelatedDataset!]!
 }
 
 # Generic
@@ -797,17 +845,17 @@ type GenericDataset implements Dataset & Node {
   """
   データセットが属する都道府県のID。
   """
-  prefectureId: ID!
+  prefectureId: ID
   """
   データセットが属する都道府県コード。2桁の数字から成る文字列です。
   """
-  prefectureCode: AreaCode!
+  prefectureCode: AreaCode
   """
   データセットが属する市のID。
   """
   cityId: ID
   """
-  データセットが属する市コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する市コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   cityCode: AreaCode
   """
@@ -815,7 +863,7 @@ type GenericDataset implements Dataset & Node {
   """
   wardId: ID
   """
-  データセットが属する区コード。先頭に都道府県コードを含む6桁の数字から成る文字列です。
+  データセットが属する区コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
   """
   wardCode: AreaCode
   """
@@ -846,6 +894,10 @@ type GenericDataset implements Dataset & Node {
   データセットのアイテム。
   """
   items: [GenericDatasetItem!]!
+  """
+  管理者用
+  """
+  admin: Any
 }
 
 """
@@ -897,6 +949,10 @@ type GenericDatasetType implements DatasetType & Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
+  """
+  datasets(input: DatasetsInput): [GenericDataset!]!
 }
 
 # Queries
@@ -911,8 +967,19 @@ input AreasInput {
   parentCode: AreaCode
   """
   データセットの種類コード。例えば、建築物モデルのデータセットが存在する地域を検索したい場合は "bldg" を指定します。複数指定するとOR条件で検索を行います。
+  未指定の場合、全てのデータセットの種類を対象に検索します。
   """
   datasetTypes: [String!]
+  """
+  データセットの種類のカテゴリ。例えば、PLATEAU都市モデルデータセットが存在する地域を検索したい場合は PLATEAU を指定します。複数指定するとOR条件で検索を行います。
+  未指定の場合、全てのカテゴリのデータセットを対象に検索します。
+  """
+  categories: [DatasetTypeCategory!]
+  """
+  地域の種類。例えば、市を検索したい場合は CITY を指定します。複数指定するとOR条件で検索を行います。
+  未指定の場合、全ての地域を対象に検索します。
+  """
+  areaTypes: [AreaType!]
   """
   検索文字列。複数指定するとAND条件で絞り込み検索が行えます。
   """

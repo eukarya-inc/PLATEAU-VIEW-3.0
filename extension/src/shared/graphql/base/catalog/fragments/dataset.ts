@@ -39,5 +39,6 @@ export const DATASET_FRAGMENT = gql(`
       url
       layers
     }
+    admin
   }
 `);
