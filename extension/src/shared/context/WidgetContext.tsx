@@ -21,7 +21,6 @@ import {
   setIsEditorMode,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
-import { inEditor } from "../reearth/utils";
 
 type Props = {
   geoUrl?: string;
@@ -77,9 +76,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
 
   useEffect(() => {
     if (!catalogClient && catalogUrl) {
-      createCatalogClient(catalogUrl, inEditor() ? plateauToken : undefined);
+      createCatalogClient(catalogUrl, isEditorMode ? plateauToken : undefined);
     }
-  }, [catalogUrl, plateauToken]);
+  }, [catalogUrl, plateauToken, isEditorMode]);
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
