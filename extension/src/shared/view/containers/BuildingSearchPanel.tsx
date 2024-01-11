@@ -148,6 +148,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       ),
     ),
   );
+  const defferedSearchedFeatures = useDeferredValue(searchedFeatures);
 
   const allFeatures = useMemo(
     () =>
@@ -246,7 +247,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  triggerUpdateRef.current += 1;
+  if (state.isOpen) {
+    triggerUpdateRef.current += 1;
+  }
 
   if (!allFeatures || !groups) return null;
 
@@ -294,10 +297,10 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
             <ResultLabel>{searchedFeatures?.features.length ?? 0}件見つかりました</ResultLabel>
             <Divider />
             <ResultList>
-              {searchedFeatures?.features.map((f, i) => (
+              {defferedSearchedFeatures?.features.map((f, i) => (
                 <ResultListItem
                   key={f}
-                  selected={searchedFeatures.selectedIndices.includes(i)}
+                  selected={defferedSearchedFeatures.selectedIndices.includes(i)}
                   onClick={() => handleResultItemClick(i)}>
                   {f}
                 </ResultListItem>

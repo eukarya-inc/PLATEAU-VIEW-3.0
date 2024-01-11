@@ -78,6 +78,11 @@ const yml = {
                 title: "Re:Earthプロジェクトの公開URL",
               },
               {
+                id: "isEditorMode",
+                type: "bool",
+                title: "エディターモード",
+              },
+              {
                 id: "enableGeoPub",
                 type: "bool",
                 title: "G空間情報センターに公開",

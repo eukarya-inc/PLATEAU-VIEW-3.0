@@ -3,6 +3,7 @@ import { debounce } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
+import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { useDatasets, useEstatAreasLazy } from "../../../shared/graphql";
 import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
@@ -89,7 +90,7 @@ function useDatasetSearchOptions({
         })
         .map(dataset => ({
           type: "dataset" as const,
-          name: dataset.name,
+          name: IS_EDITOR_MODE && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
           index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
             dataset.ward?.name ?? ""
           }`,

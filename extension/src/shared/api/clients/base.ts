@@ -30,11 +30,11 @@ export class PlateauAPIClient<V> {
   }
 
   async findAll(): Promise<V[]> {
-    return this.handleError(await fetchWithGet(this.baseUrl(), this.token));
+    return this.handleError(await fetchWithGet(this.baseUrl()));
   }
 
   async findById(id: string): Promise<V> {
-    return this.handleError(await fetchWithGet(this.urlWithId(id), this.token));
+    return this.handleError(await fetchWithGet(this.urlWithId(id)));
   }
 
   async save(data: V) {

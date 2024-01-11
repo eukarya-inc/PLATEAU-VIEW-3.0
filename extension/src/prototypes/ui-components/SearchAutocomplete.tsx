@@ -269,7 +269,6 @@ export const SearchAutocomplete = forwardRef<HTMLInputElement, SearchAutocomplet
     const handleInputChange: NonNullable<AutocompleteProps["onInputChange"]> = useCallback(
       (event, value, reason) => {
         if (reason === "reset") {
-          setFocused(false);
           return; // Disable auto clear
         }
         setInputValue(value);
