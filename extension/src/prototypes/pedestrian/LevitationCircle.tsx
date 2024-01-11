@@ -1,5 +1,4 @@
 import { useTheme } from "@mui/material";
-import { hexToRgb } from "@mui/system";
 import { animate, useMotionValue, usePresence } from "framer-motion";
 import { useMemo, type FC, useEffect, useState } from "react";
 
@@ -8,6 +7,7 @@ import {
   PedestrianEllipseLayer,
 } from "../../shared/reearth/layers/pedestrian/ellipse";
 import { XYZ } from "../../shared/reearth/types";
+import { hexToRGBArray } from "../../shared/utils";
 
 import { type MotionPosition } from "./useMotionPosition";
 
@@ -77,10 +77,7 @@ export const LevitationCircle: FC<LevitationCircleProps> = ({
   const theme = useTheme();
 
   const color = useMemo(() => {
-    const rgb = hexToRgb(theme.palette.primary.main)
-      .slice("rgb(".length, -")".length)
-      .split(/, |,/)
-      .map(Number);
+    const rgb = hexToRGBArray(theme.palette.primary.main);
     return `rgba(${[...rgb, 0.2].join(",")})`;
   }, [theme]);
 

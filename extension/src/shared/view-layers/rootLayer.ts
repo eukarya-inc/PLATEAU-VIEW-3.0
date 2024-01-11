@@ -123,14 +123,19 @@ const findComponentTemplate = (
   templates: Template[],
   dataName: string | undefined,
 ): ComponentTemplate | undefined => {
-  const { useTemplate, templateId } = setting?.fieldComponents ?? {};
+  const { useTemplate, templateId, groups } = setting?.fieldComponents ?? {};
 
   // Default template
   const templateWithName = dataName
     ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
     : undefined;
 
-  if ((!useTemplate || !templateId) && !templateWithName) return;
+  if (
+    (!useTemplate || !templateId) &&
+    // If there is no group, use the default template
+    (groups?.some(g => !!g.components.length) || !templateWithName)
+  )
+    return;
 
   const template =
     !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
@@ -150,7 +155,9 @@ const findEmphasisProperties = (
     ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
     : undefined;
 
-  if ((!useTemplate || !templateId) && !templateWithName) return properties;
+  // If there is no emphasis property, use the default template
+  if ((!useTemplate || !templateId) && (!!properties?.length || !templateWithName))
+    return properties;
 
   const template =
     !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
