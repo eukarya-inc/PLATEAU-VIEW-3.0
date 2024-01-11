@@ -1,7 +1,7 @@
 import { FormControl } from "@mui/base/FormControl";
 import { Input, inputClasses } from "@mui/base/Input";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
-import CancelIcon from "@mui/icons-material/Cancel";
+import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import {
   Box,
   Button,
@@ -15,18 +15,6 @@ import {
 } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useCallback, useMemo, useState } from "react";
-
-const style = {
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 420,
-  bgcolor: "background.paper",
-  color: "#000",
-  margin: "auto",
-  padding: "18px 22px",
-};
 
 export type Props = {
   show: boolean;
@@ -89,8 +77,8 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
       open={show}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description">
-      <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
+      <StyledBox>
+        <Typography id="modal-modal-title" variant="subtitle1" component="h2">
           フィードバック{" "}
           <IconButton
             aria-label="close"
@@ -153,10 +141,27 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
         <StyledButton disabled={disabled} type="submit" onClick={handleSubmit}>
           送信
         </StyledButton>
-      </Box>
+      </StyledBox>
     </Modal>
   );
 };
+
+const StyledBox = styled(Box)(({ theme }) => ({
+  position: "absolute" as const,
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 560,
+  backgroundColor: theme.palette.background.paper,
+  color: "#000",
+  margin: "auto",
+  padding: "18px 22px",
+  borderRadius: theme.shape.borderRadius,
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(2)})`,
+    overflowY: "scroll",
+  },
+}));
 
 const StyledInput = styled(Input)(
   ({ theme }) => `
@@ -174,6 +179,10 @@ const StyledInput = styled(Input)(
     }
   `,
 );
+
+const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
+  color: theme.palette.text.primary,
+}));
 
 const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
   background: theme.palette.grey[50],
