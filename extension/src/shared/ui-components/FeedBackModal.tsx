@@ -157,9 +157,11 @@ const StyledBox = styled(Box)(({ theme }) => ({
   margin: "auto",
   padding: "18px 22px",
   borderRadius: theme.shape.borderRadius,
+  boxSizing: "border-box",
+  maxHeight: "calc(100vh - 50px)",
+  overflowY: "scroll",
   [theme.breakpoints.down("mobile")]: {
     width: `calc(100vw - ${theme.spacing(2)})`,
-    overflowY: "scroll",
   },
 }));
 
