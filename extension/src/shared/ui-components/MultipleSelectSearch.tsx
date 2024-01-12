@@ -21,6 +21,7 @@ const Root = styled("div")(
 const Label = styled("label")`
   padding: 0 0 5px;
   display: inline-block;
+  word-break: break-all;
 `;
 
 const InputWrapper = styled("div")(

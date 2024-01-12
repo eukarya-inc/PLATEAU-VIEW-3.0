@@ -1,6 +1,7 @@
 import { SetStateAction, atom, useAtomValue } from "jotai";
 import { intersectionWith } from "lodash-es";
 import { useMemo, type FC, useState, useCallback } from "react";
+import invariant from "tiny-invariant";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
@@ -56,7 +57,13 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property => {
-                      if (property.type !== type) return;
+                      if (
+                        property.type !== type ||
+                        !property.minimum ||
+                        !property.maximum ||
+                        !property.availableFeatures.includes("filter")
+                      )
+                        return;
 
                       const minimum = Math.ceil(property.minimum);
                       const maximum = Math.ceil(property.maximum);
@@ -80,7 +87,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
             ),
             (a, b: Poperty) => a.name === b.name,
           );
-          return props.map((prop): [Poperty, string] => [prop, prop.name.replaceAll("_", " ")]);
+          return props.map((prop): [Poperty, string] => [prop, prop.displayName]);
         }),
       [buildingLayers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
     ),
@@ -91,6 +98,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
       propertyItems.reduce((res, [prop]) => {
         const maximum = prop.maximum;
         const minimum = prop.minimum;
+        invariant(maximum !== undefined && minimum !== undefined);
         res[prop.name] = atoms.map(a =>
           atom(
             get => {

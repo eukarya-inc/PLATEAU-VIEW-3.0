@@ -150,37 +150,54 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   );
   const defferedSearchedFeatures = useDeferredValue(searchedFeatures);
 
-  const allFeatures = useMemo(
-    () =>
-      window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? []),
-    [layerId, featureIndex, triggerUpdateRef.current], // eslint-disable-line react-hooks/exhaustive-deps
+  const initialized = useRef(false);
+  if (state.isOpen && !initialized.current) {
+    initialized.current = true;
+  }
+  useEffect(
+    () => () => {
+      initialized.current = false;
+    },
+    [layer],
   );
 
-  const groups = useMemo(() => {
-    if (!allFeatures) return;
+  const allFeatures = useMemo(
+    () =>
+      initialized.current
+        ? window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? [])
+        : undefined,
+    [layerId, featureIndex, initialized.current, triggerUpdateRef.current], // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
-    return properties?.value
-      ?.map(value => {
-        if (!value) return;
-        if (value.type !== "unknown") return;
-        if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+  const groups = useDeferredValue(
+    useMemo(() => {
+      if (!allFeatures || !initialized.current) return [];
 
-        return {
-          key: value.name,
-          title: value.name,
-          options: uniqBy(
-            allFeatures
-              .map(f => {
-                const propertyValue = get(f.properties, value.name);
-                return { label: propertyValue, value: propertyValue };
-              })
-              .filter(v => !!v.label && !!v.value),
-            "label",
-          ),
-        };
-      })
-      .filter(isNotNullish);
-  }, [allFeatures, properties]);
+      return (
+        properties?.value
+          ?.map(value => {
+            if (!value) return;
+            if (value.type !== "unknown") return;
+            if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+
+            return {
+              key: value.name,
+              title: value.name,
+              options: uniqBy(
+                allFeatures
+                  .map(f => {
+                    const propertyValue = get(f.properties, value.name);
+                    return { label: propertyValue, value: propertyValue };
+                  })
+                  .filter(v => !!v.label && !!v.value),
+                "label",
+              ),
+            };
+          })
+          .filter(isNotNullish) ?? []
+      );
+    }, [allFeatures, properties, initialized.current]), // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   const [conditions, setConditions] = useState<
     Record<string, MultipleSelectSearchProps["options"]>
@@ -251,7 +268,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     triggerUpdateRef.current += 1;
   }
 
-  if (!allFeatures || !groups) return null;
+  if (!allFeatures) return null;
 
   return (
     <Popover
@@ -287,7 +304,11 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
               ))}
             </SearchConditionList>
             <Space size={3} />
-            <SearchButton color="primary" variant="contained" onClick={handleSearchButtonClick}>
+            <SearchButton
+              color="primary"
+              variant="contained"
+              onClick={handleSearchButtonClick}
+              disabled={!groups.length}>
               検索
             </SearchButton>
           </SearchContent>
