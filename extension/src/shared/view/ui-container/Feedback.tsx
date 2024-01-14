@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
-import FeedBackModal from "../../ui-components/FeedBackModal";
+import FeedBackModal from "../../ui-components/FeedBackForm";
 
 const FeedBack = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
