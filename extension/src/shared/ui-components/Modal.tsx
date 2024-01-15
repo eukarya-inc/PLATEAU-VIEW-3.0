@@ -5,11 +5,11 @@ import React, { ReactNode } from "react";
 type Props = {
   disabled?: boolean;
   title?: string;
-  button1?: ReactNode;
   children?: ReactNode;
+  buttonIcon?: React.ReactNode;
   isVisible: boolean;
   buttonTitle?: string;
-  isContent?: boolean;
+  isIcon?: boolean;
   onClose?: () => void;
   onSubmit?: () => void;
 };
@@ -20,6 +20,8 @@ const SharedModal: React.FC<Props> = ({
   disabled,
   children,
   buttonTitle,
+  isIcon,
+  buttonIcon,
   onClose,
   onSubmit,
 }) => {
@@ -43,7 +45,11 @@ const SharedModal: React.FC<Props> = ({
           </IconButton>
         </Typography>
         {children}
-        <StyledButton disabled={disabled} type="submit" onClick={onSubmit}>
+        <StyledButton
+          startIcon={isIcon && buttonIcon}
+          disabled={disabled}
+          type="submit"
+          onClick={onSubmit}>
           {buttonTitle}
         </StyledButton>
       </StyledBox>

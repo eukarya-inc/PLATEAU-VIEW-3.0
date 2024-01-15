@@ -128,7 +128,7 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
 };
 
 const FormWrapper = styled("div")(() => ({
-  padding: "18px 22px",
+  padding: "0 22px",
 }));
 
 const StyledInput = styled(Input)(
