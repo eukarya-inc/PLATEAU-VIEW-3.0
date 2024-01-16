@@ -1,6 +1,7 @@
 export const HEATMAP_LAYER = "HEATMAP_LAYER";
 export const PEDESTRIAN_LAYER = "PEDESTRIAN_LAYER";
 export const SKETCH_LAYER = "SKETCH_LAYER";
+export const MY_DATA_LAYER = "MY_DATA_LAYER";
 
 // Dataset layers
 export const BORDER_LAYER = "BORDER_LAYER";

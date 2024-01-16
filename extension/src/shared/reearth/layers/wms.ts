@@ -10,7 +10,7 @@ export type WMSProps = {
   url: string;
   onLoad?: (layerId: string) => void;
   visible?: boolean;
-  appearances: WMSAppearances;
+  appearances?: WMSAppearances;
   layers?: string[];
 };
 
@@ -23,7 +23,7 @@ const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
 export const WMSLayer: FC<WMSProps> = ({ url, onLoad, visible, appearances, layers }) => {
   const mergedAppearances: WMSAppearances | undefined = useMemo(
     () => ({
-      ...appearances,
+      ...(appearances ?? {}),
       raster: {
         ...DEFAULT_APPEARNACES.raster,
       },

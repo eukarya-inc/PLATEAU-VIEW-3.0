@@ -115,7 +115,9 @@ export const makePropertyForFeatureInspector = ({
         )
         .filter(v => !!v && !!Object.keys(v).length)
     : [];
-  const builtInRootPropertyNames = rawBuiltInRootProperties.flatMap(p => Object.keys(p ?? {}));
+  const builtInRootPropertyNames = intersection(
+    rawBuiltInRootProperties.flatMap(p => Object.keys(p ?? {})),
+  );
   const builtInRootProperties: { name: string; values: any[] }[] = builtInRootPropertyNames
     .map(name => ({
       name,
@@ -153,7 +155,7 @@ export const makePropertyForFeatureInspector = ({
       .filter(n => {
         if (n === attributesKey) return false;
         return (
-          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? "") &&
+          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? n) &&
           !settingRootPropertyNames?.includes(n)
         );
       })

@@ -42,6 +42,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
@@ -60,6 +61,7 @@ export const layerTypeIcons: Record<LayerType, ComponentType<SvgIconProps>> = {
   [HEATMAP_LAYER]: UseCaseIcon,
   [PEDESTRIAN_LAYER]: PedestrianIcon,
   [SKETCH_LAYER]: SketchIcon,
+  [MY_DATA_LAYER]: UseCaseIcon,
 
   // Dataset layers
   [BORDER_LAYER]: BorderIcon,
