@@ -11,21 +11,16 @@ import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
 import SharedModal from "../Modal";
 
 import LocalDataTab from "./LocalDataTab";
-import { UserDataItem } from "./types";
 import WebDataTab from "./WebDataTab";
 
 const MyData = () => {
   const [showMyDataModal, setShowMyDataModal] = useAtom(showMyDataModalAtom);
-
-  const [value, setValue] = useState("local");
-  const [fileName, setFileName] = useState("");
-  const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
-  const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
-
   const addLayer = useAddLayer();
 
+  const [value, setValue] = useState("local");
+
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue);
+    if (event) setValue(newValue);
   };
 
   const onClose = useCallback(() => {
@@ -41,22 +36,10 @@ const MyData = () => {
             <Tab label="Webから追加" value="web" sx={{ flex: 1 }} />
           </TabList>
           <TabPanel value="local">
-            <LocalDataTab
-              setSelectedLocalItem={setSelectedLocalItem}  
-              selectedLocalItem={selectedLocalItem}
-              fileName={fileName}
-              onClose={onClose}
-              setFileName={setFileName}
-              onAddLayer={addLayer}
-            />
+            <LocalDataTab onClose={onClose} onAddLayer={addLayer} />
           </TabPanel>
           <TabPanel value="web">
-            <WebDataTab
-              selectedWebItem={selectedWebItem}
-              setSelectedWebItem={setSelectedWebItem}
-              onAddLayer={addLayer}
-              onClose={onClose}
-            />
+            <WebDataTab onAddLayer={addLayer} onClose={onClose} />
           </TabPanel>
         </TabContext>
       </Box>

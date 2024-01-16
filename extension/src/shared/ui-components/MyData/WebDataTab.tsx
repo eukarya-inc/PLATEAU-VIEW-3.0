@@ -4,21 +4,17 @@ import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { Fragment, useCallback, useMemo, useState } from "react";
 
-import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
 import { AddLayerOptions } from "../../../prototypes/layers/states";
-import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
-import { createRootLayerForLayerAtom, RootLayerConfig } from "../../view-layers/rootLayer";
+import { getExtension } from "../../utils/files";
+import { RootLayerConfig } from "../../view-layers/rootLayer";
 import { Label } from "../Label";
 import { StyledButton } from "../StyledButton";
 
 import { UserDataItem } from "./types";
-import { getAdditionalData } from "./utils";
-import { getExtension } from "./utils/files";
+import { handleDataSetSubmit } from "./utils";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
-  selectedWebItem?: UserDataItem;
-  setSelectedWebItem?: (data?: UserDataItem) => void;
   onAddLayer: (
     layer: Omit<RootLayerConfig, "id">,
     options?: AddLayerOptions | undefined,
@@ -26,9 +22,10 @@ type Props = {
   onClose?: () => void;
 };
 
-const WebDataTab: React.FC<Props> = ({ selectedWebItem, setSelectedWebItem, onAddLayer, onClose }) => {
+const WebDataTab: React.FC<Props> = ({ onAddLayer, onClose }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [dataUrl, setDataUrl] = useState("");
+  const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
 
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
@@ -53,15 +50,6 @@ const WebDataTab: React.FC<Props> = ({ selectedWebItem, setSelectedWebItem, onAd
     const id = "id" + Math.random().toString(16).slice(2);
     const format = setDataFormat(fileType, filename);
 
-    let additionalData: AdditionalData | undefined;
-    if (format === "csv") {
-      const csv = await fetch(dataUrl);
-      if (csv.status === 200) {
-        const content = await csv.text();
-        additionalData = getAdditionalData(content, format);
-      }
-    }
-
     const item: UserDataItem = {
       type: "item",
       id: id,
@@ -75,25 +63,13 @@ const WebDataTab: React.FC<Props> = ({ selectedWebItem, setSelectedWebItem, onAd
       url: dataUrl,
       visible: true,
       format,
-      additionalData,
     };
     if (setSelectedWebItem) setSelectedWebItem(item);
   }, [dataUrl, fileType, setDataFormat, setSelectedWebItem]);
 
   const handleSubmit = useCallback(() => {
-    if (selectedWebItem) {
-      onAddLayer(
-        createRootLayerForLayerAtom({
-          title: selectedWebItem.name ?? "",
-          format: selectedWebItem?.format,
-          type: MY_DATA_LAYER,
-          url: selectedWebItem?.url,
-          id: selectedWebItem?.dataID,
-        }),
-        { autoSelect: false },
-      );
-    }
-    onClose?.();
+    selectedWebItem && handleDataSetSubmit(selectedWebItem, onAddLayer, onClose);
+    setSelectedWebItem(undefined);
   }, [onAddLayer, onClose, selectedWebItem]);
 
   const disabled = useMemo(() => {

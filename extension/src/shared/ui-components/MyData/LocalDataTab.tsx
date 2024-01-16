@@ -8,36 +8,26 @@ import React, { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { AddLayerOptions } from "../../../prototypes/layers/states";
-import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
-import { RootLayerConfig, createRootLayerForLayerAtom } from "../../view-layers/rootLayer";
+import { getExtension } from "../../utils/files";
+import { RootLayerConfig } from "../../view-layers/rootLayer";
 import { Label } from "../Label";
 import { StyledButton } from "../StyledButton";
 
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { UserDataItem } from "./types";
-import { getExtension } from "./utils/files";
+import { handleDataSetSubmit } from "./utils";
 
 type Props = {
-  fileName: string;
-  selectedLocalItem?: UserDataItem;
   onAddLayer: (
     layer: Omit<RootLayerConfig, "id">,
     options?: AddLayerOptions | undefined,
   ) => () => void;
   onClose?: () => void;
-  setFileName: (v: string) => void;
-  setSelectedLocalItem?: (data?: UserDataItem) => void;
 };
 
-const LocalDataTab: React.FC<Props> = ({
-  fileName,
-  selectedLocalItem,
-  onClose,
-  onAddLayer,
-  setFileName,
-  setSelectedLocalItem,
-}) => {
+const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
+  const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
 
   const setDataFormat = useCallback((type: FileType, filename: string) => {
     const extension = getExtension(filename);
@@ -63,9 +53,10 @@ const LocalDataTab: React.FC<Props> = ({
   }, []);
 
   const proccessedData = useCallback(
-    async (fileName: string, acceptedFiles: any) => {
-      const reader = new FileReader();
+    async (acceptedFiles: any) => {
+      const fileName = acceptedFiles[0].name;
 
+      const reader = new FileReader();
       const content = await new Promise<string | ArrayBuffer | null>(resolve => {
         reader.onload = () => resolve(reader.result);
         reader.readAsText(acceptedFiles[0]);
@@ -83,11 +74,8 @@ const LocalDataTab: React.FC<Props> = ({
         type: "item",
         id: id,
         dataID: id,
-        description: `このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。${
-          format === "csv"
-            ? "<br/><br/>パフォーマンス上の問題が発生するため、6000レコード以上を含むCSVファイルをアップロードしないでください。"
-            : ""
-        }`,
+        description:
+          "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
         name: fileName,
         visible: true,
         url: url,
@@ -102,12 +90,10 @@ const LocalDataTab: React.FC<Props> = ({
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        const fileName = acceptedFiles[0].name;
-        setFileName(fileName);
-        proccessedData(fileName, acceptedFiles);
+        proccessedData(acceptedFiles);
       }
     },
-    [proccessedData, setFileName],
+    [proccessedData],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -115,33 +101,18 @@ const LocalDataTab: React.FC<Props> = ({
     multiple: false,
   });
 
-  const handleCancel = useCallback(() => {
-    setFileName("");
-  }, [setFileName]);
-
   const disabled = useMemo(() => {
-    if (fileName) return false;
+    if (selectedLocalItem) return false;
     return true;
-  }, [fileName]);
+  }, [selectedLocalItem]);
 
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (selectedLocalItem) {
-      onAddLayer(
-        createRootLayerForLayerAtom({
-          title: selectedLocalItem.name ?? "",
-          format: selectedLocalItem?.format,
-          type: MY_DATA_LAYER,
-          url: selectedLocalItem?.url,
-          id: selectedLocalItem?.dataID,
-        }),
-        { autoSelect: false },
-      );
-    }
-    onClose?.();
+    selectedLocalItem && handleDataSetSubmit(selectedLocalItem, onAddLayer, onClose);
+    setSelectedLocalItem(undefined);
   }, [onAddLayer, onClose, selectedLocalItem]);
 
   return (
@@ -161,15 +132,15 @@ const LocalDataTab: React.FC<Props> = ({
         </div>
       </DropzoneAreaWrapper>
 
-      {fileName && (
+      {selectedLocalItem && (
         <>
           <Box sx={{ display: "flex", gap: "10px", border: "1px solid #0000001f", padding: "8px" }}>
             <DescriptionOutlinedIcon />
-            <Typography>{fileName}</Typography>
-            <CancelIcon sx={{ cursor: "pointer" }} onClick={handleCancel} />
+            <Typography>{selectedLocalItem.name}</Typography>
+            <CancelIcon sx={{ cursor: "pointer" }} onClick={setSelectedLocalItem} />
           </Box>
           <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-            このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。
+            {selectedLocalItem.description}
           </Typography>
         </>
       )}
