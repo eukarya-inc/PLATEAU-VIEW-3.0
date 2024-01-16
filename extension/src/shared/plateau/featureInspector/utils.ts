@@ -155,7 +155,7 @@ export const makePropertyForFeatureInspector = ({
       .filter(n => {
         if (n === attributesKey) return false;
         return (
-          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? "") &&
+          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? n) &&
           !settingRootPropertyNames?.includes(n)
         );
       })
