@@ -15,10 +15,12 @@ import {
   GOOGLE_STREET_VIEW_API_KEY,
   GSI_TILE_URL,
   IS_EDITOR_MODE,
+  PLATEAU_API_URL,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
   setIsEditorMode,
+  setPlateauApiUrl,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
@@ -44,6 +46,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   isEditorMode,
   children,
 }) => {
+  useEffect(() => {
+    if (!PLATEAU_API_URL && plateauUrl) {
+      setPlateauApiUrl(plateauUrl);
+    }
+  }, [plateauUrl]);
+
   useEffect(() => {
     if (!GEO_API_URL && geoUrl) {
       setGeoApiUrl(geoUrl);
@@ -88,7 +96,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [projectId, plateauUrl, plateauToken]);
 
-  if (!geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
+  if (!PLATEAU_API_URL || !geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
     return null;
   }
 
