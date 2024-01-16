@@ -116,18 +116,22 @@ const UrlWrapper = styled("section")(({ theme }) => ({
 }));
 
 const StyledInput = styled(Input)(
-  () => `
-      .${inputClasses.input} {
-        font-size: 0.875rem;
-        font-weight: 400;
-        line-height: 1.5;
-        padding: 6px 12px;
-        border-radius: 4px 0 0 4px ; 
-        border: solid 2px #eee;
-        outline: none;
-        width: 370px;
+  ({ theme }) => `
+    .${inputClasses.input} {
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 1.5;
+      padding: 6px 12px;
+      border-radius: 4px 0 0 4px;
+      border: solid 2px #eee;
+      outline: none;
+      width: 370px;
+
+      ${theme.breakpoints.down("mobile")} {
+        width: 124px;
       }
-    `,
+    }
+  `,
 );
 
 const BrowseButton = styled(Button)(({ theme, disabled }) => ({
@@ -137,6 +141,11 @@ const BrowseButton = styled(Button)(({ theme, disabled }) => ({
   padding: "0 16px",
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
+  },
+  [theme.breakpoints.down("mobile")]: {
+    minWidth: "auto",
+    padding: "2px",
+    fontSize: "12px",
   },
 }));
 

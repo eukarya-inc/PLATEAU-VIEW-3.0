@@ -99,6 +99,12 @@ const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
+    accept: {
+      "application/json": [],
+      "application/vnd.google-earth.kml+xml": [],
+      "application/xml": [],
+      "application/zip": [],
+    },
   });
 
   const disabled = useMemo(() => {
@@ -124,7 +130,7 @@ const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
       <DropzoneAreaWrapper>
         <div {...getRootProps({ className: "dropzone" })}>
           <input {...getInputProps()} />
-          <CopyAllOutlinedIcon sx={{ margin: "0 120px" }} fontSize="large" />
+          <StyledCopyIcon fontSize="large" />
           <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }} variant="body1">
             ここをクリックしてファイルを選択するか <br />{" "}
             ファイルをここにドラッグ＆ドロップしてください
@@ -168,6 +174,13 @@ const DropzoneAreaWrapper = styled("section")(({ theme }) => ({
 const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
   color: theme.palette.text.primary,
   marginLeft: "auto",
+}));
+
+const StyledCopyIcon = styled(CopyAllOutlinedIcon)(({ theme }) => ({
+  margin: "0 120px",
+  [theme.breakpoints.down("mobile")]: {
+    margin: "0 70px",
+  },
 }));
 
 export default LocalDataTab;
