@@ -10,7 +10,7 @@ export type GTFSProps = {
   url: string;
   onLoad?: (layerId: string) => void;
   visible?: boolean;
-  appearances: GTFSAppearances;
+  appearances?: GTFSAppearances;
   updateInterval?: number;
 };
 
@@ -30,11 +30,11 @@ export const GTFSLayer: FC<GTFSProps> = ({ url, onLoad, visible, appearances, up
       ...appearances,
       marker: {
         ...DEFAULT_APPEARNACES.marker,
-        ...(appearances.marker ?? {}),
+        ...(appearances?.marker ?? {}),
       },
       model: {
         ...DEFAULT_APPEARNACES.model,
-        ...(appearances.model ?? {}),
+        ...(appearances?.model ?? {}),
       },
     }),
     [appearances],

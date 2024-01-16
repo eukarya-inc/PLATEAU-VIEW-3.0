@@ -66,6 +66,16 @@ export const InitialLayers: FC = () => {
         }),
         { autoSelect: false },
       ),
+      // TODO: Remove this comment after my data is implemented.
+      // addLayer(
+      //   createRootLayerForLayerAtom({
+      //     title: "3dtile",
+      //     format: "3dtiles",
+      //     type: MY_DATA_LAYER,
+      //     url: "https://assets.cms.plateau.reearth.io/assets/a7/862f0f-1626-4793-98a1-0d08384d7f34/40130_fukuoka-shi_2022_3dtiles_1_0_bldg_40132_hakata-ku_lod1/tileset.json",
+      //   }),
+      //   { autoSelect: false },
+      // ),
     ];
     return () => {
       remove.forEach(remove => {

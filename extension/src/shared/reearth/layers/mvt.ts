@@ -12,7 +12,7 @@ export type MVTProps = {
   url: string;
   onLoad?: (layerId: string, camera: CameraPosition) => void;
   visible?: boolean;
-  appearances: MVTAppearances;
+  appearances?: MVTAppearances;
   layers?: string[];
 };
 
@@ -80,15 +80,15 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
       ...appearances,
       marker: {
         ...DEFAULT_APPEARNACES.marker,
-        ...(appearances.marker ?? {}),
+        ...(appearances?.marker ?? {}),
       },
       polyline: {
         ...DEFAULT_APPEARNACES.polyline,
-        ...(appearances.polyline ?? {}),
+        ...(appearances?.polyline ?? {}),
       },
       polygon: {
         ...DEFAULT_APPEARNACES.polygon,
-        ...(appearances.polygon ?? {}),
+        ...(appearances?.polygon ?? {}),
       },
       raster: {
         maximumLevel: meta?.maxzoom,
