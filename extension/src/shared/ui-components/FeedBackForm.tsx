@@ -5,7 +5,9 @@ import { Checkbox, FormControlLabel, Link, Typography, styled } from "@mui/mater
 import { red } from "@mui/material/colors";
 import { useCallback, useMemo, useState } from "react";
 
+import { Label } from "./Label";
 import SharedModal from "./Modal";
+import { StyledButton } from "./StyledButton";
 
 export type Props = {
   show: boolean;
@@ -64,13 +66,7 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
   }, [comment, email]);
 
   return (
-    <SharedModal
-      isVisible={show}
-      title="フィードバック"
-      disabled={disabled}
-      buttonTitle="送信"
-      onClose={handleFeedBackModalForm}
-      onSubmit={handleSubmit}>
+    <SharedModal isVisible={show} title="フィードバック" onClose={handleFeedBackModalForm}>
       <FormWrapper>
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
           <Link href="https://www.mlit.go.jp/plateau/" underline="none">
@@ -122,6 +118,9 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
           }
           label="マップレビューを添付する"
         />
+        <StyledButton disabled={disabled} type="submit" onClick={handleSubmit}>
+          送信
+        </StyledButton>
       </FormWrapper>
     </SharedModal>
   );
@@ -157,11 +156,6 @@ const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
   outline: "none",
   padding: "8px 12px",
   fontSize: "0.875rem",
-}));
-
-const Label = styled("div")(() => ({
-  fontSize: "0.875rem",
-  marginBottom: "10px",
 }));
 
 const Required = styled("span")(() => ({

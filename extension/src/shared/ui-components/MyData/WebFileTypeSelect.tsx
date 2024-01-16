@@ -1,26 +1,58 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { MenuItem } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { useCallback } from "react";
-
-export const fileFormats = ".kml,.csv,.czml,.gpx,.geojson,.georss,.shapefile,.zip,.glb,.gltf";
+import Select from "@mui/material/Select";
+import React from "react";
 
 export type FileType =
   | "auto"
+  | "wms"
   | "geojson"
   | "kml"
   | "csv"
   | "czml"
   | "gpx"
   | "georss"
-  | "shapefile"
-  | "gltf";
+  | "shapefile";
 
-const FileTypeSelect: React.FC = () => {
+type Props = {
+  fileType: string;
+  onFileTypeSelect: (value: string) => void;
+};
+
+const SUPPORTED_TYPES: Record<string, string> = {
+  zip: "shapefile",
+  wms: "wms",
+  gpx: "gpx",
+  czml: "czml",
+  xml: "georss",
+  mvt: "mvt",
+  kml: "kml",
+  geojson: "geojson",
+  gtfs: "gtfs",
+  csv: "csv",
+  "tileset.json": "3dtiles",
+  glb: "gltf",
+  gltf: "gltf",
+};
+
+export const getSupportedType = (url: string): string | undefined => {
+  for (const key in SUPPORTED_TYPES) {
+    if (url.includes(key)) {
+      return SUPPORTED_TYPES[key];
+    }
+  }
+  return undefined;
+};
+
+const WebFileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
   const options = [
     {
       value: "auto",
       label: "自動検出",
+    },
+    {
+      value: "wms",
+      label: "Web Map Service (WMS)",
     },
     {
       value: "geojson",
@@ -43,6 +75,10 @@ const FileTypeSelect: React.FC = () => {
       label: "GPX",
     },
     {
+      value: "3dtiles",
+      label: "3D Tiles",
+    },
+    {
       value: "georss",
       label: "GeoRSS",
     },
@@ -51,16 +87,15 @@ const FileTypeSelect: React.FC = () => {
       label: "ShapeFile (zip)",
     },
     {
+      value: "mvt",
+      label: "Mapbox Vector Tile (MVT)",
+    },
+    {
       value: "gltf",
       label: "GLTF/GLB",
     },
   ];
 
-  const [fileType, setFileType] = React.useState("auto");
-
-  const handleFileTypeSelect = useCallback((event: SelectChangeEvent) => {
-    setFileType(event.target.value as FileType);
-  }, []);
   return (
     <Select
       sx={{ marginBottom: "12px", "& .MuiSelect-icon": { right: 8 } }}
@@ -68,7 +103,7 @@ const FileTypeSelect: React.FC = () => {
       value={fileType}
       defaultValue="auto"
       IconComponent={ArrowDropDownIcon}
-      onChange={handleFileTypeSelect}>
+      onChange={e => onFileTypeSelect(e.target.value as FileType)}>
       {options.map((option, idx) => (
         <MenuItem key={idx} value={option.value}>
           {option.label}
@@ -78,4 +113,4 @@ const FileTypeSelect: React.FC = () => {
   );
 };
 
-export default FileTypeSelect;
+export default WebFileTypeSelect;

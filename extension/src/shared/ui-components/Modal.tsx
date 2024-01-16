@@ -1,30 +1,15 @@
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import { Box, Button, IconButton, Modal, Typography, styled } from "@mui/material";
+import { Box, IconButton, Modal, Typography, styled } from "@mui/material";
 import React, { ReactNode } from "react";
 
 type Props = {
-  disabled?: boolean;
   title?: string;
   children?: ReactNode;
-  buttonIcon?: React.ReactNode;
   isVisible: boolean;
-  buttonTitle?: string;
-  isIcon?: boolean;
   onClose?: () => void;
-  onSubmit?: () => void;
 };
 
-const SharedModal: React.FC<Props> = ({
-  title,
-  isVisible,
-  disabled,
-  children,
-  buttonTitle,
-  isIcon,
-  buttonIcon,
-  onClose,
-  onSubmit,
-}) => {
+const SharedModal: React.FC<Props> = ({ title, isVisible, children, onClose }) => {
   return (
     <Modal
       open={isVisible}
@@ -45,13 +30,6 @@ const SharedModal: React.FC<Props> = ({
           </IconButton>
         </Typography>
         {children}
-        <StyledButton
-          startIcon={isIcon && buttonIcon}
-          disabled={disabled}
-          type="submit"
-          onClick={onSubmit}>
-          {buttonTitle}
-        </StyledButton>
       </StyledBox>
     </Modal>
   );
@@ -77,19 +55,6 @@ const StyledBox = styled(Box)(({ theme }) => ({
 
 const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
   color: theme.palette.text.primary,
-}));
-
-const StyledButton = styled(Button)(({ theme, disabled }) => ({
-  display: "flex",
-  padding: theme.spacing(1),
-  margin: "18px 22px",
-  color: theme.palette.text.primary,
-  backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
-  borderRadius: "4px",
-  marginLeft: "auto",
-  "&:hover": {
-    backgroundColor: !disabled && theme.palette.primary.main,
-  },
 }));
 
 export default SharedModal;

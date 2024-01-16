@@ -1,36 +1,55 @@
+import AddIcon from "@mui/icons-material/Add";
 import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
 import CopyAllOutlinedIcon from "@mui/icons-material/CopyAllOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Box, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 
+import { Label } from "../Label";
+import { StyledButton } from "../StyledButton";
+
 import FileTypeSelect from "./LocalFileTypeSelect";
+import { UserDataItem } from "./types";
 
 type Props = {
   fileName: string;
   setFileName: (v: string) => void;
+  onSubmit: () => void;
+  setSelectedLocalItem?: (data?: UserDataItem) => void;
 };
 
-const LocalDataTab: React.FC<Props> = ({ fileName, setFileName }) => {
+const LocalDataTab: React.FC<Props> = ({
+  fileName,
+  setFileName,
+  setSelectedLocalItem,
+  onSubmit,
+}) => {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
         setFileName(acceptedFiles[0].name);
+        setSelectedLocalItem?.(acceptedFiles[0]);
       }
     },
-    [setFileName],
+    [setFileName, setSelectedLocalItem],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
+    
   });
 
   const handleCancel = useCallback(() => {
     setFileName("");
   }, [setFileName]);
+
+  const disabled = useMemo(() => {
+    if (fileName) return false;
+    return true;
+  }, [fileName]);
 
   return (
     <FormControl fullWidth size="small">
@@ -61,14 +80,12 @@ const LocalDataTab: React.FC<Props> = ({ fileName, setFileName }) => {
           </Typography>
         </>
       )}
+      <StyledButton startIcon={<AddIcon />} disabled={disabled} type="submit" onClick={onSubmit}>
+        シーンに追加
+      </StyledButton>
     </FormControl>
   );
 };
-
-const Label = styled("div")(() => ({
-  fontSize: "0.875rem",
-  marginBottom: "10px",
-}));
 
 const DropzoneAreaWrapper = styled("section")(({ theme }) => ({
   backgroundColor: theme.palette.grey[50],
