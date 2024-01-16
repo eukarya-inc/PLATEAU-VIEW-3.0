@@ -18,6 +18,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
@@ -34,7 +35,7 @@ import {
 
 import { FloodLayer } from "./plateau-3dtiles/FloodLayer";
 
-import { BuildingLayer, GeneralDatasetLayer } from ".";
+import { BuildingLayer, GeneralDatasetLayer, MyDataLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
 // import { RoadLayer } from "./RoadLayer";
@@ -45,6 +46,7 @@ export const layerComponents: LayerComponents = {
   [HEATMAP_LAYER]: HeatmapLayer,
   [PEDESTRIAN_LAYER]: PedestrianLayer,
   [SKETCH_LAYER]: undefined, // SketchLayer,
+  [MY_DATA_LAYER]: MyDataLayer,
 
   // Dataset layers
   // Building model

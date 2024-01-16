@@ -13,6 +13,7 @@ import {
   LANDMARK_LAYER,
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
@@ -29,6 +30,7 @@ import {
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
 
 import { GeneralLayerModel } from "./general";
+import { MyDataLayerModel } from "./myData";
 import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
 
@@ -36,6 +38,7 @@ export interface LayerModelOverrides {
   [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: never; // SketchLayerModel;
+  [MY_DATA_LAYER]: MyDataLayerModel; // SketchLayerModel;
 
   // Dataset layers
   // Building model

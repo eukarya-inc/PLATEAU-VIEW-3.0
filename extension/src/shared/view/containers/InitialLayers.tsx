@@ -3,7 +3,7 @@ import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
-import { PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
+import { MY_DATA_LAYER, PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
@@ -63,6 +63,15 @@ export const InitialLayers: FC = () => {
             longitude: 139.769,
             latitude: 35.68,
           },
+        }),
+        { autoSelect: false },
+      ),
+      addLayer(
+        createRootLayerForLayerAtom({
+          title: "3dtile",
+          format: "3dtiles",
+          type: MY_DATA_LAYER,
+          url: "https://assets.cms.plateau.reearth.io/assets/a7/862f0f-1626-4793-98a1-0d08384d7f34/40130_fukuoka-shi_2022_3dtiles_1_0_bldg_40132_hakata-ku_lod1/tileset.json",
         }),
         { autoSelect: false },
       ),

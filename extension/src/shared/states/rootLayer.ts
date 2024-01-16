@@ -91,7 +91,9 @@ export const forceUpdateRootLayer = atom(undefined, (get, set) => {
 export const findRootLayerAtom = atom(undefined, (get, _, id: string) => {
   const rootLayers = get(rootLayersAtom);
   const rootLayerConfig = rootLayers.find(
-    (r): r is RootLayerConfigForDataset => r.type === "dataset" && r.id === id,
+    (r): r is RootLayerConfigForDataset =>
+      (r.type === "dataset" && r.id === id) ||
+      (r.type === "layer" && get(get(r.rootLayerAtom).layer).type === "MY_DATA_LAYER"),
   );
   if (!rootLayerConfig) return;
   const rootLayer = get(rootLayerConfig.rootLayerAtom);

@@ -20,6 +20,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   PedestrianLayerModelParams,
@@ -36,6 +37,7 @@ import {
 } from "../../prototypes/view-layers";
 
 import { GeneralLayerModelParams, createGeneralDatasetLayer } from "./general";
+import { MyDataLayerModelParams, createMyDataLayer } from "./myData";
 import {
   createBuildingLayer,
   type BuildingLayerModelParams,
@@ -58,6 +60,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? never : // SketchLayerModelParams :
+  T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
 
   // Dataset layers
   T extends typeof BORDER_LAYER ? GeneralLayerModelParams : // BorderLayerModelParams
@@ -97,6 +100,7 @@ export function createViewLayer<T extends LayerType>(
     case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return undefined // createSketchLayer(params as SketchLayerModelParams)
+    case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
 
     // Dataset layers
     // Building model

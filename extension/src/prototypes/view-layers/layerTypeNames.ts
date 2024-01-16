@@ -14,6 +14,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
@@ -32,6 +33,7 @@ export const layerTypeNames: Record<LayerType, string> = {
   [HEATMAP_LAYER]: "統計データ",
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
+  [MY_DATA_LAYER]: "マイデータ",
 
   // Dataset layers
   [BORDER_LAYER]: "行政界",

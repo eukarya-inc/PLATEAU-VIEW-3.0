@@ -32,8 +32,8 @@ export type GeneralProps = {
   onLoad?: (layerId: string) => void;
   visible?: boolean;
   selectedFeatureColor?: string;
-  appearances: GeneralAppearances;
-  appendData: GeneralData;
+  appearances?: GeneralAppearances;
+  appendData?: GeneralData;
   updateInterval?: number;
   events?: Events;
 };
@@ -69,23 +69,23 @@ export const GeneralLayer: FC<GeneralProps> = ({
       ...appearances,
       resource: {
         ...DEFAULT_APPEARNACES.resource,
-        ...(appearances.resource ?? {}),
+        ...(appearances?.resource ?? {}),
       },
       marker: {
         ...DEFAULT_APPEARNACES.marker,
-        ...(appearances.marker ?? {}),
+        ...(appearances?.marker ?? {}),
       },
       polyline: {
         ...DEFAULT_APPEARNACES.polyline,
-        ...(appearances.polyline ?? {}),
+        ...(appearances?.polyline ?? {}),
       },
       polygon: {
         ...DEFAULT_APPEARNACES.polygon,
-        ...(appearances.polygon ?? {}),
+        ...(appearances?.polygon ?? {}),
       },
       "3dtiles": {
         selectedFeatureColor,
-        ...(appearances["3dtiles"] ?? {}),
+        ...(appearances?.["3dtiles"] ?? {}),
       },
     }),
     [appearances, selectedFeatureColor],
@@ -96,7 +96,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
       type: format,
       url,
       updateInterval,
-      ...appendData,
+      ...(appendData ?? {}),
     }),
     [url, updateInterval, format, appendData],
   );
