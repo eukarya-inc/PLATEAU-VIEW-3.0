@@ -19,15 +19,16 @@ import { useCallback, useMemo, useState } from "react";
 export type Props = {
   show: boolean;
   setShowFeedbackModal: (show: boolean) => void;
+  loading?: boolean;
   onSubmit: (params: {
     name: string;
     email: string;
     comment: string;
     attachMapReview: boolean;
-  }) => void;
+  }) => Promise<void>;
 };
 
-const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }) => {
+const FeedBackModal: React.FC<Props> = ({ show, loading, setShowFeedbackModal, onSubmit }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [comment, setComment] = useState("");
@@ -68,9 +69,10 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
   }, []);
 
   const disabled = useMemo(() => {
+    if (loading) return true;
     if (comment && email) return false;
     return true;
-  }, [comment, email]);
+  }, [comment, email, loading]);
 
   return (
     <Modal
@@ -114,6 +116,7 @@ const FeedBackModal: React.FC<Props> = ({ show, setShowFeedbackModal, onSubmit }
           </Label>
           <StyledInput
             placeholder="メールアドレス"
+            type="email"
             value={email}
             onChange={e => handleSetEmail(e.target.value)}
           />

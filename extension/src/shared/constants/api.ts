@@ -1,3 +1,8 @@
+export let PLATEAU_API_URL: string | undefined;
+export const setPlateauApiUrl = (url: string) => {
+  PLATEAU_API_URL = url;
+};
+
 export let GEO_API_URL: string | undefined;
 export const setGeoApiUrl = (url: string) => {
   GEO_API_URL = url;
