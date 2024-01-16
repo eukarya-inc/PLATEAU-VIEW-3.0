@@ -6,6 +6,7 @@ import Tab from "@mui/material/Tab";
 import { useAtom } from "jotai";
 import { useCallback, useState } from "react";
 
+import { useAddLayer } from "../../../prototypes/layers";
 import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
 import SharedModal from "../Modal";
 
@@ -15,36 +16,21 @@ import WebDataTab from "./WebDataTab";
 
 const MyData = () => {
   const [showMyDataModal, setShowMyDataModal] = useAtom(showMyDataModalAtom);
+
   const [value, setValue] = useState("local");
   const [fileName, setFileName] = useState("");
-  const [selectedDataset, setDataset] = useState<UserDataItem>();
-  const [requireLayerName, setRequireLayerName] = useState<boolean>(false);
   const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
   const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
 
-  const handleOpenDetails = useCallback((data?: UserDataItem, needLayerName?: boolean) => {
-    setDataset(data);
-    setRequireLayerName(!!needLayerName);
-  }, []);
-
-  console.log("selectedLocalItem", selectedDataset);
-  console.log("requiredName", requireLayerName);
+  const addLayer = useAddLayer();
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    if (handleOpenDetails) {
-      if (newValue === "local") handleOpenDetails(selectedLocalItem);
-      else handleOpenDetails(selectedWebItem);
-    }
     setValue(newValue);
   };
 
   const onClose = useCallback(() => {
     setShowMyDataModal(false);
   }, [setShowMyDataModal]);
-
-  const handleSubmit = useCallback(() => {
-    console.log("called");
-  }, []);
 
   return (
     <SharedModal isVisible={showMyDataModal} title="Myデータ" onClose={onClose}>
@@ -56,18 +42,20 @@ const MyData = () => {
           </TabList>
           <TabPanel value="local">
             <LocalDataTab
-              setSelectedLocalItem={setSelectedLocalItem}
-              onSubmit={handleSubmit}
+              setSelectedLocalItem={setSelectedLocalItem}  
+              selectedLocalItem={selectedLocalItem}
               fileName={fileName}
+              onClose={onClose}
               setFileName={setFileName}
+              onAddLayer={addLayer}
             />
           </TabPanel>
           <TabPanel value="web">
             <WebDataTab
               selectedWebItem={selectedWebItem}
-              onOpenDetails={handleOpenDetails}
               setSelectedWebItem={setSelectedWebItem}
-              onSubmit={handleSubmit}
+              onAddLayer={addLayer}
+              onClose={onClose}
             />
           </TabPanel>
         </TabContext>

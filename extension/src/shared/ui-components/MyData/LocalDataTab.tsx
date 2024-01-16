@@ -4,42 +4,115 @@ import CopyAllOutlinedIcon from "@mui/icons-material/CopyAllOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Box, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
+import { AddLayerOptions } from "../../../prototypes/layers/states";
+import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
+import { RootLayerConfig, createRootLayerForLayerAtom } from "../../view-layers/rootLayer";
 import { Label } from "../Label";
 import { StyledButton } from "../StyledButton";
 
-import FileTypeSelect from "./LocalFileTypeSelect";
+import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { UserDataItem } from "./types";
+import { getExtension } from "./utils/files";
 
 type Props = {
   fileName: string;
+  selectedLocalItem?: UserDataItem;
+  onAddLayer: (
+    layer: Omit<RootLayerConfig, "id">,
+    options?: AddLayerOptions | undefined,
+  ) => () => void;
+  onClose?: () => void;
   setFileName: (v: string) => void;
-  onSubmit: () => void;
   setSelectedLocalItem?: (data?: UserDataItem) => void;
 };
 
 const LocalDataTab: React.FC<Props> = ({
   fileName,
+  selectedLocalItem,
+  onClose,
+  onAddLayer,
   setFileName,
   setSelectedLocalItem,
-  onSubmit,
 }) => {
+  const [fileType, setFileType] = useState<FileType>("auto");
+
+  const setDataFormat = useCallback((type: FileType, filename: string) => {
+    const extension = getExtension(filename);
+    if (type === "auto") {
+      switch (extension) {
+        // 3dtiles
+        case "json":
+          return "json";
+        // georss
+        case "rss":
+          return "rss";
+        // georss
+        case "xml":
+          return "xml";
+        // shapefile
+        case "zip":
+          return "zip";
+        default:
+          return extension;
+      }
+    }
+    return type;
+  }, []);
+
+  const proccessedData = useCallback(
+    async (fileName: string, acceptedFiles: any) => {
+      const reader = new FileReader();
+
+      const content = await new Promise<string | ArrayBuffer | null>(resolve => {
+        reader.onload = () => resolve(reader.result);
+        reader.readAsText(acceptedFiles[0]);
+      });
+
+      const url = (() => {
+        if (!content) {
+          return;
+        }
+        return "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString());
+      })();
+      const format = setDataFormat(fileType, fileName);
+      const id = "id" + Math.random().toString(16).slice(2);
+      const item: UserDataItem = {
+        type: "item",
+        id: id,
+        dataID: id,
+        description: `このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。${
+          format === "csv"
+            ? "<br/><br/>パフォーマンス上の問題が発生するため、6000レコード以上を含むCSVファイルをアップロードしないでください。"
+            : ""
+        }`,
+        name: fileName,
+        visible: true,
+        url: url,
+        format,
+      };
+      if (setSelectedLocalItem) setSelectedLocalItem(item);
+      return false;
+    },
+    [fileType, setDataFormat, setSelectedLocalItem],
+  );
+
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        setFileName(acceptedFiles[0].name);
-        setSelectedLocalItem?.(acceptedFiles[0]);
+        const fileName = acceptedFiles[0].name;
+        setFileName(fileName);
+        proccessedData(fileName, acceptedFiles);
       }
     },
-    [setFileName, setSelectedLocalItem],
+    [proccessedData, setFileName],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    
   });
 
   const handleCancel = useCallback(() => {
@@ -51,10 +124,30 @@ const LocalDataTab: React.FC<Props> = ({
     return true;
   }, [fileName]);
 
+  const handleFileTypeSelect = useCallback((type: string) => {
+    setFileType(type as FileType);
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    if (selectedLocalItem) {
+      onAddLayer(
+        createRootLayerForLayerAtom({
+          title: selectedLocalItem.name ?? "",
+          format: selectedLocalItem?.format,
+          type: MY_DATA_LAYER,
+          url: selectedLocalItem?.url,
+          id: selectedLocalItem?.dataID,
+        }),
+        { autoSelect: false },
+      );
+    }
+    onClose?.();
+  }, [onAddLayer, onClose, selectedLocalItem]);
+
   return (
     <FormControl fullWidth size="small">
       <Label>ファイルタイプを選択</Label>
-      <FileTypeSelect />
+      <FileTypeSelect fileType={fileType} onFileTypeSelect={handleFileTypeSelect} />
 
       <Label>ファイルをアップロード</Label>
       <DropzoneAreaWrapper>
@@ -80,7 +173,11 @@ const LocalDataTab: React.FC<Props> = ({
           </Typography>
         </>
       )}
-      <StyledButton startIcon={<AddIcon />} disabled={disabled} type="submit" onClick={onSubmit}>
+      <StyledButton
+        startIcon={<AddIcon />}
+        disabled={disabled}
+        type="submit"
+        onClick={handleSubmit}>
         シーンに追加
       </StyledButton>
     </FormControl>

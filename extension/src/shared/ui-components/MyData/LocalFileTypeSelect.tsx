@@ -1,9 +1,14 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { MenuItem } from "@mui/material";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import React, { useCallback } from "react";
+import Select from "@mui/material/Select";
+import React from "react";
 
 export const fileFormats = ".kml,.csv,.czml,.gpx,.geojson,.georss,.shapefile,.zip,.glb,.gltf";
+
+type Props = {
+  fileType: string;
+  onFileTypeSelect: (value: string) => void;
+};
 
 export type FileType =
   | "auto"
@@ -16,7 +21,7 @@ export type FileType =
   | "shapefile"
   | "gltf";
 
-const FileTypeSelect: React.FC = () => {
+const FileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
   const options = [
     {
       value: "auto",
@@ -56,11 +61,6 @@ const FileTypeSelect: React.FC = () => {
     },
   ];
 
-  const [fileType, setFileType] = React.useState("auto");
-
-  const handleFileTypeSelect = useCallback((event: SelectChangeEvent) => {
-    setFileType(event.target.value as FileType);
-  }, []);
   return (
     <Select
       sx={{ marginBottom: "12px", "& .MuiSelect-icon": { right: 8 } }}
@@ -68,7 +68,7 @@ const FileTypeSelect: React.FC = () => {
       value={fileType}
       defaultValue="auto"
       IconComponent={ArrowDropDownIcon}
-      onChange={handleFileTypeSelect}>
+      onChange={e => onFileTypeSelect(e.target.value as FileType)}>
       {options.map((option, idx) => (
         <MenuItem key={idx} value={option.value}>
           {option.label}

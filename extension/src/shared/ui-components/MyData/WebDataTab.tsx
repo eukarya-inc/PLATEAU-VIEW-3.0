@@ -5,29 +5,31 @@ import FormControl from "@mui/material/FormControl";
 import { Fragment, useCallback, useMemo, useState } from "react";
 
 import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
+import { AddLayerOptions } from "../../../prototypes/layers/states";
+import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
+import { createRootLayerForLayerAtom, RootLayerConfig } from "../../view-layers/rootLayer";
 import { Label } from "../Label";
+import { StyledButton } from "../StyledButton";
 
 import { UserDataItem } from "./types";
 import { getAdditionalData } from "./utils";
 import { getExtension } from "./utils/files";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
-import { StyledButton } from "../StyledButton";
 
 type Props = {
   selectedWebItem?: UserDataItem;
-  onOpenDetails?: (data?: UserDataItem, needLayerName?: boolean) => void;
   setSelectedWebItem?: (data?: UserDataItem) => void;
-  onSubmit: () => void;
+  onAddLayer: (
+    layer: Omit<RootLayerConfig, "id">,
+    options?: AddLayerOptions | undefined,
+  ) => () => void;
+  onClose?: () => void;
 };
 
-const WebDataTab: React.FC<Props> = ({
-  selectedWebItem,
-  onOpenDetails,
-  setSelectedWebItem,
-  onSubmit,
-}) => {
+const WebDataTab: React.FC<Props> = ({ selectedWebItem, setSelectedWebItem, onAddLayer, onClose }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [dataUrl, setDataUrl] = useState("");
+
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
   }, []);
@@ -39,21 +41,10 @@ const WebDataTab: React.FC<Props> = ({
   const setDataFormat = useCallback((type: FileType, filename: string) => {
     if (type === "auto") {
       let extension = getSupportedType(filename);
-      // Remove this in future
       if (!extension) extension = getExtension(filename);
       return extension;
     }
     return type;
-  }, []);
-
-  const needsLayerName = useCallback((url: string): boolean => {
-    const serviceTypes = ["mvt", "wms", "wmts"];
-    for (const serviceType of serviceTypes) {
-      if (url.includes(serviceType)) {
-        return true;
-      }
-    }
-    return false;
   }, []);
 
   const handleClick = useCallback(async () => {
@@ -86,10 +77,24 @@ const WebDataTab: React.FC<Props> = ({
       format,
       additionalData,
     };
-    const requireLayerName = needsLayerName(dataUrl);
-    if (onOpenDetails) onOpenDetails(item, requireLayerName);
     if (setSelectedWebItem) setSelectedWebItem(item);
-  }, [dataUrl, fileType, needsLayerName, onOpenDetails, setDataFormat, setSelectedWebItem]);
+  }, [dataUrl, fileType, setDataFormat, setSelectedWebItem]);
+
+  const handleSubmit = useCallback(() => {
+    if (selectedWebItem) {
+      onAddLayer(
+        createRootLayerForLayerAtom({
+          title: selectedWebItem.name ?? "",
+          format: selectedWebItem?.format,
+          type: MY_DATA_LAYER,
+          url: selectedWebItem?.url,
+          id: selectedWebItem?.dataID,
+        }),
+        { autoSelect: false },
+      );
+    }
+    onClose?.();
+  }, [onAddLayer, onClose, selectedWebItem]);
 
   const disabled = useMemo(() => {
     if (selectedWebItem) return false;
@@ -115,10 +120,14 @@ const WebDataTab: React.FC<Props> = ({
           </BrowseButton>
         </UrlWrapper>
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-          {selectedWebItem?.description}
+          {dataUrl && selectedWebItem && selectedWebItem?.description}
         </Typography>
       </FormControl>
-      <StyledButton startIcon={<AddIcon />} disabled={disabled} type="submit" onClick={onSubmit}>
+      <StyledButton
+        startIcon={<AddIcon />}
+        disabled={disabled}
+        type="submit"
+        onClick={handleSubmit}>
         シーンに追加
       </StyledButton>
     </Fragment>
