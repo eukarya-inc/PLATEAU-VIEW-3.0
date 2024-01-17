@@ -99,12 +99,6 @@ const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    accept: {
-      "application/json": [],
-      "application/vnd.google-earth.kml+xml": [],
-      "application/xml": [],
-      "application/zip": [],
-    },
   });
 
   const disabled = useMemo(() => {
