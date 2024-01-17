@@ -18,6 +18,7 @@ import {
   TILESET_BUILDING_MODEL_COLOR,
   TILESET_BUILDING_MODEL_FILTER,
   TILESET_CLIPPING,
+  TILESET_WIREFRAME,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { SearchedFeatures } from "../view-layers";
@@ -131,6 +132,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const filter = useEvaluateFilter(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
   );
+  const wireframeAtom = useFindComponent(componentAtoms, TILESET_WIREFRAME);
 
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
   const hiddenFeaturesConditions: ConditionsExpression = useMemo(
@@ -162,6 +164,8 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const colorMode = useAtomValue(colorModeAtom);
 
   const opacity = useOptionalAtomValue(opacityAtom);
+  const wireframe = useOptionalAtomValue(wireframeAtom);
+
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
     colorScheme: buildingModelColorAtom ? colorScheme ?? undefined : undefined,
@@ -195,16 +199,18 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
+      showWireframe: wireframe,
     }),
     [
-      color,
-      enableShadow,
       textured,
+      color,
+      shownSearchedFeaturesConditions,
+      hiddenFeaturesConditions.conditions,
+      filter.conditions,
+      enableShadow,
       theme.palette.primary.main,
       clippingBox,
-      filter.conditions,
-      hiddenFeaturesConditions.conditions,
-      shownSearchedFeaturesConditions,
+      wireframe,
     ],
   );
 

@@ -61,6 +61,14 @@ export type TilesetFloodModelFilterField = FieldBase<{
   };
 }>;
 
+export const TILESET_WIREFRAME = "TILESET_WIREFRAME";
+export type TilesetWireframeField = FieldBase<{
+  type: typeof TILESET_WIREFRAME;
+  value?: {
+    wireframe?: boolean;
+  };
+}>;
+
 export type TilesetFields =
   | TilesetBuildingModelColorField
   | TilesetFloodModelColorField
@@ -68,4 +76,5 @@ export type TilesetFields =
   | TilesetFillGradientColorField
   | TilesetClippingField
   | TilesetBuildingModelFilterField
-  | TilesetFloodModelFilterField;
+  | TilesetFloodModelFilterField
+  | TilesetWireframeField;
