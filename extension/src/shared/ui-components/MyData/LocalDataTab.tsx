@@ -13,6 +13,7 @@ import { Label } from "../Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
+import { getAdditionalData } from "./utils";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -61,6 +62,9 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
         }
         return "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString());
       })();
+      const contentString =
+        content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
+
       const format = setDataFormat(fileType, fileName);
       const id = "id" + Math.random().toString(16).slice(2);
       const item: UserDataItem = {
@@ -73,6 +77,7 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
         visible: true,
         url: url,
         format,
+        additionalData: getAdditionalData(contentString, format),
       };
       if (setSelectedLocalItem) setSelectedLocalItem(item);
       return false;

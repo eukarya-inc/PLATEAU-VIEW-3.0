@@ -10,6 +10,7 @@ import {
 } from "../../../prototypes/view-layers";
 import { MyDataLayerContainer } from "../../layerContainers/myData";
 import { GENERAL_FEATURE } from "../../reearth/layers";
+import { Data } from "../../reearth/types/layer";
 import { Properties } from "../../reearth/utils";
 import { LayerModel, LayerModelParams } from "../model";
 
@@ -17,21 +18,27 @@ import { MY_DATA_SUPPORTED_FORMAT } from "./format";
 
 export interface MyDataLayerModelParams extends LayerModelParams {
   title: string;
+  layers?: Data["layers"];
+  csv?: Data["csv"];
 }
 
 export interface MyDataLayerModel extends LayerModel {
   title: string;
   propertiesAtom: PrimitiveAtom<Properties | null>;
+  layers?: string[] | undefined;
+  csv?: Data["csv"];
 }
 
 export function createMyDataLayer(
   params: MyDataLayerModelParams,
 ): ConfigurableLayerModel<MyDataLayerModel> {
+  console.log("parms", params);
   return {
     ...createViewLayerModel(params),
     type: MY_DATA_LAYER,
     title: params.title,
     url: params.url,
+    csv: params.csv,
     format: params.format as (typeof MY_DATA_SUPPORTED_FORMAT)[number],
     propertiesAtom: atom<Properties | null>(null),
   };

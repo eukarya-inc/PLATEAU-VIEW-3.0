@@ -4,20 +4,24 @@ import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { Fragment, useCallback, useState } from "react";
 
+import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
 import { Label } from "../Label";
 
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
+import { getAdditionalData } from "./utils";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
-  onSubmit: (selectedItem: UserDataItem) => void;
+  onSubmit: (selectedItem: UserDataItem, layersName: string[]) => void;
 };
 const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [dataUrl, setDataUrl] = useState("");
   const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
+  const [requireLayerName, setRequireLayerName] = useState<boolean>(false);
+  const [layerNames, setLayerNames] = useState<string[]>([]);
 
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
@@ -36,11 +40,43 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     return type;
   }, []);
 
+  const needsLayerName = useCallback((url: string): boolean => {
+    const serviceTypes = ["mvt", "wms", "wmts"];
+    for (const serviceType of serviceTypes) {
+      if (url.includes(serviceType)) {
+        return true;
+      }
+    }
+    return false;
+  }, []);
+
+  const handleBlur = useCallback(() => {
+    const inputValue = layerNames[layerNames.length - 1]?.trim();
+
+    if (inputValue) {
+      setLayerNames(prevNames => {
+        if (!prevNames.includes(inputValue)) {
+          return [...prevNames, inputValue];
+        }
+        return prevNames;
+      });
+    }
+  }, [layerNames]);
+
   const handleClick = useCallback(async () => {
     // Catalog Item
     const filename = dataUrl.substring(dataUrl.lastIndexOf("/") + 1);
     const id = "id" + Math.random().toString(16).slice(2);
     const format = setDataFormat(fileType, filename);
+
+    let additionalData: AdditionalData | undefined;
+    if (format === "csv") {
+      const csv = await fetch(dataUrl);
+      if (csv.status === 200) {
+        const content = await csv.text();
+        additionalData = getAdditionalData(content, format);
+      }
+    }
 
     const item: UserDataItem = {
       type: "item",
@@ -55,15 +91,19 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
       url: dataUrl,
       visible: true,
       format,
+      additionalData,
     };
+    const requireLayerName = needsLayerName(dataUrl);
+    setRequireLayerName(requireLayerName);
     if (setSelectedWebItem) setSelectedWebItem(item);
-  }, [dataUrl, fileType, setDataFormat, setSelectedWebItem]);
+  }, [dataUrl, fileType, needsLayerName, setDataFormat]);
 
   const handleSubmit = useCallback(() => {
-    selectedWebItem && onSubmit(selectedWebItem);
+    selectedWebItem && onSubmit(selectedWebItem, layerNames);
     setSelectedWebItem(undefined);
-  }, [onSubmit, selectedWebItem]);
+  }, [layerNames, onSubmit, selectedWebItem]);
 
+  console.log("layerNames", layerNames)
   return (
     <Fragment>
       <FormControl fullWidth size="small">
@@ -82,9 +122,23 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
             データの閲覧
           </BrowseButton>
         </UrlWrapper>
-        <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-          {dataUrl && selectedWebItem && selectedWebItem?.description}
-        </Typography>
+        {dataUrl && selectedWebItem && (
+          <>
+            <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
+              {selectedWebItem?.description}
+            </Typography>
+            {requireLayerName && (
+              <FormControl>
+                <Label>表示したいレイヤー名を入力してください。</Label>
+                <StyledInput
+                  sx={{ width: "95%" }}
+                  placeholder="レイヤー名"
+                  onBlur={handleBlur}
+                />{" "}
+              </FormControl>
+            )}
+          </>
+        )}
       </FormControl>
       <StyledButton
         startIcon={<AddIcon />}

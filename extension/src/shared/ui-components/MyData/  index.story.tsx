@@ -30,15 +30,7 @@ const Component: FC = () => {
     );
   };
 
-  return (
-    <MyData
-      show={true}
-      selectedTab="local"
-      onClose={console.log}
-      handleTabChange={console.log}
-      addLayer={handleAddLayer}
-    />
-  );
+  return <MyData show={true} onClose={console.log} addLayer={handleAddLayer} />;
 };
 
 export const Default: Story = {

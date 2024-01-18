@@ -3,7 +3,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import { FC } from "react";
+import { FC, useCallback, useState } from "react";
 
 import { AddLayerOptions } from "../../../prototypes/layers";
 import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
@@ -15,9 +15,7 @@ import { UserDataItem } from "./types";
 import WebDataTab from "./WebDataTab";
 
 type Props = {
-  selectedTab: string;
   show: boolean;
-  handleTabChange: (event: React.SyntheticEvent, value: string) => void;
   addLayer: (
     layer: Omit<RootLayerConfig, "id">,
     options?: AddLayerOptions | undefined,
@@ -25,8 +23,14 @@ type Props = {
   onClose?: () => void;
 };
 
-const MyDataModal: FC<Props> = ({ show, selectedTab, addLayer, onClose, handleTabChange }) => {
-  const handleDataSetSubmit = (selectedItem: UserDataItem) => {
+const MyDataModal: FC<Props> = ({ show, addLayer, onClose }) => {
+  const [value, setValue] = useState("local");
+
+  const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
+    if (event) setValue(newValue);
+  }, []);
+
+  const handleDataSetSubmit = (selectedItem: UserDataItem, layers?: string[]) => {
     addLayer(
       createRootLayerForLayerAtom({
         title: selectedItem.name ?? "",
@@ -34,6 +38,8 @@ const MyDataModal: FC<Props> = ({ show, selectedTab, addLayer, onClose, handleTa
         type: MY_DATA_LAYER,
         url: selectedItem?.url,
         id: selectedItem?.dataID,
+        csv: selectedItem?.additionalData?.data?.csv,
+        layers,
       }),
       { autoSelect: false },
     );
@@ -43,7 +49,7 @@ const MyDataModal: FC<Props> = ({ show, selectedTab, addLayer, onClose, handleTa
   return (
     <SharedModal isVisible={show} title="Myデータ" onClose={onClose}>
       <Box sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
-        <TabContext value={selectedTab}>
+        <TabContext value={value}>
           <TabList onChange={handleTabChange}>
             <Tab label="ローカルのデータから追加" value="local" sx={{ flex: 1 }} />
             <Tab label="Webから追加" value="web" sx={{ flex: 1 }} />

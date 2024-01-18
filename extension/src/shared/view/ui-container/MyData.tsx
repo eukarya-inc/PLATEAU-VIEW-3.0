@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
@@ -9,25 +9,11 @@ const MyData = () => {
   const [showMyDataModal, setShowMyDataModal] = useAtom(showMyDataModalAtom);
   const addLayer = useAddLayer();
 
-  const [value, setValue] = useState("local");
-
-  const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
-    if (event) setValue(newValue);
-  }, []);
-
   const onClose = useCallback(() => {
     setShowMyDataModal(false);
   }, [setShowMyDataModal]);
 
-  return (
-    <MyDataModal
-      selectedTab={value}
-      show={showMyDataModal}
-      addLayer={addLayer}
-      handleTabChange={handleTabChange}
-      onClose={onClose}
-    />
-  );
+  return <MyDataModal show={showMyDataModal} addLayer={addLayer} onClose={onClose} />;
 };
 
 export default MyData;
