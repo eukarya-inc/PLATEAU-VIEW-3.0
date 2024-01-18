@@ -232,7 +232,7 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case TILESET_BUILDING_MODEL_FILTER: {
       component = (
         <BuildingFilterSection
-          type="number"
+          availableFeature="buildingFilter"
           label="フィルター（建物モデル）"
           layers={layers}
           atoms={
@@ -247,7 +247,7 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case TILESET_FLOOD_MODEL_FILTER: {
       component = (
         <BuildingFilterSection
-          type="qualitative"
+          availableFeature="floodFilter"
           label="フィルター（浸水想定区域）"
           layers={layers}
           atoms={
