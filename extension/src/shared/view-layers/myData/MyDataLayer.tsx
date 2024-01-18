@@ -32,7 +32,6 @@ export interface MyDataLayerModel extends LayerModel {
 export function createMyDataLayer(
   params: MyDataLayerModelParams,
 ): ConfigurableLayerModel<MyDataLayerModel> {
-  console.log("parms", params);
   return {
     ...createViewLayerModel(params),
     type: MY_DATA_LAYER,

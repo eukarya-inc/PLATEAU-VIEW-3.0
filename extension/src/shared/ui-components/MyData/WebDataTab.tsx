@@ -103,7 +103,6 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     setSelectedWebItem(undefined);
   }, [layerNames, onSubmit, selectedWebItem]);
 
-  console.log("layerNames", layerNames)
   return (
     <Fragment>
       <FormControl fullWidth size="small">
