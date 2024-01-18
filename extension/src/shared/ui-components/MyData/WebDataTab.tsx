@@ -2,27 +2,19 @@ import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import { Fragment, useCallback, useMemo, useState } from "react";
+import { Fragment, useCallback, useState } from "react";
 
-import { AddLayerOptions } from "../../../prototypes/layers/states";
-import { getExtension } from "../../utils/files";
-import { RootLayerConfig } from "../../view-layers/rootLayer";
+import { getExtension } from "../../utils/file";
 import { Label } from "../Label";
-import { StyledButton } from "../StyledButton";
 
+import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { handleDataSetSubmit } from "./utils";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
-  onAddLayer: (
-    layer: Omit<RootLayerConfig, "id">,
-    options?: AddLayerOptions | undefined,
-  ) => () => void;
-  onClose?: () => void;
+  onSubmit: (selectedItem: UserDataItem) => void;
 };
-
-const WebDataTab: React.FC<Props> = ({ onAddLayer, onClose }) => {
+const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [dataUrl, setDataUrl] = useState("");
   const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
@@ -68,14 +60,9 @@ const WebDataTab: React.FC<Props> = ({ onAddLayer, onClose }) => {
   }, [dataUrl, fileType, setDataFormat, setSelectedWebItem]);
 
   const handleSubmit = useCallback(() => {
-    selectedWebItem && handleDataSetSubmit(selectedWebItem, onAddLayer, onClose);
+    selectedWebItem && onSubmit(selectedWebItem);
     setSelectedWebItem(undefined);
-  }, [onAddLayer, onClose, selectedWebItem]);
-
-  const disabled = useMemo(() => {
-    if (selectedWebItem) return false;
-    return true;
-  }, [selectedWebItem]);
+  }, [onSubmit, selectedWebItem]);
 
   return (
     <Fragment>
@@ -101,7 +88,7 @@ const WebDataTab: React.FC<Props> = ({ onAddLayer, onClose }) => {
       </FormControl>
       <StyledButton
         startIcon={<AddIcon />}
-        disabled={disabled}
+        disabled={!selectedWebItem}
         type="submit"
         onClick={handleSubmit}>
         シーンに追加

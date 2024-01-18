@@ -3,43 +3,56 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
-import { useAtom } from "jotai";
-import { useCallback, useState } from "react";
+import { FC } from "react";
 
-import { useAddLayer } from "../../../prototypes/layers";
-import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
+import { AddLayerOptions } from "../../../prototypes/layers";
+import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
+import { RootLayerConfig, createRootLayerForLayerAtom } from "../../view-layers";
 import SharedModal from "../Modal";
 
 import LocalDataTab from "./LocalDataTab";
+import { UserDataItem } from "./types";
 import WebDataTab from "./WebDataTab";
 
-const MyData = () => {
-  const [showMyDataModal, setShowMyDataModal] = useAtom(showMyDataModalAtom);
-  const addLayer = useAddLayer();
+type Props = {
+  selectedTab: string;
+  show: boolean;
+  handleTabChange: (event: React.SyntheticEvent, value: string) => void;
+  addLayer: (
+    layer: Omit<RootLayerConfig, "id">,
+    options?: AddLayerOptions | undefined,
+  ) => () => void;
+  onClose?: () => void;
+};
 
-  const [value, setValue] = useState("local");
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    if (event) setValue(newValue);
+const MyDataModal: FC<Props> = ({ show, selectedTab, addLayer, onClose, handleTabChange }) => {
+  const handleDataSetSubmit = (selectedItem: UserDataItem) => {
+    addLayer(
+      createRootLayerForLayerAtom({
+        title: selectedItem.name ?? "",
+        format: selectedItem?.format,
+        type: MY_DATA_LAYER,
+        url: selectedItem?.url,
+        id: selectedItem?.dataID,
+      }),
+      { autoSelect: false },
+    );
+    onClose?.();
   };
 
-  const onClose = useCallback(() => {
-    setShowMyDataModal(false);
-  }, [setShowMyDataModal]);
-
   return (
-    <SharedModal isVisible={showMyDataModal} title="Myデータ" onClose={onClose}>
+    <SharedModal isVisible={show} title="Myデータ" onClose={onClose}>
       <Box sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
-        <TabContext value={value}>
-          <TabList onChange={handleChange}>
+        <TabContext value={selectedTab}>
+          <TabList onChange={handleTabChange}>
             <Tab label="ローカルのデータから追加" value="local" sx={{ flex: 1 }} />
             <Tab label="Webから追加" value="web" sx={{ flex: 1 }} />
           </TabList>
           <TabPanel value="local">
-            <LocalDataTab onClose={onClose} onAddLayer={addLayer} />
+            <LocalDataTab onSubmit={handleDataSetSubmit} />
           </TabPanel>
           <TabPanel value="web">
-            <WebDataTab onAddLayer={addLayer} onClose={onClose} />
+            <WebDataTab onSubmit={handleDataSetSubmit} />
           </TabPanel>
         </TabContext>
       </Box>
@@ -47,4 +60,4 @@ const MyData = () => {
   );
 };
 
-export default MyData;
+export default MyDataModal;

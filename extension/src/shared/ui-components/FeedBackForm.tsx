@@ -1,13 +1,12 @@
 import { FormControl } from "@mui/base/FormControl";
 import { Input, inputClasses } from "@mui/base/Input";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
-import { Checkbox, FormControlLabel, Link, Typography, styled } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Link, Typography, styled } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useCallback, useMemo, useState } from "react";
 
 import { Label } from "./Label";
 import SharedModal from "./Modal";
-import { StyledButton } from "./StyledButton";
 
 export type Props = {
   show: boolean;
@@ -163,6 +162,18 @@ const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
 
 const Required = styled("span")(() => ({
   color: red[500],
+}));
+
+export const StyledButton = styled(Button)(({ theme, disabled }) => ({
+  display: "flex",
+  padding: theme.spacing(1),
+  color: theme.palette.text.primary,
+  backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
+  borderRadius: "4px",
+  marginLeft: "auto",
+  "&:hover": {
+    backgroundColor: !disabled && theme.palette.primary.main,
+  },
 }));
 
 export default FeedBackModal;

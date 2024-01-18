@@ -13,9 +13,9 @@ import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { WidgetProps } from "../shared/types/widget";
-import MyData from "../shared/ui-components/MyData";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import FeedBack from "../shared/view/ui-container/Feedback";
+import MyData from "../shared/view/ui-container/MyData";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";

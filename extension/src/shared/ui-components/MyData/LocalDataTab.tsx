@@ -4,28 +4,21 @@ import CopyAllOutlinedIcon from "@mui/icons-material/CopyAllOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Box, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-import { AddLayerOptions } from "../../../prototypes/layers/states";
-import { getExtension } from "../../utils/files";
-import { RootLayerConfig } from "../../view-layers/rootLayer";
+import { getExtension } from "../../utils/file";
 import { Label } from "../Label";
-import { StyledButton } from "../StyledButton";
 
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
+import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { handleDataSetSubmit } from "./utils";
 
 type Props = {
-  onAddLayer: (
-    layer: Omit<RootLayerConfig, "id">,
-    options?: AddLayerOptions | undefined,
-  ) => () => void;
-  onClose?: () => void;
+  onSubmit: (selectedItem: UserDataItem) => void;
 };
 
-const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
+const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
 
@@ -101,19 +94,14 @@ const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
     multiple: false,
   });
 
-  const disabled = useMemo(() => {
-    if (selectedLocalItem) return false;
-    return true;
-  }, [selectedLocalItem]);
-
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
   }, []);
 
   const handleSubmit = useCallback(() => {
-    selectedLocalItem && handleDataSetSubmit(selectedLocalItem, onAddLayer, onClose);
+    selectedLocalItem && onSubmit(selectedLocalItem);
     setSelectedLocalItem(undefined);
-  }, [onAddLayer, onClose, selectedLocalItem]);
+  }, [onSubmit, selectedLocalItem]);
 
   return (
     <FormControl fullWidth size="small">
@@ -144,11 +132,7 @@ const LocalDataTab: React.FC<Props> = ({ onClose, onAddLayer }) => {
           </Typography>
         </>
       )}
-      <StyledButton
-        startIcon={<AddIcon />}
-        disabled={disabled}
-        type="submit"
-        onClick={handleSubmit}>
+      <StyledButton startIcon={<AddIcon />} disabled={!selectedLocalItem} onClick={handleSubmit}>
         シーンに追加
       </StyledButton>
     </FormControl>

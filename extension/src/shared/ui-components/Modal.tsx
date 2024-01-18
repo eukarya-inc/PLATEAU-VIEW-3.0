@@ -11,10 +11,7 @@ type Props = {
 
 const SharedModal: React.FC<Props> = ({ title, isVisible, children, onClose }) => {
   return (
-    <Modal
-      open={isVisible}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description">
+    <Modal open={isVisible} aria-labelledby="modal-modal-title">
       <StyledBox>
         <Typography
           sx={{ padding: "18px 22px" }}
