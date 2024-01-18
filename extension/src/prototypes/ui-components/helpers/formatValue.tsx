@@ -4,11 +4,11 @@ import { type ReactElement } from "react";
 
 const exponentFormatter = format("~e");
 
-export type ValueFormatter = (value: number) => ReactElement | string;
+export type ValueFormatter = (value: number, allowFloat?: boolean) => ReactElement | string;
 
-export const formatValue: ValueFormatter = value => {
+export const formatValue: ValueFormatter = (value, allowFloat) => {
   if (value < 100000) {
-    return `${round(value, 1)}`;
+    return allowFloat ? `${round(value, 1)}` : `${Math.trunc(value)}`;
   }
   const [base, exponent] = exponentFormatter(value).split("e");
   return (

@@ -181,7 +181,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property =>
                       (property.type === "number" || property.type === "qualitative") &&
-                      property.availableFeatures.includes("color")
+                      property.availableFeatures?.includes("color")
                         ? [property.name, property.displayName]
                         : undefined,
                     )

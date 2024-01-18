@@ -58,6 +58,6 @@ export const useLayer = ({
       if (layerId) {
         onLoad?.(layerId);
       }
-    }, 0);
+    }, 300);
   }, [onLoad, data.url]);
 };

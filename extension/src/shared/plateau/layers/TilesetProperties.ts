@@ -10,13 +10,14 @@ import {
   landSlideRiskColorSet,
 } from "../colorSets";
 
-type AvailableFeatures = ("color" | "filter")[];
+export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
 interface QualitativeProperty {
   testProperty: (name: string, value: unknown) => boolean;
-  colorSet: QualitativeColorSet;
+  colorSet?: QualitativeColorSet;
   getDisplayName?: (name: string) => string;
-  availableFeatures: AvailableFeatures;
+  getMinMax?: (min: number, max: number) => [min: number, max: number];
+  availableFeatures?: AvailableFeatures;
 }
 
 const qualitativeProperties: QualitativeProperty[] = [
@@ -32,7 +33,7 @@ const qualitativeProperties: QualitativeProperty[] = [
     colorSet: floodRankColorSet,
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
-    availableFeatures: ["color", "filter"],
+    availableFeatures: ["color", "floodFilter"],
   },
   {
     testProperty: propertyName => propertyName === "用途",
@@ -67,32 +68,43 @@ const qualitativeProperties: QualitativeProperty[] = [
     getDisplayName: () => "地すべり",
     availableFeatures: ["color"],
   },
+  {
+    testProperty: propertyName => propertyName === "建築年",
+    availableFeatures: ["buildingFilter"],
+    getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
+  },
+  {
+    testProperty: propertyName => propertyName === "_lod",
+    getDisplayName: () => "LOD",
+    availableFeatures: ["buildingFilter"],
+  },
 ];
 
 interface NumberProperty {
   testProperty: (name: string, value: unknown) => boolean;
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  availableFeatures: AvailableFeatures;
+  availableFeatures?: AvailableFeatures;
 }
 
 const numberProperties: NumberProperty[] = [
   {
     testProperty: propertyName => propertyName === "計測高さ",
-    availableFeatures: ["color", "filter"],
-  },
-  {
-    testProperty: propertyName => propertyName === "建築年",
-    availableFeatures: ["filter"],
-    getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
+    availableFeatures: ["color", "buildingFilter"],
   },
   {
     testProperty: propertyName => propertyName === "地上階数",
-    availableFeatures: ["filter"],
+    availableFeatures: ["buildingFilter"],
   },
   {
     testProperty: propertyName => propertyName === "地下階数",
-    availableFeatures: ["filter"],
+    availableFeatures: ["buildingFilter"],
+  },
+  {
+    testProperty: propertyName => propertyName === "_x",
+  },
+  {
+    testProperty: propertyName => propertyName === "_y",
   },
 ];
 
@@ -126,7 +138,7 @@ export class PlateauTilesetProperties extends Properties {
 
     this._cachedComputedProperties = Object.entries(properties)
       .map(([name, value]) => {
-        if (name.startsWith("_") || value == null || typeof value !== "object") {
+        if (value == null || typeof value !== "object") {
           return undefined;
         }
 
@@ -141,12 +153,16 @@ export class PlateauTilesetProperties extends Properties {
           testProperty(name, value),
         );
         if (qualitativeProperty != null) {
+          const [finalMinimum, finalMaximum] =
+            minimum && maximum
+              ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
+              : [];
           return {
             name,
             type: "qualitative" as const,
             colorSet: qualitativeProperty.colorSet,
-            minimum,
-            maximum,
+            minimum: finalMinimum,
+            maximum: finalMaximum,
             displayName: qualitativeProperty.getDisplayName?.(name) ?? name,
             availableFeatures: qualitativeProperty.availableFeatures,
           };

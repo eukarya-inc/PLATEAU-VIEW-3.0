@@ -211,7 +211,6 @@ export const Content: FC<{
     }
   }, []);
 
-  console.log("render: ", window.reearth?.camera?.position?.aspectRatio);
   // NOTE: We are using Suepense to wait loading StreetView,
   // but Suspense re-render the component automatically after StreetView is loaded.
   // So we need to re-render manually.
