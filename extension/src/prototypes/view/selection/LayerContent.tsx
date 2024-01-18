@@ -229,7 +229,12 @@ export function LayerContent<T extends SupportedLayerType>({
         />
       )}
       {buildingLayers.length !== 0 && (
-        <BuildingSearchPanel state={buildingSearchPanelState} layer={layer} layerId={layerId} />
+        <BuildingSearchPanel
+          key={layerId}
+          state={buildingSearchPanelState}
+          layer={layer}
+          layerId={layerId}
+        />
       )}
     </>
   );
