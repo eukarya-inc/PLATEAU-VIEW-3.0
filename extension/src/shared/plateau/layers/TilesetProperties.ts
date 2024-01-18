@@ -100,12 +100,6 @@ const numberProperties: NumberProperty[] = [
     testProperty: propertyName => propertyName === "地下階数",
     availableFeatures: ["buildingFilter"],
   },
-  {
-    testProperty: propertyName => propertyName === "_x",
-  },
-  {
-    testProperty: propertyName => propertyName === "_y",
-  },
 ];
 
 export type PlateauTilesetProperty = {

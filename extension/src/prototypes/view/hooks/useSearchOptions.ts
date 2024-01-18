@@ -7,7 +7,7 @@ import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { useDatasets, useEstatAreasLazy } from "../../../shared/graphql";
 import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
-import { flyToBBox } from "../../../shared/reearth/utils";
+import { flyToBBox, lookAtTileFeature } from "../../../shared/reearth/utils";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
@@ -269,14 +269,20 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         case "building": {
           const buildingOption = option as BuildingSearchOption;
           invariant(buildingOption.id);
-          // TODO: Implement flyTo by `_x` and `_y` properties which are embeded in feature.
+
+          const layerId = buildingOption.featureIndex.layerId;
+          const featureId = buildingOption.id;
+          const feature = window.reearth?.layers?.findFeatureById?.(layerId, featureId);
+          if (!feature) return;
+          lookAtTileFeature(feature.properties);
+
           setScreenSpaceSelection([
             {
               type: "TILESET_FEATURE",
               value: {
-                layerId: buildingOption.featureIndex.layerId,
+                layerId: layerId,
                 featureIndex: buildingOption.featureIndex,
-                key: buildingOption.id,
+                key: featureId,
                 datasetId: buildingOption.datasetId,
               },
             },
