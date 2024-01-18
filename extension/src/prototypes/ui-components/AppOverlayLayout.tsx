@@ -59,7 +59,7 @@ const RootColumn = styled("div")(() => ({
   gridTemplateRows: "1fr",
   gridAutoFlow: "row",
   gridAutoRows: "fit-content(0)",
-  // minHeight: 0,
+  minHeight: 0,
 }));
 
 const RootGrid = styled("div", {

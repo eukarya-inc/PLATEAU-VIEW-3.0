@@ -164,7 +164,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const colorMode = useAtomValue(colorModeAtom);
 
   const opacity = useOptionalAtomValue(opacityAtom);
-  const wireframe = useOptionalAtomValue(wireframeAtom);
+  const wireframeView = useOptionalAtomValue(wireframeAtom);
 
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
@@ -199,7 +199,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
-      showWireframe: wireframe,
+      showWireframe: wireframeView?.value?.wireframe,
     }),
     [
       textured,
@@ -210,7 +210,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       enableShadow,
       theme.palette.primary.main,
       clippingBox,
-      wireframe,
+      wireframeView,
     ],
   );
 
