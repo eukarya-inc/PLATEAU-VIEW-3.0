@@ -130,7 +130,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
           <Box sx={{ display: "flex", gap: "10px", border: "1px solid #0000001f", padding: "8px" }}>
             <DescriptionOutlinedIcon />
             <Typography>{selectedLocalItem.name}</Typography>
-            <CancelIcon sx={{ cursor: "pointer" }} onClick={setSelectedLocalItem} />
+            <CancelIcon
+              sx={{ cursor: "pointer" }}
+              onClick={() => setSelectedLocalItem(undefined)}
+            />
           </Box>
           <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
             {selectedLocalItem.description}

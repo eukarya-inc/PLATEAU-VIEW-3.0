@@ -2,7 +2,7 @@ import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import { Fragment, useCallback, useState } from "react";
+import { ChangeEvent, Fragment, useCallback, useState } from "react";
 
 import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
@@ -14,14 +14,14 @@ import { getAdditionalData } from "./utils";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
-  onSubmit: (selectedItem: UserDataItem, layersName: string[]) => void;
+  onSubmit: (selectedItem: UserDataItem) => void;
 };
 const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
   const [dataUrl, setDataUrl] = useState("");
   const [selectedWebItem, setSelectedWebItem] = useState<UserDataItem>();
   const [requireLayerName, setRequireLayerName] = useState<boolean>(false);
-  const [layerNames, setLayerNames] = useState<string[]>([]);
+  const [layers, setLayers] = useState<string[]>([]);
 
   const handleFileTypeSelect = useCallback((type: string) => {
     setFileType(type as FileType);
@@ -49,19 +49,6 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     }
     return false;
   }, []);
-
-  const handleBlur = useCallback(() => {
-    const inputValue = layerNames[layerNames.length - 1]?.trim();
-
-    if (inputValue) {
-      setLayerNames(prevNames => {
-        if (!prevNames.includes(inputValue)) {
-          return [...prevNames, inputValue];
-        }
-        return prevNames;
-      });
-    }
-  }, [layerNames]);
 
   const handleClick = useCallback(async () => {
     // Catalog Item
@@ -98,10 +85,23 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     if (setSelectedWebItem) setSelectedWebItem(item);
   }, [dataUrl, fileType, needsLayerName, setDataFormat]);
 
+  const handleLayersAddOnDataset = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      if (!selectedWebItem) return;
+      const newValue = event.target.value;
+      const newLayersArray = newValue.split(",");
+      setLayers(newLayersArray);
+    },
+    [selectedWebItem],
+  );
+
   const handleSubmit = useCallback(() => {
-    selectedWebItem && onSubmit(selectedWebItem, layerNames);
+    if (!selectedWebItem) return;
+    const terminalDataset = selectedWebItem && selectedWebItem;
+    if (layers.length) terminalDataset.layers = layers;
+    onSubmit(terminalDataset);
     setSelectedWebItem(undefined);
-  }, [layerNames, onSubmit, selectedWebItem]);
+  }, [layers, onSubmit, selectedWebItem]);
 
   return (
     <Fragment>
@@ -123,19 +123,19 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
         </UrlWrapper>
         {dataUrl && selectedWebItem && (
           <>
-            <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-              {selectedWebItem?.description}
-            </Typography>
             {requireLayerName && (
               <FormControl>
                 <Label>表示したいレイヤー名を入力してください。</Label>
-                <StyledInput
+                <LayerInput
                   sx={{ width: "95%" }}
                   placeholder="レイヤー名"
-                  onBlur={handleBlur}
+                  onChange={handleLayersAddOnDataset}
                 />{" "}
               </FormControl>
             )}
+            <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
+              {selectedWebItem?.description}
+            </Typography>
           </>
         )}
       </FormControl>
@@ -152,7 +152,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
 
 const UrlWrapper = styled("section")(({ theme }) => ({
   display: "flex",
-  marginBottom: theme.spacing(1),
+  marginBottom: theme.spacing(3),
 }));
 
 const StyledInput = styled(Input)(
@@ -166,12 +166,26 @@ const StyledInput = styled(Input)(
       border: solid 2px #eee;
       outline: none;
       width: 370px;
-
       ${theme.breakpoints.down("mobile")} {
         width: 124px;
       }
     }
   `,
+);
+
+const LayerInput = styled(Input)(
+  () => `
+    .${inputClasses.input} {
+      width: 99%;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: solid 2px #eee;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    `,
 );
 
 const BrowseButton = styled(Button)(({ theme, disabled }) => ({

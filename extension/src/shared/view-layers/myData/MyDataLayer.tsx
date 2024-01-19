@@ -32,12 +32,15 @@ export interface MyDataLayerModel extends LayerModel {
 export function createMyDataLayer(
   params: MyDataLayerModelParams,
 ): ConfigurableLayerModel<MyDataLayerModel> {
+  const layers = Array.isArray(params.layers) ? params.layers : undefined;
+
   return {
     ...createViewLayerModel(params),
     type: MY_DATA_LAYER,
     title: params.title,
     url: params.url,
     csv: params.csv,
+    layers: layers,
     format: params.format as (typeof MY_DATA_SUPPORTED_FORMAT)[number],
     propertiesAtom: atom<Properties | null>(null),
   };

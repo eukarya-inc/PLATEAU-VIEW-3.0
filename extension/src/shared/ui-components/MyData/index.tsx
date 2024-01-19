@@ -30,7 +30,7 @@ const MyDataModal: FC<Props> = ({ show, addLayer, onClose }) => {
     if (event) setValue(newValue);
   }, []);
 
-  const handleDataSetSubmit = (selectedItem: UserDataItem, layers?: string[]) => {
+  const handleDataSetSubmit = (selectedItem: UserDataItem) => {
     addLayer(
       createRootLayerForLayerAtom({
         title: selectedItem.name ?? "",
@@ -39,7 +39,7 @@ const MyDataModal: FC<Props> = ({ show, addLayer, onClose }) => {
         url: selectedItem?.url,
         id: selectedItem?.dataID,
         csv: selectedItem?.additionalData?.data?.csv,
-        layers,
+        layers: selectedItem?.layers,
       }),
       { autoSelect: false },
     );
