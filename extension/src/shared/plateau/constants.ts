@@ -14,17 +14,6 @@ export const REEARTH_DATA_FORMATS: Record<DatasetFormat, DataType> = {
   [DatasetFormat.Wms]: "wms",
 };
 
-export const BUILDING_MODEL_FILTER_RANGE: Record<string, [min: number, max: number]> = {
-  // Height
-  ["計測高さ"]: [0, 200],
-  // Aboveground floor
-  ["地上階数"]: [0, 100],
-  // Basement floor
-  ["地下階数"]: [0, 5],
-  // Building age
-  ["建築年"]: [1850, new Date().getFullYear()],
-};
-
 export const FEATURE_PROPERTIES_CONFIG = [
   {
     property: "attributes",

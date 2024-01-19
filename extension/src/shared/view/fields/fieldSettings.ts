@@ -234,4 +234,11 @@ export const fieldSettings: {
     },
     hasLayerUI: true,
   },
+  TILESET_WIREFRAME: {
+    defaultValue: undefined,
+    value: {
+      wireframe: false,
+    },
+    hasLayerUI: true,
+  },
 };

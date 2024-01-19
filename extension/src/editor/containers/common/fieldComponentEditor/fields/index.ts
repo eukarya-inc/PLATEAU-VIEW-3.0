@@ -6,6 +6,7 @@ import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBu
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
+import { EditorTilesetWireframeField } from "./3dtiles/EditorTilesetWireframeField";
 import { EditorCLassificationTypeField } from "./common/EditorClassificationTypeField";
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
@@ -366,6 +367,11 @@ export const fields: {
     group: FIELD_GROUP_THREE_D_TILES_FILTER,
     name: "Flood model",
     Component: EditorTilesetFloodModelFilterField,
+  },
+  TILESET_WIREFRAME: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    name: "Wireframe",
+    Component: EditorTilesetWireframeField,
   },
 };
 

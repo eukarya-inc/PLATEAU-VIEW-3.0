@@ -11,8 +11,7 @@ import {
   SliderParameterItem,
 } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
-import { PlateauTilesetProperty } from "../../plateau";
-import { BUILDING_MODEL_FILTER_RANGE } from "../../plateau/constants";
+import { AvailableFeatures, PlateauTilesetProperty } from "../../plateau";
 import {
   TilesetBuildingModelFilterField,
   TilesetFloodModelFilterField,
@@ -29,7 +28,7 @@ export interface BuildingFilterSectionProps {
   label: string;
   layers: readonly LayerModel[];
   atoms: WritableAtomForComponent<TilesetBuildingModelFilterField | TilesetFloodModelFilterField>[];
-  type: Exclude<PlateauTilesetProperty["type"], "unknown">;
+  availableFeature: AvailableFeatures[number];
 }
 
 type Poperty = Extract<PlateauTilesetProperty, { type: "qualitative" | "number" }>;
@@ -38,7 +37,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
   label,
   atoms,
   layers,
-  type,
+  availableFeature,
 }) => {
   const buildingLayers = useMemo(
     () =>
@@ -58,28 +57,20 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property => {
                       if (
-                        property.type !== type ||
+                        (property.type !== "number" && property.type !== "qualitative") ||
                         !property.minimum ||
                         !property.maximum ||
-                        !property.availableFeatures.includes("filter")
+                        !property.availableFeatures?.includes(availableFeature)
                       )
                         return;
 
                       const minimum = Math.ceil(property.minimum);
                       const maximum = Math.ceil(property.maximum);
 
-                      const defaultRange = BUILDING_MODEL_FILTER_RANGE[property.name];
-                      if (!defaultRange) {
-                        return {
-                          ...property,
-                          minimum,
-                          maximum,
-                        };
-                      }
                       return {
                         ...property,
-                        minimum: defaultRange[0],
-                        maximum: defaultRange[1],
+                        minimum,
+                        maximum,
                       };
                     })
                     .filter(isNotNullish) ?? []
@@ -150,6 +141,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
               max={prop.maximum}
               range
               step={1}
+              allowFloat={prop.type === "number"}
             />
           ))}
         </ParameterList>

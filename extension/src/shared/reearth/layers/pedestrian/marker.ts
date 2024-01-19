@@ -32,6 +32,7 @@ export const PedestrianMarkerLayer: FC<PedestrianMarkerProps> = ({
       ...appearances,
       marker: {
         ...(appearances.marker ?? {}),
+        hideIndicator: true,
       },
       transition: {
         useTransition,
