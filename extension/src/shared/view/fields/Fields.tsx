@@ -12,6 +12,7 @@ import {
   TILESET_FILL_COLOR_GRADIENT_FIELD,
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
+  TILESET_WIREFRAME,
 } from "../../types/fieldComponents/3dtiles";
 import {
   LAYER_DESCRIPTION_FIELD,
@@ -59,6 +60,7 @@ import { LayerPolygonFillColorConditionField } from "./polygon/LayerPolygonFillC
 import { LayerPolygonVisibilityFilterField } from "./polygon/LayerPolygonVisibilityFilterField";
 import { LayerPolylineFillColorConditionField } from "./polyline/LayerPolylineFillColorConditionField";
 import { LayerPolylineVisibilityFilterField } from "./polyline/LayerPolylineVisibilityFilterField";
+import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
 
 type Props = {
   layers: readonly LayerModel[];
@@ -255,6 +257,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
               "TILESET_BUILDING_MODEL_FILTER" | "TILESET_FLOOD_MODEL_FILTER"
             >["atom"][]
           }
+        />
+      );
+      break;
+    }
+    case TILESET_WIREFRAME: {
+      component = (
+        <LayerTilesetWireframeField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_WIREFRAME">["atom"][]}
         />
       );
       break;

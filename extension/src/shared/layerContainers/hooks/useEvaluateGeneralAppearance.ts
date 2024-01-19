@@ -12,6 +12,7 @@ import {
   TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
+  TILESET_WIREFRAME,
 } from "../../types/fieldComponents/3dtiles";
 import { STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
@@ -445,6 +446,9 @@ export const useEvaluateGeneralAppearance = ({
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms ?? [], TILESET_CLIPPING)),
   );
+  const tilesetWireframe = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], TILESET_WIREFRAME),
+  );
 
   // General
   const styleCodeString = useOptionalAtomValue(
@@ -526,47 +530,48 @@ export const useEvaluateGeneralAppearance = ({
             makeConditionalExpression(tilesetFillColorCondition) ??
             makeGradientExpression(tilesetFillGradientColor),
           experimental_clipping: clippingBox,
+          showWireframe: tilesetWireframe?.value?.wireframe,
         },
         box: boxAppearance,
       }),
     [
       appearanceObjectFromStyleCode,
-      // Point
+      pointStyle?.preset?.style,
       pointColor,
-      pointSize,
-      pointStroke,
       pointFillColorCondition,
       pointFillGradientColor,
-      pointStyle,
-      pointVisibilityCondition,
-      pointVisibilityFilter,
-      pointImageValue,
+      pointSize?.preset?.defaultValue,
+      pointStroke?.preset?.color,
+      pointStroke?.preset?.width,
+      pointImageValue?.preset?.imageURL,
+      pointImageValue?.preset?.imageColor,
       pointImageCondition,
-      pointImageSize,
-      pointModel,
+      pointImageSize?.preset?.defaultValue,
+      pointImageSize?.preset?.enableSizeInMeters,
+      pointVisibilityFilter,
+      pointVisibilityCondition,
       pointLabel,
-      pointHeightReference,
-      // Polyline
+      pointHeightReference?.preset?.defaultValue,
       polylineColor,
       polylineFillColorCondition,
-      polylineStrokeWeight,
-      polylineVisibilityCondition,
+      polylineStrokeWeight?.preset?.defaultValue,
       polylineVisibilityFilter,
-      polylineHeightReference,
-      polylineClassificationType,
-      // Polygon
+      polylineVisibilityCondition,
+      polylineHeightReference?.preset?.defaultValue,
+      polylineClassificationType?.preset?.defaultValue,
       polygonColor,
       polygonFillColorCondition,
       polygonStrokeColor,
       polygonStrokeWeight,
-      polygonVisibilityCondition,
       polygonVisibilityFilter,
-      polygonHeightReference,
-      polygonClassificationType,
-      // Tileset
+      polygonVisibilityCondition,
+      polygonHeightReference?.preset?.defaultValue,
+      polygonClassificationType?.preset?.defaultValue,
+      pointModel?.preset,
       tilesetFillColorCondition,
       tilesetFillGradientColor,
       clippingBox,
+      tilesetWireframe?.value?.wireframe,
       boxAppearance,
     ],
   );
