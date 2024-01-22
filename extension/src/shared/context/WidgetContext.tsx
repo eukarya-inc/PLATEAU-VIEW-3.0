@@ -14,12 +14,10 @@ import {
   GEO_API_URL,
   GOOGLE_STREET_VIEW_API_KEY,
   GSI_TILE_URL,
-  IS_EDITOR_MODE,
   PLATEAU_API_URL,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
-  setIsEditorMode,
   setPlateauApiUrl,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
@@ -31,8 +29,9 @@ type Props = {
   projectId?: string;
   plateauToken?: string;
   catalogUrl?: string;
+  catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
-  isEditorMode?: boolean;
+  inEditor?: boolean;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -42,9 +41,10 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   projectId,
   plateauToken,
   catalogUrl,
+  catalogURLForAdmin,
   googleStreetViewAPIKey,
-  isEditorMode,
   children,
+  inEditor,
 }) => {
   useEffect(() => {
     if (!PLATEAU_API_URL && plateauUrl) {
@@ -71,22 +71,17 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [googleStreetViewAPIKey]);
 
   useEffect(() => {
-    if (!IS_EDITOR_MODE) {
-      setIsEditorMode(!!isEditorMode);
-    }
-  }, [isEditorMode]);
-
-  useEffect(() => {
     if (!geoClient && geoUrl) {
       createGeoClient(geoUrl);
     }
   }, [geoUrl]);
 
   useEffect(() => {
-    if (!catalogClient && catalogUrl) {
-      createCatalogClient(catalogUrl, isEditorMode ? plateauToken : undefined);
+    const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;
+    if (url) {
+      createCatalogClient(url, inEditor ? plateauToken : undefined);
     }
-  }, [catalogUrl, plateauToken, isEditorMode]);
+  }, [catalogUrl, catalogURLForAdmin, plateauToken, inEditor]);
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {

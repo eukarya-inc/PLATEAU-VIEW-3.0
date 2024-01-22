@@ -53,6 +53,11 @@ const yml = {
                 title: "データカタログURL",
               },
               {
+                id: "catalogURLForAdmin",
+                type: "string",
+                title: "Admin用データカタログURL",
+              },
+              {
                 id: "catalogProjectName",
                 type: "string",
                 title: "データカタログのプロジェクト名",
@@ -76,11 +81,6 @@ const yml = {
                 id: "reearthURL",
                 type: "string",
                 title: "Re:Earthプロジェクトの公開URL",
-              },
-              {
-                id: "isEditorMode",
-                type: "bool",
-                title: "エディターモード",
               },
               {
                 id: "enableGeoPub",

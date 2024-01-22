@@ -27,12 +27,12 @@ type Props = WidgetProps<{
   plateauURL?: string;
   plateauAccessToken?: string;
   catalogURL?: string;
+  catalogURLForAdmin?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
-  isEditorMode?: boolean;
 }>;
 
-export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
+export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
 
   return (
@@ -41,10 +41,11 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
       gsiTileURL={widget.property.default.gsiTileURL}
       plateauUrl={widget.property.default.plateauURL}
       catalogUrl={widget.property.default.catalogURL}
+      catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
       projectId={widget.property.default.projectName}
       plateauToken={widget.property.default.plateauAccessToken}
       googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-      isEditorMode={widget.property.default.isEditorMode}>
+      inEditor={inEditor}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
