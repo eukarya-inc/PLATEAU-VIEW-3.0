@@ -30,7 +30,7 @@ const Component: FC = () => {
     );
   };
 
-  return <MyData show={true} onClose={console.log} addLayer={handleAddLayer} />;
+  return <MyData show={true} onClose={console.log} handleSubmit={handleAddLayer} />;
 };
 
 export const Default: Story = {
