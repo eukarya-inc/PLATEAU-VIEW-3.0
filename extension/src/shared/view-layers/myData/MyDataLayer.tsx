@@ -59,6 +59,7 @@ export const MyDataLayer: FC<LayerProps<typeof MY_DATA_LAYER>> = ({
   selections,
   propertiesAtom,
   cameraAtom,
+  csv,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
 
@@ -85,6 +86,7 @@ export const MyDataLayer: FC<LayerProps<typeof MY_DATA_LAYER>> = ({
         url={url}
         format={format}
         layers={layers}
+        csv={csv}
         type={type}
         onLoad={handleLoad}
         layerIdAtom={layerIdAtom}
