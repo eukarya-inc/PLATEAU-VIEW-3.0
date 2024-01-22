@@ -7,3 +7,4 @@ export * from "./appearance";
 export * from "./layerEvent";
 export * from "./expression";
 export * from "./value";
+export * from "./layer";

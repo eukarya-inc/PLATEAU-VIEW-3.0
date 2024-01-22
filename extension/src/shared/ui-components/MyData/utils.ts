@@ -1,7 +1,7 @@
 export const getAdditionalData = (content: string | undefined | null, format: string) => {
   if (!content) return undefined;
   if (format === "csv") {
-    const header = content.split("\r\n")[0];
+    const header = content.split(/\r\n|\n/)[0];
     const cols = header.split(",");
     const latColumn = cols.find(col =>
       ["latitude", "lat", "緯度", "北緯"].includes(col.toLowerCase()),
