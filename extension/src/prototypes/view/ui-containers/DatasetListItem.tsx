@@ -2,8 +2,8 @@ import { IconButton, styled, useMediaQuery, useTheme } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, type MouseEvent, type ReactNode } from "react";
 
-import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { inEditor } from "../../../shared/reearth/utils";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
@@ -98,7 +98,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
 
   const wrappedLabel = useMemo(
     () =>
-      IS_EDITOR_MODE && dataset.year
+      inEditor() && dataset.year
         ? !Array.isArray(label)
           ? `[${dataset.year}]${label}`
           : [...label.slice(0, -1), `[${dataset.year}]${label.slice(-1)[0]}`]
