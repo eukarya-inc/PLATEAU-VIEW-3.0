@@ -4,6 +4,7 @@ import { useState } from "react";
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
 import { PLATEAU_API_URL } from "../../constants";
 import FeedBackModal from "../../ui-components/FeedBackForm";
+import FeedbackNotificationModal from "../../ui-components/FeedbackNotificationModal";
 
 const dataURItoBlob = (dataURI: string) => {
   const byteString = atob(dataURI.split(",")[1]);
@@ -19,6 +20,7 @@ const dataURItoBlob = (dataURI: string) => {
 const FeedBack = () => {
   const [loading, setLoading] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
+  const [notification, setNotification] = useState(false);
 
   const handleSubmit = async (params: {
     name: string;
@@ -43,16 +45,22 @@ const FeedBack = () => {
     });
 
     setShowFeedbackModal(false);
+    setNotification(true);
     setLoading(false);
   };
 
   return (
-    <FeedBackModal
-      onSubmit={handleSubmit}
-      show={showFeedbackModal}
-      loading={loading}
-      setShowFeedbackModal={setShowFeedbackModal}
-    />
+    <>
+      <FeedBackModal
+        onSubmit={handleSubmit}
+        show={showFeedbackModal}
+        loading={loading}
+        setShowFeedbackModal={setShowFeedbackModal}
+      />
+      {notification && (
+        <FeedbackNotificationModal show={notification} handleCloseModal={setNotification} />
+      )}
+    </>
   );
 };
 

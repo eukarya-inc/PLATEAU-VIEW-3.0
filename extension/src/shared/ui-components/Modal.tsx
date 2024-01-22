@@ -6,18 +6,20 @@ type Props = {
   title?: string;
   children?: ReactNode;
   isVisible: boolean;
+  notifyIcon?: ReactNode;
   onClose?: () => void;
 };
 
-const SharedModal: React.FC<Props> = ({ title, isVisible, children, onClose }) => {
+const SharedModal: React.FC<Props> = ({ title, isVisible, children, notifyIcon, onClose }) => {
   return (
     <Modal open={isVisible} aria-labelledby="modal-modal-title">
       <StyledBox>
         <Typography
-          sx={{ padding: "18px 22px" }}
+          sx={{ padding: "14px 22px", display: "flex" }}
           id="modal-modal-title"
           variant="subtitle1"
           component="h2">
+          {notifyIcon}
           {title}{" "}
           <IconButton
             aria-label="close"
@@ -44,6 +46,7 @@ const StyledBox = styled(Box)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   boxSizing: "border-box",
   maxHeight: "calc(100vh - 50px)",
+  overflowY: "auto",
   [theme.breakpoints.down("mobile")]: {
     width: `calc(100vw - ${theme.spacing(2)})`,
     overflowY: "scroll",

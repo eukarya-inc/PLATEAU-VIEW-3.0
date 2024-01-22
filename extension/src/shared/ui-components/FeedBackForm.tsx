@@ -169,6 +169,7 @@ const StyledButton = styled(Button)(({ theme, disabled }) => ({
   color: theme.palette.text.primary,
   backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
   borderRadius: "4px",
+  marginBottom: theme.spacing(2),
   marginLeft: "auto",
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
