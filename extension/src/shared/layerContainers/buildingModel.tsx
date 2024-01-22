@@ -59,7 +59,6 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   hidden,
   hiddenFeaturesAtom,
   searchedFeaturesAtom,
-  textured,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -181,7 +180,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: textured,
+      pbr: false,
       ...(color
         ? {
             color: {
@@ -202,7 +201,6 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       showWireframe: wireframeView?.value?.wireframe,
     }),
     [
-      textured,
       color,
       shownSearchedFeaturesConditions,
       hiddenFeaturesConditions.conditions,
