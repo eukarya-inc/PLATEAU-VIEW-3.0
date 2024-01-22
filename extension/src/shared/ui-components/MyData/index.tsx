@@ -5,9 +5,6 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import { FC, useCallback, useState } from "react";
 
-import { AddLayerOptions } from "../../../prototypes/layers";
-import { MY_DATA_LAYER } from "../../../prototypes/view-layers";
-import { RootLayerConfig, createRootLayerForLayerAtom } from "../../view-layers";
 import SharedModal from "../Modal";
 
 import LocalDataTab from "./LocalDataTab";
@@ -16,35 +13,16 @@ import WebDataTab from "./WebDataTab";
 
 type Props = {
   show: boolean;
-  addLayer: (
-    layer: Omit<RootLayerConfig, "id">,
-    options?: AddLayerOptions | undefined,
-  ) => () => void;
+  handleSubmit: (item: UserDataItem) => void;
   onClose?: () => void;
 };
 
-const MyDataModal: FC<Props> = ({ show, addLayer, onClose }) => {
+const MyDataModal: FC<Props> = ({ show, onClose, handleSubmit }) => {
   const [value, setValue] = useState("local");
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
     if (event) setValue(newValue);
   }, []);
-
-  const handleDataSetSubmit = (selectedItem: UserDataItem) => {
-    addLayer(
-      createRootLayerForLayerAtom({
-        title: selectedItem.name ?? "",
-        format: selectedItem?.format,
-        type: MY_DATA_LAYER,
-        url: selectedItem?.url,
-        id: selectedItem?.dataID,
-        csv: selectedItem?.additionalData?.data?.csv,
-        layers: selectedItem?.layers,
-      }),
-      { autoSelect: false },
-    );
-    onClose?.();
-  };
 
   return (
     <SharedModal isVisible={show} title="Myデータ" onClose={onClose}>
@@ -55,10 +33,10 @@ const MyDataModal: FC<Props> = ({ show, addLayer, onClose }) => {
             <Tab label="Webから追加" value="web" sx={{ flex: 1 }} />
           </TabList>
           <TabPanel value="local">
-            <LocalDataTab onSubmit={handleDataSetSubmit} />
+            <LocalDataTab onSubmit={handleSubmit} />
           </TabPanel>
           <TabPanel value="web">
-            <WebDataTab onSubmit={handleDataSetSubmit} />
+            <WebDataTab onSubmit={handleSubmit} />
           </TabPanel>
         </TabContext>
       </Box>

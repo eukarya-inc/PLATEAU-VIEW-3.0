@@ -6,8 +6,8 @@ import { ChangeEvent, Fragment, useCallback, useState } from "react";
 
 import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
-import { Label } from "../Label";
 
+import { Label } from "./Label";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
 import { getAdditionalData } from "./utils";
@@ -51,7 +51,6 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleClick = useCallback(async () => {
-    // Catalog Item
     const filename = dataUrl.substring(dataUrl.lastIndexOf("/") + 1);
     const id = "id" + Math.random().toString(16).slice(2);
     const format = setDataFormat(fileType, filename);
@@ -71,7 +70,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
       dataID: id,
       description: `著作権や制約に関する情報などの詳細については、このデータの提供者にお問い合わせください。${
         format === "csv"
-          ? "<br/><br/>パフォーマンス上の問題が発生するため、6000レコード以上を含むCSVファイルをアップロードしないでください。"
+          ? "パフォーマンス上の問題が発生するため、6000レコード以上を含むCSVファイルをアップロードしないでください。"
           : ""
       }`,
       name: filename,

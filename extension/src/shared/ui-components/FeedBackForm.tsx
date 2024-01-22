@@ -5,7 +5,6 @@ import { Button, Checkbox, FormControlLabel, Link, Typography, styled } from "@m
 import { red } from "@mui/material/colors";
 import { useCallback, useMemo, useState } from "react";
 
-import { Label } from "./Label";
 import SharedModal from "./Modal";
 
 export type Props = {
@@ -164,7 +163,7 @@ const Required = styled("span")(() => ({
   color: red[500],
 }));
 
-export const StyledButton = styled(Button)(({ theme, disabled }) => ({
+const StyledButton = styled(Button)(({ theme, disabled }) => ({
   display: "flex",
   padding: theme.spacing(1),
   color: theme.palette.text.primary,
@@ -174,6 +173,11 @@ export const StyledButton = styled(Button)(({ theme, disabled }) => ({
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
   },
+}));
+
+const Label = styled("div")(() => ({
+  fontSize: "0.875rem",
+  marginBottom: "10px",
 }));
 
 export default FeedBackModal;

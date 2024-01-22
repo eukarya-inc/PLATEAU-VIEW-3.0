@@ -8,8 +8,8 @@ import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { getExtension } from "../../utils/file";
-import { Label } from "../Label";
 
+import { Label } from "./Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
