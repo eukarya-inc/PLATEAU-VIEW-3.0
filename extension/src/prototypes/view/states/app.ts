@@ -12,6 +12,7 @@ export const readyAtom = atom<boolean>(false);
 export const hideAppOverlayAtom = atom(false);
 export const showDeveloperPanelsAtom = atom(false);
 export const showFeedbackModalAtom = atom(false);
+export const showMyDataModalAtom = atom(false);
 export const viewportWidthAtom = atom<number | null>(null);
 export const viewportHeightAtom = atom<number | null>(null);
 

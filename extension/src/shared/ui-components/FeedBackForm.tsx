@@ -1,20 +1,11 @@
 import { FormControl } from "@mui/base/FormControl";
 import { Input, inputClasses } from "@mui/base/Input";
 import { TextareaAutosize } from "@mui/base/TextareaAutosize";
-import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  Link,
-  Modal,
-  Typography,
-  styled,
-} from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Link, Typography, styled } from "@mui/material";
 import { red } from "@mui/material/colors";
 import { useCallback, useMemo, useState } from "react";
+
+import SharedModal from "./Modal";
 
 export type Props = {
   show: boolean;
@@ -75,21 +66,8 @@ const FeedBackModal: React.FC<Props> = ({ show, loading, setShowFeedbackModal, o
   }, [comment, email, loading]);
 
   return (
-    <Modal
-      open={show}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description">
-      <StyledBox>
-        <Typography id="modal-modal-title" variant="subtitle1" component="h2">
-          フィードバック{" "}
-          <IconButton
-            aria-label="close"
-            onClick={handleFeedBackModalForm}
-            sx={{ position: "absolute", top: 10, right: 10 }}>
-            <CancelIcon />
-          </IconButton>
-        </Typography>
-
+    <SharedModal isVisible={show} title="フィードバック" onClose={handleFeedBackModalForm}>
+      <FormWrapper>
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
           <Link href="https://www.mlit.go.jp/plateau/" underline="none">
             PLATEAU
@@ -144,28 +122,13 @@ const FeedBackModal: React.FC<Props> = ({ show, loading, setShowFeedbackModal, o
         <StyledButton disabled={disabled} type="submit" onClick={handleSubmit}>
           送信
         </StyledButton>
-      </StyledBox>
-    </Modal>
+      </FormWrapper>
+    </SharedModal>
   );
 };
 
-const StyledBox = styled(Box)(({ theme }) => ({
-  position: "absolute" as const,
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 560,
-  backgroundColor: theme.palette.background.paper,
-  color: "#000",
-  margin: "auto",
-  padding: "18px 22px",
-  borderRadius: theme.shape.borderRadius,
-  boxSizing: "border-box",
-  maxHeight: "calc(100vh - 50px)",
-  overflowY: "scroll",
-  [theme.breakpoints.down("mobile")]: {
-    width: `calc(100vw - ${theme.spacing(2)})`,
-  },
+const FormWrapper = styled("div")(() => ({
+  padding: "0 22px",
 }));
 
 const StyledInput = styled(Input)(
@@ -185,10 +148,6 @@ const StyledInput = styled(Input)(
   `,
 );
 
-const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
-  color: theme.palette.text.primary,
-}));
-
 const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
   background: theme.palette.grey[50],
   width: "94%",
@@ -198,11 +157,6 @@ const StyledTextArea = styled(TextareaAutosize)(({ theme }) => ({
   outline: "none",
   padding: "8px 12px",
   fontSize: "0.875rem",
-}));
-
-const Label = styled("div")(() => ({
-  fontSize: "0.875rem",
-  marginBottom: "10px",
 }));
 
 const Required = styled("span")(() => ({
@@ -219,6 +173,11 @@ const StyledButton = styled(Button)(({ theme, disabled }) => ({
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
   },
+}));
+
+const Label = styled("div")(() => ({
+  fontSize: "0.875rem",
+  marginBottom: "10px",
 }));
 
 export default FeedBackModal;

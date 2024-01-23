@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
 import { PLATEAU_API_URL } from "../../constants";
-import FeedBackModal from "../../ui-components/FeedBackModal";
+import FeedBackModal from "../../ui-components/FeedBackForm";
 
 const dataURItoBlob = (dataURI: string) => {
   const byteString = atob(dataURI.split(",")[1]);
