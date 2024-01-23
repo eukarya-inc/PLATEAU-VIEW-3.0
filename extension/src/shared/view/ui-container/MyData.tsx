@@ -32,9 +32,7 @@ const MyData = () => {
     onClose?.();
   };
 
-  return (
-    <MyDataModal handleSubmit={handleDataSetSubmit} show={showMyDataModal} onClose={onClose} />
-  );
+  return <MyDataModal onSubmit={handleDataSetSubmit} show={showMyDataModal} onClose={onClose} />;
 };
 
 export default MyData;

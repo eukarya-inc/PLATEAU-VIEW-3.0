@@ -13,11 +13,11 @@ import WebDataTab from "./WebDataTab";
 
 type Props = {
   show: boolean;
-  handleSubmit: (item: UserDataItem) => void;
+  onSubmit: (item: UserDataItem) => void;
   onClose?: () => void;
 };
 
-const MyDataModal: FC<Props> = ({ show, onClose, handleSubmit }) => {
+const MyDataModal: FC<Props> = ({ show, onClose, onSubmit }) => {
   const [value, setValue] = useState("local");
 
   const handleTabChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
@@ -33,10 +33,10 @@ const MyDataModal: FC<Props> = ({ show, onClose, handleSubmit }) => {
             <Tab label="Webから追加" value="web" sx={{ flex: 1 }} />
           </TabList>
           <TabPanel value="local">
-            <LocalDataTab onSubmit={handleSubmit} />
+            <LocalDataTab onSubmit={onSubmit} />
           </TabPanel>
           <TabPanel value="web">
-            <WebDataTab onSubmit={handleSubmit} />
+            <WebDataTab onSubmit={onSubmit} />
           </TabPanel>
         </TabContext>
       </Box>
