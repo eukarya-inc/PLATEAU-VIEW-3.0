@@ -6,11 +6,11 @@ type Props = {
   title?: string;
   children?: ReactNode;
   isVisible: boolean;
-  notifyIcon?: ReactNode;
+  titleIcon?: ReactNode;
   onClose?: () => void;
 };
 
-const SharedModal: React.FC<Props> = ({ title, isVisible, children, notifyIcon, onClose }) => {
+const SharedModal: React.FC<Props> = ({ title, isVisible, children, titleIcon, onClose }) => {
   return (
     <Modal open={isVisible} aria-labelledby="modal-modal-title">
       <StyledBox>
@@ -19,7 +19,7 @@ const SharedModal: React.FC<Props> = ({ title, isVisible, children, notifyIcon, 
           id="modal-modal-title"
           variant="subtitle1"
           component="h2">
-          {notifyIcon}
+          {titleIcon}
           {title}{" "}
           <IconButton
             aria-label="close"

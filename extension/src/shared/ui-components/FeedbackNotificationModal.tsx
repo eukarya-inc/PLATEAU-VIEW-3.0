@@ -17,7 +17,7 @@ const FeedbackNotificationModal: FC<Props> = ({ show, handleCloseModal }) => {
 
   return (
     <SharedModal
-      notifyIcon={<InsertCommentOutlinedIcon sx={{ mr: 1 }} />}
+      titleIcon={<InsertCommentOutlinedIcon sx={{ mr: 1 }} />}
       isVisible={show}
       onClose={onClose}
       title="フィードバック">
