@@ -26,7 +26,7 @@ const FeedbackNotificationModal: FC<Props> = ({ show, handleCloseModal }) => {
           <img src={FeedbackIcon} alt="Feedback Icon" />
         </StyledImage>
         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
-          あなたのフィードバックは送信され、ありがとうございました。
+          あなたのフィードバックは送信されました。ありがとうございました。
         </Typography>
       </Wrapper>
     </SharedModal>
