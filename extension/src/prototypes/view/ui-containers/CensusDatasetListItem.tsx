@@ -27,6 +27,8 @@ export const CensusDatasetListItem: FC<CensusDatasetListItemProps> = ({
     addLayer(
       createRootLayerForLayerAtom({
         type: HEATMAP_LAYER,
+        datasetId: dataset.id,
+        dataId: data.id,
         title: data.name,
         getUrl: code => format(dataset.urlTemplate, { code }),
         codes: censusDatasetMeshCodes,

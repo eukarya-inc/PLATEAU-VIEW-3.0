@@ -6,6 +6,7 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
+import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { colorMapFlare, type ColorMap } from "../color-maps";
 import {
   createMeshImageData,
@@ -32,6 +33,10 @@ export interface HeatmapLayerModelParams extends ViewLayerModelParams {
   codes: readonly string[];
   parserOptions: ParseCSVOptions;
   opacity?: number;
+  datasetId: string;
+  dataId: string;
+  shouldInitializeAtom?: boolean;
+  shareId?: string;
 }
 
 export interface HeatmapLayerModel extends ViewLayerModel {
@@ -41,14 +46,46 @@ export interface HeatmapLayerModel extends ViewLayerModel {
   opacityAtom: PrimitiveAtom<number>;
   valueRangeAtom: PrimitiveAtom<number[]>;
   contourSpacingAtom: PrimitiveAtom<number>;
+  datasetId: string;
+  dataId: string;
 }
+
+export type SharedHeatmapLayer = {
+  type: "heatmap";
+  datasetId: string;
+  dataId: string;
+};
 
 export function createHeatmapLayer(
   params: HeatmapLayerModelParams,
 ): ConfigurableLayerModel<HeatmapLayerModel> {
-  const colorMapAtom = atom<ColorMap>(colorMapFlare);
-  const colorRangeAtom = atom([0, 100]);
-  const valueRangeAtom = atom([0, 100]);
+  const colorMapAtom = makeComponentAtomWrapper(
+    atom<ColorMap>(colorMapFlare),
+    {
+      ...params,
+      componentType: "colorMap",
+    },
+    true,
+    params.shouldInitializeAtom,
+  );
+  const colorRangeAtom = makeComponentAtomWrapper(
+    atom([0, 100]),
+    {
+      ...params,
+      componentType: "colorRange",
+    },
+    true,
+    params.shouldInitializeAtom,
+  );
+  const valueRangeAtom = makeComponentAtomWrapper(
+    atom([0, 100]),
+    {
+      ...params,
+      componentType: "valueRange",
+    },
+    false,
+    params.shouldInitializeAtom,
+  );
   const colorSchemeAtom = atom<LayerColorScheme | null>({
     type: "quantitative",
     name: params.title ?? "統計データ",
@@ -56,6 +93,24 @@ export function createHeatmapLayer(
     colorRangeAtom,
     valueRangeAtom,
   });
+  const opacityAtom = makeComponentAtomWrapper(
+    atom(params.opacity ?? 0.8),
+    {
+      ...params,
+      componentType: "opacity",
+    },
+    false,
+    params.shouldInitializeAtom,
+  );
+  const contourSpacingAtom = makeComponentAtomWrapper(
+    atom(10),
+    {
+      ...params,
+      componentType: "contourSpacing",
+    },
+    false,
+    params.shouldInitializeAtom,
+  );
 
   return {
     ...createViewLayerModel({
@@ -66,10 +121,12 @@ export function createHeatmapLayer(
     getUrl: params.getUrl,
     codes: params.codes,
     parserOptions: params.parserOptions,
-    opacityAtom: atom(params.opacity ?? 0.8),
+    opacityAtom,
     valueRangeAtom,
-    contourSpacingAtom: atom(10),
+    contourSpacingAtom,
     colorSchemeAtom,
+    datasetId: params.datasetId,
+    dataId: params.dataId,
   };
 }
 

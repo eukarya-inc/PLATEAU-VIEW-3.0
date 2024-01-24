@@ -84,6 +84,7 @@ export type RootLayerAtom = PrimitiveAtom<RootLayerForDataset | RootLayerForLaye
 
 export type RootLayerConfigForLayer = {
   type: "layer";
+  id: string;
   rootLayerAtom: PrimitiveAtom<RootLayerForLayer>;
 };
 
@@ -414,7 +415,7 @@ export const createRootLayerForLayerAtom = <T extends LayerType>({
   type,
   title,
   shareId,
-  shouldInitialize,
+  shouldInitialize = true,
   ...props
 }: RootLayerForLayerAtomParams<T>): RootLayerConfig => {
   const rootLayerId = id ?? generateID();
@@ -436,6 +437,7 @@ export const createRootLayerForLayerAtom = <T extends LayerType>({
   };
   return {
     type: "layer",
+    id: rootLayerId,
     rootLayerAtom: atom(
       () => rootLayer,
       () => {}, // readonly
