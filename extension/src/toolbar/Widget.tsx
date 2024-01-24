@@ -1,7 +1,9 @@
+import { AnimatePresence } from "framer-motion";
+import { useAtomValue } from "jotai";
 import { FC, memo } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
-import { AppFrame } from "../prototypes/ui-components";
+import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
 import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
@@ -9,6 +11,7 @@ import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
+import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
@@ -20,6 +23,7 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
+import { useLoading } from "./hooks/useLoadingModel";
 
 type Props = WidgetProps<{
   geoURL?: string;
@@ -31,6 +35,12 @@ type Props = WidgetProps<{
   projectName?: string;
   googleStreetViewAPIKey?: string;
 }>;
+
+export const Loading: FC = () => {
+  const ready = useAtomValue(readyAtom);
+  useLoading();
+  return <AnimatePresence>{!ready && <LoadingScreen />}</AnimatePresence>;
+};
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
@@ -49,6 +59,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
+      <Loading />
       {/* <Suspense>
         <SuspendUntilTilesLoaded
           initialTileCount={35}
