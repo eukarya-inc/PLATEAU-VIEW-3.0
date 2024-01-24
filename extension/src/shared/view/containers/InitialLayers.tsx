@@ -32,6 +32,8 @@ export const InitialLayers: FC = () => {
 
   // TODO: Get share ID
   const shareId = undefined;
+  // TODO: Use this to restore shared layers
+  // const getSharedRootLayer = useSetAtom(getSharedRootLayerIdsAtom);
 
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
@@ -39,7 +41,7 @@ export const InitialLayers: FC = () => {
   const templatesRef = useRef(templates);
   templatesRef.current = templates;
   useEffect(() => {
-    if (query.loading) return;
+    if (query.loading || shareId) return;
 
     const remove = [
       ...initialDatasets.map(d => {

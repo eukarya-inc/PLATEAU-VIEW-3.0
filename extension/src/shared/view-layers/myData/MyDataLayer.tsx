@@ -29,6 +29,16 @@ export interface MyDataLayerModel extends LayerModel {
   csv?: Data["csv"];
 }
 
+export type SharedMyDataLayer = {
+  type: "myData";
+  id: string;
+  title: string;
+  url?: string;
+  format?: string;
+  layers?: string[];
+  csv?: Data["csv"];
+};
+
 export function createMyDataLayer(
   params: MyDataLayerModelParams,
 ): ConfigurableLayerModel<MyDataLayerModel> {
