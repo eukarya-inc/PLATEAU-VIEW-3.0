@@ -92,6 +92,34 @@ resource "google_project_iam_custom_role" "plateauview_api" {
   ]
 }
 
+resource "google_service_account" "plateauview_geo" {
+  account_id   = "plateauview-geo"
+  display_name = "Service Account for plateauview geo"
+}
+
+resource "google_project_iam_member" "plateauview_geo" {
+  role    = google_project_iam_custom_role.plateauview_geo.id
+  project = data.google_project.project.project_id
+
+  member = "serviceAccount:${google_service_account.plateauview_geo.email}"
+}
+
+resource "google_project_iam_custom_role" "plateauview_geo" {
+  role_id     = "plateauviewgeo"
+  project     = data.google_project.project.project_id
+  title       = "plateauview-geo"
+  description = "iam role for plateauview geo"
+  stage       = "GA"
+  permissions = [
+    "cloudprofiler.profiles.create",
+    "cloudprofiler.profiles.update",
+    "storage.objects.create",
+    "storage.objects.delete",
+    "storage.objects.get",
+    "storage.objects.update",
+    "secretmanager.versions.access",
+  ]
+}
 
 resource "google_service_account" "cms_worker_m2m" {
   for_each = toset([

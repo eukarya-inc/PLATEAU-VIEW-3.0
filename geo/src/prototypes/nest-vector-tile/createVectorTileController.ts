@@ -8,13 +8,12 @@ import {
   StreamableFile,
   type Type,
 } from "@nestjs/common";
+import { type TileFormat, TileFormatValidationPipe } from "@prototypes/type-helpers";
 import { type Response } from "express";
 
 import { VECTOR_TILE_MODULE_OPTIONS } from "./constants";
-import { type TileFormat } from "./interfaces/TileFormat";
 import { VectorTileModuleOptions } from "./interfaces/VectorTileModuleOptions";
 import { type VectorTileOptions } from "./interfaces/VectorTileOptions";
-import { TileFormatValidationPipe } from "./TileFormatValidationPipe";
 import { VectorTileService } from "./VectorTileService";
 
 export function createVectorTileController(options: VectorTileOptions): Type {

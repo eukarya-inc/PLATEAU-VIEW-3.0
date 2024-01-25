@@ -16,10 +16,9 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
-import { BUILDING_LAYER } from "../../view-layers";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
@@ -58,12 +57,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   // TODO: Separate into hook
   const layer = useAtomValue(
     useMemo(
-      () =>
-        atom(get =>
-          get(rootLayersLayersAtom).find(
-            layer => layer.type === BUILDING_LAYER && layer.id === dataset.id,
-          ),
-        ),
+      () => atom(get => get(rootLayersLayersAtom).find(layer => layer.id === dataset.id)),
       [dataset],
     ),
   );
@@ -81,7 +75,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
     if (layer == null) {
       const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
       addLayer(
-        createRootLayerAtom({
+        createRootLayerForDatasetAtom({
           dataset,
           settings: filteredSettings,
           templates,

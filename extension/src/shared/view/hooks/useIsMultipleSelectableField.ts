@@ -1,5 +1,5 @@
 import { LayerType } from "../../../prototypes/layers";
-import { BUILDING_LAYER } from "../../../prototypes/view-layers";
+import { BUILDING_LAYER, HEATMAP_LAYER } from "../../../prototypes/view-layers";
 import { ComponentBase } from "../../types/fieldComponents";
 import {
   TILESET_BUILDING_MODEL_COLOR,
@@ -14,7 +14,11 @@ export const MULTIPLE_SELECTABLE_FIELDS: ComponentBase["type"][] = [
   TILESET_FLOOD_MODEL_COLOR,
   OPACITY_FIELD,
 ];
-export const MULTIPLE_SELECTABLE_TYPES: LayerType[] = [BUILDING_LAYER, ...FLOOD_LAYER_TYPES];
+export const MULTIPLE_SELECTABLE_TYPES: LayerType[] = [
+  BUILDING_LAYER,
+  ...FLOOD_LAYER_TYPES,
+  HEATMAP_LAYER,
+];
 
 export const useIsMultipleSelectableField = ({
   layers,

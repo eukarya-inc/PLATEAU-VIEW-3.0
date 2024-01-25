@@ -6,7 +6,7 @@ import { makePropertyForFeatureInspector } from "../../../shared/plateau/feature
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { Feature } from "../../../shared/reearth/types/layer";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
-import { RootLayer } from "../../../shared/view-layers";
+import { RootLayerForDataset } from "../../../shared/view-layers";
 import { LayerModel, useFindLayer } from "../../layers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { type SCREEN_SPACE_SELECTION, type SelectionGroup } from "../states/selection";
@@ -42,7 +42,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
       const layer = findLayer(rootLayersLayers, l => l.id === datasetId);
       const rootLayer = findRootLayer(datasetId ?? "");
       return res.concat({ features: fs ?? [], layer, rootLayer });
-    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayer }[]);
+    }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayerForDataset }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
   const properties = useMemo(() => {

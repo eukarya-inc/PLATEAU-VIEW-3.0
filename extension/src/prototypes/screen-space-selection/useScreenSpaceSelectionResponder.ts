@@ -38,10 +38,9 @@ export function useScreenSpaceSelectionResponder<T extends ScreenSpaceSelectionT
       paramsRef.current.onDeselect?.(value);
       selection.delete(value);
     },
-    // TODO(ReEarth): Support the bounding sphere for multiple feature selection
-    // computeBoundingSphere: (value, result) => {
-    //   return paramsRef.current.computeBoundingSphere?.(value, result);
-    // },
+    computeBoundingSphere: value => {
+      return paramsRef.current.computeBoundingSphere?.(value);
+    },
   }));
 
   // Assume that component is ephemeral.

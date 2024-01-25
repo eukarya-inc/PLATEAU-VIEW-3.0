@@ -4,6 +4,7 @@ import { useCallback, useState, type FC, useMemo, useEffect } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { RootLayerAtom } from "../../../shared/view-layers";
 import { findLayerAtom, layerSelectionAtom } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import {
@@ -54,7 +55,7 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
     () =>
       atom(get =>
         tilesetLayers.map(l => {
-          const v = get(get(l.rootLayerAtom).layer);
+          const v = get(get(l.rootLayerAtom as RootLayerAtom).layer);
           return { id: v.id, type: v.type } as const;
         }),
       ),

@@ -3,6 +3,7 @@
 // import { LandSlideRiskLayer } from "./LandSlideRiskLayer";
 // import { LandUseLayer } from "./LandUseLayer";
 import { type LayerComponents } from "../../prototypes/layers";
+import { HeatmapLayer, PedestrianLayer } from "../../prototypes/view-layers";
 import {
   BORDER_LAYER,
   BRIDGE_LAYER,
@@ -17,6 +18,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
@@ -33,7 +35,7 @@ import {
 
 import { FloodLayer } from "./plateau-3dtiles/FloodLayer";
 
-import { BuildingLayer, GeneralDatasetLayer } from ".";
+import { BuildingLayer, GeneralDatasetLayer, MyDataLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
 // import { RoadLayer } from "./RoadLayer";
@@ -41,9 +43,10 @@ import { BuildingLayer, GeneralDatasetLayer } from ".";
 // import { UrbanPlanningLayer } from "./UrbanPlanningLayer";
 
 export const layerComponents: LayerComponents = {
-  [HEATMAP_LAYER]: undefined, // HeatmapLayer,
-  [PEDESTRIAN_LAYER]: undefined, // PedestrianLayer,
+  [HEATMAP_LAYER]: HeatmapLayer,
+  [PEDESTRIAN_LAYER]: PedestrianLayer,
   [SKETCH_LAYER]: undefined, // SketchLayer,
+  [MY_DATA_LAYER]: MyDataLayer,
 
   // Dataset layers
   // Building model

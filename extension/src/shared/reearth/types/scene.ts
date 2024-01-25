@@ -1,5 +1,6 @@
-import { CameraPosition, LatLngHeight } from "./camera";
+import { CameraPosition } from "./camera";
 import { ComputedFeature } from "./layer";
+import { LngLatHeight } from "./value";
 
 export type TerrainProperty = {
   terrain?: boolean;
@@ -131,8 +132,29 @@ export type Scene = {
     x: number,
     y: number,
     withTerrain?: boolean,
-  ) => LatLngHeight | undefined;
+  ) => LngLatHeight | undefined;
   readonly sampleTerrainHeight: (lng: number, lat: number) => Promise<number | undefined>;
+  readonly computeGlobeHeight: (lng: number, lat: number, height?: number) => number | undefined;
+  readonly toXYZ: (
+    lng: number,
+    lat: number,
+    height: number,
+    options?: { useGlobeEllipsoid?: boolean },
+  ) => [x: number, y: number, z: number] | undefined;
+  readonly toLngLatHeight: (
+    x: number,
+    y: number,
+    z: number,
+    options?: { useGlobeEllipsoid?: boolean },
+  ) => [lng: number, lat: number, height: number] | undefined;
+  readonly convertScreenToPositionOffset: (
+    rawPosition: [x: number, y: number, z: number],
+    screenOffset: [x: number, y: number],
+  ) => [x: number, y: number, z: number] | undefined;
+  isPositionVisible: (position: [x: number, y: number, z: number]) => boolean;
+  toWindowPosition: (
+    position: [x: number, y: number, z: number],
+  ) => [x: number, y: number] | undefined;
   readonly pickManyFromViewport: (
     windowPosition: [x: number, y: number],
     windowWidth: number,

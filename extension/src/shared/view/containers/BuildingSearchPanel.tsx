@@ -13,13 +13,23 @@ import {
 import { PrimitiveAtom, useAtom } from "jotai";
 import { get, uniq, uniqBy } from "lodash-es";
 import { PopupState, bindPopover } from "material-ui-popup-state/hooks";
-import { FC, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FC,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../../plateau";
+import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
   Props as MultipleSelectSearchProps,
@@ -36,12 +46,15 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   },
 }));
 
-const Content = styled("div")(() => ({
+const Content = styled("div")(({ theme }) => ({
   width: 320,
+  [theme.breakpoints.down("mobile")]: {
+    width: `calc(100vw - ${theme.spacing(4)})`,
+  },
 }));
 
-const SearchContent = styled("div")(() => ({
-  margin: "8px 8px 16px 8px",
+const SearchContent = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 1, 2, 1),
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -60,8 +73,9 @@ const SearchConditionList = styled(List)(() => ({
   padding: 0,
 }));
 
-const SearchConditionListItem = styled(ListItem)(() => ({
+const SearchConditionListItem = styled(ListItem)(({ theme }) => ({
   width: "100%",
+  padding: theme.spacing(1),
 }));
 
 const ResultLabel = styled("div")(({ theme }) => ({
@@ -116,12 +130,17 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     setTab(value);
   }, []);
 
-  const triggerUpdateRef = useRef(0);
+  const initialized = useRef(false);
+  if (state.isOpen && !initialized.current) {
+    initialized.current = true;
+  }
+
   const properties = useOptionalAtomValue(
     useMemo(() => {
-      if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer)) return;
+      if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer) || !initialized.current)
+        return;
       return layer.propertiesAtom as PrimitiveAtom<PlateauTilesetProperties | null>;
-    }, [layer, triggerUpdateRef.current]), // eslint-disable-line react-hooks/exhaustive-deps
+    }, [layer, initialized.current]), // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const featureIndex = useOptionalAtomValue(
@@ -144,38 +163,62 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       ),
     ),
   );
+  const defferedSearchedFeatures = useDeferredValue(searchedFeatures);
 
   const allFeatures = useMemo(
     () =>
-      window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? []),
-    [layerId, featureIndex, triggerUpdateRef.current], // eslint-disable-line react-hooks/exhaustive-deps
+      initialized.current
+        ? window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? [])
+        : undefined,
+    [layerId, featureIndex, initialized.current], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const groups = useMemo(() => {
-    if (!allFeatures) return;
+  const [groups, setGroups] = useState<
+    {
+      key: string;
+      title: string;
+      options: { label: string; value: string }[];
+    }[]
+  >([]);
 
-    return properties?.value
-      ?.map(value => {
-        if (!value) return;
-        if (value.type !== "unknown") return;
-        if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+  const prevAllFeaturesLengthRef = useRef(0);
+  useLayoutEffect(() => {
+    if (
+      !allFeatures ||
+      prevAllFeaturesLengthRef.current === allFeatures.length ||
+      !initialized.current ||
+      tab !== 0
+    )
+      return;
 
-        return {
-          key: value.name,
-          title: value.name,
-          options: uniqBy(
-            allFeatures
-              .map(f => {
-                const propertyValue = get(f.properties, value.name);
-                return { label: propertyValue, value: propertyValue };
-              })
-              .filter(v => !!v.label && !!v.value),
-            "label",
-          ),
-        };
-      })
-      .filter(isNotNullish);
-  }, [allFeatures, properties]);
+    prevAllFeaturesLengthRef.current = allFeatures.length;
+
+    setGroups(
+      properties?.value
+        ?.map(value => {
+          if (!value) return;
+          if (value.type !== "unknown") return;
+          if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+
+          return {
+            key: value.name,
+            title: value.name,
+            options: uniqBy(
+              allFeatures
+                .map(f => {
+                  const propertyValue = get(f.properties, value.name);
+                  return { label: propertyValue, value: propertyValue };
+                })
+                .filter(v => !!v.label && !!v.value),
+              "label",
+            ),
+          };
+        })
+        .filter(isNotNullish) ?? [],
+    );
+  }, [allFeatures, initialized.current, tab, properties]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const defferredGroups = useDeferredValue(groups);
 
   const [conditions, setConditions] = useState<
     Record<string, MultipleSelectSearchProps["options"]>
@@ -190,10 +233,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const handleSearchButtonClick = useCallback(() => {
     if (!allFeatures) return;
 
-    const conditionEntries = Object.entries(conditions).map(([key, value]) => [
-      key,
-      value.map(v => v.label),
-    ]);
+    const conditionEntries = Object.entries(conditions)
+      .filter(([, v]) => !!v.length)
+      .map(([key, value]) => [key, value.map(v => v.label)]);
     const hasCondition = conditionEntries.some(([, values]) => !!values.length);
 
     if (allFeatures && hasCondition) {
@@ -201,9 +243,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         features: uniq(
           allFeatures
             .filter(f =>
-              conditionEntries.every(
-                ([key, values]) => !values.length || values.includes(get(f.properties, key)),
-              ),
+              conditionEntries.every(([key, values]) => values.includes(get(f.properties, key))),
             )
             .map(f => f.id),
         ),
@@ -215,15 +255,13 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     setTab(1);
   }, [allFeatures, conditions, setSearchedFeatures]);
 
-  // TODO: Handle moving camera to the selected feature in this function.
   const handleResultItemClick = useCallback(
     (i: number) => {
       setSearchedFeatures(p => {
-        const shouldUpdate = p?.selectedIndices.every(v => v !== i);
         return p
           ? {
               ...p,
-              selectedIndices: shouldUpdate ? [i] : p.selectedIndices.filter(v => v !== i),
+              selectedIndices: [i],
               highlight: false,
             }
           : p;
@@ -231,6 +269,17 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     },
     [setSearchedFeatures],
   );
+
+  useEffect(() => {
+    if (!searchedFeatures) return;
+    const index = searchedFeatures.selectedIndices[0];
+    if (index === undefined) return;
+    const featureId = searchedFeatures.features[index];
+    if (!layerId || !featureId) return;
+    const feature = window.reearth?.layers?.findFeatureById?.(layerId, featureId);
+    if (!feature) return;
+    lookAtTileFeature(feature.properties);
+  }, [searchedFeatures, layerId]);
 
   const handleHighlightResultButtonClick = useCallback(() => {
     setSearchedFeatures(p => (p ? { ...p, highlight: !p.highlight, selectedIndices: [] } : p));
@@ -242,9 +291,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  triggerUpdateRef.current += 1;
-
-  if (!allFeatures || !groups) return null;
+  if (!allFeatures) return null;
 
   return (
     <Popover
@@ -259,7 +306,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       }}>
       <InspectorHeader title={"データを検索"} onClose={state.close} />
       <Divider />
-      <StyledTabs value={deferredTab} onChange={handleTabChange} sx={{ width: 320 }}>
+      <StyledTabs value={deferredTab} onChange={handleTabChange} sx={{ width: "100%" }}>
         <Tab label="条件" />
         <Tab label="結果" />
       </StyledTabs>
@@ -267,7 +314,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         {tab === 0 && (
           <SearchContent>
             <SearchConditionList>
-              {groups.map((group, i) => (
+              {defferredGroups.map((group, i) => (
                 <SearchConditionListItem key={group.title}>
                   <MultipleSelectSearch
                     title={group.title}
@@ -280,7 +327,11 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
               ))}
             </SearchConditionList>
             <Space size={3} />
-            <SearchButton color="primary" variant="contained" onClick={handleSearchButtonClick}>
+            <SearchButton
+              color="primary"
+              variant="contained"
+              onClick={handleSearchButtonClick}
+              disabled={!defferredGroups.length}>
               検索
             </SearchButton>
           </SearchContent>
@@ -290,11 +341,12 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
             <ResultLabel>{searchedFeatures?.features.length ?? 0}件見つかりました</ResultLabel>
             <Divider />
             <ResultList>
-              {searchedFeatures?.features.map((f, i) => (
+              {defferedSearchedFeatures?.features.map((f, i) => (
                 <ResultListItem
                   key={f}
-                  selected={searchedFeatures.selectedIndices.includes(i)}
-                  onClick={() => handleResultItemClick(i)}>
+                  selected={searchedFeatures?.selectedIndices.includes(i)}
+                  onClick={() => handleResultItemClick(i)}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   {f}
                 </ResultListItem>
               ))}
@@ -305,7 +357,8 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
                 <ResultButton
                   color={searchedFeatures?.highlight ? "primary" : "secondary"}
                   variant={searchedFeatures?.highlight ? "contained" : "outlined"}
-                  onClick={handleHighlightResultButtonClick}>
+                  onClick={handleHighlightResultButtonClick}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   結果をハイライト
                 </ResultButton>
               </li>
@@ -313,7 +366,8 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
                 <ResultButton
                   color={searchedFeatures?.onlyShow ? "primary" : "secondary"}
                   variant={searchedFeatures?.onlyShow ? "contained" : "outlined"}
-                  onClick={handleShowOnlyResultButtonClick}>
+                  onClick={handleShowOnlyResultButtonClick}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   結果のみ表示
                 </ResultButton>
               </li>

@@ -1,5 +1,7 @@
 import { type Primitive } from "type-fest";
 
+import { XYZ } from "../../shared/reearth/types";
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ScreenSpaceSelectionOverrides {}
 
@@ -34,10 +36,9 @@ export type ScreenSpaceSelectionEntry<
         : never;
     }[ScreenSpaceSelectionType];
 
-// export type ComputeBoundingSphere<T extends ScreenSpaceSelectionType = ScreenSpaceSelectionType> = (
-//   value: ScreenSpaceSelectionEntry<T>,
-//   result?: BoundingSphere,
-// ) => BoundingSphere | undefined;
+export type ComputeBoundingSphere<T extends ScreenSpaceSelectionType = ScreenSpaceSelectionType> = (
+  value: ScreenSpaceSelectionEntry<T>,
+) => XYZ | undefined;
 
 export interface ScreenSpaceSelectionResponder<
   T extends ScreenSpaceSelectionType = ScreenSpaceSelectionType,
@@ -49,5 +50,5 @@ export interface ScreenSpaceSelectionResponder<
   ) => value is ScreenSpaceSelectionEntry<T>;
   onSelect?: (value: ScreenSpaceSelectionEntry<T>) => void;
   onDeselect?: (value: ScreenSpaceSelectionEntry<T>) => void;
-  // computeBoundingSphere?: ComputeBoundingSphere<T>;
+  computeBoundingSphere?: ComputeBoundingSphere<T>;
 }

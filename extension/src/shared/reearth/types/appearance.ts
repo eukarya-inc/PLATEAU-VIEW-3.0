@@ -1,10 +1,12 @@
+import { Camera } from "./camera";
 import type { ExpressionContainer } from "./expression";
 import { Feature } from "./layer";
 import type {
-  Camera,
+  LUT,
+  Bound,
   ClassificationType,
   EXPERIMENTAL_clipping,
-  LatLng,
+  LngLat,
   Typography,
 } from "./value";
 
@@ -23,14 +25,19 @@ export type AppearanceTypes = {
   model: ModelAppearance;
   "3dtiles": Cesium3DTilesAppearance;
   ellipsoid: EllipsoidAppearance;
+  ellipse: EllipseAppearance;
   box: BoxAppearance;
   photooverlay: LegacyPhotooverlayAppearance;
   resource: ResourceAppearance;
   raster: RasterAppearance;
+  frustum: FrustumAppearance;
+  transition: TransitionAppearance;
+  heatMap: HeatMapAppearance;
 };
 
 export type MarkerAppearance = {
   show?: boolean;
+  height?: number;
   heightReference?: "none" | "clamp" | "relative";
   style?: "none" | "point" | "image";
   pointSize?: number;
@@ -68,6 +75,8 @@ export type MarkerAppearance = {
   extrude?: boolean;
   near?: number;
   far?: number;
+  pixelOffset?: [number, number];
+  eyeOffset?: [number, number, number];
 };
 
 export type PolylineAppearance = {
@@ -107,6 +116,18 @@ export type EllipsoidAppearance = {
   far?: number;
 };
 
+export type EllipseAppearance = {
+  show?: boolean;
+  heightReference?: "none" | "clamp" | "relative";
+  classificationType?: ClassificationType;
+  shadows?: "disabled" | "enabled" | "cast_only" | "receive_only";
+  radius?: number;
+  fill?: boolean;
+  fillColor?: string;
+  near?: number;
+  far?: number;
+};
+
 export type ModelAppearance = {
   show?: boolean;
   model?: string; // For compat
@@ -136,6 +157,15 @@ export type ModelAppearance = {
   imageBasedLightIntensity?: number;
 };
 
+export type FrustumAppearance = {
+  show?: boolean;
+  color?: string;
+  opacity?: number;
+  zoom?: number;
+  aspectRatio?: number;
+  length?: number;
+};
+
 export type Cesium3DTilesAppearance = {
   show?: boolean;
   color?: string;
@@ -159,7 +189,7 @@ export type Cesium3DTilesAppearance = {
 
 export type LegacyPhotooverlayAppearance = {
   show?: boolean;
-  location?: LatLng;
+  location?: LngLat;
   height?: number;
   heightReference?: "none" | "clamp" | "relative";
   camera?: Camera; // You may also update the field name in storytelling widget
@@ -229,4 +259,27 @@ export type BoxAppearance = {
   activeEdgeIndex?: number; // 0 ~ 11
   near?: number;
   far?: number;
+};
+
+export type TransitionAppearance = {
+  useTransition?: boolean;
+  translate?: [lng: number, lat: number, height: number];
+  rotate?: [heading: number, pitch: number, roll: number];
+  scale?: [x: number, y: number, z: number];
+};
+
+export type HeatMapAppearance = {
+  valueMap: string;
+  bounds: Bound;
+  colorMap?: LUT;
+  cropBounds?: Bound;
+  width?: number;
+  height?: number;
+  minValue?: number;
+  maxValue?: number;
+  opacity?: number;
+  contourSpacing?: number;
+  contourThickness?: number;
+  contourAlpha?: number;
+  logarithmic?: boolean;
 };

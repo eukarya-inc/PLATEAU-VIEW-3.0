@@ -8,17 +8,22 @@ import {
   BRIDGE_LAYER,
   BUILDING_LAYER,
   CITY_FURNITURE_LAYER,
+  createHeatmapLayer,
+  createPedestrianLayer,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
   GLOBAL_LAYER,
   HEATMAP_LAYER,
+  HeatmapLayerModelParams,
   HIGH_TIDE_RISK_LAYER,
   INLAND_FLOODING_RISK_LAYER,
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
+  PedestrianLayerModelParams,
   RAILWAY_LAYER,
   RIVER_FLOODING_RISK_LAYER,
   ROAD_LAYER,
@@ -32,6 +37,7 @@ import {
 } from "../../prototypes/view-layers";
 
 import { GeneralLayerModelParams, createGeneralDatasetLayer } from "./general";
+import { MyDataLayerModelParams, createMyDataLayer } from "./myData";
 import {
   createBuildingLayer,
   type BuildingLayerModelParams,
@@ -50,10 +56,11 @@ import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/Flood
 // import { createUrbanPlanningLayer, type UrbanPlanningLayerModelParams } from "./UrbanPlanningLayer";
 
 // prettier-ignore
-type ViewLayerModelParams<T extends LayerType> =
-  T extends typeof HEATMAP_LAYER ? never : // HeatmapLayerModelParams :
-  T extends typeof PEDESTRIAN_LAYER ? never : // PedestrianLayerModelParams :
+export type ViewLayerModelParams<T extends LayerType> =
+  T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
+  T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? never : // SketchLayerModelParams :
+  T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
 
   // Dataset layers
   T extends typeof BORDER_LAYER ? GeneralLayerModelParams : // BorderLayerModelParams
@@ -90,9 +97,10 @@ export function createViewLayer<T extends LayerType>(
 ): SetOptional<LayerModel, "id"> | undefined {
   // prettier-ignore
   switch (params.type) {
-    case HEATMAP_LAYER: return undefined // createHeatmapLayer(params as HeatmapLayerModelParams)
-    case PEDESTRIAN_LAYER: return undefined // createPedestrianLayer(params as PedestrianLayerModelParams)
+    case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
+    case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return undefined // createSketchLayer(params as SketchLayerModelParams)
+    case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
 
     // Dataset layers
     // Building model

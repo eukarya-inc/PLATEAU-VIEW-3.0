@@ -60,7 +60,7 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
       globeBaseColor={colorMode === "light" ? "#bfbfbf" : "#000000"}
       enableGlobeLighting={enableTerrainLighting}
       lightIntensity={colorMode === "light" ? 3 : 14}
-      shadowDarkness={colorMode === "light" ? 1 : 0.3}
+      shadowDarkness={colorMode === "light" ? 0.7 : 0.3}
       imageBasedLightingIntensity={1}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       showSkyBox={false}

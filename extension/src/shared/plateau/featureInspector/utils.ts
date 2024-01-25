@@ -6,7 +6,7 @@ import { isNotNullish } from "../../../prototypes/type-helpers";
 import { layerDatasetTypes } from "../../../prototypes/view/constants/datasetTypeLayers";
 import { datasetTypeNames } from "../../../prototypes/view/constants/datasetTypeNames";
 import { Feature } from "../../reearth/types/layer";
-import { RootLayer } from "../../view-layers";
+import { RootLayerForDataset } from "../../view-layers";
 
 import { getAttributeLabel, getAttributes, getRootFields } from "./attributes";
 
@@ -21,13 +21,27 @@ const parseJsonPathAsNodes = (obj: any, path: string) => {
   }
 };
 
+// `process` should be like `[from (|| from), to]`
+export const parseProcess = (process: string | undefined) => {
+  if (!process) return;
+  if (!process.startsWith("[") || !process.endsWith("]")) return;
+  const splitProcess = process.slice(1, -1).split(/ ?, ?/);
+  if (splitProcess.length !== 2) return;
+  const conditions = splitProcess[0].split(/ ?\|\| ?/);
+  const result = splitProcess[1];
+  return {
+    conditions,
+    result,
+  };
+};
+
 export const makePropertyForFeatureInspector = ({
   features,
   featureInspector,
   layer,
   builtin,
 }: {
-  featureInspector?: RootLayer["featureInspector"];
+  featureInspector?: RootLayerForDataset["featureInspector"];
   layer: LayerModel | undefined;
   features: Pick<Feature, "properties">[];
   builtin?: boolean;
@@ -58,6 +72,7 @@ export const makePropertyForFeatureInspector = ({
   const settingRootProperties =
     convertedFeatureInspectorProperties
       ?.map(p => {
+        if (!p.visible) return;
         const lastPathName = p.nodes[0]?.path
           .slice()
           .reverse()
@@ -66,24 +81,43 @@ export const makePropertyForFeatureInspector = ({
         return {
           name: p.displayName || label || lastPathName,
           // TODO: Evaluate `process` in here.
-          values: p.nodes.map(n => n?.value).filter(isNotNullish),
+          values: p.nodes
+            .map(n => {
+              if (!n) return;
+
+              const parsedProcess = parseProcess(p.process);
+              if (!parsedProcess) return n.value;
+
+              const match = parsedProcess?.conditions.some(cond => {
+                if (isNaN(Number(cond))) {
+                  return n.value === cond;
+                }
+                return n.value === Number(cond) || n.value === cond;
+              });
+              return match ? parsedProcess.result : n.value;
+            })
+            .filter(isNotNullish),
         };
       })
-      .filter(({ values }) => !!values.length) ?? [];
+      .filter(v => v && !!v.values.length) ?? [];
 
   // Built-in root properties
   const datasetType = layer ? layerDatasetTypes[layer.type] : undefined;
   const rawBuiltInRootProperties = !shouldUseSettingProperty
     ? features
         .map(f =>
-          getRootFields(f.properties, datasetType, {
-            name: layer?.title,
-            datasetName: datasetType ? datasetTypeNames[datasetType] : undefined,
-          }),
+          layer && "title" in layer
+            ? getRootFields(f.properties, datasetType, {
+                name: layer?.title,
+                datasetName: datasetType ? datasetTypeNames[datasetType] : undefined,
+              })
+            : undefined,
         )
         .filter(v => !!v && !!Object.keys(v).length)
     : [];
-  const builtInRootPropertyNames = rawBuiltInRootProperties.flatMap(p => Object.keys(p ?? {}));
+  const builtInRootPropertyNames = intersection(
+    rawBuiltInRootProperties.flatMap(p => Object.keys(p ?? {})),
+  );
   const builtInRootProperties: { name: string; values: any[] }[] = builtInRootPropertyNames
     .map(name => ({
       name,
@@ -121,7 +155,7 @@ export const makePropertyForFeatureInspector = ({
       .filter(n => {
         if (n === attributesKey) return false;
         return (
-          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? "") &&
+          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? n) &&
           !settingRootPropertyNames?.includes(n)
         );
       })

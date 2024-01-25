@@ -26,9 +26,9 @@ export const useEvaluateFilter = (
             res += " &&";
           }
 
-          return `${res} ${defaultConditionalNumber(propertyName, range[0])} > ${
+          return `${res} ${defaultConditionalNumber(propertyName, range[0])} >= ${
             value[0]
-          } && ${defaultConditionalNumber(propertyName, range[0])} < ${
+          } && ${defaultConditionalNumber(propertyName, range[0])} <= ${
             value[1] === range[1] ? Infinity : value[1]
           }`;
         }, ""),

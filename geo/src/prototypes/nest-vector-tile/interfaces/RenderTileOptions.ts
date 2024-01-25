@@ -1,4 +1,4 @@
-import { type TileFormat } from "./TileFormat";
+import { type TileFormat } from "@prototypes/type-helpers";
 
 export interface RenderTileOptions {
   format?: TileFormat;

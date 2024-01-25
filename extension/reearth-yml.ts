@@ -37,16 +37,6 @@ const yml = {
                 title: "バックエンドURL",
               },
               {
-                id: "geoURL",
-                type: "string",
-                title: "GeoサーバーバックエンドURL",
-              },
-              {
-                id: "gsiTileURL",
-                type: "string",
-                title: "地理院地図タイルURL",
-              },
-              {
                 id: "projectName",
                 type: "string",
                 title: "プロジェクト名",
@@ -63,9 +53,29 @@ const yml = {
                 title: "データカタログURL",
               },
               {
+                id: "catalogURLForAdmin",
+                type: "string",
+                title: "Admin用データカタログURL",
+              },
+              {
                 id: "catalogProjectName",
                 type: "string",
                 title: "データカタログのプロジェクト名",
+              },
+              {
+                id: "geoURL",
+                type: "string",
+                title: "GeoサーバーバックエンドURL",
+              },
+              {
+                id: "gsiTileURL",
+                type: "string",
+                title: "地理院地図タイルURL",
+              },
+              {
+                id: "googleStreetViewAPIKey",
+                type: "string",
+                title: "Google Street View API Key",
               },
               {
                 id: "reearthURL",

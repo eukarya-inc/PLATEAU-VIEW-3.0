@@ -3,11 +3,15 @@ import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
+import { PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
 import { settingsAtom } from "../../states/setting";
 import { templatesAtom } from "../../states/template";
-import { createRootLayerAtom } from "../../view-layers/rootLayer";
+import {
+  createRootLayerForDatasetAtom,
+  createRootLayerForLayerAtom,
+} from "../../view-layers/rootLayer";
 
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
@@ -28,6 +32,8 @@ export const InitialLayers: FC = () => {
 
   // TODO: Get share ID
   const shareId = undefined;
+  // TODO: Use this to restore shared layers
+  // const getSharedRootLayer = useSetAtom(getSharedRootLayerIdsAtom);
 
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
@@ -35,75 +41,40 @@ export const InitialLayers: FC = () => {
   const templatesRef = useRef(templates);
   templatesRef.current = templates;
   useEffect(() => {
-    const remove = initialDatasets.map(d => {
-      const dataList = d.items as DatasetItem[];
-      return addLayer(
-        createRootLayerAtom({
-          dataset: d,
-          areaCode: d.wardCode || d.cityCode || d.prefectureCode,
-          currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-          settings: settingsRef.current.filter(s => s.datasetId === d.id),
-          templates: templatesRef.current,
-          shareId,
+    if (query.loading || shareId) return;
+
+    const remove = [
+      ...initialDatasets.map(d => {
+        const dataList = d.items as DatasetItem[];
+        return addLayer(
+          createRootLayerForDatasetAtom({
+            dataset: d,
+            areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+            currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
+            settings: settingsRef.current.filter(s => s.datasetId === d.id),
+            templates: templatesRef.current,
+            shareId,
+          }),
+          { autoSelect: false },
+        );
+      }),
+      addLayer(
+        createRootLayerForLayerAtom({
+          type: PEDESTRIAN_LAYER,
+          location: {
+            longitude: 139.769,
+            latitude: 35.68,
+          },
         }),
         { autoSelect: false },
-      );
-    });
-    // const remove = [
-    // addLayer(
-    //   createRootLayerAtom({
-    //     type: BUILDING_LAYER,
-    //     municipalityCode: "13101",
-    //     version: "2020",
-    //     lod: 2,
-    //     textured: false,
-    //   }),
-    //   { autoSelect: false },
-    // ),
-    //   addLayer(
-    //     createViewLayer({
-    //       type: BUILDING_LAYER,
-    //       municipalityCode: "13102",
-    //       version: "2020",
-    //       lod: 2,
-    //       textured: false,
-    //     }),
-    //     { autoSelect: false },
-    //   ),
-    //   // addLayer(
-    //   //   createViewLayer({
-    //   //     type: PEDESTRIAN_LAYER,
-    //   //     location: {
-    //   //       longitude: 139.769,
-    //   //       latitude: 35.68,
-    //   //     },
-    //   //   }),
-    //   //   { autoSelect: false },
-    //   // ),
-    //   // addLayer(
-    //   //   createViewLayer({
-    //   //     type: HEATMAP_LAYER,
-    //   //     urls: [
-    //   //       `${process.env.NEXT_PUBLIC_DATA_BASE_URL}/estat/T001102/tblT001102Q5339.txt`,
-    //   //       `${process.env.NEXT_PUBLIC_DATA_BASE_URL}/estat/T001102/tblT001102Q5439.txt`,
-    //   //       `${process.env.NEXT_PUBLIC_DATA_BASE_URL}/estat/T001102/tblT001102Q5340.txt`,
-    //   //       `${process.env.NEXT_PUBLIC_DATA_BASE_URL}/estat/T001102/tblT001102Q5440.txt`,
-    //   //     ],
-    //   //     parserOptions: {
-    //   //       codeColumn: 0,
-    //   //       valueColumn: 4,
-    //   //       skipHeader: 2,
-    //   //     },
-    //   //   }),
-    //   //   { autoSelect: false },
-    //   // ),
-    // ];
+      ),
+    ];
     return () => {
       remove.forEach(remove => {
         remove();
       });
     };
-  }, [addLayer, initialDatasets, shareId]);
+  }, [addLayer, initialDatasets, shareId, query.loading]);
 
   return null;
 };

@@ -3,10 +3,11 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, type MouseEvent, type ReactNode } from "react";
 
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { inEditor } from "../../../shared/reearth/utils";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { DatasetTreeItem, InfoIcon, type DatasetTreeItemProps } from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
@@ -37,6 +38,7 @@ export interface DatasetListItemProps
 export const DatasetListItem: FC<DatasetListItemProps> = ({
   dataset,
   municipalityCode,
+  label,
   ...props
 }) => {
   // TODO: Separate into hook
@@ -54,7 +56,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const theme = useTheme();
-  const smDown = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const handleClick = useCallback(() => {
     if (layerType == null) {
       return;
@@ -62,13 +64,13 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     if (layer == null) {
       const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
       addLayer(
-        createRootLayerAtom({
+        createRootLayerForDatasetAtom({
           dataset,
           settings: filteredSettings,
           templates,
           areaCode: municipalityCode,
         }),
-        { autoSelect: !smDown },
+        { autoSelect: !isMobile },
       );
     } else {
       removeLayer(layer.id);
@@ -79,7 +81,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     layerType,
     addLayer,
     removeLayer,
-    smDown,
+    isMobile,
     municipalityCode,
     settings,
     templates,
@@ -93,6 +95,16 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const handleInfoClose = useCallback(() => {
     setInfoOpen(false);
   }, []);
+
+  const wrappedLabel = useMemo(
+    () =>
+      inEditor() && dataset.year
+        ? !Array.isArray(label)
+          ? `[${dataset.year}]${label}`
+          : [...label.slice(0, -1), `[${dataset.year}]${label.slice(-1)[0]}`]
+        : label,
+    [dataset, label],
+  );
 
   const Icon = datasetTypeIcons[dataset.type.code as PlateauDatasetType];
   return (
@@ -108,6 +120,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
           </IconButton>
         }
         onClick={handleClick}
+        label={wrappedLabel}
         {...props}
       />
       <DatasetDialog

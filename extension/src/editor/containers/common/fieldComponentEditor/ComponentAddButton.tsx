@@ -70,7 +70,7 @@ export const ComponentAddButton: React.FC<ComponentAddButtonProps> = ({
         title="Add Component"
         open={addComponentOpen}
         fullWidth
-        maxWidth="sm"
+        maxWidth="mobile"
         primaryButtonText="Add"
         onClose={handleCloseAddComponent}
         onSubmit={handleComponentAdd}

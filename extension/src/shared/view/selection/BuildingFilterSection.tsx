@@ -1,6 +1,7 @@
 import { SetStateAction, atom, useAtomValue } from "jotai";
 import { intersectionWith } from "lodash-es";
 import { useMemo, type FC, useState, useCallback } from "react";
+import invariant from "tiny-invariant";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
@@ -10,8 +11,7 @@ import {
   SliderParameterItem,
 } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
-import { PlateauTilesetProperty } from "../../plateau";
-import { BUILDING_MODEL_FILTER_RANGE } from "../../plateau/constants";
+import { AvailableFeatures, PlateauTilesetProperty } from "../../plateau";
 import {
   TilesetBuildingModelFilterField,
   TilesetFloodModelFilterField,
@@ -28,7 +28,7 @@ export interface BuildingFilterSectionProps {
   label: string;
   layers: readonly LayerModel[];
   atoms: WritableAtomForComponent<TilesetBuildingModelFilterField | TilesetFloodModelFilterField>[];
-  type: Exclude<PlateauTilesetProperty["type"], "unknown">;
+  availableFeature: AvailableFeatures[number];
 }
 
 type Poperty = Extract<PlateauTilesetProperty, { type: "qualitative" | "number" }>;
@@ -37,7 +37,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
   label,
   atoms,
   layers,
-  type,
+  availableFeature,
 }) => {
   const buildingLayers = useMemo(
     () =>
@@ -56,23 +56,21 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property => {
-                      if (property.type !== type) return;
+                      if (
+                        (property.type !== "number" && property.type !== "qualitative") ||
+                        !property.minimum ||
+                        !property.maximum ||
+                        !property.availableFeatures?.includes(availableFeature)
+                      )
+                        return;
 
                       const minimum = Math.ceil(property.minimum);
                       const maximum = Math.ceil(property.maximum);
 
-                      const defaultRange = BUILDING_MODEL_FILTER_RANGE[property.name];
-                      if (!defaultRange) {
-                        return {
-                          ...property,
-                          minimum,
-                          maximum,
-                        };
-                      }
                       return {
                         ...property,
-                        minimum: defaultRange[0],
-                        maximum: defaultRange[1],
+                        minimum,
+                        maximum,
                       };
                     })
                     .filter(isNotNullish) ?? []
@@ -80,7 +78,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
             ),
             (a, b: Poperty) => a.name === b.name,
           );
-          return props.map((prop): [Poperty, string] => [prop, prop.name.replaceAll("_", " ")]);
+          return props.map((prop): [Poperty, string] => [prop, prop.displayName]);
         }),
       [buildingLayers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
     ),
@@ -91,6 +89,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
       propertyItems.reduce((res, [prop]) => {
         const maximum = prop.maximum;
         const minimum = prop.minimum;
+        invariant(maximum !== undefined && minimum !== undefined);
         res[prop.name] = atoms.map(a =>
           atom(
             get => {
@@ -131,7 +130,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
 
   return (
     <GroupedParameterItem label={label} onClick={handleClickParameterItem}>
-      <InspectorItem sx={{ width: 320 }}>
+      <InspectorItem sx={{ width: 320 }} level={2}>
         <ParameterList>
           {propertyItems.map(([prop, name]) => (
             <SliderParameterItem
@@ -142,6 +141,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
               max={prop.maximum}
               range
               step={1}
+              allowFloat={prop.type === "number"}
             />
           ))}
         </ParameterList>

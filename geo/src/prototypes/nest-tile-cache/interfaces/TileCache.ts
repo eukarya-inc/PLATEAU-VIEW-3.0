@@ -1,7 +1,6 @@
 import { type Readable } from "stream";
 
-import { type Coordinates } from "@prototypes/nest-vector-tile/interfaces/Coordinates";
-import { type TileFormat } from "@prototypes/nest-vector-tile/interfaces/TileFormat";
+import { type Coordinates, type TileFormat } from "@prototypes/type-helpers";
 import { type Sharp } from "sharp";
 
 export interface TileCache {

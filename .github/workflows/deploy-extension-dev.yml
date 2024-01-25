@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Deploy
-        run: gsutil -m -h "Cache-Control:no-store" rsync -dr dist ${{ env.GCS_DEST }}/extension
+        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^estat/.*$" -dr dist ${{ env.GCS_DEST }}/extension
       - name: Pack extension
         run: tar -zcvf plateauview-extension.tar.gz dist
       - name: Save as artifact

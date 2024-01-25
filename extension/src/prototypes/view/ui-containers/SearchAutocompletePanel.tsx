@@ -1,4 +1,14 @@
-import { ClickAwayListener, Divider, styled, Tab, tabClasses, Tabs } from "@mui/material";
+import {
+  ClickAwayListener,
+  Divider,
+  FilterOptionsState,
+  styled,
+  Tab,
+  tabClasses,
+  Tabs,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useAtomValue } from "jotai";
 import {
   useCallback,
@@ -52,6 +62,16 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   },
 }));
 
+function filterOptions(
+  options: SearchOption[],
+  state: FilterOptionsState<SearchOption>,
+): SearchOption[] {
+  const tokens = state.inputValue.split(/\s+/).filter(value => value.length > 0);
+  return tokens.length > 0
+    ? options.filter(option => tokens.some(token => state.getOptionLabel(option).includes(token)))
+    : options;
+}
+
 export interface SearchAutocompletePanelProps {
   children?: ReactNode;
 }
@@ -79,8 +99,8 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
     skip: !focused,
   });
   const options = useMemo(
-    () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.addresses],
-    [searchOptions.datasets, searchOptions.buildings, searchOptions.addresses],
+    () => [...searchOptions.datasets, ...searchOptions.buildings, ...searchOptions.areas],
+    [searchOptions.datasets, searchOptions.buildings, searchOptions.areas],
   );
 
   const selectOption = searchOptions.select;
@@ -153,6 +173,9 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
   const maxMainHeight = useAtomValue(maxMainHeightAtom);
 
   const platform = useAtomValue(platformAtom);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <FloatingPanel>
@@ -160,6 +183,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
           inputRef={textFieldRef}
           placeholder="データセット、建築物、住所を検索"
           options={options}
+          filterOptions={filterOptions}
           filters={filters}
           maxHeight={maxMainHeight}
           onFocus={handleFocus}
@@ -173,7 +197,10 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
             children
           ) : (
             <StyledScrollable>
-              <StyledTabs value={deferredTab} onChange={handleTabChange}>
+              <StyledTabs
+                value={deferredTab}
+                variant={isMobile ? "fullWidth" : "standard"}
+                onChange={handleTabChange}>
                 <Tab label="検索" />
                 <Tab label="都道府県" />
                 <Tab label="カテゴリー" />
@@ -182,7 +209,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                 <SearchList
                   datasets={searchOptions.datasets}
                   buildings={searchOptions.buildings}
-                  addresses={searchOptions.addresses}
+                  areas={searchOptions.areas}
                   onOptionSelect={handleOptionSelect}
                   onFiltersChange={handleFiltersChange}
                 />

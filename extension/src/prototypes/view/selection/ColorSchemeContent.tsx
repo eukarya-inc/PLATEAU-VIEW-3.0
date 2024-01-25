@@ -4,6 +4,8 @@ import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { makeColorSchemeAtomForComponent } from "../../../shared/view/state/colorSchemeForComponent";
+import { FLOOD_LAYER_TYPES } from "../../../shared/view-layers";
+import { LayerType } from "../../layers";
 import {
   ColorMapIcon,
   ColorMapParameterItem,
@@ -15,7 +17,12 @@ import {
   QuantitativeColorLegend,
   SliderParameterItem,
 } from "../../ui-components";
-import { colorSchemeSelectionAtom, type LayerColorScheme } from "../../view-layers";
+import {
+  BUILDING_LAYER,
+  colorSchemeSelectionAtom,
+  HEATMAP_LAYER,
+  type LayerColorScheme,
+} from "../../view-layers";
 import { type COLOR_SCHEME_SELECTION, type SelectionGroup } from "../states/selection";
 
 const QuantitativeContent: FC<{
@@ -89,6 +96,12 @@ export interface ColorSchemeContentProps {
   })["values"];
 }
 
+const DEFAULT_COLOR_SCHEME_LAYER_TYPES: LayerType[] = [
+  BUILDING_LAYER,
+  ...FLOOD_LAYER_TYPES,
+  HEATMAP_LAYER,
+];
+
 export const ColorSchemeContent: FC<ColorSchemeContentProps> = ({ values }) => {
   invariant(values.length > 0);
 
@@ -100,13 +113,13 @@ export const ColorSchemeContent: FC<ColorSchemeContentProps> = ({ values }) => {
     setSelection([]);
   }, [setSelection]);
 
-  const isPlateauTilesetLayer = "isPlateauTilesetLayer" in layer && layer.isPlateauTilesetLayer;
-
   const colorScheme = useAtomValue(
     useMemo(
       () =>
-        isPlateauTilesetLayer ? layer.colorSchemeAtom : makeColorSchemeAtomForComponent([layer]),
-      [layer, isPlateauTilesetLayer],
+        DEFAULT_COLOR_SCHEME_LAYER_TYPES.includes(layer.type) && "colorSchemeAtom" in layer
+          ? layer.colorSchemeAtom
+          : makeColorSchemeAtomForComponent([layer]),
+      [layer],
     ),
   );
 

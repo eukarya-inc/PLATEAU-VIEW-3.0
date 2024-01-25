@@ -12,7 +12,12 @@ import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
-import { hideAppOverlayAtom, showDeveloperPanelsAtom } from "../states/app";
+import {
+  hideAppOverlayAtom,
+  showDeveloperPanelsAtom,
+  showFeedbackModalAtom,
+  showMyDataModalAtom,
+} from "../states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {
   onClick?: (event: MouseEvent<HTMLElement>, name: string) => void;
@@ -28,6 +33,8 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
 
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
     const [showDeveloperPanels, setShowDeveloperPanels] = useAtom(showDeveloperPanelsAtom);
+    const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
+    const [, setShowMyDataModal] = useAtom(showMyDataModalAtom);
 
     const onClickRef = useRef(onClick);
     onClickRef.current = onClick;
@@ -45,11 +52,22 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           case "developer":
             setShowDeveloperPanels(value => !value);
             break;
+          case "feedback":
+            setShowFeedbackModal(value => !value);
+            break;
+          case "my-data":
+            setShowMyDataModal(value => !value);
         }
         onClickRef.current?.(event, name);
         popupState.close();
       },
-      [popupState, setHideAppOverlay, setShowDeveloperPanels],
+      [
+        popupState,
+        setHideAppOverlay,
+        setShowDeveloperPanels,
+        setShowFeedbackModal,
+        setShowMyDataModal,
+      ],
     );
 
     const platform = useAtomValue(platformAtom);
@@ -85,10 +103,13 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             onClick={handleClick}>
             3D都市モデルダウンロード
           </SelectItem>
+          <SelectItem data-name="my-data" selected={showDeveloperPanels} onClick={handleClick}>
+            Myデータ
+          </SelectItem>
           <SelectItem disabled data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
-          <SelectItem disabled data-name="feedback" onClick={handleClick}>
+          <SelectItem data-name="feedback" selected={showDeveloperPanels} onClick={handleClick}>
             フィードバック
           </SelectItem>
           <Divider />

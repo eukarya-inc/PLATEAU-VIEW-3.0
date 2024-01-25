@@ -1,21 +1,24 @@
 import { atom, useAtomValue, useSetAtom } from "jotai";
+import { debounce } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
-import { useDatasets } from "../../../shared/graphql";
+import { useDatasets, useEstatAreasLazy } from "../../../shared/graphql";
 import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
+import { flyToBBox, inEditor, lookAtTileFeature } from "../../../shared/reearth/utils";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
-import { createRootLayerAtom } from "../../../shared/view-layers";
+import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { LayerModel, addLayerAtom, useFindLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import { type SearchOption } from "../../ui-components";
 import { BUILDING_LAYER } from "../../view-layers";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
+import { highlightAreaAtom } from "../containers/HighlightedAreas";
 // import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 // import { areasAtom } from "../states/address";
 
@@ -32,8 +35,9 @@ export interface BuildingSearchOption extends SearchOption /* , earchableFeature
   long?: number;
 }
 
-export interface AddressSearchOption extends SearchOption {
-  type: "address";
+export interface AreaSearchOption extends SearchOption {
+  type: "area";
+  bbox: [number, number, number, number];
 }
 
 export interface SearchOptionsParams {
@@ -51,9 +55,9 @@ function useDatasetSearchOptions({
     () => areas?.filter(area => area.type === "municipality").map(area => area.code) ?? [],
     [areas],
   );
-  const tokens = useMemo(() => inputValue?.split(/ |\u3000/), [inputValue]);
+  const tokens = useMemo(() => inputValue?.split(/\s+/).filter(Boolean), [inputValue]);
   const query = useDatasets(
-    tokens
+    tokens?.length
       ? {
           searchTokens: tokens,
         }
@@ -85,7 +89,7 @@ function useDatasetSearchOptions({
         })
         .map(dataset => ({
           type: "dataset" as const,
-          name: dataset.name,
+          name: inEditor() && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
           index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
             dataset.ward?.name ?? ""
           }`,
@@ -151,21 +155,81 @@ function useBuildingSearchOption({
   );
 }
 
+function useAreaSearchOptions({
+  inputValue,
+  skip = false,
+}: SearchOptionsParams = {}): readonly AreaSearchOption[] {
+  const [fetch, query] = useEstatAreasLazy();
+  const debouncedFetch = useMemo(
+    () => debounce(async (...args: Parameters<typeof fetch>) => await fetch(...args), 200),
+    [fetch],
+  );
+
+  const [areas, setAreas] = useState(query.data?.estatAreas);
+  useEffect(() => {
+    if (!query.loading) {
+      setAreas(query.data?.estatAreas);
+    }
+  }, [query]);
+
+  const currentAreas = useAtomValue(areasAtom);
+  useEffect(() => {
+    if (skip) {
+      return;
+    }
+    let searchTokens = inputValue?.split(/\s+/).filter(value => value.length > 0) ?? [];
+    if (searchTokens.length === 0 && currentAreas != null && currentAreas.length > 0) {
+      searchTokens = currentAreas
+        // Tokyo 23 wards is the only area which is not a municipality.
+        .filter(area => area.name !== "東京都23区")
+        .map(area => area.name);
+    }
+    if (searchTokens.length > 0) {
+      debouncedFetch({
+        variables: {
+          searchTokens,
+        },
+      })?.catch(error => {
+        console.error(error);
+      });
+    } else {
+      setAreas([]);
+    }
+  }, [inputValue, skip, debouncedFetch, currentAreas]);
+
+  return useMemo(() => {
+    if (skip) {
+      return [];
+    }
+    return (
+      areas?.map(area => ({
+        type: "area" as const,
+        id: area.id,
+        name: area.address,
+        bbox: area.bbox as [number, number, number, number],
+      })) ?? []
+    );
+  }, [skip, areas]);
+}
+
 export interface SearchOptions {
   datasets: readonly DatasetSearchOption[];
   buildings: readonly BuildingSearchOption[];
-  addresses: readonly AddressSearchOption[];
+  areas: readonly AreaSearchOption[];
   select: (option: SearchOption) => void;
 }
 
 export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
   const datasets = useDatasetSearchOptions(options);
   const buildings = useBuildingSearchOption(options);
+  const areas = useAreaSearchOptions(options);
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
   const addLayer = useSetAtom(addLayerAtom);
   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
+  const highlightArea = useSetAtom(highlightAreaAtom);
+
   const select = useCallback(
     (option: SearchOption) => {
       switch (option.type) {
@@ -180,7 +244,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
           const filteredSettings = settings.filter(s => s.datasetId === dataset.id);
           if (type === BUILDING_LAYER) {
             addLayer(
-              createRootLayerAtom({
+              createRootLayerForDatasetAtom({
                 dataset,
                 settings: filteredSettings,
                 templates,
@@ -190,7 +254,7 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
             );
           } else {
             addLayer(
-              createRootLayerAtom({
+              createRootLayerForDatasetAtom({
                 dataset,
                 settings: filteredSettings,
                 templates,
@@ -204,29 +268,44 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         case "building": {
           const buildingOption = option as BuildingSearchOption;
           invariant(buildingOption.id);
-          // TODO: Implement flyTo by `_x` and `_y` properties which are embeded in feature.
+
+          const layerId = buildingOption.featureIndex.layerId;
+          const featureId = buildingOption.id;
+          const feature = window.reearth?.layers?.findFeatureById?.(layerId, featureId);
+          if (!feature) return;
+          lookAtTileFeature(feature.properties);
+
           setScreenSpaceSelection([
             {
               type: "TILESET_FEATURE",
               value: {
-                layerId: buildingOption.featureIndex.layerId,
+                layerId: layerId,
                 featureIndex: buildingOption.featureIndex,
-                key: buildingOption.id,
+                key: featureId,
                 datasetId: buildingOption.datasetId,
               },
             },
           ]);
           break;
         }
+        case "area": {
+          const areaOption = option as AreaSearchOption;
+          if (!areaOption.id) return;
+          void flyToBBox(areaOption.bbox);
+          highlightArea({
+            areaId: areaOption.id,
+          });
+          break;
+        }
       }
     },
-    [setScreenSpaceSelection, addLayer, settings, templates],
+    [setScreenSpaceSelection, addLayer, settings, templates, highlightArea],
   );
 
   return {
     datasets,
     buildings,
-    addresses: [],
+    areas,
     select,
   };
 }

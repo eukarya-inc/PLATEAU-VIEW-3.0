@@ -1,1 +1,1 @@
-export type FieldFeatureType = "point" | "polyline" | "polygon";
+export type FieldFeatureType = "marker" | "polyline" | "polygon";

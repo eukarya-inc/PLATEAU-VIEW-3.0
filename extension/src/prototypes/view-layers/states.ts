@@ -3,10 +3,17 @@ import { atom } from "jotai";
 import { fromPairs, uniq, without } from "lodash-es";
 import invariant from "tiny-invariant";
 
-import { rootLayersAtom } from "../../shared/states/rootLayer";
+import { rootLayersAtom, rootLayersLayersAtom } from "../../shared/states/rootLayer";
+import { RootLayerAtom } from "../../shared/view-layers";
+import { parseIdentifier } from "../cesium-helpers";
 import { featureSelectionAtom } from "../datasets";
+import { LayerModel } from "../layers";
+import { PEDESTRIAN_OBJECT } from "../pedestrian";
+import { screenSpaceSelectionAtom } from "../screen-space-selection";
 import { atomsWithSelection } from "../shared-states";
 import { isNotNullish } from "../type-helpers";
+
+import { PEDESTRIAN_LAYER } from "./layerTypes";
 
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
 // import { type PedestrianLayerModel } from "./PedestrianLayer";
@@ -15,11 +22,11 @@ export const pixelRatioAtom = atom(1);
 
 // TODO(ReEarth): Support selected feature
 export const tilesetLayersAtom = atom(get =>
-  get(rootLayersAtom).filter(layer => get(get(layer.rootLayerAtom).layer)),
+  get(rootLayersAtom).filter(layer => get(get(layer.rootLayerAtom as RootLayerAtom).layer)),
 );
 
 export const tilesetLayersLayersAtom = atom(get =>
-  get(rootLayersAtom).map(layer => get(get(layer.rootLayerAtom).layer)),
+  get(rootLayersAtom).map(layer => get(get(layer.rootLayerAtom as RootLayerAtom).layer)),
 );
 
 // export const pedestrianLayersAtom = atom(get =>
@@ -30,7 +37,7 @@ export const highlightedTilesetLayersAtom = atom(get => {
   const featureKeys = get(featureSelectionAtom).map(({ value }) => value);
   const tilesetLayers = get(tilesetLayersAtom);
   return tilesetLayers.filter(root => {
-    const layer = get(get(root.rootLayerAtom).layer);
+    const layer = get(get(root.rootLayerAtom as RootLayerAtom).layer);
     if (!("featureIndexAtom" in layer)) {
       return;
     }
@@ -50,8 +57,25 @@ export const highlightedTilesetLayersAtom = atom(get => {
 // });
 
 export const highlightedLayersAtom = atom(get => {
-  // TODO: Support other types of selection.
-  return [...get(highlightedTilesetLayersAtom) /* ...get(highlightedPedestrianLayersAtom) */];
+  const screenSpaceSelection = get(screenSpaceSelectionAtom);
+  const layers = get(rootLayersLayersAtom);
+  const result: LayerModel[] = [];
+  for (const layer of layers) {
+    const layerId = get(layer.layerIdAtom);
+    const selection = screenSpaceSelection.some(v => {
+      switch (v.type) {
+        case PEDESTRIAN_OBJECT:
+          return layer.type === PEDESTRIAN_LAYER && layer.id === parseIdentifier(v.value).key;
+        default:
+          return layerId === v.value.layerId;
+      }
+    });
+    if (selection) {
+      result.push(layer);
+    }
+  }
+
+  return result;
 });
 
 export const featureIndicesAtom = atom(get => {
@@ -59,7 +83,7 @@ export const featureIndicesAtom = atom(get => {
   return fromPairs(
     layers
       .map(root => {
-        const layer = get(get(root.rootLayerAtom).layer);
+        const layer = get(get(root.rootLayerAtom as RootLayerAtom).layer);
         const layerId = get(layer.layerIdAtom);
         if (!("featureIndexAtom" in layer)) {
           return;
@@ -85,7 +109,7 @@ export const featureIndicesAtom = atom(get => {
 export const hideFeaturesAtom = atom(null, (get, set, value: readonly string[] | null) => {
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
-    const layer = get(get(root.rootLayerAtom).layer);
+    const layer = get(get(root.rootLayerAtom as RootLayerAtom).layer);
     if (!("hiddenFeaturesAtom" in layer)) {
       return;
     }
@@ -105,7 +129,7 @@ export const hideFeaturesAtom = atom(null, (get, set, value: readonly string[] |
 export const showFeaturesAtom = atom(null, (get, set, value: readonly string[] | null) => {
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
-    const layer = get(get(root.rootLayerAtom).layer);
+    const layer = get(get(root.rootLayerAtom as RootLayerAtom).layer);
     if (!("hiddenFeaturesAtom" in layer)) {
       return;
     }
@@ -127,7 +151,7 @@ export const showFeaturesAtom = atom(null, (get, set, value: readonly string[] |
 export const showAllFeaturesAtom = atom(null, (get, set) => {
   const layers = get(tilesetLayersAtom);
   layers.forEach(root => {
-    const layer = get(get(root.rootLayerAtom).layer);
+    const layer = get(get(root.rootLayerAtom as RootLayerAtom).layer);
     if (!("hiddenFeaturesAtom" in layer)) {
       return;
     }

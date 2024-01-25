@@ -1,6 +1,6 @@
 import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom, type Getter } from "jotai";
-import { intersection, isEqual, min, uniqWith } from "lodash-es";
+import { intersection, isEqual, min, uniqWith, uniqBy } from "lodash-es";
 import { useCallback, useMemo, type FC, useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -180,8 +180,9 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
                     ?.value?.map(property =>
-                      property.type === "number" || property.type === "qualitative"
-                        ? property.name
+                      (property.type === "number" || property.type === "qualitative") &&
+                      property.availableFeatures?.includes("color")
+                        ? [property.name, property.displayName]
                         : undefined,
                     )
                     .filter(isNotNullish) ?? []
@@ -190,7 +191,10 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
           );
           return [
             [null, "なし"],
-            ...names.map((name): [string, string] => [name, name.replaceAll("_", " ")]),
+            ...uniqBy(
+              names.map(([name, displayName]): [string, string] => [name, displayName]),
+              ([, d]) => d,
+            ),
           ];
         }),
       [buildingLayers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
@@ -259,7 +263,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
         label="色分け"
         onClick={handleClickParameterItem}
         content={<Legend layers={buildingLayers} />}>
-        <InspectorItem sx={{ width: 320 }}>
+        <InspectorItem sx={{ width: 320 }} level={2}>
           <ParameterList>
             <SelectParameterItem
               label="モデル属性"

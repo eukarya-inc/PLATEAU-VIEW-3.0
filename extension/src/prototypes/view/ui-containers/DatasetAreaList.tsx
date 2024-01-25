@@ -7,14 +7,13 @@ import invariant from "tiny-invariant";
 import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
+import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
+import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
-
-// import { censusDatasets } from "../constants/censusDatasets";
-// import { CensusDatasetListItem } from "./CensusDatasetListItem";
 
 const expandedAtom = atomWithReset<string[]>([]);
 
@@ -130,22 +129,22 @@ const PrefectureItem: FC<{
   );
 };
 
-// const RegionalMeshItem: FC = () => {
-//   return (
-//     <DatasetTreeItem nodeId="RegionalMesh" label="地域メッシュ">
-//       {censusDatasets.map(dataset => (
-//         <DatasetTreeItem
-//           key={dataset.name}
-//           nodeId={`RegionalMesh:${dataset.name}`}
-//           label={dataset.name}>
-//           {dataset.data.map(data => (
-//             <CensusDatasetListItem key={data.name} dataset={dataset} data={data} />
-//           ))}
-//         </DatasetTreeItem>
-//       ))}
-//     </DatasetTreeItem>
-//   );
-// };
+const RegionalMeshItem: FC = () => {
+  return (
+    <DatasetTreeItem nodeId="RegionalMesh" label="地域メッシュ">
+      {censusDatasets.map(dataset => (
+        <DatasetTreeItem
+          key={dataset.name}
+          nodeId={`RegionalMesh:${dataset.name}`}
+          label={dataset.name}>
+          {dataset.data.map(data => (
+            <CensusDatasetListItem key={data.name} dataset={dataset} data={data} />
+          ))}
+        </DatasetTreeItem>
+      ))}
+    </DatasetTreeItem>
+  );
+};
 
 export const DatasetAreaList: FC = () => {
   const query = useAreas();
@@ -163,9 +162,8 @@ export const DatasetAreaList: FC = () => {
     <DatasetTreeView
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
-      maxHeight={gridHeight - searchHeaderHeight}>
-      {/* TODO: Suport heat-map */}
-      {/* <RegionalMeshItem /> */}
+      maxheight={gridHeight - searchHeaderHeight}>
+      <RegionalMeshItem />
       <GlobalItem />
       {query.data?.areas.map(
         prefecture =>

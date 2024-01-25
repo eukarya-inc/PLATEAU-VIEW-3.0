@@ -11,6 +11,7 @@
   "include": [
     "vite.config.ts",
     "reearth-yml.ts",
+    "scripts",
     "package.json"
   ]
 }

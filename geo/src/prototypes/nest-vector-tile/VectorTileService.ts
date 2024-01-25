@@ -4,13 +4,13 @@ import { Map, type MapOptions, type ResourceKind } from "@maplibre/maplibre-gl-n
 import { Inject, Injectable } from "@nestjs/common";
 import { CESIUM, type Cesium } from "@prototypes/nest-cesium";
 import { TileCacheService } from "@prototypes/nest-tile-cache";
+import { type Coordinates } from "@prototypes/type-helpers";
 import axios from "axios";
 import { createPool, type Pool } from "generic-pool";
 import { type CustomLayerInterface, type Style } from "mapbox-gl";
 import sharp from "sharp";
 
 import { VECTOR_TILE_MAP_STYLE, VECTOR_TILE_OPTIONS } from "./constants";
-import { type Coordinates } from "./interfaces/Coordinates";
 import { type RenderTileOptions } from "./interfaces/RenderTileOptions";
 import { VectorTileOptions } from "./interfaces/VectorTileOptions";
 

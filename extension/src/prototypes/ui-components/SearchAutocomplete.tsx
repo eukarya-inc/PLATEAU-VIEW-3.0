@@ -90,10 +90,10 @@ const CloseIcon = createSvgIcon(
   "Close",
 );
 
-export type SearchOptionType = "filter" | "history" | "dataset" | "building" | "address";
+export type SearchOptionType = "filter" | "history" | "dataset" | "building" | "area";
 
 function isSearchOptionType(value: unknown): value is Exclude<SearchOptionType, "filter"> {
-  return value === "history" || value === "dataset" || value === "building" || value === "address";
+  return value === "history" || value === "dataset" || value === "building" || value === "area";
 }
 
 export interface SearchOption {
@@ -107,14 +107,14 @@ const iconComponents: Record<Exclude<SearchOptionType, "filter">, ComponentType>
   history: HistoryIcon,
   dataset: DatasetIcon,
   building: BuildingIcon,
-  address: AddressIcon,
+  area: AddressIcon,
 };
 
 const groupNames: Record<Exclude<SearchOptionType, "filter">, string> = {
   history: "最近の検索",
   dataset: "データセット",
   building: "建築物",
-  address: "住所",
+  area: "エリア",
 };
 
 function getOptionLabel(value: string | SearchOption): string {
@@ -269,7 +269,6 @@ export const SearchAutocomplete = forwardRef<HTMLInputElement, SearchAutocomplet
     const handleInputChange: NonNullable<AutocompleteProps["onInputChange"]> = useCallback(
       (event, value, reason) => {
         if (reason === "reset") {
-          setFocused(false);
           return; // Disable auto clear
         }
         setInputValue(value);

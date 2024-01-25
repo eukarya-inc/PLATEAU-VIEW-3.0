@@ -4,7 +4,7 @@ import { atomWithReset } from "jotai/utils";
 import { LayerModel } from "../../prototypes/layers";
 import { Setting } from "../api/types";
 import { sharedAtom, sharedStoreAtom, sharedStoreAtomWrapper } from "../sharedAtoms";
-import { RootLayerConfig } from "../view-layers";
+import { RootLayerAtom, RootLayerConfig, RootLayerConfigForDataset } from "../view-layers";
 
 export const CURRENT_COMPONENT_GROUP_ID = "CURRENT_COMPONENT_GROUP_ID";
 export const CURRENT_DATA_ID = "CURRENT_DATA_ID";
@@ -17,20 +17,22 @@ export const rootLayersBaseAtom = atomWithReset<RootLayerConfig[]>([]);
 export const rootLayersAtom = sharedStoreAtomWrapper("ROOT_LAYERS", rootLayersBaseAtom);
 export const rootLayersLayersAtom = atom<LayerModel[]>(get => {
   return get(rootLayersAtom).map(root => {
-    const rootLayer = get(root.rootLayerAtom);
+    const rootLayer = get(root.rootLayerAtom as RootLayerAtom);
     return get(rootLayer.layer) as LayerModel;
   });
 });
 export const rootLayersLayerAtomsAtom = atom<PrimitiveAtom<LayerModel>[]>(get => {
   return get(rootLayersAtom).map(root => {
-    const rootLayer = get(root.rootLayerAtom);
+    const rootLayer = get(root.rootLayerAtom as RootLayerAtom);
     return rootLayer.layer as PrimitiveAtom<LayerModel>;
   });
 });
 
 export const updateRootLayerBySetting = atom(undefined, (get, set, setting: Setting) => {
   const rootLayers = get(rootLayersAtom);
-  const layer = rootLayers.find(l => l.id === setting.datasetId);
+  const layer = rootLayers.find(
+    (l): l is RootLayerConfigForDataset => l.type === "dataset" && l.id === setting.datasetId,
+  );
   if (!layer) {
     return;
   }
@@ -46,7 +48,7 @@ export const updateRootLayerBySetting = atom(undefined, (get, set, setting: Sett
 
 export const updateRootLayerBySettings = atom(undefined, (get, set, settings: Setting[]) => {
   const rootLayers = get(rootLayersAtom);
-  const layerIds = rootLayers.map(l => l.id);
+  const layerIds = rootLayers.map(l => l.type === "dataset" && l.id);
   const settingsMap = settings.reduce((res, s) => {
     if (layerIds.includes(s.datasetId)) {
       res[s.datasetId] ? res[s.datasetId].push(s) : (res[s.datasetId] = [s]);
@@ -55,6 +57,7 @@ export const updateRootLayerBySettings = atom(undefined, (get, set, settings: Se
   }, {} as Record<string, Setting[]>);
 
   for (const layer of rootLayers) {
+    if (layer.type !== "dataset") continue;
     const settings = settingsMap[layer.id];
     if (settings) {
       set(layer.settingsAtom, settings);
@@ -64,7 +67,9 @@ export const updateRootLayerBySettings = atom(undefined, (get, set, settings: Se
 
 export const removeRootLayerBySetting = atom(undefined, (get, set, setting: Setting) => {
   const rootLayers = get(rootLayersAtom);
-  const layer = rootLayers.find(l => l.id === setting.datasetId);
+  const layer = rootLayers.find(
+    (l): l is RootLayerConfigForDataset => l.type === "dataset" && l.id === setting.datasetId,
+  );
   if (!layer) {
     return;
   }
@@ -77,6 +82,7 @@ export const removeRootLayerBySetting = atom(undefined, (get, set, setting: Sett
 export const forceUpdateRootLayer = atom(undefined, (get, set) => {
   const rootLayers = get(rootLayersAtom);
   for (const layer of rootLayers) {
+    if (layer.type !== "dataset") continue;
     // Force to recreate each root layer to update templates.
     set(layer.settingsAtom, get(layer.settingsAtom));
   }
@@ -84,7 +90,11 @@ export const forceUpdateRootLayer = atom(undefined, (get, set) => {
 
 export const findRootLayerAtom = atom(undefined, (get, _, id: string) => {
   const rootLayers = get(rootLayersAtom);
-  const rootLayerConfig = rootLayers.find(r => r.id === id);
+  const rootLayerConfig = rootLayers.find(
+    (r): r is RootLayerConfigForDataset =>
+      (r.type === "dataset" && r.id === id) ||
+      (r.type === "layer" && get(get(r.rootLayerAtom).layer).type === "MY_DATA_LAYER"),
+  );
   if (!rootLayerConfig) return;
   const rootLayer = get(rootLayerConfig.rootLayerAtom);
   return rootLayer;
