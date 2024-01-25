@@ -57,18 +57,22 @@ export type SceneProps = EnvironmentProps & {
   tiles?: Tile[];
   shadows?: ShadowProps;
   antialias?: Antialias;
-  terrainNormal?: boolean;
+  terrainHeatmapMaxHeight?: number;
+  terrainHeatmapMinHeight?: number;
+  terrainHeatmapLogarithmic?: boolean;
 };
 
 export const Scene: FC<SceneProps> = ({
-  backgroundColor = "black",
-  globeBaseColor = "black",
+  backgroundColor = "#000000",
+  globeBaseColor = "#000000",
   // showGlobe = true,
   enableGlobeLighting = false,
   globeImageBasedLightingFactor = 0.3,
-  // TODO(ReEarth): Support terrain heat-map
-  // terrainHeatmap = false,
-  lightColor = "white",
+  terrainHeatmap = false,
+  terrainHeatmapLogarithmic,
+  terrainHeatmapMinHeight,
+  terrainHeatmapMaxHeight,
+  lightColor = "#ffffff",
   lightIntensity = 2,
   shadowDarkness = 0.3,
   imageBasedLightingIntensity = 1,
@@ -158,6 +162,14 @@ export const Scene: FC<SceneProps> = ({
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2UyMjcwOS00MDY1LTQxYjEtYjZjMy00YTU0ZTg5MmViYWQiLCJpZCI6ODAzMDYsImlhdCI6MTY0Mjc0ODI2MX0.dkwAL1CcljUV7NA7fDbhXXnmyZQU_c-G5zRx8PtEcxE",
         terrainCesiumIonAsset: "770371",
         terrainNormal: true,
+        ...(terrainHeatmap
+          ? {
+              heatmapType: "custom",
+              heatmapMaxHeight: terrainHeatmapMaxHeight,
+              heatmapMinHeight: terrainHeatmapMinHeight,
+              heatmapLogarithmic: terrainHeatmapLogarithmic,
+            }
+          : {}),
       },
       render: {
         antialias,
@@ -191,6 +203,10 @@ export const Scene: FC<SceneProps> = ({
     globeBaseColor,
     skyAtmosphereBrightnessShift,
     skyAtmosphereSaturationShift,
+    terrainHeatmap,
+    terrainHeatmapLogarithmic,
+    terrainHeatmapMaxHeight,
+    terrainHeatmapMinHeight,
   ]);
 
   return null;
