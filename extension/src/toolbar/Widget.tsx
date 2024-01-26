@@ -23,7 +23,6 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
-import { useLoading } from "./hooks/useLoadingModel";
 
 type Props = WidgetProps<{
   geoURL?: string;
@@ -38,7 +37,6 @@ type Props = WidgetProps<{
 
 export const Loading: FC = () => {
   const ready = useAtomValue(readyAtom);
-  useLoading();
   return <AnimatePresence>{!ready && <LoadingScreen />}</AnimatePresence>;
 };
 
