@@ -1,9 +1,6 @@
-import { useAtomValue } from "jotai";
 import { type FC, useState, useMemo, useCallback, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
-import { readyAtom } from "../../prototypes/view/states/app";
 
 import { EditorFieldComponentsTemplateSection } from "./component-template";
 import { EditorDatasetSection } from "./dataset";
@@ -38,32 +35,30 @@ export const Editor: FC = () => {
   const handleEditorTypeChange = useCallback((editorType: string) => {
     setEditorType(editorType);
   }, []);
-  const ready = useAtomValue(readyAtom);
+
   const cache = useCache();
 
   const editorNoticeRef = useRef<EditorNoticeRef>(null);
 
   return (
-    ready && (
-      <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
-        <DndProvider backend={HTML5Backend}>
-          <EditorBar
-            editorTypes={editorTypes}
-            editorType={editorType}
-            onEditorTypeChange={handleEditorTypeChange}
-          />
-          <EditorPanel>
-            {editorType === "dataset" ? (
-              <EditorDatasetSection cache={cache} editorNoticeRef={editorNoticeRef} />
-            ) : editorType === "fieldComponentsTemplate" ? (
-              <EditorFieldComponentsTemplateSection editorNoticeRef={editorNoticeRef} />
-            ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
-              <EditorInspectorEmphasisPropertyTemplateSection editorNoticeRef={editorNoticeRef} />
-            ) : null}
-            <EditorNotice ref={editorNoticeRef} />
-          </EditorPanel>
-        </DndProvider>
-      </div>
-    )
+    <div id={PLATEAUVIEW_EDITOR_DOM_ID}>
+      <DndProvider backend={HTML5Backend}>
+        <EditorBar
+          editorTypes={editorTypes}
+          editorType={editorType}
+          onEditorTypeChange={handleEditorTypeChange}
+        />
+        <EditorPanel>
+          {editorType === "dataset" ? (
+            <EditorDatasetSection cache={cache} editorNoticeRef={editorNoticeRef} />
+          ) : editorType === "fieldComponentsTemplate" ? (
+            <EditorFieldComponentsTemplateSection editorNoticeRef={editorNoticeRef} />
+          ) : editorType === "inspectorEmphasisPropertyTemplate" ? (
+            <EditorInspectorEmphasisPropertyTemplateSection editorNoticeRef={editorNoticeRef} />
+          ) : null}
+          <EditorNotice ref={editorNoticeRef} />
+        </EditorPanel>
+      </DndProvider>
+    </div>
   );
 };
