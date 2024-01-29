@@ -21,14 +21,14 @@ export const useEvaluateFilter = (
   return {
     conditions: [
       [
-        Object.entries(filters).reduce((res, [propertyName, { value, range }]) => {
+        Object.entries(filters).reduce((res, [propertyName, { value, range, accessor }]) => {
           if (res) {
             res += " &&";
           }
 
-          return `${res} ${defaultConditionalNumber(propertyName, range[0])} >= ${
+          return `${res} ${defaultConditionalNumber(accessor || propertyName, range[0])} >= ${
             value[0]
-          } && ${defaultConditionalNumber(propertyName, range[0])} <= ${
+          } && ${defaultConditionalNumber(accessor || propertyName, range[0])} <= ${
             value[1] === range[1] ? Infinity : value[1]
           }`;
         }, ""),

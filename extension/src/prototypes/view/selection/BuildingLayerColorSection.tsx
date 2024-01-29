@@ -182,7 +182,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
                     ?.value?.map(property =>
                       (property.type === "number" || property.type === "qualitative") &&
                       property.availableFeatures?.includes("color")
-                        ? [property.name, property.displayName]
+                        ? [property.accessor || property.name, property.displayName]
                         : undefined,
                     )
                     .filter(isNotNullish) ?? []

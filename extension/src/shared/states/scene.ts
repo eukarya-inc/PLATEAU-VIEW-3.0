@@ -1,4 +1,8 @@
-import { environmentTypeAtom } from "../../prototypes/view/states/app";
+import {
+  environmentTypeAtom,
+  logarithmicTerrainElevationAtom,
+  terrainElevationHeightRangeAtom,
+} from "../../prototypes/view/states/app";
 import { graphicsQualityAtom } from "../../prototypes/view/states/graphics";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
 
@@ -9,4 +13,13 @@ export const shareableGraphicsQualityAtom = sharedStoreAtomWrapper(
 export const shareableEnvironmentTypeAtom = sharedStoreAtomWrapper(
   "environmentType",
   environmentTypeAtom,
+);
+
+export const shareableTerrainElevationHeightRangeAtom = sharedStoreAtomWrapper(
+  "terrainElevationHeightRange",
+  terrainElevationHeightRangeAtom,
+);
+export const shareableLogarithmicTerrainElevationAtom = sharedStoreAtomWrapper(
+  "logarithmicTerrainElevation",
+  logarithmicTerrainElevationAtom,
 );

@@ -28,7 +28,7 @@ import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
-import { PlateauTilesetProperties, TileFeatureIndex } from "../../plateau";
+import { PlateauTilesetProperties, TileFeatureIndex, getAttributeLabel } from "../../plateau";
 import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
@@ -121,7 +121,24 @@ type Props = {
   layerId: string | null;
 };
 
-const EXCLUDE_PROPERTY_NAMES = ["attributes", "gml_id"];
+const INCLUDE_PROPERTY_NAMES = [
+  "住所",
+  "bldg:address",
+  "名称",
+  "gml:name",
+  "建物利用現況（中分類）",
+  "uro:orgUsage",
+  "建物利用現況（小分類）",
+  "uro:orgUsage2",
+  "建物利用現況（詳細分類）",
+  "uro:detailedUsage",
+  "構造種別",
+  "uro:buildingStructureType",
+  "用途",
+  "bldg:usage",
+  "耐火構造種別",
+  "uro:fireproofStructureType",
+];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const [tab, setTab] = useState(0);
@@ -197,12 +214,11 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       properties?.value
         ?.map(value => {
           if (!value) return;
-          if (value.type !== "unknown") return;
-          if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+          if (!INCLUDE_PROPERTY_NAMES.includes(value.name)) return;
 
           return {
             key: value.name,
-            title: value.name,
+            title: getAttributeLabel(value.name) ?? value.displayName ?? value.name,
             options: uniqBy(
               allFeatures
                 .map(f => {
