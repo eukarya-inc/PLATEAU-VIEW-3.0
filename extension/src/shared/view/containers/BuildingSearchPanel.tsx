@@ -121,7 +121,16 @@ type Props = {
   layerId: string | null;
 };
 
-const EXCLUDE_PROPERTY_NAMES = ["attributes", "gml_id"];
+const INCLUDE_PROPERTY_NAMES = [
+  "住所",
+  "名称",
+  "建物利用現況（中分類）",
+  "建物利用現況（小分類）",
+  "建物利用現況（詳細分類）",
+  "構造種別",
+  "用途",
+  "耐火構造種別",
+];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const [tab, setTab] = useState(0);
@@ -197,8 +206,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
       properties?.value
         ?.map(value => {
           if (!value) return;
-          if (value.type !== "unknown") return;
-          if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+          if (!INCLUDE_PROPERTY_NAMES.includes(value.name)) return;
 
           return {
             key: value.name,
