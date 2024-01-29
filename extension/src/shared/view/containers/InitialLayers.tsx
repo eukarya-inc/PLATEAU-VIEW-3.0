@@ -1,8 +1,9 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, type FC, useMemo, useRef } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { PlateauDatasetType } from "../../../prototypes/view/constants/plateau";
+import { readyAtom } from "../../../prototypes/view/states/app";
 import { PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
 import { useDatasets } from "../../graphql";
 import { DatasetItem, DatasetsInput } from "../../graphql/types/catalog";
@@ -29,6 +30,7 @@ export const InitialLayers: FC = () => {
   const templates = useAtomValue(templatesAtom);
 
   const initialDatasets = useMemo(() => query.data?.datasets ?? [], [query]);
+  const setReady = useSetAtom(readyAtom);
 
   // TODO: Get share ID
   const shareId = undefined;
@@ -69,12 +71,13 @@ export const InitialLayers: FC = () => {
         { autoSelect: false },
       ),
     ];
+    setReady(true);
     return () => {
       remove.forEach(remove => {
         remove();
       });
     };
-  }, [addLayer, initialDatasets, shareId, query.loading]);
+  }, [addLayer, initialDatasets, shareId, query.loading, setReady]);
 
   return null;
 };
