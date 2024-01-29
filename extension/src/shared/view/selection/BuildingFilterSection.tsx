@@ -112,6 +112,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
                     [prop.name]: {
                       range: [minimum, maximum],
                       value: [update[0] ?? minimum, update[1] ?? maximum],
+                      accessor: prop.accessor,
                     },
                   },
                 },

@@ -101,12 +101,14 @@ export function createPlateauTilesetLayerState(
     if (colorProperty == null) {
       return null;
     }
-    const property = properties?.value?.find(({ name }) => name === colorProperty);
+    const property = properties?.value?.find(
+      ({ name, accessor }) => name === colorProperty || accessor === colorProperty,
+    );
     return property?.type === "qualitative"
       ? property.colorSet
       : {
           type: "quantitative",
-          name: colorProperty.replaceAll("_", " "),
+          name: property?.displayName || colorProperty.replaceAll("_", " "),
           colorMapAtom,
           colorRangeAtom,
           valueRangeAtom,
