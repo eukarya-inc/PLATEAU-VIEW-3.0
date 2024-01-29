@@ -28,7 +28,7 @@ import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
-import { PlateauTilesetProperties, TileFeatureIndex } from "../../plateau";
+import { PlateauTilesetProperties, TileFeatureIndex, getAttributeLabel } from "../../plateau";
 import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
@@ -123,13 +123,21 @@ type Props = {
 
 const INCLUDE_PROPERTY_NAMES = [
   "住所",
+  "bldg:address",
   "名称",
+  "gml:name",
   "建物利用現況（中分類）",
+  "uro:orgUsage",
   "建物利用現況（小分類）",
+  "uro:orgUsage2",
   "建物利用現況（詳細分類）",
+  "uro:detailedUsage",
   "構造種別",
+  "uro:buildingStructureType",
   "用途",
+  "bldg:usage",
   "耐火構造種別",
+  "uro:fireproofStructureType",
 ];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
@@ -210,7 +218,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
           return {
             key: value.name,
-            title: value.name,
+            title: getAttributeLabel(value.name) ?? value.displayName ?? value.name,
             options: uniqBy(
               allFeatures
                 .map(f => {
