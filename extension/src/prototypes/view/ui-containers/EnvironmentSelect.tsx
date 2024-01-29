@@ -1,7 +1,7 @@
-import { alpha, Button, Popover, styled } from "@mui/material";
+import { alpha, Button, Popover, styled, Divider, FormControlLabel, Switch } from "@mui/material";
 import { useAtom, useAtomValue } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { useCallback, useId, type FC } from "react";
+import { useCallback, useId, type FC, type ChangeEvent } from "react";
 
 import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
 import elevationImage from "../../../prototypes/view/assets/elevation.webp";
@@ -26,6 +26,7 @@ import {
   SwitchParameterItem,
   type SelectItemProps,
 } from "../../ui-components";
+import { showMapLabelAtom } from "../states/app";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",
@@ -110,6 +111,12 @@ const Item: FC<
     <Label>{environmentItems[item].label}</Label>
   </StyledSelectItem>
 );
+
+const ControlItem = styled("div")(({ theme }) => ({
+  paddingRight: theme.spacing(3),
+  paddingBottom: theme.spacing(1),
+  paddingLeft: theme.spacing(2),
+}));
 
 const ElevationLegendButton: FC = () => {
   const elevationRange = useAtomValue(shareableTerrainElevationHeightRangeAtom);
@@ -212,6 +219,17 @@ export const EnvironmentSelect: FC = () => {
       ? "elevation"
       : undefined;
 
+  const [showMapLabel, setShowMapLabel] = useAtom(showMapLabelAtom);
+  const handleShowMapLabelChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      setShowMapLabel((prevValue: any) => ({
+        ...prevValue,
+        [event.target.name]: checked,
+      }));
+    },
+    [setShowMapLabel],
+  );
+
   return (
     <>
       <AppIconButton
@@ -228,6 +246,41 @@ export const EnvironmentSelect: FC = () => {
           <Item item="dark-map" selectedItem={selectedItem} onClick={handleDarkMap} />
           <Item item="satellite" selectedItem={selectedItem} onClick={handleSatellite} />
           <Item item="elevation" selectedItem={selectedItem} onClick={handleElevation} />
+          <Divider />
+          {(
+            [
+              "municipalities",
+              "towns",
+              "roads",
+              "railways",
+              "stations",
+              "landmarks",
+              "topography",
+            ] as const
+          ).map(name => (
+            <ControlItem key={name}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name={name}
+                    checked={showMapLabel[name]}
+                    onChange={handleShowMapLabelChange}
+                  />
+                }
+                label={
+                  {
+                    municipalities: "都道府県、市区町村",
+                    towns: "町丁字",
+                    roads: "道路",
+                    railways: "線路",
+                    stations: "鉄道駅",
+                    landmarks: "建物、ランドマーク",
+                    topography: "地形",
+                  }[name]
+                }
+              />
+            </ControlItem>
+          ))}
         </FloatingPanel>
       </OverlayPopper>
     </>
