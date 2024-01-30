@@ -1,9 +1,13 @@
 import { useAtomValue } from "jotai";
-import { type FC } from "react";
-import invariant from "tiny-invariant";
+import { useMemo, type FC } from "react";
 
 // import { TerrainElevationImageryLayer, VertexTerrainElevationMaterial } from "../../datasets";
+import { GSI_TILE_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
+import {
+  shareableLogarithmicTerrainElevationAtom,
+  shareableTerrainElevationHeightRangeAtom,
+} from "../../../shared/states/scene";
 import {
   enableTerrainLightingAtom,
   // logarithmicTerrainElevationAtom,
@@ -23,59 +27,8 @@ const sphericalHarmonicCoefficients: [x: number, y: number, z: number][] = [
 ];
 
 export const ElevationEnvironment: FC<SceneProps> = props => {
-  invariant(
-    process.env.NEXT_PUBLIC_API_BASE_URL != null,
-    "Missing environment variable: NEXT_PUBLIC_API_BASE_URL",
-  );
-
-  // const globeShader = useConstant(() => ({
-  //   material: new VertexTerrainElevationMaterial(),
-  //   matcher: new StringMatcher().replace(
-  //     [
-  //       "#ifdef APPLY_COLOR_TO_ALPHA",
-  //       "vec3 colorDiff = abs(color.rgb - colorToAlpha.rgb);",
-  //       "colorDiff.r = max(max(colorDiff.r, colorDiff.g), colorDiff.b);",
-  //       "alpha = czm_branchFreeTernary(colorDiff.r < colorToAlpha.a, 0.0, alpha);",
-  //       "#endif",
-  //     ],
-  //     /* glsl */ `
-  //     // colorToAlpha is used as an identification of imagery layer here.
-  //     if (greaterThan(colorToAlpha, vec4(0.9)) == bvec4(true)) {
-  //       float decodedValue = dot(color, vec3(16711680.0, 65280.0, 255.0));
-  //       float height = (decodedValue - 8388607.0) * 0.01;
-  //       float minHeight = czm_branchFreeTernary(
-  //         logarithmic_3,
-  //         pseudoLog(minHeight_1),
-  //         minHeight_1
-  //       );
-  //       float maxHeight = czm_branchFreeTernary(
-  //         logarithmic_3,
-  //         pseudoLog(maxHeight_2),
-  //         maxHeight_2
-  //       );
-  //       float value = czm_branchFreeTernary(
-  //         logarithmic_3,
-  //         pseudoLog(height),
-  //         height
-  //       );
-  //       float normalizedHeight = clamp(
-  //         (value - minHeight) / (maxHeight - minHeight),
-  //         0.0,
-  //         1.0
-  //       );
-  //       vec4 mappedColor = texture(colorMap_0, vec2(normalizedHeight, 0.5));
-  //       color = mappedColor.rgb;
-  //     }`,
-  //   ),
-  // }));
-
-  // const terrainElevationHeightRange = useAtomValue(terrainElevationHeightRangeAtom);
-  // const logarithmicTerrainElevation = useAtomValue(logarithmicTerrainElevationAtom);
-  // globeShader.material.uniforms.minHeight = terrainElevationHeightRange[0];
-  // globeShader.material.uniforms.maxHeight = terrainElevationHeightRange[1];
-  // globeShader.material.uniforms.logarithmic = logarithmicTerrainElevation;
-  // const scene = useCesium(({ scene }) => scene);
-  // scene.requestRender();
+  const terrainElevationHeightRange = useAtomValue(shareableTerrainElevationHeightRangeAtom);
+  const logarithmicTerrainElevation = useAtomValue(shareableLogarithmicTerrainElevationAtom);
 
   const enableTerrainLighting = useAtomValue(enableTerrainLightingAtom);
 
@@ -84,29 +37,36 @@ export const ElevationEnvironment: FC<SceneProps> = props => {
   //   layer?.sendToBack();
   // }, [layer]);
 
+  const tiles = useMemo(
+    () => [
+      {
+        id: "elevation-heatmap",
+        tile_type: "url",
+        tile_url: `${GSI_TILE_URL}/terrain/{z}/{x}/{y}.png`,
+        heatmap: true,
+        tile_maxLevel: 15,
+      },
+    ],
+    [],
+  );
+
   return (
-    <>
-      <Scene
-        backgroundColor={"black"}
-        globeBaseColor={"black"}
-        enableGlobeLighting={enableTerrainLighting}
-        // globeShader={globeShader}
-        lightIntensity={10}
-        shadowDarkness={0.5}
-        imageBasedLightingIntensity={1}
-        sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
-        showSkyBox={false}
-        atmosphereSaturationShift={-1}
-        groundAtmosphereBrightnessShift={2}
-        {...props}
-      />
-      {/* TODO(ReEarth): Support terrain heat-map */}
-      {/* <TerrainElevationImageryLayer
-        ref={setLayer}
-        baseUrl={process.env.NEXT_PUBLIC_API_BASE_URL}
-        colorToAlpha={Color.WHITE}
-        colorToAlphaThreshold={1}
-      /> */}
-    </>
+    <Scene
+      tiles={tiles}
+      enableGlobeLighting={enableTerrainLighting}
+      lightIntensity={2}
+      globeImageBasedLightingFactor={0.45}
+      shadowDarkness={0.5}
+      imageBasedLightingIntensity={1}
+      sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
+      showSkyBox={false}
+      atmosphereSaturationShift={-1}
+      groundAtmosphereBrightnessShift={2}
+      terrainHeatmap={true}
+      terrainHeatmapLogarithmic={logarithmicTerrainElevation}
+      terrainHeatmapMinHeight={terrainElevationHeightRange[0]}
+      terrainHeatmapMaxHeight={terrainElevationHeightRange[1]}
+      {...props}
+    />
   );
 };

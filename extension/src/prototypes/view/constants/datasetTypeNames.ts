@@ -16,7 +16,7 @@ export const datasetTypeNames: Record<PlateauDatasetType, string> = {
   [PlateauDatasetType.LandSlideRisk]: "土砂災害警戒区域",
   [PlateauDatasetType.LandUse]: "土地利用",
   [PlateauDatasetType.Park]: "公園",
-  [PlateauDatasetType.Railway]: "線路",
+  [PlateauDatasetType.Railway]: "鉄道",
   [PlateauDatasetType.Road]: "道路",
   [PlateauDatasetType.Shelter]: "避難施設",
   [PlateauDatasetType.Station]: "鉄道駅",

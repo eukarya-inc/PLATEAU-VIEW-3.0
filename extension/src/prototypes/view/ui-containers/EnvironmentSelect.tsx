@@ -7,7 +7,11 @@ import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
 import elevationImage from "../../../prototypes/view/assets/elevation.webp";
 import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
 import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
-import { shareableEnvironmentTypeAtom } from "../../../shared/states/scene";
+import {
+  shareableEnvironmentTypeAtom,
+  shareableLogarithmicTerrainElevationAtom,
+  shareableTerrainElevationHeightRangeAtom,
+} from "../../../shared/states/scene";
 import { colorMapTurbo } from "../../color-maps";
 import { colorModeAtom } from "../../shared-states";
 import {
@@ -23,7 +27,6 @@ import {
   type SelectItemProps,
   PaperPlaneTilt,
 } from "../../ui-components";
-import { logarithmicTerrainElevationAtom, terrainElevationHeightRangeAtom } from "../states/app";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",
@@ -110,7 +113,7 @@ const Item: FC<
 );
 
 const ElevationLegendButton: FC = () => {
-  const elevationRange = useAtomValue(terrainElevationHeightRangeAtom);
+  const elevationRange = useAtomValue(shareableTerrainElevationHeightRangeAtom);
 
   const id = useId();
   const popupState = usePopupState({
@@ -149,9 +152,12 @@ const ElevationLegendButton: FC = () => {
               range
               unit="m"
               logarithmic
-              atom={terrainElevationHeightRangeAtom}
+              atom={shareableTerrainElevationHeightRangeAtom}
             />
-            <SwitchParameterItem label="対数スケール" atom={logarithmicTerrainElevationAtom} />
+            <SwitchParameterItem
+              label="対数スケール"
+              atom={shareableLogarithmicTerrainElevationAtom}
+            />
           </ParameterList>
         </FloatingPanel>
       </Popover>

@@ -1,6 +1,6 @@
 import { CameraPosition } from "./camera";
 import { ComputedFeature } from "./layer";
-import { LngLatHeight } from "./value";
+import { LUT, LngLatHeight } from "./value";
 
 export type TerrainProperty = {
   terrain?: boolean;
@@ -13,6 +13,12 @@ export type TerrainProperty = {
   terrainCesiumIonUrl?: string;
   terrainUrl?: string;
   terrainNormal?: boolean;
+  // TODO: Add encode option
+  heatmapType?: "custom"; // TODO: Support Cesium's terrain heatmap as built-in: https://sandcastle.cesium.com/?src=Globe%20Materials.html
+  heatmapColorLUT?: LUT;
+  heatmapMinHeight?: number;
+  heatmapMaxHeight?: number;
+  heatmapLogarithmic?: boolean;
 };
 
 export type Tile = {

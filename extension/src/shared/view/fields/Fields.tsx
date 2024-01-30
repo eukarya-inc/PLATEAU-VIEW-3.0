@@ -45,6 +45,7 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
+import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
 import { LayerDatasetStoryField } from "./general/LayerDatasetStoryField";
 import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
@@ -60,7 +61,6 @@ import { LayerPolygonFillColorConditionField } from "./polygon/LayerPolygonFillC
 import { LayerPolygonVisibilityFilterField } from "./polygon/LayerPolygonVisibilityFilterField";
 import { LayerPolylineFillColorConditionField } from "./polyline/LayerPolylineFillColorConditionField";
 import { LayerPolylineVisibilityFilterField } from "./polyline/LayerPolylineVisibilityFilterField";
-import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
 
 type Props = {
   layers: readonly LayerModel[];
