@@ -125,11 +125,13 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
             <Icon fontSize="medium" />
           )}
         </EntityTitleIcon>
-        <Tooltip title="移動">
-          <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
-            <AddressIcon />
-          </IconButton>
-        </Tooltip>
+        {onMove && (
+          <Tooltip title="移動">
+            <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
+              <AddressIcon />
+            </IconButton>
+          </Tooltip>
+        )}
         <EntityTitleText
           primary={typeof title === "object" ? title?.primary : title}
           secondary={typeof title === "object" ? title?.secondary : undefined}

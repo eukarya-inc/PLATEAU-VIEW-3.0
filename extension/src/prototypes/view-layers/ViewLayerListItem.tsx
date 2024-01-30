@@ -48,7 +48,6 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
     const rootLayer = findRootLayer(props.id);
 
     const layerId = useAtomValue(layerIdAtom);
-    console.log("layerId viewlayer", layerId);
     const layerCamera = useOptionalAtomValue(
       useMemo(() => ("cameraAtom" in props ? props.cameraAtom : undefined), [props]),
     );
