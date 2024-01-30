@@ -526,6 +526,7 @@ export const useEvaluateGeneralAppearance = ({
             }
           : undefined,
         "3dtiles": {
+          pbr: false,
           color:
             makeConditionalExpression(tilesetFillColorCondition) ??
             makeGradientExpression(tilesetFillGradientColor),
