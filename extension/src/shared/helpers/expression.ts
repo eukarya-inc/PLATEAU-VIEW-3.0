@@ -1,3 +1,4 @@
+import { OperationValue } from "../../editor/containers/ui-components/property/PropertyOperationSelectField";
 import { RGBA } from "../types";
 
 export const string = (v: string) => {
@@ -31,4 +32,12 @@ export const condition = (cond: string, v: string, el: string) => {
 
 export const rgba = (rgba: RGBA) => {
   return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+};
+
+export const conditionWithOperation = (variable: string, value: string, op: OperationValue) => {
+  if (op === "startsWith") {
+    return `${op}(${variable}, ${value})`;
+  }
+
+  return `${variable} ${op} ${value}`;
 };

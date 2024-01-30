@@ -9,6 +9,7 @@ const operationOptions = [
   { value: "<=", label: "<=" },
   { value: "===", label: "=" },
   { value: "!==", label: "!=" },
+  { value: "startsWith", label: "Starts with" },
 ] as const;
 
 export type OperationValue = (typeof operationOptions)[number]["value"] | undefined;
