@@ -3,7 +3,15 @@ import { useMemo } from "react";
 
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { COLOR_MAPS } from "../../constants";
-import { color, defaultConditionalNumber, number, rgba, string, variable } from "../../helpers";
+import {
+  color,
+  conditionWithOperation,
+  defaultConditionalNumber,
+  number,
+  rgba,
+  string,
+  variable,
+} from "../../helpers";
 import { useOptionalAtomValue } from "../../hooks";
 import { GeneralAppearances } from "../../reearth/layers";
 import { ExpressionContainer } from "../../reearth/types/expression";
@@ -111,13 +119,17 @@ export const makeConditionalExpression = (
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const colorValue = overriddenCondition?.color || cond.color;
               if (!rule.propertyName || !cond.value || !colorValue) return;
-              const stringCondition = `${variable(rule.propertyName)} ${cond.operation} ${string(
-                cond.value,
-              )}`;
+              const stringCondition = conditionWithOperation(
+                variable(rule.propertyName),
+                string(cond.value),
+                cond.operation,
+              );
               const numberCondition = !isNaN(Number(cond.value))
-                ? `${defaultConditionalNumber(rule.propertyName)} ${cond.operation} ${number(
-                    Number(cond.value),
-                  )}`
+                ? conditionWithOperation(
+                    defaultConditionalNumber(rule.propertyName),
+                    number(Number(cond.value)),
+                    cond.operation,
+                  )
                 : undefined;
               return rule.propertyName && cond.value && colorValue
                 ? ([numberCondition ? numberCondition : stringCondition, color(colorValue, 1)] as [
@@ -204,8 +216,16 @@ const makeVisibilityConditionExpression = (
           if (!cond.operation || !cond.value || !cond.propertyName) return res;
           res.unshift([
             isNumber
-              ? `${defaultConditionalNumber(cond.propertyName)} ${cond.operation} ${cond.value}`
-              : `${variable(cond.propertyName)} ${cond.operation} ${string(cond.value)}`,
+              ? conditionWithOperation(
+                  defaultConditionalNumber(cond.propertyName),
+                  cond.value,
+                  cond.operation,
+                )
+              : conditionWithOperation(
+                  variable(cond.propertyName),
+                  string(cond.value),
+                  cond.operation,
+                ),
             cond.show ? "true" : "false",
           ]);
           return res;
@@ -239,8 +259,12 @@ const makeVisibilityFilterExpression = (
           if (!cond.operation || !cond.value) return res;
           res.unshift([
             isNumber
-              ? `${defaultConditionalNumber(property)} ${cond.operation} ${cond.value}`
-              : `${variable(property)} ${cond.operation} ${string(cond.value)}`,
+              ? conditionWithOperation(
+                  defaultConditionalNumber(property),
+                  cond.value,
+                  cond.operation,
+                )
+              : conditionWithOperation(variable(property), string(cond.value), cond.operation),
             "true",
           ]);
           return res;
@@ -267,13 +291,17 @@ export const makeConditionalImageExpression = (
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const imageURLValue = overriddenCondition?.imageURL || cond.imageURL;
               if (!rule.propertyName || !cond.value || !imageURLValue) return;
-              const stringCondition = `${variable(rule.propertyName)} ${cond.operation} ${string(
-                cond.value,
-              )}`;
+              const stringCondition = conditionWithOperation(
+                variable(rule.propertyName),
+                string(cond.value),
+                cond.operation,
+              );
               const numberCondition = !isNaN(Number(cond.value))
-                ? `${defaultConditionalNumber(rule.propertyName)} ${cond.operation} ${number(
-                    Number(cond.value),
-                  )}`
+                ? conditionWithOperation(
+                    defaultConditionalNumber(rule.propertyName),
+                    number(Number(cond.value)),
+                    cond.operation,
+                  )
                 : undefined;
               return rule.propertyName && cond.value && imageURLValue
                 ? ([
@@ -305,13 +333,17 @@ export const makeConditionalImageColorExpression = (
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const imageColorValue = overriddenCondition?.imageColor || cond.imageColor;
               if (!rule.propertyName || !cond.value || !imageColorValue) return;
-              const stringCondition = `${variable(rule.propertyName)} ${cond.operation} ${string(
-                cond.value,
-              )}`;
+              const stringCondition = conditionWithOperation(
+                variable(rule.propertyName),
+                string(cond.value),
+                cond.operation,
+              );
               const numberCondition = !isNaN(Number(cond.value))
-                ? `${defaultConditionalNumber(rule.propertyName)} ${cond.operation} ${number(
-                    Number(cond.value),
-                  )}`
+                ? conditionWithOperation(
+                    defaultConditionalNumber(rule.propertyName),
+                    number(Number(cond.value)),
+                    cond.operation,
+                  )
                 : undefined;
               return rule.propertyName && cond.value && imageColorValue
                 ? ([
