@@ -1,12 +1,13 @@
-import { useAtom } from "jotai";
-import { useCallback } from "react";
+import { FC, useCallback } from "react";
 
-import { showShareModalAtom } from "../../../prototypes/view/states/app";
 import Modal from "../../ui-components/ShareModal";
 
-const ShareModal = () => {
-  const [showShareModal, setShowShareModal] = useAtom(showShareModalAtom);
+type Props = {
+  showShareModal: boolean;
+  setShowShareModal: (val: boolean) => void;
+};
 
+const ShareModal: FC<Props> = ({ showShareModal, setShowShareModal }) => {
   const onClose = useCallback(() => {
     setShowShareModal(false);
   }, [setShowShareModal]);

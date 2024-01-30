@@ -1,9 +1,10 @@
-import { useMediaQuery, useTheme } from "@mui/material";
-import { useAtomValue } from "jotai";
+import { IconButton, useMediaQuery, useTheme } from "@mui/material";
+import { useAtom, useAtomValue } from "jotai";
 import { type FC } from "react";
 
-import { AppBar, Space } from "../../ui-components";
-import { hideAppOverlayAtom } from "../states/app";
+import ShareModal from "../../../shared/view/ui-container/ShareModal";
+import { AppBar, PaperPlaneTilt, Space } from "../../ui-components";
+import { hideAppOverlayAtom, showShareModalAtom } from "../states/app";
 
 import { CameraButtons } from "./CameraButtons";
 import { DateControlButton } from "./DateControlButton";
@@ -15,6 +16,7 @@ import { ToolButtons } from "./ToolButtons";
 
 export const AppHeader: FC = () => {
   const hidden = useAtomValue(hideAppOverlayAtom);
+  const [showShareModal, setShowShareModal] = useAtom(showShareModalAtom);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   if (hidden) {
@@ -33,6 +35,12 @@ export const AppHeader: FC = () => {
       <SettingsButton />
       <DateControlButton />
       <EnvironmentSelect />
+      <IconButton>
+        <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
+      </IconButton>
+      {showShareModal && (
+        <ShareModal showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
+      )}
       {!isMobile && (
         <>
           <Space flexible />

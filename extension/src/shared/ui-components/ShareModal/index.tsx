@@ -1,5 +1,5 @@
 import LoadingIcon from "@ant-design/icons/LoadingOutlined";
-import { styled } from "@mui/material";
+import { Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
@@ -44,10 +44,12 @@ const IconContainer = styled("div")(({ theme }) => ({
 export type Props = {
   show: boolean;
   loading?: boolean;
+  url?: string;
+  iframe?: string;
   onClose?: () => void;
 };
 
-const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
+const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
   return (
     <Modal
       isVisible={show}
@@ -59,18 +61,18 @@ const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
           <LoadingIcon />
         </LoadingContainer>
       ) : (
-        <StyledBox sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
-          <div>URLで共有</div>
+        <StyledBox sx={{ typography: "body1", borderTop: "1px solid #0000001f" }}>
+          <Typography>URLで共有</Typography>
           <FieldContainer>
-            <StyledField>URL TODO: Dyamic Value from Prop </StyledField>
+            <StyledField>URL {url ? url : "TODO: Dyamic Value from Prop"} </StyledField>
             <IconContainer>
               <CopyIcon />
             </IconContainer>
           </FieldContainer>
 
-          <div>HTMLページへの埋め込みは下記のコードをお使いください：</div>
+          <Typography>HTMLページへの埋め込みは下記のコードをお使いください：</Typography>
           <FieldContainer>
-            <StyledField>Iframe TODO: Dyamic Value from Prop </StyledField>
+            <StyledField>Iframe {iframe ? iframe : "TODO: Dyamic Value from Prop"} </StyledField>
             <IconContainer>
               <CopyIcon />
             </IconContainer>
