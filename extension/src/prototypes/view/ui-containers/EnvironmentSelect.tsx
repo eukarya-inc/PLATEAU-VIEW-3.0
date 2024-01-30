@@ -1,4 +1,4 @@
-import { alpha, Button, Popover, styled } from "@mui/material";
+import { alpha, Button, IconButton, Popover, styled } from "@mui/material";
 import { useAtom, useAtomValue } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, type FC } from "react";
@@ -21,6 +21,7 @@ import {
   SliderParameterItem,
   SwitchParameterItem,
   type SelectItemProps,
+  PaperPlaneTilt,
 } from "../../ui-components";
 import { logarithmicTerrainElevationAtom, terrainElevationHeightRangeAtom } from "../states/app";
 
@@ -215,6 +216,10 @@ export const EnvironmentSelect: FC = () => {
         {...bindTrigger(popupState)}>
         <MapIcon />
       </AppIconButton>
+      {/* TODO: Implment the click, popup and pass props */}
+      <IconButton>
+        <PaperPlaneTilt />
+      </IconButton>
       {selectedItem === "elevation" && <ElevationLegendButton />}
       <OverlayPopper {...popoverProps} inset={1.5}>
         <FloatingPanel>

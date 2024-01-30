@@ -3,7 +3,7 @@ import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
-import { UnionIcon, CopyIcon } from "../../../prototypes/ui-components/icons";
+import { PaperPlane, CopyIcon } from "../../../prototypes/ui-components/icons";
 import Modal from "../Modal";
 
 const LoadingContainer = styled("div")(() => ({
@@ -52,7 +52,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
     <Modal
       isVisible={show}
       title="シェア"
-      titleIcon={<UnionIcon sx={{ mt: 0.85 }} />}
+      titleIcon={<PaperPlane sx={{ mt: 0.85 }} />}
       onClose={onClose}>
       {loading ? (
         <LoadingContainer>
@@ -62,7 +62,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
         <StyledBox sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
           <div>URLで共有</div>
           <FieldContainer>
-            <StyledField>URL </StyledField>
+            <StyledField>URL TODO: Dyamic Value from Prop </StyledField>
             <IconContainer>
               <CopyIcon />
             </IconContainer>
@@ -70,7 +70,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
 
           <div>HTMLページへの埋め込みは下記のコードをお使いください：</div>
           <FieldContainer>
-            <StyledField>Iframe </StyledField>
+            <StyledField>Iframe TODO: Dyamic Value from Prop </StyledField>
             <IconContainer>
               <CopyIcon />
             </IconContainer>

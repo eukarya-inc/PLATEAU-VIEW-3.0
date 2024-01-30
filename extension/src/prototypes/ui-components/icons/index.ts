@@ -55,5 +55,6 @@ export * from "./VisibilityOffSmallIcon";
 export * from "./VisibilityOnIcon";
 export * from "./VisibilityOnSmallIcon";
 export * from "./ListIcon";
-export * from "./Union";
+export * from "./PaperPlane";
+export * from "./PaperPlaneTilt";
 export * from "./Copy";
