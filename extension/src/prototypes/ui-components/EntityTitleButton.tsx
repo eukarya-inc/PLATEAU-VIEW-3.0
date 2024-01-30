@@ -12,6 +12,8 @@ import {
 } from "@mui/material";
 import { forwardRef, type ComponentType } from "react";
 
+import { XYZ } from "../../shared/reearth/types";
+
 import { AntIcon } from "./AntIcon";
 import { EntityTitleIcon, EntityTitleText } from "./EntityTitle";
 
@@ -86,6 +88,7 @@ export interface EntityTitleButtonProps extends Omit<ListItemButtonProps, "title
   loading?: boolean;
   hidden?: boolean;
   onMove?: () => void;
+  boundingSphere?: XYZ | null;
   layerId?: string | null;
 }
 
@@ -100,11 +103,13 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
       hidden = false,
       onMove,
       layerId,
+      boundingSphere,
       children,
       ...props
     },
     ref,
   ) => {
+    const isButtonDisabled = layerId == null && boundingSphere == null;
     const Icon = iconComponent;
     return (
       <StyledListItemButton
@@ -121,7 +126,7 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
           )}
         </EntityTitleIcon>
         <Tooltip title="移動">
-          <IconButton aria-label="移動" disabled={layerId == null} onClick={onMove}>
+          <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
             <AddressIcon />
           </IconButton>
         </Tooltip>

@@ -48,6 +48,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
     const rootLayer = findRootLayer(props.id);
 
     const layerId = useAtomValue(layerIdAtom);
+    console.log("layerId viewlayer", layerId);
     const layerCamera = useOptionalAtomValue(
       useMemo(() => ("cameraAtom" in props ? props.cameraAtom : undefined), [props]),
     );
@@ -123,20 +124,13 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
     }, [id, setImageSchemeSelection]);
 
     const handleMove = useCallback(() => {
-      const camera = rootLayer?.general?.camera;
-      if (camera) {
-        return flyToCamera(camera);
-      }
-      if (layerCamera) {
-        return flyToCamera(layerCamera);
-      }
       if (boundingSphere) {
         return lookAtXYZ(boundingSphere);
       }
       if (layerId) {
         return flyToLayerId(layerId);
       }
-    }, [layerId, layerCamera, rootLayer?.general?.camera, boundingSphere]);
+    }, [boundingSphere, layerId]);
 
     return (
       <LayerListItem
@@ -148,6 +142,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
         loading={loading}
         hidden={hidden}
         layerId={layerId}
+        boundingSphere={boundingSphere}
         accessory={
           colorMap != null ? (
             <Tooltip title={colorScheme?.name}>
