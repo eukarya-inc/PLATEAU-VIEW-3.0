@@ -1,6 +1,8 @@
 import LoadingIcon from "@ant-design/icons/LoadingOutlined";
 import {
   alpha,
+  IconButton,
+  Tooltip,
   ListItemButton,
   listItemButtonClasses,
   listItemTextClasses,
@@ -12,6 +14,8 @@ import { forwardRef, type ComponentType } from "react";
 
 import { AntIcon } from "./AntIcon";
 import { EntityTitleIcon, EntityTitleText } from "./EntityTitle";
+
+import { AddressIcon } from "./index";
 
 const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: prop => prop !== "highlighted" && prop !== "hidden",
@@ -81,6 +85,8 @@ export interface EntityTitleButtonProps extends Omit<ListItemButtonProps, "title
   selected?: boolean;
   loading?: boolean;
   hidden?: boolean;
+  onMove?: () => void;
+  layerId?: string | null;
 }
 
 export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonProps>(
@@ -92,6 +98,8 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
       selected = false,
       loading = false,
       hidden = false,
+      onMove,
+      layerId,
       children,
       ...props
     },
@@ -112,6 +120,11 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
             <Icon fontSize="medium" />
           )}
         </EntityTitleIcon>
+        <Tooltip title="移動">
+          <IconButton aria-label="移動" disabled={layerId == null} onClick={onMove}>
+            <AddressIcon />
+          </IconButton>
+        </Tooltip>
         <EntityTitleText
           primary={typeof title === "object" ? title?.primary : title}
           secondary={typeof title === "object" ? title?.secondary : undefined}
