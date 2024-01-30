@@ -15,7 +15,7 @@ type Story = StoryObj<typeof ShareModal>;
 const Component: FC = () => {
   return (
     <div style={{ width: 300 }}>
-      <ShareModal show={true} />
+      <ShareModal show={true} loading={false} />
     </div>
   );
 };

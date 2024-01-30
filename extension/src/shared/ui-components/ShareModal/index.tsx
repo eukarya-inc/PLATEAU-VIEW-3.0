@@ -1,9 +1,16 @@
+import LoadingIcon from "@ant-design/icons/LoadingOutlined";
 import { styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
 import { UnionIcon, CopyIcon } from "../../../prototypes/ui-components/icons";
 import Modal from "../Modal";
+
+const LoadingContainer = styled("div")(() => ({
+  display: "flex",
+  justifyContent: "center",
+  margin: "5rem 0",
+}));
 
 const StyledBox = styled(Box)(() => ({
   display: "flex",
@@ -36,33 +43,40 @@ const IconContainer = styled("div")(({ theme }) => ({
 
 export type Props = {
   show: boolean;
+  loading?: boolean;
   onClose?: () => void;
 };
 
-const ShareModal: FC<Props> = ({ show, onClose }) => {
+const ShareModal: FC<Props> = ({ show, onClose, loading }) => {
   return (
     <Modal
       isVisible={show}
       title="シェア"
       titleIcon={<UnionIcon sx={{ mt: 0.85 }} />}
       onClose={onClose}>
-      <StyledBox sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
-        <div>URLで共有</div>
-        <FieldContainer>
-          <StyledField>URL </StyledField>
-          <IconContainer>
-            <CopyIcon />
-          </IconContainer>
-        </FieldContainer>
+      {loading ? (
+        <LoadingContainer>
+          <LoadingIcon />
+        </LoadingContainer>
+      ) : (
+        <StyledBox sx={{ width: "100%", typography: "body1", borderTop: "1px solid #0000001f" }}>
+          <div>URLで共有</div>
+          <FieldContainer>
+            <StyledField>URL </StyledField>
+            <IconContainer>
+              <CopyIcon />
+            </IconContainer>
+          </FieldContainer>
 
-        <div>HTMLページへの埋め込みは下記のコードをお使いください：</div>
-        <FieldContainer>
-          <StyledField>Iframe </StyledField>
-          <IconContainer>
-            <CopyIcon />
-          </IconContainer>
-        </FieldContainer>
-      </StyledBox>
+          <div>HTMLページへの埋め込みは下記のコードをお使いください：</div>
+          <FieldContainer>
+            <StyledField>Iframe </StyledField>
+            <IconContainer>
+              <CopyIcon />
+            </IconContainer>
+          </FieldContainer>
+        </StyledBox>
+      )}
     </Modal>
   );
 };
