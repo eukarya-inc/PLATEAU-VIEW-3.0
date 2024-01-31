@@ -1,5 +1,5 @@
 import LoadingIcon from "@ant-design/icons/LoadingOutlined";
-import { Typography, styled } from "@mui/material";
+import { IconButton, Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
@@ -33,12 +33,10 @@ const FieldContainer = styled("div")(() => ({
   display: "flex",
 }));
 
-const IconContainer = styled("div")(({ theme }) => ({
-  padding: "4px",
+const IconButtonStyled = styled(IconButton)(({ theme }) => ({
   border: `1px solid ${theme.palette.grey[300]}`,
   borderLeft: "none",
   borderRadius: "0 2px 2px 0",
-  cursor: "pointer",
 }));
 
 export type Props = {
@@ -50,6 +48,10 @@ export type Props = {
 };
 
 const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
+  const handleCopyToClipboard = (value?: string) => {
+    if (!value) return;
+    navigator.clipboard.writeText(value);
+  };
   return (
     <Modal
       isVisible={show}
@@ -64,18 +66,18 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
         <StyledBox sx={{ typography: "body1", borderTop: "1px solid #0000001f" }}>
           <Typography>URLで共有</Typography>
           <FieldContainer>
-            <StyledField>URL {url ? url : "TODO: Dyamic Value from Prop"} </StyledField>
-            <IconContainer>
+            <StyledField>{url ? url : "URL TODO: Dyamic Value from Prop"} </StyledField>
+            <IconButtonStyled onClick={() => handleCopyToClipboard(url)}>
               <CopyIcon />
-            </IconContainer>
+            </IconButtonStyled>
           </FieldContainer>
 
           <Typography>HTMLページへの埋め込みは下記のコードをお使いください：</Typography>
           <FieldContainer>
-            <StyledField>Iframe {iframe ? iframe : "TODO: Dyamic Value from Prop"} </StyledField>
-            <IconContainer>
+            <StyledField>{iframe ? iframe : "Iframe TODO: Dyamic Value from Prop"} </StyledField>
+            <IconButtonStyled onClick={() => handleCopyToClipboard(iframe)}>
               <CopyIcon />
-            </IconContainer>
+            </IconButtonStyled>
           </FieldContainer>
         </StyledBox>
       )}
