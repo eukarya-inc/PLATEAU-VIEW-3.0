@@ -48,8 +48,10 @@ uro:buildingFootprintArea,建築面積
 uro:buildingRoofEdgeArea,図形面積
 uro:developmentArea,開発面積
 uro:buildingStructureType,構造種別
+uro:BuildingDetailAttribute_uro:buildingStructureType,構造種別
 uro:buildingStructureOrgType,構造種別（自治体独自）
 uro:fireproofStructureType,耐火構造種別
+uro:BuildingDetailAttribute_uro:fireproofStructureType,耐火構造種別
 uro:implementingBody,事業主体
 uro:urbanPlanType,都市計画区域
 uro:areaClassificationType,区域区分

@@ -111,7 +111,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     <>
       <DatasetTreeItem
         nodeId={dataset.id}
-        icon={<Icon />}
+        icon={Icon && <Icon />}
         selected={layer != null}
         disabled={layerType == null}
         secondaryAction={

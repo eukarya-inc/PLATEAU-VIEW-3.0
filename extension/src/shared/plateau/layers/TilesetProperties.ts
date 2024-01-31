@@ -9,6 +9,7 @@ import {
   mudflowRiskColorSet,
   landSlideRiskColorSet,
 } from "../colorSets";
+import { getAttributeLabel } from "../featureInspector";
 
 export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
@@ -17,7 +18,7 @@ interface QualitativeProperty {
   colorSet?: QualitativeColorSet;
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  accessor?: string;
+  accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
 }
 
@@ -38,26 +39,22 @@ const qualitativeProperties: QualitativeProperty[] = [
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
-    getDisplayName: () => "用途",
     colorSet: usageColorSet,
     availableFeatures: ["color"],
-    accessor: `attributes["bldg:usage"][0]`,
   },
   {
     testProperty: propertyName =>
-      propertyName === "構造種別" || propertyName === "uro:buildingStructureType",
-    getDisplayName: () => "構造種別",
+      propertyName === "構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:buildingStructureType",
     colorSet: structureTypeColorSet,
     availableFeatures: ["color"],
-    accessor: `attributes["uro:BuildingDetailAttribute"][0]["uro:buildingStructureType"]`,
   },
   {
     testProperty: propertyName =>
-      propertyName === "耐火構造種別" || propertyName === "uro:fireproofStructureType",
-    getDisplayName: () => "耐火構造",
+      propertyName === "耐火構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:fireproofStructureType",
     colorSet: fireproofStructureTypeColorSet,
     availableFeatures: ["color"],
-    accessor: `attributes["uro:BuildingDetailAttribute"][0]["uro:fireproofStructureType"]`,
   },
   {
     testProperty: propertyName => propertyName === "土砂災害リスク_急傾斜地の崩落_区域区分コード",
@@ -80,9 +77,7 @@ const qualitativeProperties: QualitativeProperty[] = [
   {
     testProperty: propertyName =>
       propertyName === "建築年" || propertyName === "bldg:yearOfConstruction",
-    getDisplayName: () => "建築年",
     availableFeatures: ["buildingFilter"],
-    accessor: `attributes["bldg:yearOfConstruction"]`,
     getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
   },
   {
@@ -96,7 +91,7 @@ interface NumberProperty {
   testProperty: (name: string, value: unknown) => boolean;
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  accessor?: string;
+  accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
 }
 
@@ -104,23 +99,17 @@ const numberProperties: NumberProperty[] = [
   {
     testProperty: propertyName =>
       propertyName === "計測高さ" || propertyName === "bldg:measuredHeight",
-    getDisplayName: () => "計測高さ",
     availableFeatures: ["color", "buildingFilter"],
-    accessor: `attributes["bldg:measuredHeight"]`,
   },
   {
     testProperty: propertyName =>
       propertyName === "地上階数" || propertyName === "bldg:storeysAboveGround",
-    getDisplayName: () => "地上階数",
     availableFeatures: ["buildingFilter"],
-    accessor: `attributes["bldg:storeysAboveGround"]`,
   },
   {
     testProperty: propertyName =>
       propertyName === "地下階数" || propertyName === "bldg:storeysBelowGround",
-    getDisplayName: () => "地下階数",
     availableFeatures: ["buildingFilter"],
-    accessor: `attributes["bldg:storeysBelowGround"]`,
   },
 ];
 
@@ -143,6 +132,8 @@ export type PlateauTilesetProperty = {
       maximum?: number;
     }
 );
+
+const defaultAccessor = (propertyName: string) => `rootProperties["${propertyName}"]`;
 
 export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
@@ -180,9 +171,10 @@ export class PlateauTilesetProperties extends Properties {
             colorSet: qualitativeProperty.colorSet,
             minimum: finalMinimum,
             maximum: finalMaximum,
-            displayName: qualitativeProperty.getDisplayName?.(name) ?? name,
+            displayName:
+              qualitativeProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
             availableFeatures: qualitativeProperty.availableFeatures,
-            accessor: qualitativeProperty.accessor,
+            accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
         }
 
@@ -200,9 +192,9 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? name,
+              displayName: numberProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
-              accessor: numberProperty.accessor,
+              accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
             };
           }
         }

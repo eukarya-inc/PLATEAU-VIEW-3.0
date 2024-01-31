@@ -49,7 +49,7 @@ export const layerTypeNames: Record<LayerType, string> = {
   [LANDMARK_LAYER]: "ランドマーク",
   [LAND_SLIDE_RISK_LAYER]: "土砂災害警戒区域",
   [PARK_LAYER]: "公園",
-  [RAILWAY_LAYER]: "線路",
+  [RAILWAY_LAYER]: "鉄道",
   [RIVER_FLOODING_RISK_LAYER]: "洪水浸水想定区域",
   [ROAD_LAYER]: "道路",
   [SHELTER_LAYER]: "避難施設",

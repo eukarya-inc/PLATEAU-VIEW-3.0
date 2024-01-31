@@ -6,5 +6,5 @@ import {
 export type UserDataItem = Partial<DataCatalogItem> & {
   description?: string;
   additionalData?: AdditionalData;
-  layers?: string[],
+  layers?: string[];
 };
