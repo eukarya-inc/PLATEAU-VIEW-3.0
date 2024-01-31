@@ -1,4 +1,4 @@
-import { Math as CesiumMath } from "@cesium/engine";
+// import { Math as CesiumMath } from "@cesium/engine";
 import { useAtomValue } from "jotai";
 import { type FC, useEffect, useCallback, useRef } from "react";
 
@@ -9,7 +9,7 @@ export interface AutoRotateCameraProps {
 }
 
 const Content: FC<AutoRotateCameraProps> = ({ degreesPerMinute = 180 }) => {
-  const radianPerMilliseconds = CesiumMath.toRadians(degreesPerMinute) / 60000;
+  const radianPerMilliseconds = (degreesPerMinute * Math.PI) / (60000 * 180);
   const camera = window.reearth?.camera;
   const dateRef = useRef<number>(Date.now());
 
