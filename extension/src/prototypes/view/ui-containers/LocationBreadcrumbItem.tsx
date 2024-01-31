@@ -24,6 +24,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       PlateauDatasetType.UseCase,
       PlateauDatasetType.GenericCityObject,
       PlateauDatasetType.Sample,
+      PlateauDatasetType.Constructure,
     ],
   });
 

@@ -22,4 +22,5 @@ export enum PlateauDatasetType {
   UseCase = "usecase",
   Vegetation = "veg",
   Sample = "sample",
+  Constructure = "cons",
 }

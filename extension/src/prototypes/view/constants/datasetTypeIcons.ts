@@ -48,4 +48,5 @@ export const datasetTypeIcons = {
   [PlateauDatasetType.UseCase]: UseCaseIcon,
   [PlateauDatasetType.Vegetation]: VegetationIcon,
   [PlateauDatasetType.Sample]: UseCaseIcon,
+  [PlateauDatasetType.Constructure]: UseCaseIcon,
 } as const;
