@@ -24,7 +24,11 @@ export interface MapEnvironmentProps extends SceneProps {
   colorMode?: ColorMode;
 }
 
-export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", ...props }) => {
+export const MapEnvironment: FC<MapEnvironmentProps> = ({
+  colorMode = "light",
+  tileLabels,
+  ...props
+}) => {
   // invariant(
   //   process.env.NEXT_PUBLIC_TILES_BASE_URL != null,
   //   "Missing environment variable: NEXT_PUBLIC_TILES_BASE_URL",
@@ -70,6 +74,7 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({ colorMode = "light", .
       // TODO(ReEarth): Use Takram's tile
       // TODO(ReEarth): Support tile brightness
       tiles={tiles}
+      tileLabels={tileLabels}
       {...props}
     />
   );

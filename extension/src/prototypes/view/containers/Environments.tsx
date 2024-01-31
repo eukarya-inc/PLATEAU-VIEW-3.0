@@ -1,18 +1,21 @@
+import { Color, type Label } from "cesium";
 import { atom, useAtomValue } from "jotai";
-import { type FC } from "react";
+import { type FC, useMemo } from "react";
 
 import { ShadowProps } from "../../../shared/reearth/scene";
 import { AmbientOcclusion } from "../../../shared/reearth/types";
+import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
+import { TileLabels } from "../../../shared/reearth/types/scene.ts";
 import {
   shareableEnvironmentTypeAtom,
   shareableGraphicsQualityAtom,
 } from "../../../shared/states/scene";
-import { colorModeAtom } from "../../shared-states";
+import { colorModeAtom, type ColorMode } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
 import { GooglePhotorealisticEnvironment } from "../environments/GooglePhotorealisticEnvironment";
 import { MapEnvironment } from "../environments/MapEnvironment";
 import { SatelliteEnvironment } from "../environments/SatelliteEnvironment";
-import { debugSphericalHarmonicsAtom } from "../states/app";
+import { debugSphericalHarmonicsAtom, showMapLabelAtom } from "../states/app";
 import {
   ambientOcclusionEnabledAtom,
   ambientOcclusionIntensityAtom,
@@ -24,6 +27,26 @@ import {
 import { AmbientOcclusionOutputType } from "../types/hbao";
 
 export type EnvironmentType = "map" | "satellite" | "elevation" | "google-photorealistic";
+
+type LabelOptions = Partial<
+  Pick<
+    Label,
+    {
+      [K in keyof Label]: Label[K] extends (...args: any[]) => any ? never : K;
+    }[keyof Label]
+  >
+>;
+
+export type AnnotationStyle = Partial<
+  Record<
+    AnnotationType | "default",
+    | (Omit<LabelOptions, "id" | "position" | "text" | "font" | "show"> & {
+        fontSize?: number;
+        fontFamily?: string;
+      })
+    | false
+  >
+>;
 
 const shadowMapPropsAtom = atom(
   (get): ShadowProps => ({
@@ -48,11 +71,58 @@ const ambientOcclusionPropsAtom = atom((get): AmbientOcclusion => {
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(colorModeAtom);
+  const showMapLabel = useAtomValue(showMapLabelAtom);
   const debugSphericalHarmonics = useAtomValue(debugSphericalHarmonicsAtom);
   const shadowProps = useAtomValue(shadowMapPropsAtom);
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
+
+  const styleOverrides: Record<ColorMode, any> = useMemo(
+    () => ({
+      light: {
+        default: {
+          fillColor: Color.BLACK,
+          outlineColor: Color.WHITE.withAlpha(0.8),
+        },
+        towns: {
+          fillColor: Color.BLACK.withAlpha(0.6),
+        },
+        topography: {
+          fillColor: Color.BLACK.withAlpha(0.6),
+        },
+      },
+      dark: {
+        default: {
+          fillColor: Color.WHITE,
+          outlineColor: Color.BLACK.withAlpha(0.8),
+        },
+        towns: {
+          fillColor: Color.WHITE.withAlpha(0.6),
+        },
+        topography: {
+          fillColor: Color.WHITE.withAlpha(0.6),
+        },
+      },
+    }),
+    [],
+  );
+
+  const tileLabels: TileLabels[] = useMemo(() => {
+    return Object.entries(showMapLabel)
+      .map(([key, value]) => {
+        if (value) {
+          return {
+            id: `label_${key}`,
+            labelType: "japan_gsi_optimal_bvmap", // この部分は状況に応じて変更
+            style:
+              styleOverrides[colorMode][key as AnnotationType] || styleOverrides[colorMode].default,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean) as TileLabels[];
+  }, [showMapLabel, colorMode, styleOverrides]);
 
   switch (environmentType) {
     case "map":
@@ -63,6 +133,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          tileLabels={tileLabels}
         />
       );
     case "satellite":
@@ -72,6 +143,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          tileLabels={tileLabels}
         />
       );
     case "elevation":
@@ -81,6 +153,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          tileLabels={tileLabels}
         />
       );
     case "google-photorealistic":
@@ -89,6 +162,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          tileLabels={tileLabels}
         />
       );
   }
