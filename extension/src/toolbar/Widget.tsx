@@ -4,6 +4,7 @@ import { FC, memo } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
+import { AutoRotateCamera } from "../prototypes/view/containers/AutoRotateCamera";
 import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
@@ -76,6 +77,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <ReverseGeocoding />
       <PedestrianTool />
       <MyData />
+      <AutoRotateCamera />
       <FeedBack />
     </WidgetContext>
   );
