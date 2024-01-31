@@ -40,5 +40,5 @@ const Content: FC<AutoRotateCameraProps> = ({ degreesPerMinute = 180 }) => {
 
 export const AutoRotateCamera: FC<AutoRotateCameraProps> = props => {
   const enabled = useAtomValue(autoRotateCameraAtom);
-  return enabled && <Content {...props} />;
+  return enabled ? <Content {...props} /> : null;
 };
