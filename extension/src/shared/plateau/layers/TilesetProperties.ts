@@ -9,6 +9,7 @@ import {
   mudflowRiskColorSet,
   landSlideRiskColorSet,
 } from "../colorSets";
+import { getAttributeLabel } from "../featureInspector";
 
 export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
@@ -38,21 +39,20 @@ const qualitativeProperties: QualitativeProperty[] = [
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
-    getDisplayName: () => "用途",
     colorSet: usageColorSet,
     availableFeatures: ["color"],
   },
   {
     testProperty: propertyName =>
-      propertyName === "構造種別" || propertyName === "uro:buildingStructureType",
-    getDisplayName: () => "構造種別",
+      propertyName === "構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:buildingStructureType",
     colorSet: structureTypeColorSet,
     availableFeatures: ["color"],
   },
   {
     testProperty: propertyName =>
-      propertyName === "耐火構造種別" || propertyName === "uro:fireproofStructureType",
-    getDisplayName: () => "耐火構造",
+      propertyName === "耐火構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:fireproofStructureType",
     colorSet: fireproofStructureTypeColorSet,
     availableFeatures: ["color"],
   },
@@ -77,7 +77,6 @@ const qualitativeProperties: QualitativeProperty[] = [
   {
     testProperty: propertyName =>
       propertyName === "建築年" || propertyName === "bldg:yearOfConstruction",
-    getDisplayName: () => "建築年",
     availableFeatures: ["buildingFilter"],
     getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
   },
@@ -100,19 +99,16 @@ const numberProperties: NumberProperty[] = [
   {
     testProperty: propertyName =>
       propertyName === "計測高さ" || propertyName === "bldg:measuredHeight",
-    getDisplayName: () => "計測高さ",
     availableFeatures: ["color", "buildingFilter"],
   },
   {
     testProperty: propertyName =>
       propertyName === "地上階数" || propertyName === "bldg:storeysAboveGround",
-    getDisplayName: () => "地上階数",
     availableFeatures: ["buildingFilter"],
   },
   {
     testProperty: propertyName =>
       propertyName === "地下階数" || propertyName === "bldg:storeysBelowGround",
-    getDisplayName: () => "地下階数",
     availableFeatures: ["buildingFilter"],
   },
 ];
@@ -175,7 +171,8 @@ export class PlateauTilesetProperties extends Properties {
             colorSet: qualitativeProperty.colorSet,
             minimum: finalMinimum,
             maximum: finalMaximum,
-            displayName: qualitativeProperty.getDisplayName?.(name) ?? name,
+            displayName:
+              qualitativeProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
             availableFeatures: qualitativeProperty.availableFeatures,
             accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
@@ -195,7 +192,7 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? name,
+              displayName: numberProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
               accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
             };

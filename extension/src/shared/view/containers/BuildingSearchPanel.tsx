@@ -24,7 +24,6 @@ import {
   useState,
 } from "react";
 
-import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
@@ -126,18 +125,12 @@ const INCLUDE_PROPERTY_NAMES = [
   "bldg:address",
   "名称",
   "gml:name",
-  "建物利用現況（中分類）",
-  "uro:orgUsage",
-  "建物利用現況（小分類）",
-  "uro:orgUsage2",
-  "建物利用現況（詳細分類）",
-  "uro:detailedUsage",
   "構造種別",
-  "uro:buildingStructureType",
+  "uro:BuildingDetailAttribute_uro:buildingStructureType",
   "用途",
   "bldg:usage",
   "耐火構造種別",
-  "uro:fireproofStructureType",
+  "uro:BuildingDetailAttribute_uro:fireproofStructureType",
 ];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
@@ -211,26 +204,21 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     prevAllFeaturesLengthRef.current = allFeatures.length;
 
     setGroups(
-      properties?.value
-        ?.map(value => {
-          if (!value) return;
-          if (!INCLUDE_PROPERTY_NAMES.includes(value.name)) return;
-
-          return {
-            key: value.name,
-            title: getAttributeLabel(value.name) ?? value.displayName ?? value.name,
-            options: uniqBy(
-              allFeatures
-                .map(f => {
-                  const propertyValue = get(f.properties, value.name);
-                  return { label: propertyValue, value: propertyValue };
-                })
-                .filter(v => !!v.label && !!v.value),
-              "label",
-            ),
-          };
-        })
-        .filter(isNotNullish) ?? [],
+      INCLUDE_PROPERTY_NAMES.map(value => {
+        return {
+          key: value,
+          title: getAttributeLabel(value) ?? value,
+          options: uniqBy(
+            allFeatures.reduce((res, f) => {
+              const propertyValue = get(f.properties, value);
+              if (!propertyValue) return res;
+              res.push({ label: propertyValue, value: propertyValue });
+              return res;
+            }, [] as { label: string; value: string }[]),
+            "label",
+          ),
+        };
+      }).filter(v => !!v.options.length) ?? [],
     );
   }, [allFeatures, initialized.current, tab, properties]); // eslint-disable-line react-hooks/exhaustive-deps
 
