@@ -1,5 +1,5 @@
 import LoadingIcon from "@ant-design/icons/LoadingOutlined";
-import { IconButton, Typography, styled } from "@mui/material";
+import { IconButton, Typography, styled, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
@@ -12,13 +12,14 @@ const LoadingContainer = styled("div")(() => ({
   margin: "5rem 0",
 }));
 
-const StyledBox = styled(Box)(() => ({
+const StyledBox = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
   margin: "0px",
   padding: "12px 24px",
   marginBottom: "12px",
+  color: theme.palette.text.primary,
 }));
 
 const StyledField = styled("div")(({ theme }) => ({
