@@ -122,6 +122,15 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       setImageSchemeSelection([id]);
     }, [id, setImageSchemeSelection]);
 
+    const handleMove = useCallback(() => {
+      if (boundingSphere) {
+        return lookAtXYZ(boundingSphere);
+      }
+      if (layerId) {
+        return flyToLayerId(layerId);
+      }
+    }, [boundingSphere, layerId]);
+
     return (
       <LayerListItem
         {...itemProps}
@@ -131,6 +140,8 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
         selected={selected}
         loading={loading}
         hidden={hidden}
+        layerId={layerId}
+        boundingSphere={boundingSphere}
         accessory={
           colorMap != null ? (
             <Tooltip title={colorScheme?.name}>
@@ -167,6 +178,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
         onDoubleClick={handleDoubleClick}
         onRemove={handleRemove}
         onToggleHidden={handleToggleHidden}
+        onMove={handleMove}
       />
     );
   },
