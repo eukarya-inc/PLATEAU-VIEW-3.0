@@ -22,4 +22,5 @@ export const datasetTypeOrder = [
   PlateauDatasetType.Vegetation,
   PlateauDatasetType.UseCase,
   PlateauDatasetType.GenericCityObject,
+  PlateauDatasetType.Sample,
 ];

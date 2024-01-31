@@ -21,4 +21,5 @@ export enum PlateauDatasetType {
   UrbanPlanning = "urf",
   UseCase = "usecase",
   Vegetation = "veg",
+  Sample = "sample",
 }

@@ -20,7 +20,11 @@ export interface LocationBreadcrumbItemProps {
 
 export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }) => {
   const query = useAreaDatasets(area.code, {
-    excludeTypes: [PlateauDatasetType.UseCase, PlateauDatasetType.GenericCityObject],
+    excludeTypes: [
+      PlateauDatasetType.UseCase,
+      PlateauDatasetType.GenericCityObject,
+      PlateauDatasetType.Sample,
+    ],
   });
 
   const datasetGroups = useMemo(() => {
