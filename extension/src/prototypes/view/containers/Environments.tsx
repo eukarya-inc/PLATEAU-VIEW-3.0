@@ -110,11 +110,11 @@ export const Environments: FC = () => {
 
   const tileLabels: TileLabels[] = useMemo(() => {
     return Object.entries(showMapLabel)
-      .map(([key, value]) => {
-        if (value) {
+      .map(([key, isVisible]) => {
+        if (isVisible) {
           return {
             id: `label_${key}`,
-            labelType: "japan_gsi_optimal_bvmap", // この部分は状況に応じて変更
+            labelType: "japan_gsi_optimal_bvmap",
             style:
               styleOverrides[colorMode][key as AnnotationType] || styleOverrides[colorMode].default,
           };
