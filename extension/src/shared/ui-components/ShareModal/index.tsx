@@ -1,15 +1,29 @@
-import LoadingIcon from "@ant-design/icons/LoadingOutlined";
-import { IconButton, Typography, styled, useTheme } from "@mui/material";
+import { IconButton, Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
-import { PaperPlane, CopyIcon } from "../../../prototypes/ui-components/icons";
+import { PaperPlane, CopyIcon, ShareLoading } from "../../../prototypes/ui-components/icons";
 import Modal from "../Modal";
 
 const LoadingContainer = styled("div")(() => ({
   display: "flex",
   justifyContent: "center",
   margin: "5rem 0",
+}));
+
+const Loading = styled(ShareLoading)(({ theme }) => ({
+  color: theme.palette.primary.main,
+  width: 36,
+  height: 36,
+  animation: "rotating 1s linear infinite",
+  ["@keyframes rotating"]: {
+    from: {
+      transform: "rotate(0deg)",
+    },
+    to: {
+      transform: "rotate(360deg)",
+    },
+  },
 }));
 
 const StyledBox = styled(Box)(({ theme }) => ({
@@ -61,7 +75,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
       onClose={onClose}>
       {loading ? (
         <LoadingContainer>
-          <LoadingIcon />
+          <Loading />
         </LoadingContainer>
       ) : (
         <StyledBox sx={{ typography: "body1", borderTop: "1px solid #0000001f" }}>

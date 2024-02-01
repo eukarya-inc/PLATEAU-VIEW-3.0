@@ -58,3 +58,4 @@ export * from "./ListIcon";
 export * from "./PaperPlane";
 export * from "./PaperPlaneTilt";
 export * from "./Copy";
+export * from "./ShareLoading";
