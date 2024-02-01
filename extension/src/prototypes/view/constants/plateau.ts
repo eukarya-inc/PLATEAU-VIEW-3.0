@@ -23,4 +23,6 @@ export enum PlateauDatasetType {
   Vegetation = "veg",
   Sample = "sample",
   Constructure = "cons",
+  Water = "wtr",
+  Traffic = "trk",
 }

@@ -9,7 +9,12 @@ import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
-import { DatasetTreeItem, InfoIcon, type DatasetTreeItemProps } from "../../ui-components";
+import {
+  DatasetTreeItem,
+  InfoIcon,
+  UseCaseIcon,
+  type DatasetTreeItemProps,
+} from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
@@ -52,7 +57,8 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const layerType =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const theme = useTheme();
@@ -106,7 +112,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     [dataset, label],
   );
 
-  const Icon = datasetTypeIcons[dataset.type.code as PlateauDatasetType];
+  const Icon = datasetTypeIcons[dataset.type.code as PlateauDatasetType] ?? UseCaseIcon;
   return (
     <>
       <DatasetTreeItem

@@ -62,6 +62,7 @@ export type RootLayerForDataset = {
   general: GeneralSetting | undefined;
   featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
   layer: PrimitiveAtom<LayerModel>;
+  layerName: string | undefined;
 };
 
 export type RootLayerForLayer<T extends LayerType = LayerType> = {
@@ -236,6 +237,7 @@ const createRootLayerForDataset = ({
 
   return {
     type: "dataset",
+    layerName: subName ?? datasetType.name ?? "ユースケース",
     // TODO: get settings from featureInspectorTemplate
     general: setting?.general,
     featureInspector: setting?.featureInspector
@@ -268,7 +270,8 @@ export const createRootLayerForDatasetAtom = (
 ): RootLayerConfig => {
   const dataset = params.dataset;
   const dataList = dataset.items as DatasetItem[];
-  const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const type =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const subName =
     dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
 

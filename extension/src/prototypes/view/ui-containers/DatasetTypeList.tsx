@@ -105,7 +105,7 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType }> = ({ datasetType 
   return (
     <DatasetTreeItem
       nodeId={datasetType}
-      label={datasetTypeNames[datasetType]}
+      label={datasetTypeNames[datasetType] ?? datasetTypeNames.usecase}
       loading={query.loading}>
       {datasetType === PlateauDatasetType.UseCase && <GlobalItem />}
       {query.data?.areas.map(

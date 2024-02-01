@@ -130,7 +130,9 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
 
     return (
       <ContextButtonSelect
-        label={datasetTypeNames[dataset.type.code as PlateauDatasetType]}
+        label={
+          datasetTypeNames[dataset.type.code as PlateauDatasetType] ?? datasetTypeNames.usecase
+        }
         value={value}
         disabled={disabled}
         onClick={handleClick}

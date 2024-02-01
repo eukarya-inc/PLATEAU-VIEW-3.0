@@ -55,6 +55,8 @@ export const datasetTypeLayers = {
   [PlateauDatasetType.Vegetation]: VEGETATION_LAYER,
   [PlateauDatasetType.Sample]: USE_CASE_LAYER,
   [PlateauDatasetType.Constructure]: USE_CASE_LAYER,
+  [PlateauDatasetType.Water]: USE_CASE_LAYER,
+  [PlateauDatasetType.Traffic]: USE_CASE_LAYER,
 } as const satisfies Record<PlateauDatasetType, LayerType | undefined>;
 
 export const layerDatasetTypes = {

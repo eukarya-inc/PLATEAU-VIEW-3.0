@@ -18,7 +18,12 @@ import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
-import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
+import {
+  EntityTitle,
+  PrefixedAddSmallIcon,
+  PrefixedCheckSmallIcon,
+  UseCaseIcon,
+} from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
@@ -65,7 +70,8 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const layerType =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const handleClick = useCallback(() => {
@@ -100,9 +106,12 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   return (
     <Dialog {...props}>
       <StyledEntityTitle
-        iconComponent={datasetTypeIcons[dataset.type.code as PlateauDatasetType]}
+        iconComponent={datasetTypeIcons[dataset.type.code as PlateauDatasetType] ?? UseCaseIcon}
         title={{
-          primary: dataset.type.name,
+          primary: [
+            dataset.type.name,
+            dataset.__typename === "PlateauDataset" ? dataset.subname ?? "" : "",
+          ].join(" "),
           secondary: dataset?.city?.name,
         }}
         secondaryAction={
