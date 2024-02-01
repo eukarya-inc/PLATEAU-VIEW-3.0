@@ -47,6 +47,33 @@ const ambientOcclusionPropsAtom = atom((get): AmbientOcclusion => {
   };
 });
 
+const STYLE_OVERRIDES: Record<ColorMode, any> = {
+  light: {
+    default: {
+      fillColor: "#000000",
+      outlineColor: "rgba(255, 255, 255, 0.8)",
+    },
+    towns: {
+      fillColor: "rgba(0, 0, 0, 0.6)",
+    },
+    topography: {
+      fillColor: "rgba(0, 0, 0, 0.6)",
+    },
+  },
+  dark: {
+    default: {
+      fillColor: "#FFFFFF",
+      outlineColor: "rgba(0, 0, 0, 0.8)",
+    },
+    towns: {
+      fillColor: "rgba(255, 255, 255, 0.6)",
+    },
+    topography: {
+      fillColor: "rgba(255, 255, 255, 0.6)",
+    },
+  },
+};
+
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(colorModeAtom);
@@ -57,36 +84,6 @@ export const Environments: FC = () => {
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
 
-  const styleOverrides: Record<ColorMode, any> = useMemo(
-    () => ({
-      light: {
-        default: {
-          fillColor: "#000000",
-          outlineColor: "rgba(255, 255, 255, 0.8)",
-        },
-        towns: {
-          fillColor: "rgba(0, 0, 0, 0.6)",
-        },
-        topography: {
-          fillColor: "rgba(0, 0, 0, 0.6)",
-        },
-      },
-      dark: {
-        default: {
-          fillColor: "#FFFFFF",
-          outlineColor: "rgba(0, 0, 0, 0.8)",
-        },
-        towns: {
-          fillColor: "rgba(255, 255, 255, 0.6)",
-        },
-        topography: {
-          fillColor: "rgba(255, 255, 255, 0.6)",
-        },
-      },
-    }),
-    [],
-  );
-
   const tileLabels: TileLabels[] = useMemo(() => {
     return Object.entries(showMapLabel)
       .map(([key, isVisible]) => {
@@ -95,13 +92,14 @@ export const Environments: FC = () => {
             id: `label_${key}`,
             labelType: "japan_gsi_optimal_bvmap",
             style:
-              styleOverrides[colorMode][key as AnnotationType] || styleOverrides[colorMode].default,
+              STYLE_OVERRIDES[colorMode][key as AnnotationType] ||
+              STYLE_OVERRIDES[colorMode].default,
           };
         }
         return null;
       })
       .filter(Boolean) as TileLabels[];
-  }, [showMapLabel, colorMode, styleOverrides]);
+  }, [showMapLabel, colorMode]);
 
   switch (environmentType) {
     case "map":
