@@ -39,6 +39,10 @@ export type Area = {
   id: Scalars['ID']['output'];
   /** 地域名 */
   name: Scalars['String']['output'];
+  /** 地域の親となる地域。 */
+  parent?: Maybe<Area>;
+  /** 地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。 */
+  parentId?: Maybe<Scalars['ID']['output']>;
   /** 地域の種類 */
   type: AreaType;
 };
@@ -78,6 +82,8 @@ export type AreasInput = {
    * 未指定の場合、全てのデータセットの種類を対象に検索します。
    */
   datasetTypes?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** 検索結果にその地域の親も含めるかどうか。デフォルトは false です。 */
+  includeParents?: InputMaybe<Scalars['Boolean']['input']>;
   /** 検索したい地域が属する親となる地域のコード。例えば東京都に属する都市を検索したい場合は "13" を指定します。 */
   parentCode?: InputMaybe<Scalars['AreaCode']['input']>;
   /** 検索文字列。複数指定するとAND条件で絞り込み検索が行えます。 */
@@ -94,6 +100,10 @@ export type City = Area & Node & {
   id: Scalars['ID']['output'];
   /** 市区町村名 */
   name: Scalars['String']['output'];
+  /** 地域の親となる地域。 */
+  parent: Prefecture;
+  /** 地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。 */
+  parentId?: Maybe<Scalars['ID']['output']>;
   /** 平面直角座標系のEPSGコード。例えば、東京都の場合は "6677" です。 */
   planarCrsEpsgCode?: Maybe<Scalars['String']['output']>;
   /** 市区町村の都道府県。 */
@@ -242,9 +252,9 @@ export type DatasetTypesInput = {
 export type DatasetsInput = {
   /** データセットの地域コード（都道府県コードや市区町村コードが使用可能）。複数指定するとOR条件で検索を行います。 */
   areaCodes?: InputMaybe<Array<Scalars['AreaCode']['input']>>;
-  /** 検索結果から除外するデータセットの種類コード。 */
+  /** 検索結果から除外するデータセットの種類コード。種類コードは例えば "bldg"（建築物モデル）の他、"plateau"（PLATEAU都市モデルデータセット）、"related"（関連データセット）、"generic"（その他のデータセット）が使用可能です。 */
   excludeTypes?: InputMaybe<Array<Scalars['String']['input']>>;
-  /** 検索結果に含めるデータセットの種類コード。未指定の場合、全てのデータセットの種類を対象に検索し、指定するとその種類で検索結果を絞り込みます。 */
+  /** 検索結果に含めるデータセットの種類コード。未指定の場合、全てのデータセットの種類を対象に検索し、指定するとその種類で検索結果を絞り込みます。種類コードは例えば "bldg"（建築物モデル）の他、"plateau"（PLATEAU都市モデルデータセット）、"related"（関連データセット）、"generic"（その他のデータセット）が使用可能です。 */
   includeTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   /** 仕様書のバージョン。「第2.3版」「2.3」「2」などの文字列が使用可能です。 */
   plateauSpec?: InputMaybe<Scalars['String']['input']>;
@@ -518,6 +528,10 @@ export type Prefecture = Area & Node & {
   id: Scalars['ID']['output'];
   /** 都道府県名 */
   name: Scalars['String']['output'];
+  /** 地域の親となる地域。 */
+  parent?: Maybe<Area>;
+  /** 地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。 */
+  parentId?: Maybe<Scalars['ID']['output']>;
   /** 地域の種類 */
   type: AreaType;
 };
@@ -722,6 +736,10 @@ export type Ward = Area & Node & {
   id: Scalars['ID']['output'];
   /** 区名 */
   name: Scalars['String']['output'];
+  /** 地域の親となる地域。 */
+  parent: City;
+  /** 地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。 */
+  parentId?: Maybe<Scalars['ID']['output']>;
   /** 区が属する都道府県。 */
   prefecture?: Maybe<Prefecture>;
   /** 区が属する都道府県コード。2桁の数字から成る文字列です。 */

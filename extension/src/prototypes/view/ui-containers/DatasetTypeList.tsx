@@ -101,6 +101,7 @@ const PrefectureItem: FC<{
 const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType }> = ({ datasetType }) => {
   const query = useAreas({
     datasetTypes: [datasetType],
+    includeParents: true,
   });
   return (
     <DatasetTreeItem

@@ -147,7 +147,7 @@ const RegionalMeshItem: FC = () => {
 };
 
 export const DatasetAreaList: FC = () => {
-  const query = useAreas();
+  const query = useAreas({ includeParents: true });
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleNodeToggle = useCallback(
     (_event: unknown, nodeIds: string[]) => {
