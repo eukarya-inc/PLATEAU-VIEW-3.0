@@ -135,7 +135,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       <LayerListItem
         {...itemProps}
         title={title ?? undefined}
-        iconComponent={layerTypeIcons[type]}
+        iconComponent={layerTypeIcons[type] ?? layerTypeIcons.USE_CASE_LAYER}
         highlighted={highlighted}
         selected={selected}
         loading={loading}

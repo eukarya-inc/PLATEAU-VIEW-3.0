@@ -25,4 +25,6 @@ export const datasetTypeNames: Record<PlateauDatasetType, string> = {
   [PlateauDatasetType.Vegetation]: "植生",
   [PlateauDatasetType.Sample]: "その他",
   [PlateauDatasetType.Constructure]: "その他の構造物モデル",
+  [PlateauDatasetType.Water]: "水辺モデル",
+  [PlateauDatasetType.Traffic]: "交通モデル",
 };

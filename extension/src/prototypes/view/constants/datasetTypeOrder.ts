@@ -20,6 +20,8 @@ export const datasetTypeOrder = [
   PlateauDatasetType.UrbanPlanning,
   PlateauDatasetType.CityFurniture,
   PlateauDatasetType.Vegetation,
+  PlateauDatasetType.Water,
+  PlateauDatasetType.Traffic,
   PlateauDatasetType.UseCase,
   PlateauDatasetType.GenericCityObject,
   PlateauDatasetType.Constructure,

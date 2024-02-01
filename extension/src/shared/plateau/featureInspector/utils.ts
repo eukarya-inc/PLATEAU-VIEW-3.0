@@ -102,14 +102,18 @@ export const makePropertyForFeatureInspector = ({
       .filter(v => v && !!v.values.length) ?? [];
 
   // Built-in root properties
-  const datasetType = layer ? layerDatasetTypes[layer.type] : undefined;
+  const datasetType = layer
+    ? layerDatasetTypes[layer.type] ?? layerDatasetTypes.USE_CASE_LAYER
+    : undefined;
   const rawBuiltInRootProperties = !shouldUseSettingProperty
     ? features
         .map(f =>
           layer && "title" in layer
             ? getRootFields(f.properties, datasetType, {
                 name: layer?.title,
-                datasetName: datasetType ? datasetTypeNames[datasetType] : undefined,
+                datasetName: datasetType
+                  ? datasetTypeNames[datasetType] ?? datasetTypeNames.usecase
+                  : undefined,
               })
             : undefined,
         )

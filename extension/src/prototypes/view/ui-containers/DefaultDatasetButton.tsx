@@ -22,7 +22,8 @@ export interface DefaultDatasetButtonProps {
 export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
   ({ dataset, municipalityCode, disabled = false }) => {
     const layers = useAtomValue(rootLayersLayersAtom);
-    const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+    const layerType =
+      datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
     const findLayer = useFindLayer();
     const layer = useMemo(
       () =>
@@ -69,7 +70,7 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
         selected={layer != null}
         disabled={disabled || layerType == null}
         onClick={handleClick}>
-        {datasetTypeNames[dataset.type.code as PlateauDatasetType]}
+        {datasetTypeNames[dataset.type.code as PlateauDatasetType] ?? datasetTypeNames.usecase}
         {showDataFormats ? ` (${datum.format})` : null}
       </ContextButton>
     );
