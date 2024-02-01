@@ -15,6 +15,7 @@ export const showFeedbackModalAtom = atom(false);
 export const showMyDataModalAtom = atom(false);
 export const viewportWidthAtom = atom<number | null>(null);
 export const viewportHeightAtom = atom<number | null>(null);
+export const showShareModalAtom = atom(false);
 
 const environmentTypePrimitiveAtom = atomWithReset<EnvironmentType>("map");
 export const environmentTypeAtom = atom(
