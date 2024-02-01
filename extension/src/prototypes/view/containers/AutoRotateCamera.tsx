@@ -16,7 +16,7 @@ const Content: FC<AutoRotateCameraProps> = ({ degreesPerMinute = 180 }) => {
   const handleTick = useCallback(() => {
     const now = Date.now();
     const elapsed = now - dateRef.current;
-    camera?.rotateCameraOnCenter(radianPerMilliseconds * elapsed);
+    camera?.rotateOnCenter(radianPerMilliseconds * elapsed);
     dateRef.current = now;
   }, [camera, radianPerMilliseconds]);
 
