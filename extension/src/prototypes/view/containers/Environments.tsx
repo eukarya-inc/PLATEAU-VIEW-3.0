@@ -1,4 +1,3 @@
-import { Color, type Label } from "cesium";
 import { atom, useAtomValue } from "jotai";
 import { type FC, useMemo } from "react";
 
@@ -27,26 +26,6 @@ import {
 import { AmbientOcclusionOutputType } from "../types/hbao";
 
 export type EnvironmentType = "map" | "satellite" | "elevation" | "google-photorealistic";
-
-type LabelOptions = Partial<
-  Pick<
-    Label,
-    {
-      [K in keyof Label]: Label[K] extends (...args: any[]) => any ? never : K;
-    }[keyof Label]
-  >
->;
-
-export type AnnotationStyle = Partial<
-  Record<
-    AnnotationType | "default",
-    | (Omit<LabelOptions, "id" | "position" | "text" | "font" | "show"> & {
-        fontSize?: number;
-        fontFamily?: string;
-      })
-    | false
-  >
->;
 
 const shadowMapPropsAtom = atom(
   (get): ShadowProps => ({
@@ -82,26 +61,26 @@ export const Environments: FC = () => {
     () => ({
       light: {
         default: {
-          fillColor: Color.BLACK,
-          outlineColor: Color.WHITE.withAlpha(0.8),
+          fillColor: "#000000",
+          outlineColor: "rgba(255, 255, 255, 0.8)",
         },
         towns: {
-          fillColor: Color.BLACK.withAlpha(0.6),
+          fillColor: "rgba(0, 0, 0, 0.6)",
         },
         topography: {
-          fillColor: Color.BLACK.withAlpha(0.6),
+          fillColor: "rgba(0, 0, 0, 0.6)",
         },
       },
       dark: {
         default: {
-          fillColor: Color.WHITE,
-          outlineColor: Color.BLACK.withAlpha(0.8),
+          fillColor: "#FFFFFF",
+          outlineColor: "rgba(0, 0, 0, 0.8)",
         },
         towns: {
-          fillColor: Color.WHITE.withAlpha(0.6),
+          fillColor: "rgba(255, 255, 255, 0.6)",
         },
         topography: {
-          fillColor: Color.WHITE.withAlpha(0.6),
+          fillColor: "rgba(255, 255, 255, 0.6)",
         },
       },
     }),
