@@ -85,20 +85,20 @@ export const Environments: FC = () => {
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
 
   const tileLabels: TileLabels[] = useMemo(() => {
-    return Object.entries(showMapLabel)
-      .map(([key, isVisible]) => {
-        if (isVisible) {
-          return {
-            id: `label_${key}`,
-            labelType: "japan_gsi_optimal_bvmap",
-            style:
-              STYLE_OVERRIDES[colorMode][key as AnnotationType] ||
-              STYLE_OVERRIDES[colorMode].default,
-          };
-        }
-        return null;
-      })
-      .filter(Boolean) as TileLabels[];
+    const styles = Object.entries(showMapLabel).reduce((acc, [key, isVisible]) => {
+      acc[key] = isVisible
+        ? STYLE_OVERRIDES[colorMode][key as AnnotationType] || STYLE_OVERRIDES[colorMode].default
+        : false;
+      return acc;
+    }, {} as Record<string, any | false>);
+
+    return [
+      {
+        id: `label`,
+        labelType: "japan_gsi_optimal_bvmap",
+        style: styles,
+      },
+    ] as TileLabels[];
   }, [showMapLabel, colorMode]);
 
   switch (environmentType) {
