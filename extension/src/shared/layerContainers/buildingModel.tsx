@@ -180,7 +180,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: false,
+      pbr: "withTexture",
       ...(color
         ? {
             color: {
