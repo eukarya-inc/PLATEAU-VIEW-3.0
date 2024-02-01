@@ -2,7 +2,7 @@
 
 import { FC, useEffect } from "react";
 
-import { AmbientOcclusion, Antialias, Tile } from "../types";
+import { AmbientOcclusion, Antialias, CameraPosition, Tile } from "../types";
 
 // nx = red
 // ny = green
@@ -60,6 +60,7 @@ export type SceneProps = EnvironmentProps & {
   terrainHeatmapMaxHeight?: number;
   terrainHeatmapMinHeight?: number;
   terrainHeatmapLogarithmic?: boolean;
+  initialCamera?: CameraPosition;
 };
 
 export const Scene: FC<SceneProps> = ({
@@ -95,17 +96,18 @@ export const Scene: FC<SceneProps> = ({
   ambientOcclusion,
   shadows,
   antialias,
+  initialCamera = {
+    lng: 139.755,
+    lat: 35.675,
+    height: 1000,
+    heading: Math.PI * 0.4,
+    pitch: -Math.PI * 0.2,
+  },
 }) => {
   useEffect(() => {
     window.reearth?.scene?.overrideProperty({
       default: {
-        camera: {
-          lng: 139.755,
-          lat: 35.675,
-          height: 1000,
-          heading: Math.PI * 0.4,
-          pitch: -Math.PI * 0.2,
-        },
+        camera: initialCamera,
         bgcolor: backgroundColor,
         skybox: showSkyBox,
       },
@@ -207,6 +209,7 @@ export const Scene: FC<SceneProps> = ({
     terrainHeatmapLogarithmic,
     terrainHeatmapMaxHeight,
     terrainHeatmapMinHeight,
+    initialCamera,
   ]);
 
   return null;

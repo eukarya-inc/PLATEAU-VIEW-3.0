@@ -6,6 +6,7 @@ import { AmbientOcclusion } from "../../../shared/reearth/types";
 import {
   shareableEnvironmentTypeAtom,
   shareableGraphicsQualityAtom,
+  sharedInitialCameraAtom,
 } from "../../../shared/states/scene";
 import { colorModeAtom } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
@@ -53,6 +54,7 @@ export const Environments: FC = () => {
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
+  const initialCamera = useAtomValue(sharedInitialCameraAtom);
 
   switch (environmentType) {
     case "map":
@@ -63,6 +65,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
         />
       );
     case "satellite":
@@ -72,6 +75,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
         />
       );
     case "elevation":
@@ -81,6 +85,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
         />
       );
     case "google-photorealistic":
@@ -89,6 +94,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
         />
       );
   }

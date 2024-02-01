@@ -1,4 +1,4 @@
-import { WritableAtom } from "jotai";
+import { SetStateAction, WritableAtom } from "jotai";
 import invariant from "tiny-invariant";
 
 import { SettingComponent } from "../api/types";
@@ -35,21 +35,23 @@ export const makeComponentId = ({ datasetId, componentType, shareId }: Component
   return name;
 };
 
-export const makeComponentAtomWrapper = <V, A extends unknown[], S>(
+export const makeComponentAtomWrapper = <V, A extends (unknown | SetStateAction<unknown>)[], S>(
   a: WritableAtom<V, A, S>,
   params: ComponentIdParams,
   storeable?: boolean,
-  shouldInitialize?: boolean,
+  {
+    shouldInitialize,
+    beforeSet,
+  }: { shouldInitialize?: boolean; beforeSet?: (a: unknown) => unknown } = {},
 ) => {
   const name = makeComponentId(params);
   if (storeable) {
-    return sharedStoreAtomWrapper(
-      name,
-      storageStoreAtomWrapper(name, a, shouldInitialize),
+    return sharedStoreAtomWrapper(name, storageStoreAtomWrapper(name, a, shouldInitialize), {
       shouldInitialize,
-    );
+      beforeSet,
+    });
   }
-  return sharedStoreAtomWrapper(name, a, shouldInitialize);
+  return sharedStoreAtomWrapper(name, a, { shouldInitialize, beforeSet });
 };
 
 export const makeComponentAtoms = (

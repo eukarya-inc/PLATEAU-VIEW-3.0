@@ -26,7 +26,7 @@ import { type ConfigurableLayerModel } from "./types";
 let nextLayerIndex = 1;
 
 export interface PedestrianLayerModelParams extends ViewLayerModelParams {
-  location: Location;
+  location?: Location;
   headingPitchAtom?: HeadingPitch;
   zoomAtom?: number;
   shouldInitializeAtom?: boolean;
@@ -52,8 +52,8 @@ export function createPedestrianLayer(
   invariant(params.id);
 
   const locationPrimitiveAtom = atom<Location>({
-    longitude: params.location.longitude,
-    latitude: params.location.latitude,
+    longitude: params.location?.longitude ?? 0,
+    latitude: params.location?.latitude ?? 0,
     height: 2.5,
   });
   const locationAtom = makeComponentAtomWrapper(
@@ -73,7 +73,7 @@ export function createPedestrianLayer(
     ),
     { datasetId: params.id, componentType: "location" },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   const headingPitchPrimitiveAtom = atom<HeadingPitch | null>(params.headingPitchAtom ?? null);
@@ -90,14 +90,14 @@ export function createPedestrianLayer(
     ),
     { datasetId: params.id, componentType: "headingPitch" },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   const zoomPrimitiveAtom = makeComponentAtomWrapper(
     atom<number | null>(params.zoomAtom ?? null),
     { datasetId: params.id, componentType: "zoom" },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   return {

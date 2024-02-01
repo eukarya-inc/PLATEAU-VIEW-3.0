@@ -18,6 +18,7 @@ const documents = {
     "\nquery AreaDatasets($code: AreaCode!, $input: DatasetsInput!) {\n  area(code: $code) {\n    id\n    code\n    name\n    datasets(input: $input) {\n      ...DatasetFragment\n    }\n  }\n}\n": types.AreaDatasetsDocument,
     "\nquery Datasets($input: DatasetsInput!) {\n  datasets(input: $input) {\n    ...DatasetFragment\n  }\n}\n": types.DatasetsDocument,
     "\nquery DatasetById($id: ID!) {\n  node(id: $id) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n": types.DatasetByIdDocument,
+    "\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n": types.DatasetsByIdsDocument,
 };
 
 /**
@@ -54,6 +55,10 @@ export function gql(source: "\nquery Datasets($input: DatasetsInput!) {\n  datas
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\nquery DatasetById($id: ID!) {\n  node(id: $id) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"): (typeof documents)["\nquery DatasetById($id: ID!) {\n  node(id: $id) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"): (typeof documents)["\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

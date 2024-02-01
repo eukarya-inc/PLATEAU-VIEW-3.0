@@ -1,4 +1,4 @@
-import { atom, useAtomValue, useSetAtom, type PrimitiveAtom } from "jotai";
+import { SetStateAction, atom, useAtomValue, useSetAtom, type PrimitiveAtom } from "jotai";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from "react";
 import invariant from "tiny-invariant";
 
@@ -7,7 +7,7 @@ import {
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
-import { colorMapFlare, type ColorMap } from "../color-maps";
+import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {
   createMeshImageData,
   type MeshImageData,
@@ -59,14 +59,36 @@ export type SharedHeatmapLayer = {
 export function createHeatmapLayer(
   params: HeatmapLayerModelParams,
 ): ConfigurableLayerModel<HeatmapLayerModel> {
+  const originalColorMapAtom = atom<ColorMap>(colorMapFlare);
+  const wrappedOriginalColorMapAtom = atom(
+    get => get(originalColorMapAtom),
+    (get, set, colorMapAction: SetStateAction<ColorMap>) => {
+      const colorMap =
+        typeof colorMapAction === "function"
+          ? colorMapAction(get(originalColorMapAtom))
+          : colorMapAction;
+      if (colorMap instanceof ColorMap) {
+        set(originalColorMapAtom, colorMap);
+        return;
+      }
+      const objectColorMap: unknown = colorMap;
+      if (typeof objectColorMap === "string") {
+        set(originalColorMapAtom, createColorMapFromType(objectColorMap) ?? colorMapFlare);
+      }
+    },
+  );
+
   const colorMapAtom = makeComponentAtomWrapper(
-    atom<ColorMap>(colorMapFlare),
+    wrappedOriginalColorMapAtom,
     {
       ...params,
       componentType: "colorMap",
     },
     true,
-    params.shouldInitializeAtom,
+    {
+      shouldInitialize: params.shouldInitializeAtom,
+      beforeSet: a => (a instanceof ColorMap ? a.type : undefined),
+    },
   );
   const colorRangeAtom = makeComponentAtomWrapper(
     atom([0, 100]),
@@ -75,7 +97,7 @@ export function createHeatmapLayer(
       componentType: "colorRange",
     },
     true,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
   const valueRangeAtom = makeComponentAtomWrapper(
     atom([0, 100]),
@@ -84,7 +106,7 @@ export function createHeatmapLayer(
       componentType: "valueRange",
     },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
   const colorSchemeAtom = atom<LayerColorScheme | null>({
     type: "quantitative",
@@ -100,7 +122,7 @@ export function createHeatmapLayer(
       componentType: "opacity",
     },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
   const contourSpacingAtom = makeComponentAtomWrapper(
     atom(10),
@@ -109,7 +131,7 @@ export function createHeatmapLayer(
       componentType: "contourSpacing",
     },
     false,
-    params.shouldInitializeAtom,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   return {

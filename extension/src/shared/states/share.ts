@@ -14,8 +14,15 @@ import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { MyDataLayerModel, SharedMyDataLayer } from "../view-layers";
 
 import { rootLayersAtom } from "./rootLayer";
+import { sharedInitialCameraAtom, sharedInitialClockAtom } from "./scene";
 
-type SharedRootLayer =
+export const shareAtom = atom(undefined, async (_get, set) => {
+  set(sharedInitialClockAtom, async () => window.reearth?.clock?.currentTime?.getTime());
+  set(sharedInitialCameraAtom, async () => window.reearth?.camera?.position);
+  set(shareRootLayerAtom);
+});
+
+export type SharedRootLayer =
   | {
       type: "dataset";
       datasetId: string;
@@ -27,7 +34,7 @@ type SharedRootLayer =
 
 // For share feature
 const SHARED_LAYERS_KEY = "$sharedLayers";
-export const shareRootLayerAtom = atom(undefined, get => {
+const shareRootLayerAtom = atom(undefined, get => {
   const rootLayers: SharedRootLayer[] = get(rootLayersAtom)
     .map((r): SharedRootLayer | undefined => {
       switch (r.type) {
@@ -75,6 +82,6 @@ export const shareRootLayerAtom = atom(undefined, get => {
     .filter(isNotNullish);
   setSharedStoreValue(SHARED_LAYERS_KEY, rootLayers);
 });
-export const getSharedRootLayerIdsAtom = atom(undefined, () => {
-  return getSharedStoreValue(SHARED_LAYERS_KEY);
+export const getSharedRootLayersAtom = atom(undefined, () => {
+  return getSharedStoreValue<SharedRootLayer[]>(SHARED_LAYERS_KEY);
 });
