@@ -1,12 +1,12 @@
 import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
-import { useWindowEvent } from "../../prototypes/react-helpers";
-import { SketchGeometryType } from "../../prototypes/sketch";
-import { sketchTypeAtom, toolAtom } from "../../prototypes/view/states/tool";
-import { useReEarthEvent } from "../reearth/hooks";
-import { useSketch } from "../reearth/hooks/useSketch";
-import { ReearthSketchType } from "../reearth/types";
+import { useWindowEvent } from "../../../prototypes/react-helpers";
+import { SketchGeometryType } from "../../../prototypes/sketch";
+import { sketchTypeAtom, toolAtom } from "../../../prototypes/view/states/tool";
+import { useReEarthEvent } from "../../reearth/hooks";
+import { useSketch } from "../../reearth/hooks/useSketch";
+import { ReearthSketchType } from "../../reearth/types";
 
 export default () => {
   const [sketchType] = useAtom(sketchTypeAtom);
@@ -70,6 +70,21 @@ export default () => {
 
   return null;
 };
+
+export function reearthSketchTypeToSketchGeometryType(
+  type: ReearthSketchType | undefined,
+): SketchGeometryType | undefined {
+  switch (type) {
+    case "extrudedCircle":
+      return "circle";
+    case "extrudedRectangle":
+      return "rectangle";
+    case "extrudedPolygon":
+      return "polygon";
+    default:
+      return undefined;
+  }
+}
 
 function sketchGeometryTypeToReearthSketchType(
   type: SketchGeometryType,

@@ -1,7 +1,6 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, type FC } from "react";
 
-import useSketch from "../../../shared/sketch/useSketch";
 import { isSketchGeometryType } from "../../sketch";
 import {
   AppToggleButton,
@@ -55,8 +54,6 @@ export const ToolButtons: FC = () => {
     },
     [send, setSketchType],
   );
-
-  useSketch();
 
   return (
     <AppToggleButtonGroup value={tool?.type} onChange={handleChange}>

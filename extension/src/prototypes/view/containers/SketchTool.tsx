@@ -3,13 +3,15 @@ import { nanoid } from "nanoid";
 import { useCallback, type FC } from "react";
 
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
-import { ReearthSketchType } from "../../../shared/reearth/types";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import useSketchTool, {
+  reearthSketchTypeToSketchGeometryType,
+} from "../../../shared/view/hooks/useSketchTool";
 import { createRootLayerForLayerAtom } from "../../../shared/view-layers";
 import { composeIdentifier } from "../../cesium-helpers";
 import { LayerModel, layerSelectionAtom, useAddLayer } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
-import { SKETCH_OBJECT, SketchGeometryType, type SketchFeature } from "../../sketch";
+import { SKETCH_OBJECT, type SketchFeature } from "../../sketch";
 import { SKETCH_LAYER, highlightedSketchLayersAtom } from "../../view-layers";
 import { modalToolAtom, toolAtom } from "../states/tool";
 
@@ -85,23 +87,10 @@ const Wrapped: FC = () => {
 
 export const SketchTool: FC = () => {
   const tool = useAtomValue(modalToolAtom);
+  useSketchTool();
+
   if (tool?.type !== "sketch") {
     return null;
   }
   return <Wrapped />;
 };
-
-function reearthSketchTypeToSketchGeometryType(
-  type: ReearthSketchType | undefined,
-): SketchGeometryType | undefined {
-  switch (type) {
-    case "extrudedCircle":
-      return "circle";
-    case "extrudedRectangle":
-      return "rectangle";
-    case "extrudedPolygon":
-      return "polygon";
-    default:
-      return undefined;
-  }
-}
