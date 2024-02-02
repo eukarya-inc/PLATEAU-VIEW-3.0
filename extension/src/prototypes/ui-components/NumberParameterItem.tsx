@@ -61,7 +61,7 @@ export const NumberParameterItem = forwardRef<HTMLDivElement, NumberParameterIte
                 const [value] = values;
                 return values.slice(1).every(another => another === value) ? value : MIXED;
               },
-              (get, set, value: SetStateAction<number>) => {
+              (_, set, value: SetStateAction<number>) => {
                 atomOrAtoms.forEach(atom => {
                   set(atom, value);
                 });
