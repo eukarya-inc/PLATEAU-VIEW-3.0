@@ -1,7 +1,10 @@
+import { AnimatePresence } from "framer-motion";
+import { useAtomValue } from "jotai";
 import { FC, memo } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
-import { AppFrame } from "../prototypes/ui-components";
+import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
+import { AutoRotateCamera } from "../prototypes/view/containers/AutoRotateCamera";
 import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
@@ -9,6 +12,7 @@ import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
+import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
@@ -32,6 +36,11 @@ type Props = WidgetProps<{
   googleStreetViewAPIKey?: string;
 }>;
 
+export const Loading: FC = () => {
+  const ready = useAtomValue(readyAtom);
+  return <AnimatePresence>{!ready && <LoadingScreen />}</AnimatePresence>;
+};
+
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
 
@@ -49,6 +58,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
+      <Loading />
       {/* <Suspense>
         <SuspendUntilTilesLoaded
           initialTileCount={35}
@@ -67,6 +77,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <ReverseGeocoding />
       <PedestrianTool />
       <MyData />
+      <AutoRotateCamera />
       <FeedBack />
     </WidgetContext>
   );

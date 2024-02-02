@@ -122,15 +122,26 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       setImageSchemeSelection([id]);
     }, [id, setImageSchemeSelection]);
 
+    const handleMove = useCallback(() => {
+      if (boundingSphere) {
+        return lookAtXYZ(boundingSphere);
+      }
+      if (layerId) {
+        return flyToLayerId(layerId);
+      }
+    }, [boundingSphere, layerId]);
+
     return (
       <LayerListItem
         {...itemProps}
         title={title ?? undefined}
-        iconComponent={layerTypeIcons[type]}
+        iconComponent={layerTypeIcons[type] ?? layerTypeIcons.USE_CASE_LAYER}
         highlighted={highlighted}
         selected={selected}
         loading={loading}
         hidden={hidden}
+        layerId={layerId}
+        boundingSphere={boundingSphere}
         accessory={
           colorMap != null ? (
             <Tooltip title={colorScheme?.name}>
@@ -167,6 +178,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
         onDoubleClick={handleDoubleClick}
         onRemove={handleRemove}
         onToggleHidden={handleToggleHidden}
+        onMove={handleMove}
       />
     );
   },

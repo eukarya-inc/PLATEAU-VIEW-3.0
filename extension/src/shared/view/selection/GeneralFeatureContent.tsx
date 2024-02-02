@@ -54,9 +54,13 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
   const type = values[0].layerType;
   const title = useMemo(() => {
     if (rootLayer?.featureInspector?.basic?.titleType === "custom") {
-      return rootLayer?.featureInspector?.basic?.customTitle ?? layerTypeNames[type];
+      return (
+        rootLayer?.featureInspector?.basic?.customTitle ??
+        layerTypeNames[type] ??
+        rootLayer.layerName
+      );
     }
-    return layerTypeNames[type];
+    return layerTypeNames[type] ?? rootLayer.layerName;
   }, [rootLayer, type]);
 
   // TODO(reearth): Support hiding feature
@@ -94,7 +98,7 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
       <div ref={handleSetHeaderHeight}>
         <InspectorHeader
           title={title}
-          iconComponent={layerTypeIcons[type]}
+          iconComponent={layerTypeIcons[type] ?? layerTypeIcons.USE_CASE_LAYER}
           // TODO(reearth): Support highlight layer if necessary
           // actions={
           //   <>

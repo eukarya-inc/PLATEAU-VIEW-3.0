@@ -29,7 +29,8 @@ import {
   VEGETATION_LAYER,
 } from "./layerTypes";
 
-export const layerTypeNames: Record<LayerType, string> = {
+// Undefined means using the name from API.
+export const layerTypeNames: Record<LayerType, string | undefined> = {
   [HEATMAP_LAYER]: "統計データ",
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
@@ -49,13 +50,13 @@ export const layerTypeNames: Record<LayerType, string> = {
   [LANDMARK_LAYER]: "ランドマーク",
   [LAND_SLIDE_RISK_LAYER]: "土砂災害警戒区域",
   [PARK_LAYER]: "公園",
-  [RAILWAY_LAYER]: "線路",
+  [RAILWAY_LAYER]: "鉄道",
   [RIVER_FLOODING_RISK_LAYER]: "洪水浸水想定区域",
   [ROAD_LAYER]: "道路",
   [SHELTER_LAYER]: "避難施設",
   [STATION_LAYER]: "鉄道駅",
   [TSUNAMI_RISK_LAYER]: "津波浸水想定区域",
-  [URBAN_PLANNING_LAYER]: "都市計画",
-  [USE_CASE_LAYER]: "ユースケース",
+  [URBAN_PLANNING_LAYER]: undefined,
   [VEGETATION_LAYER]: "植生",
+  [USE_CASE_LAYER]: undefined,
 };

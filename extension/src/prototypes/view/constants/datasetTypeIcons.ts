@@ -47,4 +47,8 @@ export const datasetTypeIcons = {
   [PlateauDatasetType.TsunamiRisk]: TsunamiRiskIcon,
   [PlateauDatasetType.UseCase]: UseCaseIcon,
   [PlateauDatasetType.Vegetation]: VegetationIcon,
+  [PlateauDatasetType.Sample]: UseCaseIcon,
+  [PlateauDatasetType.Constructure]: UseCaseIcon,
+  [PlateauDatasetType.Water]: UseCaseIcon,
+  [PlateauDatasetType.Traffic]: UseCaseIcon,
 } as const;

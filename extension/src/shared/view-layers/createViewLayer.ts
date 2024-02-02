@@ -128,5 +128,6 @@ export function createViewLayer<T extends LayerType>(
     case URBAN_PLANNING_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case USE_CASE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case VEGETATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    default: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
   }
 }

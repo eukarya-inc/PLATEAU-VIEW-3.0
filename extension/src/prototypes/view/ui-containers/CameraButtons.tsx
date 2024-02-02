@@ -5,12 +5,13 @@ import { useCameraZoom } from "../../../shared/reearth/hooks/useCamera";
 import {
   AppIconButton,
   KeyboardMovementIcon,
-  LocationIcon,
   MinusIcon,
   PlusIcon,
   RotateAroundIcon,
 } from "../../ui-components";
-import { enableKeyboardCameraControlAtom } from "../states/app";
+import { autoRotateCameraAtom, enableKeyboardCameraControlAtom } from "../states/app";
+
+import { GeolocationButton } from "./GeolocationButton";
 
 function useBooleanAtomProps(atom: PrimitiveAtom<boolean>): {
   selected: boolean;
@@ -25,6 +26,7 @@ function useBooleanAtomProps(atom: PrimitiveAtom<boolean>): {
 
 export const CameraButtons: FC = () => {
   const enableKeyboardCameraControlProps = useBooleanAtomProps(enableKeyboardCameraControlAtom);
+  const autoRotateCameraProps = useBooleanAtomProps(autoRotateCameraAtom);
 
   const { zoomIn, zoomOut } = useCameraZoom();
 
@@ -33,10 +35,8 @@ export const CameraButtons: FC = () => {
       <AppIconButton title="キーボード操作" {...enableKeyboardCameraControlProps} disabled>
         <KeyboardMovementIcon />
       </AppIconButton>
-      <AppIconButton title="現在地" disabled>
-        <LocationIcon />
-      </AppIconButton>
-      <AppIconButton title="自動回転" disabled>
+      <GeolocationButton />
+      <AppIconButton title="自動回転" {...autoRotateCameraProps}>
         <RotateAroundIcon />
       </AppIconButton>
       <AppIconButton title="縮小" onClick={zoomOut}>

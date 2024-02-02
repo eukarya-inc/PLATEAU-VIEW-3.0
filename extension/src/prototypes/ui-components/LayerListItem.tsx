@@ -62,12 +62,14 @@ const HoverMenu: FC<HoverMenuProps> = ({
 
 export interface LayerListItemProps extends EntityTitleButtonProps, Omit<HoverMenuProps, "hidden"> {
   accessory?: ReactNode;
+  onMove?: () => void;
 }
 
 export const LayerListItem: FC<LayerListItemProps> = ({
   accessory,
   hidden = false,
   onRemove,
+  onMove,
   onToggleHidden,
   onMouseEnter,
   onMouseLeave,
@@ -84,6 +86,7 @@ export const LayerListItem: FC<LayerListItemProps> = ({
     <StyledEntityTitleButton
       {...props}
       hidden={hidden}
+      onMove={onMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <Stack direction="row" spacing={0.5}>

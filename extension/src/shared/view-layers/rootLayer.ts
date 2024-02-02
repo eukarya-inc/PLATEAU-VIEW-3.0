@@ -37,6 +37,7 @@ export type RootLayerForDatasetAtomParams = {
 export type RootLayerForDatasetParams = {
   datasetId: string;
   datasetType: DatasetType;
+  subName: string | undefined;
   type: LayerType;
   title: string;
   dataList: DatasetItem[];
@@ -61,6 +62,7 @@ export type RootLayerForDataset = {
   general: GeneralSetting | undefined;
   featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
   layer: PrimitiveAtom<LayerModel>;
+  layerName: string | undefined;
 };
 
 export type RootLayerForLayer<T extends LayerType = LayerType> = {
@@ -123,12 +125,13 @@ const findComponentTemplate = (
   setting: Setting | undefined,
   templates: Template[],
   dataName: string | undefined,
+  dataSubName: string | undefined,
 ): ComponentTemplate | undefined => {
   const { useTemplate, templateId, groups } = setting?.fieldComponents ?? {};
 
   // Default template
   const templateWithName = dataName
-    ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
+    ? templates.find(t => [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]))
     : undefined;
 
   if (
@@ -210,6 +213,7 @@ const createViewLayerWithComponentGroup = (
 
 const createRootLayerForDataset = ({
   datasetId,
+  subName,
   type,
   title,
   datasetType,
@@ -223,7 +227,7 @@ const createRootLayerForDataset = ({
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
-  const componentTemplate = findComponentTemplate(setting, templates, datasetType.name);
+  const componentTemplate = findComponentTemplate(setting, templates, datasetType.name, subName);
   const emphasisProperties = findEmphasisProperties(
     setting?.featureInspector,
     templates,
@@ -233,6 +237,7 @@ const createRootLayerForDataset = ({
 
   return {
     type: "dataset",
+    layerName: subName ?? datasetType.name ?? "ユースケース",
     // TODO: get settings from featureInspectorTemplate
     general: setting?.general,
     featureInspector: setting?.featureInspector
@@ -265,7 +270,10 @@ export const createRootLayerForDatasetAtom = (
 ): RootLayerConfig => {
   const dataset = params.dataset;
   const dataList = dataset.items as DatasetItem[];
-  const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const type =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
+  const subName =
+    dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
 
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
@@ -273,6 +281,7 @@ export const createRootLayerForDatasetAtom = (
   const rootLayerAtom = atom<RootLayerForDataset>(
     createRootLayerForDataset({
       datasetId: dataset.id,
+      subName,
       type,
       title: dataset.name,
       datasetType: dataset.type as DatasetType,
@@ -298,6 +307,7 @@ export const createRootLayerForDatasetAtom = (
         rootLayerAtom,
         createRootLayerForDataset({
           datasetId: dataset.id,
+          subName,
           type,
           title: dataset.name,
           datasetType: dataset.type as DatasetType,
@@ -329,6 +339,7 @@ export const createRootLayerForDatasetAtom = (
         rootLayerAtom,
         createRootLayerForDataset({
           datasetId: dataset.id,
+          subName,
           type,
           title: dataset.name,
           datasetType: dataset.type as DatasetType,
@@ -357,7 +368,12 @@ export const createRootLayerForDatasetAtom = (
       const currentDataId = get(currentDataIdAtom);
       const setting = findSetting(get(settingsPrimitiveAtom), currentDataId);
       const data = findData(dataList, currentDataId);
-      const template = findComponentTemplate(setting, get(templatesAtom), dataset.type.name);
+      const template = findComponentTemplate(
+        setting,
+        get(templatesAtom),
+        dataset.type.name,
+        subName,
+      );
       const group = findComponentGroup(setting, template, update);
 
       set(
