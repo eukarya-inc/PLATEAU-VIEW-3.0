@@ -12,15 +12,20 @@ import { readyAtom } from "../../../prototypes/view/states/app";
 import { HEATMAP_LAYER, MY_DATA_LAYER, PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
-import { getShareId } from "../../sharedAtoms";
+import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
 import { settingsAtom } from "../../states/setting";
-import { SharedRootLayer, getSharedRootLayersAtom } from "../../states/share";
+import {
+  SHARED_PROJECT_ID_KEY,
+  SharedRootLayer,
+  getSharedRootLayersAtom,
+} from "../../states/share";
 import { templatesAtom } from "../../states/template";
 import {
   RootLayerForLayerAtomParams,
   createRootLayerForDatasetAtom,
   createRootLayerForLayerAtom,
 } from "../../view-layers/rootLayer";
+import { isAppReadyAtom } from "../state/app";
 
 const DEFAULT_BUILDING_IDS = ["d_13101_bldg", "d_13102_bldg"];
 
@@ -42,9 +47,11 @@ export const InitialLayers: FC = () => {
   const getSharedRootLayers = useSetAtom(getSharedRootLayersAtom);
   const [sharedRootLayers, setSharedRootLayers] = useState<SharedRootLayer[] | undefined>();
   const [isSharedDataLoaded, setIsSharedDataLoaded] = useState(false);
+  const isAppReady = useAtomValue(isAppReadyAtom);
 
   useEffect(() => {
     const run = async () => {
+      if (!isAppReady) return;
       const layers = await getSharedRootLayers();
       setSharedRootLayers(layers);
       setIsSharedDataLoaded(true);
@@ -54,7 +61,7 @@ export const InitialLayers: FC = () => {
     } else {
       setIsSharedDataLoaded(true);
     }
-  }, [getSharedRootLayers, shareId]);
+  }, [getSharedRootLayers, shareId, isAppReady]);
 
   const datasetIds = useMemo(
     () =>
@@ -127,29 +134,53 @@ export const InitialLayers: FC = () => {
   const templatesRef = useRef(templates);
   templatesRef.current = templates;
   useEffect(() => {
-    if (query.loading || !isSharedDataLoaded) return;
+    if (query.loading || !isSharedDataLoaded || !isAppReady) return;
 
-    const remove = [
-      ...initialDatasets.map(d => {
-        const dataList = d.items as DatasetItem[];
-        return addLayer(
-          createRootLayerForDatasetAtom({
-            dataset: d,
-            areaCode: d.wardCode || d.cityCode || d.prefectureCode,
-            currentDataId: dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-            settings: settingsRef.current.filter(s => s.datasetId === d.id),
-            templates: templatesRef.current,
-          }),
-          { autoSelect: false },
-        );
-      }),
-      ...(initialLayers?.map(l =>
-        addLayer(createRootLayerForLayerAtom(l as RootLayerForLayerAtomParams<LayerType>), {
-          autoSelect: false,
+    let remove: (() => void)[] = [];
+    const initialize = async () => {
+      const sharedProjectIdUnknown =
+        (await getSharedStoreValue(SHARED_PROJECT_ID_KEY)) ?? undefined;
+      const sharedProjectId =
+        typeof sharedProjectIdUnknown === "string" ? sharedProjectIdUnknown : undefined;
+
+      const sharedDatasetLayers = sharedRootLayers?.filter(
+        (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
+      );
+
+      remove = [
+        ...initialDatasets.map(d => {
+          const dataList = d.items as DatasetItem[];
+          const { dataId, groupId } = sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
+          return addLayer(
+            createRootLayerForDatasetAtom({
+              dataset: d,
+              areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+              settings: settingsRef.current.filter(s => s.datasetId === d.id),
+              templates: templatesRef.current,
+              shareId: sharedProjectId,
+              currentDataId: sharedProjectId
+                ? dataId
+                : dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
+              currentGroupId: groupId,
+            }),
+            { autoSelect: false },
+          );
         }),
-      ) ?? []),
-    ];
-    setReady(true);
+        ...(initialLayers?.map(l =>
+          addLayer(
+            createRootLayerForLayerAtom({
+              ...l,
+              shareId: sharedProjectId,
+            } as RootLayerForLayerAtomParams<LayerType>),
+            {
+              autoSelect: false,
+            },
+          ),
+        ) ?? []),
+      ];
+      setReady(true);
+    };
+    initialize();
     return () => {
       remove.forEach(remove => {
         remove();
@@ -163,6 +194,8 @@ export const InitialLayers: FC = () => {
     setReady,
     initialLayers,
     isSharedDataLoaded,
+    isAppReady,
+    sharedRootLayers,
   ]);
 
   return null;

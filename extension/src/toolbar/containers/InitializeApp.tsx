@@ -3,9 +3,11 @@ import { FC, useEffect, useLayoutEffect } from "react";
 
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
+import { fetchShare } from "../../shared/sharedAtoms";
 import { sharedInitialClockAtom } from "../../shared/states/scene";
 import { updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
+import { isAppReadyAtom } from "../../shared/view/state/app";
 import { useInteractionMode } from "../hooks/useInteractionMode";
 
 export const InitializeApp: FC = () => {
@@ -13,22 +15,23 @@ export const InitializeApp: FC = () => {
   const templateClient = useTemplateClient();
 
   const updateAllSetting = useSetAtom(updateAllSettingAtom);
-  useEffect(() => {
-    const fetch = async () => {
-      const settings = await settingClient.findAll();
-      updateAllSetting(settings);
-    };
-    fetch();
-  }, [settingClient, updateAllSetting]);
 
   const updateAllTemplate = useSetAtom(updateAllTemplateAtom);
+
+  const setIsAppReady = useSetAtom(isAppReadyAtom);
   useEffect(() => {
     const fetch = async () => {
-      const templates = await templateClient.findAll();
+      fetchShare();
+      const [settings, templates] = await Promise.all([
+        settingClient.findAll(),
+        templateClient.findAll(),
+      ]);
+      updateAllSetting(settings);
       updateAllTemplate(Array.isArray(templates) ? templates : []);
+      setIsAppReady(true);
     };
     fetch();
-  }, [templateClient, updateAllTemplate]);
+  }, [setIsAppReady, settingClient, templateClient, updateAllSetting, updateAllTemplate]);
 
   const initialClock = useAtomValue(sharedInitialClockAtom);
 

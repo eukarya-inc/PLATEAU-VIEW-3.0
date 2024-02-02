@@ -40,7 +40,15 @@ export function createPlateauTilesetLayerState(
 ): PlateauTilesetLayerState {
   const propertiesAtom = atom<PlateauTilesetProperties | null>(null);
 
-  const colorPropertyAtom = atom<string | null>(null);
+  const colorPropertyAtom = makeComponentAtomWrapper(
+    atom<string | null>(null),
+    {
+      ...params,
+      componentType: "colorProperty",
+    },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
 
   const originalColorMapAtom = atom<ColorMap>(colorMapPlateau);
   const wrappedOriginalColorMapAtom = atom(
@@ -67,7 +75,7 @@ export function createPlateauTilesetLayerState(
     true,
     {
       shouldInitialize: params.shouldInitializeAtom,
-      beforeSet: a => (a instanceof ColorMap ? a.type : undefined),
+      beforeSet: a => (a instanceof ColorMap ? a.name : undefined),
     },
   );
   const colorRangeAtom = makeComponentAtomWrapper(

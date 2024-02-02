@@ -30,6 +30,7 @@ export interface PedestrianLayerModelParams extends ViewLayerModelParams {
   headingPitchAtom?: HeadingPitch;
   zoomAtom?: number;
   shouldInitializeAtom?: boolean;
+  shareId?: string;
 }
 
 export interface PedestrianLayerModel extends ViewLayerModel {
@@ -71,7 +72,7 @@ export function createPedestrianLayer(
         }
       },
     ),
-    { datasetId: params.id, componentType: "location" },
+    { ...params, datasetId: params.id, componentType: "location" },
     false,
     { shouldInitialize: params.shouldInitializeAtom },
   );
@@ -88,14 +89,14 @@ export function createPedestrianLayer(
         }
       },
     ),
-    { datasetId: params.id, componentType: "headingPitch" },
+    { ...params, datasetId: params.id, componentType: "headingPitch" },
     false,
     { shouldInitialize: params.shouldInitializeAtom },
   );
 
   const zoomPrimitiveAtom = makeComponentAtomWrapper(
     atom<number | null>(params.zoomAtom ?? null),
-    { datasetId: params.id, componentType: "zoom" },
+    { ...params, datasetId: params.id, componentType: "zoom" },
     false,
     { shouldInitialize: params.shouldInitializeAtom },
   );
@@ -129,7 +130,8 @@ export const PedestrianLayer: FC<LayerProps<typeof PEDESTRIAN_LAYER>> = ({
   addressAtom,
 }) => {
   const [pano, setPano] = useAtom(panoAtom);
-  const [location, setLocation] = useAtom(locationAtom);
+  const location = useAtomValue(locationAtom);
+  const setLocation = useSetAtom(locationAtom);
   const headingPitch = useAtomValue(headingPitchAtom);
   const zoom = useAtomValue(zoomAtom);
   const synchronized = useAtomValue(synchronizedAtom);

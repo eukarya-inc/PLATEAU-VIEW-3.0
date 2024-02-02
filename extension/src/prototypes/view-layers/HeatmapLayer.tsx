@@ -87,7 +87,7 @@ export function createHeatmapLayer(
     true,
     {
       shouldInitialize: params.shouldInitializeAtom,
-      beforeSet: a => (a instanceof ColorMap ? a.type : undefined),
+      beforeSet: a => (a instanceof ColorMap ? a.name : undefined),
     },
   );
   const colorRangeAtom = makeComponentAtomWrapper(

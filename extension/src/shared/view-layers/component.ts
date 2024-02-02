@@ -28,11 +28,7 @@ export type ComponentIdParams = {
 };
 
 export const makeComponentId = ({ datasetId, componentType, shareId }: ComponentIdParams) => {
-  let name = `${datasetId}_${componentType}`;
-  if (shareId) {
-    name += `_${shareId}`;
-  }
-  return name;
+  return `${datasetId}_${componentType}_${shareId}`;
 };
 
 export const makeComponentAtomWrapper = <V, A extends (unknown | SetStateAction<unknown>)[], S>(

@@ -5,7 +5,7 @@ import { FC } from "react";
 import { PaperPlane, CopyIcon, ShareLoading } from "../../../prototypes/ui-components/icons";
 import Modal from "../Modal";
 
-const LoadingContainer = styled("div")(() => ({
+const Container = styled("div")(() => ({
   display: "flex",
   justifyContent: "center",
   margin: "5rem 0",
@@ -57,16 +57,22 @@ const IconButtonStyled = styled(IconButton)(({ theme }) => ({
 export type Props = {
   show: boolean;
   loading?: boolean;
+  isError?: boolean;
   url?: string;
   iframe?: string;
   onClose?: () => void;
 };
 
-const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
+const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError }) => {
   const handleCopyToClipboard = (value?: string) => {
     if (!value) return;
     navigator.clipboard.writeText(value);
   };
+
+  if (isError) {
+    return <Container sx={{ typography: "body1" }}>シェアに失敗しました。</Container>;
+  }
+
   return (
     <Modal
       isVisible={show}
@@ -74,9 +80,9 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe }) => {
       titleIcon={<PaperPlane sx={{ mt: 0.85 }} />}
       onClose={onClose}>
       {loading ? (
-        <LoadingContainer>
+        <Container>
           <Loading />
-        </LoadingContainer>
+        </Container>
       ) : (
         <StyledBox sx={{ typography: "body1", borderTop: "1px solid #0000001f" }}>
           <Typography>URLで共有</Typography>

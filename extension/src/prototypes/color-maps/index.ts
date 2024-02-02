@@ -29,33 +29,33 @@ export { default as colorMapTurbo } from "./colorMaps/turbo";
 export { default as colorMapViridis } from "./colorMaps/viridis";
 export { default as colorMapVlag } from "./colorMaps/vlag";
 
-export const createColorMapFromType = (colorMapType: string) => {
-  switch (colorMapType) {
-    case colorMapCividis.type:
+export const createColorMapFromType = (colorMapName: string) => {
+  switch (colorMapName) {
+    case colorMapCividis.name:
       return colorMapCividis;
-    case colorMapCrest.type:
+    case colorMapCrest.name:
       return colorMapCrest;
-    case colorMapFlare.type:
+    case colorMapFlare.name:
       return colorMapFlare;
-    case colorMapIcefire.type:
+    case colorMapIcefire.name:
       return colorMapIcefire;
-    case colorMapInferno.type:
+    case colorMapInferno.name:
       return colorMapInferno;
-    case colorMapMagma.type:
+    case colorMapMagma.name:
       return colorMapMagma;
-    case colorMapMako.type:
+    case colorMapMako.name:
       return colorMapMako;
-    case colorMapPlasma.type:
+    case colorMapPlasma.name:
       return colorMapPlasma;
-    case colorMapPlateau.type:
+    case colorMapPlateau.name:
       return colorMapPlateau;
-    case colorMapRocket.type:
+    case colorMapRocket.name:
       return colorMapRocket;
-    case colorMapTurbo.type:
+    case colorMapTurbo.name:
       return colorMapTurbo;
-    case colorMapViridis.type:
+    case colorMapViridis.name:
       return colorMapViridis;
-    case colorMapVlag.type:
+    case colorMapVlag.name:
       return colorMapVlag;
   }
 };
