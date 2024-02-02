@@ -20,6 +20,7 @@ interface QualitativeProperty {
   getMinMax?: (min: number, max: number) => [min: number, max: number];
   accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
+  isMinMaxNeeded?: boolean;
 }
 
 const qualitativeProperties: QualitativeProperty[] = [
@@ -29,13 +30,26 @@ const qualitativeProperties: QualitativeProperty[] = [
       propertyName.endsWith("浸水ランクコード") ||
       // For river flooding risk layers
       propertyName === "rank_code" ||
-      propertyName === "rank_org_code" ||
-      propertyName === "uro:rank_code" ||
-      propertyName === "uro:rank_org_code",
+      propertyName === "uro:rank_code",
     colorSet: floodRankColorSet,
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
     availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
+  },
+  {
+    testProperty: propertyName =>
+      // For building layers
+      propertyName.endsWith("浸水ランクコード（独自）") ||
+      // For river flooding risk layers
+      propertyName === "rank_org_code" ||
+      propertyName === "uro:rank_org_code" ||
+      propertyName === "uro:rankOrg_code",
+    colorSet: floodRankColorSet,
+    getDisplayName: name =>
+      name.endsWith("浸水ランクコード（独自）") ? name.replaceAll("_", " ") : "浸水ランク（独自）",
+    availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
@@ -160,7 +174,9 @@ export class PlateauTilesetProperties extends Properties {
         const qualitativeProperty = qualitativeProperties?.find(({ testProperty }) =>
           testProperty(name, value),
         );
-        if (qualitativeProperty != null) {
+        const hasMinMaxForNeededCase =
+          !qualitativeProperty?.isMinMaxNeeded || (minimum != null && maximum != null);
+        if (qualitativeProperty != null && hasMinMaxForNeededCase) {
           const [finalMinimum, finalMaximum] =
             minimum && maximum
               ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
