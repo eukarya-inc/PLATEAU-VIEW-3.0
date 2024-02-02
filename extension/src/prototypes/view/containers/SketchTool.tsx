@@ -59,16 +59,22 @@ const Wrapped: FC = () => {
         });
         addLayer(layer, { autoSelect: false });
       }
-      setScreenSpaceSelection([
-        {
-          type: SKETCH_OBJECT,
-          value: composeIdentifier({
-            type: "Sketch",
-            subtype: SKETCH_OBJECT,
-            key: feature.properties.id,
-          }),
-        },
-      ]);
+      // Workaround:
+      // Delay two frames to ensure reearth can find the crated feature.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setScreenSpaceSelection([
+            {
+              type: SKETCH_OBJECT,
+              value: composeIdentifier({
+                type: "Sketch",
+                subtype: SKETCH_OBJECT,
+                key: feature.properties.id,
+              }),
+            },
+          ]);
+        });
+      });
     },
     [layer, addFeature, addLayer, setScreenSpaceSelection],
   );
