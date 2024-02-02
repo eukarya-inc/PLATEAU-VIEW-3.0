@@ -178,7 +178,7 @@ export class PlateauTilesetProperties extends Properties {
           };
         }
 
-        if (minimum && maximum) {
+        if (minimum != null && maximum != null) {
           const numberProperty = numberProperties?.find(({ testProperty }) =>
             testProperty(name, value),
           );
