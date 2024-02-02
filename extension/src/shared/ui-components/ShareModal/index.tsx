@@ -69,10 +69,6 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError })
     navigator.clipboard.writeText(value);
   };
 
-  if (isError) {
-    return <Container sx={{ typography: "body1" }}>シェアに失敗しました。</Container>;
-  }
-
   return (
     <Modal
       isVisible={show}
@@ -83,6 +79,8 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError })
         <Container>
           <Loading />
         </Container>
+      ) : isError ? (
+        <Container sx={{ typography: "body1" }}>シェアに失敗しました。</Container>
       ) : (
         <StyledBox sx={{ typography: "body1", borderTop: "1px solid #0000001f" }}>
           <Typography>URLで共有</Typography>

@@ -82,7 +82,9 @@ export const sharedStoreAtomWrapper = <V, A extends (unknown | SetStateAction<un
   w.onMount = set => {
     if (!shouldInitialize) return;
     getSharedStoreValue<A>(name).then(v => {
-      set(...((v ?? []) as A));
+      if (v) {
+        set(...(v as A));
+      }
     });
   };
   return w;
@@ -133,7 +135,9 @@ export const storageStoreAtomWrapper = <V, A extends (unknown | SetStateAction<u
   w.onMount = set => {
     if (!shouldInitialize) return;
     const v = getStorageStoreValue<A>(name);
-    set(...((v ?? []) as A));
+    if (v) {
+      set(...(v as A));
+    }
   };
   return w;
 };
