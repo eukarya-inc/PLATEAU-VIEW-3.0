@@ -74,6 +74,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
       marker: {
         ...DEFAULT_APPEARNACES.marker,
         ...(appearances?.marker ?? {}),
+        hideIndicator: true,
       },
       polyline: {
         ...DEFAULT_APPEARNACES.polyline,
