@@ -9,6 +9,7 @@ import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
 import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
+import { ScreenSpaceCamera } from "../prototypes/view/containers/ScreenSpaceCamera";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
@@ -78,6 +79,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <PedestrianTool />
       <MyData />
       <AutoRotateCamera />
+      <ScreenSpaceCamera />
       <FeedBack />
     </WidgetContext>
   );
