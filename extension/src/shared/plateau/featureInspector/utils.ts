@@ -172,3 +172,11 @@ export const makePropertyForFeatureInspector = ({
     ...(rowAllAttributes?.length ? [{ name: "全ての属性", values: rowAllAttributes ?? {} }] : []),
   ];
 };
+
+export const makePropertyName = (name: string) => {
+  const split = name.split(/_uro:/);
+  const next = split[1] ? `uro:${split[1]}` : split[0];
+  const first = getAttributeLabel(next);
+  if (first) return first;
+  return getAttributeLabel(next.replace("_", ":")) ?? next.replaceAll("_", "");
+};
