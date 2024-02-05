@@ -18,6 +18,12 @@ bldg,custom,prefecture_name,,,,都道府県名
 bldg,custom,uro:WaterBodyRiverFloodingRiskAttribute,,,,損傷状況
 bldg,custom,uro:rank_code,,,,浸水ランクコード
 bldg,custom,uro:rankOrg_code,,,,浸水ランク（独自）コード
+bldg,custom,uro:adminType_code,,,,指定機関コード
+bldg,custom,uro:description_code,,,,設定等名称コード
+bldg,custom,uro:scale_code,,,,規模コード
+bldg,custom,uro:depthuom,,,,浸水深単位
+bldg,custom,uro:durationuom,,,,継続時間単位
+bldg,custom,ancestors,,,,原型
 bldg,bldg:Building,gml:description,,,,概要
 bldg,bldg:Building,gml:name,,,,名称
 bldg,bldg:Building,gml:boundedBy,,,,範囲
@@ -124,30 +130,30 @@ bldg,bldg:Building,uro:largeCustomerFacilityAttribute.uro:LargeCustomerFacilityA
 bldg,bldg:Building,uro:largeCustomerFacilityAttribute.uro:LargeCustomerFacilityAttribute,uro:note,,,備考
 bldg,bldg:Building,uro:largeCustomerFacilityAttribute.uro:LargeCustomerFacilityAttribute,uro:surveyYear,,,調査年
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,,,,洪水浸水リスク
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:rank,,,浸水ランク
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:depth,,,浸水深
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:adminType,,,指定機関区分
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:scale,,,縮尺係数
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:scale,,,規模
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:duration,,,継続時間
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,,,,津波浸水リスク
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:rank,,,浸水ランク
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:depth,,,浸水深
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,,,,高潮浸水リスク
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:rank,,,浸水ランク
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:depth,,,浸水深
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,,,,内水浸水リスク
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:rank,,,浸水ランク
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:depth,,,浸水深
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,,,,土砂災害リスク
-bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:areaType,,,内外区分
 bldg,bldg:Building,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute,,,,データ品質属性
 bldg,bldg:Building,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute,uro:srcScale,,,地図情報レベル
@@ -168,7 +174,7 @@ bldg,bldg:Building,uro:keyValuePairAttribute.uro:KeyValuePair,uro:uriValue,,,ー
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,,,,プロジェクト情報
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:globalId,,,グローバルID
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:name,,,名称
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:description,,,説明
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:description,,,設定等名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:longName,,,識別名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:phase,,,プロジェクトの状態
@@ -177,7 +183,7 @@ bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProject,uro:unitsInContext,,,
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,,,,建築物情報
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:globalId,,,グローバルID
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:name,,,名称
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:description,,,説明
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:description,,,設定等名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:longName,,,識別名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:compositionType,,,空間構成の区分
@@ -187,7 +193,7 @@ bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:buildingAddress,
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,,,,敷地情報
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:globalId,,,グローバルID
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:name,,,名称
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:description,,,説明
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:description,,,設定等名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:longName,,,識別名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:objectType,,,オブジェクトタイプ
@@ -198,12 +204,12 @@ bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:landTitleNumber,,,�
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcSite,uro:siteAddress,,,郵便住所
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,,,,座標参照系情報
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:name,,,名称
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:description,,,説明
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:description,,,設定等名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:geodeticDatum,,,測地原子
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:verticalDatum,,,垂直原子
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,,,,投影座標系情報
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:name,,,名称
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:description,,,説明
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:description,,,設定等名称
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:geodeticDatum,,,測地原子
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:verticalDatum,,,垂直原子
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:mapUnit,,,座標軸の単位
@@ -217,7 +223,7 @@ bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,northings,,,変
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,orthogonalHeight,,,指定された垂直原子に対する高さ
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,xAxisAbscissa,,,エンジニアリング（ワールド）座標系のローカルx軸の単位ベクトルの終点の東軸に沿った値
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:xAxisOrdinate,,,エンジニアリング（ワールド）座標系のローカルy軸の単位ベクトルの終点の東軸に沿った値
-bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:scale,,,縮尺係数
+bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:scale,,,規模
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,,,,建築物共通属性
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,uro:buildingId,,,識別子
 bldg,bldg:Building,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,uro:isPermanentId,,,永続性
@@ -247,7 +253,7 @@ bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,,,
 bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:Building,uro:bldgFacilityTypeAttribute,,,,施設分類属性
 bldg,bldg:Building,uro:bldgFacilityTypeAttribute,uro:class,,,分野
@@ -678,7 +684,7 @@ bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:mai
 bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+bldg,bldg:Building,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 bldg,bldg:Building,uro:bldgDmAttribute.DmGeometricAttribute,,,,図式情報
 bldg,bldg:Building,uro:bldgDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 bldg,bldg:Building,uro:bldgDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -847,7 +853,7 @@ bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcPsetSpaceCommon,uro:concealedCeiling,
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,,,,空間情報
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:globalId,,,グローバル識別子
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:name,,,名称
-bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:description,,,説明
+bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:description,,,設定等名称
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:longName,,,識別名称
 bldg,bldg:Room,uro:ifcRoomAttribute.uro:IfcSpace,uro:compositionType,,,構成区分
@@ -886,7 +892,7 @@ bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,,,,屋内�
 bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:Room,uro:indoorRoomAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:Room,uro:roomDataQualityAttribute,,,,データ品質属性
 bldg,bldg:Room,uro:roomDataQualityAttribute,uro:srcScale,,,地図情報レベル
@@ -918,7 +924,7 @@ bldg,bldg:BuildingInstallation,bldg:boundedBy,,,,境界面
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,,,,BIMモデルからの変換情報
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:globalId,,,グローバルID
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:name,,,名称
-bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:description,,,説明
+bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:description,,,設定等名称
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:tag,,,識別番号
 bldg,bldg:BuildingInstallation,uro:ifcBuildingInstallationAttribute.uro:IfcBuildingElement,uro:elementType,,,部材区分
@@ -952,7 +958,7 @@ bldg,bldg:RoofSurface,bldg:opening,,,,開口部
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,,,,BIMモデルからの変換情報
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:globalId,,,グローバルID
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:name,,,名称
-bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,説明
+bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,設定等名称
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:tag,,,識別番号
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:elementType,,,部材区分
@@ -968,7 +974,7 @@ bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,,,,BIMモデルからの変換情報
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:globalId,,,グローバルID
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:name,,,名称
-bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:description,,,説明
+bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:description,,,設定等名称
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:tag,,,識別番号
 bldg,bldg:RoofSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcRoof,uro:elementType,,,部材区分
@@ -994,7 +1000,7 @@ bldg,bldg:WallSurface,bldg:opening,,,,開口部
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,,,,壁情報
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:globalId,,,グローバルID
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:name,,,名称
-bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:description,,,説明
+bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:description,,,設定等名称
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:tag,,,識別番号
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:elementType,,,部材区分
@@ -1023,7 +1029,7 @@ bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWall,uro:netVolume,
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,,,,標準壁情報
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:globalId,,,グローバルID
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:name,,,名称
-bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:description,,,説明
+bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:description,,,設定等名称
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:tag,,,識別番号
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,uro:elementType,,,部材区分
@@ -1052,7 +1058,7 @@ bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcWallStandardCase,ur
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,,,,カーテンウォール情報
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:globalId,,,グローバルID
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:name,,,名称
-bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:description,,,説明
+bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:description,,,設定等名称
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:tag,,,識別番号
 bldg,bldg:WallSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcCurtainWall,uro:elementType,,,部材区分
@@ -1086,7 +1092,7 @@ bldg,bldg:GroundSurface,bldg:opening,,,,開口部
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,,,,BIMモデルからの変換情報
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:globalId,,,グローバルID
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:name,,,名称
-bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,説明
+bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,設定等名称
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:tag,,,識別番号
 bldg,bldg:GroundSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:elementType,,,部材区分
@@ -1120,7 +1126,7 @@ bldg,bldg:OuterFloorSurface,bldg:opening,,,,開口部
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,,,,BIMモデルからの変換情報
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:globalId,,,グローバルID
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:name,,,名称
-bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,説明
+bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:description,,,設定等名称
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:tag,,,識別番号
 bldg,bldg:OuterFloorSurface,uro:ifcBoundarySurfaceAttribute.uro:IfcBuildingElement,uro:elementType,,,部材区分
@@ -1196,7 +1202,7 @@ bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserD
 bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:InteriorWallSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:FloorSurface,gml:description,,,,説明
 bldg,bldg:FloorSurface,gml:name,,,,名称
@@ -1224,7 +1230,7 @@ bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedA
 bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:FloorSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:CeilingSurface,gml:description,,,,説明
 bldg,bldg:CeilingSurface,gml:name,,,,名称
@@ -1252,7 +1258,7 @@ bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefine
 bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:CeilingSurface,uro:indoorBoundarySurfaceAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:Window,gml:description,,,,説明
 bldg,bldg:Window,gml:name,,,,名称
@@ -1273,7 +1279,7 @@ bldg,bldg:Window,bldg:lod4MultiSurface,,,,lod4面
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,,,,開口部情報
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:globalId,,,グローバルID
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:name,,,名称
-bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:description,,,説明
+bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:description,,,設定等名称
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:tag,,,識別番号
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:nominalArea,,,面積
@@ -1281,7 +1287,7 @@ bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:nominalVolume
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,,,,窓情報
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:globalId,,,グローバルID
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:name,,,名称
-bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:description,,,説明
+bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:description,,,設定等名称
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:tag,,,識別番号
 bldg,bldg:Window,uro:ifcOpeningAttribute.uro:IfcWindow,uro:elementType,,,部材区分
@@ -1319,7 +1325,7 @@ bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,,,,�
 bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:Window,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:Door,gml:description,,,,説明
 bldg,bldg:Door,gml:name,,,,名称
@@ -1340,7 +1346,7 @@ bldg,bldg:Door,bldg:lod4MultiSurface,,,,lod4面
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,,,,開口部情報
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:globalId,,,グローバルID
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:name,,,名称
-bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:description,,,説明
+bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:description,,,設定等名称
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:tag,,,識別番号
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:nominalArea,,,面積
@@ -1348,7 +1354,7 @@ bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcOpeningElement,uro:nominalVolume,,
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,,,,扉情報
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:globalId,,,グローバルID
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:name,,,名称
-bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:description,,,説明
+bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:description,,,設定等名称
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:tag,,,識別番号
 bldg,bldg:Door,uro:ifcOpeningAttribute.uro:IfcDoor,uro:elementType,,,部材区分
@@ -1389,7 +1395,7 @@ bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,,,,屋�
 bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:Door,uro:indoorOpeningAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:IntBuildingInstallation,gml:description,,,,説明
 bldg,bldg:IntBuildingInstallation,gml:name,,,,名称
@@ -1413,7 +1419,7 @@ bldg,bldg:IntBuildingInstallation,bldg:boundedBy,,,,境界面
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,,,,BIMモデルからの変換情報
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:globalId,,,グローバルID
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:name,,,名称
-bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:description,,,説明
+bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:description,,,設定等名称
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:tag,,,識別番号
 bldg,bldg:IntBuildingInstallation,uro:ifcIntBuildingInstallationAttribute.uro:IfcBuildingElement,uro:elementType,,,部材区分
@@ -1443,7 +1449,7 @@ bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUser
 bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:IntBuildingInstallation,uro:indoorInstallationAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,bldg:BuildingFurniture,gml:description,,,,説明
 bldg,bldg:BuildingFurniture,gml:name,,,,名称
@@ -1466,7 +1472,7 @@ bldg,bldg:BuildingFurniture,bldg:lod4Geometry,,,,lod4幾何
 bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,,,,BIMモデルからの変換情報
 bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:globalId,,,グローバルID
 bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:name,,,名称
-bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:description,,,説明
+bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:description,,,設定等名称
 bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:objectType,,,オブジェクトタイプ
 bldg,bldg:BuildingFurniture,uro:ifcBuildingFurnitureAttribute.uro:IfcFurnishingElement,uro:tag,,,識別番号
 bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorPublicTagAttribute,,,,パブリックタグ属性
@@ -1479,7 +1485,7 @@ bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAt
 bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,bldg:BuildingFurniture,uro:indoorFurnitureAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 bldg,grp:CityObjectGroup,gml:description,,,,説明
 bldg,grp:CityObjectGroup,gml:name,,,,名称
@@ -1503,7 +1509,7 @@ bldg,grp:CityObjectGroup,grp:parent,,,,親オブジェクト
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,,,,階数情報
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:globalId,,,グローバルID
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:name,,,名称
-bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:description,,,説明
+bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:description,,,設定等名称
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:objectType,,,オブジェクトタイプ
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:longName,,,識別名称
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,uro:compositionType,,,空間構成区分
@@ -1511,7 +1517,7 @@ bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.uro:IfcBuildingStorey,ur
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,,,,任意区画情報
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,uro:globalId,,,グローバルID
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,uro:name,,,名称
-bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,uro:description,,,説明
+bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,uro:description,,,設定等名称
 bldg,grp:CityObjectGroup,uro:ifcBuildingStoreyAttribute.IfcZone,uro:objectType,,,オブジェクトタイプ
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorStoreyAttribute,,,,階数情報
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorStoreyAttribute,uro:source,,,原典資料
@@ -1524,7 +1530,7 @@ bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribut
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 bldg,grp:CityObjectGroup,uro:indoorStoreyAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 
 prefix,feature_type,level1,level2,level3,level4,description
@@ -1996,7 +2002,7 @@ luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:main
 luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+luse,luse:LandUse,uro:luseFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 
 prefix,feature_type,level1,level2,level3,level4,description
 tran,tran:Road,gml:description,,,,説明
@@ -2479,7 +2485,7 @@ tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:mainten
 tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+tran,tran:Road,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 tran,tran:Road,uro:tranDataQualityAttribute,,,,データ品質属性
 tran,tran:Road,uro:tranDataQualityAttribute,uro:srcScale,,,地図情報レベル
 tran,tran:Road,uro:tranDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -3086,7 +3092,7 @@ rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+rwy,tran:Railway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 rwy,tran:Railway,uro:tranDataQualityAttribute.uro:TransportationDataQualityAttribute,,,,データ品質属性
 rwy,tran:Railway,uro:tranDataQualityAttribute.uro:TransportationDataQualityAttribute,uro:srcScale,,,地図情報レベル
 rwy,tran:Railway,uro:tranDataQualityAttribute.uro:TransportationDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -3654,7 +3660,7 @@ trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:mainten
 trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+trk,tran:Track,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 trk,tran:Track,uro:tranDataQualityAttribute,,,,データ品質属性
 trk,tran:Track,uro:tranDataQualityAttribute,uro:srcScale,,,地図情報レベル
 trk,tran:Track,uro:tranDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -3663,7 +3669,7 @@ trk,tran:Track,uro:tranDataQualityAttribute,uro:appearanceSrcDesc,,,テクスチ
 trk,tran:Track,uro:tranDataQualityAttribute,uro:lodType,,,詳細LOD
 trk,tran:Track,uro:trackAttribute,,,,道路構造
 trk,tran:Track,uro:trackAttribute,uro:alternativeName,,,その他の名称
-trk,tran:Track,uro:trackAttribute,uro:adminType,,,管理者区分
+trk,tran:Track,uro:trackAttribute,uro:adminType,,,指定機関
 trk,tran:Track,uro:trackAttribute,uro:relativeLevel,,,階層順
 trk,tran:Track,uro:trackAttribute,uro:widthType,,,幅員区分
 trk,tran:Track,uro:trackAttribute,uro:structureType,,,構造形式
@@ -4249,7 +4255,7 @@ squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+squr,tran:Square,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 squr,tran:Square,uro:tranDataQualityAttribute,,,,データ品質属性
 squr,tran:Square,uro:tranDataQualityAttribute,uro:srcScale,,,地図情報レベル
 squr,tran:Square,uro:tranDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -4874,7 +4880,7 @@ wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+wwy,uro:Waterway,uro:tranFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 wwy,uro:Waterway,uro:tranDataQualityAttribute,,,,データ品質属性
 wwy,uro:Waterway,uro:tranDataQualityAttribute,uro:srcScale,,,地図情報レベル
 wwy,uro:Waterway,uro:tranDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -9364,7 +9370,7 @@ brid,brid:Bridge,brid:interiorBridgeRoom,,,,部屋
 brid,brid:Bridge,brid:consistsOfBridgePart,,,,橋梁部分
 brid,brid:Bridge,brid:address,,,,住所
 brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,,,,構造物基本属性
-brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,管理者区分
+brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,指定機関
 brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,uro:administorator,,,管理者名
 brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,uro:adminOffice,,,管理者事務所所在地
 brid,brid:Bridge,uro:bridBaseAttribute.uro:ConstructionBaseAttribute,uro:operatorType,,,運用者
@@ -9399,30 +9405,30 @@ brid,brid:Bridge,uro:bridRiskAssessmentAttribute.uro:ConstructionRiskAssessmentA
 brid,brid:Bridge,uro:bridRiskAssessmentAttribute.uro:ConstructionRiskAssessmentAttribute,uro:status,,,対応状況
 brid,brid:Bridge,uro:bridRiskAssessmentAttribute.uro:ConstructionRiskAssessmentAttribute,uro:referenceDate,,,更新時点
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,,,,損傷状況
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:rank,,,浸水ランク
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:depth,,,浸水深
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:adminType,,,指定機関区分
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:scale,,,縮尺係数
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:scale,,,規模
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:duration,,,継続時間
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,,,,津波浸水リスク
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:rank,,,浸水ランク
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:depth,,,浸水深
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,,,,高潮浸水リスク
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:rank,,,浸水ランク
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:depth,,,浸水深
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,,,,内水浸水リスク
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:rank,,,浸水ランク
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:depth,,,浸水深
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:LandSlideRiskAttribute,,,,土砂災害リスク
-brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:areaType,,,内外区分
 brid,brid:Bridge,uro:bridDataQualityAttribute.uro:ConstructionDataQualityAttribute,,,,データ品質属性
 brid,brid:Bridge,uro:bridDataQualityAttribute.uro:ConstructionDataQualityAttribute,uro:srcScale,,,地図情報レベル
@@ -9862,7 +9868,7 @@ brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+brid,brid:Bridge,uro:bridFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 brid,brid:Bridge,uro:bridDmAttribute.DmGeometricAttribute,,,,図式情報
 brid,brid:Bridge,uro:bridDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 brid,brid:Bridge,uro:bridDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -9934,7 +9940,7 @@ brid,brid:BridgePart,brid:interiorBridgeRoom,,,,部屋
 brid,brid:BridgePart,brid:consistsOfBridgePart,,,,橋梁部分
 brid,brid:BridgePart,brid:address,,,,住所
 brid,brid:BridgePart,uro:bridBaseAttribute,,,,構造物基本属性
-brid,brid:BridgePart,uro:bridBaseAttribute,uro:adminType,,,管理者区分
+brid,brid:BridgePart,uro:bridBaseAttribute,uro:adminType,,,指定機関
 brid,brid:BridgePart,uro:bridBaseAttribute,uro:administorator,,,管理者名
 brid,brid:BridgePart,uro:bridBaseAttribute,uro:adminOffice,,,管理者事務所所在地
 brid,brid:BridgePart,uro:bridBaseAttribute,uro:operatorType,,,運用者
@@ -10319,7 +10325,7 @@ tun,tun:Tunnel,tun:lod4TerrainIntersection,,,,lod4地形との交線
 tun,tun:Tunnel,tun:interiorHollowSpace,,,,部屋
 tun,tun:Tunnel,tun:consistsOfTunnelPart,,,,橋梁部分
 tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,,,,構造物基本属性
-tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,管理者区分
+tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,指定機関
 tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:administorator,,,管理者名
 tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminOffice,,,管理者事務所所在地
 tun,tun:Tunnel,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:operatorType,,,運用者
@@ -10352,30 +10358,30 @@ tun,tun:Tunnel,uro:tunRiskAssessmentAttribute.5	uro:ConstructionRiskAssessmentAt
 tun,tun:Tunnel,uro:tunRiskAssessmentAttribute.5	uro:ConstructionRiskAssessmentAttribute,uro:status,,,対応状況
 tun,tun:Tunnel,uro:tunRiskAssessmentAttribute.5	uro:ConstructionRiskAssessmentAttribute,uro:referenceDate,,,更新時点
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,,,,洪水浸水リスク
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:rank,,,浸水ランク
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:depth,,,浸水深
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:adminType,,,指定機関区分
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:scale,,,縮尺係数
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:scale,,,規模
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:RiverFloodingRiskAttribute,uro:duration,,,継続時間
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,,,,津波浸水リスク
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:rank,,,浸水ランク
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:TsunamiRiskAttribute,uro:depth,,,浸水深
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,,,,高潮浸水リスク
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:rank,,,浸水ランク
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:HighTideRiskAttribute,uro:depth,,,浸水深
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,,,,内水浸水リスク
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:rank,,,浸水ランク
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:InlandFloodingRiskAttribute,uro:depth,,,浸水深
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:LandSlideRiskAttribute,,,,土砂災害リスク
-tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDisasterRiskAttribute.uro:LandSlideRiskAttribute,uro:areaType,,,内外区分
 tun,tun:Tunnel,uro:tunDataQualityAttribute.uro:ConstructionDataQualityAttribute,,,,データ品質属性
 tun,tun:Tunnel,uro:tunDataQualityAttribute.uro:ConstructionDataQualityAttribute,uro:srcScale,,,地図情報レベル
@@ -10815,7 +10821,7 @@ tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:maintena
 tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+tun,tun:Tunnel,uro:tunFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 tun,tun:Tunnel,uro:tunDmAttribute.DmGeometricAttribute,,,,図式情報
 tun,tun:Tunnel,uro:tunDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 tun,tun:Tunnel,uro:tunDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -10884,7 +10890,7 @@ tun,tun:TunnelPart,tun:lod4TerrainIntersection,,,,lod4地形との交線
 tun,tun:TunnelPart,tun:interiorHollowSpace,,,,部屋
 tun,tun:TunnelPart,tun:consistsOfTunnelPart,,,,橋梁部分
 tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,,,,構造物基本属性
-tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,管理者区分
+tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,指定機関
 tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:administorator,,,管理者名
 tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:adminOffice,,,管理者事務所所在地
 tun,tun:TunnelPart,uro:tunBaseAttribute.uro:ConstructionBaseAttribute,uro:operatorType,,,運用者
@@ -11665,7 +11671,7 @@ cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute
 cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+cons,uro:OtherConstruction,uro:consFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 cons,uro:OtherConstruction,uro:consDmAttribute.DmGeometricAttribute,,,,図式情報
 cons,uro:OtherConstruction,uro:consDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 cons,uro:OtherConstruction,uro:consDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -11695,7 +11701,7 @@ cons,uro:OtherConstruction,uro:consDmAttribute.DmAnnotation,uro:linewidth,,,線�
 cons,uro:OtherConstruction,uro:consDmAttribute.DmAnnotation,uro:spacing,,,字隔
 cons,uro:OtherConstruction,uro:consDmAttribute.DmAnnotation,uro:lod0AnchorPoint,,,挿入位置
 cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,,,,構造物基本属性
-cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,管理者区分
+cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,uro:adminType,,,指定機関
 cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,uro:administorator,,,管理者名
 cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,uro:adminOffice,,,管理者事務所所在地
 cons,uro:OtherConstruction,uro:consBaseAttribute.uro:ConstructionBaseAttribute,uro:operatorType,,,運用者
@@ -11881,7 +11887,7 @@ frn,frn:CityFurniture,frn:lod3Geometry,,,,lod3幾何
 frn,frn:CityFurniture,frn:lod4Geometry,,,,lod4幾何
 frn,frn:CityFurniture,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 frn,frn:CityFurniture,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-frn,frn:CityFurniture,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+frn,frn:CityFurniture,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 frn,frn:CityFurniture,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 frn,frn:CityFurniture,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 frn,frn:CityFurniture,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -12317,7 +12323,7 @@ frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:m
 frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+frn,frn:CityFurniture,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 frn,frn:CityFurniture,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 frn,frn:CityFurniture,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 frn,frn:CityFurniture,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -12371,7 +12377,7 @@ unf,uro:WaterPipe,frn:lod3Geometry,,,,lod3幾何
 unf,uro:WaterPipe,frn:lod4Geometry,,,,lod4幾何
 unf,uro:WaterPipe,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:WaterPipe,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:WaterPipe,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:WaterPipe,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:WaterPipe,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:WaterPipe,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:WaterPipe,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -12807,7 +12813,7 @@ unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:WaterPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:WaterPipe,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:WaterPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:WaterPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -12890,7 +12896,7 @@ unf,uro:SewerPipe,frn:lod3Geometry,,,,lod3幾何
 unf,uro:SewerPipe,frn:lod4Geometry,,,,lod4幾何
 unf,uro:SewerPipe,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:SewerPipe,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:SewerPipe,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:SewerPipe,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:SewerPipe,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:SewerPipe,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:SewerPipe,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -13326,7 +13332,7 @@ unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:SewerPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:SewerPipe,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:SewerPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:SewerPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -13411,7 +13417,7 @@ unf,uro:ThermalPipe,frn:lod3Geometry,,,,lod3幾何
 unf,uro:ThermalPipe,frn:lod4Geometry,,,,lod4幾何
 unf,uro:ThermalPipe,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:ThermalPipe,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:ThermalPipe,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:ThermalPipe,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:ThermalPipe,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:ThermalPipe,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:ThermalPipe,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -13847,7 +13853,7 @@ unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:mai
 unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:ThermalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:ThermalPipe,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:ThermalPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:ThermalPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -13930,7 +13936,7 @@ unf,uro:OilGasCemicalPipe,frn:lod3Geometry,,,,lod3幾何
 unf,uro:OilGasCemicalPipe,frn:lod4Geometry,,,,lod4幾何
 unf,uro:OilGasCemicalPipe,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:OilGasCemicalPipe,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:OilGasCemicalPipe,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:OilGasCemicalPipe,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:OilGasCemicalPipe,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:OilGasCemicalPipe,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:OilGasCemicalPipe,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -14366,7 +14372,7 @@ unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,u
 unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:OilGasCemicalPipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:OilGasCemicalPipe,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:OilGasCemicalPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:OilGasCemicalPipe,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -14449,7 +14455,7 @@ unf,uro:Pipe,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Pipe,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Pipe,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Pipe,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Pipe,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Pipe,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Pipe,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Pipe,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Pipe,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -14885,7 +14891,7 @@ unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanc
 unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Pipe,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Pipe,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Pipe,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Pipe,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -14968,7 +14974,7 @@ unf,uro:TelecommunicationsCable,frn:lod3Geometry,,,,lod3幾何
 unf,uro:TelecommunicationsCable,frn:lod4Geometry,,,,lod4幾何
 unf,uro:TelecommunicationsCable,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:TelecommunicationsCable,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:TelecommunicationsCable,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:TelecommunicationsCable,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:TelecommunicationsCable,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:TelecommunicationsCable,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:TelecommunicationsCable,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -15404,7 +15410,7 @@ unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttri
 unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:TelecommunicationsCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:TelecommunicationsCable,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:TelecommunicationsCable,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:TelecommunicationsCable,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -15487,7 +15493,7 @@ unf,uro:ElectricityCable,frn:lod3Geometry,,,,lod3幾何
 unf,uro:ElectricityCable,frn:lod4Geometry,,,,lod4幾何
 unf,uro:ElectricityCable,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:ElectricityCable,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:ElectricityCable,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:ElectricityCable,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:ElectricityCable,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:ElectricityCable,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:ElectricityCable,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -15923,7 +15929,7 @@ unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,ur
 unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:ElectricityCable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:ElectricityCable,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:ElectricityCable,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:ElectricityCable,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -16006,7 +16012,7 @@ unf,uro:Cable,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Cable,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Cable,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Cable,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Cable,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Cable,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Cable,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Cable,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Cable,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -16442,7 +16448,7 @@ unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenan
 unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Cable,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Cable,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Cable,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Cable,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -16525,7 +16531,7 @@ unf,uro:Duct,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Duct,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Duct,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Duct,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Duct,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Duct,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Duct,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Duct,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Duct,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -16961,7 +16967,7 @@ unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanc
 unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Duct,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Duct,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Duct,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Duct,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -17041,7 +17047,7 @@ unf,uro:Appurtenance,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Appurtenance,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Appurtenance,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Appurtenance,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Appurtenance,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Appurtenance,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Appurtenance,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Appurtenance,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Appurtenance,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -17477,7 +17483,7 @@ unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:ma
 unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Appurtenance,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Appurtenance,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Appurtenance,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Appurtenance,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -17547,7 +17553,7 @@ unf,uro:Manhole,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Manhole,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Manhole,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Manhole,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Manhole,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Manhole,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Manhole,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Manhole,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Manhole,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -17983,7 +17989,7 @@ unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:mainten
 unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Manhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Manhole,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Manhole,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Manhole,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -18057,7 +18063,7 @@ unf,uro:Handhole,frn:lod3Geometry,,,,lod3幾何
 unf,uro:Handhole,frn:lod4Geometry,,,,lod4幾何
 unf,uro:Handhole,uro:cityFurnitureDetailAttribute,,,,都市設備詳細情報
 unf,uro:Handhole,uro:cityFurnitureDetailAttribute,uro:facilityType,,,施設詳細区分
-unf,uro:Handhole,uro:cityFurnitureDetailAttribute,uro:description,,,説明
+unf,uro:Handhole,uro:cityFurnitureDetailAttribute,uro:description,,,設定等名称
 unf,uro:Handhole,uro:cityFurnitureDataQualityAttribute,,,,データ品質属性
 unf,uro:Handhole,uro:cityFurnitureDataQualityAttribute,uro:srcScale,,,地図情報レベル
 unf,uro:Handhole,uro:cityFurnitureDataQualityAttribute,uro:geometrySrcDesc,,,幾何属性作成方法
@@ -18493,7 +18499,7 @@ unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:mainte
 unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+unf,uro:Handhole,uro:frnFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 unf,uro:Handhole,uro:frnDmAttribute.DmGeometricAttribute,,,,図式情報
 unf,uro:Handhole,uro:frnDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 unf,uro:Handhole,uro:frnDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -18651,30 +18657,30 @@ ubld,uro:UndergroundBuilding,uro:largeCustomerFacilityAttribute.uro:LargeCustome
 ubld,uro:UndergroundBuilding,uro:largeCustomerFacilityAttribute.uro:LargeCustomerFacilityAttribute,uro:note,,,備考
 ubld,uro:UndergroundBuilding,uro:largeCustomerFacilityAttribute.uro:LargeCustomerFacilityAttribute,uro:surveyYear,,,調査年
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,,,,洪水浸水リスク
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:rank,,,浸水ランク
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:depth,,,浸水深
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:adminType,,,指定機関区分
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:scale,,,縮尺係数
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:scale,,,規模
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingRiverFloodingRiskAttribute,uro:duration,,,継続時間
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,,,,津波浸水リスク
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:rank,,,浸水ランク
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingTsunamiRiskAttribute,uro:depth,,,浸水深
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,,,,高潮浸水リスク
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:rank,,,浸水ランク
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingHighTideRiskAttribute,uro:depth,,,浸水深
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,,,,内水浸水リスク
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:rank,,,浸水ランク
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:rankOrg,,,浸水ランク（独自）
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingInlandFloodingRiskAttribute,uro:depth,,,浸水深
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,,,,土砂災害リスク
-ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:buildingDisasterRiskAttribute.uro:BuildingLandSlideRiskAttribute,uro:areaType,,,内外区分
 ubld,uro:UndergroundBuilding,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute,,,,データ品質属性
 ubld,uro:UndergroundBuilding,uro:buildingDataQualityAttribute.uro:BuildingDataQualityAttribute,uro:srcScale,,,地図情報レベル
@@ -18695,7 +18701,7 @@ ubld,uro:UndergroundBuilding,uro:keyValuePairAttribute.uro:KeyValuePair,uro:uriV
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,,,,プロジェクト情報
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:globalId,,,グローバルID
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:name,,,名称
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:objectType,,,オブジェクトタイプ
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:longName,,,識別名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:phase,,,プロジェクトの状態
@@ -18704,7 +18710,7 @@ ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProject,uro:unitsIn
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,,,,建築物情報
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:globalId,,,グローバルID
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:name,,,名称
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:objectType,,,オブジェクトタイプ
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:longName,,,識別名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:compositionType,,,空間構成の区分
@@ -18714,7 +18720,7 @@ ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcBuilding,uro:buildi
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,,,,敷地情報
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:globalId,,,グローバルID
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:name,,,名称
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:objectType,,,オブジェクトタイプ
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:longName,,,識別名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:objectType,,,オブジェクトタイプ
@@ -18725,12 +18731,12 @@ ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:landTitleN
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcSite,uro:siteAddress,,,郵便住所
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,,,,座標参照系情報
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:name,,,名称
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:geodeticDatum,,,測地原子
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcCoordinateReferenceSystem,uro:verticalDatum,,,垂直原子
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,,,,投影座標系情報
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:name,,,名称
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:geodeticDatum,,,測地原子
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:verticalDatum,,,垂直原子
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcProjectedCRS,uro:mapUnit,,,座標軸の単位
@@ -18744,7 +18750,7 @@ ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,north
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,orthogonalHeight,,,指定された垂直原子に対する高さ
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,xAxisAbscissa,,,エンジニアリング（ワールド）座標系のローカルx軸の単位ベクトルの終点の東軸に沿った値
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:xAxisOrdinate,,,エンジニアリング（ワールド）座標系のローカルy軸の単位ベクトルの終点の東軸に沿った値
-ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:scale,,,縮尺係数
+ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcMapConversion,uro:scale,,,規模
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,,,,建築物共通属性
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,uro:buildingId,,,識別子
 ubld,uro:UndergroundBuilding,uro:ifcBuildingAttribute.uro:IfcPsetBuildingCommon,uro:isPermanentId,,,永続性
@@ -18774,7 +18780,7 @@ ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAt
 ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:source,,,原典資料
 ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:name,,,名称
 ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:nominalValue,,,フィールド名に対応する属性値
-ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:indoorBuildingAttribute.uro:IndoorUserDefinedAttribute,uro:unit,,,単位
 ubld,uro:UndergroundBuilding,uro:bldgFacilityTypeAttribute,,,,施設分類属性
 ubld,uro:UndergroundBuilding,uro:bldgFacilityTypeAttribute,uro:class,,,分野
@@ -19205,7 +19211,7 @@ ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribu
 ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+ubld,uro:UndergroundBuilding,uro:bldgFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 ubld,uro:UndergroundBuilding,uro:bldgDmAttribute.DmGeometricAttribute,,,,図式情報
 ubld,uro:UndergroundBuilding,uro:bldgDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 ubld,uro:UndergroundBuilding,uro:bldgDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -19676,7 +19682,7 @@ veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttr
 veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+veg,veg:SolitaryVegetationObject,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 veg,veg:SolitaryVegetationObject,uro:vegDmAttribute.DmGeometricAttribute,,,,図式情報
 veg,veg:SolitaryVegetationObject,uro:vegDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 veg,veg:SolitaryVegetationObject,uro:vegDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -20163,7 +20169,7 @@ veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:main
 veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+veg,veg:PlantCover,uro:vegFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 veg,veg:PlantCover,uro:vegDmAttribute.DmGeometricAttribute,,,,図式情報
 veg,veg:PlantCover,uro:vegDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 veg,veg:PlantCover,uro:vegDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード
@@ -20662,7 +20668,7 @@ wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:maint
 wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceYear,,,点検・工事を行った西暦年
 wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:maintenanceDate,,,点検・工事の日付
 wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:status,,,点検、工事の状況
-wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,説明
+wtr,wtr:WaterBody,uro:wtrFacilityAttribute.MaintenanceHistoryAttribute,uro:description,,,設定等名称
 wtr,wtr:WaterBody,uro:wtrDmAttribute.DmGeometricAttribute,,,,図式情報
 wtr,wtr:WaterBody,uro:wtrDmAttribute.DmGeometricAttribute,uro:dmCode,,,DMコード
 wtr,wtr:WaterBody,uro:wtrDmAttribute.DmGeometricAttribute,uro:meshCode,,,メッシュコード

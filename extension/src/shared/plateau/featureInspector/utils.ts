@@ -8,7 +8,7 @@ import { datasetTypeNames } from "../../../prototypes/view/constants/datasetType
 import { Feature } from "../../reearth/types/layer";
 import { RootLayerForDataset } from "../../view-layers";
 
-import { getAttributeLabel, getAttributes, getRootFields } from "./attributes";
+import { getAttributeLabel, getRootFields } from "./attributes";
 
 const attributesKey = "attributes";
 
@@ -144,9 +144,9 @@ export const makePropertyForFeatureInspector = ({
 
   // All attributes
   const shouldDisplayAllAttributes = features.length === 1;
-  const rowAllAttributes = shouldDisplayAllAttributes
+  const rawAllAttributes = shouldDisplayAllAttributes
     ? features
-        ?.map(f => getAttributes(f.properties?.[attributesKey] ?? {}, "label"))
+        ?.map(f => f.properties?.[attributesKey] ?? {})
         .filter(v => !!v && !!Object.keys(v).length)
     : undefined;
 
@@ -169,8 +169,15 @@ export const makePropertyForFeatureInspector = ({
       }))
       .filter(({ values }) => features.length === values.length),
     // All attributes
-    ...(rowAllAttributes?.length ? [{ name: "全ての属性", values: rowAllAttributes ?? {} }] : []),
+    ...(rawAllAttributes?.length ? [{ name: "全ての属性", values: rawAllAttributes ?? {} }] : []),
   ];
+};
+
+const UNION_MAP = {
+  code: "コード",
+  _code: "コード",
+  uom: "単位",
+  _uom: "単位",
 };
 
 export const makePropertyName = (name: string) => {
@@ -178,5 +185,22 @@ export const makePropertyName = (name: string) => {
   const next = split[1] ? `uro:${split[1]}` : split[0];
   const first = getAttributeLabel(next);
   if (first) return first;
-  return getAttributeLabel(next.replace("_", ":")) ?? next.replaceAll("_", "");
+
+  // Find joined a name by `_` instead of `:`.
+  const second = getAttributeLabel(next.replace("_", ":"));
+  if (second) return second;
+
+  // Find a name which has a suffix for union.
+  const third = Object.entries(UNION_MAP)
+    .map(([key, val]) => {
+      if (!next.endsWith(key)) return;
+
+      const attr = getAttributeLabel(next.split(key)[0]);
+      if (!attr) return;
+
+      return attr + val;
+    })
+    .filter(Boolean)[0];
+  if (third) return third;
+  return next.replaceAll("_", "");
 };
