@@ -157,9 +157,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     const showDataFormats = useAtomValue(showDataFormatsAtom);
     return (
       <ContextSelect
-        label={
-          datasetTypeNames[datasets[0].type.code as PlateauDatasetType] ?? datasetTypeNames.usecase
-        }
+        label={datasets[0].type.name ?? datasetTypeNames.usecase}
         value={value}
         onChange={handleChange}
         disabled={disabled}>

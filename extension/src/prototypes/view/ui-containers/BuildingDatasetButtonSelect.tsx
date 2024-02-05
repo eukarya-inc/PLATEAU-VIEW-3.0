@@ -13,7 +13,6 @@ import {
 import { removeLayerAtom, useAddLayer } from "../../layers";
 import { ContextButtonSelect, SelectItem } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
-import { PlateauDatasetType } from "../constants/plateau";
 import { showDataFormatsAtom } from "../states/app";
 
 interface Params {
@@ -130,9 +129,7 @@ export const BuildingDatasetButtonSelect: FC<BuildingDatasetButtonSelectProps> =
 
     return (
       <ContextButtonSelect
-        label={
-          datasetTypeNames[dataset.type.code as PlateauDatasetType] ?? datasetTypeNames.usecase
-        }
+        label={dataset.type.name ?? datasetTypeNames.usecase}
         value={value}
         disabled={disabled}
         onClick={handleClick}
