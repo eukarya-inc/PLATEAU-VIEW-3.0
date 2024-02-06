@@ -102,8 +102,10 @@ const NumberValue: FC<{
   );
 
   if (values.length === 1 || values.slice(1).every(value => value === values[0])) {
-    return <>{values[0]}</>;
+    const roundedValue = Math.floor(values[0] * 100) / 100;
+    return <>{roundedValue.toFixed(2)}</>;
   }
+
   return (
     <NumberValueRoot>
       {format === "mean"
