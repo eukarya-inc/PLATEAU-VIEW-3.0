@@ -2,7 +2,7 @@
 
 import { FC, useEffect } from "react";
 
-import { AmbientOcclusion, Antialias, Tile } from "../types";
+import { AmbientOcclusion, Antialias, Tile, TileLabels } from "../types";
 
 // nx = red
 // ny = green
@@ -55,6 +55,7 @@ export type ShadowProps = { enabled?: boolean; size?: 1024 | 2048 | 4096; softSh
 export type SceneProps = EnvironmentProps & {
   ambientOcclusion?: AmbientOcclusion;
   tiles?: Tile[];
+  tileLabels?: TileLabels[];
   shadows?: ShadowProps;
   antialias?: Antialias;
   terrainHeatmapMaxHeight?: number;
@@ -92,6 +93,7 @@ export const Scene: FC<SceneProps> = ({
   groundAtmosphereSaturationShift,
   groundAtmosphereBrightnessShift,
   tiles,
+  tileLabels,
   ambientOcclusion,
   shadows,
   antialias,
@@ -155,6 +157,7 @@ export const Scene: FC<SceneProps> = ({
         imageBasedLightIntensity: imageBasedLightingIntensity,
       },
       tiles,
+      tileLabels,
       terrain: {
         terrain: true,
         terrainType: "cesiumion",
@@ -199,6 +202,7 @@ export const Scene: FC<SceneProps> = ({
     showMoon,
     sphericalHarmonicCoefficients,
     tiles,
+    tileLabels,
     shadows,
     globeBaseColor,
     skyAtmosphereBrightnessShift,
