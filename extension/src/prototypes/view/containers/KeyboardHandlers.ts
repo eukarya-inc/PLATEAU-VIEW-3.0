@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 
 import { useWindowEvent } from "../../react-helpers";
 
@@ -44,6 +44,30 @@ export const KeyboardHandlers = () => {
     sprint?: boolean;
   }>({});
 
+  const camera = window.reearth?.camera;
+
+  const checkOnKeyboard = useCallback(
+    (assignment: string) => {
+      switch (assignment) {
+        case "forward":
+          return camera?.moveForward(3);
+        case "backward":
+          return camera?.moveBackward(3);
+        case "up":
+          return camera?.moveUp(3);
+        case "down":
+          return camera?.moveDown(3);
+        case "left":
+          return camera?.moveLeft(3);
+        case "right":
+          return camera?.moveRight(3);
+        default:
+          return;
+      }
+    },
+    [camera],
+  );
+
   useWindowEvent("keydown", event => {
     const assignment = defaultKeyAssignments[event.code];
     if (assignment == null) {
@@ -52,11 +76,15 @@ export const KeyboardHandlers = () => {
     if (isDirection(assignment)) {
       directionsRef.current[assignment] = event.timeStamp;
       event.preventDefault();
+      if (event.key) {
+        checkOnKeyboard(assignment);
+      }
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = true;
       event.preventDefault();
     }
   });
+
   useWindowEvent("keyup", event => {
     const assignment = defaultKeyAssignments[event.code];
     if (assignment == null) {
@@ -64,6 +92,9 @@ export const KeyboardHandlers = () => {
     }
     if (isDirection(assignment)) {
       directionsRef.current[assignment] = undefined;
+      if (event.key) {
+        checkOnKeyboard(assignment);
+      }
       event.preventDefault();
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = false;
@@ -74,8 +105,5 @@ export const KeyboardHandlers = () => {
     directionsRef.current = {};
     modesRef.current = {};
   });
-
-  //here comes the API FROM reeath;
-  console.log("called", directions);
   return null;
 };
