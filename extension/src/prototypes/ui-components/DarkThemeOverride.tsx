@@ -3,7 +3,7 @@ import { Theme } from "@mui/system";
 import { merge } from "lodash-es";
 import { useState, type FC, type ReactNode, useEffect } from "react";
 
-import { THEME_COLOR } from "../../shared/constants";
+import { PRIMARY_COLOR } from "../../shared/constants";
 
 import { darkTheme, darkThemeOptions } from "./theme";
 
@@ -15,13 +15,13 @@ export const DarkThemeOverride: FC<DarkThemeOverrideProps> = ({ children, ...pro
   const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
 
   useEffect(() => {
-    if (!customTheme && THEME_COLOR) {
+    if (!customTheme && PRIMARY_COLOR) {
       setCustomTheme(
         createTheme(
           merge<unknown, unknown, ThemeOptions>({}, darkThemeOptions, {
             palette: {
               primary: {
-                main: THEME_COLOR,
+                main: PRIMARY_COLOR,
               },
             },
           }),

@@ -17,13 +17,13 @@ import {
   GSI_TILE_URL,
   LOGO,
   PLATEAU_API_URL,
-  THEME_COLOR,
+  PRIMARY_COLOR,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
   setLogo,
   setPlateauApiUrl,
-  setThemeColor,
+  setPrimaryColor,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
@@ -37,7 +37,7 @@ type Props = {
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
   inEditor?: boolean;
-  customThemeColor?: string;
+  customPrimaryColor?: string;
   customLogo?: string;
 };
 
@@ -52,7 +52,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
   inEditor,
-  customThemeColor,
+  customPrimaryColor,
   customLogo,
 }) => {
   useEffect(() => {
@@ -107,21 +107,21 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [customLogo]);
 
   useEffect(() => {
-    if (customThemeColor && (!THEME_COLOR || THEME_COLOR !== customThemeColor)) {
-      setThemeColor(customThemeColor);
+    if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {
+      setPrimaryColor(customPrimaryColor);
     }
-  }, [customThemeColor]);
+  }, [customPrimaryColor]);
 
   const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
 
   useEffect(() => {
-    if (!customTheme && THEME_COLOR) {
+    if (!customTheme && PRIMARY_COLOR) {
       setCustomTheme(
         createTheme(
           merge<unknown, unknown, ThemeOptions>({}, lightThemeOptions, {
             palette: {
               primary: {
-                main: THEME_COLOR,
+                main: PRIMARY_COLOR,
               },
             },
           }),

@@ -38,7 +38,7 @@ type DefaultProps = {
 
 type AppearanceProps = {
   logo?: string;
-  themeColor?: string;
+  primaryColor?: string;
 };
 
 type Props = WidgetProps<DefaultProps, AppearanceProps>;
@@ -62,7 +62,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       plateauToken={widget.property.default.plateauAccessToken}
       googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
       inEditor={inEditor}
-      customThemeColor={widget.property.appearance?.themeColor}
+      customPrimaryColor={widget.property.appearance?.primaryColor}
       customLogo={widget.property.appearance?.logo}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />

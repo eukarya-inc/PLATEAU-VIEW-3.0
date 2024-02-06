@@ -105,10 +105,10 @@ const yml = {
                 title: "ロゴ",
               },
               {
-                id: "themeColor",
+                id: "primaryColor",
                 type: "string",
                 ui: "color",
-                title: "テーマカラー",
+                title: "プライマリカラー",
               },
             ],
           },
