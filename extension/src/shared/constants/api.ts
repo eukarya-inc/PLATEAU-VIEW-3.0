@@ -17,3 +17,13 @@ export let GOOGLE_STREET_VIEW_API_KEY: string | undefined;
 export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
+
+export let THEME_COLOR: string | undefined;
+export const setThemeColor = (color: string) => {
+  THEME_COLOR = color;
+};
+
+export let LOGO: string | undefined;
+export const setLogo = (url: string) => {
+  LOGO = url;
+};
