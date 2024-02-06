@@ -233,6 +233,7 @@ export type RasterAppearance = {
   maximumLevel?: number;
   credit?: string;
   alpha?: number;
+  hideIndicator?: boolean;
 };
 
 export type BoxAppearance = {
