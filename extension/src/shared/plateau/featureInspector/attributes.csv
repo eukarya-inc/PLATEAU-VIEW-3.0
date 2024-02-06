@@ -17,6 +17,12 @@ prefecture_name,都道府県名
 uro:WaterBodyRiverFloodingRiskAttribute,損傷状況
 uro:rank_code,浸水ランクコード
 uro:rankOrg_code,浸水ランク（独自）コード
+uro:adminType_code,指定機関コード
+uro:description_code,設定等名称コード
+uro:scale_code,規模コード
+uro:depthuom,浸水深単位
+uro:durationuom,継続時間単位
+ancestors,原型
 gml:description,概要
 gml:name,名称
 gml:boundedBy,範囲
@@ -115,12 +121,12 @@ uro:yearClosed,廃止年
 uro:keyTenants,核テナント
 uro:availability,利用可能性
 uro:BuildingRiverFloodingRiskAttribute,洪水浸水リスク
-uro:description,説明
+uro:description,設定等名称
 uro:rank,浸水ランク
 uro:rankOrg,浸水ランク（独自）
 uro:depth,浸水深
 uro:adminType,指定機関区分
-uro:scale,縮尺係数
+uro:scale,規模
 uro:duration,継続時間
 uro:BuildingTsunamiRiskAttribute,津波浸水リスク
 uro:BuildingHighTideRiskAttribute,高潮浸水リスク

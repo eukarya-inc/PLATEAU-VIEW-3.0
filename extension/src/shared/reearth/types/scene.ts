@@ -30,12 +30,6 @@ export type Tile = {
   tile_opacity?: number;
 };
 
-export type TileLabels = {
-  id: string;
-  labelType: "japan_gsi_optimal_bvmap"; // | "other_map"
-  style: Record<string, any>; // Function isn't allowed
-};
-
 export type AmbientOcclusion = {
   enabled?: boolean;
   quality?: "low" | "medium" | "high" | "extreme";
@@ -80,7 +74,6 @@ export type SceneProperty = {
   //     indicator_image_scale?: number;
   //   };
   tiles?: Tile[];
-  tileLabels?: TileLabels[];
   terrain?: TerrainProperty;
   atmosphere?: {
     enable_sun?: boolean;

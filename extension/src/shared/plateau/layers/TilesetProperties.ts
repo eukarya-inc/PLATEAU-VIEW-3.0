@@ -9,7 +9,7 @@ import {
   mudflowRiskColorSet,
   landSlideRiskColorSet,
 } from "../colorSets";
-import { getAttributeLabel } from "../featureInspector";
+import { makePropertyName } from "../featureInspector";
 
 export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
@@ -188,7 +188,7 @@ export class PlateauTilesetProperties extends Properties {
             minimum: finalMinimum,
             maximum: finalMaximum,
             displayName:
-              qualitativeProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
+              qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
             availableFeatures: qualitativeProperty.availableFeatures,
             accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
@@ -208,7 +208,7 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
+              displayName: numberProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
               accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
             };

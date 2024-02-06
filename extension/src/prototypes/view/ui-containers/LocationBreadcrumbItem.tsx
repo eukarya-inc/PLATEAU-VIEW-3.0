@@ -44,11 +44,12 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
             ? d.wardCode === area.code
             : false,
         ),
-        d => d.type.code,
+        d => d.type.id,
       ),
     );
+
     return datasetTypeOrder
-      ?.map(orderedType => groups.find(([type]) => type === orderedType.code))
+      ?.map(orderedType => groups.find(([type]) => type === orderedType.id))
       .filter(isNotNullish)
       .map(([, datasets]) => datasets);
   }, [query.data, area.code, datasetTypeOrder]);
