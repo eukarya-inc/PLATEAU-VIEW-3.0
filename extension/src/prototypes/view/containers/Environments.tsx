@@ -8,6 +8,7 @@ import { TileLabels } from "../../../shared/reearth/types/scene.ts";
 import {
   shareableEnvironmentTypeAtom,
   shareableGraphicsQualityAtom,
+  sharedInitialCameraAtom,
 } from "../../../shared/states/scene";
 import { colorModeAtom, type ColorMode } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
@@ -83,6 +84,7 @@ export const Environments: FC = () => {
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
+  const initialCamera = useAtomValue(sharedInitialCameraAtom);
 
   const tileLabels: TileLabels[] = useMemo(() => {
     const styles = Object.entries(showMapLabel).reduce((acc, [key, isVisible]) => {
@@ -110,6 +112,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
           tileLabels={tileLabels}
         />
       );
@@ -120,6 +123,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
           tileLabels={tileLabels}
         />
       );
@@ -130,6 +134,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
           tileLabels={tileLabels}
         />
       );
@@ -139,6 +144,7 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
+          initialCamera={initialCamera.value}
           tileLabels={tileLabels}
         />
       );

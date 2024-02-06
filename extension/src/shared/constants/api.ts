@@ -3,6 +3,11 @@ export const setPlateauApiUrl = (url: string) => {
   PLATEAU_API_URL = url;
 };
 
+export let PROJECT_ID: string | undefined;
+export const setProjectId = (id: string) => {
+  PROJECT_ID = id;
+};
+
 export let GEO_API_URL: string | undefined;
 export const setGeoApiUrl = (url: string) => {
   GEO_API_URL = url;
