@@ -14,12 +14,14 @@ import {
 } from "../../../shared/view/selection/GeneralFeatureContent";
 import { LegendDescriptionSection } from "../../../shared/view/selection/LegendDescriptionSection";
 import { PEDESTRIAN_OBJECT } from "../../pedestrian";
+import { SKETCH_OBJECT } from "../../sketch";
 import { Inspector } from "../../ui-components";
 import { PEDESTRIAN_LAYER } from "../../view-layers";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
 import { PedestrianLayerContent } from "../selection/PedestrianLayerContent";
+import { SketchObjectContent } from "../selection/SketchObjectContent";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom, pedestrianInspectorWidthAtom, viewportWidthAtom } from "../states/app";
 import {
@@ -87,9 +89,9 @@ export const SelectionPanel: FC = () => {
             content = <PedestrianLayerContent values={selectionGroup.values} />;
             contentType = "pedestrian";
             break;
-          // case SKETCH_OBJECT:
-          //   content = <SketchObjectContent values={selectionGroup.values} />;
-          //   break;
+          case SKETCH_OBJECT:
+            content = <SketchObjectContent values={selectionGroup.values} />;
+            break;
         }
         break;
       case COLOR_SCHEME_SELECTION:

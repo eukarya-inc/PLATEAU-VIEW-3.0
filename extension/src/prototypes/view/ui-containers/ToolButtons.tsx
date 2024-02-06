@@ -1,16 +1,20 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, type FC } from "react";
 
+import { isSketchGeometryType } from "../../sketch";
 import {
   AppToggleButton,
   AppToggleButtonGroup,
+  AppToggleButtonSelect,
   HandIcon,
   PedestrianIcon,
   PointerArrowIcon,
-  SketchIcon,
   StoryIcon,
+  SketchRectangleIcon,
+  SketchCircleIcon,
+  SketchPolygonIcon,
 } from "../../ui-components";
-import { toolAtom, toolMachineAtom, type ToolType } from "../states/tool";
+import { sketchTypeAtom, toolAtom, toolMachineAtom, type ToolType } from "../states/tool";
 import { type EventObject } from "../states/toolMachine";
 
 const eventTypes: Record<ToolType, EventObject["type"]> = {
@@ -20,6 +24,12 @@ const eventTypes: Record<ToolType, EventObject["type"]> = {
   story: "STORY",
   pedestrian: "PEDESTRIAN",
 };
+
+const sketchItems = [
+  { value: "rectangle", title: "立方体", icon: <SketchRectangleIcon /> },
+  { value: "circle", title: "円柱", icon: <SketchCircleIcon /> },
+  { value: "polygon", title: "自由形状", icon: <SketchPolygonIcon /> },
+];
 
 export const ToolButtons: FC = () => {
   const send = useSetAtom(toolMachineAtom);
@@ -34,6 +44,17 @@ export const ToolButtons: FC = () => {
     [send],
   );
 
+  const [sketchType, setSketchType] = useAtom(sketchTypeAtom);
+  const handleSketchTypeChange = useCallback(
+    (_: unknown, value: string) => {
+      if (isSketchGeometryType(value)) {
+        send({ type: "SKETCH" });
+        setSketchType(value);
+      }
+    },
+    [send, setSketchType],
+  );
+
   return (
     <AppToggleButtonGroup value={tool?.type} onChange={handleChange}>
       <AppToggleButton value="hand" title="移動" shortcutKey="H">
@@ -45,9 +66,14 @@ export const ToolButtons: FC = () => {
       <AppToggleButton value="pedestrian" title="歩行者視点" shortcutKey="P">
         <PedestrianIcon fontSize="medium" />
       </AppToggleButton>
-      <AppToggleButton value="sketch" title="作図" shortcutKey="G" disabled>
-        <SketchIcon fontSize="medium" />
-      </AppToggleButton>
+      <AppToggleButtonSelect
+        value="sketch"
+        title="作図"
+        shortcutKey="G"
+        items={sketchItems}
+        selectedValue={sketchType}
+        onValueChange={handleSketchTypeChange}
+      />
       <AppToggleButton value="story" title="ストーリー" shortcutKey="T" disabled>
         <StoryIcon fontSize="medium" />
       </AppToggleButton>
