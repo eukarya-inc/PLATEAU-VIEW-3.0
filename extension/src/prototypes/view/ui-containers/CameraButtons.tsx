@@ -9,7 +9,7 @@ import {
   PlusIcon,
   RotateAroundIcon,
 } from "../../ui-components";
-import { enableKeyboardCameraControlAtom } from "../states/app";
+import { autoRotateCameraAtom, enableKeyboardCameraControlAtom } from "../states/app";
 
 import { GeolocationButton } from "./GeolocationButton";
 
@@ -26,6 +26,7 @@ function useBooleanAtomProps(atom: PrimitiveAtom<boolean>): {
 
 export const CameraButtons: FC = () => {
   const enableKeyboardCameraControlProps = useBooleanAtomProps(enableKeyboardCameraControlAtom);
+  const autoRotateCameraProps = useBooleanAtomProps(autoRotateCameraAtom);
 
   const { zoomIn, zoomOut } = useCameraZoom();
 
@@ -35,7 +36,7 @@ export const CameraButtons: FC = () => {
         <KeyboardMovementIcon />
       </AppIconButton>
       <GeolocationButton />
-      <AppIconButton title="自動回転" disabled>
+      <AppIconButton title="自動回転" {...autoRotateCameraProps}>
         <RotateAroundIcon />
       </AppIconButton>
       <AppIconButton title="縮小" onClick={zoomOut}>

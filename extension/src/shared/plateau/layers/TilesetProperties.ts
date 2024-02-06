@@ -9,7 +9,7 @@ import {
   mudflowRiskColorSet,
   landSlideRiskColorSet,
 } from "../colorSets";
-import { getAttributeLabel } from "../featureInspector";
+import { makePropertyName } from "../featureInspector";
 
 export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
@@ -20,6 +20,7 @@ interface QualitativeProperty {
   getMinMax?: (min: number, max: number) => [min: number, max: number];
   accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
+  isMinMaxNeeded?: boolean;
 }
 
 const qualitativeProperties: QualitativeProperty[] = [
@@ -29,13 +30,26 @@ const qualitativeProperties: QualitativeProperty[] = [
       propertyName.endsWith("浸水ランクコード") ||
       // For river flooding risk layers
       propertyName === "rank_code" ||
-      propertyName === "rank_org_code" ||
-      propertyName === "uro:rank_code" ||
-      propertyName === "uro:rank_org_code",
+      propertyName === "uro:rank_code",
     colorSet: floodRankColorSet,
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
     availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
+  },
+  {
+    testProperty: propertyName =>
+      // For building layers
+      propertyName.endsWith("浸水ランクコード（独自）") ||
+      // For river flooding risk layers
+      propertyName === "rank_org_code" ||
+      propertyName === "uro:rank_org_code" ||
+      propertyName === "uro:rankOrg_code",
+    colorSet: floodRankColorSet,
+    getDisplayName: name =>
+      name.endsWith("浸水ランクコード（独自）") ? name.replaceAll("_", " ") : "浸水ランク（独自）",
+    availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
@@ -160,7 +174,9 @@ export class PlateauTilesetProperties extends Properties {
         const qualitativeProperty = qualitativeProperties?.find(({ testProperty }) =>
           testProperty(name, value),
         );
-        if (qualitativeProperty != null) {
+        const hasMinMaxForNeededCase =
+          !qualitativeProperty?.isMinMaxNeeded || (minimum != null && maximum != null);
+        if (qualitativeProperty != null && hasMinMaxForNeededCase) {
           const [finalMinimum, finalMaximum] =
             minimum && maximum
               ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
@@ -172,13 +188,13 @@ export class PlateauTilesetProperties extends Properties {
             minimum: finalMinimum,
             maximum: finalMaximum,
             displayName:
-              qualitativeProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
+              qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
             availableFeatures: qualitativeProperty.availableFeatures,
             accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
         }
 
-        if (minimum && maximum) {
+        if (minimum != null && maximum != null) {
           const numberProperty = numberProperties?.find(({ testProperty }) =>
             testProperty(name, value),
           );
@@ -192,7 +208,7 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? getAttributeLabel(name) ?? name,
+              displayName: numberProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
               accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
             };

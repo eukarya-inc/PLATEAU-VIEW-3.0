@@ -3,11 +3,10 @@ import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state
 import { useCallback, useId, useMemo, useState, type FC, type MouseEvent } from "react";
 import invariant from "tiny-invariant";
 
-import { useAreaDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useDatasetTypes } from "../../../shared/graphql";
 import { Area } from "../../../shared/states/address";
 import { isNotNullish } from "../../type-helpers";
 import { AppBreadcrumbsItem, ContextBar, OverlayPopper } from "../../ui-components";
-import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { BuildingDatasetButtonSelect } from "./BuildingDatasetButtonSelect";
@@ -19,6 +18,7 @@ export interface LocationBreadcrumbItemProps {
 }
 
 export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }) => {
+  const { data: datasetTypeOrder } = useDatasetTypes();
   const query = useAreaDatasets(area.code, {
     excludeTypes: [
       PlateauDatasetType.UseCase,
@@ -44,14 +44,15 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
             ? d.wardCode === area.code
             : false,
         ),
-        d => d.type.code,
+        d => d.type.id,
       ),
     );
+
     return datasetTypeOrder
-      .map(orderedType => groups.find(([type]) => type === orderedType))
+      ?.map(orderedType => groups.find(([type]) => type === orderedType.id))
       .filter(isNotNullish)
       .map(([, datasets]) => datasets);
-  }, [query.data, area.code]);
+  }, [query.data, area.code, datasetTypeOrder]);
 
   const [expanded, setExpanded] = useState(false);
   const handleCollapse = useCallback(() => {

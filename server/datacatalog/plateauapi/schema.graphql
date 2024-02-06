@@ -435,7 +435,7 @@ enum DatasetFormat {
 interface DatasetType implements Node {
   id: ID!
   """
-  データセットの種類コード。「bldg」など。
+  データセットの種類コード。 "bldg" など。
   """
   code: String!
   """
@@ -446,6 +446,10 @@ interface DatasetType implements Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
   """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
@@ -489,6 +493,10 @@ type PlateauDataset implements Dataset & Node {
   データセットのサブコード。都市計画決定情報の○○区域や洪水浸水想定区域の河川名などのコード表現が含まれます。
   """
   subcode: String
+  """
+  データセットのサブコードの順番。大きいほど後に表示されます。
+  """
+  suborder: Int
   """
   データセットの説明
   """
@@ -693,6 +701,10 @@ type PlateauDatasetType implements DatasetType & Node {
   """
   category: DatasetTypeCategory!
   """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
+  """
   データセットの種類が属するPLATEAU都市モデルの仕様のID。
   """
   plateauSpecId: ID!
@@ -856,6 +868,10 @@ type RelatedDatasetType implements DatasetType & Node {
   """
   category: DatasetTypeCategory!
   """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
+  """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [RelatedDataset!]!
@@ -991,6 +1007,10 @@ type GenericDatasetType implements DatasetType & Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
   """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
