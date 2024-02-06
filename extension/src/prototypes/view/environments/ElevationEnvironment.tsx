@@ -26,7 +26,7 @@ const sphericalHarmonicCoefficients: [x: number, y: number, z: number][] = [
   [-0.192780449986458, -0.223674207925797, -0.249334931373596], // L22, irradiance, pre-scaled base
 ];
 
-export const ElevationEnvironment: FC<SceneProps> = props => {
+export const ElevationEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) => {
   const terrainElevationHeightRange = useAtomValue(shareableTerrainElevationHeightRangeAtom);
   const logarithmicTerrainElevation = useAtomValue(shareableLogarithmicTerrainElevationAtom);
 
@@ -66,6 +66,7 @@ export const ElevationEnvironment: FC<SceneProps> = props => {
       terrainHeatmapLogarithmic={logarithmicTerrainElevation}
       terrainHeatmapMinHeight={terrainElevationHeightRange[0]}
       terrainHeatmapMaxHeight={terrainElevationHeightRange[1]}
+      tileLabels={tileLabels}
       {...props}
     />
   );

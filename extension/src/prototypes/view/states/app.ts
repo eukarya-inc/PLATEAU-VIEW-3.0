@@ -2,6 +2,7 @@ import { isNumber } from "class-validator";
 import { atom, type SetStateAction } from "jotai";
 import { atomWithReset, type RESET } from "jotai/utils";
 
+import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
 import { atomWithStorageValidation } from "../../shared-states";
 import { EnvironmentType } from "../types/environment";
 import { TerrainType } from "../types/terrain";
@@ -31,6 +32,15 @@ export const terrainTypeAtom = atomWithReset<TerrainType>("plateau");
 export const enableTerrainLightingAtom = atomWithReset(true);
 export const terrainElevationHeightRangeAtom = atomWithReset([0, 4000]);
 export const logarithmicTerrainElevationAtom = atomWithReset(true);
+export const showMapLabelAtom = atomWithReset<Record<AnnotationType, boolean>>({
+  municipalities: false,
+  towns: false,
+  roads: false,
+  railways: false,
+  stations: false,
+  landmarks: false,
+  topography: false,
+});
 
 export const debugSphericalHarmonicsAtom = atomWithReset(false);
 export const showShadowMapDepthAtom = atomWithReset(false);

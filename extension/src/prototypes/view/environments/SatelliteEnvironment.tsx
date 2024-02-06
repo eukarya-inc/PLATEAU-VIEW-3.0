@@ -19,7 +19,7 @@ const sphericalHarmonicCoefficients: [x: number, y: number, z: number][] = [
   [0.114833705127239, 0.114355310797691, 0.067587599158287],
 ];
 
-export const SatelliteEnvironment: FC<SceneProps> = props => {
+export const SatelliteEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) => {
   const enableTerrainLighting = useAtomValue(enableTerrainLightingAtom);
 
   // const [layer, setLayer] = useState<ImageryLayerHandle | null>(null);
@@ -52,6 +52,7 @@ export const SatelliteEnvironment: FC<SceneProps> = props => {
       shadowDarkness={0.5}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       tiles={tiles}
+      tileLabels={tileLabels}
       {...props}
     />
   );
