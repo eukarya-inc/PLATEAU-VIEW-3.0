@@ -237,10 +237,10 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const handleSearchButtonClick = useCallback(() => {
     if (!allFeatures) return;
 
-    const conditionEntries = Object.entries(conditions)
+    const conditionEntries: [string, string[]][] = Object.entries(conditions)
       .filter(([, v]) => !!v.length)
       .map(([key, value]) => [key, value.map(v => v.label)]);
-    const hasCondition = conditionEntries.some(([, values]) => !!values.length);
+    const hasCondition = !!conditionEntries.filter(([, values]) => !!values.length).length;
 
     if (allFeatures && hasCondition) {
       setSearchedFeatures({
@@ -251,6 +251,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
             )
             .map(f => f.id),
         ),
+        conditions: conditionEntries.map(([key, vals]) => [`rootProperties["${key}"]`, vals]),
         highlight: true,
         onlyShow: false,
         selectedIndices: [],
