@@ -193,7 +193,7 @@ export const useEvaluateGeneralAppearance = ({
             makeGradientExpression(pointFillGradientColor, opacity?.value) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           pointSize: pointSize?.preset?.defaultValue,
-          pointOutlineColor: pointStroke?.preset?.color,
+          pointOutlineColor: makeSimpleColorWithOpacity(opacity, pointStroke?.preset?.color),
           pointOutlineWidth: pointStroke?.preset?.width,
           image:
             pointImageValue?.preset?.imageURL ??
