@@ -128,6 +128,7 @@ export const fieldSettings: {
     value: {
       type: VALUE_COLOR_SCHEME,
       color: undefined,
+      strokeColor: undefined,
     },
     hasLegendUI: true,
   },
@@ -144,7 +145,6 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
-  POLYGON_STROKE_COLOR_FIELD: {},
   POLYGON_STROKE_WEIGHT_FIELD: {},
   POLYGON_VISIBILITY_CONDITION_FIELD: {},
   POLYGON_VISIBILITY_FILTER_FIELD: {
@@ -153,7 +153,7 @@ export const fieldSettings: {
   },
   POLYLINE_HEIGHT_REFERENCE_FIELD: {},
   POLYLINE_CLASSIFICATION_TYPE_FIELD: {},
-  // Polygon
+  // Polyline
   POLYLINE_FILL_COLOR_VALUE_FIELD: {
     value: {
       type: VALUE_COLOR_SCHEME,
