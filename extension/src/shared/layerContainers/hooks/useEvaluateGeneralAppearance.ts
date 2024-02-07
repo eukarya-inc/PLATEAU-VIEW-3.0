@@ -44,7 +44,6 @@ import {
   POLYGON_FILL_COLOR_CONDITION_FIELD,
   POLYGON_FILL_COLOR_VALUE_FIELD,
   POLYGON_HEIGHT_REFERENCE_FIELD,
-  POLYGON_STROKE_COLOR_FIELD,
   POLYGON_STROKE_WEIGHT_FIELD,
   POLYGON_VISIBILITY_CONDITION_FIELD,
   POLYGON_VISIBILITY_FILTER_FIELD,
@@ -71,7 +70,6 @@ export const makeSimpleValue = (
         | typeof POINT_FILL_COLOR_VALUE_FIELD
         | typeof POLYLINE_FILL_COLOR_VALUE_FIELD
         | typeof POLYGON_FILL_COLOR_VALUE_FIELD
-        | typeof POLYGON_STROKE_COLOR_FIELD
       >
     | undefined,
 ): string | undefined => {
@@ -88,7 +86,24 @@ export const makeSimpleValue = (
     case POLYGON_FILL_COLOR_VALUE_FIELD:
       return comp.value?.color || comp.preset?.defaultValue;
     default:
-      return comp.preset?.defaultValue;
+      return;
+  }
+};
+
+export const makeSimpleValueForStrokeColor = (
+  comp: Component<typeof POLYGON_FILL_COLOR_VALUE_FIELD> | undefined,
+): string | undefined => {
+  if (!comp) return;
+  let strokeColor;
+  let fillColor;
+  switch (comp.type) {
+    // Polygon
+    case POLYGON_FILL_COLOR_VALUE_FIELD:
+      strokeColor = comp.value?.strokeColor || comp.preset?.strokeValue;
+      fillColor = comp.value?.color || comp.preset?.defaultValue;
+      return strokeColor === "" ? fillColor : strokeColor;
+    default:
+      return;
   }
 };
 
@@ -141,6 +156,53 @@ export const makeConditionalExpression = (
           }) ?? []
         ).filter(isNotNullish),
         ["true", color(DEFAULT_COLOR, 1)],
+      ],
+    },
+  };
+};
+
+export const makeStrokeColorConditionalExpression = (
+  comp: Component<typeof POLYGON_FILL_COLOR_CONDITION_FIELD> | undefined,
+): ExpressionContainer | undefined => {
+  if (!comp) return;
+
+  const currentRuleId = comp.value?.useDefault
+    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0].id
+    : comp.value?.currentRuleId;
+
+  return {
+    expression: {
+      conditions: [
+        ...(
+          comp.preset?.rules?.flatMap(rule => {
+            if (rule.id !== currentRuleId) return;
+            const overriddenRules = comp.value?.overrideRules.filter(r => r.ruleId === rule.id);
+            return rule.conditions?.map(cond => {
+              const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
+              const colorValue = overriddenCondition?.strokeColor || cond.strokeColor;
+              if (!rule.propertyName || !cond.value || !colorValue) return;
+              const stringCondition = conditionWithOperation(
+                variable(rule.propertyName),
+                string(cond.value),
+                cond.operation,
+              );
+              const numberCondition = !isNaN(Number(cond.value))
+                ? conditionWithOperation(
+                    defaultConditionalNumber(rule.propertyName),
+                    number(Number(cond.value)),
+                    cond.operation,
+                  )
+                : undefined;
+              return rule.propertyName && cond.value && colorValue
+                ? ([numberCondition ? numberCondition : stringCondition, color(colorValue, 1)] as [
+                    string,
+                    string,
+                  ])
+                : undefined;
+            });
+          }) ?? []
+        ).filter(isNotNullish),
+        ["true", color(DEFAULT_COLOR, 0)],
       ],
     },
   };
@@ -443,17 +505,14 @@ export const useEvaluateGeneralAppearance = ({
   );
 
   // Polygon
-  const polygonColor = useOptionalAtomValue(
+  const polygonFillAndStrokeColor = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_VALUE_FIELD),
+  );
+  const polygonFillAndStrokeColorCondition = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
   );
   const polygonStrokeWeight = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_STROKE_WEIGHT_FIELD),
-  );
-  const polygonStrokeColor = useOptionalAtomValue(
-    useFindComponent(componentAtoms ?? [], POLYGON_STROKE_COLOR_FIELD),
-  );
-  const polygonFillColorCondition = useOptionalAtomValue(
-    useFindComponent(componentAtoms ?? [], POLYGON_FILL_COLOR_CONDITION_FIELD),
   );
   const polygonVisibilityCondition = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], POLYGON_VISIBILITY_CONDITION_FIELD),
@@ -541,10 +600,13 @@ export const useEvaluateGeneralAppearance = ({
         },
         polygon: {
           fillColor:
-            makeSimpleValue(polygonColor) ?? makeConditionalExpression(polygonFillColorCondition),
-          strokeColor: polygonStrokeColor?.preset?.defaultValue,
+            makeSimpleValue(polygonFillAndStrokeColor) ??
+            makeConditionalExpression(polygonFillAndStrokeColorCondition),
+          strokeColor:
+            makeSimpleValueForStrokeColor(polygonFillAndStrokeColor) ??
+            makeStrokeColorConditionalExpression(polygonFillAndStrokeColorCondition),
           strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
-          stroke: !!polygonStrokeColor || !!polygonStrokeWeight,
+          stroke: !!polygonFillAndStrokeColor?.preset?.strokeValue || !!polygonStrokeWeight,
           show:
             makeVisibilityFilterExpression(polygonVisibilityFilter) ??
             makeVisibilityConditionExpression(polygonVisibilityCondition),
@@ -592,9 +654,8 @@ export const useEvaluateGeneralAppearance = ({
       polylineVisibilityCondition,
       polylineHeightReference?.preset?.defaultValue,
       polylineClassificationType?.preset?.defaultValue,
-      polygonColor,
-      polygonFillColorCondition,
-      polygonStrokeColor,
+      polygonFillAndStrokeColor,
+      polygonFillAndStrokeColorCondition,
       polygonStrokeWeight,
       polygonVisibilityFilter,
       polygonVisibilityCondition,
