@@ -8,6 +8,8 @@ import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodM
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
 import { EditorTilesetWireframeField } from "./3dtiles/EditorTilesetWireframeField";
 import { EditorCLassificationTypeField } from "./common/EditorClassificationTypeField";
+import { EditorFillAndStrokeColorConditionField } from "./common/EditorFillAndStrokeColorConditionField";
+import { EditorFillAndStrokeColorValueField } from "./common/EditorFillAndStrokeColorValueField";
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
 import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
@@ -51,7 +53,6 @@ import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointUseLabelField } from "./point/EditorPointUseLabelField";
-import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
 import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
 import { EditorPolylineStrokeWeightField } from "./polyline/EditorPolygonStrokeWeightField";
 
@@ -266,31 +267,26 @@ export const fields: {
     >,
   },
   // Polygon
-  POLYGON_STROKE_COLOR_FIELD: {
-    category: FIELD_CATEGORY_POLYGON,
-    name: "Stroke Color",
-    Component: EditorPolygonStrokeColorField,
-  },
-  POLYGON_STROKE_WEIGHT_FIELD: {
-    category: FIELD_CATEGORY_POLYGON,
-    name: "Stroke Weight",
-    Component: EditorPolygonStrokeWeightField,
-  },
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
     group: FIELD_GROUP_POLYGON_FILL_COLOR,
-    name: "Value",
-    Component: EditorFillColorValueField as React.FC<
+    name: "Color Value",
+    Component: EditorFillAndStrokeColorValueField as React.FC<
       BasicFieldProps<"POLYGON_FILL_COLOR_VALUE_FIELD">
     >,
   },
   POLYGON_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
     group: FIELD_GROUP_POLYGON_FILL_COLOR,
-    name: "Condition",
-    Component: EditorFillColorConditionField as React.FC<
+    name: "Color Condition",
+    Component: EditorFillAndStrokeColorConditionField as React.FC<
       BasicFieldProps<"POLYGON_FILL_COLOR_CONDITION_FIELD">
     >,
+  },
+  POLYGON_STROKE_WEIGHT_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Stroke Weight",
+    Component: EditorPolygonStrokeWeightField,
   },
   POLYGON_VISIBILITY_FILTER_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
