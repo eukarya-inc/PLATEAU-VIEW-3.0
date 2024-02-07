@@ -16,32 +16,30 @@ import {
 } from "../../../../ui-components";
 import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
 
-export type FillColorConditionFieldPresetRule = {
+export type FillAndStrokeColorConditionFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
-  conditions?: FillColorConditionFieldPresetRuleCondition[];
+  conditions?: FillAndStrokeColorConditionFieldPresetRuleCondition[];
 };
 
-type FillColorConditionFieldPresetRuleCondition = {
+type FillAndStrokeColorConditionFieldPresetRuleCondition = {
   id: string;
   operation?: OperationValue;
   value?: string;
   color?: string;
+  strokeColor?: string;
   asLegend?: boolean;
   legendName?: string;
 };
 
-export type FillColorConditionFieldPreset = {
-  rules?: FillColorConditionFieldPresetRule[];
+export type FillAndStrokeColorConditionFieldPreset = {
+  rules?: FillAndStrokeColorConditionFieldPresetRule[];
 };
 
-type SupportedFieldTypes =
-  | "POINT_FILL_COLOR_CONDITION_FIELD"
-  | "POLYLINE_FILL_COLOR_CONDITION_FIELD"
-  | "TILESET_FILL_COLOR_CONDITION_FIELD";
+type SupportedFieldTypes = "POLYGON_FILL_COLOR_CONDITION_FIELD";
 
-export const EditorFillColorConditionField = ({
+export const EditorFillAndStrokeColorConditionField = ({
   component,
   onUpdate,
 }: BasicFieldProps<SupportedFieldTypes>): ReactElement | null => {
@@ -57,7 +55,7 @@ export const EditorFillColorConditionField = ({
   }, [rules, currentRuleId]);
 
   const handleRuleCreate = useCallback(() => {
-    const newRule: FillColorConditionFieldPresetRule = {
+    const newRule: FillAndStrokeColorConditionFieldPresetRule = {
       id: generateID(),
       conditions: [],
     };
@@ -109,7 +107,7 @@ export const EditorFillColorConditionField = ({
   );
 
   const handleRuleUpdate = useCallback(
-    (rule: FillColorConditionFieldPresetRule) => {
+    (rule: FillAndStrokeColorConditionFieldPresetRule) => {
       onUpdate?.({
         ...component,
         preset: {
@@ -190,7 +188,7 @@ export const EditorFillColorConditionField = ({
   );
 
   const handleConditionUpdate = useCallback(
-    (condition: FillColorConditionFieldPresetRuleCondition) => {
+    (condition: FillAndStrokeColorConditionFieldPresetRuleCondition) => {
       if (!currentRule?.conditions) return;
       onUpdate?.({
         ...component,
@@ -264,8 +262,8 @@ export const EditorFillColorConditionField = ({
 };
 
 type RulePanelProps = {
-  rule: FillColorConditionFieldPresetRule;
-  onRuleUpdate: (rule: FillColorConditionFieldPresetRule) => void;
+  rule: FillAndStrokeColorConditionFieldPresetRule;
+  onRuleUpdate: (rule: FillAndStrokeColorConditionFieldPresetRule) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
@@ -309,8 +307,8 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
 };
 
 type ConditionPanelProps = {
-  condition: FillColorConditionFieldPresetRuleCondition;
-  onConditionUpdate: (condition: FillColorConditionFieldPresetRuleCondition) => void;
+  condition: FillAndStrokeColorConditionFieldPresetRuleCondition;
+  onConditionUpdate: (condition: FillAndStrokeColorConditionFieldPresetRuleCondition) => void;
 };
 
 const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onConditionUpdate }) => {
@@ -334,10 +332,25 @@ const ConditionMainPanel: React.FC<ConditionPanelProps> = ({ condition, onCondit
     [condition, onConditionUpdate],
   );
 
+  const handleStrokeColorChange = useCallback(
+    (strokeColor: string) => {
+      onConditionUpdate({
+        ...condition,
+        strokeColor,
+      });
+    },
+    [condition, onConditionUpdate],
+  );
+
   return (
     <>
       <PropertyConditionField condition={condition} onConditionChange={handleConditionChange} />
-      <PropertyColorField value={condition.color} onChange={handleColorChange} />
+      <PropertyColorField value={condition.color} onChange={handleColorChange} placeholder="Fill" />
+      <PropertyColorField
+        value={condition.strokeColor}
+        onChange={handleStrokeColorChange}
+        placeholder="Stroke"
+      />
     </>
   );
 };
