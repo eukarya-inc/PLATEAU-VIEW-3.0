@@ -77,6 +77,8 @@ export type MarkerAppearance = {
   far?: number;
   pixelOffset?: [number, number];
   eyeOffset?: [number, number, number];
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type PolylineAppearance = {
@@ -88,6 +90,8 @@ export type PolylineAppearance = {
   near?: number;
   far?: number;
   classificationType?: ClassificationType;
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type PolygonAppearance = {
@@ -104,6 +108,8 @@ export type PolygonAppearance = {
   far?: number;
   extrudedHeight?: number;
   classificationType?: ClassificationType;
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type EllipsoidAppearance = {
@@ -151,7 +157,7 @@ export type ModelAppearance = {
   silhouetteSize?: number; // default: 1
   near?: number;
   far?: number;
-  pbr?: boolean;
+  pbr?: boolean | "withTexture";
   specularEnvironmentMaps?: string;
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;
@@ -179,7 +185,7 @@ export type Cesium3DTilesAppearance = {
   experimental_clipping?: EXPERIMENTAL_clipping;
   pointSize?: number;
   meta?: unknown;
-  pbr?: boolean;
+  pbr?: boolean | "withTexture";
   specularEnvironmentMaps?: string;
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;

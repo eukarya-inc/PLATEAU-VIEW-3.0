@@ -9,7 +9,7 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
-import { string, variable } from "../helpers";
+import { numberOrString, string, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
@@ -148,8 +148,10 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       searchedFeatures?.onlyShow
         ? {
             conditions: [
-              ...(searchedFeatures?.features?.map(
-                f => [`${variable("gml_id")} ===  ${string(f)}`, "true"] as [string, string],
+              ...(searchedFeatures?.conditions?.flatMap(([key, values]) =>
+                values.map(
+                  v => [`${variable(key)} === ${numberOrString(v)}`, "true"] as [string, string],
+                ),
               ) ?? []),
               ...hiddenFeaturesConditions.conditions,
               ...(filter.conditions[0].every(c => c === "true") ? [] : filter.conditions),
@@ -180,7 +182,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: false,
+      pbr: "withTexture",
       ...(color
         ? {
             color: {

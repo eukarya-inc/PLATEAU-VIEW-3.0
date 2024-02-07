@@ -30,6 +30,7 @@ export const DATASET_FRAGMENT = gql(`
       code
       name
       category
+      order
     }
     items {
       id

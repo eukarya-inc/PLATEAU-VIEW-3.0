@@ -57,7 +57,8 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     const settings = useAtomValue(settingsAtom);
     const templates = useAtomValue(templatesAtom);
     // Assume that all the datasets share the same type.
-    const layerType = datasetTypeLayers[datasets[0].type.code as PlateauDatasetType];
+    const layerType =
+      datasetTypeLayers[datasets[0].type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
     invariant(layerType !== "BUILDING_LAYER", "Building layer is not supported.");
     const filterLayers = useFilterLayers();
     const filteredLayers = useMemo(
@@ -156,7 +157,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     const showDataFormats = useAtomValue(showDataFormatsAtom);
     return (
       <ContextSelect
-        label={datasetTypeNames[datasets[0].type.code as PlateauDatasetType]}
+        label={datasets[0].type.name ?? datasetTypeNames.usecase}
         value={value}
         onChange={handleChange}
         disabled={disabled}>

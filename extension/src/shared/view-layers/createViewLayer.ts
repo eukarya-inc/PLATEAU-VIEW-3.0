@@ -10,6 +10,7 @@ import {
   CITY_FURNITURE_LAYER,
   createHeatmapLayer,
   createPedestrianLayer,
+  createSketchLayer,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
   GLOBAL_LAYER,
@@ -29,6 +30,7 @@ import {
   ROAD_LAYER,
   SHELTER_LAYER,
   SKETCH_LAYER,
+  SketchLayerModelParams,
   STATION_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
@@ -59,7 +61,7 @@ import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/Flood
 export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
-  T extends typeof SKETCH_LAYER ? never : // SketchLayerModelParams :
+  T extends typeof SKETCH_LAYER ? SketchLayerModelParams :
   T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
 
   // Dataset layers
@@ -99,7 +101,7 @@ export function createViewLayer<T extends LayerType>(
   switch (params.type) {
     case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
-    case SKETCH_LAYER: return undefined // createSketchLayer(params as SketchLayerModelParams)
+    case SKETCH_LAYER: return createSketchLayer(params as SketchLayerModelParams)
     case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
 
     // Dataset layers
@@ -128,5 +130,6 @@ export function createViewLayer<T extends LayerType>(
     case URBAN_PLANNING_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case USE_CASE_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
     case VEGETATION_LAYER: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
+    default: return createGeneralDatasetLayer(params as GeneralLayerModelParams)
   }
 }

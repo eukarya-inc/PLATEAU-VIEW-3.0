@@ -12,10 +12,10 @@ export default meta;
 
 type Story = StoryObj<typeof ShareModal>;
 
-const Component: FC<Props> = ({ loading = false, show = true }) => {
+const Component: FC<Props> = props => {
   return (
     <div style={{ width: 300 }}>
-      <ShareModal show={show} loading={loading} />
+      <ShareModal {...props} />
     </div>
   );
 };
@@ -26,4 +26,10 @@ export const Default: Story = {
 
 export const Loading: Story = {
   render: () => <Component show={true} loading={true} />,
+};
+
+export const PropsPassed: Story = {
+  render: () => (
+    <Component show={true} url={"https://app.reearth.io"} iframe={"https://app.reearth.io"} />
+  ),
 };

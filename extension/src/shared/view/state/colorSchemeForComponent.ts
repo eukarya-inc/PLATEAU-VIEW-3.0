@@ -20,6 +20,10 @@ import {
   ValueColorSchemeValue,
   VALUE_COLOR_SCHEME,
 } from "../../types/fieldComponents/colorScheme";
+import {
+  POLYGON_FILL_COLOR_CONDITION_FIELD,
+  POLYGON_FILL_COLOR_VALUE_FIELD,
+} from "../../types/fieldComponents/polygon";
 import { LayerModel } from "../../view-layers";
 
 export const isColorSchemeComponent = (
@@ -164,12 +168,33 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             const overriddenCondition = component.value?.overrideRules.find(
               o => o.ruleId === rule.id && o.conditionId === c.id,
             );
-            const color = overriddenCondition?.color || c.color;
-            return c.value && color
+            const color = (overriddenCondition?.color || c.color) ?? "";
+
+            // Polygon always has stroke to compat exists data
+            const hasStroke = component.type === POLYGON_FILL_COLOR_CONDITION_FIELD;
+            const strokeColor =
+              (overriddenCondition?.strokeColor ||
+                (typeof c === "object" && "strokeColor" in c && typeof c.strokeColor === "string"
+                  ? c.strokeColor
+                  : "")) ??
+              "";
+
+            return hasStroke
+              ? c.value
+                ? {
+                    id: c.id,
+                    value: c.value,
+                    color,
+                    // use fill color if strokeColor is not set
+                    strokeColor: strokeColor === "" ? color : strokeColor,
+                    name: c.legendName || c.value,
+                  }
+                : undefined
+              : c.value && color
               ? {
                   id: c.id,
                   value: c.value,
-                  color: color,
+                  color,
                   name: c.legendName || c.value,
                 }
               : undefined;
@@ -193,6 +218,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
                         ruleId: currentRuleId,
                         conditionId: color.id,
                         color: color.color,
+                        strokeColor: color.strokeColor,
                       }))
                       .filter(isNotNullish) ?? []),
                     ...(component.value?.overrideRules ?? []),
@@ -214,13 +240,30 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       }
       case VALUE_COLOR_SCHEME: {
         if (!isValueColorSchemeComponent(component)) return;
-        const colors = component.preset?.defaultValue
+        const hasStroke = component.type === POLYGON_FILL_COLOR_VALUE_FIELD;
+        const strokeColor =
+          component.value?.strokeColor || (hasStroke ? component.preset?.strokeValue : "");
+        const color = (component.value?.color || component.preset?.defaultValue) ?? "";
+        const colors = hasStroke
+          ? component.preset?.defaultValue || strokeColor
+            ? [
+                {
+                  id: component.id,
+                  value: component.preset?.defaultValue ?? "",
+                  color,
+                  // use fill color if strokeColor is not set
+                  strokeColor: strokeColor === "" ? color : strokeColor,
+                  name: component.preset?.legendName ?? "",
+                },
+              ]
+            : []
+          : component.preset?.defaultValue
           ? [
               {
                 id: component.id,
-                value: component.preset.defaultValue,
-                color: component.value?.color || component.preset.defaultValue,
-                name: component.preset.legendName ?? "",
+                value: component.preset?.defaultValue ?? "",
+                color,
+                name: component.preset?.legendName ?? "",
               },
             ]
           : [];
@@ -233,6 +276,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
               value: {
                 ...(component.value ?? {}),
                 color: update[0].color,
+                strokeColor: update[0].strokeColor,
               } as typeof component.value,
             });
           },

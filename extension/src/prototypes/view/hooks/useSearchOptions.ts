@@ -78,8 +78,9 @@ function useDatasetSearchOptions({
     }
     return (
       query.data?.datasets
-        .filter(dataset => {
-          const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+        ?.filter(dataset => {
+          const layerType =
+            datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
           return (
             !layerType ||
             findLayer(layers, {
@@ -236,7 +237,8 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         case "dataset": {
           const datasetOption = option as DatasetSearchOption;
           const dataset = datasetOption.dataset as Dataset;
-          const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+          const type =
+            datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
           const municipalityCode = datasetOption.dataset.wardCode;
           if (type == null) {
             return;

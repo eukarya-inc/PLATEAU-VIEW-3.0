@@ -3,7 +3,7 @@ import { atomWithReset } from "jotai/utils";
 
 import { LayerModel } from "../../prototypes/layers";
 import { Setting } from "../api/types";
-import { sharedAtom, sharedStoreAtom, sharedStoreAtomWrapper } from "../sharedAtoms";
+import { sharedAtom, sharedStoreAtom } from "../sharedAtoms";
 import { RootLayerAtom, RootLayerConfig, RootLayerConfigForDataset } from "../view-layers";
 
 export const CURRENT_COMPONENT_GROUP_ID = "CURRENT_COMPONENT_GROUP_ID";
@@ -13,8 +13,7 @@ export const addedDatasetIdList = sharedStoreAtom(
   sharedAtom<string[]>("ADDED_DATASET_ID_LIST", []),
 );
 
-export const rootLayersBaseAtom = atomWithReset<RootLayerConfig[]>([]);
-export const rootLayersAtom = sharedStoreAtomWrapper("ROOT_LAYERS", rootLayersBaseAtom);
+export const rootLayersAtom = atomWithReset<RootLayerConfig[]>([]);
 export const rootLayersLayersAtom = atom<LayerModel[]>(get => {
   return get(rootLayersAtom).map(root => {
     const rootLayer = get(root.rootLayerAtom as RootLayerAtom);

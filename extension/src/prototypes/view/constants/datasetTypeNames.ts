@@ -23,4 +23,8 @@ export const datasetTypeNames: Record<PlateauDatasetType, string> = {
   [PlateauDatasetType.TsunamiRisk]: "津波浸水想定区域",
   [PlateauDatasetType.UseCase]: "ユースケース",
   [PlateauDatasetType.Vegetation]: "植生",
+  [PlateauDatasetType.Sample]: "その他",
+  [PlateauDatasetType.Constructure]: "その他の構造物モデル",
+  [PlateauDatasetType.Water]: "水辺モデル",
+  [PlateauDatasetType.Traffic]: "交通モデル",
 };

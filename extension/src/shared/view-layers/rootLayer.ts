@@ -19,6 +19,7 @@ import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
 import { sharedStoreAtomWrapper } from "../sharedAtoms";
 import { CURRENT_COMPONENT_GROUP_ID, CURRENT_DATA_ID } from "../states/rootLayer";
+import { SHARED_PROJECT_ID } from "../states/share";
 import { templatesAtom } from "../states/template";
 import { generateID } from "../utils/id";
 
@@ -30,6 +31,7 @@ export type RootLayerForDatasetAtomParams = {
   settings: Setting[];
   templates: Template[];
   currentDataId?: string;
+  currentGroupId?: string;
   shareId?: string;
   dataset: DatasetFragmentFragment;
 };
@@ -53,8 +55,8 @@ export type RootLayerForLayerAtomParams<T extends LayerType> = {
   id?: string;
   type: T;
   title?: string;
-  shareId?: string;
   shouldInitialize?: boolean;
+  shareId?: string;
 } & ViewLayerModelParams<T>;
 
 export type RootLayerForDataset = {
@@ -62,6 +64,7 @@ export type RootLayerForDataset = {
   general: GeneralSetting | undefined;
   featureInspector: FeatureInspectorSettings | undefined; // TODO: Use API definition
   layer: PrimitiveAtom<LayerModel>;
+  layerName: string | undefined;
 };
 
 export type RootLayerForLayer<T extends LayerType = LayerType> = {
@@ -236,6 +239,7 @@ const createRootLayerForDataset = ({
 
   return {
     type: "dataset",
+    layerName: subName ?? datasetType.name ?? "ユースケース",
     // TODO: get settings from featureInspectorTemplate
     general: setting?.general,
     featureInspector: setting?.featureInspector
@@ -266,15 +270,18 @@ const createRootLayerForDataset = ({
 export const createRootLayerForDatasetAtom = (
   params: RootLayerForDatasetAtomParams,
 ): RootLayerConfig => {
+  const shareId = params.shareId || SHARED_PROJECT_ID;
   const dataset = params.dataset;
   const dataList = dataset.items as DatasetItem[];
-  const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const type =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const subName =
     dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
 
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
   const initialCurrentDataId = params.currentDataId ?? dataList[0].id;
+  const initialCurrentGroupId = params.currentGroupId;
   const rootLayerAtom = atom<RootLayerForDataset>(
     createRootLayerForDataset({
       datasetId: dataset.id,
@@ -286,8 +293,8 @@ export const createRootLayerForDatasetAtom = (
       settings: initialSettings,
       templates: initialTemplates,
       currentDataId: initialCurrentDataId,
-      currentGroupId: undefined,
-      shareId: params.shareId,
+      currentGroupId: initialCurrentGroupId,
+      shareId,
       shouldInitialize: true,
     }),
   );
@@ -313,7 +320,7 @@ export const createRootLayerForDatasetAtom = (
           templates: get(templatesAtom),
           currentDataId: currentDataId,
           currentGroupId: currentGroupId,
-          shareId: params.shareId,
+          shareId,
           shouldInitialize: false,
         }),
       );
@@ -345,7 +352,7 @@ export const createRootLayerForDatasetAtom = (
           templates: get(templatesAtom),
           currentDataId: update ?? currentDataId,
           currentGroupId: currentGroupId,
-          shareId: params.shareId,
+          shareId,
           shouldInitialize: false,
         }),
       );
@@ -383,7 +390,7 @@ export const createRootLayerForDatasetAtom = (
           template,
           data,
           group,
-          params.shareId,
+          shareId,
           false,
         ),
       );
@@ -393,7 +400,7 @@ export const createRootLayerForDatasetAtom = (
   );
 
   const shareableCurrentDataIdName = `${dataset.id}_${CURRENT_DATA_ID}${
-    params.shareId ? `_${params.shareId}` : ""
+    shareId ? `_${shareId}` : ""
   }`;
   const shareableCurrentDataIdAtom = sharedStoreAtomWrapper(
     shareableCurrentDataIdName,
@@ -401,7 +408,7 @@ export const createRootLayerForDatasetAtom = (
   );
 
   const shareableCurrentComponentGroupIdName = `${dataset.id}_${CURRENT_COMPONENT_GROUP_ID}${
-    params.shareId ? `_${params.shareId}` : ""
+    shareId ? `_${shareId}` : ""
   }`;
   const shareableCurrentGroupIdAtom = sharedStoreAtomWrapper(
     shareableCurrentComponentGroupIdName,
@@ -427,10 +434,10 @@ export const createRootLayerForLayerAtom = <T extends LayerType>({
   id,
   type,
   title,
-  shareId,
   shouldInitialize = true,
   ...props
 }: RootLayerForLayerAtomParams<T>): RootLayerConfig => {
+  const shareId = props.shareId || SHARED_PROJECT_ID;
   const rootLayerId = id ?? generateID();
   const rootLayer: RootLayerForLayer<T> = {
     id: rootLayerId,
@@ -441,10 +448,10 @@ export const createRootLayerForLayerAtom = <T extends LayerType>({
         type: type as LayerType,
         title: title ?? "",
         datasetId: undefined,
-        shareId,
         municipalityCode: "",
         shouldInitializeAtom: shouldInitialize,
         ...props,
+        shareId,
       }) as LayerModel<T>),
     }),
   };

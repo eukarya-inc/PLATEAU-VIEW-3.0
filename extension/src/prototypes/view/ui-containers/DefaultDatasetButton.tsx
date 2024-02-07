@@ -9,7 +9,6 @@ import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer, useFindLayer } from "../../layers";
 import { ContextButton } from "../../ui-components";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
-import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { PlateauDatasetType } from "../constants/plateau";
 import { showDataFormatsAtom } from "../states/app";
 
@@ -22,7 +21,8 @@ export interface DefaultDatasetButtonProps {
 export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
   ({ dataset, municipalityCode, disabled = false }) => {
     const layers = useAtomValue(rootLayersLayersAtom);
-    const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+    const layerType =
+      datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
     const findLayer = useFindLayer();
     const layer = useMemo(
       () =>
@@ -69,7 +69,7 @@ export const DefaultDatasetButton: FC<DefaultDatasetButtonProps> = memo(
         selected={layer != null}
         disabled={disabled || layerType == null}
         onClick={handleClick}>
-        {datasetTypeNames[dataset.type.code as PlateauDatasetType]}
+        {dataset.type.name}
         {showDataFormats ? ` (${datum.format})` : null}
       </ContextButton>
     );

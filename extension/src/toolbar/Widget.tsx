@@ -4,12 +4,14 @@ import { FC, memo } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
+import { AutoRotateCamera } from "../prototypes/view/containers/AutoRotateCamera";
 import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
 import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
+import { SketchTool } from "../prototypes/view/containers/SketchTool";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
@@ -23,8 +25,9 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
+import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
 
-type Props = WidgetProps<{
+type DefaultProps = {
   geoURL?: string;
   gsiTileURL?: string;
   plateauURL?: string;
@@ -33,7 +36,14 @@ type Props = WidgetProps<{
   catalogURLForAdmin?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
-}>;
+};
+
+type AppearanceProps = {
+  logo?: string;
+  primaryColor?: string;
+};
+
+type Props = WidgetProps<DefaultProps, AppearanceProps>;
 
 export const Loading: FC = () => {
   const ready = useAtomValue(readyAtom);
@@ -42,6 +52,7 @@ export const Loading: FC = () => {
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
+  useSelectSketchFeature();
 
   return (
     <WidgetContext
@@ -53,7 +64,9 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       projectId={widget.property.default.projectName}
       plateauToken={widget.property.default.plateauAccessToken}
       googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-      inEditor={inEditor}>
+      inEditor={inEditor}
+      customPrimaryColor={widget.property.appearance?.primaryColor}
+      customLogo={widget.property.appearance?.logo}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
@@ -75,7 +88,9 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <HighlightedAreas />
       <ReverseGeocoding />
       <PedestrianTool />
+      <SketchTool />
       <MyData />
+      <AutoRotateCamera />
       <FeedBack />
     </WidgetContext>
   );

@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { animate, useMotionValue, usePresence } from "framer-motion";
-import { useMemo, type FC, useEffect, useState } from "react";
+import { useMemo, type FC, useEffect, useState, useRef } from "react";
 
 import {
   PedestrianEllipseAppearances,
@@ -24,17 +24,19 @@ export const LevitationCircle: FC<LevitationCircleProps> = ({
 }) => {
   const motionLevitation = useMotionValue(0);
   const [present, safeToRemove] = usePresence();
+  const safeToRemoveRef = useRef(safeToRemove);
+  safeToRemoveRef.current = safeToRemove;
   useEffect(() => {
     return animate(motionLevitation, present ? 1 : 0, {
       type: "tween",
       duration: 0.2,
       onComplete: () => {
         if (!present) {
-          safeToRemove();
+          safeToRemoveRef.current?.();
         }
       },
     }).stop;
-  }, [motionLevitation, present, safeToRemove]);
+  }, [motionLevitation, present]);
 
   const [levitation, setLevitation] = useState(0);
   useEffect(() => {

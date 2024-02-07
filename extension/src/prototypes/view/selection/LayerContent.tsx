@@ -35,7 +35,7 @@ import { DatasetDialog } from "../ui-containers/DatasetDialog";
 import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
-// import { LayerSketchSection } from "./LayerSketchSection";
+import { LayerSketchSection } from "./LayerSketchSection";
 
 type SupportedLayerType = Exclude<LayerType, typeof PEDESTRIAN_LAYER>;
 
@@ -154,6 +154,8 @@ export function LayerContent<T extends SupportedLayerType>({
     [buildingSearchPanelState],
   );
 
+  const layerName = layerTypeNames[type] ?? rootLayer?.layerName;
+
   return (
     <>
       <List disablePadding>
@@ -161,10 +163,10 @@ export function LayerContent<T extends SupportedLayerType>({
           actionsRef={buildingSearchPanelRef}
           title={
             values.length === 1
-              ? `${layerTypeNames[type]}レイヤー`
-              : `${values.length}個の${layerTypeNames[type]}レイヤー`
+              ? `${layerName}レイヤー`
+              : `${values.length}個の${layerName}レイヤー`
           }
-          iconComponent={layerTypeIcons[type]}
+          iconComponent={layerTypeIcons[type] ?? layerTypeIcons.USE_CASE_LAYER}
           actions={
             <>
               <Tooltip title={hidden ? "表示" : "隠す"}>
@@ -216,8 +218,8 @@ export function LayerContent<T extends SupportedLayerType>({
           <Fields key={type} layers={values} type={type} atoms={atoms} />
         ))}
         {/* <InspectorItem> */}
-        {/* <LayerShowWireframeSection layers={values} />
-        <LayerSketchSection layers={values} /> */}
+        {/* <LayerShowWireframeSection layers={values} />*/}
+        <LayerSketchSection layers={values} />
         {/* </InspectorItem> */}
       </List>
       {rootLayerConfig && (
