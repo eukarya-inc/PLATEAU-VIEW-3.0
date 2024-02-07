@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import { useMemo, type FC } from "react";
 
 // import { TerrainElevationImageryLayer, VertexTerrainElevationMaterial } from "../../datasets";
-import { GSI_TILE_URL } from "../../../shared/constants";
+import { GEO_API_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
 import {
   shareableLogarithmicTerrainElevationAtom,
@@ -42,7 +42,7 @@ export const ElevationEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
       {
         id: "elevation-heatmap",
         tile_type: "url",
-        tile_url: `${GSI_TILE_URL}/terrain/{z}/{x}/{y}.png`,
+        tile_url: `${GEO_API_URL}/terrain/{z}/{x}/{y}.png`,
         heatmap: true,
         tile_maxLevel: 15,
       },
