@@ -22,7 +22,7 @@ import {
   TILESET_FILL_COLOR_GRADIENT_FIELD,
   TILESET_WIREFRAME,
 } from "../../types/fieldComponents/3dtiles";
-import { STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
+import { OPACITY_FIELD, STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_VALUE_FIELD,
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -101,6 +101,7 @@ export const makeConditionalExpression = (
         | typeof POLYGON_FILL_COLOR_CONDITION_FIELD
       >
     | undefined,
+  opacity = 1,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
@@ -132,15 +133,15 @@ export const makeConditionalExpression = (
                   )
                 : undefined;
               return rule.propertyName && cond.value && colorValue
-                ? ([numberCondition ? numberCondition : stringCondition, color(colorValue, 1)] as [
-                    string,
-                    string,
-                  ])
+                ? ([
+                    numberCondition ? numberCondition : stringCondition,
+                    color(colorValue, opacity),
+                  ] as [string, string])
                 : undefined;
             });
           }) ?? []
         ).filter(isNotNullish),
-        ["true", color(DEFAULT_COLOR, 1)],
+        ["true", color(DEFAULT_COLOR, opacity)],
       ],
     },
   };
@@ -150,6 +151,7 @@ export const makeGradientExpression = (
   comp:
     | Component<typeof POINT_FILL_COLOR_GRADIENT_FIELD | typeof TILESET_FILL_COLOR_GRADIENT_FIELD>
     | undefined,
+  opacity = 1,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
@@ -160,7 +162,7 @@ export const makeGradientExpression = (
     : comp.value?.currentRuleId;
   const rule = preset?.rules?.find(r => r.id === currentRuleId);
 
-  const conditions: [string, string][] = [["true", color(DEFAULT_COLOR, 1)]];
+  const conditions: [string, string][] = [["true", color(DEFAULT_COLOR, opacity)]];
 
   const [minValue, maxValue] = [
     value?.currentMin ?? rule?.min ?? 0,
@@ -184,13 +186,25 @@ export const makeGradientExpression = (
     const color = colorMap.linear((i - minValue) / (maxValue - minValue));
     conditions.unshift([
       `${defaultConditionalNumber(colorProperty, minValue - 1)} >= ${number(i)}`,
-      rgba({ r: color[0] * 255, g: color[1] * 255, b: color[2] * 255, a: 1 }),
+      rgba({ r: color[0] * 255, g: color[1] * 255, b: color[2] * 255, a: opacity }),
     ]);
   }
 
   return {
     expression: {
       conditions,
+    },
+  };
+};
+
+const makeSimpleColorWithOpacity = (
+  comp: Component<typeof OPACITY_FIELD> | undefined,
+  defaultColor = DEFAULT_COLOR,
+) => {
+  if (!comp) return;
+  return {
+    expression: {
+      conditions: [["true", color(defaultColor, comp.value ?? 1)]],
     },
   };
 };
@@ -483,6 +497,8 @@ export const useEvaluateGeneralAppearance = ({
   );
 
   // General
+  const opacity = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], OPACITY_FIELD));
+
   const styleCodeString = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
   )?.preset?.code;
@@ -560,8 +576,9 @@ export const useEvaluateGeneralAppearance = ({
         "3dtiles": {
           pbr: "withTexture",
           color:
-            makeConditionalExpression(tilesetFillColorCondition) ??
-            makeGradientExpression(tilesetFillGradientColor),
+            makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
+            makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
+            makeSimpleColorWithOpacity(opacity),
           experimental_clipping: clippingBox,
           showWireframe: tilesetWireframe?.value?.wireframe,
         },
@@ -606,6 +623,7 @@ export const useEvaluateGeneralAppearance = ({
       clippingBox,
       tilesetWireframe?.value?.wireframe,
       boxAppearance,
+      opacity,
     ],
   );
 
