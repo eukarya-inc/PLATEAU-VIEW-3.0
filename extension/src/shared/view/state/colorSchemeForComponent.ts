@@ -2,8 +2,6 @@ import { Atom, PrimitiveAtom, SetStateAction, atom } from "jotai";
 import { splitAtom } from "jotai/utils";
 import { uniqWith } from "lodash-es";
 
-import { FillAndStrokeColorConditionFieldPresetRule } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillAndStrokeColorConditionField";
-import { FillColorConditionFieldPresetRule } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { ColorMap } from "../../../prototypes/color-maps";
 import {
   QualitativeColor,
@@ -161,10 +159,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         const currentRuleId = colorScheme.useDefault
           ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
           : colorScheme.currentRuleId;
-        const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId) as
-          | FillColorConditionFieldPresetRule
-          | FillAndStrokeColorConditionFieldPresetRule
-          | undefined;
+        const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
         const colors = rule?.conditions
           ?.map((c): QualitativeColor | undefined => {
@@ -179,7 +174,9 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             const hasStroke = component.type === POLYGON_FILL_COLOR_CONDITION_FIELD;
             const strokeColor =
               (overriddenCondition?.strokeColor ||
-                (typeof c === "object" && "strokeColor" in c ? c.strokeColor : "")) ??
+                (typeof c === "object" && "strokeColor" in c && typeof c.strokeColor === "string"
+                  ? c.strokeColor
+                  : "")) ??
               "";
 
             return hasStroke
