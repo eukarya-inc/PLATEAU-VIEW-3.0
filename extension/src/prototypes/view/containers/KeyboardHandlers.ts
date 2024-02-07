@@ -1,6 +1,6 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
-import { useWindowEvent } from "../../react-helpers";
+import { useConstant, useWindowEvent } from "../../react-helpers";
 
 const directions = ["forward", "backward", "right", "left", "up", "down"] as const;
 
@@ -44,28 +44,56 @@ export const KeyboardHandlers = () => {
     sprint?: boolean;
   }>({});
 
+  const state = useConstant(() => ({
+    time: Date.now(),
+    speed: 0,
+  }));
   const camera = window.reearth?.camera;
+  const globeHeight = window.reearth?.scene?.getGlobeHeight();
 
+  const previousTime = state.time;
+  const currentTime = Date.now();
+  const deltaSeconds = (currentTime - previousTime) / 1000;
+  state.time = currentTime;
+
+  const acceleration = 0.1;
+  const damping = 0.3;
+  const maximumSpeed = 3;
+
+  const [amount, setAmount] = useState(1);
   const checkOnKeyboard = useCallback(
     (assignment: string) => {
+      const cameraHeight = camera?.position?.height;
+      if (state.speed > 1) {
+        state.speed = Math.max(maximumSpeed, state.speed - damping);
+      } else {
+        state.speed = Math.min(maximumSpeed, state.speed + acceleration);
+      }
+      if (globeHeight != null && cameraHeight) {
+        let speed = state.speed;
+        speed *= 1 + Math.max(0, cameraHeight - globeHeight) * 0.1;
+        setAmount(speed * deltaSeconds);
+      }
+      camera?.moveOverTerrain(amount);
+
       switch (assignment) {
         case "forward":
-          return camera?.moveForward(10);
+          return camera?.moveForward(amount);
         case "backward":
-          return camera?.moveBackward(3);
+          return camera?.moveBackward(amount);
         case "up":
-          return camera?.moveUp(3);
+          return camera?.moveUp(amount);
         case "down":
-          return camera?.moveDown(3);
+          return camera?.moveDown(amount);
         case "left":
-          return camera?.moveLeft(3);
+          return camera?.moveLeft(amount);
         case "right":
-          return camera?.moveRight(3);
+          return camera?.moveRight(amount);
         default:
           return;
       }
     },
-    [camera],
+    [amount, camera, deltaSeconds, globeHeight, state],
   );
 
   useWindowEvent("keydown", event => {
@@ -105,5 +133,6 @@ export const KeyboardHandlers = () => {
     directionsRef.current = {};
     modesRef.current = {};
   });
+
   return null;
 };
