@@ -50,7 +50,7 @@ export const KeyboardHandlers = () => {
     (assignment: string) => {
       switch (assignment) {
         case "forward":
-          return camera?.moveForward(3);
+          return camera?.moveForward(10);
         case "backward":
           return camera?.moveBackward(3);
         case "up":
