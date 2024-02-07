@@ -44,7 +44,10 @@ export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockPr
   );
 
   const templateOptions = useMemo(
-    () => componentTemplates.map(t => ({ label: t.name, value: t.id })),
+    () =>
+      componentTemplates
+        .map(t => ({ label: t.name, value: t.id }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [componentTemplates],
   );
 

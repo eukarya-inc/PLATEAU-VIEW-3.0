@@ -50,7 +50,10 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
   );
 
   const templateOptions = useMemo(
-    () => emphasisPropertyTemplates.map(t => ({ label: t.name, value: t.id })),
+    () =>
+      emphasisPropertyTemplates
+        .map(t => ({ label: t.name, value: t.id }))
+        .sort((a, b) => a.label.localeCompare(b.label)),
     [emphasisPropertyTemplates],
   );
 
