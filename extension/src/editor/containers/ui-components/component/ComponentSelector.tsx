@@ -171,8 +171,9 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
 
-  [`&.Mui-selected`]: {
+  [`&.Mui-selected, &.Mui-selected:hover`]: {
     color: "#fff",
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
