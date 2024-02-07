@@ -21,6 +21,7 @@ import { groupBy, max, mean, min, round, intersection } from "lodash-es";
 import { forwardRef, useCallback, type ComponentPropsWithRef, type FC, useMemo } from "react";
 
 import { makePropertyName } from "../../shared/plateau";
+import { roundFloat } from "../../shared/utils";
 import { isNotNullish } from "../type-helpers";
 
 import { TreeArrowCollapsedIcon } from "./icons/TreeArrowCollapsedIcon";
@@ -102,8 +103,8 @@ const NumberValue: FC<{
   );
 
   if (values.length === 1 || values.slice(1).every(value => value === values[0])) {
-    const roundedValue = Math.floor(values[0] * 100) / 100;
-    return <>{roundedValue.toFixed(2)}</>;
+    const roundedValue = roundFloat(values[0]);
+    return <>{roundedValue}</>;
   }
 
   return (
