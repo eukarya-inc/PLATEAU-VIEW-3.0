@@ -49,7 +49,10 @@ export const TilesetLayer: FC<TilesetProps> = ({
   const appearances = useMemo(
     () => ({
       ["3dtiles"]: appearance,
-      box: boxAppearance,
+      box: {
+        ...boxAppearance,
+        hideIndicator: true,
+      },
     }),
     [appearance, boxAppearance],
   );
