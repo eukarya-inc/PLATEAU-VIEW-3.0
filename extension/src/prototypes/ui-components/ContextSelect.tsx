@@ -6,6 +6,7 @@ import {
   Stack,
   styled,
   Typography,
+  menuClasses,
   type SelectChangeEvent,
   type SelectProps,
 } from "@mui/material";
@@ -119,6 +120,12 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
         onChange={handleChange}
         MenuProps={{
           ...props.MenuProps,
+          sx: {
+            ...props.MenuProps?.sx,
+            [`& .${menuClasses.paper}`]: {
+              maxWidth: 700,
+            },
+          },
           MenuListProps: {
             ...props.MenuProps?.MenuListProps,
             ref: menuRef,

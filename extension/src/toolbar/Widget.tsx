@@ -27,7 +27,7 @@ import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
 
-type Props = WidgetProps<{
+type DefaultProps = {
   geoURL?: string;
   gsiTileURL?: string;
   plateauURL?: string;
@@ -36,7 +36,14 @@ type Props = WidgetProps<{
   catalogURLForAdmin?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
-}>;
+};
+
+type AppearanceProps = {
+  logo?: string;
+  primaryColor?: string;
+};
+
+type Props = WidgetProps<DefaultProps, AppearanceProps>;
 
 export const Loading: FC = () => {
   const ready = useAtomValue(readyAtom);
@@ -57,7 +64,9 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       projectId={widget.property.default.projectName}
       plateauToken={widget.property.default.plateauAccessToken}
       googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-      inEditor={inEditor}>
+      inEditor={inEditor}
+      customPrimaryColor={widget.property.appearance?.primaryColor}
+      customLogo={widget.property.appearance?.logo}>
       <InitializeApp />
       <AppFrame header={<AppHeader />} />
       {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}

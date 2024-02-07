@@ -10,15 +10,16 @@ import {
   PropertyColorField,
 } from "../../../../ui-components";
 
-type SupportedFieldTypes = "POINT_FILL_COLOR_VALUE_FIELD" | "POLYLINE_FILL_COLOR_VALUE_FIELD";
+type SupportedFieldTypes = "POLYGON_FILL_COLOR_VALUE_FIELD";
 
-export type FillColorValueFieldPreset = {
+export type FillAndStrokeColorValueFieldPreset = {
   defaultValue?: string;
+  strokeValue?: string;
   asLegend?: boolean;
   legendName?: string;
 };
 
-export const EditorFillColorValueField = ({
+export const EditorFillAndStrokeColorValueField = ({
   component,
   onUpdate,
 }: BasicFieldProps<SupportedFieldTypes>): ReactElement | null => {
@@ -27,7 +28,7 @@ export const EditorFillColorValueField = ({
   }, [component]);
 
   const handleRuleUpdate = useCallback(
-    (preset: FillColorValueFieldPreset) => {
+    (preset: FillAndStrokeColorValueFieldPreset) => {
       onUpdate?.({
         ...component,
         preset,
@@ -52,8 +53,8 @@ export const EditorFillColorValueField = ({
 };
 
 type RulePanelProps = {
-  preset: FillColorValueFieldPreset;
-  onRuleUpdate: (preset: FillColorValueFieldPreset) => void;
+  preset: FillAndStrokeColorValueFieldPreset;
+  onRuleUpdate: (preset: FillAndStrokeColorValueFieldPreset) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
@@ -67,7 +68,30 @@ const RuleMainPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {
     [preset, onRuleUpdate],
   );
 
-  return <PropertyColorField value={preset.defaultValue} onChange={handleColorChange} />;
+  const handleStrokeColorChange = useCallback(
+    (color: string) => {
+      onRuleUpdate({
+        ...preset,
+        strokeValue: color,
+      });
+    },
+    [preset, onRuleUpdate],
+  );
+
+  return (
+    <>
+      <PropertyColorField
+        value={preset.defaultValue}
+        onChange={handleColorChange}
+        placeholder="Fill"
+      />
+      <PropertyColorField
+        value={preset.strokeValue}
+        onChange={handleStrokeColorChange}
+        placeholder="Stroke"
+      />
+    </>
+  );
 };
 
 const RuleLegendPanel: React.FC<RulePanelProps> = ({ preset, onRuleUpdate }) => {

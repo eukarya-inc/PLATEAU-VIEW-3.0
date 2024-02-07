@@ -18,6 +18,7 @@ export interface PlateauTilesetLayerStateParams extends Omit<ComponentIdParams, 
 
 export type SearchedFeatures = {
   features: string[];
+  conditions: [string, string[]][];
   onlyShow: boolean;
   highlight: boolean;
   selectedIndices: number[];

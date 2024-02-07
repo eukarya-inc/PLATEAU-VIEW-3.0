@@ -1,9 +1,10 @@
 import { ApolloProvider } from "@apollo/client";
-import { ThemeProvider } from "@mui/material";
+import { Theme, ThemeOptions, ThemeProvider, createTheme } from "@mui/material";
+import { merge } from "lodash-es";
 import { SnackbarProvider } from "notistack";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
 
-import { lightTheme } from "../../prototypes/ui-components";
+import { lightTheme, lightThemeOptions } from "../../prototypes/ui-components";
 import {
   createSettingClient,
   settingClient,
@@ -14,13 +15,17 @@ import {
   GEO_API_URL,
   GOOGLE_STREET_VIEW_API_KEY,
   GSI_TILE_URL,
+  LOGO,
   PLATEAU_API_URL,
   PROJECT_ID,
+  PRIMARY_COLOR,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
+  setLogo,
   setPlateauApiUrl,
   setProjectId,
+  setPrimaryColor,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 
@@ -34,6 +39,8 @@ type Props = {
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
   inEditor?: boolean;
+  customPrimaryColor?: string;
+  customLogo?: string;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -47,6 +54,8 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
   inEditor,
+  customPrimaryColor,
+  customLogo,
 }) => {
   useEffect(() => {
     if (!PLATEAU_API_URL && plateauUrl) {
@@ -99,6 +108,36 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [projectId, plateauUrl, plateauToken]);
 
+  useEffect(() => {
+    if (customLogo && (!LOGO || LOGO !== customLogo)) {
+      setLogo(customLogo);
+    }
+  }, [customLogo]);
+
+  useEffect(() => {
+    if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {
+      setPrimaryColor(customPrimaryColor);
+    }
+  }, [customPrimaryColor]);
+
+  const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
+
+  useEffect(() => {
+    if (!customTheme && PRIMARY_COLOR) {
+      setCustomTheme(
+        createTheme(
+          merge<unknown, unknown, ThemeOptions>({}, lightThemeOptions, {
+            palette: {
+              primary: {
+                main: PRIMARY_COLOR,
+              },
+            },
+          }),
+        ),
+      );
+    }
+  }, [customTheme]);
+
   if (!PLATEAU_API_URL || !geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
     return null;
   }
@@ -106,7 +145,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   return (
     <ApolloProvider client={catalogClient}>
       <ApolloProvider client={geoClient}>
-        <ThemeProvider theme={lightTheme}>
+        <ThemeProvider theme={customTheme ?? lightTheme}>
           <SnackbarProvider maxSnack={1}>{children}</SnackbarProvider>
         </ThemeProvider>
       </ApolloProvider>

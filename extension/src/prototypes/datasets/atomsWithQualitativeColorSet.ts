@@ -9,6 +9,7 @@ export interface QualitativeColor {
   value: string | number;
   color: string;
   name: string;
+  strokeColor?: string;
 }
 
 export interface QualitativeColorSet {

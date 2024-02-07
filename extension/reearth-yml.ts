@@ -94,6 +94,24 @@ const yml = {
               },
             ],
           },
+          {
+            id: "appearance",
+            title: "外観",
+            fields: [
+              {
+                id: "logo",
+                type: "url",
+                ui: "image",
+                title: "ロゴ",
+              },
+              {
+                id: "primaryColor",
+                type: "string",
+                ui: "color",
+                title: "プライマリカラー",
+              },
+            ],
+          },
         ],
       },
     },

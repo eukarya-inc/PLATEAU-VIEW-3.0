@@ -166,12 +166,7 @@ export const Pedestrian: FC<PedestrianProps> = ({
       />
       <AnimatePresence>
         {selected && !levitated && !hideFrustum && headingPitch != null && zoom != null && (
-          <StreetViewFrustum
-            key={dragKey}
-            location={location}
-            headingPitch={headingPitch}
-            zoom={zoom}
-          />
+          <StreetViewFrustum location={location} headingPitch={headingPitch} zoom={zoom} />
         )}
       </AnimatePresence>
     </DndContext>
