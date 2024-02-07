@@ -21,6 +21,7 @@ import { WidgetProps } from "../shared/types/widget";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import FeedBack from "../shared/view/ui-container/Feedback";
 import MyData from "../shared/view/ui-container/MyData";
+import { StoryCreator } from "../shared/view/ui-container/StoryCreator";
 import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
@@ -92,6 +93,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <MyData />
       <AutoRotateCamera />
       <FeedBack />
+      <StoryCreator />
     </WidgetContext>
   );
 });
