@@ -28,6 +28,7 @@ import {
   VEGETATION_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
+import { SketchLayerModel } from "../../prototypes/view-layers/SketchLayer";
 
 import { GeneralLayerModel } from "./general";
 import { MyDataLayerModel } from "./myData";
@@ -37,7 +38,7 @@ import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
 export interface LayerModelOverrides {
   [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
-  [SKETCH_LAYER]: never; // SketchLayerModel;
+  [SKETCH_LAYER]: SketchLayerModel;
   [MY_DATA_LAYER]: MyDataLayerModel; // SketchLayerModel;
 
   // Dataset layers

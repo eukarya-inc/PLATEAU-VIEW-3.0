@@ -7,3 +7,4 @@ export * from "./ViewLayerListItem";
 export * from "./layerTypeNames";
 export * from "./PedestrianLayer";
 export * from "./HeatmapLayer";
+export * from "./SketchLayer";
