@@ -13,6 +13,8 @@ export type Camera = {
     options?: CameraOptions & { heading?: number; pitch?: number; range?: number },
   ) => void;
   readonly rotateOnCenter: (radian: number) => void;
+  readonly overrideScreenSpaceController: (options: screenSpaceOptions) => void;
+
   /** Moves the camera position to look at the specified destination. */
   readonly lookAt: (destination: LookAtDestination, options?: CameraOptions) => void;
   /** Rotate the camera around the center of earth. */
@@ -104,4 +106,11 @@ export type CameraOptions = {
   duration?: number;
   easing?: (time: number) => number;
   withoutAnimation?: boolean;
+};
+
+export type screenSpaceOptions = {
+  useKeyboard: boolean;
+  tiltByRightButton: boolean;
+  ctrl: string;
+  shift: string;
 };

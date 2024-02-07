@@ -79,7 +79,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <PedestrianTool />
       <MyData />
       <AutoRotateCamera />
-      <ScreenSpaceCamera />
+      <ScreenSpaceCamera tiltByRightButton />
       <FeedBack />
     </WidgetContext>
   );
