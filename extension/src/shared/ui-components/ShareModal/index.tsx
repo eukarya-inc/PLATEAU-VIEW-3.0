@@ -42,9 +42,7 @@ const StyledField = styled("div")(({ theme }) => ({
   padding: "6px 12px",
   borderRadius: "2px 0 0 2px",
   width: "100%",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
+  wordBreak: "break-all",
 }));
 
 const FieldContainer = styled("div")(() => ({
