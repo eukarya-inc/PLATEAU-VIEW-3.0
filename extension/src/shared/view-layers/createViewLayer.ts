@@ -32,6 +32,7 @@ import {
   SKETCH_LAYER,
   SketchLayerModelParams,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -45,6 +46,7 @@ import {
   type BuildingLayerModelParams,
 } from "./plateau-3dtiles/BuildingLayer";
 import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/FloodLayer";
+import { StoryLayerModelParams, createStoryLayer } from "./story";
 // import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
 // import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
 // import { createLandUseLayer, type LandUseLayerModelParams } from "./LandUseLayer";
@@ -63,6 +65,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? SketchLayerModelParams :
   T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
+  T extends typeof STORY_LAYER ? StoryLayerModelParams :
 
   // Dataset layers
   T extends typeof BORDER_LAYER ? GeneralLayerModelParams : // BorderLayerModelParams
@@ -103,6 +106,7 @@ export function createViewLayer<T extends LayerType>(
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return createSketchLayer(params as SketchLayerModelParams)
     case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
+    case STORY_LAYER: return createStoryLayer(params as StoryLayerModelParams)
 
     // Dataset layers
     // Building model

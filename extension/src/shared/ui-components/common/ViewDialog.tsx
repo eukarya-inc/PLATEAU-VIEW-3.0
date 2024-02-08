@@ -7,25 +7,24 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  buttonClasses,
-  Button,
-  svgIconClasses,
   IconButton,
 } from "@mui/material";
 
-export type SharedDialogProps = DialogProps & {
+import { ViewButton } from ".";
+
+export type ViewDialogProps = DialogProps & {
   icon?: React.ReactNode;
-  submitDisabled?: boolean;
+  disableSubmit?: boolean;
   primaryButtonText?: string;
   secondaryButtonText?: string;
   onClose?: () => void;
   onSubmit?: () => void;
 };
 
-export const SharedDialog: React.FC<SharedDialogProps> = ({
+export const ViewDialog: React.FC<ViewDialogProps> = ({
   icon,
   title,
-  submitDisabled,
+  disableSubmit,
   primaryButtonText = "Submit",
   secondaryButtonText = "Cancel",
   children,
@@ -34,7 +33,7 @@ export const SharedDialog: React.FC<SharedDialogProps> = ({
   ...props
 }) => {
   return (
-    <StyledDialog {...props}>
+    <StyledDialog fullWidth {...props}>
       <DialogHeader>
         <Title>
           {icon}
@@ -46,17 +45,10 @@ export const SharedDialog: React.FC<SharedDialogProps> = ({
       </DialogHeader>
       <StyledDialogContent>{children}</StyledDialogContent>
       <StyledDialogActions>
-        <StyledButton variant="contained" size="medium" onClick={onClose}>
-          {secondaryButtonText}
-        </StyledButton>
-        <StyledButton
-          variant="contained"
-          size="medium"
-          color="primary"
-          onClick={onSubmit}
-          disabled={!!submitDisabled}>
+        <ViewButton onClick={onClose}>{secondaryButtonText}</ViewButton>
+        <ViewButton color="primary" onClick={onSubmit} disabled={!!disableSubmit}>
           {primaryButtonText}
-        </StyledButton>
+        </ViewButton>
       </StyledDialogActions>
     </StyledDialog>
   );
@@ -96,15 +88,4 @@ const StyledDialogContent = styled(DialogContent)(({ theme }) => ({
 
 const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
   padding: theme.spacing(1, 2, 2, 2),
-}));
-
-const StyledButton = styled(Button)(({ theme }) => ({
-  fontSize: theme.typography.body2.fontSize,
-  [`&.${buttonClasses.containedPrimary}`]: {
-    color: "#fff",
-  },
-  [`.${svgIconClasses.root}`]: {
-    width: "18px",
-    marginRight: theme.spacing(0.5),
-  },
 }));

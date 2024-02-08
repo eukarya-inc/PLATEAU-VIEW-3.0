@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, type FC, useMemo } from "react";
 
-import { createStoryAtom } from "../../../shared/view/state/story";
+import { showCreateStoryAtom } from "../../../shared/view/state/story";
 import { isSketchGeometryType } from "../../sketch";
 import {
   AppToggleButton,
@@ -57,10 +57,10 @@ export const ToolButtons: FC = () => {
     [send, setSketchType],
   );
 
-  const createStory = useSetAtom(createStoryAtom);
+  const showCreateStory = useSetAtom(showCreateStoryAtom);
   const handleCreateStory = useCallback(() => {
-    createStory(true);
-  }, [createStory]);
+    showCreateStory(true);
+  }, [showCreateStory]);
 
   const storyItems = useMemo(
     () => [{ title: "New Story", icon: <StoryIcon />, onClick: handleCreateStory }],

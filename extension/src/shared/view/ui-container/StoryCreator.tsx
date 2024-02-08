@@ -1,39 +1,55 @@
-import { TextField, inputBaseClasses, styled } from "@mui/material";
 import { useAtom } from "jotai";
-import { FC, useCallback } from "react";
+import { nanoid } from "nanoid";
+import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 
+import { useAddLayer } from "../../../prototypes/layers";
 import { StoryIcon } from "../../../prototypes/ui-components";
-import { SharedDialog } from "../../ui-components/Dialog";
-import { createStoryAtom } from "../state/story";
+import { STORY_LAYER } from "../../../prototypes/view-layers";
+import { ViewDialog, ViewTextField, ViewLabel } from "../../ui-components/common";
+import { createRootLayerForLayerAtom } from "../../view-layers";
+import { showCreateStoryAtom } from "../state/story";
 
 export const StoryCreator: FC = () => {
-  const [createStory, setCreateStory] = useAtom(createStoryAtom);
+  const [showCreateStory, setShowCreateStory] = useAtom(showCreateStoryAtom);
   const handleClose = useCallback(() => {
-    setCreateStory(false);
-  }, [setCreateStory]);
-  return createStory ? (
-    <SharedDialog
+    setShowCreateStory(false);
+    setStoryName("");
+  }, [setShowCreateStory]);
+
+  const [storyName, setStoryName] = useState("");
+  const handleStoryNameChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setStoryName(event.target.value);
+    },
+    [],
+  );
+  const disableSubmit = useMemo(() => !storyName.trim(), [storyName]);
+
+  const addLayer = useAddLayer();
+  const handleCreate = useCallback(() => {
+    const id = nanoid();
+    addLayer(
+      createRootLayerForLayerAtom({
+        id,
+        type: STORY_LAYER,
+        title: storyName,
+        chapters: [],
+      }),
+      { autoSelect: false },
+    );
+    handleClose();
+  }, [storyName, addLayer, handleClose]);
+
+  return (
+    <ViewDialog
       icon={<StoryIcon />}
       title="Create a new story"
-      fullWidth
-      open={createStory}
-      onClose={handleClose}>
-      <Label>Story name</Label>
-      <StyledTextField size="medium" variant="outlined" fullWidth />
-    </SharedDialog>
-  ) : null;
+      open={showCreateStory}
+      disableSubmit={disableSubmit}
+      onClose={handleClose}
+      onSubmit={handleCreate}>
+      <ViewLabel>Story name</ViewLabel>
+      <ViewTextField value={storyName} onChange={handleStoryNameChange} />
+    </ViewDialog>
+  );
 };
-
-const Label = styled("div")(({ theme }) => ({
-  color: theme.palette.text.primary,
-  fontSize: theme.typography.body1.fontSize,
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledTextField = styled(TextField)(({ theme }) => ({
-  [`.${inputBaseClasses.input}`]: {
-    padding: theme.spacing(1, 2),
-    borderRadius: theme.shape.borderRadius,
-    fontSize: theme.typography.body2.fontSize,
-  },
-}));
