@@ -9,7 +9,6 @@ import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/typ
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
-import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -74,13 +73,8 @@ const MunicipalityItem: FC<{
   const groups = useMemo(
     () =>
       datasetTypeOrder && query.data?.area?.datasets != null
-        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.code))
+        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.id))
             .map(([, value]) => value)
-            .sort(
-              (a, b) =>
-                datasetTypeOrder.findIndex(o => o.code === (a[0].type.code as PlateauDatasetType)) -
-                datasetTypeOrder.findIndex(o => o.code === (b[0].type.code as PlateauDatasetType)),
-            )
             .map(value => ({
               groupId: value.map(({ id }) => id).join(":"),
               datasets: value,
