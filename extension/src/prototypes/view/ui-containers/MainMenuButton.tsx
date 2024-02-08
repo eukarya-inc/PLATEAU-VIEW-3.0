@@ -10,6 +10,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
+import { LOGO } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import {
@@ -74,7 +75,11 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     return (
       <>
         <IconButton ref={ref} aria-label="メインメニュー" {...bindTrigger(popupState)} {...props}>
-          <PlateauSymbol sx={{ fontSize: 24 }} />
+          {LOGO ? (
+            <img src={LOGO} alt="customIcon" height={24} />
+          ) : (
+            <PlateauSymbol sx={{ fontSize: 24 }} />
+          )}
         </IconButton>
         <Menu
           {...bindMenu(popupState)}

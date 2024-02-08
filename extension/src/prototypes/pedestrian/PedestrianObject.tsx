@@ -147,12 +147,28 @@ export const PedestrianObject: FC<PedestrianObjectProps> = ({
     return motionPosition.animatePosition(position);
   }, [position, motionPosition]);
 
+  const [animatedPosition, setAnimatedPosition] = useState([position.x, position.y, position.z] as [
+    number,
+    number,
+    number,
+  ]);
+  useEffect(() => {
+    return motionPosition.on("renderRequest", () => {
+      const next = motionPosition.get();
+      requestAnimationFrame(() => {
+        setAnimatedPosition(prev =>
+          prev[0] === next[0] && prev[1] === next[1] && prev[2] === next[2] ? prev : [...next],
+        );
+      });
+    });
+  }, [motionPosition]);
+
   // TODO(ReEarth): Improve the animation model to update the position internally.
   const [offset, setOffset] = useState<XYZ | undefined>();
 
   const coordinates = useMemo(() => {
     const { x: offsetX, y: offsetY, z: offsetZ } = offset ?? { x: 0, y: 0, z: 0 };
-    const position = motionPosition.get();
+    const position = animatedPosition;
 
     const nextPosition = [
       position[0] + offsetX,
@@ -163,7 +179,7 @@ export const PedestrianObject: FC<PedestrianObjectProps> = ({
       useGlobeEllipsoid: true,
     }) ?? [0, 0, 0];
     return [lng, lat, location.height ?? 0] as [lng: number, lat: number, height: number];
-  }, [motionPosition, offset, location.height]);
+  }, [animatedPosition, offset, location]);
 
   return (
     <>

@@ -21,26 +21,28 @@ const Root = styled("div", {
   }),
 }));
 
-const Item = styled("div")(({ theme }) => ({
+const Item = styled("div")(() => ({
   overflow: "hidden",
   display: "flex",
   flexDirection: "row",
   flexWrap: "wrap",
+  boxSizing: "border-box",
   width: 16,
   height: 16,
   borderRadius: 2,
-  boxShadow: `inset 0 0 0 1px ${alpha(theme.palette.text.primary, 0.1)}`,
+  border: "solid 3px transparent",
 }));
 
 export interface ColorIconProps extends ComponentPropsWithRef<typeof Root> {
   color: string;
+  strokeColor?: string;
   selected?: boolean;
 }
 
 export const ColorIcon = forwardRef<HTMLDivElement, ColorIconProps>(
-  ({ color, selected, ...props }, ref) => (
+  ({ color, strokeColor, selected, ...props }, ref) => (
     <Root ref={ref} {...props} selected={selected}>
-      <Item style={{ backgroundColor: color }} />
+      <Item style={{ backgroundColor: color, borderColor: strokeColor ?? "transparent" }} />
     </Root>
   ),
 );

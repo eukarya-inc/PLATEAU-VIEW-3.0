@@ -77,6 +77,8 @@ export type MarkerAppearance = {
   far?: number;
   pixelOffset?: [number, number];
   eyeOffset?: [number, number, number];
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type PolylineAppearance = {
@@ -88,6 +90,8 @@ export type PolylineAppearance = {
   near?: number;
   far?: number;
   classificationType?: ClassificationType;
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type PolygonAppearance = {
@@ -104,6 +108,8 @@ export type PolygonAppearance = {
   far?: number;
   extrudedHeight?: number;
   classificationType?: ClassificationType;
+  hideIndicator?: boolean;
+  selectedFeatureColor?: string; // This doesn't support expression
 };
 
 export type EllipsoidAppearance = {
@@ -227,6 +233,7 @@ export type RasterAppearance = {
   maximumLevel?: number;
   credit?: string;
   alpha?: number;
+  hideIndicator?: boolean;
 };
 
 export type BoxAppearance = {
@@ -259,6 +266,7 @@ export type BoxAppearance = {
   activeEdgeIndex?: number; // 0 ~ 11
   near?: number;
   far?: number;
+  hideInactive?: boolean;
 };
 
 export type TransitionAppearance = {

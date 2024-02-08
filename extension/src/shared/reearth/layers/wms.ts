@@ -17,6 +17,7 @@ export type WMSProps = {
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
   raster: {
     alpha: 0.8,
+    hideIndicator: true,
   },
 };
 

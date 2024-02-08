@@ -74,14 +74,17 @@ export const GeneralLayer: FC<GeneralProps> = ({
       marker: {
         ...DEFAULT_APPEARNACES.marker,
         ...(appearances?.marker ?? {}),
+        hideIndicator: true,
       },
       polyline: {
         ...DEFAULT_APPEARNACES.polyline,
         ...(appearances?.polyline ?? {}),
+        hideIndicator: true,
       },
       polygon: {
         ...DEFAULT_APPEARNACES.polygon,
         ...(appearances?.polygon ?? {}),
+        hideIndicator: true,
       },
       "3dtiles": {
         selectedFeatureColor,

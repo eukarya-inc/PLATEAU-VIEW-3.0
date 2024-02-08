@@ -1,20 +1,12 @@
 import { ClassificationTypeFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorClassificationTypeField";
-import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
-import { FillColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorValueField";
+import { FillAndStrokeColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillAndStrokeColorConditionField";
+import { FillAndStrokeColorValueFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillAndStrokeColorValueField";
 import { HeightReferenceFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorHeightReferenceField";
 import { VisibilityConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityConditionField";
 import { VisibilityFilterFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorVisibilityFilterField";
 
 import { FieldBase } from "./base";
 import { ConditionalColorSchemeValue, ValueColorSchemeValue } from "./colorScheme";
-
-export const POLYGON_STROKE_COLOR_FIELD = "POLYGON_STROKE_COLOR_FIELD";
-export type PolygonStrokeColorField = FieldBase<{
-  type: typeof POLYGON_STROKE_COLOR_FIELD;
-  preset?: {
-    defaultValue?: string;
-  };
-}>;
 
 export const POLYGON_STROKE_WEIGHT_FIELD = "POLYGON_STROKE_WEIGHT_FIELD";
 export type PolygonStrokeWeightField = FieldBase<{
@@ -34,14 +26,14 @@ export const POLYGON_FILL_COLOR_VALUE_FIELD = "POLYGON_FILL_COLOR_VALUE_FIELD";
 export type PolygonFillColorValueField = FieldBase<{
   type: typeof POLYGON_FILL_COLOR_VALUE_FIELD;
   value?: ValueColorSchemeValue;
-  preset?: FillColorValueFieldPreset;
+  preset?: FillAndStrokeColorValueFieldPreset;
 }>;
 
 export const POLYGON_FILL_COLOR_CONDITION_FIELD = "POLYGON_FILL_COLOR_CONDITION_FIELD";
 export type PolygonFillColorConditionField = FieldBase<{
   type: typeof POLYGON_FILL_COLOR_CONDITION_FIELD;
   value?: ConditionalColorSchemeValue;
-  preset?: FillColorConditionFieldPreset;
+  preset?: FillAndStrokeColorConditionFieldPreset;
 }>;
 
 export const POLYGON_VISIBILITY_FILTER_FIELD = "POLYGON_VISIBILITY_FILTER_FIELD";
@@ -64,7 +56,6 @@ export type PolygonClassificationTypeField = FieldBase<{
 }>;
 
 export type PolygonFields =
-  | PolygonStrokeColorField
   | PolygonStrokeWeightField
   | PolygonFillColorConditionField
   | PolygonFillColorValueField

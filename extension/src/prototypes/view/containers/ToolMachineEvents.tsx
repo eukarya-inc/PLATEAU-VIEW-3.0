@@ -81,8 +81,8 @@ export const ToolMachineEvents: FC = () => {
       cursor = "grabbing";
     } else if (tool?.type === "hand" && !tool.active) {
       cursor = "grab";
-      // } else if (tool?.type === "sketch") {
-      // cursor = `url("${crossCursor.src}") 12 12, auto`;
+    } else if (tool?.type === "sketch") {
+      cursor = "crosshair";
     } else {
       cursor = "auto";
     }

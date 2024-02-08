@@ -24,7 +24,7 @@ export const QualitativeColorLegend: FC<QualitativeColorLegendProps> = ({ colors
         {colors.map(color => (
           <Tooltip key={color.id} title={color.name} enterDelay={0} leaveDelay={0}>
             <Cell>
-              <ColorIcon color={color.color} />
+              <ColorIcon color={color.color} strokeColor={color.strokeColor} />
             </Cell>
           </Tooltip>
         ))}
