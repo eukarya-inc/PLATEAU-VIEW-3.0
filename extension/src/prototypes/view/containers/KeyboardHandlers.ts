@@ -74,7 +74,7 @@ export const KeyboardHandlers = () => {
         speed *= 1 + Math.max(0, cameraHeight - globeHeight) * 0.1;
         setAmount(speed * deltaSeconds);
       }
-      camera?.moveOverTerrain(amount);
+      camera?.moveOverTerrain(1.8);
 
       switch (assignment) {
         case "forward":
