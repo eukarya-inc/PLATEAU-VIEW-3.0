@@ -13,7 +13,7 @@ export type Camera = {
     options?: CameraOptions & { heading?: number; pitch?: number; range?: number },
   ) => void;
   readonly rotateOnCenter: (radian: number) => void;
-  readonly overrideScreenSpaceController: (options: screenSpaceOptions) => void;
+  readonly overrideScreenSpaceController: (options?: ScreenSpaceCameraControllerOptions) => void;
 
   /** Moves the camera position to look at the specified destination. */
   readonly lookAt: (destination: LookAtDestination, options?: CameraOptions) => void;
@@ -108,9 +108,20 @@ export type CameraOptions = {
   withoutAnimation?: boolean;
 };
 
-export type screenSpaceOptions = {
-  useKeyboard: boolean;
-  tiltByRightButton: boolean;
-  ctrl: string;
-  shift: string;
+export type Position2d = [x: number, y: number];
+export type Position3d = [x: number, y: number, z: number];
+
+type CameraEventType = "left_drag" | "right_drag" | "middle_drag" | "wheel" | "pinch";
+type KeyboardEventModifier = "ctrl" | "shift" | "alt";
+
+export type ScreenSpaceCameraControllerOptions = {
+  zoomEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  rotateEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  tiltEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  lookEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+};
+
+type ModifiedCameraEventType = {
+  eventType: CameraEventType;
+  modifier: KeyboardEventModifier;
 };

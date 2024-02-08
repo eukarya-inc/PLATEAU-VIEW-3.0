@@ -1,16 +1,11 @@
 import { useAtomValue } from "jotai";
-import { FC } from "react";
 
-import { screenSpaceOptions } from "../../../shared/reearth/types";
+import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
 import { assignPropertyProps } from "../../react-helpers";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 import { toolAtom } from "../states/tool";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";
-
-type ScreenSpaceCameraProps = {
-  tiltByRightButton: boolean;
-};
 
 const defaultOptions = {
   enableInputs: true,
@@ -21,7 +16,7 @@ const defaultOptions = {
   enableLook: true,
 };
 
-export const ScreenSpaceCamera: FC<ScreenSpaceCameraProps> = ({ tiltByRightButton = false }) => {
+export const ScreenSpaceCamera = () => {
   const useKeyboard = useAtomValue(enableKeyboardCameraControlAtom);
   const tool = useAtomValue(toolAtom);
   const isHand = tool?.type === "hand";
@@ -32,16 +27,28 @@ export const ScreenSpaceCamera: FC<ScreenSpaceCameraProps> = ({ tiltByRightButto
     enableInputs: isHand,
   };
 
-  const screenSpaceCameraOptions: screenSpaceOptions = {
-    useKeyboard,
-    tiltByRightButton: tiltByRightButton,
-    ctrl: "ctrl",
-    shift: "shift",
+  const screenSpaceCameraControllerOptions: ScreenSpaceCameraControllerOptions = {
+    zoomEventTypes: [],
+    rotateEventTypes: [],
+    tiltEventTypes: [],
+    lookEventTypes: [
+      "left_drag",
+      {
+        eventType: "left_drag",
+        modifier: "ctrl",
+      },
+      {
+        eventType: "left_drag",
+        modifier: "shift",
+      },
+    ],
   };
-  const handler = window.reearth?.camera?.overrideScreenSpaceController(screenSpaceCameraOptions);
 
-  if (handler != null) {
-    assignPropertyProps(handler, options, defaultOptions);
+  if (useKeyboard) {
+    const handler = window?.reearth?.camera?.overrideScreenSpaceController(
+      screenSpaceCameraControllerOptions,
+    );
+    handler != null && assignPropertyProps(handler, options, defaultOptions);
   }
   return useKeyboard ? <KeyboardHandlers /> : null;
 };
