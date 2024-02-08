@@ -1,3 +1,4 @@
+import { TilesetFloodColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/3dtiles/EditorTilesetFloodColorField";
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
 
@@ -12,6 +13,12 @@ export type TilesetBuildingModelColorField = FieldBase<{
 export const TILESET_FLOOD_MODEL_COLOR = "TILESET_FLOOD_MODEL_COLOR";
 export type TilesetFloodModelColorField = FieldBase<{
   type: typeof TILESET_FLOOD_MODEL_COLOR;
+}>;
+
+export const TILESET_FLOOD_COLOR_FIELD = "TILESET_FLOOD_COLOR_FIELD";
+export type TilesetFloodColorField = FieldBase<{
+  type: typeof TILESET_FLOOD_COLOR_FIELD;
+  preset?: TilesetFloodColorFieldPreset;
 }>;
 
 export const TILESET_FILL_COLOR_CONDITION_FIELD = "TILESET_FILL_COLOR_CONDITION_FIELD";
@@ -82,6 +89,7 @@ export type TilesetFields =
   | TilesetFloodModelColorField
   | TilesetFillColorConditionField
   | TilesetFillGradientColorField
+  | TilesetFloodColorField
   | TilesetClippingField
   | TilesetBuildingModelFilterField
   | TilesetFloodModelFilterField

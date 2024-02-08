@@ -13,6 +13,7 @@ export interface QualitativeColor {
 }
 
 export interface QualitativeColorSet {
+  id?: string;
   type: "qualitative";
   name: string;
   colorsAtom: PrimitiveAtom<QualitativeColor[]>;
@@ -20,22 +21,25 @@ export interface QualitativeColorSet {
 }
 
 export interface QualitativeColorSetOptions {
+  id?: string;
   name: string;
   colors: readonly QualitativeColor[];
 }
 
 export function atomsWithQualitativeColorSet({
+  id,
   name,
   colors,
 }: QualitativeColorSetOptions): QualitativeColorSet {
-  const id = `COLOR_SET_${name}`;
+  const shareId = `COLOR_SET_${id}`;
   const colorsAtom = sharedStoreAtomWrapper(
-    id,
-    storageStoreAtomWrapper(id, atom([...colors]), true),
+    shareId,
+    storageStoreAtomWrapper(shareId, atom([...colors]), true),
     { shouldInitialize: true },
   );
   const colorAtomsAtom = splitAtom(colorsAtom);
   return {
+    id,
     type: "qualitative",
     name,
     colorsAtom,
