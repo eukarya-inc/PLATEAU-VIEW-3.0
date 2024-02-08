@@ -78,7 +78,7 @@ function useDatasetSearchOptions({
     }
     return (
       query.data?.datasets
-        .filter(dataset => {
+        ?.filter(dataset => {
           const layerType =
             datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
           return (

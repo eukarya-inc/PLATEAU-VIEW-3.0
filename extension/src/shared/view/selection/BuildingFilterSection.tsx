@@ -58,8 +58,8 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
                     ?.value?.map(property => {
                       if (
                         (property.type !== "number" && property.type !== "qualitative") ||
-                        !property.minimum ||
-                        !property.maximum ||
+                        property.minimum == null ||
+                        property.maximum == null ||
                         !property.availableFeatures?.includes(availableFeature)
                       )
                         return;

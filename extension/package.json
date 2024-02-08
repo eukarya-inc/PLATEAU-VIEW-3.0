@@ -15,7 +15,8 @@
     "gql": "run-p gql:*",
     "gql:geo": "graphql-codegen --config ./codegen_geo.ts && yarn lint",
     "gql:plateau": "graphql-codegen --config ./codegen_catalog.ts && yarn lint",
-    "decode-estat": "node --loader ts-node/esm ./scripts/decode-shift-jis.ts"
+    "decode-estat": "node --loader ts-node/esm ./scripts/decode-shift-jis.ts",
+    "optimize-raw-attributes": "node --loader ts-node/esm ./scripts/optimize-raw-attributes.ts"
   },
   "dependencies": {
     "@ant-design/colors": "7.0.0",

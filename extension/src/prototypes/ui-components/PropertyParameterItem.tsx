@@ -20,6 +20,7 @@ import { atomFamily } from "jotai/utils";
 import { groupBy, max, mean, min, round, intersection } from "lodash-es";
 import { forwardRef, useCallback, type ComponentPropsWithRef, type FC, useMemo } from "react";
 
+import { makePropertyName } from "../../shared/plateau";
 import { isNotNullish } from "../type-helpers";
 
 import { TreeArrowCollapsedIcon } from "./icons/TreeArrowCollapsedIcon";
@@ -182,7 +183,7 @@ const Property: FC<{
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {name.replaceAll("_", " ")}
+        {makePropertyName(name)}
       </PropertyNameCell>
       <TableCell width="50%">
         {typeof values[0] === "string" ? (
@@ -235,7 +236,7 @@ const PropertyGroup: FC<{
             <TreeArrowButton size="small" onClick={handleClick}>
               {expanded ? <TreeArrowExpandedIcon /> : <TreeArrowCollapsedIcon />}
             </TreeArrowButton>
-            {name}
+            {makePropertyName(name)}
           </PropertyGroupName>
         </PropertyGroupCell>
       </TableRow>
@@ -272,9 +273,9 @@ export interface PropertyParameterItemProps
 
 export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParameterItemProps>(
   ({ properties, ...props }, ref) => {
-    const groups = Object.entries(groupBy(properties, property => property.name.split("_")[0])).map(
-      ([name, properties]) => ({ name, properties }),
-    );
+    const groups = Object.entries(groupBy(properties, property => property.name))
+      .map(([name, properties]) => ({ name, properties }))
+      .filter(({ name }) => !name.startsWith("_"));
     return (
       <Root ref={ref} {...props}>
         <StyledTable size="small">
