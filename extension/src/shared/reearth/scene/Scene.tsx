@@ -98,13 +98,7 @@ export const Scene: FC<SceneProps> = ({
   ambientOcclusion,
   shadows,
   antialias,
-  initialCamera = {
-    lng: 139.755,
-    lat: 35.675,
-    height: 1000,
-    heading: Math.PI * 0.4,
-    pitch: -Math.PI * 0.2,
-  },
+  initialCamera,
 }) => {
   useEffect(() => {
     window.reearth?.scene?.overrideProperty({
