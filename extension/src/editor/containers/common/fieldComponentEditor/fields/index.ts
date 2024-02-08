@@ -4,6 +4,7 @@ import { ComponentBase } from "../../../../../shared/types/fieldComponents";
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
+import { EditorTilesetFloodColorField } from "./3dtiles/EditorTilesetFloodColorField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
 import { EditorTilesetWireframeField } from "./3dtiles/EditorTilesetWireframeField";
@@ -330,6 +331,12 @@ export const fields: {
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
     name: "Flood model",
     Component: EditorTilesetFloodModelColorField,
+  },
+  TILESET_FLOOD_COLOR_FIELD: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Flood color",
+    Component: EditorTilesetFloodColorField,
   },
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_THREE_D_TILES,
