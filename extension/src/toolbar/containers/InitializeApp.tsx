@@ -1,13 +1,10 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { FC, useEffect, useLayoutEffect } from "react";
 
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
-import { fetchShare } from "../../shared/sharedAtoms";
-import { sharedInitialClockAtom } from "../../shared/states/scene";
 import { updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
-import { isAppReadyAtom } from "../../shared/view/state/app";
 import { useInteractionMode } from "../hooks/useInteractionMode";
 
 export const InitializeApp: FC = () => {
@@ -15,39 +12,31 @@ export const InitializeApp: FC = () => {
   const templateClient = useTemplateClient();
 
   const updateAllSetting = useSetAtom(updateAllSettingAtom);
-
-  const updateAllTemplate = useSetAtom(updateAllTemplateAtom);
-
-  const setIsAppReady = useSetAtom(isAppReadyAtom);
   useEffect(() => {
     const fetch = async () => {
-      fetchShare();
-      const [settings, templates] = await Promise.all([
-        settingClient.findAll(),
-        templateClient.findAll(),
-      ]);
+      const settings = await settingClient.findAll();
       updateAllSetting(settings);
-      updateAllTemplate(Array.isArray(templates) ? templates : []);
-      setIsAppReady(true);
     };
     fetch();
-  }, [setIsAppReady, settingClient, templateClient, updateAllSetting, updateAllTemplate]);
+  }, [settingClient, updateAllSetting]);
 
-  const initialClock = useAtomValue(sharedInitialClockAtom);
+  const updateAllTemplate = useSetAtom(updateAllTemplateAtom);
+  useEffect(() => {
+    const fetch = async () => {
+      const templates = await templateClient.findAll();
+      updateAllTemplate(Array.isArray(templates) ? templates : []);
+    };
+    fetch();
+  }, [templateClient, updateAllTemplate]);
 
   // Initialze clock to 10am JST of current date
   const { handleTimelineJump } = useTimeline();
   useLayoutEffect(() => {
-    if (initialClock.value) {
-      const now = new Date(initialClock.value);
-      handleTimelineJump({ start: now, stop: now, current: now });
-      return;
-    }
     const timezone = 9; // JST
     const now = new Date();
     now.setUTCHours(10 - timezone, 0, 0, 0);
     handleTimelineJump({ start: now, stop: now, current: now });
-  }, [handleTimelineJump, initialClock]);
+  }, [handleTimelineJump]);
 
   useInteractionMode();
 

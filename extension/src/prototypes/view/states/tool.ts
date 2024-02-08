@@ -2,8 +2,6 @@
 import { atom } from "jotai";
 import { atomWithMachine } from "jotai-xstate";
 
-import { SketchGeometryType } from "../../sketch";
-
 import { createToolMachine, type ToolMachineState } from "./toolMachine";
 
 export type ToolType = "hand" | "select" | "sketch" | "story" | "pedestrian";
@@ -68,4 +66,4 @@ export const momentaryToolAtom = atom<Tool | null>(
   get => getMomentaryTool(get(toolMachineAtom)) ?? null,
 );
 
-export const sketchTypeAtom = atom<SketchGeometryType>("rectangle");
+// export const sketchTypeAtom = atom<SketchGeometryType>("rectangle");

@@ -1,5 +1,4 @@
 import { CameraPosition } from "./camera";
-import { SketchFeature } from "./sketch";
 
 export type MouseEvent = {
   x?: number;
@@ -37,11 +36,4 @@ export type ReearthEventType = {
   modalclose: [];
   popupclose: [];
   //   pluginmessage: [props: PluginMessage];
-  sketchfeaturecreated: [
-    props: {
-      layerId: string;
-      featureId: string;
-      feature?: SketchFeature;
-    },
-  ];
 };

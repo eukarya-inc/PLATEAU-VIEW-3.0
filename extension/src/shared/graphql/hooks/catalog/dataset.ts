@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { DatasetFragmentFragment, DatasetsInput } from "../../base/catalog/__gen__/graphql";
-import { DATASETS, DATASETS_BY_IDS, DATASET_BY_ID } from "../../base/catalog/queries/dataset";
+import { DATASETS, DATASET_BY_ID } from "../../base/catalog/queries/dataset";
 
 import { useQuery } from "./base";
 
@@ -38,23 +38,6 @@ export const useDatasetById = (id: string, options?: Options) => {
     data: {
       ...query.data,
       node: query.data?.node as DatasetFragmentFragment,
-    },
-  };
-};
-
-export const useDatasetsByIds = (ids: string[], options?: Options) => {
-  const query = useQuery(DATASETS_BY_IDS, {
-    variables: {
-      ids,
-    },
-    skip: options?.skip,
-  });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      nodes: query.data?.nodes as DatasetFragmentFragment[],
     },
   };
 };

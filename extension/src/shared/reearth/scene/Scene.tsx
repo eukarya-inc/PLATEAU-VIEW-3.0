@@ -2,7 +2,7 @@
 
 import { FC, useEffect } from "react";
 
-import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
+import { AmbientOcclusion, Antialias, Tile } from "../types";
 
 // nx = red
 // ny = green
@@ -55,13 +55,11 @@ export type ShadowProps = { enabled?: boolean; size?: 1024 | 2048 | 4096; softSh
 export type SceneProps = EnvironmentProps & {
   ambientOcclusion?: AmbientOcclusion;
   tiles?: Tile[];
-  tileLabels?: TileLabels[];
   shadows?: ShadowProps;
   antialias?: Antialias;
   terrainHeatmapMaxHeight?: number;
   terrainHeatmapMinHeight?: number;
   terrainHeatmapLogarithmic?: boolean;
-  initialCamera?: CameraPosition;
 };
 
 export const Scene: FC<SceneProps> = ({
@@ -94,22 +92,20 @@ export const Scene: FC<SceneProps> = ({
   groundAtmosphereSaturationShift,
   groundAtmosphereBrightnessShift,
   tiles,
-  tileLabels,
   ambientOcclusion,
   shadows,
   antialias,
-  initialCamera = {
-    lng: 139.755,
-    lat: 35.675,
-    height: 1000,
-    heading: Math.PI * 0.4,
-    pitch: -Math.PI * 0.2,
-  },
 }) => {
   useEffect(() => {
     window.reearth?.scene?.overrideProperty({
       default: {
-        camera: initialCamera,
+        camera: {
+          lng: 139.755,
+          lat: 35.675,
+          height: 1000,
+          heading: Math.PI * 0.4,
+          pitch: -Math.PI * 0.2,
+        },
         bgcolor: backgroundColor,
         skybox: showSkyBox,
       },
@@ -159,7 +155,6 @@ export const Scene: FC<SceneProps> = ({
         imageBasedLightIntensity: imageBasedLightingIntensity,
       },
       tiles,
-      tileLabels,
       terrain: {
         terrain: true,
         terrainType: "cesiumion",
@@ -204,7 +199,6 @@ export const Scene: FC<SceneProps> = ({
     showMoon,
     sphericalHarmonicCoefficients,
     tiles,
-    tileLabels,
     shadows,
     globeBaseColor,
     skyAtmosphereBrightnessShift,
@@ -213,7 +207,6 @@ export const Scene: FC<SceneProps> = ({
     terrainHeatmapLogarithmic,
     terrainHeatmapMaxHeight,
     terrainHeatmapMinHeight,
-    initialCamera,
   ]);
 
   return null;

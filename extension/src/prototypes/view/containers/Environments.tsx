@@ -1,21 +1,18 @@
 import { atom, useAtomValue } from "jotai";
-import { type FC, useMemo } from "react";
+import { type FC } from "react";
 
 import { ShadowProps } from "../../../shared/reearth/scene";
 import { AmbientOcclusion } from "../../../shared/reearth/types";
-import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
-import { TileLabels } from "../../../shared/reearth/types/scene.ts";
 import {
   shareableEnvironmentTypeAtom,
   shareableGraphicsQualityAtom,
-  sharedInitialCameraAtom,
 } from "../../../shared/states/scene";
-import { colorModeAtom, type ColorMode } from "../../shared-states";
+import { colorModeAtom } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
 import { GooglePhotorealisticEnvironment } from "../environments/GooglePhotorealisticEnvironment";
 import { MapEnvironment } from "../environments/MapEnvironment";
 import { SatelliteEnvironment } from "../environments/SatelliteEnvironment";
-import { debugSphericalHarmonicsAtom, showMapLabelAtom } from "../states/app";
+import { debugSphericalHarmonicsAtom } from "../states/app";
 import {
   ambientOcclusionEnabledAtom,
   ambientOcclusionIntensityAtom,
@@ -48,60 +45,14 @@ const ambientOcclusionPropsAtom = atom((get): AmbientOcclusion => {
   };
 });
 
-const STYLE_OVERRIDES: Record<ColorMode, any> = {
-  light: {
-    default: {
-      fillColor: "#000000",
-      outlineColor: "rgba(255, 255, 255, 0.8)",
-    },
-    towns: {
-      fillColor: "rgba(0, 0, 0, 0.6)",
-    },
-    topography: {
-      fillColor: "rgba(0, 0, 0, 0.6)",
-    },
-  },
-  dark: {
-    default: {
-      fillColor: "#FFFFFF",
-      outlineColor: "rgba(0, 0, 0, 0.8)",
-    },
-    towns: {
-      fillColor: "rgba(255, 255, 255, 0.6)",
-    },
-    topography: {
-      fillColor: "rgba(255, 255, 255, 0.6)",
-    },
-  },
-};
-
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(colorModeAtom);
-  const showMapLabel = useAtomValue(showMapLabelAtom);
   const debugSphericalHarmonics = useAtomValue(debugSphericalHarmonicsAtom);
   const shadowProps = useAtomValue(shadowMapPropsAtom);
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
-  const initialCamera = useAtomValue(sharedInitialCameraAtom);
-
-  const tileLabels: TileLabels[] = useMemo(() => {
-    const styles = Object.entries(showMapLabel).reduce((acc, [key, isVisible]) => {
-      acc[key] = isVisible
-        ? STYLE_OVERRIDES[colorMode][key as AnnotationType] || STYLE_OVERRIDES[colorMode].default
-        : false;
-      return acc;
-    }, {} as Record<string, any | false>);
-
-    return [
-      {
-        id: `label`,
-        labelType: "japan_gsi_optimal_bvmap",
-        style: styles,
-      },
-    ] as TileLabels[];
-  }, [showMapLabel, colorMode]);
 
   switch (environmentType) {
     case "map":
@@ -112,8 +63,6 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
-          initialCamera={initialCamera.value}
-          tileLabels={tileLabels}
         />
       );
     case "satellite":
@@ -123,8 +72,6 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
-          initialCamera={initialCamera.value}
-          tileLabels={tileLabels}
         />
       );
     case "elevation":
@@ -134,8 +81,6 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
-          initialCamera={initialCamera.value}
-          tileLabels={tileLabels}
         />
       );
     case "google-photorealistic":
@@ -144,8 +89,6 @@ export const Environments: FC = () => {
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
           antialias={antialias}
-          initialCamera={initialCamera.value}
-          tileLabels={tileLabels}
         />
       );
   }

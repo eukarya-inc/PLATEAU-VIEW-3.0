@@ -17,14 +17,12 @@ import {
   GSI_TILE_URL,
   LOGO,
   PLATEAU_API_URL,
-  PROJECT_ID,
   PRIMARY_COLOR,
   setGISTileURL,
   setGeoApiUrl,
   setGoogleStreetViewAPIKey,
   setLogo,
   setPlateauApiUrl,
-  setProjectId,
   setPrimaryColor,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
@@ -62,12 +60,6 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setPlateauApiUrl(plateauUrl);
     }
   }, [plateauUrl]);
-
-  useEffect(() => {
-    if (!PROJECT_ID && projectId) {
-      setProjectId(projectId);
-    }
-  }, [projectId]);
 
   useEffect(() => {
     if (!GEO_API_URL && geoUrl) {

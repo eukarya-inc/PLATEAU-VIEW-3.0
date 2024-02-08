@@ -26,11 +26,10 @@ import { type ConfigurableLayerModel } from "./types";
 let nextLayerIndex = 1;
 
 export interface PedestrianLayerModelParams extends ViewLayerModelParams {
-  location?: Location;
+  location: Location;
   headingPitchAtom?: HeadingPitch;
   zoomAtom?: number;
   shouldInitializeAtom?: boolean;
-  shareId?: string;
 }
 
 export interface PedestrianLayerModel extends ViewLayerModel {
@@ -53,8 +52,8 @@ export function createPedestrianLayer(
   invariant(params.id);
 
   const locationPrimitiveAtom = atom<Location>({
-    longitude: params.location?.longitude ?? 0,
-    latitude: params.location?.latitude ?? 0,
+    longitude: params.location.longitude,
+    latitude: params.location.latitude,
     height: 2.5,
   });
   const locationAtom = makeComponentAtomWrapper(
@@ -72,9 +71,9 @@ export function createPedestrianLayer(
         }
       },
     ),
-    { ...params, datasetId: params.id, componentType: "location" },
+    { datasetId: params.id, componentType: "location" },
     false,
-    { shouldInitialize: params.shouldInitializeAtom },
+    params.shouldInitializeAtom,
   );
 
   const headingPitchPrimitiveAtom = atom<HeadingPitch | null>(params.headingPitchAtom ?? null);
@@ -89,16 +88,16 @@ export function createPedestrianLayer(
         }
       },
     ),
-    { ...params, datasetId: params.id, componentType: "headingPitch" },
+    { datasetId: params.id, componentType: "headingPitch" },
     false,
-    { shouldInitialize: params.shouldInitializeAtom },
+    params.shouldInitializeAtom,
   );
 
   const zoomPrimitiveAtom = makeComponentAtomWrapper(
     atom<number | null>(params.zoomAtom ?? null),
-    { ...params, datasetId: params.id, componentType: "zoom" },
+    { datasetId: params.id, componentType: "zoom" },
     false,
-    { shouldInitialize: params.shouldInitializeAtom },
+    params.shouldInitializeAtom,
   );
 
   return {
@@ -130,8 +129,7 @@ export const PedestrianLayer: FC<LayerProps<typeof PEDESTRIAN_LAYER>> = ({
   addressAtom,
 }) => {
   const [pano, setPano] = useAtom(panoAtom);
-  const location = useAtomValue(locationAtom);
-  const setLocation = useSetAtom(locationAtom);
+  const [location, setLocation] = useAtom(locationAtom);
   const headingPitch = useAtomValue(headingPitchAtom);
   const zoom = useAtomValue(zoomAtom);
   const synchronized = useAtomValue(synchronizedAtom);
