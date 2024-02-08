@@ -5,15 +5,17 @@ import invariant from "tiny-invariant";
 
 import { rootLayersAtom, rootLayersLayersAtom } from "../../shared/states/rootLayer";
 import { RootLayerAtom } from "../../shared/view-layers";
-import { parseIdentifier } from "../cesium-helpers";
+import { matchIdentifier, parseIdentifier } from "../cesium-helpers";
 import { featureSelectionAtom } from "../datasets";
 import { LayerModel } from "../layers";
 import { PEDESTRIAN_OBJECT } from "../pedestrian";
 import { screenSpaceSelectionAtom } from "../screen-space-selection";
 import { atomsWithSelection } from "../shared-states";
+import { SKETCH_OBJECT, sketchSelectionAtom } from "../sketch";
 import { isNotNullish } from "../type-helpers";
 
-import { PEDESTRIAN_LAYER } from "./layerTypes";
+import { PEDESTRIAN_LAYER, SKETCH_LAYER } from "./layerTypes";
+import { SketchLayerModel } from "./SketchLayer";
 
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
 // import { type PedestrianLayerModel } from "./PedestrianLayer";
@@ -32,6 +34,12 @@ export const tilesetLayersLayersAtom = atom(get =>
 // export const pedestrianLayersAtom = atom(get =>
 //   get(layersAtom).filter((layer): layer is PedestrianLayerModel => layer.type === PEDESTRIAN_LAYER),
 // );
+
+export const sketchLayersAtom = atom(get =>
+  get(rootLayersLayersAtom).filter(
+    (layer): layer is SketchLayerModel => layer.type === SKETCH_LAYER,
+  ),
+);
 
 export const highlightedTilesetLayersAtom = atom(get => {
   const featureKeys = get(featureSelectionAtom).map(({ value }) => value);
@@ -56,16 +64,36 @@ export const highlightedTilesetLayersAtom = atom(get => {
 //   });
 // });
 
+export const highlightedSketchLayersAtom = atom(get => {
+  const entityIds = get(sketchSelectionAtom).map(({ value }) => value);
+  const sketchLayers = get(sketchLayersAtom);
+  return sketchLayers.filter(layer => {
+    const features = get(layer.featuresAtom);
+    return entityIds.some(entityId =>
+      features.some(feature =>
+        matchIdentifier(entityId, {
+          type: "Sketch",
+          subtype: SKETCH_OBJECT,
+          key: feature.properties.id,
+        }),
+      ),
+    );
+  });
+});
+
 export const highlightedLayersAtom = atom(get => {
   const screenSpaceSelection = get(screenSpaceSelectionAtom);
   const layers = get(rootLayersLayersAtom);
   const result: LayerModel[] = [];
+  const highlightedSketchLayers = get(highlightedSketchLayersAtom);
   for (const layer of layers) {
     const layerId = get(layer.layerIdAtom);
     const selection = screenSpaceSelection.some(v => {
       switch (v.type) {
         case PEDESTRIAN_OBJECT:
           return layer.type === PEDESTRIAN_LAYER && layer.id === parseIdentifier(v.value).key;
+        case SKETCH_OBJECT:
+          return highlightedSketchLayers.some(v => v.id === layer.id);
         default:
           return layerId === v.value.layerId;
       }
