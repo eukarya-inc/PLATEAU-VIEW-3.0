@@ -1,4 +1,4 @@
-import { SetStateAction, WritableAtom, atom } from "jotai";
+import { WritableAtom, atom } from "jotai";
 import { omit } from "lodash-es";
 
 import {
@@ -60,30 +60,23 @@ export const sharedStoreAtom = <V>(a: SharedAtom<V>, shouldInitialize = true) =>
   return w;
 };
 
-export const sharedStoreAtomWrapper = <V, A extends (unknown | SetStateAction<unknown>)[], S>(
+export const sharedStoreAtomWrapper = <V, A extends unknown[], S>(
   name: string,
   a: WritableAtom<V, A, S>,
-  {
-    shouldInitialize = true,
-    beforeSet = a => a,
-  }: { shouldInitialize?: boolean; beforeSet?: (a: unknown) => unknown } = {},
+  shouldInitialize = true,
 ) => {
   const w = atom(
     get => get(a),
-    (get, set, ...args: A) => {
-      const result =
-        args.length === 0
-          ? ([get(a)] as A)
-          : (args.map(arg => (typeof arg === "function" ? arg(get(a)) : arg)) as A);
-      setSharedStoreValue(name, result.map(beforeSet));
-      set(a, ...result);
+    (_get, set, ...args: A) => {
+      setSharedStoreValue(name, args);
+      set(a, ...args);
     },
   );
   w.onMount = set => {
     if (!shouldInitialize) return;
     getSharedStoreValue<A>(name).then(v => {
       if (v) {
-        set(...(v as A));
+        set(...v);
       }
     });
   };
@@ -116,27 +109,23 @@ export const storageStoreAtom = <V>(
   return wrapped;
 };
 
-export const storageStoreAtomWrapper = <V, A extends (unknown | SetStateAction<unknown>)[], S>(
+export const storageStoreAtomWrapper = <V, A extends unknown[], S>(
   name: string,
   a: WritableAtom<V, A, S>,
   shouldInitialize = true,
 ) => {
   const w = atom(
     get => get(a),
-    (get, set, ...args: A) => {
-      const result =
-        args.length === 0
-          ? ([get(a)] as A)
-          : (args.map(arg => (typeof arg === "function" ? arg(get(a)) : arg)) as A);
-      setStorageStoreValue(name, result);
-      set(a, ...result);
+    (_get, set, ...args: A) => {
+      setStorageStoreValue(name, args);
+      set(a, ...args);
     },
   );
   w.onMount = set => {
     if (!shouldInitialize) return;
     const v = getStorageStoreValue<A>(name);
     if (v) {
-      set(...(v as A));
+      set(...v);
     }
   };
   return w;

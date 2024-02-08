@@ -1,11 +1,6 @@
 import { atom, SetStateAction, type PrimitiveAtom, WritableAtom } from "jotai";
 
-import {
-  colorMapPlateau,
-  ColorMap,
-  ColorMapType,
-  createColorMapFromType,
-} from "../../../prototypes/color-maps";
+import { colorMapPlateau, ColorMap, ColorMapType } from "../../../prototypes/color-maps";
 import { type ViewLayerModel, type LayerColorScheme } from "../../../prototypes/view-layers";
 import { type TileFeatureIndex } from "../../plateau";
 import { PlateauTilesetProperties } from "../../plateau/layers";
@@ -41,15 +36,7 @@ export function createPlateauTilesetLayerState(
 ): PlateauTilesetLayerState {
   const propertiesAtom = atom<PlateauTilesetProperties | null>(null);
 
-  const colorPropertyAtom = makeComponentAtomWrapper(
-    atom<string | null>(null),
-    {
-      ...params,
-      componentType: "colorProperty",
-    },
-    false,
-    { shouldInitialize: params.shouldInitializeAtom },
-  );
+  const colorPropertyAtom = atom<string | null>(null);
 
   const originalColorMapAtom = atom<ColorMap>(colorMapPlateau);
   const wrappedOriginalColorMapAtom = atom(
@@ -63,12 +50,21 @@ export function createPlateauTilesetLayerState(
         set(originalColorMapAtom, colorMap);
         return;
       }
-      const objectColorMap: unknown = colorMap;
-      if (typeof objectColorMap === "string") {
-        const colorMap = createColorMapFromType(objectColorMap);
-        if (colorMap) {
-          set(originalColorMapAtom, colorMap);
-        }
+      const objectColorMap: any = colorMap;
+      if (
+        objectColorMap &&
+        "type" in objectColorMap &&
+        typeof objectColorMap.type === "string" &&
+        "name" in objectColorMap &&
+        typeof objectColorMap.name === "string" &&
+        "lut" in objectColorMap &&
+        objectColorMap.lut &&
+        Array.isArray(objectColorMap.lut)
+      ) {
+        set(
+          originalColorMapAtom,
+          new ColorMap(objectColorMap.type, objectColorMap.name, objectColorMap.lut),
+        );
       }
     },
   );
@@ -77,16 +73,13 @@ export function createPlateauTilesetLayerState(
     wrappedOriginalColorMapAtom,
     { ...params, componentType: "colorMap" },
     true,
-    {
-      shouldInitialize: params.shouldInitializeAtom,
-      beforeSet: a => (a instanceof ColorMap ? a.name : typeof a === "string" ? a : undefined),
-    },
+    params.shouldInitializeAtom,
   );
   const colorRangeAtom = makeComponentAtomWrapper(
     atom([0, 100]),
     { ...params, componentType: "colorRange" },
     true,
-    { shouldInitialize: params.shouldInitializeAtom },
+    params.shouldInitializeAtom,
   );
   const valueRangeAtom = atom(
     get => {

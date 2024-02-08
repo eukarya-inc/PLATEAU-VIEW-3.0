@@ -18,7 +18,6 @@ import {
   RotateAroundIcon,
   SettingsIcon,
   SketchIcon,
-  PaperPlaneTilt,
 } from "./icons";
 import { Space } from "./Space";
 
@@ -61,9 +60,6 @@ const Component: FC = () => {
       </IconButton>
       <IconButton>
         <ClockIcon />
-      </IconButton>
-      <IconButton>
-        <PaperPlaneTilt />
       </IconButton>
       <Space flexible />
       <AppBreadcrumbs>

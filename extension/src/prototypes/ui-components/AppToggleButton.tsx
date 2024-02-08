@@ -57,15 +57,16 @@ export interface AppToggleButtonProps
   extends ToggleButtonProps,
     Pick<ShortcutTooltipProps, "shortcutKey"> {}
 
-export const AppToggleButton = forwardRef<HTMLButtonElement, AppToggleButtonProps>(
-  ({ title, shortcutKey, ...props }, ref) => {
-    const platform = useAtomValue(platformAtom);
-    return (
-      <ShortcutTooltip title={title} platform={platform} shortcutKey={shortcutKey}>
-        <TooltipContent>
-          <StyledToggleButton ref={ref} aria-label={title} {...props} />
-        </TooltipContent>
-      </ShortcutTooltip>
-    );
-  },
-);
+export const AppToggleButton = forwardRef<
+  HTMLButtonElement,
+  ToggleButtonProps & Omit<ShortcutTooltipProps, "children">
+>(({ title, shortcutKey, ...props }, ref) => {
+  const platform = useAtomValue(platformAtom);
+  return (
+    <ShortcutTooltip title={title} platform={platform} shortcutKey={shortcutKey}>
+      <TooltipContent>
+        <StyledToggleButton ref={ref} aria-label={title} {...props} />
+      </TooltipContent>
+    </ShortcutTooltip>
+  );
+});

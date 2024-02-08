@@ -11,7 +11,6 @@ import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
 import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ScreenSpaceSelection } from "../prototypes/view/containers/ScreenSpaceSelection";
 import { SelectionCoordinator } from "../prototypes/view/containers/SelectionCoordinator";
-import { SketchTool } from "../prototypes/view/containers/SketchTool";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
@@ -25,7 +24,6 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
-import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
 
 type DefaultProps = {
   geoURL?: string;
@@ -52,7 +50,6 @@ export const Loading: FC = () => {
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
-  useSelectSketchFeature();
 
   return (
     <WidgetContext
@@ -88,7 +85,6 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
       <HighlightedAreas />
       <ReverseGeocoding />
       <PedestrianTool />
-      <SketchTool />
       <MyData />
       <AutoRotateCamera />
       <FeedBack />
