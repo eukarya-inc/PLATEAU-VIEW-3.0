@@ -93,7 +93,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                 ) {
                   useNone = !componentValue.value?.useDefault;
                   return componentValue.preset?.rules?.map(rule =>
-                    rule.propertyName ? rule : undefined,
+                    rule.propertyName || rule.legendName ? rule : undefined,
                   );
                 }
               })
