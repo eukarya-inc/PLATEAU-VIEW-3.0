@@ -31,6 +31,9 @@ export const ScreenSpaceCamera = () => {
     zoomEventTypes: [],
     rotateEventTypes: [],
     tiltEventTypes: [],
+    maximumZoomDistance: Infinity,
+    minimumZoomDistance: 1.5,
+    enableCollisionDetection: isHand,
     lookEventTypes: [
       "left_drag",
       {
