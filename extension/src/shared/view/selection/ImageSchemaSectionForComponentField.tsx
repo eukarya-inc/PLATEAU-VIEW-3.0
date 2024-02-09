@@ -73,7 +73,7 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
                 const componentValue = get(c.atom);
                 if (isConditionalImageSchemeComponent(componentValue)) {
                   return componentValue.preset?.rules?.map(rule =>
-                    rule.propertyName ? rule : undefined,
+                    rule.propertyName || rule.legendName ? rule : undefined,
                   );
                 }
               })
