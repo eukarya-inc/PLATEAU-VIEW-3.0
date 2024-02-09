@@ -6,10 +6,10 @@ import { PLATEAUVIEW_INSPECTOR_DOM_ID } from "../shared/ui-components/common/Vie
 
 export const Widget = memo(function WidgetPresenter() {
   return (
-    <WidgetContext>
-      <div id={PLATEAUVIEW_INSPECTOR_DOM_ID}>
+    <div id={PLATEAUVIEW_INSPECTOR_DOM_ID}>
+      <WidgetContext>
         <AppOverlay type="aside" width={320} height={0} />
-      </div>
-    </WidgetContext>
+      </WidgetContext>
+    </div>
   );
 });

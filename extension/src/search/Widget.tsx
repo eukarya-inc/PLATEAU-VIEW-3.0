@@ -10,12 +10,8 @@ export const Widget = memo(function WidgetPresenter() {
   const ready = useAtomValue(readyAtom);
 
   return (
-    <WidgetContext>
-      {ready && (
-        <div id={PLATEAUVIEW_SEARCH_DOM_ID}>
-          <AppOverlay type="main" width={360} height={81} />
-        </div>
-      )}
-    </WidgetContext>
+    <div id={PLATEAUVIEW_SEARCH_DOM_ID}>
+      <WidgetContext>{ready && <AppOverlay type="main" width={360} height={81} />}</WidgetContext>
+    </div>
   );
 });
