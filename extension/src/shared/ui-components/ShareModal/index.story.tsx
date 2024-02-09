@@ -30,6 +30,12 @@ export const Loading: Story = {
 
 export const PropsPassed: Story = {
   render: () => (
-    <Component show={true} url={"https://app.reearth.io"} iframe={"https://app.reearth.io"} />
+    <Component
+      show={true}
+      url={
+        "https://app.reearth.io/long-link/long-link/long-link/long-link/long-link/long-link/long-link/long-link/"
+      }
+      iframe={"https://app.reearth.io"}
+    />
   ),
 };
