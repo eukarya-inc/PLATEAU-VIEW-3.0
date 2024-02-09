@@ -7,7 +7,7 @@ import iconImage from "../../prototypes/pedestrian/assets/icon.png";
 import { StoryAppearance, StoryLayer } from "../reearth/layers/story";
 import { CameraPosition } from "../reearth/types";
 
-export type StoryChapter = {
+export type StoryCapture = {
   id: string;
   title?: string;
   content?: string;
@@ -15,12 +15,12 @@ export type StoryChapter = {
 };
 
 type StoryContainerProps = {
-  chaptersAtom: PrimitiveAtom<StoryChapter[]>;
+  capturesAtom: PrimitiveAtom<StoryCapture[]>;
   onLoad: (layerId: string) => void;
 };
 
-export const StoryLayerContainer: FC<StoryContainerProps> = ({ chaptersAtom, onLoad }) => {
-  const chapters = useAtomValue(chaptersAtom);
+export const StoryLayerContainer: FC<StoryContainerProps> = ({ capturesAtom, onLoad }) => {
+  const captures = useAtomValue(capturesAtom);
 
   const handleLoad = useCallback(
     (layerId: string) => {
@@ -31,7 +31,7 @@ export const StoryLayerContainer: FC<StoryContainerProps> = ({ chaptersAtom, onL
 
   return (
     <>
-      {chapters.map(chapter => (
+      {captures.map(chapter => (
         <StoryObject key={chapter.id} chapter={chapter} onLoad={handleLoad} />
       ))}
     </>
@@ -39,7 +39,7 @@ export const StoryLayerContainer: FC<StoryContainerProps> = ({ chaptersAtom, onL
 };
 
 type StoryObjectProps = {
-  chapter: StoryChapter;
+  chapter: StoryCapture;
   onLoad: (layerId: string) => void;
 };
 

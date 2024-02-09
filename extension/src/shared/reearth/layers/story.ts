@@ -1,13 +1,13 @@
 import { FC, useMemo } from "react";
 
-import { StoryChapter } from "../../layerContainers/story";
+import { StoryCapture } from "../../layerContainers/story";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 
 export type StoryAppearance = Partial<Pick<LayerAppearanceTypes, "marker">>;
 
 export type StoryProps = {
-  chapter: StoryChapter;
+  chapter: StoryCapture;
   appearances: StoryAppearance;
   visible?: boolean;
   onLoad?: (layerId: string) => void;

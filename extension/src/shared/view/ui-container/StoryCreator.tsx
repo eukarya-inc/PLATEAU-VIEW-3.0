@@ -1,9 +1,10 @@
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { ChangeEvent, FC, useCallback, useMemo, useState } from "react";
 
 import { useAddLayer } from "../../../prototypes/layers";
 import { StoryIcon } from "../../../prototypes/ui-components";
+import { toolMachineAtom } from "../../../prototypes/view/states/tool";
 import { STORY_LAYER } from "../../../prototypes/view-layers";
 import { ViewDialog, ViewTextField, ViewLabel } from "../../ui-components/common";
 import { createRootLayerForLayerAtom } from "../../view-layers";
@@ -11,6 +12,8 @@ import { showCreateStoryAtom } from "../state/story";
 
 export const StoryCreator: FC = () => {
   const [showCreateStory, setShowCreateStory] = useAtom(showCreateStoryAtom);
+  const send = useSetAtom(toolMachineAtom);
+
   const handleClose = useCallback(() => {
     setShowCreateStory(false);
     setStoryName("");
@@ -33,12 +36,13 @@ export const StoryCreator: FC = () => {
         id,
         type: STORY_LAYER,
         title: storyName,
-        chapters: [],
+        captures: [],
       }),
-      { autoSelect: false },
+      { autoSelect: true },
     );
+    send({ type: "STORY" });
     handleClose();
-  }, [storyName, addLayer, handleClose]);
+  }, [storyName, addLayer, handleClose, send]);
 
   return (
     <ViewDialog

@@ -8,34 +8,34 @@ import {
   ViewLayerModelParams,
   createViewLayerModel,
 } from "../../../prototypes/view-layers";
-import { StoryChapter, StoryLayerContainer } from "../../layerContainers/story";
+import { StoryCapture, StoryLayerContainer } from "../../layerContainers/story";
 import { LayerModel } from "../model";
 
 export interface StoryLayerModelParams extends ViewLayerModelParams {
   title: string;
-  chapters?: readonly StoryChapter[];
+  captures?: readonly StoryCapture[];
 }
 
 export interface StoryLayerModel extends LayerModel {
   title: string;
-  chaptersAtom: PrimitiveAtom<StoryChapter[]>;
+  capturesAtom: PrimitiveAtom<StoryCapture[]>;
 }
 
 export function createStoryLayer(
   params: StoryLayerModelParams,
 ): ConfigurableLayerModel<StoryLayerModel> {
-  const chaptersAtom = atom<StoryChapter[]>([...(params.chapters ?? [])]);
+  const capturesAtom = atom<StoryCapture[]>([...(params.captures ?? [])]);
   return {
     ...createViewLayerModel(params),
     type: STORY_LAYER,
     title: params.title,
-    chaptersAtom,
+    capturesAtom,
   };
 }
 
 export const StoryLayer: FC<LayerProps<typeof STORY_LAYER>> = ({
   hiddenAtom,
-  chaptersAtom,
+  capturesAtom,
   ...props
 }) => {
   const hidden = useAtomValue(hiddenAtom);
@@ -45,5 +45,5 @@ export const StoryLayer: FC<LayerProps<typeof STORY_LAYER>> = ({
   if (hidden) {
     return null;
   }
-  return <StoryLayerContainer chaptersAtom={chaptersAtom} onLoad={handleLoad} {...props} />;
+  return <StoryLayerContainer capturesAtom={capturesAtom} onLoad={handleLoad} {...props} />;
 };
