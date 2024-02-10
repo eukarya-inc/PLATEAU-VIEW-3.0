@@ -92,6 +92,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
       },
       raster: {
         maximumLevel: meta?.maxzoom,
+        hideIndicator: true,
       },
     }),
     [appearances, meta],

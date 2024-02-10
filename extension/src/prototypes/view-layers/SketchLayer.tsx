@@ -22,20 +22,30 @@ export interface SketchLayerModelParams extends ViewLayerModelParams {
 }
 
 export interface SketchLayerModel extends ViewLayerModel {
+  title: string;
   featuresAtom: PrimitiveAtom<SketchFeature[]>;
   featureAtomsAtom: SplitAtom<SketchFeature>;
 }
+
+export type SharedSketchLayer = {
+  type: "sketch";
+  id: string;
+  title: string;
+  features: SketchFeature[];
+};
 
 export function createSketchLayer(
   params: SketchLayerModelParams,
 ): ConfigurableLayerModel<SketchLayerModel> {
   const featuresAtom = atom<SketchFeature[]>([...(params.features ?? [])]);
+  const title = `作図${nextLayerIndex++}`;
   return {
     ...createViewLayerModel({
       ...params,
       // TODO: Avoid side-effect
-      title: `作図${nextLayerIndex++}`,
+      title,
     }),
+    title,
     type: SKETCH_LAYER,
     featuresAtom,
     featureAtomsAtom: splitAtom(featuresAtom),

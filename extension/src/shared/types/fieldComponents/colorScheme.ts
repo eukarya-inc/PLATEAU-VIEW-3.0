@@ -18,6 +18,15 @@ export type ConditionalColorSchemeValue = {
   useDefault: boolean; // Whether use first rule as default rule or not. Otherwise default will be "none".
 };
 
+export const FLOOD_COLOR_SCHEME = "FLOOD_COLOR_SCHEME";
+export type FloodColorSchemeValue = {
+  type: typeof FLOOD_COLOR_SCHEME;
+  overrideConditions: {
+    conditionId: string;
+    color: string;
+  }[];
+};
+
 export const GRADIENT_COLOR_SCHEME = "GRADIENT_COLOR_SCHEME";
 export type GradientColorSchemeValue = {
   type: typeof GRADIENT_COLOR_SCHEME;
