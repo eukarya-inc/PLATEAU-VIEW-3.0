@@ -29,6 +29,7 @@ export type TilesetProps = {
   visible?: boolean;
   appearance: LayerAppearance<Cesium3DTilesAppearance>;
   boxAppearance?: LayerAppearance<BoxAppearance>;
+  defines: Record<string, string>;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({
@@ -37,6 +38,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
   visible,
   appearance,
   boxAppearance,
+  defines,
 }) => {
   const data: Data = useMemo(
     () => ({
@@ -58,6 +60,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
     visible,
     appearances,
     onLoad,
+    defines,
   });
 
   return null;

@@ -9,7 +9,6 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
-import { string, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
@@ -133,30 +132,32 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   );
 
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
-  const hiddenFeaturesConditions: ConditionsExpression = useMemo(
-    () => ({
-      conditions:
-        hiddenFeatures?.map(f => [`${variable("gml_id")} ===  ${string(f)}`, "false"]) ?? [],
-    }),
-    [hiddenFeatures],
-  );
+  const hiddenFeaturesConditions: ConditionsExpression = {
+    conditions: [["${hiddenFeatureIds} == ${gml_id}", "false"]],
+  };
 
   const searchedFeatures = useAtomValue(searchedFeaturesAtom);
+
+  const defines: Record<string, string> = {
+    hiddenFeaturesIds: JSON.stringify(hiddenFeatures),
+  };
+
+  if (searchedFeatures?.onlyShow) {
+    defines.searchedFeaturesIds = JSON.stringify(searchedFeatures.features);
+  }
   const shownSearchedFeaturesConditions: ConditionsExpression | undefined = useMemo(
     () =>
       searchedFeatures?.onlyShow
         ? {
             conditions: [
-              ...(searchedFeatures?.features?.map(
-                f => [`${variable("gml_id")} ===  ${string(f)}`, "true"] as [string, string],
-              ) ?? []),
+              ["${searchedFeaturesIds} == ${gml_id}", "true"],
               ...hiddenFeaturesConditions.conditions,
               ...(filter.conditions[0].every(c => c === "true") ? [] : filter.conditions),
               ["true", "false"],
             ],
           }
         : undefined,
-    [searchedFeatures, hiddenFeaturesConditions, filter],
+    [searchedFeatures?.onlyShow, hiddenFeaturesConditions.conditions, filter.conditions],
   );
 
   const colorMode = useAtomValue(colorModeAtom);
@@ -213,6 +214,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       {...props}
       onLoad={handleLoad}
       appearance={appearance}
+      defines={defines}
       boxAppearance={boxAppearance}
       visible={!hidden}
     />

@@ -10,6 +10,7 @@ export type LayerHookOptions = {
   events?: Events;
   onLoad?: (layerId: string) => void;
   loading?: boolean;
+  defines?: Record<string, string>;
 };
 
 export const useLayer = ({
@@ -19,6 +20,7 @@ export const useLayer = ({
   events,
   onLoad,
   loading,
+  defines,
 }: LayerHookOptions) => {
   const layerIdRef = useRef<string>();
 
@@ -29,6 +31,7 @@ export const useLayer = ({
       type: "simple",
       data: data,
       events,
+      defines: defines,
     });
 
     layerIdRef.current = layerId;
