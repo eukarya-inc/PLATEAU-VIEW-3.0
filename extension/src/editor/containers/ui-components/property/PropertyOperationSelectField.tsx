@@ -9,6 +9,7 @@ const operationOptions = [
   { value: "<=", label: "<=" },
   { value: "===", label: "=" },
   { value: "!==", label: "!=" },
+  { value: "startsWith", label: "Starts with" },
 ] as const;
 
 export type OperationValue = (typeof operationOptions)[number]["value"] | undefined;
@@ -36,7 +37,7 @@ export const PropertyOperationSelectField: React.FC<PropertyOperationSelectField
   return (
     <PropertySelectField
       placeholder="Operation"
-      sx={{ width: "100px" }}
+      sx={{ width: "45px", flexShrink: 0 }}
       options={operationOptions as unknown as { value: string; label: string }[]}
       value={operation ?? ""}
       onChange={handleOperationChange}

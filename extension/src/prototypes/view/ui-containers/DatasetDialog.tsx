@@ -7,6 +7,7 @@ import {
   listItemSecondaryActionClasses,
   styled,
   type DialogProps,
+  listItemTextClasses,
 } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC } from "react";
@@ -18,15 +19,27 @@ import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
-import { EntityTitle, PrefixedAddSmallIcon, PrefixedCheckSmallIcon } from "../../ui-components";
+import {
+  EntityTitle,
+  PrefixedAddSmallIcon,
+  PrefixedCheckSmallIcon,
+  UseCaseIcon,
+} from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
 
 const StyledEntityTitle = styled(EntityTitle)(({ theme }) => ({
-  minHeight: theme.spacing(6),
+  minHeight: theme.spacing(7),
   [`& .${listItemSecondaryActionClasses.root}`]: {
     right: 4,
+  },
+  [`& .${listItemTextClasses.primary}`]: {
+    fontSize: theme.typography.h6.fontSize,
+    fontWeight: "bold",
+  },
+  [`& .${listItemTextClasses.secondary}`]: {
+    fontSize: theme.typography.h6.fontSize,
   },
 }));
 
@@ -65,7 +78,8 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const layerType =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const handleClick = useCallback(() => {
@@ -98,12 +112,15 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
   ]);
 
   return (
-    <Dialog {...props}>
+    <Dialog maxWidth="mobile" {...props}>
       <StyledEntityTitle
-        iconComponent={datasetTypeIcons[dataset.type.code as PlateauDatasetType]}
+        iconComponent={datasetTypeIcons[dataset.type.code as PlateauDatasetType] ?? UseCaseIcon}
         title={{
-          primary: dataset.type.name,
-          secondary: dataset?.city?.name,
+          primary: [
+            dataset.name,
+            dataset.__typename === "PlateauDataset" ? dataset.subname ?? "" : "",
+          ].join(" "),
+          secondary: dataset?.prefecture?.name,
         }}
         secondaryAction={
           <StyledButton

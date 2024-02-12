@@ -1,6 +1,12 @@
-import { QualitativeColorSet, floodRankColorSet } from "../../../prototypes/datasets";
+import {
+  FLOOD_RANK_COLORS,
+  QualitativeColor,
+  QualitativeColorSet,
+  atomsWithQualitativeColorSet,
+} from "../../../prototypes/datasets";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { Properties } from "../../reearth/utils";
+import { TilesetFloodColorField } from "../../types/fieldComponents/3dtiles";
 import {
   usageColorSet,
   structureTypeColorSet,
@@ -9,14 +15,19 @@ import {
   mudflowRiskColorSet,
   landSlideRiskColorSet,
 } from "../colorSets";
+import { makePropertyName } from "../featureInspector";
 
-type AvailableFeatures = ("color" | "filter")[];
+export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
 interface QualitativeProperty {
   testProperty: (name: string, value: unknown) => boolean;
-  colorSet: QualitativeColorSet;
+  colorSet?: QualitativeColorSet | ((id: string, name: string) => QualitativeColorSet);
   getDisplayName?: (name: string) => string;
-  availableFeatures: AvailableFeatures;
+  getMinMax?: (min: number, max: number) => [min: number, max: number];
+  accessor?: (propertyName: string) => string;
+  availableFeatures?: AvailableFeatures;
+  isMinMaxNeeded?: boolean;
+  isFlood?: boolean;
 }
 
 const qualitativeProperties: QualitativeProperty[] = [
@@ -26,26 +37,45 @@ const qualitativeProperties: QualitativeProperty[] = [
       propertyName.endsWith("浸水ランクコード") ||
       // For river flooding risk layers
       propertyName === "rank_code" ||
-      propertyName === "rank_org_code" ||
-      propertyName === "uro:rank_code" ||
-      propertyName === "uro:rank_org_code",
-    colorSet: floodRankColorSet,
+      propertyName === "uro:rank_code",
+    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
-    availableFeatures: ["color", "filter"],
+    availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
+    isFlood: true,
   },
   {
-    testProperty: propertyName => propertyName === "用途",
+    testProperty: propertyName =>
+      // For building layers
+      propertyName.endsWith("浸水ランクコード（独自）") ||
+      // For river flooding risk layers
+      propertyName === "rank_org_code" ||
+      propertyName === "uro:rank_org_code" ||
+      propertyName === "uro:rankOrg_code",
+    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
+    getDisplayName: name =>
+      name.endsWith("浸水ランクコード（独自）") ? name.replaceAll("_", " ") : "浸水ランク（独自）",
+    availableFeatures: ["color", "floodFilter"],
+    isMinMaxNeeded: true,
+    isFlood: true,
+  },
+  {
+    testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
     colorSet: usageColorSet,
     availableFeatures: ["color"],
   },
   {
-    testProperty: propertyName => propertyName === "構造種別",
+    testProperty: propertyName =>
+      propertyName === "構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:buildingStructureType",
     colorSet: structureTypeColorSet,
     availableFeatures: ["color"],
   },
   {
-    testProperty: propertyName => propertyName === "耐火構造種別",
+    testProperty: propertyName =>
+      propertyName === "耐火構造種別" ||
+      propertyName === "uro:BuildingDetailAttribute_uro:fireproofStructureType",
     colorSet: fireproofStructureTypeColorSet,
     availableFeatures: ["color"],
   },
@@ -67,32 +97,42 @@ const qualitativeProperties: QualitativeProperty[] = [
     getDisplayName: () => "地すべり",
     availableFeatures: ["color"],
   },
+  {
+    testProperty: propertyName =>
+      propertyName === "建築年" || propertyName === "bldg:yearOfConstruction",
+    availableFeatures: ["buildingFilter"],
+    getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
+  },
+  {
+    testProperty: propertyName => propertyName === "_lod",
+    getDisplayName: () => "LOD",
+    availableFeatures: ["buildingFilter"],
+  },
 ];
 
 interface NumberProperty {
   testProperty: (name: string, value: unknown) => boolean;
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  availableFeatures: AvailableFeatures;
+  accessor?: (propertyName: string) => string;
+  availableFeatures?: AvailableFeatures;
 }
 
 const numberProperties: NumberProperty[] = [
   {
-    testProperty: propertyName => propertyName === "計測高さ",
-    availableFeatures: ["color", "filter"],
+    testProperty: propertyName =>
+      propertyName === "計測高さ" || propertyName === "bldg:measuredHeight",
+    availableFeatures: ["color", "buildingFilter"],
   },
   {
-    testProperty: propertyName => propertyName === "建築年",
-    availableFeatures: ["filter"],
-    getMinMax: (min, max) => [Math.max(min, 1850), Math.min(max, new Date().getFullYear())],
+    testProperty: propertyName =>
+      propertyName === "地上階数" || propertyName === "bldg:storeysAboveGround",
+    availableFeatures: ["buildingFilter"],
   },
   {
-    testProperty: propertyName => propertyName === "地上階数",
-    availableFeatures: ["filter"],
-  },
-  {
-    testProperty: propertyName => propertyName === "地下階数",
-    availableFeatures: ["filter"],
+    testProperty: propertyName =>
+      propertyName === "地下階数" || propertyName === "bldg:storeysBelowGround",
+    availableFeatures: ["buildingFilter"],
   },
 ];
 
@@ -100,6 +140,7 @@ export type PlateauTilesetProperty = {
   name: string;
   availableFeatures: AvailableFeatures;
   displayName: string;
+  accessor: string;
 } & (
   | { type: "unknown" }
   | {
@@ -115,8 +156,32 @@ export type PlateauTilesetProperty = {
     }
 );
 
+const defaultAccessor = (propertyName: string) => `rootProperties["${propertyName}"]`;
+
 export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
+  private _floodColors: QualitativeColor[] | undefined;
+  private _shareId: string | undefined;
+
+  constructor(
+    layerId: string,
+    { floodColor, shareId }: { floodColor?: TilesetFloodColorField; shareId?: string } = {},
+  ) {
+    super(layerId);
+    this._floodColors = floodColor?.preset?.conditions
+      ?.map(c =>
+        c.legendName && c.color && c.rank
+          ? {
+              name: c.legendName,
+              color: c.color,
+              value: c.rank,
+            }
+          : undefined,
+      )
+      .filter(isNotNullish);
+    this._shareId = shareId;
+  }
+
   get value(): PlateauTilesetProperty[] | undefined {
     if (this._cachedComputedProperties) {
       return this._cachedComputedProperties;
@@ -126,7 +191,7 @@ export class PlateauTilesetProperties extends Properties {
 
     this._cachedComputedProperties = Object.entries(properties)
       .map(([name, value]) => {
-        if (name.startsWith("_") || value == null || typeof value !== "object") {
+        if (value == null || typeof value !== "object") {
           return undefined;
         }
 
@@ -140,19 +205,36 @@ export class PlateauTilesetProperties extends Properties {
         const qualitativeProperty = qualitativeProperties?.find(({ testProperty }) =>
           testProperty(name, value),
         );
-        if (qualitativeProperty != null) {
+        const hasMinMaxForNeededCase =
+          !qualitativeProperty?.isMinMaxNeeded || (minimum != null && maximum != null);
+        if (qualitativeProperty != null && hasMinMaxForNeededCase) {
+          const [finalMinimum, finalMaximum] =
+            minimum && maximum
+              ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
+              : [];
+          const displayName =
+            qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name;
           return {
             name,
             type: "qualitative" as const,
-            colorSet: qualitativeProperty.colorSet,
-            minimum,
-            maximum,
-            displayName: qualitativeProperty.getDisplayName?.(name) ?? name,
+            colorSet: !this._floodColors
+              ? typeof qualitativeProperty.colorSet === "function"
+                ? qualitativeProperty.colorSet(`${displayName}_${this._shareId}`, displayName)
+                : qualitativeProperty.colorSet
+              : atomsWithQualitativeColorSet({
+                  id: `${displayName}_component_${this._shareId}`,
+                  name: displayName,
+                  colors: this._floodColors,
+                }),
+            minimum: finalMinimum,
+            maximum: finalMaximum,
+            displayName,
             availableFeatures: qualitativeProperty.availableFeatures,
+            accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
         }
 
-        if (minimum && maximum) {
+        if (minimum != null && maximum != null) {
           const numberProperty = numberProperties?.find(({ testProperty }) =>
             testProperty(name, value),
           );
@@ -166,8 +248,9 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? name,
+              displayName: numberProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
+              accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
             };
           }
         }

@@ -1,6 +1,11 @@
-import { environmentTypeAtom } from "../../prototypes/view/states/app";
+import {
+  environmentTypeAtom,
+  logarithmicTerrainElevationAtom,
+  terrainElevationHeightRangeAtom,
+} from "../../prototypes/view/states/app";
 import { graphicsQualityAtom } from "../../prototypes/view/states/graphics";
-import { sharedStoreAtomWrapper } from "../sharedAtoms";
+import { CameraPosition } from "../reearth/types";
+import { sharedAtom, sharedStoreAtom, sharedStoreAtomWrapper } from "../sharedAtoms";
 
 export const shareableGraphicsQualityAtom = sharedStoreAtomWrapper(
   "graphicsQuality",
@@ -9,4 +14,21 @@ export const shareableGraphicsQualityAtom = sharedStoreAtomWrapper(
 export const shareableEnvironmentTypeAtom = sharedStoreAtomWrapper(
   "environmentType",
   environmentTypeAtom,
+);
+
+export const shareableTerrainElevationHeightRangeAtom = sharedStoreAtomWrapper(
+  "terrainElevationHeightRange",
+  terrainElevationHeightRangeAtom,
+);
+export const shareableLogarithmicTerrainElevationAtom = sharedStoreAtomWrapper(
+  "logarithmicTerrainElevation",
+  logarithmicTerrainElevationAtom,
+);
+
+export const sharedInitialCameraAtom = sharedStoreAtom(
+  sharedAtom<CameraPosition | undefined>("initialCamera", undefined),
+);
+
+export const sharedInitialClockAtom = sharedStoreAtom(
+  sharedAtom<number | undefined>("initialClock", undefined),
 );

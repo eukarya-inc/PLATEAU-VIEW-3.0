@@ -128,6 +128,7 @@ export const fieldSettings: {
     value: {
       type: VALUE_COLOR_SCHEME,
       color: undefined,
+      strokeColor: undefined,
     },
     hasLegendUI: true,
   },
@@ -144,7 +145,6 @@ export const fieldSettings: {
     hasLegendUI: true,
     hasLayerUI: true,
   },
-  POLYGON_STROKE_COLOR_FIELD: {},
   POLYGON_STROKE_WEIGHT_FIELD: {},
   POLYGON_VISIBILITY_CONDITION_FIELD: {},
   POLYGON_VISIBILITY_FILTER_FIELD: {
@@ -153,7 +153,7 @@ export const fieldSettings: {
   },
   POLYLINE_HEIGHT_REFERENCE_FIELD: {},
   POLYLINE_CLASSIFICATION_TYPE_FIELD: {},
-  // Polygon
+  // Polyline
   POLYLINE_FILL_COLOR_VALUE_FIELD: {
     value: {
       type: VALUE_COLOR_SCHEME,
@@ -185,6 +185,7 @@ export const fieldSettings: {
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
+  TILESET_FLOOD_COLOR_FIELD: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     value: {
       type: CONDITIONAL_COLOR_SCHEME,
@@ -231,6 +232,13 @@ export const fieldSettings: {
   TILESET_FLOOD_MODEL_FILTER: {
     value: {
       filters: {},
+    },
+    hasLayerUI: true,
+  },
+  TILESET_WIREFRAME: {
+    defaultValue: undefined,
+    value: {
+      wireframe: false,
     },
     hasLayerUI: true,
   },

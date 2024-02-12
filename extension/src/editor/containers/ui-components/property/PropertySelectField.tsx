@@ -40,4 +40,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 const StyledMenuItem = styled(MenuItem)(({ theme }) => ({
   padding: theme.spacing(0.5, 1),
   fontSize: theme.typography.body2.fontSize,
+  justifyContent: "center",
+  minHeight: "28px",
 }));

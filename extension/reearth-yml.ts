@@ -53,6 +53,11 @@ const yml = {
                 title: "データカタログURL",
               },
               {
+                id: "catalogURLForAdmin",
+                type: "string",
+                title: "Admin用データカタログURL",
+              },
+              {
                 id: "catalogProjectName",
                 type: "string",
                 title: "データカタログのプロジェクト名",
@@ -78,11 +83,6 @@ const yml = {
                 title: "Re:Earthプロジェクトの公開URL",
               },
               {
-                id: "isEditorMode",
-                type: "bool",
-                title: "エディターモード",
-              },
-              {
                 id: "enableGeoPub",
                 type: "bool",
                 title: "G空間情報センターに公開",
@@ -91,6 +91,24 @@ const yml = {
                 id: "hideFeedback",
                 type: "bool",
                 title: "フィードバックを非表示",
+              },
+            ],
+          },
+          {
+            id: "appearance",
+            title: "外観",
+            fields: [
+              {
+                id: "logo",
+                type: "url",
+                ui: "image",
+                title: "ロゴ",
+              },
+              {
+                id: "primaryColor",
+                type: "string",
+                ui: "color",
+                title: "プライマリカラー",
               },
             ],
           },

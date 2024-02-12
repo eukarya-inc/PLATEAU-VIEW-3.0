@@ -1,6 +1,7 @@
 import { atom, type PrimitiveAtom } from "jotai";
 import { splitAtom } from "jotai/utils";
 
+import { sharedStoreAtomWrapper, storageStoreAtomWrapper } from "../../shared/sharedAtoms";
 import { type SplitAtom } from "../type-helpers";
 
 export interface QualitativeColor {
@@ -8,9 +9,11 @@ export interface QualitativeColor {
   value: string | number;
   color: string;
   name: string;
+  strokeColor?: string;
 }
 
 export interface QualitativeColorSet {
+  id?: string;
   type: "qualitative";
   name: string;
   colorsAtom: PrimitiveAtom<QualitativeColor[]>;
@@ -18,17 +21,25 @@ export interface QualitativeColorSet {
 }
 
 export interface QualitativeColorSetOptions {
+  id?: string;
   name: string;
   colors: readonly QualitativeColor[];
 }
 
 export function atomsWithQualitativeColorSet({
+  id,
   name,
   colors,
 }: QualitativeColorSetOptions): QualitativeColorSet {
-  const colorsAtom = atom([...colors]);
+  const shareId = `COLOR_SET_${id}`;
+  const colorsAtom = sharedStoreAtomWrapper(
+    shareId,
+    storageStoreAtomWrapper(shareId, atom([...colors]), true),
+    { shouldInitialize: true },
+  );
   const colorAtomsAtom = splitAtom(colorsAtom);
   return {
+    id,
     type: "qualitative",
     name,
     colorsAtom,

@@ -3,11 +3,10 @@ import { debounce } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
-import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { useDatasets, useEstatAreasLazy } from "../../../shared/graphql";
 import { Dataset, DatasetsQuery } from "../../../shared/graphql/types/catalog";
 import { TileFeatureIndex } from "../../../shared/plateau/layers";
-import { flyToBBox } from "../../../shared/reearth/utils";
+import { flyToBBox, inEditor, lookAtTileFeature } from "../../../shared/reearth/utils";
 import { areasAtom } from "../../../shared/states/address";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
@@ -79,8 +78,9 @@ function useDatasetSearchOptions({
     }
     return (
       query.data?.datasets
-        .filter(dataset => {
-          const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+        ?.filter(dataset => {
+          const layerType =
+            datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
           return (
             !layerType ||
             findLayer(layers, {
@@ -90,7 +90,7 @@ function useDatasetSearchOptions({
         })
         .map(dataset => ({
           type: "dataset" as const,
-          name: IS_EDITOR_MODE && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
+          name: inEditor() && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
           index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
             dataset.ward?.name ?? ""
           }`,
@@ -237,7 +237,8 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         case "dataset": {
           const datasetOption = option as DatasetSearchOption;
           const dataset = datasetOption.dataset as Dataset;
-          const type = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+          const type =
+            datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
           const municipalityCode = datasetOption.dataset.wardCode;
           if (type == null) {
             return;
@@ -269,14 +270,20 @@ export function useSearchOptions(options?: SearchOptionsParams): SearchOptions {
         case "building": {
           const buildingOption = option as BuildingSearchOption;
           invariant(buildingOption.id);
-          // TODO: Implement flyTo by `_x` and `_y` properties which are embeded in feature.
+
+          const layerId = buildingOption.featureIndex.layerId;
+          const featureId = buildingOption.id;
+          const feature = window.reearth?.layers?.findFeatureById?.(layerId, featureId);
+          if (!feature) return;
+          lookAtTileFeature(feature.properties);
+
           setScreenSpaceSelection([
             {
               type: "TILESET_FEATURE",
               value: {
-                layerId: buildingOption.featureIndex.layerId,
+                layerId: layerId,
                 featureIndex: buildingOption.featureIndex,
-                key: buildingOption.id,
+                key: featureId,
                 datasetId: buildingOption.datasetId,
               },
             },

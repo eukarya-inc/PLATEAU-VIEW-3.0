@@ -10,8 +10,10 @@ import {
   TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
+  TILESET_FLOOD_COLOR_FIELD,
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
+  TILESET_WIREFRAME,
 } from "../../types/fieldComponents/3dtiles";
 import {
   LAYER_DESCRIPTION_FIELD,
@@ -44,6 +46,7 @@ import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
+import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
 import { LayerDatasetStoryField } from "./general/LayerDatasetStoryField";
 import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
@@ -198,7 +201,8 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     }
     // Tileset
     case TILESET_BUILDING_MODEL_COLOR:
-    case TILESET_FLOOD_MODEL_COLOR: {
+    case TILESET_FLOOD_MODEL_COLOR:
+    case TILESET_FLOOD_COLOR_FIELD: {
       component = <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
       break;
     }
@@ -232,7 +236,7 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case TILESET_BUILDING_MODEL_FILTER: {
       component = (
         <BuildingFilterSection
-          type="number"
+          availableFeature="buildingFilter"
           label="フィルター（建物モデル）"
           layers={layers}
           atoms={
@@ -247,7 +251,7 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case TILESET_FLOOD_MODEL_FILTER: {
       component = (
         <BuildingFilterSection
-          type="qualitative"
+          availableFeature="floodFilter"
           label="フィルター（浸水想定区域）"
           layers={layers}
           atoms={
@@ -255,6 +259,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
               "TILESET_BUILDING_MODEL_FILTER" | "TILESET_FLOOD_MODEL_FILTER"
             >["atom"][]
           }
+        />
+      );
+      break;
+    }
+    case TILESET_WIREFRAME: {
+      component = (
+        <LayerTilesetWireframeField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_WIREFRAME">["atom"][]}
         />
       );
       break;

@@ -11,6 +11,7 @@ import invariant from "tiny-invariant";
 
 import { useCameraAreas } from "../../shared/graphql";
 import { XYZ } from "../../shared/reearth/types";
+import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { type LayerProps } from "../layers";
 import { Pedestrian, type HeadingPitch, type Location } from "../pedestrian";
 
@@ -25,9 +26,11 @@ import { type ConfigurableLayerModel } from "./types";
 let nextLayerIndex = 1;
 
 export interface PedestrianLayerModelParams extends ViewLayerModelParams {
-  location: Location;
+  location?: Location;
   headingPitchAtom?: HeadingPitch;
   zoomAtom?: number;
+  shouldInitializeAtom?: boolean;
+  shareId?: string;
 }
 
 export interface PedestrianLayerModel extends ViewLayerModel {
@@ -39,39 +42,63 @@ export interface PedestrianLayerModel extends ViewLayerModel {
   addressAtom: PrimitiveAtom<string | null>;
 }
 
+export type SharedPedestrianLayer = {
+  type: "pedestrian";
+  id: string;
+};
+
 export function createPedestrianLayer(
   params: PedestrianLayerModelParams,
 ): ConfigurableLayerModel<PedestrianLayerModel> {
+  invariant(params.id);
+
   const locationPrimitiveAtom = atom<Location>({
-    longitude: params.location.longitude,
-    latitude: params.location.latitude,
+    longitude: params.location?.longitude ?? 0,
+    latitude: params.location?.latitude ?? 0,
     height: 2.5,
   });
-  const locationAtom = atom(
-    get => get(locationPrimitiveAtom),
-    (get, set, value: SetStateAction<Location>) => {
-      const prevValue = get(locationPrimitiveAtom);
-      const nextValue = typeof value === "function" ? value(prevValue) : value;
-      if (
-        nextValue.longitude !== prevValue.longitude ||
-        nextValue.latitude !== prevValue.latitude ||
-        nextValue.height !== prevValue.height
-      ) {
-        set(locationPrimitiveAtom, nextValue);
-      }
-    },
+  const locationAtom = makeComponentAtomWrapper(
+    atom(
+      get => get(locationPrimitiveAtom),
+      (get, set, value: SetStateAction<Location>) => {
+        const prevValue = get(locationPrimitiveAtom);
+        const nextValue = typeof value === "function" ? value(prevValue) : value;
+        if (
+          nextValue.longitude !== prevValue.longitude ||
+          nextValue.latitude !== prevValue.latitude ||
+          nextValue.height !== prevValue.height
+        ) {
+          set(locationPrimitiveAtom, nextValue);
+        }
+      },
+    ),
+    { ...params, datasetId: params.id, componentType: "location" },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   const headingPitchPrimitiveAtom = atom<HeadingPitch | null>(params.headingPitchAtom ?? null);
-  const headingPitchAtom = atom(
-    get => get(headingPitchPrimitiveAtom),
-    (get, set, value: SetStateAction<HeadingPitch | null>) => {
-      const prevValue = get(headingPitchAtom);
-      const nextValue = typeof value === "function" ? value(prevValue) : value;
-      if (nextValue?.heading !== prevValue?.heading || nextValue?.pitch !== prevValue?.pitch) {
-        set(headingPitchPrimitiveAtom, nextValue);
-      }
-    },
+  const headingPitchAtom = makeComponentAtomWrapper(
+    atom(
+      get => get(headingPitchPrimitiveAtom),
+      (get, set, value: SetStateAction<HeadingPitch | null>) => {
+        const prevValue = get(headingPitchAtom);
+        const nextValue = typeof value === "function" ? value(prevValue) : value;
+        if (nextValue?.heading !== prevValue?.heading || nextValue?.pitch !== prevValue?.pitch) {
+          set(headingPitchPrimitiveAtom, nextValue);
+        }
+      },
+    ),
+    { ...params, datasetId: params.id, componentType: "headingPitch" },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
+
+  const zoomPrimitiveAtom = makeComponentAtomWrapper(
+    atom<number | null>(params.zoomAtom ?? null),
+    { ...params, datasetId: params.id, componentType: "zoom" },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
   );
 
   return {
@@ -84,7 +111,7 @@ export function createPedestrianLayer(
     panoAtom: atom<string | null>(null),
     locationAtom,
     headingPitchAtom,
-    zoomAtom: atom<number | null>(params.zoomAtom ?? null),
+    zoomAtom: zoomPrimitiveAtom,
     synchronizedAtom: atom(false),
     addressAtom: atom<string | null>(null),
   };
@@ -103,7 +130,8 @@ export const PedestrianLayer: FC<LayerProps<typeof PEDESTRIAN_LAYER>> = ({
   addressAtom,
 }) => {
   const [pano, setPano] = useAtom(panoAtom);
-  const [location, setLocation] = useAtom(locationAtom);
+  const location = useAtomValue(locationAtom);
+  const setLocation = useSetAtom(locationAtom);
   const headingPitch = useAtomValue(headingPitchAtom);
   const zoom = useAtomValue(zoomAtom);
   const synchronized = useAtomValue(synchronizedAtom);

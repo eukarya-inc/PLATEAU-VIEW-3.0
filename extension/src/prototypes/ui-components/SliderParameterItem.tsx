@@ -1,6 +1,7 @@
 import { Popover, Slider, sliderClasses, styled, type SliderProps } from "@mui/material";
 import { scaleLinear } from "d3";
 import { atom, useAtom, type PrimitiveAtom, type SetStateAction } from "jotai";
+import { uniqBy } from "lodash-es";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import {
   forwardRef,
@@ -64,6 +65,7 @@ export interface SliderParameterItemProps<Range extends boolean = false>
   unit?: ReactNode;
   logarithmic?: boolean;
   logarithmicBase?: number;
+  allowFloat?: boolean;
   atom: Range extends true
     ?
         | PrimitiveAtom<number[]>
@@ -99,6 +101,7 @@ export const SliderParameterItem = forwardRef<HTMLDivElement, InternalSliderPara
       logarithmicBase = 10,
       atom: atomOrAtoms,
       onChange,
+      allowFloat = true,
       ...props
     },
     forwardedRef,
@@ -157,18 +160,28 @@ export const SliderParameterItem = forwardRef<HTMLDivElement, InternalSliderPara
       [logarithmic, logarithmicBase, onChange, setValue, step],
     );
 
-    const marks = useMemo(
-      () =>
+    const marks = useMemo(() => {
+      const v = uniqBy(
         scaleLinear()
           .domain([min, max])
           .ticks(4)
           .map(
             logarithmic
               ? value => ({ value: pseudoLog(value, logarithmicBase) })
-              : value => ({ value, label: format(value) }),
+              : value => ({
+                  value: allowFloat ? value : Math.trunc(value),
+                  label: format(value, allowFloat),
+                }),
           ),
-      [min, max, logarithmic, logarithmicBase, format],
-    );
+        "value",
+      );
+      return v.length <= 1
+        ? [
+            { value: min, label: format(min, allowFloat) },
+            { value: max, label: format(max, allowFloat) },
+          ]
+        : v;
+    }, [min, max, logarithmic, logarithmicBase, format, allowFloat]);
 
     const scaledMin = useMemo(
       () => (logarithmic ? pseudoLog(min, logarithmicBase) : min),

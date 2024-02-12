@@ -17,6 +17,7 @@ import {
   TILESET_BUILDING_MODEL_COLOR,
   TILESET_BUILDING_MODEL_FILTER,
   TILESET_CLIPPING,
+  TILESET_WIREFRAME,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { SearchedFeatures } from "../view-layers";
@@ -57,7 +58,6 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   hidden,
   hiddenFeaturesAtom,
   searchedFeaturesAtom,
-  textured,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -130,6 +130,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const filter = useEvaluateFilter(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
   );
+  const wireframeAtom = useFindComponent(componentAtoms, TILESET_WIREFRAME);
 
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
   const hiddenFeaturesConditions: ConditionsExpression = {
@@ -163,6 +164,8 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const colorMode = useAtomValue(colorModeAtom);
 
   const opacity = useOptionalAtomValue(opacityAtom);
+  const wireframeView = useOptionalAtomValue(wireframeAtom);
+
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
     colorScheme: buildingModelColorAtom ? colorScheme ?? undefined : undefined,
@@ -178,7 +181,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: textured,
+      pbr: "withTexture",
       ...(color
         ? {
             color: {
@@ -196,16 +199,17 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
+      showWireframe: wireframeView?.value?.wireframe,
     }),
     [
       color,
+      shownSearchedFeaturesConditions,
+      hiddenFeaturesConditions.conditions,
+      filter.conditions,
       enableShadow,
-      textured,
       theme.palette.primary.main,
       clippingBox,
-      filter.conditions,
-      hiddenFeaturesConditions.conditions,
-      shownSearchedFeaturesConditions,
+      wireframeView,
     ],
   );
 

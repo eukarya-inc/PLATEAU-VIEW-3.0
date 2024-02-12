@@ -2,14 +2,19 @@ import { IconButton, styled, useMediaQuery, useTheme } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, useState, type FC, type MouseEvent, type ReactNode } from "react";
 
-import { IS_EDITOR_MODE } from "../../../shared/constants";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { inEditor } from "../../../shared/reearth/utils";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import { createRootLayerForDatasetAtom } from "../../../shared/view-layers";
 import { removeLayerAtom, useAddLayer } from "../../layers";
-import { DatasetTreeItem, InfoIcon, type DatasetTreeItemProps } from "../../ui-components";
+import {
+  DatasetTreeItem,
+  InfoIcon,
+  UseCaseIcon,
+  type DatasetTreeItemProps,
+} from "../../ui-components";
 import { datasetTypeIcons } from "../constants/datasetTypeIcons";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
 import { PlateauDatasetType } from "../constants/plateau";
@@ -52,7 +57,8 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const layerType = datasetTypeLayers[dataset.type.code as PlateauDatasetType];
+  const layerType =
+    datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const addLayer = useAddLayer();
   const removeLayer = useSetAtom(removeLayerAtom);
   const theme = useTheme();
@@ -98,7 +104,7 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
 
   const wrappedLabel = useMemo(
     () =>
-      IS_EDITOR_MODE && dataset.year
+      inEditor() && dataset.year
         ? !Array.isArray(label)
           ? `[${dataset.year}]${label}`
           : [...label.slice(0, -1), `[${dataset.year}]${label.slice(-1)[0]}`]
@@ -106,12 +112,12 @@ export const DatasetListItem: FC<DatasetListItemProps> = ({
     [dataset, label],
   );
 
-  const Icon = datasetTypeIcons[dataset.type.code as PlateauDatasetType];
+  const Icon = datasetTypeIcons[dataset.type.code as PlateauDatasetType] ?? UseCaseIcon;
   return (
     <>
       <DatasetTreeItem
         nodeId={dataset.id}
-        icon={<Icon />}
+        icon={Icon && <Icon />}
         selected={layer != null}
         disabled={layerType == null}
         secondaryAction={

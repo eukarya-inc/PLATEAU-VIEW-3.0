@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useMemo } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
@@ -11,7 +11,7 @@ import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
 import { MVTLayer } from "../reearth/layers/mvt";
 import { WMSLayer } from "../reearth/layers/wms";
-import { CameraPosition } from "../reearth/types";
+import { CameraPosition, Data } from "../reearth/types";
 import { Properties } from "../reearth/utils";
 
 type MyDataContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & {
@@ -22,6 +22,7 @@ type MyDataContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & {
   hidden: boolean;
   type: LayerType;
   layers?: string[];
+  csv?: Data["csv"];
   cameraAtom?: PrimitiveAtom<CameraPosition | undefined>;
 };
 
@@ -33,6 +34,7 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
   hidden,
   format,
   cameraAtom,
+  csv,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
@@ -84,6 +86,13 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
     [onLoad, setProperties, setLayerId, setCamera],
   );
 
+  const appendData: Partial<Data> = useMemo(
+    () => ({
+      csv,
+    }),
+    [csv],
+  );
+
   const theme = useTheme();
 
   if (format === "gtfs") {
@@ -122,9 +131,9 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
   return (
     <GeneralLayer
       {...props}
+      appendData={appendData}
       format={format}
       onLoad={handleLoad}
-      // appearances={generalAppearances}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
     />

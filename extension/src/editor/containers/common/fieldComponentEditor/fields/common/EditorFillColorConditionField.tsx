@@ -16,7 +16,7 @@ import {
 } from "../../../../ui-components";
 import { OperationValue } from "../../../../ui-components/property/PropertyOperationSelectField";
 
-type FillColorConditionFieldPresetRule = {
+export type FillColorConditionFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
@@ -25,6 +25,7 @@ type FillColorConditionFieldPresetRule = {
 
 type FillColorConditionFieldPresetRuleCondition = {
   id: string;
+  propertyName?: string;
   operation?: OperationValue;
   value?: string;
   color?: string;
@@ -39,7 +40,6 @@ export type FillColorConditionFieldPreset = {
 type SupportedFieldTypes =
   | "POINT_FILL_COLOR_CONDITION_FIELD"
   | "POLYLINE_FILL_COLOR_CONDITION_FIELD"
-  | "POLYGON_FILL_COLOR_CONDITION_FIELD"
   | "TILESET_FILL_COLOR_CONDITION_FIELD";
 
 export const EditorFillColorConditionField = ({

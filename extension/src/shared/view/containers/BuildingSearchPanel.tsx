@@ -13,13 +13,22 @@ import {
 import { PrimitiveAtom, useAtom } from "jotai";
 import { get, uniq, uniqBy } from "lodash-es";
 import { PopupState, bindPopover } from "material-ui-popup-state/hooks";
-import { FC, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FC,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
-import { PlateauTilesetProperties, TileFeatureIndex } from "../../plateau";
+import { PlateauTilesetProperties, TileFeatureIndex, makePropertyName } from "../../plateau";
+import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
   Props as MultipleSelectSearchProps,
@@ -111,7 +120,40 @@ type Props = {
   layerId: string | null;
 };
 
-const EXCLUDE_PROPERTY_NAMES = ["attributes", "gml_id"];
+type SearchOption = { label: string; value: string; accessor?: string };
+
+const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accessor: string])[] = [
+  "住所",
+  "bldg:address",
+  "名称",
+  "gml:name",
+  "構造種別",
+  "uro:BuildingDetailAttribute_uro:buildingStructureType",
+  "用途",
+  "bldg:usage",
+  "耐火構造種別",
+  "uro:BuildingDetailAttribute_uro:fireproofStructureType",
+  [
+    "uro:majorUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:majorUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:majorUsage`,
+  ],
+  [
+    "uro:orgUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage`,
+  ],
+  [
+    "uro:orgUsage2",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage2"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage2`,
+  ],
+  [
+    "uro:detailedUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:detailedUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:detailedUsage`,
+  ],
+];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const [tab, setTab] = useState(0);
@@ -120,12 +162,17 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     setTab(value);
   }, []);
 
-  const triggerUpdateRef = useRef(0);
+  const initialized = useRef(false);
+  if (state.isOpen && !initialized.current) {
+    initialized.current = true;
+  }
+
   const properties = useOptionalAtomValue(
     useMemo(() => {
-      if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer)) return;
+      if (layer.type !== BUILDING_LAYER || !("propertiesAtom" in layer) || !initialized.current)
+        return;
       return layer.propertiesAtom as PrimitiveAtom<PlateauTilesetProperties | null>;
-    }, [layer, triggerUpdateRef.current]), // eslint-disable-line react-hooks/exhaustive-deps
+    }, [layer, initialized.current]), // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const featureIndex = useOptionalAtomValue(
@@ -150,60 +197,63 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   );
   const defferedSearchedFeatures = useDeferredValue(searchedFeatures);
 
-  const initialized = useRef(false);
-  if (state.isOpen && !initialized.current) {
-    initialized.current = true;
-  }
-  useEffect(
-    () => () => {
-      initialized.current = false;
-    },
-    [layer],
-  );
-
   const allFeatures = useMemo(
     () =>
       initialized.current
         ? window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? [])
         : undefined,
-    [layerId, featureIndex, initialized.current, triggerUpdateRef.current], // eslint-disable-line react-hooks/exhaustive-deps
+    [layerId, featureIndex, initialized.current], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const groups = useDeferredValue(
-    useMemo(() => {
-      if (!allFeatures || !initialized.current) return [];
+  const [groups, setGroups] = useState<
+    {
+      key: string;
+      title: string;
+      options: { label: string; value: string; accessor?: string }[];
+    }[]
+  >([]);
 
-      return (
-        properties?.value
-          ?.map(value => {
-            if (!value) return;
-            if (value.type !== "unknown") return;
-            if (EXCLUDE_PROPERTY_NAMES.includes(value.name)) return;
+  const prevAllFeaturesLengthRef = useRef(0);
+  useLayoutEffect(() => {
+    if (
+      !allFeatures ||
+      prevAllFeaturesLengthRef.current === allFeatures.length ||
+      !initialized.current ||
+      tab !== 0
+    )
+      return;
 
-            return {
-              key: value.name,
-              title: value.name,
-              options: uniqBy(
-                allFeatures
-                  .map(f => {
-                    const propertyValue = get(f.properties, value.name);
-                    return { label: propertyValue, value: propertyValue };
-                  })
-                  .filter(v => !!v.label && !!v.value),
-                "label",
-              ),
-            };
-          })
-          .filter(isNotNullish) ?? []
-      );
-    }, [allFeatures, properties, initialized.current]), // eslint-disable-line react-hooks/exhaustive-deps
-  );
+    prevAllFeaturesLengthRef.current = allFeatures.length;
+
+    setGroups(
+      INCLUDE_PROPERTY_NAMES.map(value => {
+        const name = typeof value === "string" ? value : value[0];
+        const property = typeof value === "string" ? value : value[1];
+        const accessor = typeof value === "string" ? undefined : value[2];
+        return {
+          key: property ?? name,
+          title: makePropertyName(name) ?? name,
+          options: uniqBy(
+            allFeatures.reduce((res, f) => {
+              const propertyValue = get(f.properties, accessor ?? value);
+              if (!propertyValue) return res;
+              res.push({ label: propertyValue, value: propertyValue, accessor: accessor ?? name });
+              return res;
+            }, [] as { label: string; value: string; accessor?: string }[]),
+            "label",
+          ),
+        };
+      }).filter(v => !!v.options.length) ?? [],
+    );
+  }, [allFeatures, initialized.current, tab, properties]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const defferredGroups = useDeferredValue(groups);
 
   const [conditions, setConditions] = useState<
-    Record<string, MultipleSelectSearchProps["options"]>
+    Record<string, MultipleSelectSearchProps<SearchOption>["options"]>
   >({});
   const handleConditionsChange = useCallback(
-    (key: string, value: MultipleSelectSearchProps["options"]) => {
+    (key: string, value: MultipleSelectSearchProps<SearchOption>["options"]) => {
       setConditions(p => ({ ...p, [key]: value }));
     },
     [],
@@ -212,40 +262,42 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const handleSearchButtonClick = useCallback(() => {
     if (!allFeatures) return;
 
-    const conditionEntries = Object.entries(conditions).map(([key, value]) => [
-      key,
-      value.map(v => v.label),
-    ]);
-    const hasCondition = conditionEntries.some(([, values]) => !!values.length);
+    const conditionEntries: [string, string[], string][] = Object.entries(conditions)
+      .filter(([, v]) => !!v.length)
+      .map(([key, value]) => [key, value.map(v => v.label), value[0].accessor ?? key]);
+    const hasCondition = !!conditionEntries.filter(([, values]) => !!values.length).length;
 
     if (allFeatures && hasCondition) {
-      setSearchedFeatures({
+      const searchedFeatures: SearchedFeatures = {
         features: uniq(
           allFeatures
             .filter(f =>
-              conditionEntries.every(
-                ([key, values]) => !values.length || values.includes(get(f.properties, key)),
+              conditionEntries.every(([_, values, accessor]) =>
+                values.includes(get(f.properties, accessor)),
               ),
             )
             .map(f => f.id),
         ),
+        conditions: conditionEntries.map(([key, vals]) => [
+          key.startsWith("rootProperties") ? key : `rootProperties["${key}"]`,
+          vals,
+        ]),
         highlight: true,
         onlyShow: false,
         selectedIndices: [],
-      });
+      };
+      setSearchedFeatures(searchedFeatures);
     }
     setTab(1);
   }, [allFeatures, conditions, setSearchedFeatures]);
 
-  // TODO: Handle moving camera to the selected feature in this function.
   const handleResultItemClick = useCallback(
     (i: number) => {
       setSearchedFeatures(p => {
-        const shouldUpdate = p?.selectedIndices.every(v => v !== i);
         return p
           ? {
               ...p,
-              selectedIndices: shouldUpdate ? [i] : p.selectedIndices.filter(v => v !== i),
+              selectedIndices: [i],
               highlight: false,
             }
           : p;
@@ -253,6 +305,17 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     },
     [setSearchedFeatures],
   );
+
+  useEffect(() => {
+    if (!searchedFeatures) return;
+    const index = searchedFeatures.selectedIndices[0];
+    if (index === undefined) return;
+    const featureId = searchedFeatures.features[index];
+    if (!layerId || !featureId) return;
+    const feature = window.reearth?.layers?.findFeatureById?.(layerId, featureId);
+    if (!feature) return;
+    lookAtTileFeature(feature.properties);
+  }, [searchedFeatures, layerId]);
 
   const handleHighlightResultButtonClick = useCallback(() => {
     setSearchedFeatures(p => (p ? { ...p, highlight: !p.highlight, selectedIndices: [] } : p));
@@ -263,10 +326,6 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   }, [setSearchedFeatures]);
 
   useEffect(() => () => setSearchedFeatures(null), []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (state.isOpen) {
-    triggerUpdateRef.current += 1;
-  }
 
   if (!allFeatures) return null;
 
@@ -291,7 +350,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         {tab === 0 && (
           <SearchContent>
             <SearchConditionList>
-              {groups.map((group, i) => (
+              {defferredGroups.map((group, i) => (
                 <SearchConditionListItem key={group.title}>
                   <MultipleSelectSearch
                     title={group.title}
@@ -308,7 +367,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
               color="primary"
               variant="contained"
               onClick={handleSearchButtonClick}
-              disabled={!groups.length}>
+              disabled={!defferredGroups.length}>
               検索
             </SearchButton>
           </SearchContent>
@@ -321,8 +380,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
               {defferedSearchedFeatures?.features.map((f, i) => (
                 <ResultListItem
                   key={f}
-                  selected={defferedSearchedFeatures.selectedIndices.includes(i)}
-                  onClick={() => handleResultItemClick(i)}>
+                  selected={searchedFeatures?.selectedIndices.includes(i)}
+                  onClick={() => handleResultItemClick(i)}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   {f}
                 </ResultListItem>
               ))}
@@ -333,7 +393,8 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
                 <ResultButton
                   color={searchedFeatures?.highlight ? "primary" : "secondary"}
                   variant={searchedFeatures?.highlight ? "contained" : "outlined"}
-                  onClick={handleHighlightResultButtonClick}>
+                  onClick={handleHighlightResultButtonClick}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   結果をハイライト
                 </ResultButton>
               </li>
@@ -341,7 +402,8 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
                 <ResultButton
                   color={searchedFeatures?.onlyShow ? "primary" : "secondary"}
                   variant={searchedFeatures?.onlyShow ? "contained" : "outlined"}
-                  onClick={handleShowOnlyResultButtonClick}>
+                  onClick={handleShowOnlyResultButtonClick}
+                  disabled={!defferedSearchedFeatures?.features.length}>
                   結果のみ表示
                 </ResultButton>
               </li>

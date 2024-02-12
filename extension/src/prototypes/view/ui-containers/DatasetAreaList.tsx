@@ -4,12 +4,11 @@ import { groupBy } from "lodash";
 import { useCallback, useMemo, type FC, useContext } from "react";
 import invariant from "tiny-invariant";
 
-import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasetTypes, useDatasets } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
-import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
@@ -67,28 +66,29 @@ const MunicipalityItem: FC<{
   municipality: AreasQuery["areas"][number];
   parents?: string[];
 }> = ({ municipality, parents = [] }) => {
+  const { data: datasetTypeOrder } = useDatasetTypes();
   const query = useAreaDatasets(
     municipality.code,
     // excludeTypes: [PlateauDatasetType.UseCase, PlateauDatasetType.GenericCityObject],
   );
   const groups = useMemo(
     () =>
-      query.data?.area?.datasets != null
+      datasetTypeOrder && query.data?.area?.datasets != null
         ? Object.entries(groupBy(query.data.area.datasets, d => d.type.code))
             .map(([, value]) => value)
             .sort(
               (a, b) =>
-                datasetTypeOrder.indexOf(a[0].type.code as PlateauDatasetType) -
-                datasetTypeOrder.indexOf(b[0].type.code as PlateauDatasetType),
+                datasetTypeOrder.findIndex(o => o.code === (a[0].type.code as PlateauDatasetType)) -
+                datasetTypeOrder.findIndex(o => o.code === (b[0].type.code as PlateauDatasetType)),
             )
             .map(value => ({
               groupId: value.map(({ id }) => id).join(":"),
               datasets: value,
             }))
         : undefined,
-    [query.data?.area?.datasets],
+    [query.data?.area?.datasets, datasetTypeOrder],
   );
-  if (query.data?.area?.datasets.length === 1) {
+  if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];
     return (
       <DatasetListItem
@@ -147,7 +147,7 @@ const RegionalMeshItem: FC = () => {
 };
 
 export const DatasetAreaList: FC = () => {
-  const query = useAreas();
+  const query = useAreas({ includeParents: true });
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleNodeToggle = useCallback(
     (_event: unknown, nodeIds: string[]) => {

@@ -1,4 +1,4 @@
-import { atom, useAtomValue, useSetAtom, type PrimitiveAtom } from "jotai";
+import { SetStateAction, atom, useAtomValue, useSetAtom, type PrimitiveAtom } from "jotai";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type FC } from "react";
 import invariant from "tiny-invariant";
 
@@ -6,7 +6,8 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
-import { colorMapFlare, type ColorMap } from "../color-maps";
+import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
+import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {
   createMeshImageData,
   type MeshImageData,
@@ -32,6 +33,10 @@ export interface HeatmapLayerModelParams extends ViewLayerModelParams {
   codes: readonly string[];
   parserOptions: ParseCSVOptions;
   opacity?: number;
+  datasetId: string;
+  dataId: string;
+  shouldInitializeAtom?: boolean;
+  shareId?: string;
 }
 
 export interface HeatmapLayerModel extends ViewLayerModel {
@@ -41,14 +46,68 @@ export interface HeatmapLayerModel extends ViewLayerModel {
   opacityAtom: PrimitiveAtom<number>;
   valueRangeAtom: PrimitiveAtom<number[]>;
   contourSpacingAtom: PrimitiveAtom<number>;
+  datasetId: string;
+  dataId: string;
 }
+
+export type SharedHeatmapLayer = {
+  type: "heatmap";
+  datasetId: string;
+  dataId: string;
+};
 
 export function createHeatmapLayer(
   params: HeatmapLayerModelParams,
 ): ConfigurableLayerModel<HeatmapLayerModel> {
-  const colorMapAtom = atom<ColorMap>(colorMapFlare);
-  const colorRangeAtom = atom([0, 100]);
-  const valueRangeAtom = atom([0, 100]);
+  const originalColorMapAtom = atom<ColorMap>(colorMapFlare);
+  const wrappedOriginalColorMapAtom = atom(
+    get => get(originalColorMapAtom),
+    (get, set, colorMapAction: SetStateAction<ColorMap>) => {
+      const colorMap =
+        typeof colorMapAction === "function"
+          ? colorMapAction(get(originalColorMapAtom))
+          : colorMapAction;
+      if (colorMap instanceof ColorMap) {
+        set(originalColorMapAtom, colorMap);
+        return;
+      }
+      const objectColorMap: unknown = colorMap;
+      if (typeof objectColorMap === "string") {
+        set(originalColorMapAtom, createColorMapFromType(objectColorMap) ?? colorMapFlare);
+      }
+    },
+  );
+
+  const colorMapAtom = makeComponentAtomWrapper(
+    wrappedOriginalColorMapAtom,
+    {
+      ...params,
+      componentType: "colorMap",
+    },
+    true,
+    {
+      shouldInitialize: params.shouldInitializeAtom,
+      beforeSet: a => (a instanceof ColorMap ? a.name : typeof a === "string" ? a : undefined),
+    },
+  );
+  const colorRangeAtom = makeComponentAtomWrapper(
+    atom([0, 100]),
+    {
+      ...params,
+      componentType: "colorRange",
+    },
+    true,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
+  const valueRangeAtom = makeComponentAtomWrapper(
+    atom([0, 100]),
+    {
+      ...params,
+      componentType: "valueRange",
+    },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
   const colorSchemeAtom = atom<LayerColorScheme | null>({
     type: "quantitative",
     name: params.title ?? "統計データ",
@@ -56,6 +115,24 @@ export function createHeatmapLayer(
     colorRangeAtom,
     valueRangeAtom,
   });
+  const opacityAtom = makeComponentAtomWrapper(
+    atom(params.opacity ?? 0.8),
+    {
+      ...params,
+      componentType: "opacity",
+    },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
+  const contourSpacingAtom = makeComponentAtomWrapper(
+    atom(10),
+    {
+      ...params,
+      componentType: "contourSpacing",
+    },
+    false,
+    { shouldInitialize: params.shouldInitializeAtom },
+  );
 
   return {
     ...createViewLayerModel({
@@ -66,10 +143,12 @@ export function createHeatmapLayer(
     getUrl: params.getUrl,
     codes: params.codes,
     parserOptions: params.parserOptions,
-    opacityAtom: atom(params.opacity ?? 0.8),
+    opacityAtom,
     valueRangeAtom,
-    contourSpacingAtom: atom(10),
+    contourSpacingAtom,
     colorSchemeAtom,
+    datasetId: params.datasetId,
+    dataId: params.dataId,
   };
 }
 

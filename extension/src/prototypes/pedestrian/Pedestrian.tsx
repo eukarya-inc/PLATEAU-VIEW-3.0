@@ -3,7 +3,7 @@ import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtomValue } from "jotai";
 import { nanoid } from "nanoid";
-import { useMemo, type FC, useState, useCallback } from "react";
+import { useMemo, type FC, useState, useCallback, useEffect, useRef } from "react";
 
 import { PEDESTRIAN_MARKER_ID_PROPERTY } from "../../shared/reearth/layers";
 import { XYZ } from "../../shared/reearth/types";
@@ -130,6 +130,31 @@ export const Pedestrian: FC<PedestrianProps> = ({
     [location, onChange],
   );
 
+  // Wait until the shared data come
+  const [loaded, setLoaded] = useState(() => location.latitude !== 0 && location.longitude !== 0);
+  useEffect(() => {
+    if (loaded) return;
+    const time = setTimeout(() => {
+      setLoaded(true);
+    }, 1000);
+    return () => clearTimeout(time);
+  }, [location, loaded, onChange]);
+
+  // I don't know why this is necessary, but initial selection doesn't work without this.
+  const locationRef = useRef(location);
+  locationRef.current = location;
+  const isInitialSelected = useRef(loaded);
+  useEffect(() => {
+    if (isInitialSelected.current || !selected) return;
+    isInitialSelected.current = true;
+    onChange?.({
+      ...locationRef.current,
+      longitude: locationRef.current.longitude + 0.00001,
+    });
+  }, [selected, onChange]);
+
+  if (!loaded) return null;
+
   return (
     <DndContext autoScroll={false} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <PedestrianObject
@@ -141,12 +166,7 @@ export const Pedestrian: FC<PedestrianProps> = ({
       />
       <AnimatePresence>
         {selected && !levitated && !hideFrustum && headingPitch != null && zoom != null && (
-          <StreetViewFrustum
-            key={dragKey}
-            location={location}
-            headingPitch={headingPitch}
-            zoom={zoom}
-          />
+          <StreetViewFrustum location={location} headingPitch={headingPitch} zoom={zoom} />
         )}
       </AnimatePresence>
     </DndContext>

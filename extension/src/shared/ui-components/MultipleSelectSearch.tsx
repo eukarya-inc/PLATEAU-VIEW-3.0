@@ -5,7 +5,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { Chip } from "@mui/material";
 import { autocompleteClasses } from "@mui/material/Autocomplete";
 import { styled } from "@mui/material/styles";
-import { FC, Fragment, SyntheticEvent } from "react";
+import { Fragment, ReactElement, SyntheticEvent } from "react";
 
 import { SearchIcon } from "../../prototypes/ui-components";
 
@@ -120,23 +120,23 @@ const Listbox = styled("ul")<{ position: "top" | "bottom" }>(
 `,
 );
 
-export type Props = {
+export type Props<Option extends { label: string; value: string }> = {
   title: string;
   position?: "top" | "bottom";
   placeholder?: string;
-  options: { label: string; value: string }[];
-  onChange?: (e: SyntheticEvent, value: Props["options"]) => void;
-  values?: Props["options"];
+  options: Option[];
+  onChange?: (e: SyntheticEvent, value: Props<Option>["options"]) => void;
+  values?: Props<Option>["options"];
 };
 
-export const MultipleSelectSearch: FC<Props> = ({
+export const MultipleSelectSearch = <Option extends { label: string; value: string }>({
   title,
   options,
   placeholder,
   onChange,
   position = "bottom",
   values,
-}) => {
+}: Props<Option>): ReactElement | null => {
   const {
     getRootProps,
     getInputLabelProps,
@@ -155,7 +155,7 @@ export const MultipleSelectSearch: FC<Props> = ({
     openOnFocus: true,
     getOptionLabel: option => option.label,
     onChange,
-    value: values ?? [],
+    value: values,
   });
 
   const List =

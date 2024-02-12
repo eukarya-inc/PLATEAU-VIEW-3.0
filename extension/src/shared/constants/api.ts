@@ -3,6 +3,11 @@ export const setPlateauApiUrl = (url: string) => {
   PLATEAU_API_URL = url;
 };
 
+export let PROJECT_ID: string | undefined;
+export const setProjectId = (id: string) => {
+  PROJECT_ID = id;
+};
+
 export let GEO_API_URL: string | undefined;
 export const setGeoApiUrl = (url: string) => {
   GEO_API_URL = url;
@@ -18,7 +23,12 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
 
-export let IS_EDITOR_MODE: boolean | undefined;
-export const setIsEditorMode = (v: boolean) => {
-  IS_EDITOR_MODE = v;
+export let PRIMARY_COLOR: string | undefined;
+export const setPrimaryColor = (color: string) => {
+  PRIMARY_COLOR = color;
+};
+
+export let LOGO: string | undefined;
+export const setLogo = (url: string) => {
+  LOGO = url;
 };

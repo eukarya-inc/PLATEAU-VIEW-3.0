@@ -2,11 +2,10 @@ import { useAtom, useAtomValue } from "jotai";
 import { atomWithReset } from "jotai/utils";
 import { useCallback, type FC, useContext } from "react";
 
-import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasetTypes, useDatasets } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
-import { datasetTypeOrder } from "../constants/datasetTypeOrder";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -21,7 +20,7 @@ const MunicipalityItem: FC<{
   const query = useAreaDatasets(municipality.code, {
     includeTypes: [datasetType],
   });
-  if (query.data?.area?.datasets.length === 1) {
+  if (query.data?.area?.datasets?.length === 1) {
     return (
       <DatasetListItem
         dataset={query.data.area.datasets[0]}
@@ -98,15 +97,16 @@ const PrefectureItem: FC<{
   );
 };
 
-const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType }> = ({ datasetType }) => {
+const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType; name: string }> = ({
+  datasetType,
+  name,
+}) => {
   const query = useAreas({
     datasetTypes: [datasetType],
+    includeParents: true,
   });
   return (
-    <DatasetTreeItem
-      nodeId={datasetType}
-      label={datasetTypeNames[datasetType]}
-      loading={query.loading}>
+    <DatasetTreeItem nodeId={datasetType} label={name} loading={query.loading}>
       {datasetType === PlateauDatasetType.UseCase && <GlobalItem />}
       {query.data?.areas.map(
         prefecture =>
@@ -123,6 +123,7 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType }> = ({ datasetType 
 };
 
 export const DatasetTypeList: FC = () => {
+  const { data: datasetTypeOrder } = useDatasetTypes();
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleNodeToggle = useCallback(
     (_event: unknown, nodeIds: string[]) => {
@@ -139,8 +140,12 @@ export const DatasetTypeList: FC = () => {
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
       maxheight={gridHeight - searchHeaderHeight}>
-      {datasetTypeOrder.map(datasetType => (
-        <DatasetTypeItem key={datasetType} datasetType={datasetType} />
+      {datasetTypeOrder?.map(datasetType => (
+        <DatasetTypeItem
+          key={datasetType.code}
+          name={datasetType.name}
+          datasetType={datasetType.code as PlateauDatasetType}
+        />
       ))}
     </DatasetTreeView>
   );

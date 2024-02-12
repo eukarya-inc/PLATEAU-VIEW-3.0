@@ -77,8 +77,8 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
   }, [findRootLayer, values, rootLayers, findLayer]);
 
   const isBuildingModel = layer?.type === BUILDING_LAYER;
-  const defaultTitle = layer ? layerTypeNames[layer.type] : "";
-  const Icon = layer ? layerTypeIcons[layer.type] : undefined;
+  const defaultTitle = layer ? layerTypeNames[layer.type] ?? rootLayer?.layerName : "";
+  const Icon = layer ? layerTypeIcons[layer.type] ?? layerTypeIcons.USE_CASE_LAYER : undefined;
 
   const title = useMemo(() => {
     if (rootLayer?.featureInspector?.basic?.titleType === "custom") {

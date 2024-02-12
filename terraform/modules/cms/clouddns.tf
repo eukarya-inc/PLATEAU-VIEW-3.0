@@ -20,6 +20,15 @@ resource "google_dns_record_set" "plateauview_api" {
   rrdatas      = ["${local.cms_domain}."]
 }
 
+resource "google_dns_record_set" "plateauview_geo" {
+  name = "${local.geo_domain}."
+  type = "CNAME"
+  ttl  = 60
+
+  managed_zone = data.google_dns_managed_zone.cms.name
+  rrdatas      = ["${local.cms_domain}."]
+}
+
 resource "google_dns_record_set" "assets" {
   name = "${local.assets_cms_domain}."
   type = "CNAME"

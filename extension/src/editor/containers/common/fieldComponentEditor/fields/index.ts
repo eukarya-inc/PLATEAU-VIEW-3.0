@@ -4,9 +4,13 @@ import { ComponentBase } from "../../../../../shared/types/fieldComponents";
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
+import { EditorTilesetFloodColorField } from "./3dtiles/EditorTilesetFloodColorField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
+import { EditorTilesetWireframeField } from "./3dtiles/EditorTilesetWireframeField";
 import { EditorCLassificationTypeField } from "./common/EditorClassificationTypeField";
+import { EditorFillAndStrokeColorConditionField } from "./common/EditorFillAndStrokeColorConditionField";
+import { EditorFillAndStrokeColorValueField } from "./common/EditorFillAndStrokeColorValueField";
 import { EditorFillColorConditionField } from "./common/EditorFillColorConditionField";
 import { EditorFillColorGradientField } from "./common/EditorFillColorGradientField";
 import { EditorFillColorValueField } from "./common/EditorFillColorValueField";
@@ -50,7 +54,6 @@ import { EditorPointUse3DModelField } from "./point/EditorPointUse3DModelField";
 import { EditorPointUseImageConditionField } from "./point/EditorPointUseImageConditionField";
 import { EditorPointUseImageValueField } from "./point/EditorPointUseImageValueField";
 import { EditorPointUseLabelField } from "./point/EditorPointUseLabelField";
-import { EditorPolygonStrokeColorField } from "./polygon/EditorPolygonStrokeColorField";
 import { EditorPolygonStrokeWeightField } from "./polygon/EditorPolygonStrokeWeightField";
 import { EditorPolylineStrokeWeightField } from "./polyline/EditorPolygonStrokeWeightField";
 
@@ -265,31 +268,26 @@ export const fields: {
     >,
   },
   // Polygon
-  POLYGON_STROKE_COLOR_FIELD: {
-    category: FIELD_CATEGORY_POLYGON,
-    name: "Stroke Color",
-    Component: EditorPolygonStrokeColorField,
-  },
-  POLYGON_STROKE_WEIGHT_FIELD: {
-    category: FIELD_CATEGORY_POLYGON,
-    name: "Stroke Weight",
-    Component: EditorPolygonStrokeWeightField,
-  },
   POLYGON_FILL_COLOR_VALUE_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
     group: FIELD_GROUP_POLYGON_FILL_COLOR,
-    name: "Value",
-    Component: EditorFillColorValueField as React.FC<
+    name: "Color Value",
+    Component: EditorFillAndStrokeColorValueField as React.FC<
       BasicFieldProps<"POLYGON_FILL_COLOR_VALUE_FIELD">
     >,
   },
   POLYGON_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
     group: FIELD_GROUP_POLYGON_FILL_COLOR,
-    name: "Condition",
-    Component: EditorFillColorConditionField as React.FC<
+    name: "Color Condition",
+    Component: EditorFillAndStrokeColorConditionField as React.FC<
       BasicFieldProps<"POLYGON_FILL_COLOR_CONDITION_FIELD">
     >,
+  },
+  POLYGON_STROKE_WEIGHT_FIELD: {
+    category: FIELD_CATEGORY_POLYGON,
+    name: "Stroke Weight",
+    Component: EditorPolygonStrokeWeightField,
   },
   POLYGON_VISIBILITY_FILTER_FIELD: {
     category: FIELD_CATEGORY_POLYGON,
@@ -334,6 +332,12 @@ export const fields: {
     name: "Flood model",
     Component: EditorTilesetFloodModelColorField,
   },
+  TILESET_FLOOD_COLOR_FIELD: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
+    name: "Flood color",
+    Component: EditorTilesetFloodColorField,
+  },
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     group: FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
@@ -366,6 +370,11 @@ export const fields: {
     group: FIELD_GROUP_THREE_D_TILES_FILTER,
     name: "Flood model",
     Component: EditorTilesetFloodModelFilterField,
+  },
+  TILESET_WIREFRAME: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    name: "Wireframe",
+    Component: EditorTilesetWireframeField,
   },
 };
 

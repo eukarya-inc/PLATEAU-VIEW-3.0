@@ -2,6 +2,7 @@ import { isNumber } from "class-validator";
 import { atom, type SetStateAction } from "jotai";
 import { atomWithReset, type RESET } from "jotai/utils";
 
+import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
 import { atomWithStorageValidation } from "../../shared-states";
 import { EnvironmentType } from "../types/environment";
 import { TerrainType } from "../types/terrain";
@@ -12,8 +13,10 @@ export const readyAtom = atom<boolean>(false);
 export const hideAppOverlayAtom = atom(false);
 export const showDeveloperPanelsAtom = atom(false);
 export const showFeedbackModalAtom = atom(false);
+export const showMyDataModalAtom = atom(false);
 export const viewportWidthAtom = atom<number | null>(null);
 export const viewportHeightAtom = atom<number | null>(null);
+export const showShareModalAtom = atom(false);
 
 const environmentTypePrimitiveAtom = atomWithReset<EnvironmentType>("map");
 export const environmentTypeAtom = atom(
@@ -29,6 +32,15 @@ export const terrainTypeAtom = atomWithReset<TerrainType>("plateau");
 export const enableTerrainLightingAtom = atomWithReset(true);
 export const terrainElevationHeightRangeAtom = atomWithReset([0, 4000]);
 export const logarithmicTerrainElevationAtom = atomWithReset(true);
+export const showMapLabelAtom = atomWithReset<Record<AnnotationType, boolean>>({
+  municipalities: false,
+  towns: false,
+  roads: false,
+  railways: false,
+  stations: false,
+  landmarks: false,
+  topography: false,
+});
 
 export const debugSphericalHarmonicsAtom = atomWithReset(false);
 export const showShadowMapDepthAtom = atomWithReset(false);
@@ -40,6 +52,7 @@ export const showAreaEntitiesAtom = atomWithReset(false);
 export const showSelectionBoundingSphereAtom = atomWithReset(false);
 
 export const enableKeyboardCameraControlAtom = atomWithReset(false);
+export const autoRotateCameraAtom = atomWithReset(false);
 
 export const inspectorWidthAtom = atomWithStorageValidation({
   key: "inspectorWidth",

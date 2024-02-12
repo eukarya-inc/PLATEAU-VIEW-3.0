@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Events, LayerAppearanceTypes } from "../types";
 import { Data } from "../types/layer";
@@ -23,6 +23,7 @@ export const useLayer = ({
   defines,
 }: LayerHookOptions) => {
   const layerIdRef = useRef<string>();
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -44,7 +45,7 @@ export const useLayer = ({
 
   useEffect(() => {
     const layerId = layerIdRef.current;
-    if (!layerId) return;
+    if (!layerId || !loaded) return;
 
     window.reearth?.layers?.override?.(layerId, {
       data: data,
@@ -52,7 +53,7 @@ export const useLayer = ({
       events,
       ...appearances,
     });
-  }, [appearances, visible, data, events]);
+  }, [appearances, visible, data, events, loaded]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;
@@ -61,6 +62,7 @@ export const useLayer = ({
       if (layerId) {
         onLoad?.(layerId);
       }
-    }, 0);
+      setLoaded(true);
+    }, 300);
   }, [onLoad, data.url]);
 };

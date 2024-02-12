@@ -1,6 +1,6 @@
 import { CameraPosition } from "./camera";
 import { ComputedFeature } from "./layer";
-import { LngLatHeight } from "./value";
+import { LUT, LngLatHeight } from "./value";
 
 export type TerrainProperty = {
   terrain?: boolean;
@@ -13,6 +13,12 @@ export type TerrainProperty = {
   terrainCesiumIonUrl?: string;
   terrainUrl?: string;
   terrainNormal?: boolean;
+  // TODO: Add encode option
+  heatmapType?: "custom"; // TODO: Support Cesium's terrain heatmap as built-in: https://sandcastle.cesium.com/?src=Globe%20Materials.html
+  heatmapColorLUT?: LUT;
+  heatmapMinHeight?: number;
+  heatmapMaxHeight?: number;
+  heatmapLogarithmic?: boolean;
 };
 
 export type Tile = {
@@ -22,6 +28,12 @@ export type Tile = {
   tile_maxLevel?: number;
   tile_minLevel?: number;
   tile_opacity?: number;
+};
+
+export type TileLabels = {
+  id: string;
+  labelType: "japan_gsi_optimal_bvmap"; // | "other_map"
+  style: Record<string, any>; // Function isn't allowed
 };
 
 export type AmbientOcclusion = {
@@ -68,6 +80,7 @@ export type SceneProperty = {
   //     indicator_image_scale?: number;
   //   };
   tiles?: Tile[];
+  tileLabels?: TileLabels[];
   terrain?: TerrainProperty;
   atmosphere?: {
     enable_sun?: boolean;

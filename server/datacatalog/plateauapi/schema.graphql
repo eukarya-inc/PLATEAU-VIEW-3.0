@@ -44,6 +44,14 @@ interface Area implements Node {
   地域に属するデータセット（DatasetInput内のareasCodeの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [Dataset!]!
+  """
+  地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。
+  """
+  parentId: ID
+  """
+  地域の親となる地域。
+  """
+  parent: Area
 }
 
 enum AreaType {
@@ -86,6 +94,14 @@ type Prefecture implements Area & Node {
   都道府県に属するデータセット（DatasetInput内のareasCodeの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [Dataset!]!
+  """
+  地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。
+  """
+  parentId: ID
+  """
+  地域の親となる地域。
+  """
+  parent: Area
 }
 
 """
@@ -125,6 +141,18 @@ type City implements Area & Node {
   市区町村に属するデータセット（DatasetInput内のareasCodeの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [Dataset!]!
+  """
+  地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。
+  """
+  parentId: ID
+  """
+  地域の親となる地域。
+  """
+  parent: Prefecture!
+  """
+  平面直角座標系のEPSGコード。例えば、東京都の場合は "6677" です。
+  """
+  planarCrsEpsgCode: String
 }
 
 """
@@ -172,6 +200,14 @@ type Ward implements Area & Node {
   区に属するデータセット（DatasetInput内のareasCodeの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [Dataset!]!
+  """
+  地域の親となる地域のID。市区町村の親は都道府県です。政令指定都市の区の親は市です。
+  """
+  parentId: ID
+  """
+  地域の親となる地域。
+  """
+  parent: City!
 }
 
 # Spec
@@ -245,10 +281,6 @@ interface Dataset implements Node {
   データセット名
   """
   name: String!
-  """
-  データセットのサブ名
-  """
-  subname: String
   """
   データセットの説明
   """
@@ -403,7 +435,7 @@ enum DatasetFormat {
 interface DatasetType implements Node {
   id: ID!
   """
-  データセットの種類コード。「bldg」など。
+  データセットの種類コード。 "bldg" など。
   """
   code: String!
   """
@@ -414,6 +446,10 @@ interface DatasetType implements Node {
   データセットの種類のカテゴリ。
   """
   category: DatasetTypeCategory!
+  """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
   """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
@@ -450,9 +486,17 @@ type PlateauDataset implements Dataset & Node {
   """
   name: String!
   """
-  データセットのサブ名
+  データセットのサブ名。都市計画決定情報の○○区域や洪水浸水想定区域の河川名などが含まれます。
   """
   subname: String
+  """
+  データセットのサブコード。都市計画決定情報の○○区域や洪水浸水想定区域の河川名などのコード表現が含まれます。
+  """
+  subcode: String
+  """
+  データセットのサブコードの順番。大きいほど後に表示されます。
+  """
+  suborder: Int
   """
   データセットの説明
   """
@@ -577,6 +621,10 @@ type PlateauDatasetItem implements DatasetItem & Node {
   浸水規模。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在します。
   """
   floodingScale: FloodingScale
+  """
+  浸水規模の枝番。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在することがあります。
+  """
+  floodingScaleSuffix: String
 }
 
 """
@@ -653,6 +701,10 @@ type PlateauDatasetType implements DatasetType & Node {
   """
   category: DatasetTypeCategory!
   """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
+  """
   データセットの種類が属するPLATEAU都市モデルの仕様のID。
   """
   plateauSpecId: ID!
@@ -686,10 +738,6 @@ type RelatedDataset implements Dataset & Node {
   データセット名
   """
   name: String!
-  """
-  データセットのサブ名
-  """
-  subname: String
   """
   データセットの説明
   """
@@ -778,6 +826,16 @@ type RelatedDatasetItem implements DatasetItem & Node {
   """
   url: String!
   """
+  データセットのアイテムの変換前データのフォーマット。
+  originalUrlフィールドが存在する場合のみ存在します。
+  """
+  originalFormat: DatasetFormat
+  """
+  データセットのアイテムの変換前データのURL。
+  鉄道駅情報・ランドマーク情報はurlフィールドではCZML形式で提供されていますが、元となったGeoJSONデータが存在します。
+  """
+  originalUrl: String
+  """
   データセットのアイテムのレイヤー名。MVTやWMSなどのフォーマットの場合のみ存在。
   レイヤー名が複数存在する場合は、同時に複数のレイヤーを表示可能であることを意味します。
   """
@@ -810,6 +868,10 @@ type RelatedDatasetType implements DatasetType & Node {
   """
   category: DatasetTypeCategory!
   """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
+  """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [RelatedDataset!]!
@@ -826,10 +888,6 @@ type GenericDataset implements Dataset & Node {
   データセット名
   """
   name: String!
-  """
-  データセットのサブ名
-  """
-  subname: String
   """
   データセットの説明
   """
@@ -950,6 +1008,10 @@ type GenericDatasetType implements DatasetType & Node {
   """
   category: DatasetTypeCategory!
   """
+  データセットの種類の順番を示す数字。大きいほど後に表示されます。
+  """
+  order: Int!
+  """
   データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
   """
   datasets(input: DatasetsInput): [GenericDataset!]!
@@ -984,6 +1046,10 @@ input AreasInput {
   検索文字列。複数指定するとAND条件で絞り込み検索が行えます。
   """
   searchTokens: [String!]
+  """
+  検索結果にその地域の親も含めるかどうか。デフォルトは false です。
+  """
+  includeParents: Boolean
 }
 
 """
@@ -1021,11 +1087,11 @@ input DatasetsInput {
   """
   year: Int
   """
-  検索結果から除外するデータセットの種類コード。
+  検索結果から除外するデータセットの種類コード。種類コードは例えば "bldg"（建築物モデル）の他、"plateau"（PLATEAU都市モデルデータセット）、"related"（関連データセット）、"generic"（その他のデータセット）が使用可能です。
   """
   excludeTypes: [String!]
   """
-  検索結果に含めるデータセットの種類コード。未指定の場合、全てのデータセットの種類を対象に検索し、指定するとその種類で検索結果を絞り込みます。
+  検索結果に含めるデータセットの種類コード。未指定の場合、全てのデータセットの種類を対象に検索し、指定するとその種類で検索結果を絞り込みます。種類コードは例えば "bldg"（建築物モデル）の他、"plateau"（PLATEAU都市モデルデータセット）、"related"（関連データセット）、"generic"（その他のデータセット）が使用可能です。
   """
   includeTypes: [String!]
   """

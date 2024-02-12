@@ -4,7 +4,6 @@ export const DATASET_FRAGMENT = gql(`
   fragment DatasetFragment on Dataset {
     id
     name
-    subname
     description
     year
     groups
@@ -31,6 +30,7 @@ export const DATASET_FRAGMENT = gql(`
       code
       name
       category
+      order
     }
     items {
       id
@@ -40,5 +40,8 @@ export const DATASET_FRAGMENT = gql(`
       layers
     }
     admin
+    ... on PlateauDataset {
+      subname
+    }
   }
 `);

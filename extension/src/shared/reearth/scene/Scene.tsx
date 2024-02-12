@@ -2,7 +2,7 @@
 
 import { FC, useEffect } from "react";
 
-import { AmbientOcclusion, Antialias, Tile } from "../types";
+import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
 
 // nx = red
 // ny = green
@@ -21,6 +21,14 @@ const debugSphericalHarmonicCoefficients: [x: number, y: number, z: number][] = 
   [0.000107143961941, -0.000126510843984, -0.000425444566645], // L21, irradiance, pre-scaled base
   [-0.000069071611506, 0.000134039684781, -0.000119135256682], // L22, irradiance, pre-scaled base
 ];
+
+const DEFAULT_INITIAL_CAMERA: CameraPosition = {
+  lng: 139.755,
+  lat: 35.675,
+  height: 1000,
+  heading: Math.PI * 0.4,
+  pitch: -Math.PI * 0.2,
+};
 
 export type EnvironmentProps = {
   backgroundColor?: string;
@@ -55,20 +63,26 @@ export type ShadowProps = { enabled?: boolean; size?: 1024 | 2048 | 4096; softSh
 export type SceneProps = EnvironmentProps & {
   ambientOcclusion?: AmbientOcclusion;
   tiles?: Tile[];
+  tileLabels?: TileLabels[];
   shadows?: ShadowProps;
   antialias?: Antialias;
-  terrainNormal?: boolean;
+  terrainHeatmapMaxHeight?: number;
+  terrainHeatmapMinHeight?: number;
+  terrainHeatmapLogarithmic?: boolean;
+  initialCamera?: CameraPosition;
 };
 
 export const Scene: FC<SceneProps> = ({
-  backgroundColor = "black",
-  globeBaseColor = "black",
+  backgroundColor = "#000000",
+  globeBaseColor = "#000000",
   // showGlobe = true,
   enableGlobeLighting = false,
   globeImageBasedLightingFactor = 0.3,
-  // TODO(ReEarth): Support terrain heat-map
-  // terrainHeatmap = false,
-  lightColor = "white",
+  terrainHeatmap = false,
+  terrainHeatmapLogarithmic,
+  terrainHeatmapMinHeight,
+  terrainHeatmapMaxHeight,
+  lightColor = "#ffffff",
   lightIntensity = 2,
   shadowDarkness = 0.3,
   imageBasedLightingIntensity = 1,
@@ -88,20 +102,16 @@ export const Scene: FC<SceneProps> = ({
   groundAtmosphereSaturationShift,
   groundAtmosphereBrightnessShift,
   tiles,
+  tileLabels,
   ambientOcclusion,
   shadows,
   antialias,
+  initialCamera = DEFAULT_INITIAL_CAMERA,
 }) => {
   useEffect(() => {
     window.reearth?.scene?.overrideProperty({
       default: {
-        camera: {
-          lng: 139.755,
-          lat: 35.675,
-          height: 1000,
-          heading: Math.PI * 0.4,
-          pitch: -Math.PI * 0.2,
-        },
+        camera: initialCamera,
         bgcolor: backgroundColor,
         skybox: showSkyBox,
       },
@@ -151,6 +161,7 @@ export const Scene: FC<SceneProps> = ({
         imageBasedLightIntensity: imageBasedLightingIntensity,
       },
       tiles,
+      tileLabels,
       terrain: {
         terrain: true,
         terrainType: "cesiumion",
@@ -158,6 +169,14 @@ export const Scene: FC<SceneProps> = ({
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2UyMjcwOS00MDY1LTQxYjEtYjZjMy00YTU0ZTg5MmViYWQiLCJpZCI6ODAzMDYsImlhdCI6MTY0Mjc0ODI2MX0.dkwAL1CcljUV7NA7fDbhXXnmyZQU_c-G5zRx8PtEcxE",
         terrainCesiumIonAsset: "770371",
         terrainNormal: true,
+        ...(terrainHeatmap
+          ? {
+              heatmapType: "custom",
+              heatmapMaxHeight: terrainHeatmapMaxHeight,
+              heatmapMinHeight: terrainHeatmapMinHeight,
+              heatmapLogarithmic: terrainHeatmapLogarithmic,
+            }
+          : {}),
       },
       render: {
         antialias,
@@ -187,10 +206,16 @@ export const Scene: FC<SceneProps> = ({
     showMoon,
     sphericalHarmonicCoefficients,
     tiles,
+    tileLabels,
     shadows,
     globeBaseColor,
     skyAtmosphereBrightnessShift,
     skyAtmosphereSaturationShift,
+    terrainHeatmap,
+    terrainHeatmapLogarithmic,
+    terrainHeatmapMaxHeight,
+    terrainHeatmapMinHeight,
+    initialCamera,
   ]);
 
   return null;
