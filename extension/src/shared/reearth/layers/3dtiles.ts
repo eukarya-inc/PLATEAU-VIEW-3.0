@@ -29,7 +29,7 @@ export type TilesetProps = {
   visible?: boolean;
   appearance: LayerAppearance<Cesium3DTilesAppearance>;
   boxAppearance?: LayerAppearance<BoxAppearance>;
-  defines: Record<string, string>;
+  defines?: Record<string, string>;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({
