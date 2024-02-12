@@ -99,6 +99,8 @@ const processRequests = (req) => {
       // const statusCode = await getStatusCode(zxy);
       // console.log(zxy, statusCode);
       requests.push(zxy);
+      // it'll be processed in the upcoming batch but no need to add it again
+      processed[zxy] = true;
       if (requests.length >= parallelRequests) {
         await processRequests(requests);
         requests = [];
