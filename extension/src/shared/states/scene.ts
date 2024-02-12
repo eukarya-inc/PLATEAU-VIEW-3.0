@@ -1,5 +1,6 @@
 import {
   environmentTypeAtom,
+  showMapLabelAtom,
   logarithmicTerrainElevationAtom,
   terrainElevationHeightRangeAtom,
 } from "../../prototypes/view/states/app";
@@ -15,6 +16,8 @@ export const shareableEnvironmentTypeAtom = sharedStoreAtomWrapper(
   "environmentType",
   environmentTypeAtom,
 );
+
+export const shareableShowMapLabelAtom = sharedStoreAtomWrapper("ShowMapLabel", showMapLabelAtom);
 
 export const shareableTerrainElevationHeightRangeAtom = sharedStoreAtomWrapper(
   "terrainElevationHeightRange",
