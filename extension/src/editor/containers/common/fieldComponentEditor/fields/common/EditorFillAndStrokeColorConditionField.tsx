@@ -25,6 +25,7 @@ export type FillAndStrokeColorConditionFieldPresetRule = {
 
 type FillAndStrokeColorConditionFieldPresetRuleCondition = {
   id: string;
+  propertyName?: string;
   operation?: OperationValue;
   value?: string;
   color?: string;

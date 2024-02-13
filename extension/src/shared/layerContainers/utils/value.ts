@@ -114,20 +114,21 @@ export const makeConditionalExpression = (
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const colorValue = overriddenCondition?.color || cond.color;
-              if (!rule.propertyName || !cond.value || !colorValue) return;
+              const propertyName = cond.propertyName || rule.propertyName;
+              if (!propertyName || !cond.value || !colorValue) return;
               const stringCondition = conditionWithOperation(
-                variable(rule.propertyName),
+                variable(propertyName),
                 string(cond.value),
                 cond.operation,
               );
               const numberCondition = !isNaN(Number(cond.value))
                 ? conditionWithOperation(
-                    defaultConditionalNumber(rule.propertyName),
+                    defaultConditionalNumber(propertyName),
                     number(Number(cond.value)),
                     cond.operation,
                   )
                 : undefined;
-              return rule.propertyName && cond.value && colorValue
+              return propertyName && cond.value && colorValue
                 ? ([
                     numberCondition ? numberCondition : stringCondition,
                     color(colorValue, opacity),
@@ -162,20 +163,21 @@ export const makeStrokeColorConditionalExpression = (
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const colorValue = overriddenCondition?.strokeColor || cond.strokeColor;
-              if (!rule.propertyName || !cond.value || !colorValue) return;
+              const propertyName = cond.propertyName || rule.propertyName;
+              if (!propertyName || !cond.value || !colorValue) return;
               const stringCondition = conditionWithOperation(
-                variable(rule.propertyName),
+                variable(propertyName),
                 string(cond.value),
                 cond.operation,
               );
               const numberCondition = !isNaN(Number(cond.value))
                 ? conditionWithOperation(
-                    defaultConditionalNumber(rule.propertyName),
+                    defaultConditionalNumber(propertyName),
                     number(Number(cond.value)),
                     cond.operation,
                   )
                 : undefined;
-              return rule.propertyName && cond.value && colorValue
+              return propertyName && cond.value && colorValue
                 ? ([
                     numberCondition ? numberCondition : stringCondition,
                     color(colorValue, opacity),
@@ -347,20 +349,21 @@ export const makeConditionalImageExpression = (
             return rule.conditions?.map(cond => {
               const overriddenCondition = overriddenRules?.find(r => r.conditionId === cond.id);
               const imageURLValue = overriddenCondition?.imageURL || cond.imageURL;
-              if (!rule.propertyName || !cond.value || !imageURLValue) return;
+              const propertyName = cond.propertyName || rule.propertyName;
+              if (!propertyName || !cond.value || !imageURLValue) return;
               const stringCondition = conditionWithOperation(
-                variable(rule.propertyName),
+                variable(propertyName),
                 string(cond.value),
                 cond.operation,
               );
               const numberCondition = !isNaN(Number(cond.value))
                 ? conditionWithOperation(
-                    defaultConditionalNumber(rule.propertyName),
+                    defaultConditionalNumber(propertyName),
                     number(Number(cond.value)),
                     cond.operation,
                   )
                 : undefined;
-              return rule.propertyName && cond.value && imageURLValue
+              return propertyName && cond.value && imageURLValue
                 ? ([
                     numberCondition ? `${numberCondition} || ${stringCondition}` : stringCondition,
                     `"${imageURLValue}"`,
@@ -393,20 +396,21 @@ export const makeConditionalImageColorExpression = (
                 overriddenCondition?.imageColor || cond.imageColor,
                 opacity,
               );
-              if (!rule.propertyName || !cond.value || !imageColorValue) return;
+              const propertyName = cond.propertyName || rule.propertyName;
+              if (!propertyName || !cond.value || !imageColorValue) return;
               const stringCondition = conditionWithOperation(
-                variable(rule.propertyName),
+                variable(propertyName),
                 string(cond.value),
                 cond.operation,
               );
               const numberCondition = !isNaN(Number(cond.value))
                 ? conditionWithOperation(
-                    defaultConditionalNumber(rule.propertyName),
+                    defaultConditionalNumber(propertyName),
                     number(Number(cond.value)),
                     cond.operation,
                   )
                 : undefined;
-              return rule.propertyName && cond.value && imageColorValue
+              return propertyName && cond.value && imageColorValue
                 ? ([
                     numberCondition ? `${numberCondition} || ${stringCondition}` : stringCondition,
                     `color("${imageColorValue}")`,

@@ -5,6 +5,7 @@ import { OperationValue, PropertyOperationSelectField } from "./PropertyOperatio
 import { PropertyLineWrapper } from "./PropertyWrapper";
 
 export type CommonCondition = {
+  propertyName?: string;
   operation?: OperationValue;
   value?: string;
 };
@@ -38,9 +39,25 @@ export const PropertyConditionField: React.FC<PropertyConditionFieldProps> = ({
     [condition, onConditionChange],
   );
 
+  const handlePropertyNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onConditionChange({
+        ...condition,
+        propertyName: e.target.value,
+      });
+    },
+    [condition, onConditionChange],
+  );
+
   return (
     <PropertyLineWrapper>
       IF
+      <PropertyInputField
+        placeholder="Property name"
+        value={condition.propertyName ?? ""}
+        title="Left empty to use rule's property name"
+        onChange={handlePropertyNameChange}
+      />
       <PropertyOperationSelectField
         operation={condition.operation}
         onChange={handleOperationChange}
