@@ -51,9 +51,10 @@ export const useLayer = ({
       data: data,
       visible,
       events,
+      defines: defines,
       ...appearances,
     });
-  }, [appearances, visible, data, events, loaded]);
+  }, [appearances, visible, data, events, loaded, defines]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;

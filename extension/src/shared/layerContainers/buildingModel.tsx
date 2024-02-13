@@ -9,6 +9,7 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
+import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
@@ -137,28 +138,33 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     conditions: [["${hiddenFeatureIds} == ${gml_id}", "false"]],
   };
 
-  const searchedFeatures = useAtomValue(searchedFeaturesAtom);
-
   const defines: Record<string, string> = {
     hiddenFeaturesIds: JSON.stringify(hiddenFeatures),
   };
 
-  if (searchedFeatures?.onlyShow) {
-    defines.searchedFeaturesIds = JSON.stringify(searchedFeatures.features);
-  }
+  const searchedFeatures = useAtomValue(searchedFeaturesAtom);
   const shownSearchedFeaturesConditions: ConditionsExpression | undefined = useMemo(
     () =>
       searchedFeatures?.onlyShow
         ? {
             conditions: [
-              ["${searchedFeaturesIds} == ${gml_id}", "true"],
+              ...(searchedFeatures?.conditions?.flatMap(([key, values]) =>
+                values.map(
+                  v => [`${variable(key)} === ${numberOrString(v)}`, "true"] as [string, string],
+                ),
+              ) ?? []),
               ...hiddenFeaturesConditions.conditions,
               ...(filter.conditions[0].every(c => c === "true") ? [] : filter.conditions),
               ["true", "false"],
             ],
           }
         : undefined,
-    [searchedFeatures?.onlyShow, hiddenFeaturesConditions.conditions, filter.conditions],
+    [
+      searchedFeatures?.onlyShow,
+      searchedFeatures?.conditions,
+      hiddenFeaturesConditions.conditions,
+      filter.conditions,
+    ],
   );
 
   const colorMode = useAtomValue(colorModeAtom);
