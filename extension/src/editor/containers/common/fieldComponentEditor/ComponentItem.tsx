@@ -6,7 +6,7 @@ import {
   EditorPopper,
   EditorPopperList,
   EditorPopperListItemButton,
-  FieldComponentNotFound,
+  PropertyInfo,
 } from "../../ui-components";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
@@ -90,7 +90,7 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
         onMoreClick={handleMoreClick}
         highlight={moving}>
         {componentNotFound ? (
-          <FieldComponentNotFound />
+          <PropertyInfo preset="field-not-found" />
         ) : (
           <FieldComponent component={component} onUpdate={onComponentUpdate} />
         )}

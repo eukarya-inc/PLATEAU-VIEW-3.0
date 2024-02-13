@@ -246,7 +246,7 @@ export const makeSimpleColorWithOpacity = (
   comp: Component<typeof OPACITY_FIELD> | undefined,
   originColor: string | undefined,
 ) => {
-  if (!comp || !originColor) return originColor;
+  if (!comp || !originColor) return;
   return {
     expression: {
       conditions: [["true", color(originColor, comp.value ?? 1)]],
