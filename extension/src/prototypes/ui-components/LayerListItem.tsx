@@ -7,12 +7,15 @@ import {
   type SyntheticEvent,
 } from "react";
 
+import { XYZ } from "../../shared/reearth/types";
 import { useForkEventHandler } from "../react-helpers";
 
 import { EntityTitleButton, type EntityTitleButtonProps } from "./EntityTitleButton";
 import { TrashSmallIcon } from "./icons/TrashSmallIcon";
 import { VisibilityOffSmallIcon } from "./icons/VisibilityOffSmallIcon";
 import { VisibilityOnSmallIcon } from "./icons/VisibilityOnSmallIcon";
+
+import { AddressIcon } from "./index";
 
 const StyledEntityTitleButton = styled(EntityTitleButton)(({ theme }) => ({
   paddingRight: theme.spacing(1),
@@ -27,6 +30,9 @@ interface HoverMenuProps {
   hidden?: boolean;
   onRemove?: MouseEventHandler<HTMLButtonElement>;
   onToggleHidden?: MouseEventHandler<HTMLButtonElement>;
+  onMove?: () => void;
+  boundingSphere?: XYZ | null;
+  layerId?: string | null;
 }
 
 const HoverMenu: FC<HoverMenuProps> = ({
@@ -34,12 +40,24 @@ const HoverMenu: FC<HoverMenuProps> = ({
   hidden = false,
   onRemove,
   onToggleHidden,
+  onMove,
+  layerId,
+  boundingSphere,
 }) => {
+  const isButtonDisabled = layerId == null && boundingSphere == null;
   if (!hovered && !hidden) {
     return null;
   }
+
   return (
     <Stack direction="row" onMouseDown={stopPropagation}>
+      {onMove && (
+        <Tooltip title="移動">
+          <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
+            <AddressIcon />
+          </IconButton>
+        </Tooltip>
+      )}
       {(hovered || !hidden) && (
         <Tooltip title="削除">
           <IconButton color="inherit" aria-label="削除" onClick={onRemove}>
@@ -62,17 +80,18 @@ const HoverMenu: FC<HoverMenuProps> = ({
 
 export interface LayerListItemProps extends EntityTitleButtonProps, Omit<HoverMenuProps, "hidden"> {
   accessory?: ReactNode;
-  onMove?: () => void;
 }
 
 export const LayerListItem: FC<LayerListItemProps> = ({
   accessory,
   hidden = false,
   onRemove,
-  onMove,
   onToggleHidden,
   onMouseEnter,
   onMouseLeave,
+  onMove,
+  layerId,
+  boundingSphere,
   ...props
 }) => {
   const [hovered, setHovered] = useState(false);
@@ -86,7 +105,6 @@ export const LayerListItem: FC<LayerListItemProps> = ({
     <StyledEntityTitleButton
       {...props}
       hidden={hidden}
-      onMove={onMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       <Stack direction="row" spacing={0.5}>
@@ -95,6 +113,9 @@ export const LayerListItem: FC<LayerListItemProps> = ({
           hidden={hidden}
           onRemove={onRemove}
           onToggleHidden={onToggleHidden}
+          onMove={onMove}
+          layerId={layerId}
+          boundingSphere={boundingSphere}
         />
         {accessory}
       </Stack>
