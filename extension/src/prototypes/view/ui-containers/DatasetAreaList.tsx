@@ -4,7 +4,7 @@ import { groupBy } from "lodash";
 import { useCallback, useMemo, type FC, useContext } from "react";
 import invariant from "tiny-invariant";
 
-import { useAreaDatasets, useAreas, useDatasetTypes, useDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
@@ -65,14 +65,10 @@ const MunicipalityItem: FC<{
   municipality: AreasQuery["areas"][number];
   parents?: string[];
 }> = ({ municipality, parents = [] }) => {
-  const { data: datasetTypeOrder } = useDatasetTypes();
-  const query = useAreaDatasets(
-    municipality.code,
-    // excludeTypes: [PlateauDatasetType.UseCase, PlateauDatasetType.GenericCityObject],
-  );
+  const query = useAreaDatasets(municipality.code);
   const groups = useMemo(
     () =>
-      datasetTypeOrder && query.data?.area?.datasets != null
+      query.data?.area?.datasets != null
         ? Object.entries(groupBy(query.data.area.datasets, d => d.type.id))
             .map(([, value]) => value)
             .map(value => ({
@@ -80,7 +76,7 @@ const MunicipalityItem: FC<{
               datasets: value,
             }))
         : undefined,
-    [query.data?.area?.datasets, datasetTypeOrder],
+    [query.data?.area?.datasets],
   );
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];
