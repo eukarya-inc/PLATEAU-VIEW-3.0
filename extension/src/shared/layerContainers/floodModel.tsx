@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useRef } from "react";
 
 import { ColorMap } from "../../prototypes/color-maps";
 import {
@@ -12,7 +12,10 @@ import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
 import { Cesium3DTilesAppearance, LayerAppearance } from "../reearth/types";
+import { getSharedStoreValue } from "../sharedAtoms";
+import { SHARED_PROJECT_ID, SHARED_PROJECT_ID_KEY } from "../states/share";
 import {
+  TILESET_FLOOD_COLOR_FIELD,
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
 } from "../types/fieldComponents/3dtiles";
@@ -97,13 +100,23 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
     // },
   });
 
+  const floodColor = useOptionalAtomValue(
+    useFindComponent<typeof TILESET_FLOOD_COLOR_FIELD>(componentAtoms, TILESET_FLOOD_COLOR_FIELD),
+  );
+
   const setProperties = useSetAtom(propertiesAtom);
+  const floodColorRef = useRef(floodColor);
+  floodColorRef.current = floodColor;
   const handleLoad = useCallback(
-    (layerId: string) => {
+    async (layerId: string) => {
       onLoad?.(layerId);
       setLayerId(layerId);
       setFeatureIndex(new TileFeatureIndex(layerId));
-      setProperties(new PlateauTilesetProperties(layerId));
+      const shareId =
+        (await getSharedStoreValue<string>(SHARED_PROJECT_ID_KEY)) ?? SHARED_PROJECT_ID;
+      setProperties(
+        new PlateauTilesetProperties(layerId, { floodColor: floodColorRef.current, shareId }),
+      );
     },
     [onLoad, setFeatureIndex, setProperties, setLayerId],
   );
@@ -125,8 +138,8 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const opacity = useOptionalAtomValue(opacityAtom);
   const color = useEvaluateFeatureColor({
-    colorProperty: floodModelColorAtom ? colorProperty ?? undefined : undefined,
-    colorScheme: floodModelColorAtom ? colorScheme ?? undefined : undefined,
+    colorProperty: floodModelColorAtom || floodColor ? colorProperty ?? undefined : undefined,
+    colorScheme: floodModelColorAtom || floodColor ? colorScheme ?? undefined : undefined,
     opacity: opacity?.value,
     selections,
     defaultColor: {

@@ -10,6 +10,7 @@ import {
   TILESET_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
+  TILESET_FLOOD_COLOR_FIELD,
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
   TILESET_WIREFRAME,
@@ -200,7 +201,8 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     }
     // Tileset
     case TILESET_BUILDING_MODEL_COLOR:
-    case TILESET_FLOOD_MODEL_COLOR: {
+    case TILESET_FLOOD_MODEL_COLOR:
+    case TILESET_FLOOD_COLOR_FIELD: {
       component = <BuildingLayerColorSection layers={layers as PrototypeLayerModel[]} />;
       break;
     }

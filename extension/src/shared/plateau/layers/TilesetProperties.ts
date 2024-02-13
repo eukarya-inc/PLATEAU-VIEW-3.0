@@ -1,6 +1,12 @@
-import { QualitativeColorSet, floodRankColorSet } from "../../../prototypes/datasets";
+import {
+  FLOOD_RANK_COLORS,
+  QualitativeColor,
+  QualitativeColorSet,
+  atomsWithQualitativeColorSet,
+} from "../../../prototypes/datasets";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { Properties } from "../../reearth/utils";
+import { TilesetFloodColorField } from "../../types/fieldComponents/3dtiles";
 import {
   usageColorSet,
   structureTypeColorSet,
@@ -15,12 +21,13 @@ export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
 
 interface QualitativeProperty {
   testProperty: (name: string, value: unknown) => boolean;
-  colorSet?: QualitativeColorSet;
+  colorSet?: QualitativeColorSet | ((id: string, name: string) => QualitativeColorSet);
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
   accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
   isMinMaxNeeded?: boolean;
+  isFlood?: boolean;
 }
 
 const qualitativeProperties: QualitativeProperty[] = [
@@ -31,11 +38,12 @@ const qualitativeProperties: QualitativeProperty[] = [
       // For river flooding risk layers
       propertyName === "rank_code" ||
       propertyName === "uro:rank_code",
-    colorSet: floodRankColorSet,
+    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
     availableFeatures: ["color", "floodFilter"],
     isMinMaxNeeded: true,
+    isFlood: true,
   },
   {
     testProperty: propertyName =>
@@ -45,11 +53,12 @@ const qualitativeProperties: QualitativeProperty[] = [
       propertyName === "rank_org_code" ||
       propertyName === "uro:rank_org_code" ||
       propertyName === "uro:rankOrg_code",
-    colorSet: floodRankColorSet,
+    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
     getDisplayName: name =>
       name.endsWith("浸水ランクコード（独自）") ? name.replaceAll("_", " ") : "浸水ランク（独自）",
     availableFeatures: ["color", "floodFilter"],
     isMinMaxNeeded: true,
+    isFlood: true,
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
@@ -151,6 +160,28 @@ const defaultAccessor = (propertyName: string) => `rootProperties["${propertyNam
 
 export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
+  private _floodColors: QualitativeColor[] | undefined;
+  private _shareId: string | undefined;
+
+  constructor(
+    layerId: string,
+    { floodColor, shareId }: { floodColor?: TilesetFloodColorField; shareId?: string } = {},
+  ) {
+    super(layerId);
+    this._floodColors = floodColor?.preset?.conditions
+      ?.map(c =>
+        c.legendName && c.color && c.rank
+          ? {
+              name: c.legendName,
+              color: c.color,
+              value: c.rank,
+            }
+          : undefined,
+      )
+      .filter(isNotNullish);
+    this._shareId = shareId;
+  }
+
   get value(): PlateauTilesetProperty[] | undefined {
     if (this._cachedComputedProperties) {
       return this._cachedComputedProperties;
@@ -181,14 +212,23 @@ export class PlateauTilesetProperties extends Properties {
             minimum && maximum
               ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
               : [];
+          const displayName =
+            qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name;
           return {
             name,
             type: "qualitative" as const,
-            colorSet: qualitativeProperty.colorSet,
+            colorSet: !this._floodColors
+              ? typeof qualitativeProperty.colorSet === "function"
+                ? qualitativeProperty.colorSet(`${displayName}_${this._shareId}`, displayName)
+                : qualitativeProperty.colorSet
+              : atomsWithQualitativeColorSet({
+                  id: `${displayName}_component_${this._shareId}`,
+                  name: displayName,
+                  colors: this._floodColors,
+                }),
             minimum: finalMinimum,
             maximum: finalMaximum,
-            displayName:
-              qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
+            displayName,
             availableFeatures: qualitativeProperty.availableFeatures,
             accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
           };
