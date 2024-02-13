@@ -1,6 +1,10 @@
 import { BasicFieldProps } from "..";
-import { PropertyNoSettings } from "../../../../ui-components";
+import { PropertyInfo } from "../../../../ui-components";
 
 export const EditorOpacityField: React.FC<BasicFieldProps<"OPACITY_FIELD">> = () => {
-  return <PropertyNoSettings />;
+  return (
+    <PropertyInfo>
+      Attention: This component will override the color settings from Style Code component.
+    </PropertyInfo>
+  );
 };
