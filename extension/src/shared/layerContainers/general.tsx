@@ -107,6 +107,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   }
 
   if (format === "mvt") {
+    layerId && window.reearth?.layers?.bringToFront?.(layerId);
     return (
       <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
     );
