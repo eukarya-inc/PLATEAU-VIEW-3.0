@@ -29,6 +29,7 @@ const DatasetGroup: FC<{
             municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
             dataset={dataset}
             label={dataset.name}
+            title={dataset.name}
           />
         ))}
       </DatasetTreeItem>
@@ -39,6 +40,7 @@ const DatasetGroup: FC<{
       dataset={datasets[0]}
       municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
       label={datasets[0].type.name}
+      title={datasets[0].type.name}
     />
   );
 };
@@ -55,6 +57,7 @@ const GlobalItem: FC<{}> = () => {
           dataset={dataset}
           municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
           label={dataset.name}
+          title={dataset.name}
         />
       ))}
     </DatasetTreeItem>
