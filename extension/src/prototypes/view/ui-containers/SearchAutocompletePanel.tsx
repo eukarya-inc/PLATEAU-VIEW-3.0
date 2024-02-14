@@ -202,6 +202,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                 variant={isMobile ? "fullWidth" : "standard"}
                 onChange={handleTabChange}>
                 <Tab label="検索" />
+                <Tab label="自治体" />
                 <Tab label="都道府県" />
                 <Tab label="カテゴリー" />
               </StyledTabs>
@@ -214,8 +215,17 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                   onFiltersChange={handleFiltersChange}
                 />
               )}
-              {tab === 1 && <DatasetAreaList />}
-              {tab === 2 && <DatasetTypeList />}
+              {tab === 1 && (
+                <SearchList
+                  datasets={searchOptions.datasets}
+                  buildings={searchOptions.buildings}
+                  areas={searchOptions.areas}
+                  onOptionSelect={handleOptionSelect}
+                  onFiltersChange={handleFiltersChange}
+                />
+              )}
+              {tab === 2 && <DatasetAreaList />}
+              {tab === 3 && <DatasetTypeList />}
             </StyledScrollable>
           )}
         </SearchAutocomplete>
