@@ -54,8 +54,7 @@ export const ElevationEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
     <Scene
       tiles={tiles}
       enableGlobeLighting={enableTerrainLighting}
-      lightIntensity={2}
-      globeImageBasedLightingFactor={0.45}
+      lightIntensity={10}
       shadowDarkness={0.5}
       imageBasedLightingIntensity={1}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}

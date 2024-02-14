@@ -63,14 +63,13 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({
       // TODO: Swap background when view is ready
       globeBaseColor={colorMode === "light" ? "#bfbfbf" : "#000000"}
       enableGlobeLighting={enableTerrainLighting}
-      lightIntensity={colorMode === "light" ? 3 : 14}
+      lightIntensity={12}
       shadowDarkness={colorMode === "light" ? 0.7 : 0.3}
       imageBasedLightingIntensity={1}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       showSkyBox={false}
       atmosphereSaturationShift={-1}
       groundAtmosphereBrightnessShift={2}
-      globeImageBasedLightingFactor={colorMode === "light" ? 0.6 : 0.7}
       // TODO(ReEarth): Use Takram's tile
       // TODO(ReEarth): Support tile brightness
       tiles={tiles}

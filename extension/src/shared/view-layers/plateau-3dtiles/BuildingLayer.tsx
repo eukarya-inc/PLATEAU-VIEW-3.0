@@ -1,4 +1,4 @@
-import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { PrimitiveAtom, atom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect } from "react";
 
 import type { LayerProps } from "../../../prototypes/layers";
@@ -21,16 +21,12 @@ import {
 export interface BuildingLayerModelParams extends LayerModelParams, PlateauTilesetLayerStateParams {
   municipalityCode: string;
   title: string;
-  version?: string;
-  lod?: number;
   textured?: boolean;
 }
 
 export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
   municipalityCode: string;
   title: string;
-  versionAtom: PrimitiveAtom<string | null>;
-  lodAtom: PrimitiveAtom<number | null>;
   showWireframeAtom: PrimitiveAtom<boolean>;
   textured: boolean;
 }
@@ -45,8 +41,6 @@ export function createBuildingLayer(
     textured: !!params.textured,
     municipalityCode: params.municipalityCode,
     title: params.title,
-    versionAtom: atom(params.version ?? null),
-    lodAtom: atom(params.lod ?? null),
     showWireframeAtom: atom(false),
   };
 }
@@ -60,8 +54,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   titleAtom,
   hiddenAtom,
   layerIdAtom,
-  versionAtom,
-  lodAtom,
   featureIndexAtom,
   selections,
   hiddenFeaturesAtom,
@@ -76,9 +68,6 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
-
-  const [_version, _setVersion] = useAtom(versionAtom);
-  const [_lod, _setLod] = useAtom(lodAtom);
 
   const setLayerId = useSetAtom(layerIdAtom);
   const handleLoad = useCallback(
