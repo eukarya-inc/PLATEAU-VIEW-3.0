@@ -107,7 +107,7 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType; name: string }> = (
     includeParents: true,
   });
   return (
-    <DatasetTreeItem nodeId={datasetType} label={name} loading={query.loading}>
+    <DatasetTreeItem nodeId={datasetType} label={name} title={name} loading={query.loading}>
       {datasetType === PlateauDatasetType.UseCase && <GlobalItem />}
       {query.data?.areas.map(
         prefecture =>
