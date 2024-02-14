@@ -23,7 +23,8 @@ export const StoryInspectSection: FC<StoryInspectSectionProps> = ({ layer }) => 
       {captures.length > 0 ? (
         <>
           <Content>
-            <Markdown skipHtml>{captures[currentCaptureIndex].content}</Markdown>
+            <CaptureTitle>{captures[currentCaptureIndex].title}</CaptureTitle>
+            <StyledMarkdown skipHtml>{captures[currentCaptureIndex].content}</StyledMarkdown>
           </Content>
           <PaginationWrapper>
             <StyledPagination
@@ -64,7 +65,17 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
 }));
 
 const Content = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
   padding: theme.spacing(0, 2),
+}));
+
+const CaptureTitle = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.h6.fontSize,
+}));
+
+const StyledMarkdown = styled(Markdown)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
 }));
 
