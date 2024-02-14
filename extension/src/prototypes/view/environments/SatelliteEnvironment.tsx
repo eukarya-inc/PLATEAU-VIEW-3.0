@@ -48,7 +48,6 @@ export const SatelliteEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
     <Scene
       enableGlobeLighting={enableTerrainLighting}
       lightIntensity={1}
-      globeImageBasedLightingFactor={0.8}
       shadowDarkness={0.5}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       tiles={tiles}
