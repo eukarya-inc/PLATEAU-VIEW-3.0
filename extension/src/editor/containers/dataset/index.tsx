@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState, type FC, useEffect, RefObject } from "r
 import { layerSelectionAtom } from "../../../prototypes/layers";
 import { highlightedLayersAtom } from "../../../prototypes/view-layers";
 import { useSettingsAPI } from "../../../shared/api";
-import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
+import { DEFAULT_SETTING_DATA_ID, STATUS_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
@@ -83,7 +83,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         id: `${dataset.id}-status`,
         name: "Status",
         property: {
-          dataId: "status",
+          dataId: STATUS_SETTING_DATA_ID,
           type: "status",
         },
       },
@@ -167,7 +167,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     if (tree[0]) {
       setSelected(tree[0].id);
       setContentType("status");
-      setDataId(undefined);
+      setDataId(STATUS_SETTING_DATA_ID);
     }
     setExpanded(tree.map(item => item.id));
     setReady(true);
@@ -187,6 +187,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             general: {},
             fieldComponents: {},
             featureInspector: {},
+            status: {
+              isDefaultTile: false,
+            },
           },
     );
   }, [dataId, dataset, settings, cache]);
@@ -246,12 +249,16 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     // Save all settings belongs to current dataset
     setIsSaving(true);
     const savingTasks: Promise<void>[] = [];
-    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
-      const catchId = `dataset-${dataset.id}-${id}`;
+    [
+      DEFAULT_SETTING_DATA_ID,
+      STATUS_SETTING_DATA_ID,
+      ...dataset.items.map(item => item.id),
+    ].forEach(id => {
+      const cacheId = `dataset-${dataset.id}-${id}`;
       if (id === dataId) {
         savingTasks.push(saveSetting(draftSetting as Setting));
       } else {
-        const cachedSetting = cache?.get(catchId);
+        const cachedSetting = cache?.get(cacheId);
         if (cachedSetting) {
           savingTasks.push(saveSetting(cachedSetting as Setting));
         }
@@ -312,8 +319,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       main={
         ready && (
           <>
-            {contentType === "status" ? (
-              <StatusPage dataset={dataset} />
+            {contentType === "status" && draftSetting ? (
+              <StatusPage
+                dataset={dataset}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
             ) : contentType === "general" && draftSetting ? (
               <GeneralPage
                 key={`${dataset.id}-${dataId}`}

@@ -28,6 +28,9 @@ export type Setting = {
     groups?: ComponentGroup[];
   };
   featureInspector?: FeatureInspectorSettings;
+  status: {
+    isDefaultTile?: boolean;
+  };
 };
 
 export type FeatureInspectorSettings = {
