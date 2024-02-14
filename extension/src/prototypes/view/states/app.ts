@@ -1,6 +1,6 @@
 import { isNumber } from "class-validator";
 import { atom, type SetStateAction } from "jotai";
-import { atomWithReset, type RESET } from "jotai/utils";
+import { atomWithReset, RESET } from "jotai/utils";
 
 import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
 import { atomWithStorageValidation } from "../../shared-states";
@@ -32,7 +32,7 @@ export const terrainTypeAtom = atomWithReset<TerrainType>("plateau");
 export const enableTerrainLightingAtom = atomWithReset(true);
 export const terrainElevationHeightRangeAtom = atomWithReset([0, 4000]);
 export const logarithmicTerrainElevationAtom = atomWithReset(true);
-export const showMapLabelAtom = atomWithReset<Record<AnnotationType, boolean>>({
+export const showMapLabelPrimitiveAtom = atomWithReset<Record<AnnotationType, boolean>>({
   municipalities: false,
   towns: false,
   roads: false,
@@ -41,6 +41,19 @@ export const showMapLabelAtom = atomWithReset<Record<AnnotationType, boolean>>({
   landmarks: false,
   topography: false,
 });
+
+export const showMapLabelAtom = atom(
+  get => get(showMapLabelPrimitiveAtom),
+  (_get, set, action: SetStateAction<Record<AnnotationType, boolean>> | typeof RESET) => {
+    if (action === RESET) {
+      set(showMapLabelPrimitiveAtom, RESET);
+    } else if (typeof action === "function") {
+      set(showMapLabelPrimitiveAtom, prev => action(prev));
+    } else {
+      set(showMapLabelPrimitiveAtom, action);
+    }
+  },
+);
 
 export const debugSphericalHarmonicsAtom = atomWithReset(false);
 export const showShadowMapDepthAtom = atomWithReset(false);

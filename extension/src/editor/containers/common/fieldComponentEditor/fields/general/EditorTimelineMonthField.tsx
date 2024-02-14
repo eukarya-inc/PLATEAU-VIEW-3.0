@@ -1,11 +1,11 @@
 import { BasicFieldProps } from "..";
-import { PropertyBox, PropertyNoSettings, PropertyWrapper } from "../../../../ui-components";
+import { PropertyBox, PropertyInfo, PropertyWrapper } from "../../../../ui-components";
 
 export const EditorTimelineMonthField: React.FC<BasicFieldProps<"TIMELINE_MONTH_FIELD">> = () => {
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <PropertyNoSettings />
+        <PropertyInfo preset="no-settings" />;
       </PropertyBox>
     </PropertyWrapper>
   );
