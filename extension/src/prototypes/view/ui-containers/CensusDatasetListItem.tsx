@@ -45,6 +45,7 @@ export const CensusDatasetListItem: FC<CensusDatasetListItemProps> = ({
     <DatasetTreeItem
       nodeId={`${dataset.name}:${data.name}`}
       label={data.name}
+      title={data.name}
       icon={<DatasetIcon />}
       onClick={handleClick}
       {...props}
