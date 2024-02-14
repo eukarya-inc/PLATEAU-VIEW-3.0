@@ -1,8 +1,8 @@
 import { BasicFieldProps } from "..";
-import { PropertyNoSettings } from "../../../../ui-components";
+import { PropertyInfo } from "../../../../ui-components";
 
 export const EditorTilesetFloodModelFilterField: React.FC<
   BasicFieldProps<"TILESET_FLOOD_MODEL_FILTER">
 > = () => {
-  return <PropertyNoSettings />;
+  return <PropertyInfo preset="no-settings" />;
 };

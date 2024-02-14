@@ -4,12 +4,11 @@ import { groupBy } from "lodash";
 import { useCallback, useMemo, type FC, useContext } from "react";
 import invariant from "tiny-invariant";
 
-import { useAreaDatasets, useAreas, useDatasetTypes, useDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
-import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -30,6 +29,7 @@ const DatasetGroup: FC<{
             municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
             dataset={dataset}
             label={dataset.name}
+            title={dataset.name}
           />
         ))}
       </DatasetTreeItem>
@@ -40,6 +40,7 @@ const DatasetGroup: FC<{
       dataset={datasets[0]}
       municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
       label={datasets[0].type.name}
+      title={datasets[0].type.name}
     />
   );
 };
@@ -56,6 +57,7 @@ const GlobalItem: FC<{}> = () => {
           dataset={dataset}
           municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
           label={dataset.name}
+          title={dataset.name}
         />
       ))}
     </DatasetTreeItem>
@@ -66,27 +68,18 @@ const MunicipalityItem: FC<{
   municipality: AreasQuery["areas"][number];
   parents?: string[];
 }> = ({ municipality, parents = [] }) => {
-  const { data: datasetTypeOrder } = useDatasetTypes();
-  const query = useAreaDatasets(
-    municipality.code,
-    // excludeTypes: [PlateauDatasetType.UseCase, PlateauDatasetType.GenericCityObject],
-  );
+  const query = useAreaDatasets(municipality.code);
   const groups = useMemo(
     () =>
-      datasetTypeOrder && query.data?.area?.datasets != null
-        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.code))
+      query.data?.area?.datasets != null
+        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.id))
             .map(([, value]) => value)
-            .sort(
-              (a, b) =>
-                datasetTypeOrder.findIndex(o => o.code === (a[0].type.code as PlateauDatasetType)) -
-                datasetTypeOrder.findIndex(o => o.code === (b[0].type.code as PlateauDatasetType)),
-            )
             .map(value => ({
               groupId: value.map(({ id }) => id).join(":"),
               datasets: value,
             }))
         : undefined,
-    [query.data?.area?.datasets, datasetTypeOrder],
+    [query.data?.area?.datasets],
   );
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];

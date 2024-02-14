@@ -9,6 +9,7 @@ import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
 import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
 import {
   shareableEnvironmentTypeAtom,
+  shareableShowMapLabelAtom,
   shareableLogarithmicTerrainElevationAtom,
   shareableTerrainElevationHeightRangeAtom,
 } from "../../../shared/states/scene";
@@ -27,7 +28,6 @@ import {
   type SelectItemProps,
   PaperPlaneTilt,
 } from "../../ui-components";
-import { showMapLabelAtom } from "../states/app";
 
 const LegendButton = styled(Button)(({ theme }) => ({
   display: "flex",
@@ -220,7 +220,7 @@ export const EnvironmentSelect: FC = () => {
       ? "elevation"
       : undefined;
 
-  const [showMapLabel, setShowMapLabel] = useAtom(showMapLabelAtom);
+  const [showMapLabel, setShowMapLabel] = useAtom(shareableShowMapLabelAtom);
   const handleShowMapLabelChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
       setShowMapLabel((prevValue: any) => ({
