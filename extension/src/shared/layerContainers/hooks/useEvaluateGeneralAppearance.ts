@@ -193,13 +193,16 @@ export const useEvaluateGeneralAppearance = ({
             makeGradientExpression(pointFillGradientColor, opacity?.value) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           pointSize: pointSize?.preset?.defaultValue,
-          pointOutlineColor: makeSimpleColorWithOpacity(opacity, pointStroke?.preset?.color),
+          pointOutlineColor:
+            makeSimpleColorWithOpacity(opacity, pointStroke?.preset?.color) ??
+            pointStroke?.preset?.color,
           pointOutlineWidth: pointStroke?.preset?.width,
           image:
             pointImageValue?.preset?.imageURL ??
             makeConditionalImageExpression(pointImageCondition),
           imageColor:
             makeSimpleColorWithOpacity(opacity, pointImageValue?.preset?.imageColor) ??
+            pointImageValue?.preset?.imageColor ??
             makeConditionalImageColorExpression(pointImageCondition, opacity?.value),
           imageSize: pointImageSize?.preset?.defaultValue,
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
@@ -210,13 +213,14 @@ export const useEvaluateGeneralAppearance = ({
           labelText: makeLabelTextExpression(pointLabel),
           labelTypography: {
             fontSize: pointLabel?.preset?.fontSize,
-            color: makeSimpleColorWithOpacity(opacity, pointLabel?.preset?.fontColor),
+            color:
+              makeSimpleColorWithOpacity(opacity, pointLabel?.preset?.fontColor) ??
+              pointLabel?.preset?.fontColor,
           },
           labelBackground: pointLabel?.preset?.background,
-          labelBackgroundColor: makeSimpleColorWithOpacity(
-            opacity,
+          labelBackgroundColor:
+            makeSimpleColorWithOpacity(opacity, pointLabel?.preset?.backgroundColor) ??
             pointLabel?.preset?.backgroundColor,
-          ),
           height: pointLabel?.preset?.height,
           extrude: pointLabel?.preset?.extruded,
           heightReference: pointHeightReference?.preset?.defaultValue,

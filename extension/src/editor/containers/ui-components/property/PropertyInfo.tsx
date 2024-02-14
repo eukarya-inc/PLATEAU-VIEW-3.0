@@ -1,24 +1,27 @@
+import { ReactNode } from "react";
+
 import { PropertyPlaceHolder } from "./PropertyPlaceHolder";
 import { PropertyBox, PropertyWrapper } from "./PropertyWrapper";
 
 export const NO_SETTINGS_FOR_THIS_COMPONNET = "No custom settings for this component";
 export const FIELD_COMPONENT_NOT_FOUND = "Field component not found";
 
-export const PropertyNoSettings: React.FC = () => {
-  return (
-    <PropertyWrapper>
-      <PropertyBox>
-        <PropertyPlaceHolder>{NO_SETTINGS_FOR_THIS_COMPONNET}</PropertyPlaceHolder>
-      </PropertyBox>
-    </PropertyWrapper>
-  );
+type PropertyInfoProps = {
+  preset?: "no-settings" | "field-not-found";
+  children?: ReactNode;
 };
 
-export const FieldComponentNotFound: React.FC = () => {
+export const PropertyInfo: React.FC<PropertyInfoProps> = ({ preset, children }) => {
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <PropertyPlaceHolder>{FIELD_COMPONENT_NOT_FOUND}</PropertyPlaceHolder>
+        {preset === "no-settings" && (
+          <PropertyPlaceHolder>{NO_SETTINGS_FOR_THIS_COMPONNET}</PropertyPlaceHolder>
+        )}
+        {preset === "field-not-found" && (
+          <PropertyPlaceHolder>{FIELD_COMPONENT_NOT_FOUND}</PropertyPlaceHolder>
+        )}
+        {children && <PropertyPlaceHolder>{children}</PropertyPlaceHolder>}
       </PropertyBox>
     </PropertyWrapper>
   );

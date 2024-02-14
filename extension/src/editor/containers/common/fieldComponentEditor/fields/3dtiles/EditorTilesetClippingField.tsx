@@ -1,6 +1,6 @@
 import { BasicFieldProps } from "..";
-import { PropertyNoSettings } from "../../../../ui-components";
+import { PropertyInfo } from "../../../../ui-components";
 
 export const EditorTilesetClippingField: React.FC<BasicFieldProps<"TILESET_CLIPPING">> = () => {
-  return <PropertyNoSettings />;
+  return <PropertyInfo preset="no-settings" />;
 };

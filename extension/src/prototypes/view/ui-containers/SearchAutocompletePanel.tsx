@@ -1,5 +1,4 @@
 import {
-  ClickAwayListener,
   Divider,
   FilterOptionsState,
   styled,
@@ -23,6 +22,7 @@ import {
 } from "react";
 
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
+import { ViewClickAwayListener } from "../../../shared/ui-components/common/ViewClickAwayListener";
 import { useWindowEvent } from "../../react-helpers";
 import { platformAtom } from "../../shared-states";
 import {
@@ -177,7 +177,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   return (
-    <ClickAwayListener onClickAway={handleClickAway}>
+    <ViewClickAwayListener onClickAway={handleClickAway}>
       <FloatingPanel>
         <SearchAutocomplete
           inputRef={textFieldRef}
@@ -220,6 +220,6 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
           )}
         </SearchAutocomplete>
       </FloatingPanel>
-    </ClickAwayListener>
+    </ViewClickAwayListener>
   );
 };

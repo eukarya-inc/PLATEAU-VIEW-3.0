@@ -7,6 +7,7 @@ import type { AnnotationType } from "../../../shared/reearth/types/getAnnotation
 import { TileLabels } from "../../../shared/reearth/types/scene.ts";
 import {
   shareableEnvironmentTypeAtom,
+  shareableShowMapLabelAtom,
   shareableGraphicsQualityAtom,
   sharedInitialCameraAtom,
 } from "../../../shared/states/scene";
@@ -15,7 +16,7 @@ import { ElevationEnvironment } from "../environments/ElevationEnvironment";
 import { GooglePhotorealisticEnvironment } from "../environments/GooglePhotorealisticEnvironment";
 import { MapEnvironment } from "../environments/MapEnvironment";
 import { SatelliteEnvironment } from "../environments/SatelliteEnvironment";
-import { debugSphericalHarmonicsAtom, showMapLabelAtom } from "../states/app";
+import { debugSphericalHarmonicsAtom } from "../states/app";
 import {
   ambientOcclusionEnabledAtom,
   ambientOcclusionIntensityAtom,
@@ -78,7 +79,7 @@ const STYLE_OVERRIDES: Record<ColorMode, any> = {
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(colorModeAtom);
-  const showMapLabel = useAtomValue(showMapLabelAtom);
+  const showMapLabel = useAtomValue(shareableShowMapLabelAtom);
   const debugSphericalHarmonics = useAtomValue(debugSphericalHarmonicsAtom);
   const shadowProps = useAtomValue(shadowMapPropsAtom);
   const ambientOcclusionProps = useAtomValue(ambientOcclusionPropsAtom);

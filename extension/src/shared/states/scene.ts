@@ -1,5 +1,6 @@
 import {
   environmentTypeAtom,
+  showMapLabelPrimitiveAtom,
   logarithmicTerrainElevationAtom,
   terrainElevationHeightRangeAtom,
 } from "../../prototypes/view/states/app";
@@ -14,6 +15,11 @@ export const shareableGraphicsQualityAtom = sharedStoreAtomWrapper(
 export const shareableEnvironmentTypeAtom = sharedStoreAtomWrapper(
   "environmentType",
   environmentTypeAtom,
+);
+
+export const shareableShowMapLabelAtom = sharedStoreAtomWrapper(
+  "ShowMapLabel",
+  showMapLabelPrimitiveAtom,
 );
 
 export const shareableTerrainElevationHeightRangeAtom = sharedStoreAtomWrapper(
