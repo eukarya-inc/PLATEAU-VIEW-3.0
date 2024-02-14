@@ -1,4 +1,6 @@
 export * from "./ViewButton";
 export * from "./ViewDialog";
-export * from "./ViewTextField";
+export * from "./ViewContentColumn";
 export * from "./ViewLabel";
+export * from "./ViewTextField";
+export * from "./ViewMarkdownEditor";

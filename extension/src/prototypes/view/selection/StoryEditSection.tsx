@@ -1,14 +1,21 @@
-import { styled } from "@mui/material";
-import { useAtom } from "jotai";
+import { Button, styled } from "@mui/material";
+import { useAtom, useSetAtom } from "jotai";
 import { nanoid } from "nanoid";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 import { StoryCapture } from "../../../shared/layerContainers/story";
 import { useCamera } from "../../../shared/reearth/hooks";
-import { ViewDialog, ViewTextField } from "../../../shared/ui-components/common";
+import {
+  ViewContentColumn,
+  ViewDialog,
+  ViewMarkdownEditor,
+  ViewTextField,
+} from "../../../shared/ui-components/common";
+import { CaptureList } from "../../../shared/ui-components/story/CaptureList";
 import { LayerModel } from "../../layers";
-import { ButtonParameterItem, ParameterList, CameraIcon } from "../../ui-components";
+import { CameraIcon } from "../../ui-components";
 import { STORY_LAYER } from "../../view-layers";
+import { preventToolKeyDownAtom } from "../states/tool";
 
 type StoryEditSectionProps = {
   layer: LayerModel<typeof STORY_LAYER>;
@@ -48,6 +55,15 @@ export const StoryEditSection: FC<StoryEditSectionProps> = ({ layer }) => {
     [currentCapture],
   );
 
+  const handleContentChange = useCallback(
+    (value: string) => {
+      console.log(value);
+      if (!currentCapture) return;
+      setCurrentCapture({ ...currentCapture, content: value });
+    },
+    [currentCapture],
+  );
+
   const disableSubmit = useMemo(
     () => !currentCapture?.title?.trim() && !currentCapture?.content?.trim(),
     [currentCapture],
@@ -66,21 +82,25 @@ export const StoryEditSection: FC<StoryEditSectionProps> = ({ layer }) => {
     handleCloseEditor();
   }, [currentCapture, captures, setCaptures, handleCloseEditor]);
 
+  const preventToolKeyDown = useSetAtom(preventToolKeyDownAtom);
   useEffect(() => {
-    console.log("captures", captures);
-  }, [captures]);
+    preventToolKeyDown(editorOpen);
+  }, [editorOpen, preventToolKeyDown]);
 
   return (
-    <ParameterList>
-      {captures.map(capture => (
-        <CaptureItem key={capture.id} capture={capture} />
-      ))}
-      <ButtonParameterItem onClick={handleOpenNewCapture}>
-        <ButtonContent>
-          <CameraIcon />
+    <SectionWrapper>
+      <CaptureList captures={captures} />
+      <ButtonWrapper>
+        <Button
+          size="small"
+          variant="outlined"
+          fullWidth
+          startIcon={<CameraIcon />}
+          onClick={handleOpenNewCapture}>
           New Capture
-        </ButtonContent>
-      </ButtonParameterItem>
+        </Button>
+      </ButtonWrapper>
+
       <ViewDialog
         open={editorOpen}
         title="Capture Editor"
@@ -88,26 +108,29 @@ export const StoryEditSection: FC<StoryEditSectionProps> = ({ layer }) => {
         disableSubmit={disableSubmit}
         onClose={handleCloseEditor}
         onSubmit={handleSaveCaptures}>
-        <ViewTextField
-          placeholder="Title"
-          value={currentCapture?.title ?? ""}
-          onChange={handleCaptureTitleChange}
-        />
+        <ViewContentColumn>
+          <ViewTextField
+            placeholder="Title"
+            value={currentCapture?.title ?? ""}
+            onChange={handleCaptureTitleChange}
+          />
+          <ViewMarkdownEditor
+            value={currentCapture?.content ?? ""}
+            onChange={handleContentChange}
+          />
+        </ViewContentColumn>
       </ViewDialog>
-    </ParameterList>
+    </SectionWrapper>
   );
 };
 
-type CaptureItemProps = {
-  capture: StoryCapture;
-};
-
-const CaptureItem: FC<CaptureItemProps> = ({ capture }) => {
-  return <div>{capture.id}</div>;
-};
-
-const ButtonContent = styled("div")(({ theme }) => ({
+const SectionWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 0, 1, 0),
   display: "flex",
-  alignItems: "center",
+  flexDirection: "column",
   gap: theme.spacing(1),
+}));
+
+const ButtonWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 1),
 }));

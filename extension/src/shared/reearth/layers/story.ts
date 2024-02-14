@@ -7,25 +7,25 @@ import { Data, LayerAppearanceTypes } from "../types";
 export type StoryAppearance = Partial<Pick<LayerAppearanceTypes, "marker">>;
 
 export type StoryProps = {
-  chapter: StoryCapture;
+  capture: StoryCapture;
   appearances: StoryAppearance;
   visible?: boolean;
   onLoad?: (layerId: string) => void;
 };
 
-export const StoryLayer: FC<StoryProps> = ({ chapter, appearances, visible, onLoad }) => {
+export const StoryLayer: FC<StoryProps> = ({ capture, appearances, visible, onLoad }) => {
   const data: Data = useMemo(
     () => ({
       type: "geojson",
       value: {
         type: "Feature",
         geometry: {
-          coordinates: [chapter.camera.lng, chapter.camera.lat],
+          coordinates: [capture.camera.lng, capture.camera.lat, capture.camera.height],
           type: "Point",
         },
       },
     }),
-    [chapter],
+    [capture],
   );
 
   useLayer({
