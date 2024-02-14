@@ -1,24 +1,66 @@
 import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import { Button, buttonClasses, styled } from "@mui/material";
-import { FC } from "react";
+import { FC, useCallback, useMemo, useRef, useState } from "react";
 
 import { StoryCapture } from "../../layerContainers/story";
+import { useCamera } from "../../reearth/hooks";
+import { ViewClickAwayListener } from "../common";
+import { ViewActionsMenu } from "../common/ViewActionsMenu";
 
 type CaptureListItemProps = {
   capture: StoryCapture;
 };
 
 export const CaptureListItem: FC<CaptureListItemProps> = ({ capture }) => {
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+
+  const { flyTo } = useCamera();
+
+  const viewCapture = useCallback(() => {
+    flyTo(capture.camera);
+  }, [capture.camera, flyTo]);
+
+  const actions = useMemo(
+    () => [
+      {
+        label: "View",
+        onClick: viewCapture,
+      },
+      {
+        label: "Edit",
+      },
+      {
+        label: "Re-Capture",
+      },
+      {
+        label: "Delete",
+      },
+    ],
+    [viewCapture],
+  );
+
+  const handleActionsButtonClick = useCallback(() => {
+    setActionsOpen(prevOpen => !prevOpen);
+  }, []);
+
+  const handleClickAway = useCallback(() => {
+    setActionsOpen(false);
+  }, []);
+
   return (
-    <Wrapper>
-      <ItemHeader>
-        <Title>{capture.title}</Title>
-        <ActionsButton variant="contained">
-          <MoreVertOutlinedIcon fontSize="small" />
-        </ActionsButton>
-      </ItemHeader>
-      <Content>{capture.content}</Content>
-    </Wrapper>
+    <ViewClickAwayListener onClickAway={handleClickAway}>
+      <Wrapper>
+        <ItemHeader>
+          <Title>{capture.title}</Title>
+          <ActionsButton variant="contained" ref={anchorRef} onClick={handleActionsButtonClick}>
+            <MoreVertOutlinedIcon fontSize="small" />
+          </ActionsButton>
+        </ItemHeader>
+        {capture.content && <Content>{capture.content}</Content>}
+      </Wrapper>
+      <ViewActionsMenu open={actionsOpen} anchorEl={anchorRef.current} actions={actions} />
+    </ViewClickAwayListener>
   );
 };
 
