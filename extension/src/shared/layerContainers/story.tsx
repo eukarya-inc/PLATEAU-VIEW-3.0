@@ -1,11 +1,25 @@
 import { useTheme } from "@mui/material";
-import { PrimitiveAtom, useAtomValue } from "jotai";
+import { PrimitiveAtom, atom, useAtomValue } from "jotai";
 import { FC, useCallback, useMemo } from "react";
 
+import { composeIdentifier, matchIdentifier } from "../../prototypes/cesium-helpers";
 import balloonImage from "../../prototypes/pedestrian/assets/balloon.png";
+import {
+  ScreenSpaceSelectionEntry,
+  screenSpaceSelectionAtom,
+  useScreenSpaceSelectionResponder,
+} from "../../prototypes/screen-space-selection";
 import cameraImage from "../../shared/view/assets/camera.png";
-import { StoryAppearance, StoryLayer } from "../reearth/layers/story";
+import { StoryAppearance, StoryLayer, STORY_MARKER_ID_PROPERTY } from "../reearth/layers/story";
 import { CameraPosition } from "../reearth/types";
+
+export const STORY_OBJECT = "STORY_OBJECT";
+
+declare module "../../prototypes/screen-space-selection" {
+  interface ScreenSpaceSelectionOverrides {
+    [STORY_OBJECT]: string;
+  }
+}
 
 export type StoryCapture = {
   id: string;
@@ -13,6 +27,12 @@ export type StoryCapture = {
   content?: string;
   camera: CameraPosition;
 };
+
+export const storySelectionAtom = atom(get => {
+  return get(screenSpaceSelectionAtom).filter(
+    (entry): entry is ScreenSpaceSelectionEntry<typeof STORY_OBJECT> => entry.type === STORY_OBJECT,
+  );
+});
 
 type StoryContainerProps = {
   capturesAtom: PrimitiveAtom<StoryCapture[]>;
@@ -45,7 +65,44 @@ type StoryObjectProps = {
 
 const StoryObject: FC<StoryObjectProps> = ({ capture, onLoad }) => {
   const theme = useTheme();
-  const selected = false;
+
+  const objectId = composeIdentifier({
+    type: "Story",
+    key: capture.id,
+  });
+
+  useScreenSpaceSelectionResponder({
+    type: STORY_OBJECT,
+    convertToSelection: object => {
+      return "properties" in object &&
+        object.properties &&
+        typeof object.properties === "object" &&
+        STORY_MARKER_ID_PROPERTY in object.properties &&
+        object.properties[STORY_MARKER_ID_PROPERTY] === objectId
+        ? {
+            type: STORY_OBJECT,
+            value: objectId,
+          }
+        : undefined;
+    },
+    shouldRespondToSelection: (value): value is ScreenSpaceSelectionEntry<typeof STORY_OBJECT> => {
+      return value.type === STORY_OBJECT && value.value === objectId;
+    },
+  });
+
+  const selected = useAtomValue(
+    useMemo(
+      () =>
+        atom(get => {
+          const screenSpaceSelection = get(screenSpaceSelectionAtom);
+          return screenSpaceSelection.some(
+            ({ type, value }) =>
+              type === STORY_OBJECT && matchIdentifier(value, { type: "Story", key: capture.id }),
+          );
+        }),
+      [capture.id],
+    ),
+  );
 
   const balloonAppearance: StoryAppearance = useMemo(
     () => ({

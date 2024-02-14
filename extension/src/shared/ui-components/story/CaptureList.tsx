@@ -7,13 +7,24 @@ import { CaptureListItem } from "./CaptureListItem";
 
 type CaptureListProps = {
   captures: StoryCapture[];
+  onCaptureUpdate?: (capture: StoryCapture) => void;
+  onCaptureRemove?: (id: string) => void;
 };
 
-export const CaptureList: FC<CaptureListProps> = ({ captures }) => {
+export const CaptureList: FC<CaptureListProps> = ({
+  captures,
+  onCaptureUpdate,
+  onCaptureRemove,
+}) => {
   return captures.length > 0 ? (
     <Wrapper>
       {captures.map(capture => (
-        <CaptureListItem key={capture.id} capture={capture} />
+        <CaptureListItem
+          key={capture.id}
+          capture={capture}
+          onCaptureUpdate={onCaptureUpdate}
+          onCaptureRemove={onCaptureRemove}
+        />
       ))}
     </Wrapper>
   ) : null;

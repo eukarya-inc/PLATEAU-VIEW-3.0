@@ -45,7 +45,8 @@ const ActionButton = styled(ListItemButton)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   color: theme.palette.text.primary,
   [`&.${buttonBaseClasses.root}:hover`]: {
-    backgroundColor: theme.palette.primary.main,
-    color: "#fff",
+    // backgroundColor: theme.palette.primary.main,
+    // color: "#fff",
+    // transition: "color none",
   },
 }));

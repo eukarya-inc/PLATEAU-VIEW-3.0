@@ -17,7 +17,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = props => {
   return (
     <PlateauScreenSpaceSelection
       {...props}
-      disabled={tool?.type !== "select"}
+      disabled={tool?.type !== "select" && tool?.type !== "story"}
       allowClickWhenDisabled={isMobile}
     />
   );

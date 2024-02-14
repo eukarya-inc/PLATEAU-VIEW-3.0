@@ -44,7 +44,7 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
         iconComponent={layerTypeIcons.STORY_LAYER}
         onClose={handleClose}
       />
-      {editMode ? <StoryEditSection layer={layer} /> : <StoryInspectSection />}
+      {editMode ? <StoryEditSection layer={layer} /> : <StoryInspectSection layer={layer} />}
     </List>
   );
 };

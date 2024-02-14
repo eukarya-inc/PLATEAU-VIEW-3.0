@@ -2,7 +2,7 @@ import { styled } from "@mui/material";
 import EasyMDE from "easymde";
 import { FC, useEffect, useRef } from "react";
 
-import easyMDEStyle from "./lib/easyMDEStyles.css?inline";
+import easyMDEStyle from "../lib/easyMDEStyles.css?inline";
 
 type ViewMarkdownEditorProps = {
   value?: string;
