@@ -43,6 +43,9 @@ const mockSetting: Setting = {
       },
     ],
   },
+  status: {
+    isDefaultTile: true,
+  },
 };
 
 const ComponentItem: FC<{

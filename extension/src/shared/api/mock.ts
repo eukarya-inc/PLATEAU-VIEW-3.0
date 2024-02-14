@@ -34,6 +34,7 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
+    status: {},
   },
   // For Chuo
   {
@@ -61,6 +62,7 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
+    status: {},
   },
   // For chiyoda shelter
   {
@@ -95,6 +97,7 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
+    status: {},
   },
 ];
 
