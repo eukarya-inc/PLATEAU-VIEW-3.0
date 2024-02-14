@@ -198,7 +198,9 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
               )),
             ];
           }
-          invariant(dataset.items.length === 1);
+          if (dataset.items.length === 0) {
+            return null;
+          }
           const [datum] = dataset.items;
           return (
             <SelectItem
