@@ -152,22 +152,22 @@ export const makePropertyForFeatureInspector = ({
 
   return [
     // Root properties
-    ...builtInRootProperties,
-    ...settingRootProperties,
-    // Others which don't have the root property and attributes.
-    ...intersection(...features.map(f => Object.keys(f.properties)))
-      .filter(n => {
-        if (n === attributesKey) return false;
-        return (
-          !builtInRootPropertyNames.includes(getAttributeLabel(n) ?? n) &&
-          !settingRootPropertyNames?.includes(n)
-        );
-      })
-      .map(name => ({
-        name: getAttributeLabel(name) || name,
-        values: features.map(f => f.properties?.[name]).filter(Boolean),
-      }))
-      .filter(({ values }) => features.length === values.length),
+    ...(shouldUseSettingProperty
+      ? [
+          ...settingRootProperties,
+          // Others which don't have the root property and attributes.
+          ...intersection(...features.map(f => Object.keys(f.properties)))
+            .filter(n => {
+              if (n === attributesKey) return false;
+              return !settingRootPropertyNames?.includes(n);
+            })
+            .map(name => ({
+              name: getAttributeLabel(name) || name,
+              values: features.map(f => f.properties?.[name]).filter(Boolean),
+            }))
+            .filter(({ values }) => features.length === values.length),
+        ]
+      : builtInRootProperties),
     // All attributes
     ...(rawAllAttributes?.length ? [{ name: "全ての属性", values: rawAllAttributes ?? {} }] : []),
   ];
