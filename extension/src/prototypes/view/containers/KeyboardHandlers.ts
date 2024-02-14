@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useConstant, useWindowEvent } from "../../react-helpers";
 
@@ -36,97 +36,83 @@ type KeyboardHandlersProps = {
 
 export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   const directionsRef = useRef<{
-    forward?: number;
-    backward?: number;
-    right?: number;
-    left?: number;
-    up?: number;
-    down?: number;
+    [key: string]: boolean;
   }>({});
 
   const modesRef = useRef<{
     sprint?: boolean;
   }>({});
 
-  const state = useConstant(() => ({
-    time: Date.now(),
-    speed: 0,
-  }));
-  const camera = window.reearth?.camera;
-  const globeHeight = window.reearth?.scene?.getGlobeHeight();
+  const keyRef = useRef<string | null>(null);
+
+  const [amount, setAmount] = useState(1);
   const acceleration = 0.1;
   const damping = 0.3;
   const maximumSpeed = 3;
 
-  const [amount, setAmount] = useState(1);
-  const previousTime = state.time;
-  const currentTime = Date.now();
-  const deltaSeconds = (currentTime - previousTime) / 1000;
-  state.time = currentTime;
+  const state = useConstant(() => ({
+    time: Date.now(),
+    speed: 0,
+  }));
 
-  const checkOnKeyboard = useCallback(
-    (assignment: string) => {
-      const cameraHeight = camera?.position?.height;
-      if (state.speed > 1) {
-        state.speed = Math.max(maximumSpeed, state.speed - damping);
-      } else {
-        state.speed = Math.min(maximumSpeed, state.speed + acceleration);
+  const checkOnKeyboard = useCallback(() => {
+    const previousTime = state.time;
+    const currentTime = Date.now();
+    const deltaSeconds = (currentTime - previousTime) / 1000;
+    state.time = currentTime;
+
+    const camera = window.reearth?.camera;
+    const globeHeight = window.reearth?.scene?.getGlobeHeight();
+    if (!camera || !globeHeight) return;
+    if (state.speed > 1) {
+      state.speed = Math.max(maximumSpeed, state.speed - damping);
+    } else {
+      state.speed = Math.min(maximumSpeed, state.speed + acceleration);
+    }
+
+    const cameraHeight = camera?.position?.height;
+    let speed = state.speed;
+
+    if (globeHeight != null && cameraHeight != null) {
+      speed *= 1 + Math.max(0, cameraHeight - globeHeight) * 0.1;
+      setAmount(speed * deltaSeconds);
+    }
+
+    if (directionsRef.current["forward"]) camera.moveForward(amount);
+    if (directionsRef.current["backward"]) camera.moveBackward(amount);
+    if (directionsRef.current["left"]) camera.moveLeft(amount);
+    if (directionsRef.current["right"]) camera.moveRight(amount);
+    if (directionsRef.current["up"]) camera.moveUp(amount);
+    if (directionsRef.current["down"]) camera.moveDown(amount);
+  }, [amount, state]);
+
+  const animationFrameRef = useRef<number>(0);
+
+  useEffect(() => {
+    const animate = () => {
+      checkOnKeyboard();
+      if (isMoving) {
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
-      if (globeHeight != null && cameraHeight) {
-        let speed = state.speed;
-        speed *= 1 + Math.max(0, cameraHeight - globeHeight) * 0.1;
-        setAmount(speed * deltaSeconds);
-      }
-      camera?.moveOverTerrain(1.8);
-      switch (assignment) {
-        case "forward":
-          return camera?.moveForward(amount);
-        case "backward":
-          return camera?.moveBackward(amount);
-        case "up":
-          return camera?.moveUp(amount);
-        case "down":
-          return camera?.moveDown(amount);
-        case "left":
-          return camera?.moveLeft(amount);
-        case "right":
-          return camera?.moveRight(amount);
-        default:
-          return;
-      }
-    },
-    [amount, camera, deltaSeconds, globeHeight, state],
-  );
+    };
 
-  const renderFrame = useCallback(
-    (assignment: string) => {
-      let time: number;
-      const render = () => {
-        if (!isMoving) {
-          cancelAnimationFrame(time);
-          return;
-        }
-        checkOnKeyboard(assignment);
+    if (isMoving) {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }
 
-        time = requestAnimationFrame(render);
-      };
-      time = requestAnimationFrame(render);
-    },
-
-    [checkOnKeyboard, isMoving],
-  );
+    return () => {
+      cancelAnimationFrame(animationFrameRef.current);
+    };
+  }, [checkOnKeyboard, isMoving]);
 
   useWindowEvent("keydown", event => {
     const assignment = defaultKeyAssignments[event.code];
-    if (assignment == null) {
-      return;
-    }
+    if (assignment == null) return;
+
     if (isDirection(assignment)) {
-      directionsRef.current[assignment] = event.timeStamp;
+      directionsRef.current[assignment] = true;
+      if (keyRef.current === null) keyRef.current = assignment;
       event.preventDefault();
-      if (event.key) {
-        renderFrame(assignment);
-      }
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = true;
       event.preventDefault();
@@ -135,23 +121,22 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
 
   useWindowEvent("keyup", event => {
     const assignment = defaultKeyAssignments[event.code];
-    if (assignment == null) {
-      return;
-    }
+    if (assignment == null) return;
+
     if (isDirection(assignment)) {
-      directionsRef.current[assignment] = undefined;
+      directionsRef.current[assignment] = false;
+      if (assignment === keyRef.current) keyRef.current = null;
       event.preventDefault();
-      if (event.key) {
-        renderFrame(assignment);
-      }
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = false;
       event.preventDefault();
     }
   });
+
   useWindowEvent("blur", () => {
     directionsRef.current = {};
     modesRef.current = {};
+    keyRef.current = null;
   });
 
   return null;

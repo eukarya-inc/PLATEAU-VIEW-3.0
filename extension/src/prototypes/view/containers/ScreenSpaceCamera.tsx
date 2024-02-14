@@ -16,7 +16,10 @@ const defaultOptions = {
   enableLook: true,
 };
 
-export const ScreenSpaceCamera = () => {
+type ScreenSpaceCameraProps = {
+  tiltByRightButton: boolean;
+};
+export const ScreenSpaceCamera = ({ tiltByRightButton = false }: ScreenSpaceCameraProps) => {
   const useKeyboard = useAtomValue(enableKeyboardCameraControlAtom);
   const tool = useAtomValue(toolAtom);
   const isHand = tool?.type === "hand";
@@ -33,7 +36,7 @@ export const ScreenSpaceCamera = () => {
     tiltEventTypes: [],
     maximumZoomDistance: Infinity,
     minimumZoomDistance: 1.5,
-    enableCollisionDetection: isHand,
+    enableCollisionDetection: !useKeyboard,
     lookEventTypes: [
       "left_drag",
       {
@@ -47,11 +50,37 @@ export const ScreenSpaceCamera = () => {
     ],
   };
 
+  const tiltByRightButtonOption: ScreenSpaceCameraControllerOptions = {
+    zoomEventTypes: ["middle_drag", "wheel", "pinch"],
+    rotateEventTypes: ["left_drag"],
+    tiltEventTypes: [
+      "right_drag",
+      "pinch",
+      {
+        eventType: "left_drag",
+        modifier: "ctrl",
+      },
+      {
+        eventType: "right_drag",
+        modifier: "ctrl",
+      },
+    ],
+    lookEventTypes: [
+      {
+        eventType: "left_drag",
+        modifier: "shift",
+      },
+    ],
+  };
   if (useKeyboard) {
     const handler = window?.reearth?.camera?.overrideScreenSpaceController(
       screenSpaceCameraControllerOptions,
     );
     handler != null && assignPropertyProps(handler, options, defaultOptions);
-  }
+  } else if (tiltByRightButton) {
+    const handler = window?.reearth?.camera?.overrideScreenSpaceController(tiltByRightButtonOption);
+    handler != null && assignPropertyProps(handler, options, defaultOptions);
+  } else return window?.reearth?.camera?.overrideScreenSpaceController() ?? null;
+
   return useKeyboard ? <KeyboardHandlers isMoving={useKeyboard} /> : null;
 };
