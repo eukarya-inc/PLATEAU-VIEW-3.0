@@ -138,6 +138,7 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
             {layer == null ? "追加" : "追加済み"}
           </StyledButton>
         }
+        allowWrap
       />
       <Divider />
       <DialogContent>

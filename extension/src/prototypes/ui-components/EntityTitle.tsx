@@ -28,7 +28,7 @@ export const EntityTitleIcon = styled("div")(({ theme }) => ({
   },
 }));
 
-export const EntityTitleText = styled(ListItemText)({
+export const EntityTitleText = styled(ListItemText)<{ allowWrap?: boolean }>(({ allowWrap }) => ({
   flexGrow: 1,
   marginTop: 4,
   marginBottom: 4,
@@ -44,7 +44,12 @@ export const EntityTitleText = styled(ListItemText)({
   [`& .${listItemTextClasses.primary} + .${listItemTextClasses.secondary}`]: {
     marginLeft: "1em",
   },
-});
+  ...(allowWrap && {
+    whiteSpace: "normal",
+    overflow: "visible",
+    textOverflow: "unset",
+  }),
+}));
 
 export interface EntityTitleProps extends Omit<ListItemProps<"div">, "title"> {
   title?:
@@ -55,10 +60,11 @@ export interface EntityTitleProps extends Omit<ListItemProps<"div">, "title"> {
       };
   iconComponent?: ComponentType<SvgIconProps>;
   icon?: ReactNode;
+  allowWrap?: boolean;
 }
 
 export const EntityTitle = forwardRef<HTMLDivElement, EntityTitleProps>(
-  ({ title, iconComponent, icon, children, ...props }, ref) => {
+  ({ title, iconComponent, icon, children, allowWrap, ...props }, ref) => {
     const Icon = iconComponent;
     return (
       <StyledListItem ref={ref} {...props} component="div">
@@ -84,6 +90,7 @@ export const EntityTitle = forwardRef<HTMLDivElement, EntityTitleProps>(
           secondaryTypographyProps={{
             variant: "body2",
           }}
+          allowWrap={allowWrap}
         />
         {children}
       </StyledListItem>
