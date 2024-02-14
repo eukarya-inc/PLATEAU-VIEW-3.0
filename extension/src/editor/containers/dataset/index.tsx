@@ -167,7 +167,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     if (tree[0]) {
       setSelected(tree[0].id);
       setContentType("status");
-      setDataId(STATUS_SETTING_DATA_ID);
+      setDataId(DEFAULT_SETTING_DATA_ID);
     }
     setExpanded(tree.map(item => item.id));
     setReady(true);
@@ -219,7 +219,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     [expanded],
   );
 
-  // setting must have a defulat component group
+  // setting must have a default component group
   useEffect(() => {
     if (!draftSetting) return;
     if (!draftSetting.fieldComponents?.groups || draftSetting.fieldComponents.groups.length === 0) {
@@ -249,11 +249,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     // Save all settings belongs to current dataset
     setIsSaving(true);
     const savingTasks: Promise<void>[] = [];
-    [
-      DEFAULT_SETTING_DATA_ID,
-      STATUS_SETTING_DATA_ID,
-      ...dataset.items.map(item => item.id),
-    ].forEach(id => {
+    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
       const cacheId = `dataset-${dataset.id}-${id}`;
       if (id === dataId) {
         savingTasks.push(saveSetting(draftSetting as Setting));
@@ -321,6 +317,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           <>
             {contentType === "status" && draftSetting ? (
               <StatusPage
+                key={`${dataset.id}-${dataId}`}
                 dataset={dataset}
                 setting={draftSetting}
                 updateSetting={updateDraftSetting}
