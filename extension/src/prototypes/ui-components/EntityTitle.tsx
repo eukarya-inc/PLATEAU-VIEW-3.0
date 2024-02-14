@@ -18,6 +18,7 @@ const StyledListItem = styled(ListItem)(({ theme }) => ({
     position: "relative",
     transform: "none",
     flexGrow: 0,
+    marginLeft: theme.spacing(1),
   },
 })) as unknown as typeof ListItem; // For generics
 
