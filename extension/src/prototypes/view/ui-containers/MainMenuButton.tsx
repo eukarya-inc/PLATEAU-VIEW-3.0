@@ -8,9 +8,9 @@ import {
 } from "@mui/material";
 import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
+import { forwardRef, useCallback, useId, useRef, type MouseEvent, useMemo } from "react";
 
-import { LOGO } from "../../../shared/constants";
+import { LOGO, MUNICIPALITY_SITE_URL } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import {
@@ -72,6 +72,9 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     );
 
     const platform = useAtomValue(platformAtom);
+
+    const siteUrl = useMemo(() => MUNICIPALITY_SITE_URL ?? "https://www.mlit.go.jp/plateau/", []);
+
     return (
       <>
         <IconButton ref={ref} aria-label="メインメニュー" {...bindTrigger(popupState)} {...props}>
@@ -93,11 +96,15 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           }}>
           <MenuItem
             component="a"
-            href="https://www.mlit.go.jp/plateau/"
+            href={siteUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClick}>
-            <PlateauLogotype sx={{ height: 32, marginX: 2, marginY: 1 }} />
+            {LOGO ? (
+              <img src={LOGO} alt="customIcon" height={24} />
+            ) : (
+              <PlateauLogotype sx={{ height: 32, marginX: 2, marginY: 1 }} />
+            )}
           </MenuItem>
           <Divider />
           <SelectItem

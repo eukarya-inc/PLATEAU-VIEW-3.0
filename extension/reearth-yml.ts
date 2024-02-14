@@ -95,20 +95,47 @@ const yml = {
             ],
           },
           {
-            id: "appearance",
-            title: "外観",
+            id: "municipality",
+            title: "自治体設定（任意）",
             fields: [
               {
-                id: "logo",
-                type: "url",
-                ui: "image",
-                title: "ロゴ",
+                id: "siteUrl",
+                type: "string",
+                title: "サイトURL",
               },
+              {
+                id: "projectName",
+                type: "string",
+                title: "プロジェクト名",
+              },
+              {
+                id: "apiAccessToken",
+                type: "string",
+                title: "バックエンドアクセストークン",
+                private: true,
+              },
+              {
+                id: "catalogProjectName",
+                type: "string",
+                title: "データカタログのプロジェクト名",
+              },
+            ],
+          },
+          {
+            id: "appearance",
+            title: "外観（任意）",
+            fields: [
               {
                 id: "primaryColor",
                 type: "string",
                 ui: "color",
                 title: "プライマリカラー",
+              },
+              {
+                id: "logo",
+                type: "url",
+                ui: "image",
+                title: "ロゴ",
               },
             ],
           },

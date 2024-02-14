@@ -39,12 +39,19 @@ type DefaultProps = {
   googleStreetViewAPIKey?: string;
 };
 
+type MunicipalityProps = {
+  siteUrl?: string;
+  projectName?: string;
+  apiAccessToken?: string;
+  catalogProjectName?: string;
+};
+
 type AppearanceProps = {
   logo?: string;
   primaryColor?: string;
 };
 
-type Props = WidgetProps<DefaultProps, AppearanceProps>;
+type Props = WidgetProps<DefaultProps, MunicipalityProps, AppearanceProps>;
 
 export const Loading: FC = () => {
   const ready = useAtomValue(readyAtom);
@@ -67,6 +74,10 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         plateauToken={widget.property.default.plateauAccessToken}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
         inEditor={inEditor}
+        municipalitySiteUrl={widget.property.municipality?.siteUrl}
+        municipalityProjectId={widget.property.municipality?.projectName}
+        municipalityToken={widget.property.municipality?.apiAccessToken}
+        municipalityCatalogProjectName={widget.property.municipality?.catalogProjectName}
         customPrimaryColor={widget.property.appearance?.primaryColor}
         customLogo={widget.property.appearance?.logo}>
         <InitializeApp />

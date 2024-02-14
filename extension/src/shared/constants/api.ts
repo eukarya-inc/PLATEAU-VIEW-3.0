@@ -1,3 +1,4 @@
+// default settings
 export let PLATEAU_API_URL: string | undefined;
 export const setPlateauApiUrl = (url: string) => {
   PLATEAU_API_URL = url;
@@ -23,6 +24,18 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
 
+// municipality settings
+export let MUNICIPALITY_SITE_URL: string | undefined;
+export const setMunicipalitySiteURL = (url: string) => {
+  MUNICIPALITY_SITE_URL = url;
+};
+
+export let MUNICIPALITY_PROJECT_ID: string | undefined;
+export const setMunicipalityProjectId = (id: string) => {
+  MUNICIPALITY_PROJECT_ID = id;
+};
+
+// appearance settings
 export let PRIMARY_COLOR: string | undefined;
 export const setPrimaryColor = (color: string) => {
   PRIMARY_COLOR = color;
