@@ -121,7 +121,7 @@ function getProperty(get: Getter, layers: readonly LayerModel[]): PlateauTileset
       const properties = get(layer.propertiesAtom);
       const colorProperty = get(layer.colorPropertyAtom);
       return colorProperty != null
-        ? properties?.value?.find(({ name }) => name === colorProperty)
+        ? properties?.value?.find(({ accessor }) => accessor === colorProperty)
         : undefined;
     }),
   );

@@ -21,10 +21,11 @@ export const variable = (v: string) => {
   return `\${${v}}`;
 };
 
+export const isNumber = (prop: string) =>
+  `!(${variable(prop)} === "" || ${variable(prop)} === null || isNaN(Number(${variable(prop)})))`;
+
 export const defaultConditionalNumber = (prop: string, defaultValue?: number) =>
-  `((${variable(prop)} === "" || ${variable(prop)} === null || isNaN(Number(${variable(
-    prop,
-  )}))) ? ${defaultValue || 1} : Number(${variable(prop)}))`;
+  `(${isNumber(prop)} ? Number(${variable(prop)}) : ${defaultValue || 1})`;
 
 export const condition = (cond: string, v: string, el: string) => {
   return `((${cond}) ? ${v} : ${el})`;
