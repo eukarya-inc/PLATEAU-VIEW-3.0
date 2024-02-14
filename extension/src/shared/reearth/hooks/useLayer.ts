@@ -10,7 +10,6 @@ export type LayerHookOptions = {
   events?: Events;
   onLoad?: (layerId: string) => void;
   loading?: boolean;
-  defines?: Record<string, string>;
 };
 
 export const useLayer = ({
@@ -20,7 +19,6 @@ export const useLayer = ({
   events,
   onLoad,
   loading,
-  defines,
 }: LayerHookOptions) => {
   const layerIdRef = useRef<string>();
   const [loaded, setLoaded] = useState(false);
@@ -32,7 +30,6 @@ export const useLayer = ({
       type: "simple",
       data: data,
       events,
-      defines: defines,
     });
 
     layerIdRef.current = layerId;
@@ -51,10 +48,9 @@ export const useLayer = ({
       data: data,
       visible,
       events,
-      defines: defines,
       ...appearances,
     });
-  }, [appearances, visible, data, events, loaded, defines]);
+  }, [appearances, visible, data, events, loaded]);
 
   useEffect(() => {
     const layerId = layerIdRef.current;
