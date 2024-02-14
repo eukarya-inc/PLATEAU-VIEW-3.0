@@ -16,6 +16,13 @@ export interface StoryLayerModelParams extends ViewLayerModelParams {
   captures?: readonly StoryCapture[];
 }
 
+export type SharedStoryLayer = {
+  type: "story";
+  id: string;
+  title: string;
+  captures: StoryCapture[];
+};
+
 export interface StoryLayerModel extends LayerModel {
   title: string;
   capturesAtom: PrimitiveAtom<StoryCapture[]>;
