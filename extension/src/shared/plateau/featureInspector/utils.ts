@@ -125,7 +125,7 @@ export const makePropertyForFeatureInspector = ({
   const builtInRootProperties: { name: string; values: any[] }[] = builtInRootPropertyNames
     .map(name => ({
       name,
-      values: rawBuiltInRootProperties.map((p: any) => p[name]).filter(Boolean),
+      values: rawBuiltInRootProperties.map((p: any) => p[name]).filter(isNotNullish),
     }))
     .filter(({ values }) => {
       if (values.length === 0) {

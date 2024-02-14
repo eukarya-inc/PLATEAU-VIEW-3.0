@@ -29,6 +29,7 @@ const DatasetGroup: FC<{
             municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
             dataset={dataset}
             label={dataset.name}
+            title={dataset.name}
           />
         ))}
       </DatasetTreeItem>
@@ -39,6 +40,7 @@ const DatasetGroup: FC<{
       dataset={datasets[0]}
       municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
       label={datasets[0].type.name}
+      title={datasets[0].type.name}
     />
   );
 };
@@ -55,6 +57,7 @@ const GlobalItem: FC<{}> = () => {
           dataset={dataset}
           municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
           label={dataset.name}
+          title={dataset.name}
         />
       ))}
     </DatasetTreeItem>
@@ -69,11 +72,11 @@ const MunicipalityItem: FC<{
   const groups = useMemo(
     () =>
       query.data?.area?.datasets != null
-        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.id))
+        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.name))
             .map(([, value]) => value)
             .map(value => ({
               groupId: value.map(({ id }) => id).join(":"),
-              datasets: value,
+              datasets: value.sort((a, b) => a.type.order - b.type.order),
             }))
         : undefined,
     [query.data?.area?.datasets],

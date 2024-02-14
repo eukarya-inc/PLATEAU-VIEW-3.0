@@ -94,7 +94,7 @@ export function createPlateauTilesetLayerState(
       const colorProperty = get(colorPropertyAtom);
       const property =
         colorProperty != null
-          ? properties?.value?.find(({ name }) => name === colorProperty)
+          ? properties?.value?.find(({ accessor }) => accessor === colorProperty)
           : undefined;
       return property?.type === "number" ? [property.minimum, property.maximum] : [];
     },
