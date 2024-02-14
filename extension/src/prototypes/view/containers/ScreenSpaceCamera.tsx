@@ -53,5 +53,5 @@ export const ScreenSpaceCamera = () => {
     );
     handler != null && assignPropertyProps(handler, options, defaultOptions);
   }
-  return useKeyboard ? <KeyboardHandlers /> : null;
+  return useKeyboard ? <KeyboardHandlers isMoving={useKeyboard} /> : null;
 };

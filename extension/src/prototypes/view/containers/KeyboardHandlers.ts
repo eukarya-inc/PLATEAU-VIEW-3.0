@@ -30,7 +30,11 @@ const defaultKeyAssignments: KeyAssignments = {
   ShiftLeft: "sprint",
 };
 
-export const KeyboardHandlers = () => {
+type KeyboardHandlersProps = {
+  isMoving: boolean;
+};
+
+export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   const directionsRef = useRef<{
     forward?: number;
     backward?: number;
@@ -50,17 +54,16 @@ export const KeyboardHandlers = () => {
   }));
   const camera = window.reearth?.camera;
   const globeHeight = window.reearth?.scene?.getGlobeHeight();
-
-  const previousTime = state.time;
-  const currentTime = Date.now();
-  const deltaSeconds = (currentTime - previousTime) / 1000;
-  state.time = currentTime;
-
   const acceleration = 0.1;
   const damping = 0.3;
   const maximumSpeed = 3;
 
   const [amount, setAmount] = useState(1);
+  const previousTime = state.time;
+  const currentTime = Date.now();
+  const deltaSeconds = (currentTime - previousTime) / 1000;
+  state.time = currentTime;
+
   const checkOnKeyboard = useCallback(
     (assignment: string) => {
       const cameraHeight = camera?.position?.height;
@@ -75,7 +78,6 @@ export const KeyboardHandlers = () => {
         setAmount(speed * deltaSeconds);
       }
       camera?.moveOverTerrain(1.8);
-
       switch (assignment) {
         case "forward":
           return camera?.moveForward(amount);
@@ -96,6 +98,24 @@ export const KeyboardHandlers = () => {
     [amount, camera, deltaSeconds, globeHeight, state],
   );
 
+  const renderFrame = useCallback(
+    (assignment: string) => {
+      let time: number;
+      const render = () => {
+        if (!isMoving) {
+          cancelAnimationFrame(time);
+          return;
+        }
+        checkOnKeyboard(assignment);
+
+        time = requestAnimationFrame(render);
+      };
+      time = requestAnimationFrame(render);
+    },
+
+    [checkOnKeyboard, isMoving],
+  );
+
   useWindowEvent("keydown", event => {
     const assignment = defaultKeyAssignments[event.code];
     if (assignment == null) {
@@ -105,7 +125,7 @@ export const KeyboardHandlers = () => {
       directionsRef.current[assignment] = event.timeStamp;
       event.preventDefault();
       if (event.key) {
-        checkOnKeyboard(assignment);
+        renderFrame(assignment);
       }
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = true;
@@ -120,10 +140,10 @@ export const KeyboardHandlers = () => {
     }
     if (isDirection(assignment)) {
       directionsRef.current[assignment] = undefined;
-      if (event.key) {
-        checkOnKeyboard(assignment);
-      }
       event.preventDefault();
+      if (event.key) {
+        renderFrame(assignment);
+      }
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = false;
       event.preventDefault();
