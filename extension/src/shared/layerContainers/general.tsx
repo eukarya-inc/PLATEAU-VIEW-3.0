@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
@@ -28,6 +28,7 @@ type GeneralContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & 
   componentAtoms: ComponentAtom[] | undefined;
   layers?: string[];
   cameraAtom?: PrimitiveAtom<CameraPosition | undefined>;
+  index?: number;
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
@@ -39,6 +40,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   hidden,
   format,
   cameraAtom,
+  index,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
@@ -82,12 +84,11 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
       onLoad?.(layerId);
       setLayerId(layerId);
       setProperties(new Properties(layerId));
-
       if (camera) {
         setCamera(camera);
       }
     },
-    [onLoad, setProperties, setLayerId, setCamera],
+    [onLoad, setLayerId, setProperties, setCamera],
   );
 
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
@@ -95,6 +96,13 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   const theme = useTheme();
 
+  useEffect(() => {
+    if (layerId) {
+      if (index === 0) {
+        window.reearth?.layers?.bringToFront?.(layerId);
+      }
+    }
+  }, [index, layerId, props.layers]);
   if (format === "gtfs") {
     return (
       <GTFSLayer
@@ -107,7 +115,6 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   }
 
   if (format === "mvt") {
-    layerId && window.reearth?.layers?.bringToFront?.(layerId);
     return (
       <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
     );
