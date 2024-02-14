@@ -1,6 +1,6 @@
 import { isEqual } from "lodash-es";
 
-import { defaultConditionalNumber } from "../../helpers";
+import { isNumber, variable } from "../../helpers";
 import { ConditionsExpression } from "../../reearth/types";
 import {
   TilesetBuildingModelFilterField,
@@ -26,11 +26,14 @@ export const useEvaluateFilter = (
             res += " &&";
           }
 
-          return `${res} ${defaultConditionalNumber(accessor || propertyName, range[0])} >= ${
-            value[0]
-          } && ${defaultConditionalNumber(accessor || propertyName, range[0])} <= ${
-            value[1] === range[1] ? Infinity : value[1]
-          }`;
+          const isSameRange = value[0] === range[0] && value[1] === range[1];
+          if (isSameRange) {
+            return `${res} true`;
+          }
+
+          return `${res} ${isNumber(accessor || propertyName)} && ${variable(
+            accessor || propertyName,
+          )} >= ${value[0]} && ${variable(accessor || propertyName)} <= ${value[1]}`;
         }, ""),
         "true",
       ],
