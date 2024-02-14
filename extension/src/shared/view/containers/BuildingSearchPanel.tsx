@@ -120,7 +120,9 @@ type Props = {
   layerId: string | null;
 };
 
-const INCLUDE_PROPERTY_NAMES = [
+type SearchOption = { label: string; value: string; accessor?: string };
+
+const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accessor: string])[] = [
   "住所",
   "bldg:address",
   "名称",
@@ -131,6 +133,27 @@ const INCLUDE_PROPERTY_NAMES = [
   "bldg:usage",
   "耐火構造種別",
   "uro:BuildingDetailAttribute_uro:fireproofStructureType",
+  [
+    "uro:majorUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:majorUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:majorUsage`,
+  ],
+  [
+    "uro:orgUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage`,
+  ],
+  [
+    "uro:orgUsage2",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage2"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage2`,
+  ],
+  [
+    "uro:detailedUsage",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:detailedUsage"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:detailedUsage`,
+  ],
+  "gml_id",
 ];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
@@ -187,7 +210,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     {
       key: string;
       title: string;
-      options: { label: string; value: string }[];
+      options: { label: string; value: string; accessor?: string }[];
     }[]
   >([]);
 
@@ -205,16 +228,19 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
 
     setGroups(
       INCLUDE_PROPERTY_NAMES.map(value => {
+        const name = typeof value === "string" ? value : value[0];
+        const property = typeof value === "string" ? value : value[1];
+        const accessor = typeof value === "string" ? undefined : value[2];
         return {
-          key: value,
-          title: makePropertyName(value) ?? value,
+          key: property ?? name,
+          title: makePropertyName(name) ?? name,
           options: uniqBy(
             allFeatures.reduce((res, f) => {
-              const propertyValue = get(f.properties, value);
+              const propertyValue = get(f.properties, accessor ?? value);
               if (!propertyValue) return res;
-              res.push({ label: propertyValue, value: propertyValue });
+              res.push({ label: propertyValue, value: propertyValue, accessor: accessor ?? name });
               return res;
-            }, [] as { label: string; value: string }[]),
+            }, [] as { label: string; value: string; accessor?: string }[]),
             "label",
           ),
         };
@@ -225,10 +251,10 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const defferredGroups = useDeferredValue(groups);
 
   const [conditions, setConditions] = useState<
-    Record<string, MultipleSelectSearchProps["options"]>
+    Record<string, MultipleSelectSearchProps<SearchOption>["options"]>
   >({});
   const handleConditionsChange = useCallback(
-    (key: string, value: MultipleSelectSearchProps["options"]) => {
+    (key: string, value: MultipleSelectSearchProps<SearchOption>["options"]) => {
       setConditions(p => ({ ...p, [key]: value }));
     },
     [],
@@ -237,25 +263,31 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const handleSearchButtonClick = useCallback(() => {
     if (!allFeatures) return;
 
-    const conditionEntries: [string, string[]][] = Object.entries(conditions)
+    const conditionEntries: [string, string[], string][] = Object.entries(conditions)
       .filter(([, v]) => !!v.length)
-      .map(([key, value]) => [key, value.map(v => v.label)]);
+      .map(([key, value]) => [key, value.map(v => v.label), value[0].accessor ?? key]);
     const hasCondition = !!conditionEntries.filter(([, values]) => !!values.length).length;
 
     if (allFeatures && hasCondition) {
-      setSearchedFeatures({
+      const searchedFeatures: SearchedFeatures = {
         features: uniq(
           allFeatures
             .filter(f =>
-              conditionEntries.every(([key, values]) => values.includes(get(f.properties, key))),
+              conditionEntries.every(([_, values, accessor]) =>
+                values.includes(get(f.properties, accessor)),
+              ),
             )
             .map(f => f.id),
         ),
-        conditions: conditionEntries.map(([key, vals]) => [`rootProperties["${key}"]`, vals]),
+        conditions: conditionEntries.map(([key, vals]) => [
+          key.startsWith("rootProperties") ? key : `rootProperties["${key}"]`,
+          vals,
+        ]),
         highlight: true,
         onlyShow: false,
         selectedIndices: [],
-      });
+      };
+      setSearchedFeatures(searchedFeatures);
     }
     setTab(1);
   }, [allFeatures, conditions, setSearchedFeatures]);

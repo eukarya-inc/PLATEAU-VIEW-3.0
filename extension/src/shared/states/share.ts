@@ -7,8 +7,11 @@ import {
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   PedestrianLayerModel,
+  SKETCH_LAYER,
   SharedHeatmapLayer,
   SharedPedestrianLayer,
+  SharedSketchLayer,
+  SketchLayerModel,
 } from "../../prototypes/view-layers";
 import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { generateID } from "../utils";
@@ -40,7 +43,8 @@ export type SharedRootLayer =
     }
   | SharedHeatmapLayer
   | SharedPedestrianLayer
-  | SharedMyDataLayer;
+  | SharedMyDataLayer
+  | SharedSketchLayer;
 
 // For share feature
 const SHARED_LAYERS_KEY = "$sharedLayers";
@@ -84,6 +88,15 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 format: l.format,
                 layers: l.layers,
                 csv: l.csv,
+              };
+            }
+            case SKETCH_LAYER: {
+              const l = layer as SketchLayerModel;
+              return {
+                type: "sketch",
+                id: l.id,
+                title: l.title,
+                features: get(l.featuresAtom),
               };
             }
           }

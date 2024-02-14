@@ -9,7 +9,7 @@ export const PropertyWrapper = styled("div")(() => ({
 export const PropertyBox = styled("div")<{ asMenu?: boolean; halfWidth?: boolean }>(
   ({ theme, asMenu, halfWidth }) => ({
     position: "relative",
-    width: halfWidth ? "50%" : asMenu ? "130px" : "100%",
+    width: halfWidth ? "50%" : asMenu ? "120px" : "100%",
     display: "flex",
     padding: theme.spacing(0.5),
     flexDirection: "column",
@@ -48,7 +48,7 @@ const InlineWrapper = styled("div")(({ theme }) => ({
 }));
 
 const InlineLabel = styled("div")(({ theme }) => ({
-  width: "130px",
+  width: "120px",
   flex: "0 0 auto",
   padding: theme.spacing(0, 0.5),
 }));

@@ -1,4 +1,3 @@
-import { uniqBy } from "lodash-es";
 import { useMemo } from "react";
 
 import { DatasetTypesInput } from "../../base/catalog/__gen__/graphql";
@@ -19,11 +18,7 @@ export const useDatasetTypes = (input?: DatasetTypesInput, options?: Options) =>
   });
 
   const nextData = useMemo(
-    () =>
-      uniqBy(
-        data?.datasetTypes.slice().sort((a, b) => a.order - b.order),
-        "name",
-      ),
+    () => data?.datasetTypes.slice().sort((a, b) => a.order - b.order),
     [data],
   );
 

@@ -185,6 +185,7 @@ export const fieldSettings: {
   // 3dtiles
   TILESET_BUILDING_MODEL_COLOR: {},
   TILESET_FLOOD_MODEL_COLOR: {},
+  TILESET_FLOOD_COLOR_FIELD: {},
   TILESET_FILL_COLOR_CONDITION_FIELD: {
     value: {
       type: CONDITIONAL_COLOR_SCHEME,

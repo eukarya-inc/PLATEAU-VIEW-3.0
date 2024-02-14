@@ -9,7 +9,12 @@ import {
   censusDatasets,
 } from "../../../prototypes/view/constants/censusDatasets";
 import { readyAtom } from "../../../prototypes/view/states/app";
-import { HEATMAP_LAYER, MY_DATA_LAYER, PEDESTRIAN_LAYER } from "../../../prototypes/view-layers";
+import {
+  HEATMAP_LAYER,
+  MY_DATA_LAYER,
+  PEDESTRIAN_LAYER,
+  SKETCH_LAYER,
+} from "../../../prototypes/view-layers";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
@@ -120,6 +125,13 @@ export const InitialLayers: FC = () => {
               id: l?.id,
               csv: l?.csv,
               layers: l?.layers,
+            };
+          case "sketch":
+            return {
+              id: l.id,
+              title: l.title,
+              type: SKETCH_LAYER,
+              features: l.features,
             };
         }
       })
