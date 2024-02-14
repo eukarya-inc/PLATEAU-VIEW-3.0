@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
@@ -93,16 +93,19 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
   const generalData = useEvaluateGeneralData({ componentAtoms });
-
   const theme = useTheme();
 
+  const prevIndexRef = useRef<number>();
+
   useEffect(() => {
-    if (layerId) {
-      if (index === 0) {
+    if (layerId && index !== undefined) {
+      if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
         window.reearth?.layers?.bringToFront?.(layerId);
       }
+      prevIndexRef.current = index;
     }
-  }, [index, layerId, props.layers]);
+  }, [index, layerId]);
+
   if (format === "gtfs") {
     return (
       <GTFSLayer
