@@ -405,6 +405,7 @@ export const createRootLayerForDatasetAtom = (
   const shareableCurrentDataIdAtom = sharedStoreAtomWrapper(
     shareableCurrentDataIdName,
     currentDataIdAtomAtom,
+    { shouldInitialize: false },
   );
 
   const shareableCurrentComponentGroupIdName = `${dataset.id}_${CURRENT_COMPONENT_GROUP_ID}${
@@ -413,6 +414,7 @@ export const createRootLayerForDatasetAtom = (
   const shareableCurrentGroupIdAtom = sharedStoreAtomWrapper(
     shareableCurrentComponentGroupIdName,
     currentGroupIdAtomAtom,
+    { shouldInitialize: false },
   );
 
   return {
