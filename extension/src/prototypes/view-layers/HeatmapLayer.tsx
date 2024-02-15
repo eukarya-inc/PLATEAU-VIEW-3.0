@@ -287,23 +287,9 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
     [setValueRange, setContourSpacing, setColorRange],
   );
 
-  // TODO: Replace this logic with an API to load CSV when the primitive is visible.
-  // This logic load all data by each chunk.
-  const [managedCodes, setManagedCodes] = useState<string[]>([]);
-  useEffect(() => {
-    let nextChunk = 3;
-    const time = setInterval(() => {
-      setManagedCodes(codes.slice(0, nextChunk));
-      if (nextChunk >= codes.length) {
-        clearInterval(time);
-      }
-      nextChunk += 10;
-    }, 300);
-  }, [codes]);
-
   const propsArray = useMemo(
     () =>
-      managedCodes.map(code => {
+      codes.map(code => {
         const url = getUrl(code);
         const meshType = inferMeshType(code);
         if (url == null || meshType == null) {
@@ -315,7 +301,7 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
         // );
         return { url };
       }),
-    [getUrl, managedCodes],
+    [getUrl, codes],
   );
   return (
     <>
