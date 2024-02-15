@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
@@ -28,6 +28,7 @@ type GeneralContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & 
   componentAtoms: ComponentAtom[] | undefined;
   layers?: string[];
   cameraAtom?: PrimitiveAtom<CameraPosition | undefined>;
+  index?: number;
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
@@ -39,6 +40,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   hidden,
   format,
   cameraAtom,
+  index,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
@@ -82,18 +84,27 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
       onLoad?.(layerId);
       setLayerId(layerId);
       setProperties(new Properties(layerId));
-
       if (camera) {
         setCamera(camera);
       }
     },
-    [onLoad, setProperties, setLayerId, setCamera],
+    [onLoad, setLayerId, setProperties, setCamera],
   );
 
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
   const generalData = useEvaluateGeneralData({ componentAtoms });
-
   const theme = useTheme();
+
+  const prevIndexRef = useRef<number>();
+
+  useEffect(() => {
+    if (layerId && index !== undefined) {
+      if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
+        window.reearth?.layers?.bringToFront?.(layerId);
+      }
+      prevIndexRef.current = index;
+    }
+  }, [index, layerId]);
 
   if (format === "gtfs") {
     return (
