@@ -298,7 +298,7 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
         }
         return { url };
       }),
-    [codes, getUrl],
+    [getUrl, codes],
   );
   return (
     <>
