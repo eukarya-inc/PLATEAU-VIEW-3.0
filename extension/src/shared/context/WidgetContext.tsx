@@ -26,12 +26,14 @@ import {
   setPlateauApiUrl,
   setProjectId,
   setPrimaryColor,
-  MUNICIPALITY_SITE_URL,
-  setMunicipalitySiteURL,
+  SITE_URL,
+  setSiteURL,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
+import { CameraPosition } from "../reearth/types";
 
 type Props = {
+  inEditor?: boolean;
   // Default settings
   geoUrl?: string;
   gsiTileURL?: string;
@@ -41,15 +43,11 @@ type Props = {
   catalogUrl?: string;
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
-  inEditor?: boolean;
-  // Municipality settings
-  municipalitySiteUrl?: string;
-  municipalityProjectId?: string;
-  municipalityToken?: string;
-  municipalityCatalogProjectName?: string;
-  // Appearance settings
+  // Custom settings
   customPrimaryColor?: string;
   customLogo?: string;
+  customPedestrian?: CameraPosition;
+  customSiteUrl?: string;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -63,12 +61,10 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
   inEditor,
-  municipalitySiteUrl,
-  // municipalityProjectId,
-  // municipalityToken,
-  // municipalityCatalogProjectName,
   customPrimaryColor,
   customLogo,
+  // customPedestrian,
+  customSiteUrl,
 }) => {
   useEffect(() => {
     if (!PLATEAU_API_URL && plateauUrl) {
@@ -122,13 +118,10 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [projectId, plateauUrl, plateauToken]);
 
   useEffect(() => {
-    if (
-      municipalitySiteUrl &&
-      (!MUNICIPALITY_SITE_URL || MUNICIPALITY_SITE_URL !== municipalitySiteUrl)
-    ) {
-      setMunicipalitySiteURL(municipalitySiteUrl);
+    if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {
+      setSiteURL(customSiteUrl);
     }
-  }, [municipalitySiteUrl]);
+  }, [customSiteUrl]);
 
   useEffect(() => {
     if (customLogo && (!LOGO || LOGO !== customLogo)) {

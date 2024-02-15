@@ -17,6 +17,7 @@ import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
+import { CameraPosition } from "../shared/reearth/types";
 import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
@@ -39,19 +40,14 @@ type DefaultProps = {
   googleStreetViewAPIKey?: string;
 };
 
-type MunicipalityProps = {
-  siteUrl?: string;
-  projectName?: string;
-  apiAccessToken?: string;
-  catalogProjectName?: string;
-};
-
-type AppearanceProps = {
-  logo?: string;
+type OptionalProps = {
   primaryColor?: string;
+  logo?: string;
+  pedestrian?: CameraPosition;
+  siteUrl?: string;
 };
 
-type Props = WidgetProps<DefaultProps, MunicipalityProps, AppearanceProps>;
+type Props = WidgetProps<DefaultProps, OptionalProps>;
 
 export const Loading: FC = () => {
   const ready = useAtomValue(readyAtom);
@@ -65,6 +61,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
   return (
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>
       <WidgetContext
+        inEditor={inEditor}
         geoUrl={widget.property.default.geoURL}
         gsiTileURL={widget.property.default.gsiTileURL}
         plateauUrl={widget.property.default.plateauURL}
@@ -73,13 +70,10 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         projectId={widget.property.default.projectName}
         plateauToken={widget.property.default.plateauAccessToken}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-        inEditor={inEditor}
-        municipalitySiteUrl={widget.property.municipality?.siteUrl}
-        municipalityProjectId={widget.property.municipality?.projectName}
-        municipalityToken={widget.property.municipality?.apiAccessToken}
-        municipalityCatalogProjectName={widget.property.municipality?.catalogProjectName}
-        customPrimaryColor={widget.property.appearance?.primaryColor}
-        customLogo={widget.property.appearance?.logo}>
+        customPrimaryColor={widget.property.optional?.primaryColor}
+        customLogo={widget.property.optional?.logo}
+        customPedestrian={widget.property.optional?.pedestrian}
+        customSiteUrl={widget.property.optional?.siteUrl}>
         <InitializeApp />
         <AppFrame header={<AppHeader />} />
         {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}

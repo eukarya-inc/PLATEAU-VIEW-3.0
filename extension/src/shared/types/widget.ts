@@ -1,10 +1,9 @@
-export type WidgetProps<DefaultProperty, MunicipalityProperty, AppearanceProperty> = {
+export type WidgetProps<DefaultProperty, OptionalProperty> = {
   inEditor: boolean;
   widget: {
     property: {
       default: DefaultProperty;
-      municipality?: MunicipalityProperty;
-      appearance?: AppearanceProperty;
+      optional?: OptionalProperty;
     };
   };
 };

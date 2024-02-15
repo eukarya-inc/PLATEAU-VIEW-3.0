@@ -24,18 +24,7 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
 
-// municipality settings
-export let MUNICIPALITY_SITE_URL: string | undefined;
-export const setMunicipalitySiteURL = (url: string) => {
-  MUNICIPALITY_SITE_URL = url;
-};
-
-export let MUNICIPALITY_PROJECT_ID: string | undefined;
-export const setMunicipalityProjectId = (id: string) => {
-  MUNICIPALITY_PROJECT_ID = id;
-};
-
-// appearance settings
+// custom settings
 export let PRIMARY_COLOR: string | undefined;
 export const setPrimaryColor = (color: string) => {
   PRIMARY_COLOR = color;
@@ -44,4 +33,9 @@ export const setPrimaryColor = (color: string) => {
 export let LOGO: string | undefined;
 export const setLogo = (url: string) => {
   LOGO = url;
+};
+
+export let SITE_URL: string | undefined;
+export const setSiteURL = (url?: string) => {
+  SITE_URL = url ?? "https://www.mlit.go.jp/plateau/";
 };
