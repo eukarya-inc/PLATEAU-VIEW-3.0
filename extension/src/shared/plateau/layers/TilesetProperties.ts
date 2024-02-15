@@ -24,7 +24,6 @@ interface QualitativeProperty {
   colorSet?: QualitativeColorSet | ((id: string, name: string) => QualitativeColorSet);
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
   isMinMaxNeeded?: boolean;
   isFlood?: boolean;
@@ -114,7 +113,6 @@ interface NumberProperty {
   testProperty: (name: string, value: unknown) => boolean;
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
-  accessor?: (propertyName: string) => string;
   availableFeatures?: AvailableFeatures;
 }
 
@@ -156,7 +154,9 @@ export type PlateauTilesetProperty = {
     }
 );
 
-const defaultAccessor = (propertyName: string) => `rootProperties["${propertyName}"]`;
+const makeAccessor = (propertyName: string) => `rootProperties["${propertyName}"]`;
+export const restoreAccessor = (propertyName: string) =>
+  propertyName.slice(`rootProperties["`.length, -`"]`.length);
 
 export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
@@ -230,7 +230,7 @@ export class PlateauTilesetProperties extends Properties {
             maximum: finalMaximum,
             displayName,
             availableFeatures: qualitativeProperty.availableFeatures,
-            accessor: qualitativeProperty.accessor?.(name) ?? defaultAccessor(name),
+            accessor: makeAccessor(name),
           };
         }
 
@@ -250,7 +250,7 @@ export class PlateauTilesetProperties extends Properties {
               maximum: finalMaximum,
               displayName: numberProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
               availableFeatures: numberProperty.availableFeatures,
-              accessor: numberProperty.accessor?.(name) ?? defaultAccessor(name),
+              accessor: makeAccessor(name),
             };
           }
         }

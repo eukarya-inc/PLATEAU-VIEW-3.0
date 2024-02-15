@@ -1,4 +1,4 @@
-import { groupBy } from "lodash";
+import { groupBy, unionBy } from "lodash-es";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, useMemo, useState, type FC, type MouseEvent } from "react";
 import invariant from "tiny-invariant";
@@ -19,13 +19,12 @@ export interface LocationBreadcrumbItemProps {
 
 export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }) => {
   const { data: datasetTypeOrder } = useDatasetTypes();
+  const filteredDatasetTypeOrder = useMemo(
+    () => unionBy(datasetTypeOrder, "name"),
+    [datasetTypeOrder],
+  );
   const query = useAreaDatasets(area.code, {
-    excludeTypes: [
-      PlateauDatasetType.UseCase,
-      PlateauDatasetType.GenericCityObject,
-      PlateauDatasetType.Sample,
-      PlateauDatasetType.Constructure,
-    ],
+    excludeTypes: [PlateauDatasetType.UseCase],
   });
 
   const datasetGroups = useMemo(() => {
@@ -44,15 +43,15 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
             ? d.wardCode === area.code
             : false,
         ),
-        d => d.type.id,
+        d => d.type.name,
       ),
     );
 
-    return datasetTypeOrder
-      ?.map(orderedType => groups.find(([type]) => type === orderedType.id))
+    return filteredDatasetTypeOrder
+      ?.map(orderedType => groups.find(([type]) => type === orderedType.name))
       .filter(isNotNullish)
       .map(([, datasets]) => datasets);
-  }, [query.data, area.code, datasetTypeOrder]);
+  }, [query.data, area.code, filteredDatasetTypeOrder]);
 
   const [expanded, setExpanded] = useState(false);
   const handleCollapse = useCallback(() => {

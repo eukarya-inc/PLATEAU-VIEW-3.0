@@ -655,11 +655,11 @@ urf:city,市区町村名
 urf:reference,参考
 urf:reason,理由
 urf:note,備考
-urf:surveyYear,調査年度
+urf:surveyYear,調査年
 urf:lod1MultiSurface,LOD1面（区域）
 urf:Boundary,境界
 urf:location,所在地
-urf:disasterType,災害種別
+urf:disasterType,現象区分
 urf:areaType,区域区分
 urf:zoneNumber,区域番号
 urf:zoneName,区域名

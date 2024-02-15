@@ -26,6 +26,7 @@ type PointUseImageConditionFieldPresetRule = {
 
 type PointUseImageConditionFieldPresetRuleCondition = {
   id: string;
+  propertyName?: string;
   operation?: OperationValue;
   value?: string;
   imageURL?: string;

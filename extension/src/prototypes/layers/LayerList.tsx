@@ -13,7 +13,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { styled } from "@mui/material";
+import { styled, Button } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
 import {
   forwardRef,
@@ -27,10 +27,28 @@ import invariant from "tiny-invariant";
 import { rootLayersLayerAtomsAtom } from "../../shared/states/rootLayer";
 
 import { LayerListItem } from "./LayerListItem";
-import { layerIdsAtom, moveLayerAtom } from "./states";
+import { layerIdsAtom, moveLayerAtom, removeLayerAtom } from "./states";
 import { type LayerProps } from "./types";
 
 const Root = styled("div")({});
+
+const Wrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+}));
+
+const LayerListActions = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: theme.spacing(1),
+  padding: theme.spacing(0, 1),
+}));
+
+const LayerListActionButton = styled(Button)(({ theme }) => ({
+  padding: theme.spacing(0, 1),
+  fontSize: theme.typography.body2.fontSize,
+}));
 
 export type LayerListProps<C extends ElementType = typeof Root> = ComponentPropsWithRef<C> & {
   component?: C;
@@ -71,30 +89,46 @@ export const LayerList = forwardRef<HTMLDivElement, LayerListProps>(
       [move],
     );
 
+    const remove = useSetAtom(removeLayerAtom);
+    const handleRemoveAllLayers = useCallback(() => {
+      for (const layerId of layerIds) {
+        remove(layerId);
+      }
+    }, [layerIds, remove]);
+
     if (unmountWhenEmpty && layerAtoms.length === 0) {
       return null;
     }
     const Component = component ?? Root;
     return (
       <Component ref={ref} {...props}>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          modifiers={[restrictToVerticalAxis]}
-          onDragEnd={handleDragEnd}>
-          <SortableContext items={layerIds} strategy={verticalListSortingStrategy}>
-            {layerAtoms.map((layerAtom, index) => (
-              // Technically key can be coerced string of atom, but dnd-kit
-              // disagree with it.
-              <LayerListItem
-                key={layerIds[index]}
-                index={index}
-                layerAtom={layerAtom}
-                itemComponent={itemComponent}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+        <Wrapper>
+          <div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              modifiers={[restrictToVerticalAxis]}
+              onDragEnd={handleDragEnd}>
+              <SortableContext items={layerIds} strategy={verticalListSortingStrategy}>
+                {layerAtoms.map((layerAtom, index) => (
+                  // Technically key can be coerced string of atom, but dnd-kit
+                  // disagree with it.
+                  <LayerListItem
+                    key={layerIds[index]}
+                    index={index}
+                    layerAtom={layerAtom}
+                    itemComponent={itemComponent}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
+          </div>
+          <LayerListActions>
+            <LayerListActionButton variant="outlined" onClick={handleRemoveAllLayers}>
+              全てを削除
+            </LayerListActionButton>
+          </LayerListActions>
+        </Wrapper>
       </Component>
     );
   },

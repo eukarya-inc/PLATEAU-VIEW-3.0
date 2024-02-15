@@ -9,7 +9,7 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
-import { numberOrString, string, variable } from "../helpers";
+import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
@@ -59,6 +59,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   hidden,
   hiddenFeaturesAtom,
   searchedFeaturesAtom,
+  textured,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -134,13 +135,9 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const wireframeAtom = useFindComponent(componentAtoms, TILESET_WIREFRAME);
 
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
-  const hiddenFeaturesConditions: ConditionsExpression = useMemo(
-    () => ({
-      conditions:
-        hiddenFeatures?.map(f => [`${variable("gml_id")} ===  ${string(f)}`, "false"]) ?? [],
-    }),
-    [hiddenFeatures],
-  );
+  const hiddenFeaturesConditions: ConditionsExpression = {
+    conditions: [[`${JSON.stringify(hiddenFeatures)}` + "== ${gml_id}", "false"]],
+  };
 
   const searchedFeatures = useAtomValue(searchedFeaturesAtom);
   const shownSearchedFeaturesConditions: ConditionsExpression | undefined = useMemo(
@@ -159,7 +156,12 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
             ],
           }
         : undefined,
-    [searchedFeatures, hiddenFeaturesConditions, filter],
+    [
+      searchedFeatures?.onlyShow,
+      searchedFeatures?.conditions,
+      hiddenFeaturesConditions.conditions,
+      filter.conditions,
+    ],
   );
 
   const colorMode = useAtomValue(colorModeAtom);
@@ -182,7 +184,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: "withTexture",
+      pbr: textured ? "withTexture" : false,
       ...(color
         ? {
             color: {
@@ -203,6 +205,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       showWireframe: wireframeView?.value?.wireframe,
     }),
     [
+      textured,
       color,
       shownSearchedFeaturesConditions,
       hiddenFeaturesConditions.conditions,

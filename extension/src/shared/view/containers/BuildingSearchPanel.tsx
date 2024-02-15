@@ -153,6 +153,7 @@ const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accesso
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:detailedUsage"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:detailedUsage`,
   ],
+  "gml_id",
 ];
 
 export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {

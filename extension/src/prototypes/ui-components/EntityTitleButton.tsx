@@ -1,8 +1,6 @@
 import LoadingIcon from "@ant-design/icons/LoadingOutlined";
 import {
   alpha,
-  IconButton,
-  Tooltip,
   ListItemButton,
   listItemButtonClasses,
   listItemTextClasses,
@@ -12,12 +10,8 @@ import {
 } from "@mui/material";
 import { forwardRef, type ComponentType } from "react";
 
-import { XYZ } from "../../shared/reearth/types";
-
 import { AntIcon } from "./AntIcon";
 import { EntityTitleIcon, EntityTitleText } from "./EntityTitle";
-
-import { AddressIcon } from "./index";
 
 const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: prop => prop !== "highlighted" && prop !== "hidden",
@@ -87,9 +81,6 @@ export interface EntityTitleButtonProps extends Omit<ListItemButtonProps, "title
   selected?: boolean;
   loading?: boolean;
   hidden?: boolean;
-  onMove?: () => void;
-  boundingSphere?: XYZ | null;
-  layerId?: string | null;
 }
 
 export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonProps>(
@@ -101,15 +92,11 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
       selected = false,
       loading = false,
       hidden = false,
-      onMove,
-      layerId,
-      boundingSphere,
       children,
       ...props
     },
     ref,
   ) => {
-    const isButtonDisabled = layerId == null && boundingSphere == null;
     const Icon = iconComponent;
     return (
       <StyledListItemButton
@@ -125,13 +112,6 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
             <Icon fontSize="medium" />
           )}
         </EntityTitleIcon>
-        {onMove && (
-          <Tooltip title="移動">
-            <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
-              <AddressIcon />
-            </IconButton>
-          </Tooltip>
-        )}
         <EntityTitleText
           primary={typeof title === "object" ? title?.primary : title}
           secondary={typeof title === "object" ? title?.secondary : undefined}
@@ -141,6 +121,7 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
           secondaryTypographyProps={{
             variant: "body2",
           }}
+          title={typeof title === "object" ? title?.primary : title}
         />
         {children}
       </StyledListItemButton>

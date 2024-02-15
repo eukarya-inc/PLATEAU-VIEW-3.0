@@ -4959,11 +4959,11 @@ lsld,urf:SedimentDisasterProneArea,urf:city,,,,市区町村名
 lsld,urf:SedimentDisasterProneArea,urf:reference,,,,参考
 lsld,urf:SedimentDisasterProneArea,urf:reason,,,,理由
 lsld,urf:SedimentDisasterProneArea,urf:note,,,,備考
-lsld,urf:SedimentDisasterProneArea,urf:surveyYear,,,,調査年度
+lsld,urf:SedimentDisasterProneArea,urf:surveyYear,,,,調査年
 lsld,urf:SedimentDisasterProneArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 lsld,urf:SedimentDisasterProneArea,urf:boundary.urf:Boundary,,,,境界
 lsld,urf:SedimentDisasterProneArea,urf:location,,,,所在地
-lsld,urf:SedimentDisasterProneArea,urf:disasterType,,,,災害種別
+lsld,urf:SedimentDisasterProneArea,urf:disasterType,,,,現象区分
 lsld,urf:SedimentDisasterProneArea,urf:areaType,,,,区域区分
 lsld,urf:SedimentDisasterProneArea,urf:zoneNumber,,,,区域番号
 lsld,urf:SedimentDisasterProneArea,urf:zoneName,,,,区域名
@@ -4999,7 +4999,7 @@ urf,urf:UrbanPlanningArea,urf:city,,,,市区町村名
 urf,urf:UrbanPlanningArea,urf:reference,,,,参考
 urf,urf:UrbanPlanningArea,urf:reason,,,,理由
 urf,urf:UrbanPlanningArea,urf:note,,,,備考
-urf,urf:UrbanPlanningArea,urf:surveyYear,,,,調査年度
+urf,urf:UrbanPlanningArea,urf:surveyYear,,,,調査年
 urf,urf:UrbanPlanningArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanPlanningArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanPlanningArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5046,7 +5046,7 @@ urf,urf:QuasiUrbanPlanningArea,urf:city,,,,市区町村名
 urf,urf:QuasiUrbanPlanningArea,urf:reference,,,,参考
 urf,urf:QuasiUrbanPlanningArea,urf:reason,,,,理由
 urf,urf:QuasiUrbanPlanningArea,urf:note,,,,備考
-urf,urf:QuasiUrbanPlanningArea,urf:surveyYear,,,,調査年度
+urf,urf:QuasiUrbanPlanningArea,urf:surveyYear,,,,調査年
 urf,urf:QuasiUrbanPlanningArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:QuasiUrbanPlanningArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:QuasiUrbanPlanningArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5088,7 +5088,7 @@ urf,urf:AreaClassification,urf:city,,,,市区町村名
 urf,urf:AreaClassification,urf:reference,,,,参考
 urf,urf:AreaClassification,urf:reason,,,,理由
 urf,urf:AreaClassification,urf:note,,,,備考
-urf,urf:AreaClassification,urf:surveyYear,,,,調査年度
+urf,urf:AreaClassification,urf:surveyYear,,,,調査年
 urf,urf:AreaClassification,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:AreaClassification,urf:boundary.urf:Boundary,,,,境界
 urf,urf:AreaClassification,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5128,7 +5128,7 @@ urf,urf:DistrictsAndZones,urf:city,,,,市区町村名
 urf,urf:DistrictsAndZones,urf:reference,,,,参考
 urf,urf:DistrictsAndZones,urf:reason,,,,理由
 urf,urf:DistrictsAndZones,urf:note,,,,備考
-urf,urf:DistrictsAndZones,urf:surveyYear,,,,調査年度
+urf,urf:DistrictsAndZones,urf:surveyYear,,,,調査年
 urf,urf:DistrictsAndZones,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictsAndZones,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictsAndZones,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5168,7 +5168,7 @@ urf,urf:UseDistrict,urf:city,,,,市区町村名
 urf,urf:UseDistrict,urf:reference,,,,参考
 urf,urf:UseDistrict,urf:reason,,,,理由
 urf,urf:UseDistrict,urf:note,,,,備考
-urf,urf:UseDistrict,urf:surveyYear,,,,調査年度
+urf,urf:UseDistrict,urf:surveyYear,,,,調査年
 urf,urf:UseDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UseDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UseDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5220,7 +5220,7 @@ urf,urf:SpecialUseDistrict,urf:city,,,,市区町村名
 urf,urf:SpecialUseDistrict,urf:reference,,,,参考
 urf,urf:SpecialUseDistrict,urf:reason,,,,理由
 urf,urf:SpecialUseDistrict,urf:note,,,,備考
-urf,urf:SpecialUseDistrict,urf:surveyYear,,,,調査年度
+urf,urf:SpecialUseDistrict,urf:surveyYear,,,,調査年
 urf,urf:SpecialUseDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialUseDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialUseDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5262,7 +5262,7 @@ urf,urf:SpecialUseRestrictionDistrict,urf:city,,,,市区町村名
 urf,urf:SpecialUseRestrictionDistrict,urf:reference,,,,参考
 urf,urf:SpecialUseRestrictionDistrict,urf:reason,,,,理由
 urf,urf:SpecialUseRestrictionDistrict,urf:note,,,,備考
-urf,urf:SpecialUseRestrictionDistrict,urf:surveyYear,,,,調査年度
+urf,urf:SpecialUseRestrictionDistrict,urf:surveyYear,,,,調査年
 urf,urf:SpecialUseRestrictionDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialUseRestrictionDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialUseRestrictionDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5304,7 +5304,7 @@ urf,urf:ExceptionalFloorAreaRateDistrict,urf:city,,,,市区町村名
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:reference,,,,参考
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:reason,,,,理由
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:note,,,,備考
-urf,urf:ExceptionalFloorAreaRateDistrict,urf:surveyYear,,,,調査年度
+urf,urf:ExceptionalFloorAreaRateDistrict,urf:surveyYear,,,,調査年
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ExceptionalFloorAreaRateDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5345,7 +5345,7 @@ urf,urf:HighRiseResidentialAttractionDistrict,urf:city,,,,市区町村名
 urf,urf:HighRiseResidentialAttractionDistrict,urf:reference,,,,参考
 urf,urf:HighRiseResidentialAttractionDistrict,urf:reason,,,,理由
 urf,urf:HighRiseResidentialAttractionDistrict,urf:note,,,,備考
-urf,urf:HighRiseResidentialAttractionDistrict,urf:surveyYear,,,,調査年度
+urf,urf:HighRiseResidentialAttractionDistrict,urf:surveyYear,,,,調査年
 urf,urf:HighRiseResidentialAttractionDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:HighRiseResidentialAttractionDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:HighRiseResidentialAttractionDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5388,7 +5388,7 @@ urf,urf:HeightControlDistrict,urf:city,,,,市区町村名
 urf,urf:HeightControlDistrict,urf:reference,,,,参考
 urf,urf:HeightControlDistrict,urf:reason,,,,理由
 urf,urf:HeightControlDistrict,urf:note,,,,備考
-urf,urf:HeightControlDistrict,urf:surveyYear,,,,調査年度
+urf,urf:HeightControlDistrict,urf:surveyYear,,,,調査年
 urf,urf:HeightControlDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:HeightControlDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:HeightControlDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5430,7 +5430,7 @@ urf,urf:HighLevelUseDistrict,urf:city,,,,市区町村名
 urf,urf:HighLevelUseDistrict,urf:reference,,,,参考
 urf,urf:HighLevelUseDistrict,urf:reason,,,,理由
 urf,urf:HighLevelUseDistrict,urf:note,,,,備考
-urf,urf:HighLevelUseDistrict,urf:surveyYear,,,,調査年度
+urf,urf:HighLevelUseDistrict,urf:surveyYear,,,,調査年
 urf,urf:HighLevelUseDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:HighLevelUseDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:HighLevelUseDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5475,7 +5475,7 @@ urf,urf:SpecifiedBlock,urf:city,,,,市区町村名
 urf,urf:SpecifiedBlock,urf:reference,,,,参考
 urf,urf:SpecifiedBlock,urf:reason,,,,理由
 urf,urf:SpecifiedBlock,urf:note,,,,備考
-urf,urf:SpecifiedBlock,urf:surveyYear,,,,調査年度
+urf,urf:SpecifiedBlock,urf:surveyYear,,,,調査年
 urf,urf:SpecifiedBlock,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecifiedBlock,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecifiedBlock,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5518,7 +5518,7 @@ urf,urf:SpecialUrbanRenaissanceDistrict,urf:city,,,,市区町村名
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:reference,,,,参考
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:reason,,,,理由
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:note,,,,備考
-urf,urf:SpecialUrbanRenaissanceDistrict,urf:surveyYear,,,,調査年度
+urf,urf:SpecialUrbanRenaissanceDistrict,urf:surveyYear,,,,調査年
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialUrbanRenaissanceDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5566,7 +5566,7 @@ urf,urf:HousingControlArea,urf:city,,,,市区町村名
 urf,urf:HousingControlArea,urf:reference,,,,参考
 urf,urf:HousingControlArea,urf:reason,,,,理由
 urf,urf:HousingControlArea,urf:note,,,,備考
-urf,urf:HousingControlArea,urf:surveyYear,,,,調査年度
+urf,urf:HousingControlArea,urf:surveyYear,,,,調査年
 urf,urf:HousingControlArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:HousingControlArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:HousingControlArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5606,7 +5606,7 @@ urf,urf:ResidentialEnvironmentImprovementDistrict,urf:city,,,,市区町村名
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:reference,,,,参考
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:reason,,,,理由
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:note,,,,備考
-urf,urf:ResidentialEnvironmentImprovementDistrict,urf:surveyYear,,,,調査年度
+urf,urf:ResidentialEnvironmentImprovementDistrict,urf:surveyYear,,,,調査年
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ResidentialEnvironmentImprovementDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5652,7 +5652,7 @@ urf,urf:SpecialUseAttractionDistrict,urf:city,,,,市区町村名
 urf,urf:SpecialUseAttractionDistrict,urf:reference,,,,参考
 urf,urf:SpecialUseAttractionDistrict,urf:reason,,,,理由
 urf,urf:SpecialUseAttractionDistrict,urf:note,,,,備考
-urf,urf:SpecialUseAttractionDistrict,urf:surveyYear,,,,調査年度
+urf,urf:SpecialUseAttractionDistrict,urf:surveyYear,,,,調査年
 urf,urf:SpecialUseAttractionDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialUseAttractionDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialUseAttractionDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5698,7 +5698,7 @@ urf,urf:FirePreventionDistrict,urf:city,,,,市区町村名
 urf,urf:FirePreventionDistrict,urf:reference,,,,参考
 urf,urf:FirePreventionDistrict,urf:reason,,,,理由
 urf,urf:FirePreventionDistrict,urf:note,,,,備考
-urf,urf:FirePreventionDistrict,urf:surveyYear,,,,調査年度
+urf,urf:FirePreventionDistrict,urf:surveyYear,,,,調査年
 urf,urf:FirePreventionDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:FirePreventionDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:FirePreventionDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5738,7 +5738,7 @@ urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:city,,,,市区町村
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:reference,,,,参考
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:reason,,,,理由
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:note,,,,備考
-urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:surveyYear,,,,調査年度
+urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:surveyYear,,,,調査年
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecifiedDisasterPreventionBlockImprovementZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5782,7 +5782,7 @@ urf,urf:LandscapeZone,urf:city,,,,市区町村名
 urf,urf:LandscapeZone,urf:reference,,,,参考
 urf,urf:LandscapeZone,urf:reason,,,,理由
 urf,urf:LandscapeZone,urf:note,,,,備考
-urf,urf:LandscapeZone,urf:surveyYear,,,,調査年度
+urf,urf:LandscapeZone,urf:surveyYear,,,,調査年
 urf,urf:LandscapeZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:LandscapeZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:LandscapeZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5827,7 +5827,7 @@ urf,urf:ScenicDistrict,urf:city,,,,市区町村名
 urf,urf:ScenicDistrict,urf:reference,,,,参考
 urf,urf:ScenicDistrict,urf:reason,,,,理由
 urf,urf:ScenicDistrict,urf:note,,,,備考
-urf,urf:ScenicDistrict,urf:surveyYear,,,,調査年度
+urf,urf:ScenicDistrict,urf:surveyYear,,,,調査年
 urf,urf:ScenicDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScenicDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScenicDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5871,7 +5871,7 @@ urf,urf:ParkingPlaceDevelopmentZone,urf:city,,,,市区町村名
 urf,urf:ParkingPlaceDevelopmentZone,urf:reference,,,,参考
 urf,urf:ParkingPlaceDevelopmentZone,urf:reason,,,,理由
 urf,urf:ParkingPlaceDevelopmentZone,urf:note,,,,備考
-urf,urf:ParkingPlaceDevelopmentZone,urf:surveyYear,,,,調査年度
+urf,urf:ParkingPlaceDevelopmentZone,urf:surveyYear,,,,調査年
 urf,urf:ParkingPlaceDevelopmentZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ParkingPlaceDevelopmentZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ParkingPlaceDevelopmentZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5911,7 +5911,7 @@ urf,urf:PortZone,urf:city,,,,市区町村名
 urf,urf:PortZone,urf:reference,,,,参考
 urf,urf:PortZone,urf:reason,,,,理由
 urf,urf:PortZone,urf:note,,,,備考
-urf,urf:PortZone,urf:surveyYear,,,,調査年度
+urf,urf:PortZone,urf:surveyYear,,,,調査年
 urf,urf:PortZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:PortZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:PortZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5952,7 +5952,7 @@ urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:city,,,,市区町村
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:reference,,,,参考
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:reason,,,,理由
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:note,,,,備考
-urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:surveyYear,,,,調査年度
+urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:surveyYear,,,,調査年
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialZoneForPreservationOfHistoricalLandscape,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -5992,7 +5992,7 @@ urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:city,,,,市区町村名
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:reference,,,,参考
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:reason,,,,理由
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:note,,,,備考
-urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:surveyYear,,,,調査年度
+urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:surveyYear,,,,調査年
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ZoneForPreservationOfHistoricalLandscape,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6032,7 +6032,7 @@ urf,urf:GreenSpaceConservationDistrict,urf:city,,,,市区町村名
 urf,urf:GreenSpaceConservationDistrict,urf:reference,,,,参考
 urf,urf:GreenSpaceConservationDistrict,urf:reason,,,,理由
 urf,urf:GreenSpaceConservationDistrict,urf:note,,,,備考
-urf,urf:GreenSpaceConservationDistrict,urf:surveyYear,,,,調査年度
+urf,urf:GreenSpaceConservationDistrict,urf:surveyYear,,,,調査年
 urf,urf:GreenSpaceConservationDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:GreenSpaceConservationDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:GreenSpaceConservationDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6072,7 +6072,7 @@ urf,urf:SpecialGreenSpaceConservationDistrict,urf:city,,,,市区町村名
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:reference,,,,参考
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:reason,,,,理由
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:note,,,,備考
-urf,urf:SpecialGreenSpaceConservationDistrict,urf:surveyYear,,,,調査年度
+urf,urf:SpecialGreenSpaceConservationDistrict,urf:surveyYear,,,,調査年
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecialGreenSpaceConservationDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6113,7 +6113,7 @@ urf,urf:TreePlantingDistrict,urf:city,,,,市区町村名
 urf,urf:TreePlantingDistrict,urf:reference,,,,参考
 urf,urf:TreePlantingDistrict,urf:reason,,,,理由
 urf,urf:TreePlantingDistrict,urf:note,,,,備考
-urf,urf:TreePlantingDistrict,urf:surveyYear,,,,調査年度
+urf,urf:TreePlantingDistrict,urf:surveyYear,,,,調査年
 urf,urf:TreePlantingDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:TreePlantingDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:TreePlantingDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6154,7 +6154,7 @@ urf,urf:DistributionBusinessZone,urf:city,,,,市区町村名
 urf,urf:DistributionBusinessZone,urf:reference,,,,参考
 urf,urf:DistributionBusinessZone,urf:reason,,,,理由
 urf,urf:DistributionBusinessZone,urf:note,,,,備考
-urf,urf:DistributionBusinessZone,urf:surveyYear,,,,調査年度
+urf,urf:DistributionBusinessZone,urf:surveyYear,,,,調査年
 urf,urf:DistributionBusinessZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistributionBusinessZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistributionBusinessZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6195,7 +6195,7 @@ urf,urf:ProductiveGreenZone,urf:city,,,,市区町村名
 urf,urf:ProductiveGreenZone,urf:reference,,,,参考
 urf,urf:ProductiveGreenZone,urf:reason,,,,理由
 urf,urf:ProductiveGreenZone,urf:note,,,,備考
-urf,urf:ProductiveGreenZone,urf:surveyYear,,,,調査年度
+urf,urf:ProductiveGreenZone,urf:surveyYear,,,,調査年
 urf,urf:ProductiveGreenZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ProductiveGreenZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ProductiveGreenZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6237,7 +6237,7 @@ urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:city,,,,市区町
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:reference,,,,参考
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:reason,,,,理由
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:note,,,,備考
-urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:surveyYear,,,,調査年度
+urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:surveyYear,,,,調査年
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ConservationZoneForClustersOfTraditionalStructures,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6277,7 +6277,7 @@ urf,urf:AircraftNoiseControlZone,urf:city,,,,市区町村名
 urf,urf:AircraftNoiseControlZone,urf:reference,,,,参考
 urf,urf:AircraftNoiseControlZone,urf:reason,,,,理由
 urf,urf:AircraftNoiseControlZone,urf:note,,,,備考
-urf,urf:AircraftNoiseControlZone,urf:surveyYear,,,,調査年度
+urf,urf:AircraftNoiseControlZone,urf:surveyYear,,,,調査年
 urf,urf:AircraftNoiseControlZone,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:AircraftNoiseControlZone,urf:boundary.urf:Boundary,,,,境界
 urf,urf:AircraftNoiseControlZone,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6317,7 +6317,7 @@ urf,urf:ProjectPromotionArea,urf:city,,,,市区町村名
 urf,urf:ProjectPromotionArea,urf:reference,,,,参考
 urf,urf:ProjectPromotionArea,urf:reason,,,,理由
 urf,urf:ProjectPromotionArea,urf:note,,,,備考
-urf,urf:ProjectPromotionArea,urf:surveyYear,,,,調査年度
+urf,urf:ProjectPromotionArea,urf:surveyYear,,,,調査年
 urf,urf:ProjectPromotionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ProjectPromotionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ProjectPromotionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6358,7 +6358,7 @@ urf,urf:UrbanRedevelopmentPromotionArea,urf:city,,,,市区町村名
 urf,urf:UrbanRedevelopmentPromotionArea,urf:reference,,,,参考
 urf,urf:UrbanRedevelopmentPromotionArea,urf:reason,,,,理由
 urf,urf:UrbanRedevelopmentPromotionArea,urf:note,,,,備考
-urf,urf:UrbanRedevelopmentPromotionArea,urf:surveyYear,,,,調査年度
+urf,urf:UrbanRedevelopmentPromotionArea,urf:surveyYear,,,,調査年
 urf,urf:UrbanRedevelopmentPromotionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanRedevelopmentPromotionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanRedevelopmentPromotionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6401,7 +6401,7 @@ urf,urf:LandReadjustmentPromotionArea,urf:city,,,,市区町村名
 urf,urf:LandReadjustmentPromotionArea,urf:reference,,,,参考
 urf,urf:LandReadjustmentPromotionArea,urf:reason,,,,理由
 urf,urf:LandReadjustmentPromotionArea,urf:note,,,,備考
-urf,urf:LandReadjustmentPromotionArea,urf:surveyYear,,,,調査年度
+urf,urf:LandReadjustmentPromotionArea,urf:surveyYear,,,,調査年
 urf,urf:LandReadjustmentPromotionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:LandReadjustmentPromotionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:LandReadjustmentPromotionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6442,7 +6442,7 @@ urf,urf:ResidentialBlockConstructionPromotionAreas,urf:city,,,,市区町村名
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:reference,,,,参考
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:reason,,,,理由
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:note,,,,備考
-urf,urf:ResidentialBlockConstructionPromotionAreas,urf:surveyYear,,,,調査年度
+urf,urf:ResidentialBlockConstructionPromotionAreas,urf:surveyYear,,,,調査年
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ResidentialBlockConstructionPromotionAreas,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6483,7 +6483,7 @@ urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:city,,
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:reference,,,,参考
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:reason,,,,理由
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:note,,,,備考
-urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:surveyYear,,,,調査年度
+urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:surveyYear,,,,調査年
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:boundary.urf:Boundary,,,,境界
 urf,urf:LandReadjustmentPromotionAreasForCoreBusinessUrbanDevelopment,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6525,7 +6525,7 @@ urf,urf:UnusedLandUsePromotionArea,urf:city,,,,市区町村名
 urf,urf:UnusedLandUsePromotionArea,urf:reference,,,,参考
 urf,urf:UnusedLandUsePromotionArea,urf:reason,,,,理由
 urf,urf:UnusedLandUsePromotionArea,urf:note,,,,備考
-urf,urf:UnusedLandUsePromotionArea,urf:surveyYear,,,,調査年度
+urf,urf:UnusedLandUsePromotionArea,urf:surveyYear,,,,調査年
 urf,urf:UnusedLandUsePromotionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UnusedLandUsePromotionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UnusedLandUsePromotionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6564,7 +6564,7 @@ urf,urf:UrbanDisasterRecoveryPromotionArea,urf:city,,,,市区町村名
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:reference,,,,参考
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:reason,,,,理由
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:note,,,,備考
-urf,urf:UrbanDisasterRecoveryPromotionArea,urf:surveyYear,,,,調査年度
+urf,urf:UrbanDisasterRecoveryPromotionArea,urf:surveyYear,,,,調査年
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanDisasterRecoveryPromotionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6606,7 +6606,7 @@ urf,urf:UrbanFacility,urf:city,,,,市区町村名
 urf,urf:UrbanFacility,urf:reference,,,,参考
 urf,urf:UrbanFacility,urf:reason,,,,理由
 urf,urf:UrbanFacility,urf:note,,,,備考
-urf,urf:UrbanFacility,urf:surveyYear,,,,調査年度
+urf,urf:UrbanFacility,urf:surveyYear,,,,調査年
 urf,urf:UrbanFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6647,7 +6647,7 @@ urf,urf:TrafficFacility,urf:city,,,,市区町村名
 urf,urf:TrafficFacility,urf:reference,,,,参考
 urf,urf:TrafficFacility,urf:reason,,,,理由
 urf,urf:TrafficFacility,urf:note,,,,備考
-urf,urf:TrafficFacility,urf:surveyYear,,,,調査年度
+urf,urf:TrafficFacility,urf:surveyYear,,,,調査年
 urf,urf:TrafficFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:TrafficFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:TrafficFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6731,7 +6731,7 @@ urf,urf:OpenSpaceForPublicUse,urf:city,,,,市区町村名
 urf,urf:OpenSpaceForPublicUse,urf:reference,,,,参考
 urf,urf:OpenSpaceForPublicUse,urf:reason,,,,理由
 urf,urf:OpenSpaceForPublicUse,urf:note,,,,備考
-urf,urf:OpenSpaceForPublicUse,urf:surveyYear,,,,調査年度
+urf,urf:OpenSpaceForPublicUse,urf:surveyYear,,,,調査年
 urf,urf:OpenSpaceForPublicUse,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:OpenSpaceForPublicUse,urf:boundary.urf:Boundary,,,,境界
 urf,urf:OpenSpaceForPublicUse,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6776,7 +6776,7 @@ urf,urf:SupplyFacility,urf:city,,,,市区町村名
 urf,urf:SupplyFacility,urf:reference,,,,参考
 urf,urf:SupplyFacility,urf:reason,,,,理由
 urf,urf:SupplyFacility,urf:note,,,,備考
-urf,urf:SupplyFacility,urf:surveyYear,,,,調査年度
+urf,urf:SupplyFacility,urf:surveyYear,,,,調査年
 urf,urf:SupplyFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SupplyFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SupplyFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6820,7 +6820,7 @@ urf,urf:TreatmentFacility,urf:city,,,,市区町村名
 urf,urf:TreatmentFacility,urf:reference,,,,参考
 urf,urf:TreatmentFacility,urf:reason,,,,理由
 urf,urf:TreatmentFacility,urf:note,,,,備考
-urf,urf:TreatmentFacility,urf:surveyYear,,,,調査年度
+urf,urf:TreatmentFacility,urf:surveyYear,,,,調査年
 urf,urf:TreatmentFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:TreatmentFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:TreatmentFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6866,7 +6866,7 @@ urf,urf:WaterWay,urf:city,,,,市区町村名
 urf,urf:WaterWay,urf:reference,,,,参考
 urf,urf:WaterWay,urf:reason,,,,理由
 urf,urf:WaterWay,urf:note,,,,備考
-urf,urf:WaterWay,urf:surveyYear,,,,調査年度
+urf,urf:WaterWay,urf:surveyYear,,,,調査年
 urf,urf:WaterWay,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:WaterWay,urf:boundary.urf:Boundary,,,,境界
 urf,urf:WaterWay,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6912,7 +6912,7 @@ urf,urf:EducationalAndCulturalFacility,urf:city,,,,市区町村名
 urf,urf:EducationalAndCulturalFacility,urf:reference,,,,参考
 urf,urf:EducationalAndCulturalFacility,urf:reason,,,,理由
 urf,urf:EducationalAndCulturalFacility,urf:note,,,,備考
-urf,urf:EducationalAndCulturalFacility,urf:surveyYear,,,,調査年度
+urf,urf:EducationalAndCulturalFacility,urf:surveyYear,,,,調査年
 urf,urf:EducationalAndCulturalFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:EducationalAndCulturalFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:EducationalAndCulturalFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6953,7 +6953,7 @@ urf,urf:MedicalFacility,urf:city,,,,市区町村名
 urf,urf:MedicalFacility,urf:reference,,,,参考
 urf,urf:MedicalFacility,urf:reason,,,,理由
 urf,urf:MedicalFacility,urf:note,,,,備考
-urf,urf:MedicalFacility,urf:surveyYear,,,,調査年度
+urf,urf:MedicalFacility,urf:surveyYear,,,,調査年
 urf,urf:MedicalFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:MedicalFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:MedicalFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -6994,7 +6994,7 @@ urf,urf:SocialWelfareFacility,urf:city,,,,市区町村名
 urf,urf:SocialWelfareFacility,urf:reference,,,,参考
 urf,urf:SocialWelfareFacility,urf:reason,,,,理由
 urf,urf:SocialWelfareFacility,urf:note,,,,備考
-urf,urf:SocialWelfareFacility,urf:surveyYear,,,,調査年度
+urf,urf:SocialWelfareFacility,urf:surveyYear,,,,調査年
 urf,urf:SocialWelfareFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SocialWelfareFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SocialWelfareFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7035,7 +7035,7 @@ urf,urf:MarketsSlaughterhousesCrematoria,urf:city,,,,市区町村名
 urf,urf:MarketsSlaughterhousesCrematoria,urf:reference,,,,参考
 urf,urf:MarketsSlaughterhousesCrematoria,urf:reason,,,,理由
 urf,urf:MarketsSlaughterhousesCrematoria,urf:note,,,,備考
-urf,urf:MarketsSlaughterhousesCrematoria,urf:surveyYear,,,,調査年度
+urf,urf:MarketsSlaughterhousesCrematoria,urf:surveyYear,,,,調査年
 urf,urf:MarketsSlaughterhousesCrematoria,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:MarketsSlaughterhousesCrematoria,urf:boundary.urf:Boundary,,,,境界
 urf,urf:MarketsSlaughterhousesCrematoria,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7076,7 +7076,7 @@ urf,urf:CollectiveHousingFacilities,urf:city,,,,市区町村名
 urf,urf:CollectiveHousingFacilities,urf:reference,,,,参考
 urf,urf:CollectiveHousingFacilities,urf:reason,,,,理由
 urf,urf:CollectiveHousingFacilities,urf:note,,,,備考
-urf,urf:CollectiveHousingFacilities,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveHousingFacilities,urf:surveyYear,,,,調査年
 urf,urf:CollectiveHousingFacilities,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveHousingFacilities,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveHousingFacilities,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7125,7 +7125,7 @@ urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:city,,,,市区町村�
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:reference,,,,参考
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:reason,,,,理由
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:note,,,,備考
-urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:surveyYear,,,,調査年
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveGovernmentAndPublicOfficeFacilities,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7170,7 +7170,7 @@ urf,urf:DistributionBusinessPark,urf:city,,,,市区町村名
 urf,urf:DistributionBusinessPark,urf:reference,,,,参考
 urf,urf:DistributionBusinessPark,urf:reason,,,,理由
 urf,urf:DistributionBusinessPark,urf:note,,,,備考
-urf,urf:DistributionBusinessPark,urf:surveyYear,,,,調査年度
+urf,urf:DistributionBusinessPark,urf:surveyYear,,,,調査年
 urf,urf:DistributionBusinessPark,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistributionBusinessPark,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistributionBusinessPark,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7219,7 +7219,7 @@ urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:city,,,,市区町�
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:reference,,,,参考
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:reason,,,,理由
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:note,,,,備考
-urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:surveyYear,,,,調査年
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveFacilitiesForTsunamiDisasterPrevention,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7269,7 +7269,7 @@ urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:city,,,,市�
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:reference,,,,参考
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:reason,,,,理由
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:note,,,,備考
-urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:surveyYear,,,,調査年
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveFacilitiesForReconstructionAndRevitalization,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7319,7 +7319,7 @@ urf,urf:CollectiveFacilitiesForReconstruction,urf:city,,,,市区町村名
 urf,urf:CollectiveFacilitiesForReconstruction,urf:reference,,,,参考
 urf,urf:CollectiveFacilitiesForReconstruction,urf:reason,,,,理由
 urf,urf:CollectiveFacilitiesForReconstruction,urf:note,,,,備考
-urf,urf:CollectiveFacilitiesForReconstruction,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveFacilitiesForReconstruction,urf:surveyYear,,,,調査年
 urf,urf:CollectiveFacilitiesForReconstruction,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveFacilitiesForReconstruction,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveFacilitiesForReconstruction,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7369,7 +7369,7 @@ urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:city,,,,市区町村名
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:reference,,,,参考
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:reason,,,,理由
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:note,,,,備考
-urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:surveyYear,,,,調査年度
+urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:surveyYear,,,,調査年
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:boundary.urf:Boundary,,,,境界
 urf,urf:CollectiveUrbanDisasterPreventionFacilities,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7416,7 +7416,7 @@ urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:city,,,,市区町村名
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:reference,,,,参考
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:reason,,,,理由
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:note,,,,備考
-urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:surveyYear,,,,調査年度
+urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:surveyYear,,,,調査年
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanFacilityStipulatedByCabinetOrder,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7459,7 +7459,7 @@ urf,urf:TelecommunicationFacility,urf:city,,,,市区町村名
 urf,urf:TelecommunicationFacility,urf:reference,,,,参考
 urf,urf:TelecommunicationFacility,urf:reason,,,,理由
 urf,urf:TelecommunicationFacility,urf:note,,,,備考
-urf,urf:TelecommunicationFacility,urf:surveyYear,,,,調査年度
+urf,urf:TelecommunicationFacility,urf:surveyYear,,,,調査年
 urf,urf:TelecommunicationFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:TelecommunicationFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:TelecommunicationFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7502,7 +7502,7 @@ urf,urf:WindProtectionFacility,urf:city,,,,市区町村名
 urf,urf:WindProtectionFacility,urf:reference,,,,参考
 urf,urf:WindProtectionFacility,urf:reason,,,,理由
 urf,urf:WindProtectionFacility,urf:note,,,,備考
-urf,urf:WindProtectionFacility,urf:surveyYear,,,,調査年度
+urf,urf:WindProtectionFacility,urf:surveyYear,,,,調査年
 urf,urf:WindProtectionFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:WindProtectionFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:WindProtectionFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7545,7 +7545,7 @@ urf,urf:FireProtectionFacility,urf:city,,,,市区町村名
 urf,urf:FireProtectionFacility,urf:reference,,,,参考
 urf,urf:FireProtectionFacility,urf:reason,,,,理由
 urf,urf:FireProtectionFacility,urf:note,,,,備考
-urf,urf:FireProtectionFacility,urf:surveyYear,,,,調査年度
+urf,urf:FireProtectionFacility,urf:surveyYear,,,,調査年
 urf,urf:FireProtectionFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:FireProtectionFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:FireProtectionFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7588,7 +7588,7 @@ urf,urf:TideFacility,urf:city,,,,市区町村名
 urf,urf:TideFacility,urf:reference,,,,参考
 urf,urf:TideFacility,urf:reason,,,,理由
 urf,urf:TideFacility,urf:note,,,,備考
-urf,urf:TideFacility,urf:surveyYear,,,,調査年度
+urf,urf:TideFacility,urf:surveyYear,,,,調査年
 urf,urf:TideFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:TideFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:TideFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7631,7 +7631,7 @@ urf,urf:FloodPreventionFacility,urf:city,,,,市区町村名
 urf,urf:FloodPreventionFacility,urf:reference,,,,参考
 urf,urf:FloodPreventionFacility,urf:reason,,,,理由
 urf,urf:FloodPreventionFacility,urf:note,,,,備考
-urf,urf:FloodPreventionFacility,urf:surveyYear,,,,調査年度
+urf,urf:FloodPreventionFacility,urf:surveyYear,,,,調査年
 urf,urf:FloodPreventionFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:FloodPreventionFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:FloodPreventionFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7674,7 +7674,7 @@ urf,urf:SnowProtectionFacility,urf:city,,,,市区町村名
 urf,urf:SnowProtectionFacility,urf:reference,,,,参考
 urf,urf:SnowProtectionFacility,urf:reason,,,,理由
 urf,urf:SnowProtectionFacility,urf:note,,,,備考
-urf,urf:SnowProtectionFacility,urf:surveyYear,,,,調査年度
+urf,urf:SnowProtectionFacility,urf:surveyYear,,,,調査年
 urf,urf:SnowProtectionFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SnowProtectionFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SnowProtectionFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7717,7 +7717,7 @@ urf,urf:SandControlFacility,urf:city,,,,市区町村名
 urf,urf:SandControlFacility,urf:reference,,,,参考
 urf,urf:SandControlFacility,urf:reason,,,,理由
 urf,urf:SandControlFacility,urf:note,,,,備考
-urf,urf:SandControlFacility,urf:surveyYear,,,,調査年度
+urf,urf:SandControlFacility,urf:surveyYear,,,,調査年
 urf,urf:SandControlFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SandControlFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SandControlFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7760,7 +7760,7 @@ urf,urf:UrbanDevelopmentProject,urf:city,,,,市区町村名
 urf,urf:UrbanDevelopmentProject,urf:reference,,,,参考
 urf,urf:UrbanDevelopmentProject,urf:reason,,,,理由
 urf,urf:UrbanDevelopmentProject,urf:note,,,,備考
-urf,urf:UrbanDevelopmentProject,urf:surveyYear,,,,調査年度
+urf,urf:UrbanDevelopmentProject,urf:surveyYear,,,,調査年
 urf,urf:UrbanDevelopmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanDevelopmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanDevelopmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7800,7 +7800,7 @@ urf,urf:LandReadjustmentProject,urf:city,,,,市区町村名
 urf,urf:LandReadjustmentProject,urf:reference,,,,参考
 urf,urf:LandReadjustmentProject,urf:reason,,,,理由
 urf,urf:LandReadjustmentProject,urf:note,,,,備考
-urf,urf:LandReadjustmentProject,urf:surveyYear,,,,調査年度
+urf,urf:LandReadjustmentProject,urf:surveyYear,,,,調査年
 urf,urf:LandReadjustmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:LandReadjustmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:LandReadjustmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7842,7 +7842,7 @@ urf,urf:NewHousingAndUrbanDevelopmentProject,urf:city,,,,市区町村名
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:reference,,,,参考
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:reason,,,,理由
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:note,,,,備考
-urf,urf:NewHousingAndUrbanDevelopmentProject,urf:surveyYear,,,,調査年度
+urf,urf:NewHousingAndUrbanDevelopmentProject,urf:surveyYear,,,,調査年
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:NewHousingAndUrbanDevelopmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7885,7 +7885,7 @@ urf,urf:IndustrialParkDevelopmentProject,urf:city,,,,市区町村名
 urf,urf:IndustrialParkDevelopmentProject,urf:reference,,,,参考
 urf,urf:IndustrialParkDevelopmentProject,urf:reason,,,,理由
 urf,urf:IndustrialParkDevelopmentProject,urf:note,,,,備考
-urf,urf:IndustrialParkDevelopmentProject,urf:surveyYear,,,,調査年度
+urf,urf:IndustrialParkDevelopmentProject,urf:surveyYear,,,,調査年
 urf,urf:IndustrialParkDevelopmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:IndustrialParkDevelopmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:IndustrialParkDevelopmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7927,7 +7927,7 @@ urf,urf:UrbanRedevelopmentProject,urf:city,,,,市区町村名
 urf,urf:UrbanRedevelopmentProject,urf:reference,,,,参考
 urf,urf:UrbanRedevelopmentProject,urf:reason,,,,理由
 urf,urf:UrbanRedevelopmentProject,urf:note,,,,備考
-urf,urf:UrbanRedevelopmentProject,urf:surveyYear,,,,調査年度
+urf,urf:UrbanRedevelopmentProject,urf:surveyYear,,,,調査年
 urf,urf:UrbanRedevelopmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanRedevelopmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanRedevelopmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -7973,7 +7973,7 @@ urf,urf:NewUrbanInfrastructureProject,urf:city,,,,市区町村名
 urf,urf:NewUrbanInfrastructureProject,urf:reference,,,,参考
 urf,urf:NewUrbanInfrastructureProject,urf:reason,,,,理由
 urf,urf:NewUrbanInfrastructureProject,urf:note,,,,備考
-urf,urf:NewUrbanInfrastructureProject,urf:surveyYear,,,,調査年度
+urf,urf:NewUrbanInfrastructureProject,urf:surveyYear,,,,調査年
 urf,urf:NewUrbanInfrastructureProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:NewUrbanInfrastructureProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:NewUrbanInfrastructureProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8016,7 +8016,7 @@ urf,urf:ResidentialBlockConstructionProject,urf:city,,,,市区町村名
 urf,urf:ResidentialBlockConstructionProject,urf:reference,,,,参考
 urf,urf:ResidentialBlockConstructionProject,urf:reason,,,,理由
 urf,urf:ResidentialBlockConstructionProject,urf:note,,,,備考
-urf,urf:ResidentialBlockConstructionProject,urf:surveyYear,,,,調査年度
+urf,urf:ResidentialBlockConstructionProject,urf:surveyYear,,,,調査年
 urf,urf:ResidentialBlockConstructionProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ResidentialBlockConstructionProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ResidentialBlockConstructionProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8060,7 +8060,7 @@ urf,urf:DisasterPreventionBlockImprovementProject,urf:city,,,,市区町村名
 urf,urf:DisasterPreventionBlockImprovementProject,urf:reference,,,,参考
 urf,urf:DisasterPreventionBlockImprovementProject,urf:reason,,,,理由
 urf,urf:DisasterPreventionBlockImprovementProject,urf:note,,,,備考
-urf,urf:DisasterPreventionBlockImprovementProject,urf:surveyYear,,,,調査年度
+urf,urf:DisasterPreventionBlockImprovementProject,urf:surveyYear,,,,調査年
 urf,urf:DisasterPreventionBlockImprovementProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DisasterPreventionBlockImprovementProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DisasterPreventionBlockImprovementProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8103,7 +8103,7 @@ urf,urf:UrbanRenewalProject,urf:city,,,,市区町村名
 urf,urf:UrbanRenewalProject,urf:reference,,,,参考
 urf,urf:UrbanRenewalProject,urf:reason,,,,理由
 urf,urf:UrbanRenewalProject,urf:note,,,,備考
-urf,urf:UrbanRenewalProject,urf:surveyYear,,,,調査年度
+urf,urf:UrbanRenewalProject,urf:surveyYear,,,,調査年
 urf,urf:UrbanRenewalProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanRenewalProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanRenewalProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8149,7 +8149,7 @@ urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:city,,,,市区町村名
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:reference,,,,参考
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:reason,,,,理由
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:note,,,,備考
-urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForUrbanDevelopmentProject,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8189,7 +8189,7 @@ urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:city,,,,市区
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:reference,,,,参考
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:reason,,,,理由
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:note,,,,備考
-urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForNewHousingAndUrbanDevelopmentProjects,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8229,7 +8229,7 @@ urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:city,,,,市区町�
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:reference,,,,参考
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:reason,,,,理由
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:note,,,,備考
-urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForIndustrialParkDevelopmentProjects,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8269,7 +8269,7 @@ urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:city,,,,市区町村�
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:reference,,,,参考
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:reason,,,,理由
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:note,,,,備考
-urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForNewUrbanInfrastructureProjects,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8309,7 +8309,7 @@ urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:city,,,,市区町村名
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:reference,,,,参考
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:reason,,,,理由
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:note,,,,備考
-urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForCollectiveHousingFacilities,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8349,7 +8349,7 @@ urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:city,,
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:reference,,,,参考
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:reason,,,,理由
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:note,,,,備考
-urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForCollectiveGovernmentAndPublicOfficeFacilities,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8389,7 +8389,7 @@ urf,urf:ScheduledAreaForDistributionBusinessPark,urf:city,,,,市区町村名
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:reference,,,,参考
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:reason,,,,理由
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:note,,,,備考
-urf,urf:ScheduledAreaForDistributionBusinessPark,urf:surveyYear,,,,調査年度
+urf,urf:ScheduledAreaForDistributionBusinessPark,urf:surveyYear,,,,調査年
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ScheduledAreaForDistributionBusinessPark,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8429,7 +8429,7 @@ urf,urf:DistrictPlan,urf:city,,,,市区町村名
 urf,urf:DistrictPlan,urf:reference,,,,参考
 urf,urf:DistrictPlan,urf:reason,,,,理由
 urf,urf:DistrictPlan,urf:note,,,,備考
-urf,urf:DistrictPlan,urf:surveyYear,,,,調査年度
+urf,urf:DistrictPlan,urf:surveyYear,,,,調査年
 urf,urf:DistrictPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8474,7 +8474,7 @@ urf,urf:RoadsideDistrictPlan,urf:city,,,,市区町村名
 urf,urf:RoadsideDistrictPlan,urf:reference,,,,参考
 urf,urf:RoadsideDistrictPlan,urf:reason,,,,理由
 urf,urf:RoadsideDistrictPlan,urf:note,,,,備考
-urf,urf:RoadsideDistrictPlan,urf:surveyYear,,,,調査年度
+urf,urf:RoadsideDistrictPlan,urf:surveyYear,,,,調査年
 urf,urf:RoadsideDistrictPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RoadsideDistrictPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RoadsideDistrictPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8519,7 +8519,7 @@ urf,urf:RuralDistrictPlan,urf:city,,,,市区町村名
 urf,urf:RuralDistrictPlan,urf:reference,,,,参考
 urf,urf:RuralDistrictPlan,urf:reason,,,,理由
 urf,urf:RuralDistrictPlan,urf:note,,,,備考
-urf,urf:RuralDistrictPlan,urf:surveyYear,,,,調査年度
+urf,urf:RuralDistrictPlan,urf:surveyYear,,,,調査年
 urf,urf:RuralDistrictPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RuralDistrictPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RuralDistrictPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8562,7 +8562,7 @@ urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:city,,,,市区�
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:reference,,,,参考
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:reason,,,,理由
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:note,,,,備考
-urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:surveyYear,,,,調査年度
+urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:surveyYear,,,,調査年
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:HistoricSceneryMaintenanceAndImprovementDistrictPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8606,7 +8606,7 @@ urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:city,,,,市区町村名
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:reference,,,,参考
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:reason,,,,理由
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:note,,,,備考
-urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:surveyYear,,,,調査年度
+urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:surveyYear,,,,調査年
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DisasterPreventionBlockImprovementZonePlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8652,7 +8652,7 @@ urf,urf:DistrictDevelopmentPlan,urf:city,,,,市区町村名
 urf,urf:DistrictDevelopmentPlan,urf:reference,,,,参考
 urf,urf:DistrictDevelopmentPlan,urf:reason,,,,理由
 urf,urf:DistrictDevelopmentPlan,urf:note,,,,備考
-urf,urf:DistrictDevelopmentPlan,urf:surveyYear,,,,調査年度
+urf,urf:DistrictDevelopmentPlan,urf:surveyYear,,,,調査年
 urf,urf:DistrictDevelopmentPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictDevelopmentPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictDevelopmentPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8698,7 +8698,7 @@ urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:city,,,,市区町村名
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:reference,,,,参考
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:reason,,,,理由
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:note,,,,備考
-urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:surveyYear,,,,調査年度
+urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:surveyYear,,,,調査年
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:SpecifiedBuildingZoneImprovementPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8744,7 +8744,7 @@ urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:reference,,,,参考
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:reason,,,,理由
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:note,,,,備考
-urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:surveyYear,,,,調査年度
+urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:surveyYear,,,,調査年
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictImprovementPlanForDisasterPreventionBlockImprovementZonePlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8790,7 +8790,7 @@ urf,urf:RoadsideDistrictImprovementPlan,urf:city,,,,市区町村名
 urf,urf:RoadsideDistrictImprovementPlan,urf:reference,,,,参考
 urf,urf:RoadsideDistrictImprovementPlan,urf:reason,,,,理由
 urf,urf:RoadsideDistrictImprovementPlan,urf:note,,,,備考
-urf,urf:RoadsideDistrictImprovementPlan,urf:surveyYear,,,,調査年度
+urf,urf:RoadsideDistrictImprovementPlan,urf:surveyYear,,,,調査年
 urf,urf:RoadsideDistrictImprovementPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RoadsideDistrictImprovementPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RoadsideDistrictImprovementPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8837,7 +8837,7 @@ urf,urf:RuralDistrictImprovementPlan,urf:city,,,,市区町村名
 urf,urf:RuralDistrictImprovementPlan,urf:reference,,,,参考
 urf,urf:RuralDistrictImprovementPlan,urf:reason,,,,理由
 urf,urf:RuralDistrictImprovementPlan,urf:note,,,,備考
-urf,urf:RuralDistrictImprovementPlan,urf:surveyYear,,,,調査年度
+urf,urf:RuralDistrictImprovementPlan,urf:surveyYear,,,,調査年
 urf,urf:RuralDistrictImprovementPlan,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RuralDistrictImprovementPlan,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RuralDistrictImprovementPlan,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8884,7 +8884,7 @@ urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistri
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:reference,,,,参考
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:reason,,,,理由
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:note,,,,備考
-urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:surveyYear,,,,調査年度
+urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:surveyYear,,,,調査年
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictImprovementPlanForHistoricSceneryMaintenanceAndImprovementDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8930,7 +8930,7 @@ urf,urf:PromotionDistrict,urf:city,,,,市区町村名
 urf,urf:PromotionDistrict,urf:reference,,,,参考
 urf,urf:PromotionDistrict,urf:reason,,,,理由
 urf,urf:PromotionDistrict,urf:note,,,,備考
-urf,urf:PromotionDistrict,urf:surveyYear,,,,調査年度
+urf,urf:PromotionDistrict,urf:surveyYear,,,,調査年
 urf,urf:PromotionDistrict,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:PromotionDistrict,urf:boundary.urf:Boundary,,,,境界
 urf,urf:PromotionDistrict,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -8969,7 +8969,7 @@ urf,urf:District,urf:city,,,,市区町村名
 urf,urf:District,urf:reference,,,,参考
 urf,urf:District,urf:reason,,,,理由
 urf,urf:District,urf:note,,,,備考
-urf,urf:District,urf:surveyYear,,,,調査年度
+urf,urf:District,urf:surveyYear,,,,調査年
 urf,urf:District,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:District,urf:boundary.urf:Boundary,,,,境界
 urf,urf:District,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9028,7 +9028,7 @@ urf,urf:DistrictFacility,urf:city,,,,市区町村名
 urf,urf:DistrictFacility,urf:reference,,,,参考
 urf,urf:DistrictFacility,urf:reason,,,,理由
 urf,urf:DistrictFacility,urf:note,,,,備考
-urf,urf:DistrictFacility,urf:surveyYear,,,,調査年度
+urf,urf:DistrictFacility,urf:surveyYear,,,,調査年
 urf,urf:DistrictFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:DistrictFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:DistrictFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9067,7 +9067,7 @@ urf,urf:RoadsideDistrictFacility,urf:city,,,,市区町村名
 urf,urf:RoadsideDistrictFacility,urf:reference,,,,参考
 urf,urf:RoadsideDistrictFacility,urf:reason,,,,理由
 urf,urf:RoadsideDistrictFacility,urf:note,,,,備考
-urf,urf:RoadsideDistrictFacility,urf:surveyYear,,,,調査年度
+urf,urf:RoadsideDistrictFacility,urf:surveyYear,,,,調査年
 urf,urf:RoadsideDistrictFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RoadsideDistrictFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RoadsideDistrictFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9104,7 +9104,7 @@ urf,urf:RuralDistrictFacility,urf:city,,,,市区町村名
 urf,urf:RuralDistrictFacility,urf:reference,,,,参考
 urf,urf:RuralDistrictFacility,urf:reason,,,,理由
 urf,urf:RuralDistrictFacility,urf:note,,,,備考
-urf,urf:RuralDistrictFacility,urf:surveyYear,,,,調査年度
+urf,urf:RuralDistrictFacility,urf:surveyYear,,,,調査年
 urf,urf:RuralDistrictFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:RuralDistrictFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:RuralDistrictFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9143,7 +9143,7 @@ urf,urf:ZonalDisasterPreventionFacility,urf:city,,,,市区町村名
 urf,urf:ZonalDisasterPreventionFacility,urf:reference,,,,参考
 urf,urf:ZonalDisasterPreventionFacility,urf:reason,,,,理由
 urf,urf:ZonalDisasterPreventionFacility,urf:note,,,,備考
-urf,urf:ZonalDisasterPreventionFacility,urf:surveyYear,,,,調査年度
+urf,urf:ZonalDisasterPreventionFacility,urf:surveyYear,,,,調査年
 urf,urf:ZonalDisasterPreventionFacility,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ZonalDisasterPreventionFacility,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ZonalDisasterPreventionFacility,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9183,7 +9183,7 @@ urf,urf:UrbanFunctionAttractionArea,urf:city,,,,市区町村名
 urf,urf:UrbanFunctionAttractionArea,urf:reference,,,,参考
 urf,urf:UrbanFunctionAttractionArea,urf:reason,,,,理由
 urf,urf:UrbanFunctionAttractionArea,urf:note,,,,備考
-urf,urf:UrbanFunctionAttractionArea,urf:surveyYear,,,,調査年度
+urf,urf:UrbanFunctionAttractionArea,urf:surveyYear,,,,調査年
 urf,urf:UrbanFunctionAttractionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:UrbanFunctionAttractionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:UrbanFunctionAttractionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9222,7 +9222,7 @@ urf,urf:ResidenceAttractionArea,urf:city,,,,市区町村名
 urf,urf:ResidenceAttractionArea,urf:reference,,,,参考
 urf,urf:ResidenceAttractionArea,urf:reason,,,,理由
 urf,urf:ResidenceAttractionArea,urf:note,,,,備考
-urf,urf:ResidenceAttractionArea,urf:surveyYear,,,,調査年度
+urf,urf:ResidenceAttractionArea,urf:surveyYear,,,,調査年
 urf,urf:ResidenceAttractionArea,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ResidenceAttractionArea,urf:boundary.urf:Boundary,,,,境界
 urf,urf:ResidenceAttractionArea,urf:boundary.urf:Boundary,urf:class,,,区分
@@ -9261,7 +9261,7 @@ urf,urf:ThreeDimensionalExtent,urf:city,,,,市区町村名
 urf,urf:ThreeDimensionalExtent,urf:reference,,,,参考
 urf,urf:ThreeDimensionalExtent,urf:reason,,,,理由
 urf,urf:ThreeDimensionalExtent,urf:note,,,,備考
-urf,urf:ThreeDimensionalExtent,urf:surveyYear,,,,調査年度
+urf,urf:ThreeDimensionalExtent,urf:surveyYear,,,,調査年
 urf,urf:ThreeDimensionalExtent,urf:lod1MultiSurface,,,,LOD1面（区域）
 urf,urf:ThreeDimensionalExtent,urf:minimumDistance,,,,離隔距離の最小限度
 urf,urf:ThreeDimensionalExtent,urf:maximumLoad,,,,載荷重の最大限度
@@ -20929,7 +20929,7 @@ area,urf:Zone,urf:city,,,,市区町村名
 area,urf:Zone,urf:reference,,,,参考
 area,urf:Zone,urf:reason,,,,理由
 area,urf:Zone,urf:note,,,,備考
-area,urf:Zone,urf:surveyYear,,,,調査年度
+area,urf:Zone,urf:surveyYear,,,,調査年
 area,urf:Zone,urf:location,,,,位置
 area,urf:Zone,urf:lod1MultiSurface,,,,LOD1面（区域）
 area,urf:Zone,gen:stringAttribute,,,,汎用属性（文字列）
