@@ -11,6 +11,10 @@ export type MouseEvent = {
   delta?: number;
 };
 
+export type LayerVisibilityEvent = {
+  layerId: string | undefined;
+};
+
 export type ReearthEventType = {
   update: [];
   close: [];
@@ -44,4 +48,5 @@ export type ReearthEventType = {
       feature?: SketchFeature;
     },
   ];
+  layerVisibility: [props: string];
 };

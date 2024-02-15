@@ -170,30 +170,47 @@ const Subdivision: FC<
     onLoad,
   }) => {
     const [data, setData] = useState<ParseCSVResult>();
+    const [layerIdCurrent, setLayerIdCurrent] = useState<string | null>(null);
     const onLoadRef = useRef(onLoad);
     onLoadRef.current = onLoad;
+
+    const handleOnHeatMapLoad = useCallback((layerId?: string) => {
+      setLayerIdCurrent(layerId || "");
+    }, []);
+
     useEffect(() => {
-      let canceled = false;
-      (async () => {
-        const response = await window
-          .fetch(`${import.meta.env.PLATEAU_ORIGIN}${url}`)
-          .then(r => r.text());
-        if (!response) {
-          return;
+      const handleLayerVisibility = (layerId: string) => {
+        if (layerIdCurrent === layerId) {
+          let isCancelled = false;
+          const fetchData = async () => {
+            try {
+              const response = await fetch(`${import.meta.env.PLATEAU_ORIGIN}${url}`).then(r =>
+                r.text(),
+              );
+              if (isCancelled || !response) return;
+
+              const parsedData = await parseCSVAsync(response, parserOptions);
+              if (isCancelled) return;
+
+              setData(parsedData);
+              onLoadRef.current?.(parsedData, url);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          fetchData();
+
+          return () => {
+            isCancelled = true;
+          };
         }
-        const data = await parseCSVAsync(response, parserOptions);
-        if (canceled) {
-          return;
-        }
-        setData(data);
-        onLoadRef.current?.(data, url);
-      })().catch(error => {
-        console.error(error);
-      });
-      return () => {
-        canceled = true;
       };
-    }, [url, parserOptions]);
+
+      if (layerIdCurrent) {
+        window.reearth?.on?.("layerVisibility", handleLayerVisibility);
+        return () => {};
+      }
+    }, [layerIdCurrent, url, parserOptions]);
 
     const [meshImageData, setMeshImageData] = useState<MeshImageData>();
     useEffect(() => {
@@ -244,7 +261,7 @@ const Subdivision: FC<
     if (hidden || meshImageData == null) {
       return null;
     }
-    return <ReEarthHeatmapLayer appearances={appearances} />;
+    return <ReEarthHeatmapLayer appearances={appearances} onLoad={handleOnHeatMapLoad} />;
   },
 );
 
