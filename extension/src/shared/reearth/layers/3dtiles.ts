@@ -1,4 +1,3 @@
-import { useAtom } from "jotai";
 import { FC, useMemo } from "react";
 
 import {
@@ -6,7 +5,6 @@ import {
   Cesium3DTilesAppearance,
   LayerAppearance,
 } from "../../../shared/reearth/types";
-import { interactionModeAtom } from "../../../shared/states/interactionMode";
 import { TileFeatureIndex } from "../../plateau";
 import { useLayer } from "../hooks";
 import { Data } from "../types/layer";
@@ -44,12 +42,14 @@ export const TilesetLayer: FC<TilesetProps> = ({
   appearance,
   boxAppearance,
 }) => {
-  const [interactionMode] = useAtom(interactionModeAtom);
+  const disabledSelection = boxAppearance?.disabledSelection ?? false;
+  console.log("disabledSelectionsss", disabledSelection);
+  // const [interactionMode] = useAtom(interactionModeAtom);
 
-  const disabledSelection = useMemo(() => {
-    const mode = interactionMode.value as unknown;
-    return mode === "default" || mode === "move";
-  }, [interactionMode]);
+  // const disabledSelection = useMemo(() => {
+  //   const mode = interactionMode.value as unknown;
+  //   return mode === "default" || mode === "move";
+  // }, [interactionMode]);
 
   const data: Data = useMemo(
     () => ({
