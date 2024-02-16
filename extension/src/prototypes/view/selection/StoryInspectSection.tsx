@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { FC, useCallback, useState } from "react";
-import Markdown from "react-markdown";
 
 import { useCamera } from "../../../shared/reearth/hooks";
+import { ViewMarkdownViewer } from "../../../shared/ui-components/common";
 import { LayerModel } from "../../layers";
 import { STORY_LAYER } from "../../view-layers";
 
@@ -74,7 +74,7 @@ export const StoryInspectSection: FC<StoryInspectSectionProps> = ({ layer }) => 
             </ActionWrapper>
             <Content>
               <CaptureTitle>{captures[currentCaptureIndex].title}</CaptureTitle>
-              <StyledMarkdown skipHtml>{captures[currentCaptureIndex].content}</StyledMarkdown>
+              <ViewMarkdownViewer content={captures[currentCaptureIndex].content} />
             </Content>
             <PaginationWrapper>
               <StyledPagination
@@ -125,13 +125,6 @@ const Content = styled("div")(({ theme }) => ({
 
 const CaptureTitle = styled("div")(({ theme }) => ({
   fontSize: theme.typography.h6.fontSize,
-}));
-
-const StyledMarkdown = styled(Markdown)(({ theme }) => ({
-  fontSize: theme.typography.body2.fontSize,
-  [`img, video`]: {
-    maxWidth: "100%",
-  },
 }));
 
 const NoCaptures = styled("div")(({ theme }) => ({

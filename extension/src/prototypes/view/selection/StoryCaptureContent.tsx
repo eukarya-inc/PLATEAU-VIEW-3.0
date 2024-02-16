@@ -1,11 +1,11 @@
 import { Button, Divider, IconButton, List, Tooltip, styled } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useMemo, useState } from "react";
-import Markdown from "react-markdown";
 import invariant from "tiny-invariant";
 
 import { STORY_OBJECT, StoryCapture } from "../../../shared/layerContainers/story";
 import { useCamera } from "../../../shared/reearth/hooks";
+import { ViewMarkdownViewer } from "../../../shared/ui-components/common";
 import { StoryCaptureEditor } from "../../../shared/view/ui-container/story/StoryCaptureEditor";
 import { matchIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
@@ -117,7 +117,7 @@ export const StoryCaptureContent: FC<StoryCaptureContentProps> = ({ values }) =>
       <SectionWrapper>
         <Content>
           <CaptureTitle>{capture?.title}</CaptureTitle>
-          <StyledMarkdown skipHtml>{capture?.content}</StyledMarkdown>
+          <ViewMarkdownViewer content={capture?.content} />
         </Content>
         {editMode && (
           <ButtonsWrapper>
@@ -158,13 +158,6 @@ const Content = styled("div")(({ theme }) => ({
 
 const CaptureTitle = styled("div")(({ theme }) => ({
   fontSize: theme.typography.h6.fontSize,
-}));
-
-const StyledMarkdown = styled(Markdown)(({ theme }) => ({
-  fontSize: theme.typography.body2.fontSize,
-  [`img, video`]: {
-    maxWidth: "100%",
-  },
 }));
 
 const ButtonsWrapper = styled("div")(({ theme }) => ({
