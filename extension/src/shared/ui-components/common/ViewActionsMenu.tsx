@@ -1,11 +1,4 @@
-import {
-  List,
-  ListItemButton,
-  Popper,
-  PopperProps,
-  buttonBaseClasses,
-  styled,
-} from "@mui/material";
+import { List, ListItemButton, Popper, PopperProps, styled } from "@mui/material";
 import { FC } from "react";
 
 type ViewActionsMenuProps = PopperProps & {
@@ -44,9 +37,4 @@ const ActionButton = styled(ListItemButton)(({ theme }) => ({
   padding: theme.spacing(0.5, 2),
   fontSize: theme.typography.body2.fontSize,
   color: theme.palette.text.primary,
-  [`&.${buttonBaseClasses.root}:hover`]: {
-    // backgroundColor: theme.palette.primary.main,
-    // color: "#fff",
-    // transition: "color none",
-  },
 }));

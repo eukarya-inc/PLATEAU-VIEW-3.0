@@ -26,5 +26,4 @@ export const StyledButton = styled(MuiButton)(({ theme }) => ({
     width: "18px",
     marginRight: theme.spacing(0.5),
   },
-  // padding: theme.spacing(1, 2),
 }));
