@@ -48,5 +48,5 @@ export type ReearthEventType = {
       feature?: SketchFeature;
     },
   ];
-  layerVisibility: [props: string];
+  layerVisibility: [e: LayerVisibilityEvent];
 };

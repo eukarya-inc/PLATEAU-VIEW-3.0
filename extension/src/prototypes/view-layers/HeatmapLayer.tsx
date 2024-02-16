@@ -6,6 +6,7 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
+import { LayerVisibilityEvent } from "../../shared/reearth/types";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {
@@ -17,7 +18,7 @@ import {
   createMeshDataAsync,
 } from "../heatmap";
 import { type LayerProps } from "../layers";
-import { inferMeshType } from "../regional-mesh";
+import { MeshBounds, convertCodeToBounds, inferMeshType } from "../regional-mesh";
 
 import {
   createViewLayerModel,
@@ -155,7 +156,7 @@ export function createHeatmapLayer(
 const Subdivision: FC<
   Omit<HeatmapLayerModel, "getUrl" | "codes"> & {
     url: string;
-    // boundingSphere: BoundingSphere;
+    bound: MeshBounds;
     onLoad?: (data: ParseCSVResult, url: string) => void;
   }
 > = memo(
@@ -163,7 +164,7 @@ const Subdivision: FC<
     hiddenAtom,
     colorSchemeAtom,
     url,
-    // boundingSphere,
+    bound,
     parserOptions,
     opacityAtom,
     contourSpacingAtom,
@@ -174,13 +175,13 @@ const Subdivision: FC<
     const onLoadRef = useRef(onLoad);
     onLoadRef.current = onLoad;
 
-    const handleOnHeatMapLoad = useCallback((layerId?: string) => {
-      setLayerIdCurrent(layerId || "");
+    const handleOnHeatMapLoad = useCallback((layerId: string) => {
+      setLayerIdCurrent(layerId);
     }, []);
 
     useEffect(() => {
-      const handleLayerVisibility = (layerId: string) => {
-        if (layerIdCurrent === layerId) {
+      const handleLayerVisibility = (e: LayerVisibilityEvent): void => {
+        if (layerIdCurrent === e.layerId) {
           let isCancelled = false;
           const fetchData = async () => {
             try {
@@ -200,9 +201,7 @@ const Subdivision: FC<
           };
           fetchData();
 
-          return () => {
-            isCancelled = true;
-          };
+          isCancelled = true;
         }
       };
 
@@ -248,7 +247,7 @@ const Subdivision: FC<
       () => ({
         heatMap: {
           valueMap: meshImageData?.image.toDataURL(),
-          bounds: meshImageData?.bounds,
+          bounds: meshImageData?.bounds || bound,
           colorMap: colorMap.lut,
           opacity,
           minValue: colorRange[0],
@@ -256,10 +255,18 @@ const Subdivision: FC<
           contourSpacing,
         },
       }),
-      [meshImageData, colorMap, opacity, colorRange, contourSpacing],
+      [
+        meshImageData?.image,
+        meshImageData?.bounds,
+        bound,
+        colorMap.lut,
+        opacity,
+        colorRange,
+        contourSpacing,
+      ],
     );
 
-    if (hidden || meshImageData == null) {
+    if (hidden) {
       return null;
     }
     return <ReEarthHeatmapLayer appearances={appearances} onLoad={handleOnHeatMapLoad} />;
@@ -296,7 +303,8 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
         if (url == null || meshType == null) {
           return undefined;
         }
-        return { url };
+        const bounds = convertCodeToBounds(code, meshType);
+        return { url, bounds };
       }),
     [getUrl, codes],
   );
@@ -308,6 +316,7 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
             <Subdivision
               key={additionalProps.url}
               {...props}
+              bound={additionalProps.bounds}
               {...additionalProps}
               onLoad={handleLoad}
             />
