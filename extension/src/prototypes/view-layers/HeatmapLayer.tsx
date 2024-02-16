@@ -270,7 +270,6 @@ const Subdivision: FC<
     if (hidden) {
       return null;
     }
-    console.log("appearances: ", appearances);
     return <ReEarthHeatmapLayer appearances={appearances} onLoad={handleOnHeatMapLoad} />;
   },
 );
