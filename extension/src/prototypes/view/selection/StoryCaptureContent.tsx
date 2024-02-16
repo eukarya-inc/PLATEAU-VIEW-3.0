@@ -9,6 +9,7 @@ import { useCamera } from "../../../shared/reearth/hooks";
 import { StoryCaptureEditor } from "../../../shared/view/ui-container/story/StoryCaptureEditor";
 import { matchIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
+import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import { AddressIcon, InspectorHeader, LayerIcon, TrashIcon } from "../../ui-components";
 import { STORY_LAYER, highlightedStoryLayersAtom, layerTypeIcons } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
@@ -41,7 +42,7 @@ export const StoryCaptureContent: FC<StoryCaptureContentProps> = ({ values }) =>
   const tool = useAtomValue(toolAtom);
   const editMode = useMemo(() => tool?.type === "story", [tool]);
 
-  const setSelection = useSetAtom(layerSelectionAtom);
+  const setSelection = useSetAtom(screenSpaceSelectionAtom);
   const handleClose = useCallback(() => {
     setSelection([]);
   }, [setSelection]);

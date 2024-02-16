@@ -100,7 +100,6 @@ export const CaptureListItem: FC<CaptureListItemProps> = ({
             </ActionsButton>
           </ViewClickAwayListener>
         </ItemHeader>
-        {capture.content && <Content>{capture.content}</Content>}
       </Wrapper>
       <ViewActionsMenu open={actionsOpen} anchorEl={anchorRef.current} actions={actions} />
       {editorOpen && (
@@ -145,11 +144,4 @@ const ActionsButton = styled(Button)(({ theme }) => ({
     backgroundColor: theme.palette.background.paper,
     boxShadow: "none",
   },
-}));
-
-const Content = styled("div")(({ theme }) => ({
-  fontSize: theme.typography.body2.fontSize,
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis",
 }));

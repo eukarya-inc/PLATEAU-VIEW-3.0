@@ -24,10 +24,6 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
   invariant(values.length === 1);
 
   const layer = values[0] as LayerModel<typeof STORY_LAYER>;
-  // const findRootLayer = useSetAtom(findRootLayerAtom);
-  // const rootLayer = findRootLayer(layer.id);
-  // // const layerName = rootLayer?.layerName;
-  // console.log(rootLayer);
 
   const tool = useAtomValue(toolAtom);
   const editMode = useMemo(() => tool?.type === "story", [tool]);

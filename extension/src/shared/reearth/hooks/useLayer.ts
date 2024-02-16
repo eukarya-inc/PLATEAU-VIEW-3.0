@@ -43,7 +43,7 @@ export const useLayer = ({
   useEffect(() => {
     const layerId = layerIdRef.current;
     if (!layerId || !loaded) return;
-
+    
     window.reearth?.layers?.override?.(layerId, {
       data: data,
       visible,

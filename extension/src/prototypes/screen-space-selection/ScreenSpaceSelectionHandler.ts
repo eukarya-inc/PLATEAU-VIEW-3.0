@@ -152,6 +152,7 @@ export class ScreenSpaceSelectionHandler {
     // TODO(ReEarth): Support selecting multiple feature
     this.startPosition = [event.x ?? 0, event.y ?? 0];
     this.downing = true;
+    this.moving = false;
   };
 
   private readonly handleMouseUp = (event: MouseEvent): void => {
@@ -180,6 +181,7 @@ export class ScreenSpaceSelectionHandler {
       return;
     }
     if (!this.allowedEvents.rectangle) {
+      this.moving = true;
       return;
     }
     if (!this.startPosition) {

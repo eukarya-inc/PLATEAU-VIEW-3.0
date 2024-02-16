@@ -1,4 +1,4 @@
-import { IconButton, Stack, styled, Tooltip, SvgIcon } from "@mui/material";
+import { IconButton, Stack, styled, Tooltip } from "@mui/material";
 import {
   useState,
   type FC,
@@ -59,11 +59,7 @@ const HoverMenu: FC<HoverMenuProps> = ({
               aria-label="移動"
               disabled={isButtonDisabled}
               onClick={onMove}>
-              <SvgIcon
-                component={AddressIcon}
-                sx={{ width: 16, height: 16, color: "black" }}
-                color="action"
-              />
+              <AddressIcon fontSize="small" />
             </IconButton>
           </span>
         </Tooltip>
