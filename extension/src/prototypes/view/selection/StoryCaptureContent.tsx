@@ -161,6 +161,9 @@ const CaptureTitle = styled("div")(({ theme }) => ({
 
 const StyledMarkdown = styled(Markdown)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
+  [`img, video`]: {
+    maxWidth: "100%",
+  },
 }));
 
 const ButtonsWrapper = styled("div")(({ theme }) => ({

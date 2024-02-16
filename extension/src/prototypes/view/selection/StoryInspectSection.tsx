@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import { FC, useCallback, useState } from "react";
 import Markdown from "react-markdown";
 
+import { useCamera } from "../../../shared/reearth/hooks";
 import { LayerModel } from "../../layers";
 import { STORY_LAYER } from "../../view-layers";
 
@@ -13,10 +14,16 @@ type StoryInspectSectionProps = {
 export const StoryInspectSection: FC<StoryInspectSectionProps> = ({ layer }) => {
   const captures = useAtomValue(layer.capturesAtom);
   const [currentCaptureIndex, setCurrentCaptureIndex] = useState(0);
+  const { flyTo } = useCamera();
 
-  const handleChange = useCallback((_: React.ChangeEvent<unknown>, value: number) => {
-    setCurrentCaptureIndex(value - 1);
-  }, []);
+  const handleChange = useCallback(
+    (_: React.ChangeEvent<unknown>, value: number) => {
+      const index = value - 1;
+      setCurrentCaptureIndex(index);
+      flyTo(captures[index].camera);
+    },
+    [flyTo, captures],
+  );
 
   return (
     <SectionWrapper>
@@ -77,6 +84,9 @@ const CaptureTitle = styled("div")(({ theme }) => ({
 
 const StyledMarkdown = styled(Markdown)(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
+  [`img, video`]: {
+    maxWidth: "100%",
+  },
 }));
 
 const NoCaptures = styled("div")(({ theme }) => ({

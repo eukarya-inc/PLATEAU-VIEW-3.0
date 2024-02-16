@@ -83,6 +83,11 @@ const Wrapper = styled("div")`
     }
     .editor-preview {
       padding: ${({ theme }) => theme.spacing(1)};
+
+      img,
+      video {
+        max-width: 100%;
+      }
     }
   }
 `;
