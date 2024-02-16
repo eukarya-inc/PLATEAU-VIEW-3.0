@@ -6,6 +6,7 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
+import { LayerVisibilityEvent } from "../../shared/reearth/types";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {
@@ -17,7 +18,7 @@ import {
   createMeshDataAsync,
 } from "../heatmap";
 import { type LayerProps } from "../layers";
-import { inferMeshType } from "../regional-mesh";
+import { MeshBounds, convertCodeToBounds, inferMeshType } from "../regional-mesh";
 
 import {
   createViewLayerModel,
@@ -155,7 +156,7 @@ export function createHeatmapLayer(
 const Subdivision: FC<
   Omit<HeatmapLayerModel, "getUrl" | "codes"> & {
     url: string;
-    // boundingSphere: BoundingSphere;
+    bound: MeshBounds;
     onLoad?: (data: ParseCSVResult, url: string) => void;
   }
 > = memo(
@@ -163,37 +164,54 @@ const Subdivision: FC<
     hiddenAtom,
     colorSchemeAtom,
     url,
-    // boundingSphere,
+    bound,
     parserOptions,
     opacityAtom,
     contourSpacingAtom,
     onLoad,
   }) => {
     const [data, setData] = useState<ParseCSVResult>();
+    const [layerIdCurrent, setLayerIdCurrent] = useState<string | null>(null);
     const onLoadRef = useRef(onLoad);
     onLoadRef.current = onLoad;
+
+    const handleOnHeatMapLoad = useCallback((layerId: string) => {
+      setLayerIdCurrent(layerId);
+    }, []);
+
     useEffect(() => {
-      let canceled = false;
-      (async () => {
-        const response = await window
-          .fetch(`${import.meta.env.PLATEAU_ORIGIN}${url}`)
-          .then(r => r.text());
-        if (!response) {
-          return;
+      let isCancelled = false;
+
+      const handleLayerVisibility = (e: LayerVisibilityEvent): void => {
+        if (layerIdCurrent === e.layerId) {
+          const fetchData = async () => {
+            try {
+              const response = await fetch(`${import.meta.env.PLATEAU_ORIGIN}${url}`).then(r =>
+                r.text(),
+              );
+              if (isCancelled || !response) return;
+              const parsedData = await parseCSVAsync(response, parserOptions);
+              if (isCancelled) return;
+
+              setData(parsedData);
+              onLoadRef.current?.(parsedData, url);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          fetchData();
         }
-        const data = await parseCSVAsync(response, parserOptions);
-        if (canceled) {
-          return;
-        }
-        setData(data);
-        onLoadRef.current?.(data, url);
-      })().catch(error => {
-        console.error(error);
-      });
-      return () => {
-        canceled = true;
       };
-    }, [url, parserOptions]);
+
+      if (layerIdCurrent) {
+        const eventKey = "layerVisibility";
+        window.reearth?.on?.(eventKey, handleLayerVisibility);
+        return () => {
+          isCancelled = true;
+          window.reearth?.off?.(eventKey, handleLayerVisibility);
+        };
+      }
+    }, [layerIdCurrent, url, parserOptions]);
 
     const [meshImageData, setMeshImageData] = useState<MeshImageData>();
     useEffect(() => {
@@ -230,7 +248,7 @@ const Subdivision: FC<
       () => ({
         heatMap: {
           valueMap: meshImageData?.image.toDataURL(),
-          bounds: meshImageData?.bounds,
+          bounds: meshImageData?.bounds || bound,
           colorMap: colorMap.lut,
           opacity,
           minValue: colorRange[0],
@@ -238,13 +256,22 @@ const Subdivision: FC<
           contourSpacing,
         },
       }),
-      [meshImageData, colorMap, opacity, colorRange, contourSpacing],
+      [
+        meshImageData?.image,
+        meshImageData?.bounds,
+        bound,
+        colorMap.lut,
+        opacity,
+        colorRange,
+        contourSpacing,
+      ],
     );
 
-    if (hidden || meshImageData == null) {
+    if (hidden) {
       return null;
     }
-    return <ReEarthHeatmapLayer appearances={appearances} />;
+    console.log("appearances: ", appearances);
+    return <ReEarthHeatmapLayer appearances={appearances} onLoad={handleOnHeatMapLoad} />;
   },
 );
 
@@ -270,35 +297,18 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
     [setValueRange, setContourSpacing, setColorRange],
   );
 
-  // TODO: Replace this logic with an API to load CSV when the primitive is visible.
-  // This logic load all data by each chunk.
-  const [managedCodes, setManagedCodes] = useState<string[]>([]);
-  useEffect(() => {
-    let nextChunk = 3;
-    const time = setInterval(() => {
-      setManagedCodes(codes.slice(0, nextChunk));
-      if (nextChunk >= codes.length) {
-        clearInterval(time);
-      }
-      nextChunk += 10;
-    }, 300);
-  }, [codes]);
-
   const propsArray = useMemo(
     () =>
-      managedCodes.map(code => {
+      codes.map(code => {
         const url = getUrl(code);
         const meshType = inferMeshType(code);
         if (url == null || meshType == null) {
           return undefined;
         }
-        // const bounds = convertCodeToBounds(code, meshType);
-        // const boundingSphere = BoundingSphere.fromRectangle3D(
-        //   Rectangle.fromDegrees(bounds.west, bounds.south, bounds.east, bounds.north),
-        // );
-        return { url };
+        const bounds = convertCodeToBounds(code, meshType);
+        return { url, bounds };
       }),
-    [getUrl, managedCodes],
+    [getUrl, codes],
   );
   return (
     <>
@@ -308,6 +318,7 @@ export const HeatmapLayer: FC<LayerProps<typeof HEATMAP_LAYER>> = ({ getUrl, cod
             <Subdivision
               key={additionalProps.url}
               {...props}
+              bound={additionalProps.bounds}
               {...additionalProps}
               onLoad={handleLoad}
             />
