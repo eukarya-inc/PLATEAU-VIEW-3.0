@@ -3,12 +3,12 @@ import { PrimitiveAtom, atom, useAtomValue } from "jotai";
 import { FC, useCallback, useMemo } from "react";
 
 import { composeIdentifier, matchIdentifier } from "../../prototypes/cesium-helpers";
-import balloonImage from "../../prototypes/pedestrian/assets/balloon.png";
 import {
   ScreenSpaceSelectionEntry,
   screenSpaceSelectionAtom,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
+import balloonImage from "../../shared/view/assets/balloon.png";
 import cameraImage from "../../shared/view/assets/camera.png";
 import { StoryAppearance, StoryLayer, STORY_MARKER_ID_PROPERTY } from "../reearth/layers/story";
 import { CameraPosition } from "../reearth/types";
@@ -43,10 +43,12 @@ export const StoryLayerContainer: FC<StoryContainerProps> = ({ capturesAtom, onL
   const captures = useAtomValue(capturesAtom);
 
   const handleLoad = useCallback(
-    (layerId: string) => {
-      onLoad?.(layerId);
+    (layerId: string, captureId: string) => {
+      if (captureId === captures[0].id) {
+        onLoad?.(layerId);
+      }
     },
-    [onLoad],
+    [captures, onLoad],
   );
 
   return (
@@ -60,7 +62,7 @@ export const StoryLayerContainer: FC<StoryContainerProps> = ({ capturesAtom, onL
 
 type StoryObjectProps = {
   capture: StoryCapture;
-  onLoad: (layerId: string) => void;
+  onLoad: (layerId: string, captureId: string) => void;
 };
 
 const StoryObject: FC<StoryObjectProps> = ({ capture, onLoad }) => {
@@ -104,6 +106,13 @@ const StoryObject: FC<StoryObjectProps> = ({ capture, onLoad }) => {
     ),
   );
 
+  const handleLoad = useCallback(
+    (layerId: string) => {
+      onLoad?.(layerId, capture.id);
+    },
+    [capture.id, onLoad],
+  );
+
   const balloonAppearance: StoryAppearance = useMemo(
     () => ({
       marker: {
@@ -139,8 +148,8 @@ const StoryObject: FC<StoryObjectProps> = ({ capture, onLoad }) => {
   );
   return (
     <>
-      <StoryLayer capture={capture} onLoad={onLoad} appearances={balloonAppearance} />
-      <StoryLayer capture={capture} onLoad={onLoad} appearances={iconAppearance} />
+      <StoryLayer capture={capture} onLoad={handleLoad} appearances={balloonAppearance} />
+      <StoryLayer capture={capture} appearances={iconAppearance} />
     </>
   );
 };

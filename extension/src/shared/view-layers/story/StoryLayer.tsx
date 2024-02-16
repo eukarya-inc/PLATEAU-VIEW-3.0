@@ -1,4 +1,4 @@
-import { PrimitiveAtom, atom, useAtomValue } from "jotai";
+import { PrimitiveAtom, atom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback } from "react";
 
 import { LayerProps } from "../../../prototypes/layers";
@@ -43,11 +43,18 @@ export function createStoryLayer(
 export const StoryLayer: FC<LayerProps<typeof STORY_LAYER>> = ({
   hiddenAtom,
   capturesAtom,
+  layerIdAtom,
   ...props
 }) => {
   const hidden = useAtomValue(hiddenAtom);
 
-  const handleLoad = useCallback(() => {}, []);
+  const setLayerId = useSetAtom(layerIdAtom);
+  const handleLoad = useCallback(
+    (layerId: string) => {
+      setLayerId(layerId);
+    },
+    [setLayerId],
+  );
 
   if (hidden) {
     return null;
