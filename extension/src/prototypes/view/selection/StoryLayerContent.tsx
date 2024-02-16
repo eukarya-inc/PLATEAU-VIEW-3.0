@@ -3,7 +3,6 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
 
-// import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import { LayerModel, layerSelectionAtom } from "../../layers";
 import { InspectorHeader } from "../../ui-components";
 import { STORY_LAYER, layerTypeIcons } from "../../view-layers";
