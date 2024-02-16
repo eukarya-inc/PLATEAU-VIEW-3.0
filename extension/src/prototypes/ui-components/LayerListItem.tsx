@@ -54,7 +54,11 @@ const HoverMenu: FC<HoverMenuProps> = ({
       {onMove && (
         <Tooltip title="移動">
           <span>
-            <IconButton aria-label="移動" disabled={isButtonDisabled} onClick={onMove}>
+            <IconButton
+              color="inherit"
+              aria-label="移動"
+              disabled={isButtonDisabled}
+              onClick={onMove}>
               <SvgIcon
                 component={AddressIcon}
                 sx={{ width: 16, height: 16, color: "black" }}

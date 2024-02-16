@@ -40,6 +40,8 @@ export type Layers = Undefinable<
     findFeaturesByIds?: (layerId: string, featureId: string[]) => Feature[] | undefined;
     selectFeatures?: (layers: { layerId: string; featureId: string[] }[]) => void;
     selectionReason?: LayerSelectionReason;
+    bringToFront: (layerId: string) => void;
+    sendToBack: (layerId: string) => void;
     // For compat
     overriddenInfobox?: LayerSelectionReason["defaultInfobox"];
     defaultInfobox?: LayerSelectionReason["defaultInfobox"];
