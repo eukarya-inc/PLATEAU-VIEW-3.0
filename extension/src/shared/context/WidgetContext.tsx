@@ -28,6 +28,8 @@ import {
   setPrimaryColor,
   SITE_URL,
   setSiteURL,
+  CITY_NAME,
+  setCityName,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
@@ -44,6 +46,7 @@ type Props = {
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
   // Custom settings
+  cityName?: string;
   customPrimaryColor?: string;
   customLogo?: string;
   customPedestrian?: CameraPosition;
@@ -61,6 +64,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
   inEditor,
+  cityName,
   customPrimaryColor,
   customLogo,
   // customPedestrian,
@@ -116,6 +120,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       createTemplateClient(projectId, sidebar, plateauToken);
     }
   }, [projectId, plateauUrl, plateauToken]);
+
+  useEffect(() => {
+    if (cityName && (!CITY_NAME || CITY_NAME !== cityName)) {
+      setCityName(cityName);
+    }
+  }, [cityName]);
 
   useEffect(() => {
     if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {

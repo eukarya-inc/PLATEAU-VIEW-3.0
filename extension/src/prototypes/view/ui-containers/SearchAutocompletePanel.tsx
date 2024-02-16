@@ -21,6 +21,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { CITY_NAME } from "../../../shared/constants";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { ViewClickAwayListener } from "../../../shared/ui-components/common/ViewClickAwayListener";
 import { useWindowEvent } from "../../react-helpers";
@@ -37,9 +38,12 @@ import {
 } from "../../ui-components";
 import { useSearchOptions } from "../hooks/useSearchOptions";
 
+import { CityDatasetsList } from "./CityDatasetsList";
 import { DatasetAreaList } from "./DatasetAreaList";
 import { DatasetTypeList } from "./DatasetTypeList";
 import { SearchList } from "./SearchList";
+
+type TabOption = "search" | "city" | "area" | "type";
 
 const StyledScrollable = styled(Scrollable)(({ theme }) => {
   const canvas = getCesiumCanvas();
@@ -55,6 +59,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   position: "sticky",
   top: 0,
   minHeight: theme.spacing(5),
+  width: "100%",
   backgroundColor: theme.palette.background.default,
   zIndex: 1,
   [`& .${tabClasses.root}`]: {
@@ -163,11 +168,9 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
     }, 0);
   }, []);
 
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState<TabOption>("search");
   const deferredTab = useDeferredValue(tab);
-  const handleTabChange = useCallback((_event: unknown, value: number) => {
-    setTab(value);
-  }, []);
+  const handleTabChange = useCallback((_event: unknown, value: TabOption) => setTab(value), []);
 
   const { maxMainHeightAtom } = useContext(AppOverlayLayoutContext);
   const maxMainHeight = useAtomValue(maxMainHeightAtom);
@@ -201,12 +204,12 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                 value={deferredTab}
                 variant={isMobile ? "fullWidth" : "standard"}
                 onChange={handleTabChange}>
-                <Tab label="検索" />
-                <Tab label="自治体" />
-                <Tab label="都道府県" />
-                <Tab label="カテゴリー" />
+                <Tab value="search" label="検索" />
+                {CITY_NAME && <Tab value="city" label={CITY_NAME} />}
+                <Tab value="area" label="都道府県" />
+                <Tab value="type" label="カテゴリー" />
               </StyledTabs>
-              {tab === 0 && (
+              {tab === "search" && (
                 <SearchList
                   datasets={searchOptions.datasets}
                   buildings={searchOptions.buildings}
@@ -215,17 +218,9 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
                   onFiltersChange={handleFiltersChange}
                 />
               )}
-              {tab === 1 && (
-                <SearchList
-                  datasets={searchOptions.datasets}
-                  buildings={searchOptions.buildings}
-                  areas={searchOptions.areas}
-                  onOptionSelect={handleOptionSelect}
-                  onFiltersChange={handleFiltersChange}
-                />
-              )}
-              {tab === 2 && <DatasetAreaList />}
-              {tab === 3 && <DatasetTypeList />}
+              {tab === "city" && CITY_NAME && <CityDatasetsList cityName={CITY_NAME} />}
+              {tab === "area" && <DatasetAreaList />}
+              {tab === "type" && <DatasetTypeList />}
             </StyledScrollable>
           )}
         </SearchAutocomplete>

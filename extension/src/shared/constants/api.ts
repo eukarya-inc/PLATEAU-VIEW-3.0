@@ -25,6 +25,11 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
 };
 
 // custom settings
+export let CITY_NAME: string | undefined;
+export const setCityName = (name: string) => {
+  CITY_NAME = name;
+};
+
 export let PRIMARY_COLOR: string | undefined;
 export const setPrimaryColor = (color: string) => {
   PRIMARY_COLOR = color;
