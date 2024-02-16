@@ -180,16 +180,16 @@ const Subdivision: FC<
     }, []);
 
     useEffect(() => {
+      let isCancelled = false;
+
       const handleLayerVisibility = (e: LayerVisibilityEvent): void => {
         if (layerIdCurrent === e.layerId) {
-          let isCancelled = false;
           const fetchData = async () => {
             try {
               const response = await fetch(`${import.meta.env.PLATEAU_ORIGIN}${url}`).then(r =>
                 r.text(),
               );
               if (isCancelled || !response) return;
-
               const parsedData = await parseCSVAsync(response, parserOptions);
               if (isCancelled) return;
 
@@ -200,15 +200,16 @@ const Subdivision: FC<
             }
           };
           fetchData();
-
-          isCancelled = true;
         }
       };
 
       if (layerIdCurrent) {
         const eventKey = "layerVisibility";
         window.reearth?.on?.(eventKey, handleLayerVisibility);
-        return () => window.reearth?.off?.(eventKey, handleLayerVisibility);
+        return () => {
+          isCancelled = true;
+          window.reearth?.off?.(eventKey, handleLayerVisibility);
+        };
       }
     }, [layerIdCurrent, url, parserOptions]);
 
@@ -269,6 +270,7 @@ const Subdivision: FC<
     if (hidden) {
       return null;
     }
+    console.log("appearances: ", appearances);
     return <ReEarthHeatmapLayer appearances={appearances} onLoad={handleOnHeatMapLoad} />;
   },
 );
