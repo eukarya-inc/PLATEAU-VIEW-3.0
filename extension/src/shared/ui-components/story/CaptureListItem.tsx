@@ -115,8 +115,8 @@ export const CaptureListItem: FC<CaptureListItemProps> = ({
 };
 
 const Wrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(1),
-  border: `1px solid ${theme.palette.divider}`,
+  padding: theme.spacing(0.4, 1),
+  border: `1px solid rgba(0, 0, 0, 0.23)`,
   borderRadius: theme.shape.borderRadius,
   display: "flex",
   flexDirection: "column",
@@ -131,7 +131,7 @@ const ItemHeader = styled("div")(({ theme }) => ({
 }));
 
 const Title = styled("div")(({ theme }) => ({
-  fontSize: theme.typography.body1.fontSize,
+  fontSize: theme.typography.body2.fontSize,
 }));
 
 const ActionsButton = styled(Button)(({ theme }) => ({

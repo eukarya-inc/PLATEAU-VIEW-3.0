@@ -85,12 +85,12 @@ export const StoryEditSection: FC<StoryEditSectionProps> = ({ layer }) => {
 };
 
 const SectionWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 0, 1, 0),
+  padding: theme.spacing(2, 0),
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
 }));
 
 const ButtonWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 1),
+  padding: theme.spacing(0, 2),
 }));

@@ -1,4 +1,4 @@
-import { List } from "@mui/material";
+import { Divider, List } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useMemo } from "react";
 import invariant from "tiny-invariant";
@@ -40,6 +40,7 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
         iconComponent={layerTypeIcons.STORY_LAYER}
         onClose={handleClose}
       />
+      <Divider />
       {editMode ? <StoryEditSection layer={layer} /> : <StoryInspectSection layer={layer} />}
     </List>
   );

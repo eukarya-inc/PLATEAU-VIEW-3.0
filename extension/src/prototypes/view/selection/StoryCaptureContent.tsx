@@ -118,17 +118,17 @@ export const StoryCaptureContent: FC<StoryCaptureContentProps> = ({ values }) =>
         <Content>
           <CaptureTitle>{capture?.title}</CaptureTitle>
           <StyledMarkdown skipHtml>{capture?.content}</StyledMarkdown>
-          {editMode && (
-            <ButtonsWrapper>
-              <Button size="small" variant="outlined" fullWidth onClick={handleRecapture}>
-                Re-capture
-              </Button>
-              <Button size="small" variant="outlined" fullWidth onClick={handleEdit}>
-                Edit
-              </Button>
-            </ButtonsWrapper>
-          )}
         </Content>
+        {editMode && (
+          <ButtonsWrapper>
+            <Button size="small" variant="outlined" fullWidth onClick={handleRecapture}>
+              Re-capture
+            </Button>
+            <Button size="small" variant="outlined" fullWidth onClick={handleEdit}>
+              Edit
+            </Button>
+          </ButtonsWrapper>
+        )}
       </SectionWrapper>
       {editorOpen && (
         <StoryCaptureEditor
@@ -143,17 +143,17 @@ export const StoryCaptureContent: FC<StoryCaptureContentProps> = ({ values }) =>
 };
 
 const SectionWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 0, 1, 0),
+  padding: theme.spacing(2, 0),
   display: "flex",
   flexDirection: "column",
-  gap: theme.spacing(1),
+  gap: theme.spacing(2),
 }));
 
 const Content = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
-  padding: theme.spacing(1, 2),
+  padding: theme.spacing(0, 2),
 }));
 
 const CaptureTitle = styled("div")(({ theme }) => ({
@@ -170,4 +170,5 @@ const StyledMarkdown = styled(Markdown)(({ theme }) => ({
 const ButtonsWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   gap: theme.spacing(1),
+  padding: theme.spacing(0, 2),
 }));

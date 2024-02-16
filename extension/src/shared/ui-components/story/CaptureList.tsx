@@ -34,5 +34,5 @@ const Wrapper = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(1),
-  padding: theme.spacing(0, 1),
+  padding: theme.spacing(0, 2),
 }));
