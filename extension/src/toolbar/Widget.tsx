@@ -62,13 +62,13 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>
       <WidgetContext
         inEditor={inEditor}
-        geoUrl={widget.property.default.geoURL}
-        gsiTileURL={widget.property.default.gsiTileURL}
         plateauUrl={widget.property.default.plateauURL}
-        catalogUrl={widget.property.default.catalogURL}
-        catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
         projectId={widget.property.default.projectName}
         plateauToken={widget.property.default.plateauAccessToken}
+        catalogUrl={widget.property.default.catalogURL}
+        catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
+        geoUrl={widget.property.default.geoURL}
+        gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
         customPrimaryColor={widget.property.optional?.primaryColor}
         customLogo={widget.property.optional?.logo}

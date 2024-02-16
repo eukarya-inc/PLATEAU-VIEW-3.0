@@ -58,11 +58,6 @@ const yml = {
                 title: "Admin用データカタログURL",
               },
               {
-                id: "catalogProjectName",
-                type: "string",
-                title: "データカタログのプロジェクト名",
-              },
-              {
                 id: "geoURL",
                 type: "string",
                 title: "GeoサーバーバックエンドURL",
@@ -98,6 +93,11 @@ const yml = {
             id: "optional",
             title: "任意設定",
             fields: [
+              {
+                id: "cityName",
+                type: "string",
+                title: "都市名",
+              },
               {
                 id: "primaryColor",
                 type: "string",
