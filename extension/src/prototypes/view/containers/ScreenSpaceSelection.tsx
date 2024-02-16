@@ -8,6 +8,18 @@ import {
 } from "../../screen-space-selection";
 import { toolAtom } from "../states/tool";
 
+const EVENTS_ON_SELECT_TOOL = {
+  point: true,
+  rectangle: true,
+  imagery: true,
+};
+
+const EVENTS_ON_STORY_TOOL = {
+  point: true,
+  rectangle: false,
+  imagery: false,
+};
+
 export type ScreenSpaceSelectionProps = Omit<PlateauScreenSpaceSelectionProps, "disabled">;
 
 export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = props => {
@@ -19,6 +31,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = props => {
       {...props}
       disabled={tool?.type !== "select" && tool?.type !== "story"}
       allowClickWhenDisabled={isMobile}
+      allowedEvents={tool?.type === "select" ? EVENTS_ON_SELECT_TOOL : EVENTS_ON_STORY_TOOL}
     />
   );
 };
