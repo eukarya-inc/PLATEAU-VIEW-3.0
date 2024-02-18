@@ -123,7 +123,7 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isGradientColorSchemeComponent(componentValue)
             ) {
               const ruleId = componentValue.value?.useDefault
-                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id
+                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0]?.id
                 : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;

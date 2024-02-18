@@ -99,7 +99,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         if (!isGradientColorSchemeComponent(component)) return;
 
         const currentRuleId = colorScheme.useDefault
-          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0]?.id
           : colorScheme.currentRuleId;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         const value = component.value;
@@ -157,7 +157,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
         if (!isConditionalColorSchemeComponent(component)) return;
 
         const currentRuleId = colorScheme.useDefault
-          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+          ? colorScheme.currentRuleId ?? component.preset?.rules?.[0]?.id
           : colorScheme.currentRuleId;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
@@ -205,7 +205,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
             const update = typeof action === "function" ? action(colors) : action;
             const currentRuleId = colorScheme.useDefault
-              ? colorScheme.currentRuleId ?? component.preset?.rules?.[0].id
+              ? colorScheme.currentRuleId ?? component.preset?.rules?.[0]?.id
               : colorScheme.currentRuleId;
             set(componentAtom.atom, {
               ...component,

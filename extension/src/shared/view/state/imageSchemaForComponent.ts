@@ -69,7 +69,7 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
     switch (imageScheme.type) {
       case CONDITIONAL_IMAGE_SCHEME: {
         if (!isConditionalImageSchemeComponent(component)) return;
-        const currentRuleId = imageScheme.currentRuleId ?? component.preset?.rules?.[0].id;
+        const currentRuleId = imageScheme.currentRuleId ?? component.preset?.rules?.[0]?.id;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
         const imageIcons = rule?.conditions
@@ -96,7 +96,7 @@ export const makeImageSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           () => imageIcons,
           (_get, set, action: SetStateAction<ImageIcon[]>) => {
             const update = typeof action === "function" ? action(imageIcons) : action;
-            const currentRuleId = imageScheme.currentRuleId ?? component.preset?.rules?.[0].id;
+            const currentRuleId = imageScheme.currentRuleId ?? component.preset?.rules?.[0]?.id;
             set(componentAtom.atom, {
               ...component,
               value: {
