@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
+import { useEffect } from "react";
 
 import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
+import { setView } from "../../../shared/reearth/utils";
 import { enableKeyboardCameraControlAtom } from "../states/app";
-import { toolAtom } from "../states/tool";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";
 
@@ -11,19 +12,13 @@ type ScreenSpaceCameraProps = {
 };
 export const ScreenSpaceCamera = ({ tiltByRightButton = false }: ScreenSpaceCameraProps) => {
   const useKeyboard = useAtomValue(enableKeyboardCameraControlAtom);
-  const tool = useAtomValue(toolAtom);
-  const isHand = tool?.type === "hand";
 
   const screenSpaceCameraControllerOptions: ScreenSpaceCameraControllerOptions = {
     zoomEventTypes: [],
-    rotateEventTypes: [],
     tiltEventTypes: [],
     maximumZoomDistance: Infinity,
     minimumZoomDistance: 1.5,
     enableCollisionDetection: !useKeyboard,
-    enableRotate: isHand,
-    enableLook: isHand,
-    enableInputs: isHand,
     lookEventTypes: [
       "left_drag",
       {
@@ -39,9 +34,6 @@ export const ScreenSpaceCamera = ({ tiltByRightButton = false }: ScreenSpaceCame
 
   const tiltByRightButtonOption: ScreenSpaceCameraControllerOptions = {
     zoomEventTypes: ["middle_drag", "wheel", "pinch"],
-    enableRotate: isHand,
-    enableLook: isHand,
-    enableInputs: isHand,
     rotateEventTypes: ["left_drag"],
     tiltEventTypes: [
       "right_drag",
@@ -62,6 +54,17 @@ export const ScreenSpaceCamera = ({ tiltByRightButton = false }: ScreenSpaceCame
       },
     ],
   };
+
+  const cameraPotion = window?.reearth?.camera?.position;
+  useEffect(() => {
+    if (!cameraPotion || !useKeyboard) return;
+    setView({
+      heading: cameraPotion.heading,
+      pitch: cameraPotion.pitch,
+      roll: 0,
+    });
+  }, [cameraPotion, useKeyboard]);
+
   if (useKeyboard) {
     window?.reearth?.camera?.overrideScreenSpaceController(screenSpaceCameraControllerOptions);
   } else if (tiltByRightButton) {
