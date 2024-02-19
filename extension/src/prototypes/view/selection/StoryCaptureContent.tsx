@@ -122,7 +122,7 @@ export const StoryCaptureContent: FC<StoryCaptureContentProps> = ({ values }) =>
         {editMode && (
           <ButtonsWrapper>
             <Button size="small" variant="outlined" fullWidth onClick={handleRecapture}>
-              Re-capture
+              再キャプチャ
             </Button>
             <Button size="small" variant="outlined" fullWidth onClick={handleEdit}>
               Edit
