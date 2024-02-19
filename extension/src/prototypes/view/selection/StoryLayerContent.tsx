@@ -35,7 +35,7 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
   return (
     <List disablePadding>
       <InspectorHeader
-        title={editMode ? "Story Editor" : "Story Inspector"}
+        title={editMode ? "ストーリーエディタ" : "ストーリー"}
         iconComponent={layerTypeIcons.STORY_LAYER}
         onClose={handleClose}
       />
