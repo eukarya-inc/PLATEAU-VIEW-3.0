@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
 import { setView } from "../../../shared/reearth/utils";
@@ -56,13 +56,28 @@ export const ScreenSpaceCamera = ({ tiltByRightButton = false }: ScreenSpaceCame
   };
 
   const cameraPotion = window?.reearth?.camera?.position;
+  const animationFrameRef = useRef<number>(0);
+
   useEffect(() => {
     if (!cameraPotion || !useKeyboard) return;
-    setView({
-      heading: cameraPotion.heading,
-      pitch: cameraPotion.pitch,
-      roll: 0,
-    });
+    const animate = () => {
+      setView({
+        heading: cameraPotion.heading,
+        pitch: cameraPotion.pitch,
+        roll: 0,
+      });
+      if (useKeyboard) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    if (useKeyboard) {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameRef.current);
+    };
   }, [cameraPotion, useKeyboard]);
 
   if (useKeyboard) {
