@@ -26,7 +26,6 @@ import {
   SliderParameterItem,
   SwitchParameterItem,
   type SelectItemProps,
-  PaperPlaneTilt,
 } from "../../ui-components";
 
 const LegendButton = styled(Button)(({ theme }) => ({
@@ -240,10 +239,6 @@ export const EnvironmentSelect: FC = () => {
         {...bindTrigger(popupState)}>
         <MapIcon />
       </AppIconButton>
-      {/* TODO: Implment the click, popup and pass props */}
-      <IconButton>
-        <PaperPlaneTilt />
-      </IconButton>
       {selectedItem === "elevation" && <ElevationLegendButton />}
       <OverlayPopper {...popoverProps} inset={1.5}>
         <FloatingPanel>
