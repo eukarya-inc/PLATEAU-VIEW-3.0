@@ -76,7 +76,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   }, [query]);
 
   const tree = useMemo(() => {
-    // setReady(false);
     if (!dataset) return [];
     return [
       {
