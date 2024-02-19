@@ -285,6 +285,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       });
   }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
 
+  useEffect(() => {
+    cache?.clear();
+  }, [cache, dataset?.id]);
+
   return layer && dataset ? (
     <EditorSection
       sidebarMain={
