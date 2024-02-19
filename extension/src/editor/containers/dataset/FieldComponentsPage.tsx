@@ -3,15 +3,17 @@ import { FieldComponentEditor } from "../common/fieldComponentEditor";
 
 import { FieldComponentTemplateBlock } from "./blocks/FieldComponentTemplateBlock";
 
-import { DraftSetting, UpdateSetting } from ".";
+import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
 type FieldComponentsPageProps = {
   setting: DraftSetting;
+  dataset: EditorDataset;
   updateSetting: UpdateSetting;
 };
 
 export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
   setting,
+  dataset,
   updateSetting,
 }) => {
   const handleComponentGroupsUpdate = (groups: ComponentGroup[]) => {
@@ -26,6 +28,8 @@ export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
       <FieldComponentTemplateBlock
         key={`${setting.datasetId}-${setting.dataId}-fc-template`}
         setting={setting}
+        dataset={dataset}
+        componentsGroups={setting.fieldComponents?.groups}
         updateSetting={updateSetting}
       />
       {setting.fieldComponents?.groups && (

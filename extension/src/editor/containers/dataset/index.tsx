@@ -338,6 +338,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             ) : contentType === "fieldComponents" && draftSetting ? (
               <FieldComponentsPage
                 key={`${dataset.id}-${dataId}`}
+                dataset={dataset}
                 setting={draftSetting}
                 updateSetting={updateDraftSetting}
               />
