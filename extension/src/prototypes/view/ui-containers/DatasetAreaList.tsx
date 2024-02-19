@@ -72,11 +72,11 @@ const MunicipalityItem: FC<{
   const groups = useMemo(
     () =>
       query.data?.area?.datasets != null
-        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.id))
+        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.name))
             .map(([, value]) => value)
             .map(value => ({
               groupId: value.map(({ id }) => id).join(":"),
-              datasets: value,
+              datasets: value.sort((a, b) => a.type.order - b.type.order),
             }))
         : undefined,
     [query.data?.area?.datasets],
