@@ -63,7 +63,7 @@ export const ToolButtons: FC = () => {
   }, [showCreateStory]);
 
   const storyItems = useMemo(
-    () => [{ title: "New Story", icon: <StoryIcon />, onClick: handleCreateStory }],
+    () => [{ title: "新しいストーリー", icon: <StoryIcon />, onClick: handleCreateStory }],
     [handleCreateStory],
   );
 
