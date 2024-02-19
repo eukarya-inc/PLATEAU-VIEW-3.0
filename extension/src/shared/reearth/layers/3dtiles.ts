@@ -42,15 +42,6 @@ export const TilesetLayer: FC<TilesetProps> = ({
   appearance,
   boxAppearance,
 }) => {
-  const disabledSelection = boxAppearance?.disabledSelection ?? false;
-  console.log("disabledSelectionsss", disabledSelection);
-  // const [interactionMode] = useAtom(interactionModeAtom);
-
-  // const disabledSelection = useMemo(() => {
-  //   const mode = interactionMode.value as unknown;
-  //   return mode === "default" || mode === "move";
-  // }, [interactionMode]);
-
   const data: Data = useMemo(
     () => ({
       type: "3dtiles",
@@ -65,10 +56,9 @@ export const TilesetLayer: FC<TilesetProps> = ({
       box: {
         ...boxAppearance,
         hideIndicator: true,
-        disabledSelection: disabledSelection,
       },
     }),
-    [appearance, boxAppearance, disabledSelection],
+    [appearance, boxAppearance],
   );
   useLayer({
     data,
