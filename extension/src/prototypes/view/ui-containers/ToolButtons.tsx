@@ -1,6 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, type FC } from "react";
+import { useCallback, type FC, useMemo } from "react";
 
+import { showCreateStoryAtom } from "../../../shared/view/state/story";
 import { isSketchGeometryType } from "../../sketch";
 import {
   AppToggleButton,
@@ -14,6 +15,7 @@ import {
   SketchCircleIcon,
   SketchPolygonIcon,
 } from "../../ui-components";
+import { AppToggleButtonMenu } from "../../ui-components/AppToggleButtonMenu";
 import { sketchTypeAtom, toolAtom, toolMachineAtom, type ToolType } from "../states/tool";
 import { type EventObject } from "../states/toolMachine";
 
@@ -55,6 +57,16 @@ export const ToolButtons: FC = () => {
     [send, setSketchType],
   );
 
+  const showCreateStory = useSetAtom(showCreateStoryAtom);
+  const handleCreateStory = useCallback(() => {
+    showCreateStory(true);
+  }, [showCreateStory]);
+
+  const storyItems = useMemo(
+    () => [{ title: "新しいストーリー", icon: <StoryIcon />, onClick: handleCreateStory }],
+    [handleCreateStory],
+  );
+
   return (
     <AppToggleButtonGroup value={tool?.type} onChange={handleChange}>
       <AppToggleButton value="hand" title="移動" shortcutKey="H">
@@ -74,9 +86,9 @@ export const ToolButtons: FC = () => {
         selectedValue={sketchType}
         onValueChange={handleSketchTypeChange}
       />
-      <AppToggleButton value="story" title="ストーリー" shortcutKey="T" disabled>
+      <AppToggleButtonMenu value="story" title="ストーリー" shortcutKey="T" items={storyItems}>
         <StoryIcon fontSize="medium" />
-      </AppToggleButton>
+      </AppToggleButtonMenu>
     </AppToggleButtonGroup>
   );
 };

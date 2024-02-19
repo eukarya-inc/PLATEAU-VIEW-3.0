@@ -14,6 +14,7 @@ import {
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   SKETCH_LAYER,
+  STORY_LAYER,
 } from "../../../prototypes/view-layers";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
@@ -132,6 +133,13 @@ export const InitialLayers: FC = () => {
               title: l.title,
               type: SKETCH_LAYER,
               features: l.features,
+            };
+          case "story":
+            return {
+              id: l.id,
+              title: l.title,
+              type: STORY_LAYER,
+              captures: l.captures,
             };
         }
       })

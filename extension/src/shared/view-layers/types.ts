@@ -22,6 +22,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -34,12 +35,14 @@ import { GeneralLayerModel } from "./general";
 import { MyDataLayerModel } from "./myData";
 import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
+import { StoryLayerModel } from "./story";
 
 export interface LayerModelOverrides {
   [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: SketchLayerModel;
-  [MY_DATA_LAYER]: MyDataLayerModel; // SketchLayerModel;
+  [MY_DATA_LAYER]: MyDataLayerModel;
+  [STORY_LAYER]: StoryLayerModel;
 
   // Dataset layers
   // Building model
