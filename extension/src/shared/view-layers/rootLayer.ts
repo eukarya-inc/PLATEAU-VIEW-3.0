@@ -241,9 +241,6 @@ const createRootLayerForDataset = ({
   );
   const componentGroup = findComponentGroup(setting, componentTemplate, currentGroupId);
 
-  console.log("settings", settings);
-  console.log("setting", setting);
-
   return {
     type: "dataset",
     layerName: subName ?? datasetType.name ?? "ユースケース",
