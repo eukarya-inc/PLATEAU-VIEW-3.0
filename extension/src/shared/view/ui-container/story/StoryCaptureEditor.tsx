@@ -52,7 +52,7 @@ export const StoryCaptureEditor: React.FC<StoryCaptureEditorProps> = ({
   return (
     <ViewDialog
       open={open}
-      title="Capture Editor"
+      title="キャプチャエディタ"
       icon={<CameraIcon />}
       disableSubmit={!title.trim() || !content.trim()}
       onClose={onClose}
