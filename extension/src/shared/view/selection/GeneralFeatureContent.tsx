@@ -1,14 +1,19 @@
-import { Divider, List } from "@mui/material";
-import { useSetAtom } from "jotai";
+import { Divider, IconButton, List, Tooltip } from "@mui/material";
+import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, type FC, useMemo, useState } from "react";
 
+import { layerSelectionAtom } from "../../../prototypes/layers";
 import { screenSpaceSelectionAtom } from "../../../prototypes/screen-space-selection";
-import { InspectorHeader } from "../../../prototypes/ui-components";
+import { InspectorHeader, LayerIcon } from "../../../prototypes/ui-components";
 import {
   type SCREEN_SPACE_SELECTION,
   type SelectionGroup,
 } from "../../../prototypes/view/states/selection";
-import { layerTypeIcons, layerTypeNames } from "../../../prototypes/view-layers";
+import {
+  highlightedLayersAtom,
+  layerTypeIcons,
+  layerTypeNames,
+} from "../../../prototypes/view-layers";
 import { FeatureInspectorSettings } from "../../api/types";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
@@ -48,9 +53,11 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
   displayType,
 }) => {
   const setSelection = useSetAtom(screenSpaceSelectionAtom);
+
   const handleClose = useCallback(() => {
     setSelection([]);
   }, [setSelection]);
+
   const type = values[0].layerType;
   const title = useMemo(() => {
     if (rootLayer?.featureInspector?.basic?.titleType === "custom") {
@@ -67,26 +74,33 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
   // const [hidden, setHidden] = useState(false);
   // const hideFeatures = useSetAtom(hideFeaturesAtom);
   // const showFeatures = useSetAtom(showFeaturesAtom);
+
   // const handleHide = useCallback(() => {
   //   hideFeatures(values.map(value => value.key));
   //   setHidden(true);
   // }, [values, hideFeatures]);
+
   // const handleShow = useCallback(() => {
   //   showFeatures(values.map(value => value.key));
   //   setHidden(false);
   // }, [values, showFeatures]);
 
-  // TODO(reearth): Support highlight layer if necessary
-  // const tilesetLayers = useAtomValue(highlightedTilesetLayersAtom);
-  // const tilsetLayerIdsAtom = useMemo(
-  //   () => atom(get => tilesetLayers.map(l => get(get(l.rootLayerAtom).layer).id)),
-  //   [tilesetLayers],
-  // );
-  // const tilsetLayerIds = useAtomValue(tilsetLayerIdsAtom);
-  // const setLayerSelection = useSetAtom(layerSelectionAtom);
-  // const handleSelectLayers = useCallback(() => {
-  //   setLayerSelection(tilsetLayerIds);
-  // }, [tilsetLayerIds, setLayerSelection]);
+  const generalSetLayers = useAtomValue(highlightedLayersAtom);
+  const generalSetLayerIdsAtom = useMemo(
+    () =>
+      atom(() =>
+        generalSetLayers.map(l => {
+          return { id: l.id, type: l.type } as const;
+        }),
+      ),
+    [generalSetLayers],
+  );
+
+  const generalSetLayerIds = useAtomValue(generalSetLayerIdsAtom);
+  const setLayerSelection = useSetAtom(layerSelectionAtom);
+  const handleSelectLayers = useCallback(() => {
+    setLayerSelection(generalSetLayerIds);
+  }, [setLayerSelection, generalSetLayerIds]);
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const handleSetHeaderHeight = useCallback((e: HTMLDivElement | null) => {
@@ -100,22 +114,22 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
           title={title}
           iconComponent={layerTypeIcons[type] ?? layerTypeIcons.USE_CASE_LAYER}
           // TODO(reearth): Support highlight layer if necessary
-          // actions={
-          //   <>
-          //     <Tooltip title="レイヤーを選択">
-          //       <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
-          //         <LayerIcon />
-          //       </IconButton>
-          //     </Tooltip>
-          //     <Tooltip title={hidden ? "表示" : "隠す"}>
-          //       <IconButton
-          //         aria-label={hidden ? "表示" : "隠す"}
-          //         onClick={hidden ? handleShow : handleHide}>
-          //         {hidden ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
-          //       </IconButton>
-          //     </Tooltip>
-          //   </>
-          // }
+          actions={
+            <>
+              <Tooltip title="レイヤーを選択">
+                <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
+                  <LayerIcon />
+                </IconButton>
+              </Tooltip>
+              {/* <Tooltip title={hidden ? "表示" : "隠す"}>
+                <IconButton
+                  aria-label={hidden ? "表示" : "隠す"}
+                  onClick={hidden ? handleShow : handleHide}>
+                  {hidden ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
+                </IconButton>
+              </Tooltip> */}
+            </>
+          }
           onClose={handleClose}
         />
         <Divider />
