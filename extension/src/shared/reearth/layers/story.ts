@@ -1,6 +1,5 @@
 import { FC, useMemo } from "react";
 
-import { composeIdentifier } from "../../../prototypes/cesium-helpers";
 import { StoryCapture } from "../../layerContainers/story";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
@@ -8,6 +7,7 @@ import { Data, LayerAppearanceTypes } from "../types";
 export type StoryAppearance = Partial<Pick<LayerAppearanceTypes, "marker">>;
 
 export type StoryProps = {
+  id: string;
   capture: StoryCapture;
   appearances: StoryAppearance;
   visible?: boolean;
@@ -16,19 +16,14 @@ export type StoryProps = {
 
 export const STORY_MARKER_ID_PROPERTY = "storyCaptureID";
 
-export const StoryLayer: FC<StoryProps> = ({ capture, appearances, visible, onLoad }) => {
+export const StoryLayer: FC<StoryProps> = ({ id, capture, appearances, visible, onLoad }) => {
   const data: Data = useMemo(() => {
-    const objectId = composeIdentifier({
-      type: "Story",
-      key: capture.id,
-    });
-
     return {
       type: "geojson",
       value: {
         type: "Feature",
         properties: {
-          [STORY_MARKER_ID_PROPERTY]: objectId,
+          [STORY_MARKER_ID_PROPERTY]: id,
         },
         geometry: {
           coordinates: [capture.camera.lng, capture.camera.lat, capture.camera.height],
@@ -36,7 +31,7 @@ export const StoryLayer: FC<StoryProps> = ({ capture, appearances, visible, onLo
         },
       },
     };
-  }, [capture]);
+  }, [id, capture]);
 
   useLayer({
     data,

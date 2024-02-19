@@ -148,8 +148,13 @@ const StoryObject: FC<StoryObjectProps> = ({ capture, onLoad }) => {
   );
   return (
     <>
-      <StoryLayer capture={capture} onLoad={handleLoad} appearances={balloonAppearance} />
-      <StoryLayer capture={capture} appearances={iconAppearance} />
+      <StoryLayer
+        id={objectId}
+        capture={capture}
+        onLoad={handleLoad}
+        appearances={balloonAppearance}
+      />
+      <StoryLayer id={objectId} capture={capture} appearances={iconAppearance} />
     </>
   );
 };
