@@ -95,7 +95,7 @@ export const StoryInspectSection: FC<StoryInspectSectionProps> = ({ layer }) => 
           </>
         )
       ) : (
-        <NoCaptures>No captures.</NoCaptures>
+        <NoCaptures>キャプチャがありません。</NoCaptures>
       )}
     </SectionWrapper>
   );
