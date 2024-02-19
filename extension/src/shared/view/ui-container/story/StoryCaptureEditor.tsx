@@ -58,7 +58,7 @@ export const StoryCaptureEditor: React.FC<StoryCaptureEditorProps> = ({
       onClose={onClose}
       onSubmit={handleSubmit}>
       <ViewContentColumn>
-        <ViewTextField placeholder="Title" value={title} onChange={handleTitleChange} />
+        <ViewTextField placeholder="タイトル" value={title} onChange={handleTitleChange} />
         <ViewMarkdownEditor value={content} onChange={handleContentChange} />
       </ViewContentColumn>
     </ViewDialog>
