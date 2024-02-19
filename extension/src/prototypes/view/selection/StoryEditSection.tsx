@@ -69,7 +69,7 @@ export const StoryEditSection: FC<StoryEditSectionProps> = ({ layer }) => {
           fullWidth
           startIcon={<CameraIcon />}
           onClick={handleOpenNewCapture}>
-          New Capture
+          新しいキャプチャ
         </Button>
       </ButtonWrapper>
       {editorOpen && (
