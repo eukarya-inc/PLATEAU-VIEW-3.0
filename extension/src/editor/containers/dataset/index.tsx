@@ -238,9 +238,18 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
-    cache?.clear();
-    updateSetting(draftSetting as Setting);
-  }, [draftSetting, cache, updateSetting]);
+    // Apply all settings belongs to current dataset
+    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
+      if (id === dataId) {
+        updateSetting(draftSetting as Setting);
+      } else {
+        const cachedSetting = cache?.get(`dataset-${dataset.id}-${id}`);
+        if (cachedSetting) {
+          updateSetting(cachedSetting as Setting);
+        }
+      }
+    });
+  }, [cache, dataId, dataset?.id, dataset?.items, draftSetting, updateSetting]);
 
   const handleSave = useCallback(() => {
     // Save all settings belongs to current dataset
