@@ -8,7 +8,7 @@ import {
   styled,
 } from "@mui/material";
 import { useAtomValue } from "jotai";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 
 import { useCamera } from "../../../shared/reearth/hooks";
 import { ViewMarkdownViewer } from "../../../shared/ui-components/common";
@@ -46,6 +46,10 @@ export const StoryInspectSection: FC<StoryInspectSectionProps> = ({ layer }) => 
   const goList = useCallback(() => {
     setPanel("list");
   }, []);
+
+  useEffect(() => {
+    setPanel("list");
+  }, [layer]);
 
   return (
     <SectionWrapper>
