@@ -62,19 +62,19 @@ export const CaptureListItem: FC<CaptureListItemProps> = ({
   const actions = useMemo(
     () => [
       {
-        label: "View",
+        label: "移動",
         onClick: viewCapture,
       },
       {
-        label: "Edit",
+        label: "編集",
         onClick: editCapture,
       },
       {
-        label: "Re-Capture",
+        label: "再キャプチャ",
         onClick: recaptureCapture,
       },
       {
-        label: "Delete",
+        label: "削除",
         onClick: removeCapture,
       },
     ],
