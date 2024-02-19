@@ -57,13 +57,13 @@ export const StoryCreator: FC = () => {
   return (
     <ViewDialog
       icon={<StoryIcon />}
-      title="Create a new story"
+      title="新しいストーリーを作成"
       open={showCreateStory}
       disableSubmit={disableSubmit}
       onClose={handleClose}
       onSubmit={handleCreate}>
       <ViewContentColumn>
-        <ViewLabel>Story name</ViewLabel>
+        <ViewLabel>ストーリー名</ViewLabel>
         <ViewTextField value={storyName} onChange={handleStoryNameChange} />
       </ViewContentColumn>
     </ViewDialog>
