@@ -5,6 +5,7 @@ import { ComponentTemplate, EmphasisPropertyTemplate, Setting } from "../../shar
 import { DEFAULT_CAMERA_BLOCK_VALUE } from "./dataset/blocks/CameraBlock";
 import { DEFAULT_DATA_FETCHING_BLOCK_VALUE } from "./dataset/blocks/DataFetchingBlock";
 import { DEFAULT_EVENT_BLOCK_VALUE } from "./dataset/blocks/EventBlock";
+import { DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE } from "./dataset/blocks/FeatureInspectorBasicBlock";
 import { EditorTreeItemType } from "./ui-components";
 
 export const VIRTUAL_ROOT = {
@@ -119,7 +120,8 @@ export function hasBeenEdited(
     );
   } else if (type === "featureInspector") {
     return (
-      !!setting.featureInspector?.basic ||
+      (!!setting.featureInspector?.basic &&
+        !isEqual(setting.featureInspector?.basic, DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE)) ||
       (setting.featureInspector?.emphasisProperty?.useTemplate &&
         setting.featureInspector?.emphasisProperty?.templateId) ||
       (!setting.featureInspector?.emphasisProperty?.useTemplate &&

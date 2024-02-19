@@ -145,6 +145,6 @@ const StyledItemButton = styled(ListItemButton, {
     color: selected ? "#fff" : theme.palette.text.primary,
     width: "10px",
     height: "10px",
-    marginRight: theme.spacing(0.5),
+    marginRight: theme.spacing(1),
   },
 }));
