@@ -30,6 +30,8 @@ import {
   setSiteURL,
   CITY_NAME,
   setCityName,
+  INITIAL_PEDESTRIAN_COORDINATES,
+  setInitialPededstrianCoordinates,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
@@ -67,7 +69,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   cityName,
   customPrimaryColor,
   customLogo,
-  // customPedestrian,
+  customPedestrian,
   customSiteUrl,
 }) => {
   useEffect(() => {
@@ -138,6 +140,15 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setLogo(customLogo);
     }
   }, [customLogo]);
+
+  useEffect(() => {
+    if (
+      customPedestrian &&
+      (!INITIAL_PEDESTRIAN_COORDINATES || INITIAL_PEDESTRIAN_COORDINATES !== customPedestrian)
+    ) {
+      setInitialPededstrianCoordinates(customPedestrian);
+    }
+  }, [customPedestrian]);
 
   useEffect(() => {
     if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {

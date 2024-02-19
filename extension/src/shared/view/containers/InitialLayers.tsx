@@ -16,6 +16,7 @@ import {
   SKETCH_LAYER,
 } from "../../../prototypes/view-layers";
 import { DEFAULT_SETTING_DATA_ID } from "../../api/constants";
+import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
@@ -60,6 +61,19 @@ export const InitialLayers: FC = () => {
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
+  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(
+    () => [
+      {
+        type: PEDESTRIAN_LAYER,
+        location: {
+          longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
+          latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+        },
+      },
+    ],
+    [],
+  );
+
   const getDefaultBuildingIds = useCallback(
     () =>
       settings
@@ -87,7 +101,7 @@ export const InitialLayers: FC = () => {
   const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
 
   const initialLayers = useMemo(() => {
-    if (!sharedRootLayers?.length) return [];
+    if (!sharedRootLayers?.length) return defaultLayerParams;
     return sharedRootLayers
       .map(l => {
         switch (l.type) {
@@ -134,7 +148,7 @@ export const InitialLayers: FC = () => {
         }
       })
       .filter(isNotNullish);
-  }, [sharedRootLayers]);
+  }, [sharedRootLayers, defaultLayerParams]);
 
   const setReady = useSetAtom(readyAtom);
 

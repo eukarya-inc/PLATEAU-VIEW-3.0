@@ -1,3 +1,5 @@
+import { CameraPosition } from "../reearth/types";
+
 // default settings
 export let PLATEAU_API_URL: string | undefined;
 export const setPlateauApiUrl = (url: string) => {
@@ -43,4 +45,9 @@ export const setLogo = (url: string) => {
 export let SITE_URL: string | undefined;
 export const setSiteURL = (url?: string) => {
   SITE_URL = url ?? "https://www.mlit.go.jp/plateau/";
+};
+
+export let INITIAL_PEDESTRIAN_COORDINATES: CameraPosition | undefined;
+export const setInitialPededstrianCoordinates = (camera?: CameraPosition) => {
+  INITIAL_PEDESTRIAN_COORDINATES = camera;
 };
