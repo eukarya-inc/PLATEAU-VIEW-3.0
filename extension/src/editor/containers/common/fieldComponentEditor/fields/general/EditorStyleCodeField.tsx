@@ -1,7 +1,8 @@
+import MonacoEditor from "@monaco-editor/react";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
 import { styled, svgIconClasses } from "@mui/material";
-import CodeEditor from "@uiw/react-textarea-code-editor";
+// import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { BasicFieldProps } from "..";
@@ -11,6 +12,17 @@ import {
   PropertySwitchField,
   PropertyWrapper,
 } from "../../../../ui-components";
+
+const options = {
+  bracketPairColorization: {
+    enabled: true,
+  },
+  automaticLayout: true,
+  minimap: {
+    enabled: false,
+  },
+  selectOnLineNumbers: true,
+};
 
 export type StyleCodeFieldPreset = {
   code?: string;
@@ -34,7 +46,7 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
   }, [code]);
 
   const handleCodeChange = useCallback(
-    (code: string) => {
+    (code: string | undefined) => {
       onUpdate({
         ...component,
         preset: {
@@ -63,7 +75,7 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
     <PropertyWrapper>
       <PropertyBox>
         <CodeEditorWrapper>
-          <CodeEditor
+          {/* <CodeEditor
             value={code}
             language="json"
             placeholder="Style JSON here."
@@ -78,13 +90,19 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
               fontFamily:
                 "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
             }}
+          /> */}
+          <MonacoEditor
+            language="json"
+            value={code}
+            options={options}
+            onChange={handleCodeChange}
           />
           <ValidTip valid={codeValid ? 1 : 0}>
             {codeValid ? <CheckOutlinedIcon /> : <ErrorOutlineOutlinedIcon />}JSON
           </ValidTip>
         </CodeEditorWrapper>
 
-        <PropertyInlineWrapper label="Enable Transparency Slider">
+        <PropertyInlineWrapper label="Transparency Bar">
           <PropertySwitchField
             checked={!!component.preset?.enableTransparencySlider}
             onChange={handleEnableTransparencySliderChange}
@@ -97,6 +115,7 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
 
 const CodeEditorWrapper = styled("div")({
   position: "relative",
+  height: 200,
 });
 
 const ValidTip = styled("div")<{ valid: number }>(({ valid, theme }) => ({

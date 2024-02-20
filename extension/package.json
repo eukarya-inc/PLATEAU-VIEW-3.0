@@ -28,6 +28,7 @@
     "@emotion/react": "11.11.1",
     "@emotion/styled": "11.11.0",
     "@googlemaps/js-api-loader": "^1.16.2",
+    "@monaco-editor/react": "4.6.0",
     "@mui/icons-material": "5.14.3",
     "@mui/lab": "5.0.0-alpha.140",
     "@mui/material": "5.14.5",
