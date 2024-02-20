@@ -69,3 +69,5 @@ export const momentaryToolAtom = atom<Tool | null>(
 );
 
 export const sketchTypeAtom = atom<SketchGeometryType>("rectangle");
+
+export const preventToolKeyDownAtom = atom(false);

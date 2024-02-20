@@ -1,4 +1,4 @@
-import { IconButton, Stack, styled, Tooltip, SvgIcon } from "@mui/material";
+import { IconButton, Stack, styled, Tooltip } from "@mui/material";
 import {
   useState,
   type FC,
@@ -53,13 +53,15 @@ const HoverMenu: FC<HoverMenuProps> = ({
     <Stack direction="row" onMouseDown={stopPropagation}>
       {onMove && (
         <Tooltip title="移動">
-          <IconButton
-            color="inherit"
-            aria-label="移動"
-            disabled={isButtonDisabled}
-            onClick={onMove}>
-            <SvgIcon component={AddressIcon} sx={{ width: 16, height: 16, color: "black" }} />
-          </IconButton>
+          <span>
+            <IconButton
+              color="inherit"
+              aria-label="移動"
+              disabled={isButtonDisabled}
+              onClick={onMove}>
+              <AddressIcon fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>
       )}
       {(hovered || !hidden) && (

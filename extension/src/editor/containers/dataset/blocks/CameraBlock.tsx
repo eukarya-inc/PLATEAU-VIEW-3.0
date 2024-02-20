@@ -12,6 +12,8 @@ import {
   FieldLineWrapper,
 } from "../../ui-components";
 
+export const DEFAULT_CAMERA_BLOCK_VALUE = undefined;
+
 type CameraBlockProps = EditorBlockProps & {
   setting?: DraftSetting;
   updateSetting?: UpdateSetting;
@@ -56,7 +58,7 @@ export const CameraBlock: React.FC<CameraBlockProps> = ({ setting, updateSetting
             isNaN(numberHeading) ||
             isNaN(numberPitch) ||
             isNaN(numberRoll)
-              ? undefined
+              ? DEFAULT_CAMERA_BLOCK_VALUE
               : {
                   lat: numberLatitude,
                   lng: numberLongitude,

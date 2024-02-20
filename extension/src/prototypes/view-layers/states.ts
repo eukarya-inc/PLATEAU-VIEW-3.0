@@ -3,8 +3,9 @@ import { atom } from "jotai";
 import { fromPairs, uniq, without } from "lodash-es";
 import invariant from "tiny-invariant";
 
+import { STORY_OBJECT, storySelectionAtom } from "../../shared/layerContainers/story";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../shared/states/rootLayer";
-import { RootLayerAtom } from "../../shared/view-layers";
+import { RootLayerAtom, StoryLayerModel } from "../../shared/view-layers";
 import { matchIdentifier, parseIdentifier } from "../cesium-helpers";
 import { featureSelectionAtom } from "../datasets";
 import { LayerModel } from "../layers";
@@ -14,7 +15,7 @@ import { atomsWithSelection } from "../shared-states";
 import { SKETCH_OBJECT, sketchSelectionAtom } from "../sketch";
 import { isNotNullish } from "../type-helpers";
 
-import { PEDESTRIAN_LAYER, SKETCH_LAYER } from "./layerTypes";
+import { PEDESTRIAN_LAYER, SKETCH_LAYER, STORY_LAYER } from "./layerTypes";
 import { SketchLayerModel } from "./SketchLayer";
 
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
@@ -34,6 +35,26 @@ export const tilesetLayersLayersAtom = atom(get =>
 // export const pedestrianLayersAtom = atom(get =>
 //   get(layersAtom).filter((layer): layer is PedestrianLayerModel => layer.type === PEDESTRIAN_LAYER),
 // );
+
+export const storyLayersAtom = atom(get =>
+  get(rootLayersLayersAtom).filter((layer): layer is StoryLayerModel => layer.type === STORY_LAYER),
+);
+
+export const highlightedStoryLayersAtom = atom(get => {
+  const entityIds = get(storySelectionAtom).map(({ value }) => value);
+  const storyLayers = get(storyLayersAtom);
+  return storyLayers.filter(layer => {
+    const captures = get(layer.capturesAtom);
+    return entityIds.some(entityId =>
+      captures.some(capture =>
+        matchIdentifier(entityId, {
+          type: "Story",
+          key: capture.id,
+        }),
+      ),
+    );
+  });
+});
 
 export const sketchLayersAtom = atom(get =>
   get(rootLayersLayersAtom).filter(
@@ -86,6 +107,7 @@ export const highlightedLayersAtom = atom(get => {
   const layers = get(rootLayersLayersAtom);
   const result: LayerModel[] = [];
   const highlightedSketchLayers = get(highlightedSketchLayersAtom);
+  const hightlightedStoryLayers = get(highlightedStoryLayersAtom);
   for (const layer of layers) {
     const layerId = get(layer.layerIdAtom);
     const selection = screenSpaceSelection.some(v => {
@@ -94,6 +116,8 @@ export const highlightedLayersAtom = atom(get => {
           return layer.type === PEDESTRIAN_LAYER && layer.id === parseIdentifier(v.value).key;
         case SKETCH_OBJECT:
           return highlightedSketchLayers.some(v => v.id === layer.id);
+        case STORY_OBJECT:
+          return hightlightedStoryLayers.some(v => v.id === layer.id);
         default:
           return layerId === v.value.layerId;
       }

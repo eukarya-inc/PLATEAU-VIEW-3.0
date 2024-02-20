@@ -62,3 +62,4 @@ export * from "./PaperPlane";
 export * from "./PaperPlaneTilt";
 export * from "./Copy";
 export * from "./ShareLoading";
+export * from "./CameraIcon";

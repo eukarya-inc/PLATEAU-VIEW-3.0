@@ -8,6 +8,7 @@ import {
   PEDESTRIAN_LAYER,
   PedestrianLayerModel,
   SKETCH_LAYER,
+  STORY_LAYER,
   SharedHeatmapLayer,
   SharedPedestrianLayer,
   SharedSketchLayer,
@@ -15,7 +16,12 @@ import {
 } from "../../prototypes/view-layers";
 import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { generateID } from "../utils";
-import { MyDataLayerModel, SharedMyDataLayer } from "../view-layers";
+import {
+  MyDataLayerModel,
+  SharedMyDataLayer,
+  SharedStoryLayer,
+  StoryLayerModel,
+} from "../view-layers";
 
 import { rootLayersAtom } from "./rootLayer";
 import { sharedInitialCameraAtom, sharedInitialClockAtom } from "./scene";
@@ -44,7 +50,8 @@ export type SharedRootLayer =
   | SharedHeatmapLayer
   | SharedPedestrianLayer
   | SharedMyDataLayer
-  | SharedSketchLayer;
+  | SharedSketchLayer
+  | SharedStoryLayer;
 
 // For share feature
 const SHARED_LAYERS_KEY = "$sharedLayers";
@@ -97,6 +104,15 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 id: l.id,
                 title: l.title,
                 features: get(l.featuresAtom),
+              };
+            }
+            case STORY_LAYER: {
+              const l = layer as StoryLayerModel;
+              return {
+                type: "story",
+                id: l.id,
+                title: l.title,
+                captures: get(l.capturesAtom),
               };
             }
           }

@@ -6,6 +6,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { type ResizeCallback } from "re-resizable";
 import { useCallback, type FC } from "react";
 
+import { STORY_OBJECT } from "../../../shared/layerContainers/story";
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import {
@@ -16,12 +17,14 @@ import { LegendDescriptionSection } from "../../../shared/view/selection/LegendD
 import { PEDESTRIAN_OBJECT } from "../../pedestrian";
 import { SKETCH_OBJECT } from "../../sketch";
 import { Inspector } from "../../ui-components";
-import { PEDESTRIAN_LAYER } from "../../view-layers";
+import { PEDESTRIAN_LAYER, STORY_LAYER } from "../../view-layers";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
 import { PedestrianLayerContent } from "../selection/PedestrianLayerContent";
 import { SketchObjectContent } from "../selection/SketchObjectContent";
+import { StoryCaptureContent } from "../selection/StoryCaptureContent";
+import { StoryLayerContent } from "../selection/StoryLayerContent";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom, pedestrianInspectorWidthAtom, viewportWidthAtom } from "../states/app";
 import {
@@ -50,6 +53,9 @@ export const SelectionPanel: FC = () => {
           case PEDESTRIAN_LAYER:
             content = <PedestrianLayerContent values={selectionGroup.values} />;
             contentType = "pedestrian";
+            break;
+          case STORY_LAYER:
+            content = <StoryLayerContent values={selectionGroup.values} />;
             break;
           default:
             content = <LayerContent values={selectionGroup.values} />;
@@ -91,6 +97,9 @@ export const SelectionPanel: FC = () => {
             break;
           case SKETCH_OBJECT:
             content = <SketchObjectContent values={selectionGroup.values} />;
+            break;
+          case STORY_OBJECT:
+            content = <StoryCaptureContent values={selectionGroup.values} />;
             break;
         }
         break;
