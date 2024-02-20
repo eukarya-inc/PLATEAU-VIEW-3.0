@@ -1,5 +1,6 @@
 import { DatasetStoryFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorDatasetStoryField";
 import { LinkButtonFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorLinkButtonField";
+import { StyleCodeFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorStyleCodeField";
 import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
 
 import { FieldBase } from "./base";
@@ -34,10 +35,10 @@ export type LegendDescriptionField = FieldBase<{
 export const STYLE_CODE_FIELD = "STYLE_CODE_FIELD";
 export type StyleCodeField = FieldBase<{
   type: typeof STYLE_CODE_FIELD;
-  value?: string;
-  preset?: {
-    code?: string;
+  value?: {
+    opacity?: number;
   };
+  preset?: StyleCodeFieldPreset;
 }>;
 
 export const APPLY_TIME_VALUE_FIELD = "APPLY_TIME_VALUE_FIELD";

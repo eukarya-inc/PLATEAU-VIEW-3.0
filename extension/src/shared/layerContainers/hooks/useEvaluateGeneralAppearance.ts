@@ -173,13 +173,11 @@ export const useEvaluateGeneralAppearance = ({
   // General
   const opacity = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], OPACITY_FIELD));
 
-  const styleCodeString = useOptionalAtomValue(
-    useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
-  )?.preset?.code;
+  const styleCode = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD));
 
   const appearanceObjectFromStyleCode = useMemo(
-    () => getAppearanceObject(styleCodeString) ?? {},
-    [styleCodeString],
+    () => getAppearanceObject(styleCode?.preset?.code, styleCode?.value?.opacity) ?? {},
+    [styleCode],
   );
 
   const generalAppearances: GeneralAppearances = useMemo(
@@ -321,9 +319,42 @@ export const useEvaluateGeneralAppearance = ({
   return generalAppearances;
 };
 
-const getAppearanceObject = (code: string | undefined) => {
+const getAppearanceObject = (code: string | undefined, opacity: number | undefined) => {
   if (!code) return undefined;
   try {
+    if (opacity !== undefined) {
+      code = code
+        // color('#FF0', 1)
+        // color('#ff0000', 1)
+        // color('#ff0000', 0.1)
+        // color('#ff0000')
+        .replace(
+          /color\('(#(\w{6}|\w{3}))'(,\s*\d+(?:\.\d+)?)?\)/g,
+          (_, p1) => `color('${p1}', ${opacity})`,
+        )
+        // color('white')
+        .replace(
+          /color\('(white|black|silver|gray|maroon|red|purple|fuchsia|green|lime|olive|blue|yellow|navy|teal|aqua|)'(,\s*\d+(?:\.\d+)?)?\)/g,
+          (_, p1) => `color('${p1}', ${opacity})`,
+        )
+        // rgba(209, 94, 212, 1)
+        .replace(
+          /rgba\((\d+,\s*\d+,\s*\d+),\s*\d+(?:\.\d+)?\)/g,
+          (_, p1) => `rgba(${p1}, ${opacity})`,
+        )
+        // rgb(209, 94, 212)
+        .replace(/rgb\((\d+,\s*\d+,\s*\d+)\)/g, (_, p1) => `rgba(${p1}, ${opacity})`)
+        // hsla(1.0, 0.5, 0.5, 1)
+        .replace(
+          /hsla\((\d+(?:\.\d+)?,\s*\d+(?:\.\d+)?,\s*\d+(?:\.\d+)?),\s*\d+(?:\.\d+)?\)/g,
+          (_, p1) => `hsla(${p1}, ${opacity})`,
+        )
+        // hsl(1.0, 0.5, 0.5)
+        .replace(
+          /hsl\((\d+(?:\.\d+)?,\s*\d+(?:\.\d+)?,\s*\d+(?:\.\d+)?)\)/g,
+          (_, p1) => `hsla(${p1}, ${opacity})`,
+        );
+    }
     return JSON.parse(code) as GeneralAppearances;
   } catch (error) {
     return undefined;
