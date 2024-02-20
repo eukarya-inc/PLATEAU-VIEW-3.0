@@ -92,6 +92,7 @@ export type EXPERIMENTAL_clipping = {
   pitch?: number;
   roll?: number;
   direction?: "inside" | "outside";
+  disabledSelection?: boolean;
 };
 
 // Don't forget adding a new field to valueTypeMapper also!

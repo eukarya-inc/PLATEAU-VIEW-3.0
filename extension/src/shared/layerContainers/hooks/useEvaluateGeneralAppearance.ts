@@ -275,6 +275,7 @@ export const useEvaluateGeneralAppearance = ({
             makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           experimental_clipping: clippingBox,
+          disableSelection: clippingBox?.disabledSelection,
           showWireframe: tilesetWireframe?.value?.wireframe,
         },
         box: boxAppearance,
