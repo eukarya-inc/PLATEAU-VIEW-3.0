@@ -19,7 +19,11 @@ export const FeatureInspectorPage: React.FC<FeatureInspectorPageProps> = ({
         setting={setting}
         updateSetting={updateSetting}
       />
-      <FeatureInspectorEmphasisPropertyBlock setting={setting} updateSetting={updateSetting} />
+      <FeatureInspectorEmphasisPropertyBlock
+        key={`${setting.datasetId}-${setting.dataId}-feature-inspector-emphasis-property`}
+        setting={setting}
+        updateSetting={updateSetting}
+      />
     </>
   );
 };
