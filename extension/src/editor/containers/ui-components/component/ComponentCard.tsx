@@ -3,12 +3,15 @@ import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import { styled, Paper, Collapse, Divider, Button, buttonClasses } from "@mui/material";
 import { useState, useCallback, MouseEventHandler } from "react";
 
+import { EditorClickAwayListener } from "../../common/EditorClickAwayListener";
+
 type ComponentCardProps = {
   title: string;
   moreButtonRef?: React.RefObject<HTMLButtonElement>;
   highlight?: boolean;
   error?: boolean;
   onMoreClick?: () => void;
+  onClickAway?: () => void;
   children?: React.ReactNode;
 };
 
@@ -18,6 +21,7 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
   highlight,
   error,
   onMoreClick,
+  onClickAway,
   children,
 }) => {
   const [expanded, setExpanded] = useState(true);
@@ -41,9 +45,11 @@ export const ComponentCard: React.FC<ComponentCardProps> = ({
           <StyledIcon expanded={expanded ? 1 : 0} />
           {title}
         </ComponentTitle>
-        <StyledButton variant="contained" ref={moreButtonRef} onClick={handleMoreClick}>
-          <MoreVertOutlinedIcon fontSize="small" />
-        </StyledButton>
+        <EditorClickAwayListener onClickAway={onClickAway}>
+          <StyledButton variant="contained" ref={moreButtonRef} onClick={handleMoreClick}>
+            <MoreVertOutlinedIcon fontSize="small" />
+          </StyledButton>
+        </EditorClickAwayListener>
       </TitleBar>
       <StyledCollapse in={expanded}>
         <Divider />
