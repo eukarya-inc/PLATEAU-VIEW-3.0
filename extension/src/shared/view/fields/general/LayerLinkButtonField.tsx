@@ -18,8 +18,8 @@ export const LayerLinkButtonField: FC<LayerLinkButtonFieldProps> = ({ atoms }) =
 
   return (
     <ParameterList>
-      <Button target="_blank" variant="outlined" fullWidth href={linkButtonComponent.preset.url}>
-        {linkButtonComponent.preset.title}
+      <Button target="_blank" variant="outlined" fullWidth href={linkButtonComponent.preset?.url}>
+        {linkButtonComponent.preset?.title}
       </Button>
     </ParameterList>
   );
