@@ -36,7 +36,6 @@
     "@mui/system": "5.14.5",
     "@turf/turf": "^6.5.0",
     "@turf/unkink-polygon": "^6.5.0",
-    "@uiw/react-textarea-code-editor": "2.1.9",
     "astronomy-engine": "2.1.17",
     "chroma-js": "2.4.2",
     "class-validator": "0.14.0",
