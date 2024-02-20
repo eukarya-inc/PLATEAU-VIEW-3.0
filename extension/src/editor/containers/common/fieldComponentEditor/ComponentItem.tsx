@@ -8,6 +8,7 @@ import {
   EditorPopperListItemButton,
   PropertyInfo,
 } from "../../ui-components";
+import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 import { BasicFieldProps, FieldType, fields } from "./fields";
 import { FieldGroupTypes, fieldGroupTitles } from "./fields/constants";
@@ -81,13 +82,12 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
   );
 
   return (
-    <>
+    <EditorClickAwayListener onClickAway={handleClickAway}>
       <ComponentCard
         title={title}
         moreButtonRef={anchorRef}
         error={componentNotFound}
         onMoreClick={handleMoreClick}
-        onClickAway={handleClickAway}
         highlight={moving}>
         {componentNotFound ? (
           <PropertyInfo preset="field-not-found" />
@@ -111,6 +111,6 @@ export const ComponentItem: React.FC<ComponentItemProps> = ({
           </EditorPopperListItemButton>
         </EditorPopperList>
       </EditorPopper>
-    </>
+    </EditorClickAwayListener>
   );
 };
