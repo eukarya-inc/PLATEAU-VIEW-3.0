@@ -34,6 +34,7 @@ export const FieldComponentsPage: React.FC<FieldComponentsPageProps> = ({
       />
       {setting.fieldComponents?.groups && (
         <FieldComponentEditor
+          key={`${setting.datasetId}-${setting.dataId}-fc-editor`}
           componentsGroups={setting.fieldComponents.groups}
           hidden={setting.fieldComponents.useTemplate}
           onComponentGroupsUpdate={handleComponentGroupsUpdate}
