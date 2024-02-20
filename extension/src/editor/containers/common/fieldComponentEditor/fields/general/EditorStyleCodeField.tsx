@@ -5,7 +5,17 @@ import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { BasicFieldProps } from "..";
-import { PropertyBox, PropertyWrapper } from "../../../../ui-components";
+import {
+  PropertyBox,
+  PropertyInlineWrapper,
+  PropertySwitchField,
+  PropertyWrapper,
+} from "../../../../ui-components";
+
+export type StyleCodeFieldPreset = {
+  code?: string;
+  enableTransparencySlider?: boolean;
+};
 
 export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">> = ({
   component,
@@ -36,32 +46,58 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
     [component, onUpdate],
   );
 
+  const handleEnableTransparencySliderChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onUpdate({
+        ...component,
+        preset: {
+          ...component.preset,
+          enableTransparencySlider: !!e.target.checked,
+        },
+      });
+    },
+    [component, onUpdate],
+  );
+
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <CodeEditor
-          value={code}
-          language="json"
-          placeholder="Style JSON here."
-          onChange={evn => handleCodeChange(evn.target.value)}
-          padding={10}
-          data-color-mode="light"
-          minHeight={200}
-          style={{
-            fontSize: 12,
-            lineHeight: 1.25,
-            backgroundColor: "#fff",
-            fontFamily:
-              "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
-          }}
-        />
-        <ValidTip valid={codeValid ? 1 : 0}>
-          {codeValid ? <CheckOutlinedIcon /> : <ErrorOutlineOutlinedIcon />}JSON
-        </ValidTip>
+        <CodeEditorWrapper>
+          <CodeEditor
+            value={code}
+            language="json"
+            placeholder="Style JSON here."
+            onChange={evn => handleCodeChange(evn.target.value)}
+            padding={10}
+            data-color-mode="light"
+            minHeight={200}
+            style={{
+              fontSize: 12,
+              lineHeight: 1.25,
+              backgroundColor: "#fff",
+              fontFamily:
+                "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
+            }}
+          />
+          <ValidTip valid={codeValid ? 1 : 0}>
+            {codeValid ? <CheckOutlinedIcon /> : <ErrorOutlineOutlinedIcon />}JSON
+          </ValidTip>
+        </CodeEditorWrapper>
+
+        <PropertyInlineWrapper label="Enable Transparency Slider">
+          <PropertySwitchField
+            checked={!!component.preset?.enableTransparencySlider}
+            onChange={handleEnableTransparencySliderChange}
+          />
+        </PropertyInlineWrapper>
       </PropertyBox>
     </PropertyWrapper>
   );
 };
+
+const CodeEditorWrapper = styled("div")({
+  position: "relative",
+});
 
 const ValidTip = styled("div")<{ valid: number }>(({ valid, theme }) => ({
   position: "absolute",

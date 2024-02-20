@@ -173,13 +173,11 @@ export const useEvaluateGeneralAppearance = ({
   // General
   const opacity = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], OPACITY_FIELD));
 
-  const styleCodeString = useOptionalAtomValue(
-    useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD),
-  )?.preset?.code;
+  const styleCode = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD));
 
   const appearanceObjectFromStyleCode = useMemo(
-    () => getAppearanceObject(styleCodeString) ?? {},
-    [styleCodeString],
+    () => getAppearanceObject(styleCode?.preset?.code, styleCode?.value?.opacity) ?? {},
+    [styleCode],
   );
 
   const generalAppearances: GeneralAppearances = useMemo(
@@ -321,9 +319,15 @@ export const useEvaluateGeneralAppearance = ({
   return generalAppearances;
 };
 
-const getAppearanceObject = (code: string | undefined) => {
+const getAppearanceObject = (code: string | undefined, opacity: number | undefined) => {
   if (!code) return undefined;
+  console.log(opacity);
   try {
+    if (opacity !== undefined) {
+      code = code.replace(/color\('(#\w{6})', (\d)\)/g, (_, p1) => {
+        return `color('${p1}', ${opacity})`;
+      });
+    }
     return JSON.parse(code) as GeneralAppearances;
   } catch (error) {
     return undefined;
