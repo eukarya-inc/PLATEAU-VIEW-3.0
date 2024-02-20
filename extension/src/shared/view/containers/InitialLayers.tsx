@@ -78,7 +78,7 @@ export const InitialLayers: FC = () => {
   const getDefaultBuildingIds = useCallback(
     () =>
       settings
-        .filter(s => s.dataId === DEFAULT_SETTING_DATA_ID && !!s.status?.isDefaultTile)
+        .filter(s => s.dataId === DEFAULT_SETTING_DATA_ID && !!s.initialLayer?.isInitialLayer)
         .map(s => s.datasetId),
     [settings],
   );

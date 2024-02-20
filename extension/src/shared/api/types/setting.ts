@@ -28,8 +28,8 @@ export type Setting = {
     groups?: ComponentGroup[];
   };
   featureInspector?: FeatureInspectorSettings;
-  status: {
-    isDefaultTile?: boolean;
+  initialLayer?: {
+    isInitialLayer?: boolean;
   };
 };
 

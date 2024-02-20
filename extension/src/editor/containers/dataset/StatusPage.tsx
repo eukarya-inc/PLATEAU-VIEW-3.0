@@ -1,13 +1,11 @@
 import { StatusBlock } from "./blocks/StatusBlock";
 
-import { DraftSetting, EditorDataset, UpdateSetting } from ".";
+import { EditorDataset } from ".";
 
 type StatusPageProps = {
   dataset?: EditorDataset;
-  setting: DraftSetting;
-  updateSetting?: UpdateSetting;
 };
 
-export const StatusPage: React.FC<StatusPageProps> = ({ dataset, setting, updateSetting }) => {
-  return <StatusBlock dataset={dataset} setting={setting} updateSetting={updateSetting} />;
+export const StatusPage: React.FC<StatusPageProps> = ({ dataset }) => {
+  return <StatusBlock dataset={dataset} />;
 };

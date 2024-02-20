@@ -1,8 +1,7 @@
-import { Switch, styled } from "@mui/material";
+import { styled } from "@mui/material";
 import { green, red } from "@mui/material/colors";
-import { useCallback, useMemo } from "react";
 
-import { DraftSetting, EditorDataset, UpdateSetting } from "..";
+import { EditorDataset } from "..";
 import {
   BlockContentWrapper,
   EditorBlock,
@@ -13,29 +12,9 @@ import {
 
 type StatusBlockProps = EditorBlockProps & {
   dataset?: EditorDataset;
-  setting: DraftSetting;
-  updateSetting?: UpdateSetting;
 };
 
-export const StatusBlock: React.FC<StatusBlockProps> = ({
-  dataset,
-  setting,
-  updateSetting,
-  ...props
-}) => {
-  const isDefaultTile = useMemo(
-    () => setting?.status?.isDefaultTile,
-    [setting?.status?.isDefaultTile],
-  );
-
-  const handleSettingsUpdate = useCallback(
-    () =>
-      updateSetting?.(s =>
-        !s ? s : { ...s, status: { ...s.status, isDefaultTile: !isDefaultTile } },
-      ),
-    [isDefaultTile, updateSetting],
-  );
-
+export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) => {
   return (
     <EditorBlock title="Status" expandable {...props}>
       <BlockContentWrapper>
@@ -47,9 +26,6 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({
         <EditorTextField label="Created At" value={""} disabled />
         <EditorTextField label="Updated At" value={""} disabled />
         <EditorTextField label="CMS URL" value={""} multiline disabled rows={4} />
-        <EditorCommonField label="デフォルトタイル" inline>
-          <Switch checked={isDefaultTile} onChange={handleSettingsUpdate} />
-        </EditorCommonField>
       </BlockContentWrapper>
     </EditorBlock>
   );

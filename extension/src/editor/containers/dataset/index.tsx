@@ -8,7 +8,7 @@ import { useCallback, useMemo, useState, type FC, useEffect, RefObject, useRef }
 import { layerSelectionAtom } from "../../../prototypes/layers";
 import { highlightedLayersAtom } from "../../../prototypes/view-layers";
 import { useSettingsAPI } from "../../../shared/api";
-import { DEFAULT_SETTING_DATA_ID, STATUS_SETTING_DATA_ID } from "../../../shared/api/constants";
+import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
@@ -28,6 +28,7 @@ import { hasBeenEdited } from "../utils";
 import { FeatureInspectorPage } from "./FeatureInspectorPage";
 import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
+import { InitialLayerPage } from "./InitialLayerPage";
 import { StatusPage } from "./StatusPage";
 
 // TODO: use plateview dataset type
@@ -45,7 +46,8 @@ export type EditorDatasetConentType =
   | "folder"
   | "general"
   | "fieldComponents"
-  | "featureInspector";
+  | "featureInspector"
+  | "initialLayer";
 
 export type EditorDatasetItemProperty = {
   dataId?: string;
@@ -82,7 +84,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         id: `${dataset.id}-status`,
         name: "Status",
         property: {
-          dataId: STATUS_SETTING_DATA_ID,
+          dataId: "status",
           type: "status",
         },
       },
@@ -124,6 +126,15 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             property: {
               dataId: DEFAULT_SETTING_DATA_ID,
               type: "featureInspector",
+            },
+          },
+          {
+            name: "Initial Layer",
+            id: `${dataset.id}-default-initialLayer`,
+            edited: hasBeenEdited(settings, dataset.id, DEFAULT_SETTING_DATA_ID, "initialLayer"),
+            property: {
+              dataId: DEFAULT_SETTING_DATA_ID,
+              type: "initialLayer",
             },
           },
         ],
@@ -199,9 +210,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             general: {},
             fieldComponents: {},
             featureInspector: {},
-            status: {
-              isDefaultTile: false,
-            },
+            initialLayer: {},
           },
     );
   }, [dataId, dataset, settings, cache]);
@@ -335,30 +344,37 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       }
       main={
         <>
-          {contentType === "status" ? (
-            <StatusPage dataset={dataset} />
-          ) : contentType === "general" && draftSetting ? (
-            <GeneralPage
-              key={`${dataset.id}-${dataId}-general`}
-              dataset={dataset}
-              dataId={dataId}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : contentType === "fieldComponents" && draftSetting ? (
-            <FieldComponentsPage
-              key={`${dataset.id}-${dataId}-fieldComponents`}
-              dataset={dataset}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : contentType === "featureInspector" && draftSetting ? (
-            <FeatureInspectorPage
-              key={`${dataset.id}-${dataId}-featureInspector`}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : null}
+          {draftSetting &&
+            (contentType === "status" ? (
+              <StatusPage dataset={dataset} />
+            ) : contentType === "general" ? (
+              <GeneralPage
+                key={`${dataset.id}-${dataId}-general`}
+                dataset={dataset}
+                dataId={dataId}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "fieldComponents" ? (
+              <FieldComponentsPage
+                key={`${dataset.id}-${dataId}-fieldComponents`}
+                dataset={dataset}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "featureInspector" ? (
+              <FeatureInspectorPage
+                key={`${dataset.id}-${dataId}-featureInspector`}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "initialLayer" ? (
+              <InitialLayerPage
+                key={`${dataset.id}-${dataId}-initialLayer`}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : null)}
         </>
       }
     />

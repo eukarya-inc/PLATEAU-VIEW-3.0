@@ -43,8 +43,8 @@ const mockSetting: Setting = {
       },
     ],
   },
-  status: {
-    isDefaultTile: true,
+  initialLayer: {
+    isInitialLayer: true,
   },
 };
 
