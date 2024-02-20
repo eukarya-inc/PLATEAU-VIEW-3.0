@@ -54,6 +54,7 @@ export function useEvaluateFeatureColor({
             ? {
                 colorMap: get(colorScheme.colorMapAtom),
                 colorRange: get(colorScheme.colorRangeAtom),
+                valueRange: get(colorScheme.valueRangeAtom),
               }
             : undefined,
         ),
@@ -82,15 +83,16 @@ export function useEvaluateFeatureColor({
     if (colorMapParams) {
       let expression = blendedDefaultColor;
 
-      const { colorMap, colorRange } = colorMapParams;
-      const [minValue, maxValue] = colorRange;
+      const { colorMap, colorRange, valueRange } = colorMapParams;
+      const [minValue, maxValue] = valueRange;
+      const [colorMinValue, colorMaxValue] = colorRange;
       if (minValue === maxValue) {
         return expression;
       }
 
       const distance = 5;
       for (let i = minValue; i <= maxValue; i += distance) {
-        const color = colorMap.linear((i - minValue) / (maxValue - minValue));
+        const color = colorMap.linear((i - colorMinValue) / (colorMaxValue - colorMinValue));
         expression = condition(
           `${defaultConditionalNumber(colorProperty, minValue - 1)} >= ${number(i)}`,
           rgba({ r: color[0] * 255, g: color[1] * 255, b: color[2] * 255, a: opacity ?? 1 }),
