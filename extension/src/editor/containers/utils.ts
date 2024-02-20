@@ -1,5 +1,11 @@
-import { ComponentTemplate, EmphasisPropertyTemplate } from "../../shared/api/types";
+import { isEqual } from "lodash-es";
 
+import { ComponentTemplate, EmphasisPropertyTemplate, Setting } from "../../shared/api/types";
+
+import { DEFAULT_CAMERA_BLOCK_VALUE } from "./dataset/blocks/CameraBlock";
+import { DEFAULT_DATA_FETCHING_BLOCK_VALUE } from "./dataset/blocks/DataFetchingBlock";
+import { DEFAULT_EVENT_BLOCK_VALUE } from "./dataset/blocks/EventBlock";
+import { DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE } from "./dataset/blocks/FeatureInspectorBasicBlock";
 import { EditorTreeItemType } from "./ui-components";
 
 export const VIRTUAL_ROOT = {
@@ -89,3 +95,39 @@ const findPath = (
   }
   return undefined;
 };
+
+export function hasBeenEdited(
+  settings: Setting[],
+  datasetId: string,
+  dataId: string,
+  type = "general" || "fieldComponents" || "featureInspector",
+) {
+  const setting = settings.find(s => s.datasetId === datasetId && s.dataId === dataId);
+  if (!setting) return false;
+  if (type === "general") {
+    return (
+      setting.general?.camera !== DEFAULT_CAMERA_BLOCK_VALUE ||
+      (!!setting.general?.dataFetching &&
+        setting.general?.dataFetching.enabled !== DEFAULT_DATA_FETCHING_BLOCK_VALUE.enabled) ||
+      (!!setting.general?.featureClickEvent &&
+        !isEqual(setting.general?.featureClickEvent, DEFAULT_EVENT_BLOCK_VALUE))
+    );
+  } else if (type === "fieldComponents") {
+    return (
+      (setting.fieldComponents?.useTemplate && setting.fieldComponents.templateId) ||
+      (!setting.fieldComponents?.useTemplate &&
+        setting.fieldComponents?.groups?.some(g => g.components.length > 0))
+    );
+  } else if (type === "featureInspector") {
+    return (
+      (!!setting.featureInspector?.basic &&
+        !isEqual(setting.featureInspector?.basic, DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE)) ||
+      (setting.featureInspector?.emphasisProperty?.useTemplate &&
+        setting.featureInspector?.emphasisProperty?.templateId) ||
+      (!setting.featureInspector?.emphasisProperty?.useTemplate &&
+        setting.featureInspector?.emphasisProperty?.properties &&
+        setting.featureInspector.emphasisProperty.properties.length > 0)
+    );
+  }
+  return false;
+}

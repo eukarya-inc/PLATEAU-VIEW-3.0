@@ -120,7 +120,11 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
   const hasGroups = fieldComponents?.groups?.some(g => !!g.components.length);
   const hasTemplate = fieldComponents?.useTemplate && !!fieldComponents.templateId;
 
-  return hasGroups || hasTemplate ? setting : defaultSetting;
+  return {
+    ...defaultSetting,
+    ...setting,
+    fieldComponents: hasGroups || hasTemplate ? fieldComponents : defaultSetting?.fieldComponents,
+  } as Setting | undefined;
 };
 
 const findComponentTemplate = (

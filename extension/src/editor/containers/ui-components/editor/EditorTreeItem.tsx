@@ -1,4 +1,5 @@
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   styled,
   ListItemIcon,
@@ -17,6 +18,7 @@ export type EditorTreeItemType = {
   id: string;
   name: string;
   property?: any;
+  edited?: boolean;
   children?: EditorTreeItemType[];
 };
 
@@ -27,6 +29,7 @@ type EditorTreeItemProps = {
   level: number;
   selected?: string;
   expanded: string[];
+  showEditedIcon?: boolean;
   clickFolderToExpand?: boolean;
   onItemClick?: (selection: EditorTreeSelection) => void;
   onExpandClick?: (id: string) => void;
@@ -37,6 +40,7 @@ export const EditorTreeItem: React.FC<EditorTreeItemProps> = ({
   level,
   selected,
   expanded,
+  showEditedIcon,
   clickFolderToExpand,
   onItemClick,
   onExpandClick,
@@ -66,6 +70,7 @@ export const EditorTreeItem: React.FC<EditorTreeItemProps> = ({
           {item.children ? <ArrowRightIcon /> : null}
         </ListItemIcon>
         <ListItemText primary={item.name} />
+        {showEditedIcon && <EditIcon className="edited-icon" />}
       </StyledItemButton>
       {item.children ? (
         <Collapse in={localExpanded}>
@@ -77,6 +82,7 @@ export const EditorTreeItem: React.FC<EditorTreeItemProps> = ({
                 level={level + 1}
                 selected={selected}
                 expanded={expanded}
+                showEditedIcon={child.edited}
                 clickFolderToExpand={clickFolderToExpand}
                 onItemClick={onItemClick}
                 onExpandClick={onExpandClick}
@@ -132,5 +138,13 @@ const StyledItemButton = styled(ListItemButton, {
   [`.${typographyClasses.root}`]: {
     fontSize: theme.typography.body2.fontSize,
     lineHeight: "1.45",
+  },
+
+  [`.${svgIconClasses.root}.edited-icon`]: {
+    transform: "rotate(0deg)",
+    color: selected ? "#fff" : theme.palette.text.primary,
+    width: "10px",
+    height: "10px",
+    marginRight: theme.spacing(1),
   },
 }));
