@@ -23,6 +23,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -35,6 +36,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
   [MY_DATA_LAYER]: "マイデータ",
+  [STORY_LAYER]: "ストーリー",
 
   // Dataset layers
   [BORDER_LAYER]: "行政界",

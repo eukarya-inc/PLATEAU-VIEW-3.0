@@ -27,6 +27,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -35,7 +36,7 @@ import {
 
 import { FloodLayer } from "./plateau-3dtiles/FloodLayer";
 
-import { BuildingLayer, GeneralDatasetLayer, MyDataLayer } from ".";
+import { BuildingLayer, GeneralDatasetLayer, MyDataLayer, StoryLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
 // import { RiverFloodingRiskLayer } from "./RiverFloodingRiskLayer";
 // import { RoadLayer } from "./RoadLayer";
@@ -47,6 +48,7 @@ export const layerComponents: LayerComponents = {
   [PEDESTRIAN_LAYER]: PedestrianLayer,
   [SKETCH_LAYER]: SketchLayer,
   [MY_DATA_LAYER]: MyDataLayer,
+  [STORY_LAYER]: StoryLayer,
 
   // Dataset layers
   // Building model
