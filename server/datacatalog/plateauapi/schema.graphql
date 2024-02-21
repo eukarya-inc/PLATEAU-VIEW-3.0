@@ -294,6 +294,10 @@ interface Dataset implements Node {
   """
   groups: [String!]
   """
+  データセットの公開データのURL。
+  """
+  openDataUrl: String
+  """
   データセットが属する都道府県のID。
   """
   prefectureId: ID
@@ -509,6 +513,10 @@ type PlateauDataset implements Dataset & Node {
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
   groups: [String!]
+  """
+  データセットの公開データのURL。
+  """
+  openDataUrl: String
   """
   データセットが属する都道府県のID。
   """
@@ -751,6 +759,10 @@ type RelatedDataset implements Dataset & Node {
   """
   groups: [String!]
   """
+  データセットの公開データのURL。
+  """
+  openDataUrl: String
+  """
   データセットが属する都道府県のID。
   """
   prefectureId: ID
@@ -900,6 +912,10 @@ type GenericDataset implements Dataset & Node {
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
   groups: [String!]
+  """
+  データセットの公開データのURL。
+  """
+  openDataUrl: String
   """
   データセットが属する都道府県のID。
   """
