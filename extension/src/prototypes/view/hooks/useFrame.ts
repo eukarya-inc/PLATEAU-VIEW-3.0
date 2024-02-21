@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useFrame = (cb: () => void) => {
   const [shouldStart, setShouldStart] = useState(false);
@@ -9,11 +9,20 @@ export const useFrame = (cb: () => void) => {
     let timer: number;
     const animate = () => {
       if (isCanceled.current) return;
+      console.log("INVOKE anim??");
       cb();
-      if (shouldStart) timer = requestAnimationFrame(animate);
+      timer = requestAnimationFrame(animate);
     };
-    timer = requestAnimationFrame(animate);
+    if (shouldStart) timer = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(timer);
   }, [cb, shouldStart]);
-  return { start: () => setShouldStart(true), stop: () => setShouldStart(false) };
+
+  const start = useCallback(() => {
+    setShouldStart(true);
+  }, []);
+  const stop = useCallback(() => {
+    setShouldStart(false);
+  }, []);
+
+  return { start, stop };
 };

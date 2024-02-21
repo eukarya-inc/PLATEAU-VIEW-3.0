@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { useConstant, useWindowEvent } from "../../react-helpers";
 
@@ -45,7 +45,6 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
 
   const keyRef = useRef<string | null>(null);
 
-  const [amount, setAmount] = useState(1);
   const acceleration = 0.1;
   const damping = 0.3;
   const maximumSpeed = 3;
@@ -59,12 +58,15 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     const previousTime = state.time;
     const currentTime = Date.now();
     const deltaSeconds = (currentTime - previousTime) / 1000;
+    const flags = modesRef.current;
     state.time = currentTime;
 
     const camera = window.reearth?.camera;
     const globeHeight = window.reearth?.scene?.getGlobeHeight();
     if (!camera || !globeHeight) return;
-    if (state.speed > 1) {
+    if (flags.sprint === true) {
+      state.speed = Math.min(maximumSpeed * 2, state.speed + acceleration);
+    } else if (state.speed > 1) {
       state.speed = Math.max(maximumSpeed, state.speed - damping);
     } else {
       state.speed = Math.min(maximumSpeed, state.speed + acceleration);
@@ -73,10 +75,12 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     const cameraHeight = camera?.position?.height;
     let speed = state.speed;
 
+    let amount = 1;
     if (globeHeight != null && cameraHeight != null) {
       speed *= 1 + Math.max(0, cameraHeight - globeHeight) * 0.1;
-      setAmount(speed * deltaSeconds);
+      amount = speed * deltaSeconds;
     }
+    if (!amount) return;
 
     if (directionsRef.current["forward"]) camera.moveForward(amount);
     if (directionsRef.current["backward"]) camera.moveBackward(amount);
@@ -84,7 +88,7 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     if (directionsRef.current["right"]) camera.moveRight(amount);
     if (directionsRef.current["up"]) camera.moveUp(amount);
     if (directionsRef.current["down"]) camera.moveDown(amount);
-  }, [amount, state]);
+  }, [state]);
 
   const animationFrameRef = useRef<number>(0);
 
