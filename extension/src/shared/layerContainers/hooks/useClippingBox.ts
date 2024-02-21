@@ -1,5 +1,7 @@
+import { useAtom } from "jotai";
 import { useMemo } from "react";
 
+import { interactionModeAtom } from "../../../shared/states/interactionMode";
 import { BoxAppearance, LngLatHeight } from "../../reearth/types";
 import { EXPERIMENTAL_clipping } from "../../reearth/types/value";
 import { TilesetClippingField } from "../../types/fieldComponents/3dtiles";
@@ -29,6 +31,12 @@ export const useClippingBox = (
   component: TilesetClippingField | undefined,
 ): [EXPERIMENTAL_clipping | undefined, BoxAppearance | undefined] => {
   const { enable, visible, allowEnterGround, direction } = component?.value || {};
+  const [interactionMode] = useAtom(interactionModeAtom);
+
+  const disabledSelection = useMemo(() => {
+    const mode = interactionMode.value as unknown;
+    return mode === "default" || mode === "move";
+  }, [interactionMode]);
   const location: LngLatHeight | undefined = useMemo(() => {
     if (!enable) return;
 
@@ -56,7 +64,8 @@ export const useClippingBox = (
       direction,
       allowEnterGround,
       useBuiltinBox: true,
+      disabledSelection,
     },
-    { ...BOX_DIMENSION, ...BOX_STYLE },
+    { ...BOX_DIMENSION, ...BOX_STYLE, disabledSelection },
   ];
 };
