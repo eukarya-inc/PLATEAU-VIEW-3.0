@@ -14,6 +14,6 @@ export const useFrame = (cb: () => void) => {
     };
     timer = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(timer);
-  }, [cb]);
+  }, [cb, shouldStart]);
   return { start: () => setShouldStart(true), stop: () => setShouldStart(false) };
 };

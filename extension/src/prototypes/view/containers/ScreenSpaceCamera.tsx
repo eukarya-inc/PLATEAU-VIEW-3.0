@@ -66,16 +66,15 @@ export const ScreenSpaceCamera = ({
     [minimumZoomDistance, maximumZoomDistance, useKeyboard],
   );
 
-  const cameraPotion = window?.reearth?.camera?.position;
-
   const cb = useCallback(() => {
+    const cameraPotion = window?.reearth?.camera?.position;
     if (!cameraPotion || !useKeyboard) return;
     setView({
       heading: cameraPotion.heading,
       pitch: cameraPotion.pitch,
       roll: 0,
     });
-  }, [cameraPotion, useKeyboard]);
+  }, [useKeyboard]);
   const { start, stop } = useFrame(cb);
 
   useEffect(() => {
