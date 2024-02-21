@@ -12,7 +12,7 @@ import {
 type InitialLayerBlockProps = EditorBlockProps & {
   setting?: DraftSetting;
   dataset?: EditorDataset;
-  updateSetting: UpdateSetting;
+  updateSetting?: UpdateSetting;
 };
 
 export const InitialLayerBlock: React.FC<InitialLayerBlockProps> = ({
@@ -21,18 +21,21 @@ export const InitialLayerBlock: React.FC<InitialLayerBlockProps> = ({
   ...props
 }) => {
   const isInitialLayer = useMemo(
-    () => !!setting?.initialLayer?.isInitialLayer,
-    [setting?.initialLayer?.isInitialLayer],
+    () => !!setting?.general?.initialLayer?.isInitialLayer,
+    [setting?.general?.initialLayer?.isInitialLayer],
   );
 
   const handleInitialLayerChange = useCallback(
     () =>
-      updateSetting(s => {
+      updateSetting?.(s => {
         if (!s) return s;
         return {
           ...s,
-          initialLayer: {
-            isInitialLayer: !isInitialLayer,
+          general: {
+            ...s.general,
+            initialLayer: {
+              isInitialLayer: !isInitialLayer,
+            },
           },
         };
       }),

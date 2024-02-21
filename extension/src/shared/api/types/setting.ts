@@ -15,6 +15,9 @@ export type GeneralSetting = {
     websiteURL?: string;
     fieldName?: string;
   };
+  initialLayer?: {
+    isInitialLayer?: boolean;
+  };
 };
 
 export type Setting = {
@@ -28,9 +31,6 @@ export type Setting = {
     groups?: ComponentGroup[];
   };
   featureInspector?: FeatureInspectorSettings;
-  initialLayer?: {
-    isInitialLayer?: boolean;
-  };
 };
 
 export type FeatureInspectorSettings = {

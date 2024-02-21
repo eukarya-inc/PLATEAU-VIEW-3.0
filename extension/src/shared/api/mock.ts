@@ -34,9 +34,6 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
-    initialLayer: {
-      isInitialLayer: true,
-    },
   },
   // For Chuo
   {
@@ -64,7 +61,6 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
-    initialLayer: {},
   },
   // For chiyoda shelter
   {
@@ -99,7 +95,6 @@ export const mockSettings: Setting[] = [
       ],
     },
     featureInspector: undefined,
-    initialLayer: {},
   },
 ];
 

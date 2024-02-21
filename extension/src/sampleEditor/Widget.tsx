@@ -43,9 +43,6 @@ const mockSetting: Setting = {
       },
     ],
   },
-  initialLayer: {
-    isInitialLayer: true,
-  },
 };
 
 const ComponentItem: FC<{

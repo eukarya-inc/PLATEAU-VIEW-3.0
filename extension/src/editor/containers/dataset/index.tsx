@@ -28,7 +28,6 @@ import { hasBeenEdited } from "../utils";
 import { FeatureInspectorPage } from "./FeatureInspectorPage";
 import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
-import { InitialLayerPage } from "./InitialLayerPage";
 import { StatusPage } from "./StatusPage";
 
 // TODO: use plateview dataset type
@@ -128,15 +127,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
               type: "featureInspector",
             },
           },
-          {
-            name: "Initial Layer",
-            id: `${dataset.id}-default-initialLayer`,
-            edited: hasBeenEdited(settings, dataset.id, DEFAULT_SETTING_DATA_ID, "initialLayer"),
-            property: {
-              dataId: DEFAULT_SETTING_DATA_ID,
-              type: "initialLayer",
-            },
-          },
         ],
       },
       ...dataset.items.map(item => ({
@@ -210,7 +200,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             general: {},
             fieldComponents: {},
             featureInspector: {},
-            initialLayer: {},
           },
     );
   }, [dataId, dataset, settings, cache]);
@@ -365,12 +354,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
             ) : contentType === "featureInspector" ? (
               <FeatureInspectorPage
                 key={`${dataset.id}-${dataId}-featureInspector`}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : contentType === "initialLayer" ? (
-              <InitialLayerPage
-                key={`${dataset.id}-${dataId}-initialLayer`}
                 setting={draftSetting}
                 updateSetting={updateDraftSetting}
               />

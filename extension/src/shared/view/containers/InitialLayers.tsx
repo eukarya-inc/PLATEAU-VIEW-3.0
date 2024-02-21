@@ -16,7 +16,6 @@ import {
   SKETCH_LAYER,
   STORY_LAYER,
 } from "../../../prototypes/view-layers";
-import { DEFAULT_SETTING_DATA_ID } from "../../api/constants";
 import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
@@ -76,10 +75,7 @@ export const InitialLayers: FC = () => {
   );
 
   const getDefaultBuildingIds = useCallback(
-    () =>
-      settings
-        .filter(s => s.dataId === DEFAULT_SETTING_DATA_ID && !!s.initialLayer?.isInitialLayer)
-        .map(s => s.datasetId),
+    () => settings.filter(s => !!s.general?.initialLayer?.isInitialLayer).map(s => s.datasetId),
     [settings],
   );
 
