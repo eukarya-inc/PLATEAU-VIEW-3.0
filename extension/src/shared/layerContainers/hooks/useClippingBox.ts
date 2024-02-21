@@ -64,6 +64,7 @@ export const useClippingBox = (
       direction,
       allowEnterGround,
       useBuiltinBox: true,
+      disabledSelection,
     },
     { ...BOX_DIMENSION, ...BOX_STYLE, disabledSelection },
   ];
