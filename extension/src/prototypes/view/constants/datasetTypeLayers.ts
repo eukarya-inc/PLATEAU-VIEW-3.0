@@ -22,6 +22,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -86,4 +87,5 @@ export const layerDatasetTypes = {
   [PEDESTRIAN_LAYER]: undefined,
   [SKETCH_LAYER]: undefined,
   [MY_DATA_LAYER]: undefined,
+  [STORY_LAYER]: undefined,
 } as const satisfies Record<LayerType, PlateauDatasetType | undefined>;

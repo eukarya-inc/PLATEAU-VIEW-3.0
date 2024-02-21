@@ -16,12 +16,18 @@ type DataFetchingBlockProps = EditorBlockProps & {
   updateSetting?: UpdateSetting;
 };
 
+export const DEFAULT_DATA_FETCHING_BLOCK_VALUE = {
+  enabled: false,
+};
+
 export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
   setting,
   updateSetting,
   ...props
 }) => {
-  const [enabled, setEnabled] = useState(!!setting?.general?.dataFetching?.enabled);
+  const [enabled, setEnabled] = useState(
+    setting?.general?.dataFetching?.enabled ?? DEFAULT_DATA_FETCHING_BLOCK_VALUE.enabled,
+  );
   const [timeInterval, setTimeInterval] = useState<number | string>(
     setting?.general?.dataFetching?.timeInterval ?? "",
   );

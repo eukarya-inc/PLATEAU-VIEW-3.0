@@ -105,7 +105,11 @@ export const SelectParameterItem = forwardRef<HTMLDivElement, SelectParameterIte
         )}
         {items != null
           ? items.map(([value, content, props]) => (
-              <SelectItem {...props} key={value} value={value !== null ? value : ""}>
+              <SelectItem
+                {...props}
+                key={value}
+                value={value !== null ? value : ""}
+                title={typeof content === "string" ? content : ""}>
                 <Value>{content}</Value>
               </SelectItem>
             ))

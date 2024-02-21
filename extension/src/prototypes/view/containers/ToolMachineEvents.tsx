@@ -1,13 +1,14 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useEffect, type FC } from "react";
 
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
-import { getTool, toolMachineAtom } from "../states/tool";
+import { getTool, preventToolKeyDownAtom, toolMachineAtom } from "../states/tool";
 
 export const ToolMachineEvents: FC = () => {
   const [state, send] = useAtom(toolMachineAtom);
+  const preventToolKeyDown = useAtomValue(preventToolKeyDownAtom);
   // const tool = useAtomValue(toolAtom);
 
   // TODO(ReEarth): Support this API from ReEarth side.
@@ -37,7 +38,7 @@ export const ToolMachineEvents: FC = () => {
   // }, [tool, scene]);
 
   useWindowEvent("keydown", event => {
-    if (event.repeat) {
+    if (event.repeat || preventToolKeyDown) {
       return;
     }
     if (

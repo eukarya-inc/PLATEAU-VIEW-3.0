@@ -52,7 +52,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       useMemo(() => ("cameraAtom" in props ? props.cameraAtom : undefined), [props]),
     );
     const boundingSphere = useAtomValue(boundingSphereAtom);
-    const handleDoubleClick = useCallback(() => {
+    const handleMove = useCallback(() => {
       const camera = rootLayer?.general?.camera;
       if (camera) {
         return flyToCamera(camera);
@@ -122,15 +122,6 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       setImageSchemeSelection([id]);
     }, [id, setImageSchemeSelection]);
 
-    const handleMove = useCallback(() => {
-      if (boundingSphere) {
-        return lookAtXYZ(boundingSphere);
-      }
-      if (layerId) {
-        return flyToLayerId(layerId);
-      }
-    }, [boundingSphere, layerId]);
-
     return (
       <LayerListItem
         {...itemProps}
@@ -175,7 +166,7 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
             </Tooltip>
           ) : undefined
         }
-        onDoubleClick={handleDoubleClick}
+        onDoubleClick={handleMove}
         onRemove={handleRemove}
         onToggleHidden={handleToggleHidden}
         onMove={handleMove}

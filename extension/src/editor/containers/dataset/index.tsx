@@ -3,7 +3,7 @@ import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import { styled, Typography } from "@mui/material";
 import { useAtomValue, useSetAtom } from "jotai";
 import { cloneDeep } from "lodash-es";
-import { useCallback, useMemo, useState, type FC, useEffect, RefObject } from "react";
+import { useCallback, useMemo, useState, type FC, useEffect, RefObject, useRef } from "react";
 
 import { layerSelectionAtom } from "../../../prototypes/layers";
 import { highlightedLayersAtom } from "../../../prototypes/view-layers";
@@ -23,6 +23,7 @@ import {
 } from "../ui-components";
 import { EditorNoticeRef } from "../ui-components/editor/EditorNotice";
 import { EditorCache } from "../useCache";
+import { hasBeenEdited } from "../utils";
 
 import { FeatureInspectorPage } from "./FeatureInspectorPage";
 import { FieldComponentsPage } from "./FieldComponentsPage";
@@ -58,7 +59,6 @@ export type DraftSetting = Omit<Setting, "id"> & {
 export type UpdateSetting = React.Dispatch<React.SetStateAction<DraftSetting | undefined>>;
 
 export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, editorNoticeRef }) => {
-  const [ready, setReady] = useState(false);
   const [contentType, setContentType] = useState<EditorDatasetConentType>();
   const [dataId, setDataId] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
@@ -76,7 +76,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   }, [query]);
 
   const tree = useMemo(() => {
-    setReady(false);
     if (!dataset) return [];
     return [
       {
@@ -98,6 +97,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "General",
             id: `${dataset.id}-default-general`,
+            edited: hasBeenEdited(settings, dataset.id, DEFAULT_SETTING_DATA_ID, "general"),
             property: {
               dataId: DEFAULT_SETTING_DATA_ID,
               type: "general",
@@ -106,6 +106,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "Field Components",
             id: `${dataset.id}-default-fieldComponents`,
+            edited: hasBeenEdited(settings, dataset.id, DEFAULT_SETTING_DATA_ID, "fieldComponents"),
             property: {
               dataId: DEFAULT_SETTING_DATA_ID,
               type: "fieldComponents",
@@ -114,6 +115,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "Feature Inspector",
             id: `${dataset.id}-default-featureInspector`,
+            edited: hasBeenEdited(
+              settings,
+              dataset.id,
+              DEFAULT_SETTING_DATA_ID,
+              "featureInspector",
+            ),
             property: {
               dataId: DEFAULT_SETTING_DATA_ID,
               type: "featureInspector",
@@ -132,6 +139,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "General",
             id: `${dataset.id}-${item.id}-general`,
+            edited: hasBeenEdited(settings, dataset.id, item.id, "general"),
             property: {
               dataId: item.id,
               type: "general",
@@ -140,6 +148,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "Field Components",
             id: `${dataset.id}-${item.id}-fieldComponents`,
+            edited: hasBeenEdited(settings, dataset.id, item.id, "fieldComponents"),
             property: {
               dataId: item.id,
               type: "fieldComponents",
@@ -148,6 +157,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           {
             name: "Feature Inspector",
             id: `${dataset.id}-${item.id}-featureInspector`,
+            edited: hasBeenEdited(settings, dataset.id, item.id, "featureInspector"),
             property: {
               dataId: item.id,
               type: "featureInspector",
@@ -156,7 +166,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         ],
       })),
     ] as EditorTreeItemType[];
-  }, [dataset]);
+  }, [dataset, settings]);
+
+  const treeRef = useRef(tree);
+  treeRef.current = tree;
 
   const [draftSetting, updateDraftSetting] = useState<DraftSetting>();
 
@@ -164,14 +177,13 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const [selected, setSelected] = useState<string>("");
 
   useEffect(() => {
-    if (tree[0]) {
-      setSelected(tree[0].id);
+    if (treeRef.current.length > 0) {
+      setSelected(treeRef.current[0].id);
       setContentType("status");
       setDataId(undefined);
     }
-    setExpanded(tree.map(item => item.id));
-    setReady(true);
-  }, [tree]);
+    setExpanded(treeRef.current.map(item => item.id));
+  }, [dataset?.id]);
 
   useEffect(() => {
     if (!dataset?.id || !dataId) return;
@@ -238,23 +250,29 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
-    cache?.clear();
-    updateSetting(draftSetting as Setting);
-  }, [draftSetting, cache, updateSetting]);
+    if (draftSetting) {
+      cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
+    }
+    // Apply all settings belongs to current dataset
+    [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
+      const cachedSetting = cache?.get(`dataset-${dataset.id}-${id}`);
+      if (cachedSetting) {
+        updateSetting(cachedSetting as Setting);
+      }
+    });
+  }, [cache, dataId, dataset?.id, dataset?.items, draftSetting, updateSetting]);
 
   const handleSave = useCallback(() => {
     // Save all settings belongs to current dataset
     setIsSaving(true);
     const savingTasks: Promise<void>[] = [];
+    if (draftSetting) {
+      cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
+    }
     [DEFAULT_SETTING_DATA_ID, ...dataset.items.map(item => item.id)].forEach(id => {
-      const catchId = `dataset-${dataset.id}-${id}`;
-      if (id === dataId) {
-        savingTasks.push(saveSetting(draftSetting as Setting));
-      } else {
-        const cachedSetting = cache?.get(catchId);
-        if (cachedSetting) {
-          savingTasks.push(saveSetting(cachedSetting as Setting));
-        }
+      const cachedSetting = cache?.get(`dataset-${dataset.id}-${id}`);
+      if (cachedSetting) {
+        savingTasks.push(saveSetting(cachedSetting as Setting));
       }
     });
     cache?.clear();
@@ -276,6 +294,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       });
   }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
 
+  useEffect(() => {
+    cache?.clear();
+  }, [cache, dataset?.id]);
+
   return layer && dataset ? (
     <EditorSection
       sidebarMain={
@@ -283,7 +305,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           tree={tree}
           selected={selected}
           expanded={expanded}
-          ready={ready}
           onItemClick={handleItemClick}
           onExpandClick={handleExpandClick}
         />
@@ -310,33 +331,32 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         </>
       }
       main={
-        ready && (
-          <>
-            {contentType === "status" ? (
-              <StatusPage dataset={dataset} />
-            ) : contentType === "general" && draftSetting ? (
-              <GeneralPage
-                key={`${dataset.id}-${dataId}`}
-                dataset={dataset}
-                dataId={dataId}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : contentType === "fieldComponents" && draftSetting ? (
-              <FieldComponentsPage
-                key={`${dataset.id}-${dataId}`}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : contentType === "featureInspector" && draftSetting ? (
-              <FeatureInspectorPage
-                key={`${dataset.id}-${dataId}`}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : null}
-          </>
-        )
+        <>
+          {contentType === "status" ? (
+            <StatusPage dataset={dataset} />
+          ) : contentType === "general" && draftSetting ? (
+            <GeneralPage
+              key={`${dataset.id}-${dataId}-general`}
+              dataset={dataset}
+              dataId={dataId}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : contentType === "fieldComponents" && draftSetting ? (
+            <FieldComponentsPage
+              key={`${dataset.id}-${dataId}-fieldComponents`}
+              dataset={dataset}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : contentType === "featureInspector" && draftSetting ? (
+            <FeatureInspectorPage
+              key={`${dataset.id}-${dataId}-featureInspector`}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : null}
+        </>
       }
     />
   ) : (

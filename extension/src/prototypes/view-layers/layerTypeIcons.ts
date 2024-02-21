@@ -22,6 +22,7 @@ import {
   ShelterIcon,
   SketchIcon,
   StationIcon,
+  StoryIcon,
   TsunamiRiskIcon,
   UrbanPlanningIcon,
   UseCaseIcon,
@@ -51,6 +52,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   STATION_LAYER,
+  STORY_LAYER,
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
@@ -62,6 +64,7 @@ export const layerTypeIcons: Record<LayerType, ComponentType<SvgIconProps>> = {
   [PEDESTRIAN_LAYER]: PedestrianIcon,
   [SKETCH_LAYER]: SketchIcon,
   [MY_DATA_LAYER]: UseCaseIcon,
+  [STORY_LAYER]: StoryIcon,
 
   // Dataset layers
   [BORDER_LAYER]: BorderIcon,
