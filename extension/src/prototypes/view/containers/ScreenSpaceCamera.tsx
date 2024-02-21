@@ -1,8 +1,9 @@
 import { useAtomValue } from "jotai";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
 import { setView } from "../../../shared/reearth/utils";
+import { useFrame } from "../hooks/useFrame";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";
@@ -66,29 +67,23 @@ export const ScreenSpaceCamera = ({
   );
 
   const cameraPotion = window?.reearth?.camera?.position;
-  const animationFrameRef = useRef<number>(0);
+
+  const cb = useCallback(() => {
+    if (!cameraPotion || !useKeyboard) return;
+    setView({
+      heading: cameraPotion.heading,
+      pitch: cameraPotion.pitch,
+      roll: 0,
+    });
+  }, [cameraPotion, useKeyboard]);
+  const { start, stop } = useFrame(cb);
 
   useEffect(() => {
-    if (!cameraPotion || !useKeyboard) return;
-    const animate = () => {
-      setView({
-        heading: cameraPotion.heading,
-        pitch: cameraPotion.pitch,
-        roll: 0,
-      });
-      if (useKeyboard) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    if (useKeyboard) {
-      animationFrameRef.current = requestAnimationFrame(animate);
-    }
-
+    if (useKeyboard) start();
     return () => {
-      cancelAnimationFrame(animationFrameRef.current);
+      stop();
     };
-  }, [cameraPotion, useKeyboard]);
+  }, [start, stop, useKeyboard]);
 
   useEffect(() => {
     if (useKeyboard) {
