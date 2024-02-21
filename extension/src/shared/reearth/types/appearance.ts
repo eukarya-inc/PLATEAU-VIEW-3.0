@@ -191,7 +191,6 @@ export type Cesium3DTilesAppearance = {
   imageBasedLightIntensity?: number;
   selectedFeatureColor?: string;
   onLoadFeature?: (feature: Partial<Feature> | undefined) => void;
-  disabledSelection?: boolean;
 };
 
 export type LegacyPhotooverlayAppearance = {
