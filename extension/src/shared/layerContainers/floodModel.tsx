@@ -18,6 +18,7 @@ import {
   TILESET_FLOOD_COLOR_FIELD,
   TILESET_FLOOD_MODEL_COLOR,
   TILESET_FLOOD_MODEL_FILTER,
+  TILESET_DISABLE_DEFAULT_MATERIAL,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { hexToRGBArray } from "../utils";
@@ -124,6 +125,11 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
   const colorProperty = useAtomValue(colorPropertyAtom);
   const colorScheme = useAtomValue(colorSchemeAtom);
 
+  const disableDefaultMaterialAtom = useFindComponent(
+    componentAtoms,
+    TILESET_DISABLE_DEFAULT_MATERIAL,
+  );
+
   // Field components
   const opacityAtom = useFindComponent(componentAtoms, OPACITY_FIELD);
   const floodModelColorAtom = useFindComponent(componentAtoms, TILESET_FLOOD_MODEL_COLOR);
@@ -132,6 +138,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_FLOOD_MODEL_FILTER)),
   );
 
+  const disableDefaultMaterial = useOptionalAtomValue(disableDefaultMaterialAtom);
   const theme = useTheme();
 
   const primaryRGB = useMemo(() => hexToRGBArray(theme.palette.primary.main), [theme]);
@@ -152,7 +159,11 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: colorProperty ? false : "withTexture",
+      pbr: disableDefaultMaterial?.value?.disableDefaultMaterial
+        ? false
+        : colorProperty
+        ? false
+        : "withTexture",
       ...(color
         ? {
             color: {
@@ -166,7 +177,13 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: "disabled",
       selectedFeatureColor: theme.palette.primary.main,
     }),
-    [color, colorProperty, theme.palette.primary.main, filter],
+    [
+      color,
+      colorProperty,
+      theme.palette.primary.main,
+      filter,
+      disableDefaultMaterial?.value?.disableDefaultMaterial,
+    ],
   );
 
   return <TilesetLayer {...props} onLoad={handleLoad} appearance={appearance} visible={!hidden} />;
