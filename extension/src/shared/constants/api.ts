@@ -1,3 +1,6 @@
+import { CameraPosition } from "../reearth/types";
+
+// default settings
 export let PLATEAU_API_URL: string | undefined;
 export const setPlateauApiUrl = (url: string) => {
   PLATEAU_API_URL = url;
@@ -23,6 +26,12 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
 
+// custom settings
+export let CITY_NAME: string | undefined;
+export const setCityName = (name: string) => {
+  CITY_NAME = name;
+};
+
 export let PRIMARY_COLOR: string | undefined;
 export const setPrimaryColor = (color: string) => {
   PRIMARY_COLOR = color;
@@ -31,4 +40,14 @@ export const setPrimaryColor = (color: string) => {
 export let LOGO: string | undefined;
 export const setLogo = (url: string) => {
   LOGO = url;
+};
+
+export let SITE_URL: string | undefined;
+export const setSiteURL = (url?: string) => {
+  SITE_URL = url ?? "https://www.mlit.go.jp/plateau/";
+};
+
+export let INITIAL_PEDESTRIAN_COORDINATES: CameraPosition | undefined;
+export const setInitialPededstrianCoordinates = (camera?: CameraPosition) => {
+  INITIAL_PEDESTRIAN_COORDINATES = camera;
 };

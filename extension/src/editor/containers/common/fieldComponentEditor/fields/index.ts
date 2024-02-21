@@ -4,6 +4,7 @@ import { ComponentBase } from "../../../../../shared/types/fieldComponents";
 import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBuildingModelColorField";
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
+import { EditorDisableDefaultMaterialField } from "./3dtiles/EditorTilesetDisableDefaultMaterialField";
 import { EditorTilesetFloodColorField } from "./3dtiles/EditorTilesetFloodColorField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
@@ -375,6 +376,11 @@ export const fields: {
     category: FIELD_CATEGORY_THREE_D_TILES,
     name: "Wireframe",
     Component: EditorTilesetWireframeField,
+  },
+  TILESET_DISABLE_DEFAULT_MATERIAL: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    name: "Disable Default Material",
+    Component: EditorDisableDefaultMaterialField,
   },
 };
 

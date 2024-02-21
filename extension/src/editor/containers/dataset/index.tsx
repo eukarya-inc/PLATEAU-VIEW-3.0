@@ -45,7 +45,8 @@ export type EditorDatasetConentType =
   | "folder"
   | "general"
   | "fieldComponents"
-  | "featureInspector";
+  | "featureInspector"
+  | "initialLayer";
 
 export type EditorDatasetItemProperty = {
   dataId?: string;
@@ -180,7 +181,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     if (treeRef.current.length > 0) {
       setSelected(treeRef.current[0].id);
       setContentType("status");
-      setDataId(undefined);
+      setDataId(DEFAULT_SETTING_DATA_ID);
     }
     setExpanded(treeRef.current.map(item => item.id));
   }, [dataset?.id]);
@@ -228,7 +229,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     [expanded],
   );
 
-  // setting must have a defulat component group
+  // setting must have a default component group
   useEffect(() => {
     if (!draftSetting) return;
     if (!draftSetting.fieldComponents?.groups || draftSetting.fieldComponents.groups.length === 0) {
@@ -332,30 +333,31 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       }
       main={
         <>
-          {contentType === "status" ? (
-            <StatusPage dataset={dataset} />
-          ) : contentType === "general" && draftSetting ? (
-            <GeneralPage
-              key={`${dataset.id}-${dataId}-general`}
-              dataset={dataset}
-              dataId={dataId}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : contentType === "fieldComponents" && draftSetting ? (
-            <FieldComponentsPage
-              key={`${dataset.id}-${dataId}-fieldComponents`}
-              dataset={dataset}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : contentType === "featureInspector" && draftSetting ? (
-            <FeatureInspectorPage
-              key={`${dataset.id}-${dataId}-featureInspector`}
-              setting={draftSetting}
-              updateSetting={updateDraftSetting}
-            />
-          ) : null}
+          {draftSetting &&
+            (contentType === "status" ? (
+              <StatusPage dataset={dataset} />
+            ) : contentType === "general" ? (
+              <GeneralPage
+                key={`${dataset.id}-${dataId}-general`}
+                dataset={dataset}
+                dataId={dataId}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "fieldComponents" ? (
+              <FieldComponentsPage
+                key={`${dataset.id}-${dataId}-fieldComponents`}
+                dataset={dataset}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : contentType === "featureInspector" ? (
+              <FeatureInspectorPage
+                key={`${dataset.id}-${dataId}-featureInspector`}
+                setting={draftSetting}
+                updateSetting={updateDraftSetting}
+              />
+            ) : null)}
         </>
       }
     />

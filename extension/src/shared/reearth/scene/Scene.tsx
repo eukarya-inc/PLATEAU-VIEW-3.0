@@ -22,14 +22,6 @@ const debugSphericalHarmonicCoefficients: [x: number, y: number, z: number][] = 
   [-0.000069071611506, 0.000134039684781, -0.000119135256682], // L22, irradiance, pre-scaled base
 ];
 
-const DEFAULT_INITIAL_CAMERA: CameraPosition = {
-  lng: 139.755,
-  lat: 35.675,
-  height: 1000,
-  heading: Math.PI * 0.4,
-  pitch: -Math.PI * 0.2,
-};
-
 export type EnvironmentProps = {
   backgroundColor?: string;
   globeBaseColor?: string;
@@ -106,7 +98,7 @@ export const Scene: FC<SceneProps> = ({
   ambientOcclusion,
   shadows,
   antialias,
-  initialCamera = DEFAULT_INITIAL_CAMERA,
+  initialCamera,
 }) => {
   useEffect(() => {
     window.reearth?.scene?.overrideProperty({

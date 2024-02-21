@@ -15,7 +15,7 @@ import { DatasetListItem, joinPath } from "./DatasetListItem";
 
 const expandedAtom = atomWithReset<string[]>([]);
 
-const DatasetGroup: FC<{
+export const DatasetGroup: FC<{
   groupId: string;
   datasets: DatasetFragmentFragment[];
 }> = ({ groupId, datasets }) => {
