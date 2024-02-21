@@ -67,8 +67,6 @@ export const ScreenSpaceElement = forwardRef<HTMLDivElement, ScreenSpaceElementP
       motionDisplayRef.current.set("block");
     }, [position, trigger]);
 
-    console.log(ref);
-
     return (
       <Root
         ref={mergeRefs([ref, forwardedRef])}

@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, type FC, useMemo, useRef, useState } from "react";
+import { useEffect, type FC, useMemo, useRef, useState, useCallback } from "react";
 import format from "string-template";
 
 import { LayerType, useAddLayer } from "../../../prototypes/layers";
@@ -16,6 +16,7 @@ import {
   SKETCH_LAYER,
   STORY_LAYER,
 } from "../../../prototypes/view-layers";
+import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
 import { DatasetItem } from "../../graphql/types/catalog";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
@@ -32,18 +33,6 @@ import {
   createRootLayerForLayerAtom,
 } from "../../view-layers/rootLayer";
 import { isAppReadyAtom } from "../state/app";
-
-const DEFAULT_BUILDING_IDS = ["d_13101_bldg", "d_13102_bldg"];
-
-const DEFAULT_LAYER_PARAMS: RootLayerForLayerAtomParams<LayerType>[] = [
-  {
-    type: PEDESTRIAN_LAYER,
-    location: {
-      longitude: 139.769,
-      latitude: 35.68,
-    },
-  },
-];
 
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
@@ -69,6 +58,27 @@ export const InitialLayers: FC = () => {
     }
   }, [getSharedRootLayers, shareId, isAppReady]);
 
+  const settings = useAtomValue(settingsAtom);
+  const templates = useAtomValue(templatesAtom);
+
+  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(
+    () => [
+      {
+        type: PEDESTRIAN_LAYER,
+        location: {
+          longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
+          latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+        },
+      },
+    ],
+    [],
+  );
+
+  const getDefaultBuildingIds = useCallback(
+    () => settings.filter(s => !!s.general?.initialLayer?.isInitialLayer).map(s => s.datasetId),
+    [settings],
+  );
+
   const datasetIds = useMemo(
     () =>
       shareId && isSharedDataLoaded
@@ -77,20 +87,18 @@ export const InitialLayers: FC = () => {
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : DEFAULT_BUILDING_IDS,
-    [shareId, sharedRootLayers, isSharedDataLoaded],
+        : getDefaultBuildingIds(),
+    [shareId, sharedRootLayers, isSharedDataLoaded, getDefaultBuildingIds],
   );
 
   const query = useDatasetsByIds(datasetIds, {
     skip: !!shareId && !isSharedDataLoaded && !sharedRootLayers?.length,
   });
-  const settings = useAtomValue(settingsAtom);
-  const templates = useAtomValue(templatesAtom);
 
   const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
 
   const initialLayers = useMemo(() => {
-    if (!sharedRootLayers?.length) return DEFAULT_LAYER_PARAMS;
+    if (!sharedRootLayers?.length) return defaultLayerParams;
     return sharedRootLayers
       .map(l => {
         switch (l.type) {
@@ -144,7 +152,7 @@ export const InitialLayers: FC = () => {
         }
       })
       .filter(isNotNullish);
-  }, [sharedRootLayers]);
+  }, [sharedRootLayers, defaultLayerParams]);
 
   const setReady = useSetAtom(readyAtom);
 
