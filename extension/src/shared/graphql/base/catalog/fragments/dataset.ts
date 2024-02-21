@@ -7,6 +7,7 @@ export const DATASET_FRAGMENT = gql(`
     description
     year
     groups
+    openDataUrl
     prefectureId
     prefectureCode
     cityId

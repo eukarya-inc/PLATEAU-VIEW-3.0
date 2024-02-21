@@ -1,4 +1,4 @@
-import { Divider, Button } from "@mui/material";
+import { Divider, Button, styled } from "@mui/material";
 import { atom, useAtomValue } from "jotai";
 import { useMemo, type FC, SetStateAction } from "react";
 
@@ -51,10 +51,15 @@ export const OpenDataLink: FC<SwitchDatasetProps> = ({ layers }) => {
     <>
       <Divider />
       <InspectorItem>
-        <Button size="small" variant="outlined" fullWidth onClick={() => console.log("ff")}>
+        <CustomButton size="small" variant="outlined" fullWidth onClick={() => console.log("ff")}>
           オープンデータを入手
-        </Button>
+        </CustomButton>
       </InspectorItem>
     </>
   );
 };
+
+const CustomButton = styled(Button)({
+  borderRadius: "2px",
+  borderColor: "#D9D9D9",
+});

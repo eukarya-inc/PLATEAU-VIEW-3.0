@@ -45,6 +45,8 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       ),
     );
 
+    console.log("groups datasets", groups);
+
     return filteredDatasetTypeOrder
       ?.map(orderedType => groups.find(([type]) => type === orderedType.name))
       .filter(isNotNullish)
