@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
@@ -45,7 +45,6 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
   const [, setCamera] = useAtom(useOptionalPrimitiveAtom(cameraAtom));
-
   useScreenSpaceSelectionResponder({
     type: GENERAL_FEATURE,
     convertToSelection: object => {
@@ -95,17 +94,6 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   const generalData = useEvaluateGeneralData({ componentAtoms });
   const theme = useTheme();
 
-  const prevIndexRef = useRef<number>();
-
-  useEffect(() => {
-    if (layerId && index !== undefined) {
-      if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
-        window.reearth?.layers?.bringToFront?.(layerId);
-      }
-      prevIndexRef.current = index;
-    }
-  }, [index, layerId]);
-
   if (format === "gtfs") {
     return (
       <GTFSLayer
@@ -119,7 +107,13 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   if (format === "mvt") {
     return (
-      <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
+      <MVTLayer
+        {...props}
+        onLoad={handleLoad}
+        appearances={generalAppearances}
+        visible={!hidden}
+        index={index}
+      />
     );
   }
 

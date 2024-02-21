@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useLayer } from "../hooks";
 import { CameraPosition, LayerAppearanceTypes } from "../types";
@@ -14,6 +14,7 @@ export type MVTProps = {
   visible?: boolean;
   appearances?: MVTAppearances;
   layers?: string[];
+  index?: number;
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -46,7 +47,7 @@ type MVTMeta = Omit<RawMVTMeta, "center" | "bounds"> & {
   bounds: [x: number, y: number, z: number];
 };
 
-export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, layers }) => {
+export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, layers, index }) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
 
   useEffect(() => {
@@ -108,10 +109,19 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
     [url, layers],
   );
 
+  const prevIndexRef = useRef<number>();
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-
+      if (index === prevIndexRef.current && visible) {
+        window.reearth?.layers?.sendToBack?.(layerId);
+      }
+      if (layerId && index !== undefined) {
+        if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
+          window.reearth?.layers?.bringToFront?.(layerId);
+        }
+        prevIndexRef.current = index;
+      }
       onLoad?.(layerId, {
         lng: meta.center[0],
         lat: meta.center[1],
@@ -121,7 +131,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
         roll: 0,
       });
     },
-    [meta, onLoad],
+    [index, meta, onLoad, visible],
   );
 
   useLayer({
