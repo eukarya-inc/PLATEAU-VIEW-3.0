@@ -8,6 +8,7 @@ import {
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
   TILESET_WIREFRAME,
+  TILESET_DISABLE_DEFAULT_MATERIAL,
 } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD, STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
@@ -170,6 +171,10 @@ export const useEvaluateGeneralAppearance = ({
     useFindComponent(componentAtoms ?? [], TILESET_WIREFRAME),
   );
 
+  const tilesetDisableDefaultMaterial = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], TILESET_DISABLE_DEFAULT_MATERIAL),
+  );
+
   // General
   const opacity = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], OPACITY_FIELD));
 
@@ -264,7 +269,7 @@ export const useEvaluateGeneralAppearance = ({
             }
           : undefined,
         "3dtiles": {
-          pbr: "withTexture",
+          pbr: tilesetDisableDefaultMaterial ? false : "withTexture",
           color:
             makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
             makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
@@ -311,6 +316,7 @@ export const useEvaluateGeneralAppearance = ({
       tilesetFillGradientColor,
       clippingBox,
       tilesetWireframe?.value?.wireframe,
+      tilesetDisableDefaultMaterial,
       boxAppearance,
       opacity,
     ],
