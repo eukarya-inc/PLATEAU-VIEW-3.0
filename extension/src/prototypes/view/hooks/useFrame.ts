@@ -10,10 +10,10 @@ export const useFrame = (cb: () => void) => {
     const animate = () => {
       if (isCanceled.current) return;
       cb();
-      timer = requestAnimationFrame(animate);
+      if (shouldStart) timer = requestAnimationFrame(animate);
     };
     timer = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(timer);
-  }, [cb]);
+  }, [cb, shouldStart]);
   return { start: () => setShouldStart(true), stop: () => setShouldStart(false) };
 };

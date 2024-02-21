@@ -2,7 +2,6 @@ import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
 
 import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
-import { setView } from "../../../shared/reearth/utils";
 import { useFrame } from "../hooks/useFrame";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 
@@ -70,12 +69,9 @@ export const ScreenSpaceCamera = ({
 
   const cb = useCallback(() => {
     if (!cameraPotion || !useKeyboard) return;
-    setView({
-      heading: cameraPotion.heading,
-      pitch: cameraPotion.pitch,
-      roll: 0,
-    });
+    window.reearth?.camera?.keyboardCameraRotate(cameraPotion?.roll);
   }, [cameraPotion, useKeyboard]);
+
   const { start, stop } = useFrame(cb);
 
   useEffect(() => {
