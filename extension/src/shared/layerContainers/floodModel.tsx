@@ -159,11 +159,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: disableDefaultMaterial?.value?.disableDefaultMaterial
-        ? false
-        : colorProperty
-        ? false
-        : "withTexture",
+      pbr: disableDefaultMaterial ? false : colorProperty ? false : "withTexture",
       ...(color
         ? {
             color: {
@@ -177,13 +173,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
       shadows: "disabled",
       selectedFeatureColor: theme.palette.primary.main,
     }),
-    [
-      color,
-      colorProperty,
-      theme.palette.primary.main,
-      filter,
-      disableDefaultMaterial?.value?.disableDefaultMaterial,
-    ],
+    [color, colorProperty, theme.palette.primary.main, filter, disableDefaultMaterial],
   );
 
   return <TilesetLayer {...props} onLoad={handleLoad} appearance={appearance} visible={!hidden} />;

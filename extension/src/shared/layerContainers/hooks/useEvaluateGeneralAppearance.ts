@@ -269,7 +269,7 @@ export const useEvaluateGeneralAppearance = ({
             }
           : undefined,
         "3dtiles": {
-          pbr: tilesetDisableDefaultMaterial?.value?.disableDefaultMaterial ? false : "withTexture",
+          pbr: tilesetDisableDefaultMaterial ? false : "withTexture",
           color:
             makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
             makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
@@ -316,7 +316,7 @@ export const useEvaluateGeneralAppearance = ({
       tilesetFillGradientColor,
       clippingBox,
       tilesetWireframe?.value?.wireframe,
-      tilesetDisableDefaultMaterial?.value?.disableDefaultMaterial,
+      tilesetDisableDefaultMaterial,
       boxAppearance,
       opacity,
     ],

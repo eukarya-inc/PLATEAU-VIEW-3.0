@@ -191,11 +191,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: disableDefaultMaterial?.value?.disableDefaultMaterial
-        ? false
-        : textured
-        ? "withTexture"
-        : false,
+      pbr: disableDefaultMaterial ? false : textured ? "withTexture" : false,
       ...(color
         ? {
             color: {
@@ -225,7 +221,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       theme.palette.primary.main,
       clippingBox,
       wireframeView,
-      disableDefaultMaterial?.value?.disableDefaultMaterial,
+      disableDefaultMaterial,
     ],
   );
 
