@@ -9,6 +9,18 @@ import {
   EditorTextField,
 } from "../../ui-components";
 
+export const DEFAULT_EVENT_BLOCK_VALUE: {
+  eventType: "openFeatureInspector" | "openNewTab";
+  urlType: "manual" | "fromData";
+  websiteURL: string;
+  fieldName: string;
+} = {
+  eventType: "openFeatureInspector",
+  urlType: "manual",
+  websiteURL: "",
+  fieldName: "",
+};
+
 export type EventBlockProps = EditorBlockProps & {
   setting?: DraftSetting;
   updateSetting?: UpdateSetting;
@@ -38,14 +50,18 @@ const urlTypeOptions = [
 
 export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, ...props }) => {
   const [eventType, setEventType] = useState(
-    setting?.general?.featureClickEvent?.eventType ?? "openFeatureInspector",
+    setting?.general?.featureClickEvent?.eventType ?? DEFAULT_EVENT_BLOCK_VALUE.eventType,
   );
 
-  const [urlType, setUrlType] = useState(setting?.general?.featureClickEvent?.urlType ?? "manual");
-  const [websiteURL, setWebsiteURL] = useState(
-    setting?.general?.featureClickEvent?.websiteURL ?? "",
+  const [urlType, setUrlType] = useState(
+    setting?.general?.featureClickEvent?.urlType ?? DEFAULT_EVENT_BLOCK_VALUE.urlType,
   );
-  const [fieldName, setFieldName] = useState(setting?.general?.featureClickEvent?.fieldName ?? "");
+  const [websiteURL, setWebsiteURL] = useState(
+    setting?.general?.featureClickEvent?.websiteURL ?? DEFAULT_EVENT_BLOCK_VALUE.websiteURL,
+  );
+  const [fieldName, setFieldName] = useState(
+    setting?.general?.featureClickEvent?.fieldName ?? DEFAULT_EVENT_BLOCK_VALUE.fieldName,
+  );
 
   const handleEventTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "openFeatureInspector" || e.target.value === "openNewTab") {

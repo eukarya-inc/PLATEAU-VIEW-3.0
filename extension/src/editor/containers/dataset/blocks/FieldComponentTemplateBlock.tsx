@@ -1,9 +1,9 @@
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { DraftSetting, UpdateSetting } from "..";
+import { DraftSetting, EditorDataset, UpdateSetting } from "..";
 import { useTemplateAPI } from "../../../../shared/api";
-import { ComponentTemplate } from "../../../../shared/api/types";
+import { ComponentGroup, ComponentTemplate } from "../../../../shared/api/types";
 import {
   BlockContentWrapper,
   EditorBlock,
@@ -15,11 +15,15 @@ import {
 
 type FieldComponentTemplateBlockProps = EditorBlockProps & {
   setting?: DraftSetting;
+  dataset?: EditorDataset;
+  componentsGroups?: ComponentGroup[];
   updateSetting?: UpdateSetting;
 };
 
 export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockProps> = ({
   setting,
+  dataset,
+  componentsGroups,
   updateSetting,
   ...props
 }) => {
@@ -65,6 +69,18 @@ export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockPr
     });
   }, [useTemplate, templateId, updateSetting]);
 
+  const defaultTemplateName = useMemo(
+    () =>
+      !componentsGroups?.some(g => g.components.length > 0) &&
+      templates.find(t =>
+        [
+          dataset?.type.name,
+          dataset?.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined,
+        ].includes(t.name.split("/").slice(-1)[0]),
+      )?.name,
+    [dataset, templates, componentsGroups],
+  );
+
   return (
     <EditorBlock title="Template" expandable {...props}>
       <BlockContentWrapper>
@@ -79,6 +95,9 @@ export const FieldComponentTemplateBlock: React.FC<FieldComponentTemplateBlockPr
             disabled={!useTemplate}
             onChange={handleTemplateIdChange}
           />
+        )}
+        {!useTemplate && defaultTemplateName && (
+          <EditorCommonField>Default template detected: {defaultTemplateName}</EditorCommonField>
         )}
       </BlockContentWrapper>
     </EditorBlock>

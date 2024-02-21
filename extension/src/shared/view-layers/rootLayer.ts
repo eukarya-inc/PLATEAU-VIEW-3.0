@@ -120,7 +120,11 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
   const hasGroups = fieldComponents?.groups?.some(g => !!g.components.length);
   const hasTemplate = fieldComponents?.useTemplate && !!fieldComponents.templateId;
 
-  return hasGroups || hasTemplate ? setting : defaultSetting;
+  return {
+    ...defaultSetting,
+    ...setting,
+    fieldComponents: hasGroups || hasTemplate ? fieldComponents : defaultSetting?.fieldComponents,
+  } as Setting | undefined;
 };
 
 const findComponentTemplate = (
@@ -405,6 +409,7 @@ export const createRootLayerForDatasetAtom = (
   const shareableCurrentDataIdAtom = sharedStoreAtomWrapper(
     shareableCurrentDataIdName,
     currentDataIdAtomAtom,
+    { shouldInitialize: false },
   );
 
   const shareableCurrentComponentGroupIdName = `${dataset.id}_${CURRENT_COMPONENT_GROUP_ID}${
@@ -413,6 +418,7 @@ export const createRootLayerForDatasetAtom = (
   const shareableCurrentGroupIdAtom = sharedStoreAtomWrapper(
     shareableCurrentComponentGroupIdName,
     currentGroupIdAtomAtom,
+    { shouldInitialize: false },
   );
 
   return {

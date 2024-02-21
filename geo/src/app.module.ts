@@ -11,10 +11,6 @@ import { TerrainModule } from "./modules/terrain/app.module";
       cache: true,
     }),
     GraphQLAppModule,
-    ...(process.env.ENABLE_TILE_SERVER
-      ? // eslint-disable-next-line @typescript-eslint/no-var-requires
-        [require("./modules/tiles/app.module").TileAppModule]
-      : []),
     TerrainModule,
   ],
   controllers: [],

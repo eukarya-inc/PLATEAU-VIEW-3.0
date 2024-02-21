@@ -96,7 +96,7 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
             const componentValue = get(componentAtom.atom);
             if (isConditionalImageSchemeComponent(componentValue)) {
               const currentRuleId =
-                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id;
+                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0]?.id;
               const ruleId = currentRuleId;
               if (ruleId) {
                 return ruleId;
@@ -111,7 +111,7 @@ export const ImageSchemeSectionForComponentField: FC<ImageSchemeSectionForCompon
 
             if (isConditionalImageSchemeComponent(componentValue)) {
               const currentRuleId =
-                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0].id;
+                componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0]?.id;
               const update = typeof action === "function" ? action(currentRuleId ?? null) : action;
               set(componentAtom.atom, {
                 ...componentValue,

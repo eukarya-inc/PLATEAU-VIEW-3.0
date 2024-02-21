@@ -19,12 +19,11 @@ export const EditorTree: React.FC<EditorTreeProps> = ({
   tree,
   selected,
   expanded,
-  ready,
   clickFolderToExpand,
   onItemClick,
   onExpandClick,
 }) => {
-  return ready ? (
+  return (
     <TreeWrapper>
       <StyledList>
         {tree.map(item => (
@@ -34,6 +33,7 @@ export const EditorTree: React.FC<EditorTreeProps> = ({
             level={item.id === VIRTUAL_ROOT.id ? -1 : 0}
             selected={selected}
             expanded={expanded}
+            showEditedIcon={item.edited}
             clickFolderToExpand={clickFolderToExpand}
             onItemClick={onItemClick}
             onExpandClick={onExpandClick}
@@ -41,7 +41,7 @@ export const EditorTree: React.FC<EditorTreeProps> = ({
         ))}
       </StyledList>
     </TreeWrapper>
-  ) : null;
+  );
 };
 
 const TreeWrapper = styled("div")({

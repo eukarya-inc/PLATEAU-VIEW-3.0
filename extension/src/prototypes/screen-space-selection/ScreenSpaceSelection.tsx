@@ -16,6 +16,11 @@ import {
 const defaultOptions = {
   disabled: false,
   allowClickWhenDisabled: false,
+  allowedEvents: {
+    point: true,
+    rectangle: true,
+    imagery: true,
+  },
 };
 
 type ScreenSpaceSelectionOptions = Partial<typeof defaultOptions>;

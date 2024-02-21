@@ -9,6 +9,8 @@ import {
   type ScreenSpaceSelectionEventAction,
 } from "./ScreenSpaceSelectionEvent";
 
+type EventType = "point" | "rectangle" | "imagery";
+
 const pointEvent = {
   type: "point",
   action: "replace" as ScreenSpaceSelectionEventAction,
@@ -56,6 +58,11 @@ export class ScreenSpaceSelectionHandler {
 
   #disabled = false;
   #allowClickWhenDisabled = false;
+  #allowedEvents: { [key in EventType]: boolean } = {
+    point: true,
+    rectangle: true,
+    imagery: true,
+  };
 
   constructor() {
     // const handler = new ScreenSpaceEventHandler(scene.canvas);
@@ -94,12 +101,24 @@ export class ScreenSpaceSelectionHandler {
     this.#allowClickWhenDisabled = value;
   }
 
+  get allowedEvents(): { [key in EventType]: boolean } {
+    return this.#allowedEvents;
+  }
+
+  set allowedEvents(value: { [key in EventType]: boolean }) {
+    this.#allowedEvents = value;
+  }
+
   private handleKeyDown(e: KeyboardEvent) {
     this.currentKeyName = e.key;
   }
 
   private readonly handleClick = (position: [x: number, y: number], keyName?: string): void => {
-    if ((this.disabled && !this.allowClickWhenDisabled) || this.moving) {
+    if (
+      (this.disabled && !this.allowClickWhenDisabled) ||
+      !this.allowedEvents.point ||
+      this.moving
+    ) {
       return;
     }
     pointEvent.action = actionForModifier(keyName);
@@ -109,7 +128,12 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleSelect = (layerId?: string): void => {
-    if ((this.disabled && !this.allowClickWhenDisabled) || this.moving || !layerId) {
+    if (
+      (this.disabled && !this.allowClickWhenDisabled) ||
+      !this.#allowedEvents.imagery ||
+      this.moving ||
+      !layerId
+    ) {
       return;
     }
     const l = window.reearth?.layers?.findById?.(layerId);
@@ -128,6 +152,7 @@ export class ScreenSpaceSelectionHandler {
     // TODO(ReEarth): Support selecting multiple feature
     this.startPosition = [event.x ?? 0, event.y ?? 0];
     this.downing = true;
+    this.moving = false;
   };
 
   private readonly handleMouseUp = (event: MouseEvent): void => {
@@ -153,6 +178,10 @@ export class ScreenSpaceSelectionHandler {
       this.moving = true;
     }
     if (this.disabled) {
+      return;
+    }
+    if (!this.allowedEvents.rectangle) {
+      this.moving = true;
       return;
     }
     if (!this.startPosition) {

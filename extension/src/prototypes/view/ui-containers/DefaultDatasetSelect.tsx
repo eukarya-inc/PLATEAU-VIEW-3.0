@@ -74,10 +74,9 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
       () =>
         rootLayers.filter(
           (l): l is RootLayerConfigForDataset =>
-            l.type === "dataset" &&
-            !!filteredLayers.find(f => l.id === f.id && l.areaCode === municipalityCode),
+            l.type === "dataset" && !!filteredLayers.find(f => l.id === f.id),
         ),
-      [rootLayers, filteredLayers, municipalityCode],
+      [rootLayers, filteredLayers],
     );
 
     const addLayer = useAddLayer();
@@ -198,7 +197,9 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
               )),
             ];
           }
-          invariant(dataset.items.length === 1);
+          if (dataset.items.length === 0) {
+            return null;
+          }
           const [datum] = dataset.items;
           return (
             <SelectItem

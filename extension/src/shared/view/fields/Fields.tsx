@@ -1,4 +1,5 @@
 import { Divider } from "@mui/material";
+import { useAtomValue } from "jotai";
 import { FC } from "react";
 
 import { type LayerModel as PrototypeLayerModel } from "../../../prototypes/layers";
@@ -23,6 +24,8 @@ import {
   TIMELINE_CUSTOMIZED_FIELD,
   TIMELINE_MONTH_FIELD,
   DATASET_STORY_FIELD,
+  STYLE_CODE_FIELD,
+  StyleCodeField,
 } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -52,6 +55,7 @@ import { LayerDatasetStoryField } from "./general/LayerDatasetStoryField";
 import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
 import { LayerLinkButtonField } from "./general/LayerLinkButtonField";
 import { LayerOpacityField } from "./general/LayerOpacityField";
+import { LayerStyleCodeField } from "./general/LayerStyleCodeField";
 import { LayerTimelineCustomizedField } from "./general/LayerTimelineCustomizedField";
 import { LayerTimelineMonthField } from "./general/LayerTimelineMonthField";
 import { LayerPointFillColorConditionField } from "./point/LayerPointFillColorConditionField";
@@ -71,6 +75,7 @@ type Props = {
 
 export const Fields: FC<Props> = ({ layers, type, atoms }) => {
   const isMutipleSelectable = useIsMultipleSelectableField({ layers, type });
+  const atom0Value = useAtomValue(atoms[0]);
   if (!isMutipleSelectable) {
     return null;
   }
@@ -80,6 +85,12 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     // General
     case OPACITY_FIELD: {
       component = <LayerOpacityField atoms={atoms as ComponentAtom<"OPACITY_FIELD">["atom"][]} />;
+      break;
+    }
+    case STYLE_CODE_FIELD: {
+      component = (atom0Value as StyleCodeField).preset?.enableTransparencySlider ? (
+        <LayerStyleCodeField atoms={atoms as ComponentAtom<"STYLE_CODE_FIELD">["atom"][]} />
+      ) : undefined;
       break;
     }
     case LAYER_DESCRIPTION_FIELD: {

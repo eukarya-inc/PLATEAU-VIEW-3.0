@@ -2,6 +2,7 @@ import { CameraBlock } from "./blocks/CameraBlock";
 import { DataBlock } from "./blocks/DataBlock";
 import { DataFetchingBlock } from "./blocks/DataFetchingBlock";
 import { EventBlock } from "./blocks/EventBlock";
+import { InitialLayerBlock } from "./blocks/InitialLayerBlock";
 
 import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
@@ -24,25 +25,26 @@ export const GeneralPage: React.FC<GeneralPageProps> = ({
         key={`${setting.datasetId}-${setting.dataId}-data`}
         dataset={dataset}
         dataId={dataId}
-        expanded={false}
       />
       <CameraBlock
         key={`${setting.datasetId}-${setting.dataId}-camera`}
         setting={setting}
         updateSetting={updateSetting}
-        expanded={false}
       />
       <DataFetchingBlock
         key={`${setting.datasetId}-${setting.dataId}-data-fetching`}
         setting={setting}
         updateSetting={updateSetting}
-        expanded={false}
       />
       <EventBlock
         key={`${setting.datasetId}-${setting.dataId}-event`}
         setting={setting}
         updateSetting={updateSetting}
-        expanded={false}
+      />
+      <InitialLayerBlock
+        key={`${setting.datasetId}-${setting.dataId}-initial-layer`}
+        setting={setting}
+        updateSetting={updateSetting}
       />
     </>
   );

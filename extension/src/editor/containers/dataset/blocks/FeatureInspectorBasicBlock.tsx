@@ -9,6 +9,16 @@ import {
   EditorTextField,
 } from "../../ui-components";
 
+export const DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE: {
+  titleType: TitleType;
+  customTitle: string;
+  displayType: DisplayType;
+} = {
+  titleType: "datasetType",
+  customTitle: "",
+  displayType: "auto",
+};
+
 type FeatureInspectorBasicBlockProps = EditorBlockProps & {
   setting?: DraftSetting;
   updateSetting?: UpdateSetting;
@@ -58,13 +68,16 @@ export const FeatureInspectorBasicBlock: React.FC<FeatureInspectorBasicBlockProp
   ...props
 }) => {
   const [titleType, setTitleType] = useState<TitleType>(
-    setting?.featureInspector?.basic?.titleType ?? "datasetType",
+    setting?.featureInspector?.basic?.titleType ??
+      DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE.titleType,
   );
   const [customTitle, setCustomTitle] = useState(
-    setting?.featureInspector?.basic?.customTitle ?? "",
+    setting?.featureInspector?.basic?.customTitle ??
+      DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE.customTitle,
   );
   const [displayType, setDisplayType] = useState<DisplayType>(
-    setting?.featureInspector?.basic?.displayType ?? "auto",
+    setting?.featureInspector?.basic?.displayType ??
+      DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE.displayType,
   );
 
   const handleTitleTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

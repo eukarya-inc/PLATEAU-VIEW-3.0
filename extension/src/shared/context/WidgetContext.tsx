@@ -26,10 +26,19 @@ import {
   setPlateauApiUrl,
   setProjectId,
   setPrimaryColor,
+  SITE_URL,
+  setSiteURL,
+  CITY_NAME,
+  setCityName,
+  INITIAL_PEDESTRIAN_COORDINATES,
+  setInitialPededstrianCoordinates,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
+import { CameraPosition } from "../reearth/types";
 
 type Props = {
+  inEditor?: boolean;
+  // Default settings
   geoUrl?: string;
   gsiTileURL?: string;
   plateauUrl?: string;
@@ -38,9 +47,12 @@ type Props = {
   catalogUrl?: string;
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
-  inEditor?: boolean;
+  // Custom settings
+  cityName?: string;
   customPrimaryColor?: string;
   customLogo?: string;
+  customPedestrian?: CameraPosition;
+  customSiteUrl?: string;
 };
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
@@ -54,8 +66,11 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   googleStreetViewAPIKey,
   children,
   inEditor,
+  cityName,
   customPrimaryColor,
   customLogo,
+  customPedestrian,
+  customSiteUrl,
 }) => {
   useEffect(() => {
     if (!PLATEAU_API_URL && plateauUrl) {
@@ -109,10 +124,31 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [projectId, plateauUrl, plateauToken]);
 
   useEffect(() => {
+    if (cityName && (!CITY_NAME || CITY_NAME !== cityName)) {
+      setCityName(cityName);
+    }
+  }, [cityName]);
+
+  useEffect(() => {
+    if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {
+      setSiteURL(customSiteUrl);
+    }
+  }, [customSiteUrl]);
+
+  useEffect(() => {
     if (customLogo && (!LOGO || LOGO !== customLogo)) {
       setLogo(customLogo);
     }
   }, [customLogo]);
+
+  useEffect(() => {
+    if (
+      customPedestrian &&
+      (!INITIAL_PEDESTRIAN_COORDINATES || INITIAL_PEDESTRIAN_COORDINATES !== customPedestrian)
+    ) {
+      setInitialPededstrianCoordinates(customPedestrian);
+    }
+  }, [customPedestrian]);
 
   useEffect(() => {
     if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {
