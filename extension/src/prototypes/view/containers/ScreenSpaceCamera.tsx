@@ -67,8 +67,9 @@ export const ScreenSpaceCamera = ({
 
   const cb = useCallback(() => {
     const cameraPotion = window?.reearth?.camera?.position;
+    const checkNegToPi = window.reearth?.scene?.negatuvePiToPi(cameraPotion?.roll);
     if (!cameraPotion || !useKeyboard) return;
-    window.reearth?.camera?.keyboardCameraRotate(cameraPotion?.roll);
+    if (checkNegToPi) window.reearth?.camera?.keyboardCameraRotate();
   }, [useKeyboard]);
 
   const { start, stop } = useFrame(cb);
