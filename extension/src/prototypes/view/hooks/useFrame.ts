@@ -9,7 +9,6 @@ export const useFrame = (cb: () => void) => {
     let timer: number;
     const animate = () => {
       if (isCanceled.current) return;
-      console.log("INVOKE anim??");
       cb();
       timer = requestAnimationFrame(animate);
     };
