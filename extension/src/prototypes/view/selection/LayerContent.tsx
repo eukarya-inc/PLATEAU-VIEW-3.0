@@ -11,6 +11,7 @@ import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSea
 import { Fields } from "../../../shared/view/fields/Fields";
 import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
 import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
+import { OpenDataLink } from "../../../shared/view/selection/OpenDataLinkSection";
 import { BuildingLayerModel, RootLayerConfigForDataset } from "../../../shared/view-layers";
 import { ComponentAtom } from "../../../shared/view-layers/component";
 import { layerSelectionAtom, removeLayerAtom, type LayerType, LayerModel } from "../../layers";
@@ -53,6 +54,7 @@ export function LayerContent<T extends SupportedLayerType>({
   const buildingLayers = (values as LayerModel[]).filter(
     (v): v is BuildingLayerModel => v.type === BUILDING_LAYER,
   );
+  console.log("values", values);
   const layer = values[0] as LayerModel<SupportedLayerType>;
   const type = layer.type;
   const findRootLayer = useSetAtom(findRootLayerAtom);
@@ -211,6 +213,7 @@ export function LayerContent<T extends SupportedLayerType>({
           onClose={handleClose}
         />
         <LayerHiddenFeaturesSection layers={values} />
+        <OpenDataLink layers={values} />
         <SwitchDataset layers={values} />
         <SwitchGroup layers={values} />
         <LayerHeatmapSection layers={values} />
