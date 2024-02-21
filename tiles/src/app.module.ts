@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { GraphQLAppModule } from "./modules/graphql/app.module";
-import { TerrainModule } from "./modules/terrain/app.module";
+
+import { TileAppModule } from "./modules/tiles/app.module";
 
 @Module({
   imports: [
@@ -10,8 +10,7 @@ import { TerrainModule } from "./modules/terrain/app.module";
       isGlobal: true,
       cache: true,
     }),
-    GraphQLAppModule,
-    TerrainModule,
+    TileAppModule
   ],
   controllers: [],
   providers: [],
