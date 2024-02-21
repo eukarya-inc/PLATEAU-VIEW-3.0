@@ -23,9 +23,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
     () => unionBy(datasetTypeOrder, "name"),
     [datasetTypeOrder],
   );
-  const query = useAreaDatasets(area.code, {
-    excludeTypes: [PlateauDatasetType.UseCase],
-  });
+  const query = useAreaDatasets(area.code);
 
   const datasetGroups = useMemo(() => {
     const datasets = query.data?.area?.datasets;
