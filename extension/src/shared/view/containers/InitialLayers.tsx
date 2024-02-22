@@ -18,7 +18,6 @@ import {
 } from "../../../prototypes/view-layers";
 import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
-import { DatasetItem } from "../../graphql/types/catalog";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
 import { settingsAtom } from "../../states/setting";
 import {
@@ -183,7 +182,6 @@ export const InitialLayers: FC = () => {
 
       remove = [
         ...initialDatasets.map(d => {
-          const dataList = d.items as DatasetItem[];
           const { dataId, groupId } = sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
           return addLayer(
             createRootLayerForDatasetAtom({
@@ -194,7 +192,7 @@ export const InitialLayers: FC = () => {
               shareId: sharedProjectId,
               currentDataId: sharedProjectId
                 ? dataId
-                : dataList.find(v => defaultBuildings.find(b => b.datasetId === v.id)?.dataId)?.id,
+                : defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
               currentGroupId: groupId,
             }),
             { autoSelect: false },
