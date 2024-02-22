@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, type FC, useMemo, useRef, useState } from "react";
+import { useEffect, type FC, useMemo, useRef, useState, useCallback } from "react";
 import format from "string-template";
 
 import { LayerType, useAddLayer } from "../../../prototypes/layers";
@@ -74,14 +74,8 @@ export const InitialLayers: FC = () => {
     [],
   );
 
-  const defaultBuildings = useMemo(
-    () =>
-      settings
-        .filter(s => !!s.general?.initialLayer?.isInitialLayer)
-        .map(s => ({
-          datasetId: s.datasetId,
-          dataId: s.dataId,
-        })),
+  const getDefaultBuildingIds = useCallback(
+    () => settings.filter(s => !!s.general?.initialLayer?.isInitialLayer).map(s => s.datasetId),
     [settings],
   );
 
@@ -93,8 +87,8 @@ export const InitialLayers: FC = () => {
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : defaultBuildings.map(b => b.datasetId),
-    [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
+        : getDefaultBuildingIds(),
+    [shareId, sharedRootLayers, isSharedDataLoaded, getDefaultBuildingIds],
   );
 
   const query = useDatasetsByIds(datasetIds, {
@@ -194,7 +188,7 @@ export const InitialLayers: FC = () => {
               shareId: sharedProjectId,
               currentDataId: sharedProjectId
                 ? dataId
-                : dataList.find(v => defaultBuildings.find(b => b.datasetId === v.id)?.dataId)?.id,
+                : dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
               currentGroupId: groupId,
             }),
             { autoSelect: false },
@@ -227,7 +221,6 @@ export const InitialLayers: FC = () => {
     query.loading,
     setReady,
     initialLayers,
-    defaultBuildings,
     isSharedDataLoaded,
     isAppReady,
     sharedRootLayers,
