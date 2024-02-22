@@ -98,11 +98,12 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       case GRADIENT_COLOR_SCHEME: {
         if (!isGradientColorSchemeComponent(component)) return;
 
-        const currentRuleId = colorScheme.useDefault
-          ? colorScheme.currentRuleId ??
-            component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-            component.preset?.rules?.[0]?.id
-          : colorScheme.currentRuleId;
+        const currentRuleId =
+          colorScheme.useDefault || component.preset?.rules?.some(r => r.asDefaultRule)
+            ? colorScheme.currentRuleId ??
+              component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+              component.preset?.rules?.[0]?.id
+            : colorScheme.currentRuleId;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         const value = component.value;
         const colorMap = COLOR_MAPS.find(
@@ -158,11 +159,12 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       case CONDITIONAL_COLOR_SCHEME: {
         if (!isConditionalColorSchemeComponent(component)) return;
 
-        const currentRuleId = colorScheme.useDefault
-          ? colorScheme.currentRuleId ??
-            component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-            component.preset?.rules?.[0]?.id
-          : colorScheme.currentRuleId;
+        const currentRuleId =
+          colorScheme.useDefault || component.preset?.rules?.some(r => r.asDefaultRule)
+            ? colorScheme.currentRuleId ??
+              component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+              component.preset?.rules?.[0]?.id
+            : colorScheme.currentRuleId;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
         if (!rule?.propertyName || !rule.conditions) return;
         const colors = rule?.conditions
@@ -208,11 +210,12 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           () => colors,
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
             const update = typeof action === "function" ? action(colors) : action;
-            const currentRuleId = colorScheme.useDefault
-              ? colorScheme.currentRuleId ??
-                component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-                component.preset?.rules?.[0]?.id
-              : colorScheme.currentRuleId;
+            const currentRuleId =
+              colorScheme.useDefault || component.preset?.rules?.some(r => r.asDefaultRule)
+                ? colorScheme.currentRuleId ??
+                  component.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+                  component.preset?.rules?.[0]?.id
+                : colorScheme.currentRuleId;
             set(componentAtom.atom, {
               ...component,
               value: {

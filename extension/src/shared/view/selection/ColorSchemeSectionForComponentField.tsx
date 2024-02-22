@@ -94,7 +94,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                   isConditionalColorSchemeComponent(componentValue) ||
                   isGradientColorSchemeComponent(componentValue)
                 ) {
-                  useNone = !componentValue.value?.useDefault;
+                  useNone = !(
+                    componentValue.value?.useDefault ||
+                    componentValue.preset?.rules?.some(r => r.asDefaultRule)
+                  );
                   return componentValue.preset?.rules?.map(rule =>
                     rule.propertyName || rule.legendName ? rule : undefined,
                   );
@@ -125,24 +128,26 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isConditionalColorSchemeComponent(componentValue) ||
               isGradientColorSchemeComponent(componentValue)
             ) {
-              const ruleId = componentValue.value?.useDefault
-                ? componentValue.value?.currentRuleId ??
-                  (
-                    (componentValue.preset?.rules as unknown[] | undefined)?.find(
-                      r =>
-                        (
-                          r as
-                            | FillColorConditionFieldPresetRule
-                            | FillAndStrokeColorConditionFieldPresetRule
-                            | FillColorGradientFieldPresetRule
-                        ).asDefaultRule,
-                    ) as
-                      | FillColorConditionFieldPresetRule
-                      | FillAndStrokeColorConditionFieldPresetRule
-                      | FillColorGradientFieldPresetRule
-                  ).id ??
-                  componentValue.preset?.rules?.[0]?.id
-                : componentValue.value?.currentRuleId;
+              const ruleId =
+                componentValue.value?.useDefault ||
+                componentValue.preset?.rules?.some(r => r.asDefaultRule)
+                  ? componentValue.value?.currentRuleId ??
+                    (
+                      (componentValue.preset?.rules as unknown[] | undefined)?.find(
+                        r =>
+                          (
+                            r as
+                              | FillColorConditionFieldPresetRule
+                              | FillAndStrokeColorConditionFieldPresetRule
+                              | FillColorGradientFieldPresetRule
+                          ).asDefaultRule,
+                      ) as
+                        | FillColorConditionFieldPresetRule
+                        | FillAndStrokeColorConditionFieldPresetRule
+                        | FillColorGradientFieldPresetRule
+                    ).id ??
+                    componentValue.preset?.rules?.[0]?.id
+                  : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
               }

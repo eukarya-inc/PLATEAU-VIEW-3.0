@@ -100,11 +100,12 @@ export const makeConditionalExpression = (
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
-  const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ??
-      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-      comp.preset?.rules?.[0]?.id
-    : comp.value?.currentRuleId;
+  const currentRuleId =
+    comp.value?.useDefault || comp.preset?.rules?.some(r => r.asDefaultRule)
+      ? comp.value?.currentRuleId ??
+        comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+        comp.preset?.rules?.[0]?.id
+      : comp.value?.currentRuleId;
 
   return {
     expression: {
@@ -151,11 +152,12 @@ export const makeStrokeColorConditionalExpression = (
 ): ExpressionContainer | undefined => {
   if (!comp) return;
 
-  const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ??
-      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-      comp.preset?.rules?.[0]?.id
-    : comp.value?.currentRuleId;
+  const currentRuleId =
+    comp.value?.useDefault || comp.preset?.rules?.some(r => r.asDefaultRule)
+      ? comp.value?.currentRuleId ??
+        comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+        comp.preset?.rules?.[0]?.id
+      : comp.value?.currentRuleId;
 
   return {
     expression: {
@@ -206,11 +208,12 @@ export const makeGradientExpression = (
 
   const preset = comp.preset;
   const value = comp.value;
-  const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ??
-      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
-      comp.preset?.rules?.[0]?.id
-    : comp.value?.currentRuleId;
+  const currentRuleId =
+    comp.value?.useDefault || comp.preset?.rules?.some(r => r.asDefaultRule)
+      ? comp.value?.currentRuleId ??
+        comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+        comp.preset?.rules?.[0]?.id
+      : comp.value?.currentRuleId;
   const rule = preset?.rules?.find(r => r.id === currentRuleId);
 
   const conditions: [string, string][] = [["true", color(DEFAULT_COLOR, opacity)]];
