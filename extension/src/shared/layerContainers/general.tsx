@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
+import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useEffect, useRef } from "react";
 
 import { LayerType } from "../../prototypes/layers";
@@ -7,6 +7,7 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
+import { updateOrderAtom } from "../../prototypes/view-layers";
 import { CameraPosition } from "../../shared/reearth/types";
 import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
@@ -45,6 +46,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
   const [, setCamera] = useAtom(useOptionalPrimitiveAtom(cameraAtom));
+  const updateOrder = useAtomValue(updateOrderAtom);
 
   useScreenSpaceSelectionResponder({
     type: GENERAL_FEATURE,
@@ -96,15 +98,20 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   const theme = useTheme();
 
   const prevIndexRef = useRef<number>();
+  const prevUpdateOrderRef = useRef<number>();
 
   useEffect(() => {
     if (layerId && index !== undefined) {
-      if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
+      if (
+        (prevIndexRef.current !== undefined && index < prevIndexRef.current) ||
+        prevUpdateOrderRef.current !== updateOrder
+      ) {
         window.reearth?.layers?.bringToFront?.(layerId);
       }
       prevIndexRef.current = index;
+      prevUpdateOrderRef.current = updateOrder;
     }
-  }, [index, layerId]);
+  }, [index, layerId, updateOrder]);
 
   if (format === "gtfs") {
     return (
@@ -119,7 +126,13 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   if (format === "mvt") {
     return (
-      <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
+      <MVTLayer
+        {...props}
+        onLoad={handleLoad}
+        appearances={generalAppearances}
+        visible={!hidden}
+        updateOrder={updateOrder}
+      />
     );
   }
 

@@ -21,6 +21,8 @@ import { SketchLayerModel } from "./SketchLayer";
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
 // import { type PedestrianLayerModel } from "./PedestrianLayer";
 
+export const updateOrderAtom = atom(0);
+
 export const pixelRatioAtom = atom(1);
 
 // TODO(ReEarth): Support selected feature
