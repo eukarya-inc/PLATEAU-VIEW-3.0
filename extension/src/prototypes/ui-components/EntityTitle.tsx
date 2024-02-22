@@ -29,7 +29,9 @@ export const EntityTitleIcon = styled("div")(({ theme }) => ({
   },
 }));
 
-export const EntityTitleText = styled(ListItemText)<{ allowWrap?: boolean }>(({ allowWrap }) => ({
+export const EntityTitleText = styled(ListItemText, {
+  shouldForwardProp: prop => prop !== "allowWrap",
+})<{ allowWrap?: boolean }>(({ allowWrap }) => ({
   flexGrow: 1,
   marginTop: 4,
   marginBottom: 4,
