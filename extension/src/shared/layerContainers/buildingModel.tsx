@@ -9,6 +9,7 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
+import { interactionModeAtom } from "../../shared/states/interactionMode";
 import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
@@ -189,6 +190,13 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const enableShadow = !opacity?.value || opacity.value === 1;
 
+  const [interactionMode] = useAtom(interactionModeAtom);
+
+  const disabledSelection = useMemo(() => {
+    const mode = interactionMode.value as unknown;
+    return mode === "default" || mode === "move";
+  }, [interactionMode]);
+
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
       pbr: disableDefaultMaterial ? false : textured ? "withTexture" : false,
@@ -210,6 +218,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
       showWireframe: wireframeView?.value?.wireframe,
+      disabledSelection: disabledSelection,
     }),
     [
       textured,
@@ -222,6 +231,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       clippingBox,
       wireframeView,
       disableDefaultMaterial,
+      disabledSelection,
     ],
   );
 

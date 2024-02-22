@@ -267,6 +267,7 @@ export type BoxAppearance = {
   near?: number;
   far?: number;
   hideInactive?: boolean;
+  disabledSelection?: boolean;
 };
 
 export type TransitionAppearance = {
