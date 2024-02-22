@@ -1,5 +1,7 @@
+import { useAtomValue } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import { updateOrderAtom } from "../../../prototypes/view-layers";
 import { useLayer } from "../hooks";
 import { CameraPosition, LayerAppearanceTypes } from "../types";
 import { Data } from "../types/layer";
@@ -49,7 +51,7 @@ type MVTMeta = Omit<RawMVTMeta, "center" | "bounds"> & {
 
 export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, layers, index }) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
-
+  const updateOrder = useAtomValue(updateOrderAtom);
   useEffect(() => {
     const fetchMVTMeta = async () => {
       const mvtBaseURL = url.match(/(.+)(\/{z}\/{x}\/{y}.mvt)/)?.[1];
@@ -110,18 +112,21 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
   );
 
   const prevIndexRef = useRef<number>();
+  const preUpdateOrder = useRef<number>();
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-      if (index === prevIndexRef.current && visible) {
-        window.reearth?.layers?.sendToBack?.(layerId);
-      }
-      if (layerId && index !== undefined) {
-        if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
+      if (layerId && prevIndexRef.current !== undefined && index !== undefined) {
+        if (
+          index < prevIndexRef.current ||
+          (index < 1 && preUpdateOrder.current !== updateOrder && visible)
+        ) {
           window.reearth?.layers?.bringToFront?.(layerId);
         }
-        prevIndexRef.current = index;
       }
+      prevIndexRef.current = index;
+
+      preUpdateOrder.current = updateOrder;
       onLoad?.(layerId, {
         lng: meta.center[0],
         lat: meta.center[1],
@@ -131,7 +136,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
         roll: 0,
       });
     },
-    [index, meta, onLoad, visible],
+    [index, meta, onLoad, updateOrder, visible],
   );
 
   useLayer({
