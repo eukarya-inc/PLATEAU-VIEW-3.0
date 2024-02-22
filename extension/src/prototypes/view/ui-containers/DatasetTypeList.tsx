@@ -145,9 +145,9 @@ export const DatasetTypeList: FC = () => {
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
       maxheight={gridHeight - searchHeaderHeight}>
-      {filteredDatasetTypeOrder?.map((datasetType, index) => (
+      {filteredDatasetTypeOrder?.map(datasetType => (
         <DatasetTypeItem
-          key={index} // datasetType.code is not unique in this list
+          key={datasetType.id}
           name={datasetType.name}
           datasetType={datasetType.code as PlateauDatasetType}
         />
