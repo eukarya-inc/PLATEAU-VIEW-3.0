@@ -1,11 +1,5 @@
-import { isEqual } from "lodash-es";
-
 import { ComponentTemplate, EmphasisPropertyTemplate, Setting } from "../../shared/api/types";
 
-import { DEFAULT_CAMERA_BLOCK_VALUE } from "./dataset/blocks/CameraBlock";
-import { DEFAULT_DATA_FETCHING_BLOCK_VALUE } from "./dataset/blocks/DataFetchingBlock";
-import { DEFAULT_EVENT_BLOCK_VALUE } from "./dataset/blocks/EventBlock";
-import { DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE } from "./dataset/blocks/FeatureInspectorBasicBlock";
 import { EditorTreeItemType } from "./ui-components";
 
 export const VIRTUAL_ROOT = {
@@ -106,11 +100,9 @@ export function hasBeenEdited(
   if (!setting) return false;
   if (type === "general") {
     return (
-      setting.general?.camera !== DEFAULT_CAMERA_BLOCK_VALUE ||
-      (!!setting.general?.dataFetching &&
-        setting.general?.dataFetching.enabled !== DEFAULT_DATA_FETCHING_BLOCK_VALUE.enabled) ||
-      (!!setting.general?.featureClickEvent &&
-        !isEqual(setting.general?.featureClickEvent, DEFAULT_EVENT_BLOCK_VALUE))
+      !!setting.general?.camera ||
+      !!setting.general?.dataFetching ||
+      !!setting.general?.featureClickEvent
     );
   } else if (type === "fieldComponents") {
     return (
@@ -120,8 +112,7 @@ export function hasBeenEdited(
     );
   } else if (type === "featureInspector") {
     return (
-      (!!setting.featureInspector?.basic &&
-        !isEqual(setting.featureInspector?.basic, DEFAULT_FEATURE_INSPECTOR_BASIC_BLOCK_VALUE)) ||
+      !!setting.featureInspector?.basic ||
       (setting.featureInspector?.emphasisProperty?.useTemplate &&
         setting.featureInspector?.emphasisProperty?.templateId) ||
       (!setting.featureInspector?.emphasisProperty?.useTemplate &&

@@ -1,4 +1,5 @@
 import { PrimitiveAtom, WritableAtom, atom } from "jotai";
+import { merge } from "lodash-es";
 import invariant from "tiny-invariant";
 
 import { LayerModel, LayerType } from "../../prototypes/layers";
@@ -120,11 +121,27 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
   const hasGroups = fieldComponents?.groups?.some(g => !!g.components.length);
   const hasTemplate = fieldComponents?.useTemplate && !!fieldComponents.templateId;
 
-  return {
-    ...defaultSetting,
-    ...setting,
+  const emphasisProperty = setting?.featureInspector?.emphasisProperty;
+  const hasEmphasisProperty =
+    !emphasisProperty?.useTemplate && emphasisProperty?.properties?.length;
+  const hasEmphasisPropertyTemplate =
+    emphasisProperty?.useTemplate && !!emphasisProperty?.templateId;
+
+  const mergedSetting = merge({}, defaultSetting, setting, {
+    featureInspector: {
+      emphasisProperty:
+        hasEmphasisProperty || hasEmphasisPropertyTemplate
+          ? emphasisProperty
+          : defaultSetting?.featureInspector?.emphasisProperty,
+    },
     fieldComponents: hasGroups || hasTemplate ? fieldComponents : defaultSetting?.fieldComponents,
-  } as Setting | undefined;
+  });
+
+  console.log("defaultSetting", defaultSetting);
+  console.log("setting", setting);
+  console.log("mergedSetting", mergedSetting);
+
+  return mergedSetting as Setting | undefined;
 };
 
 const findComponentTemplate = (

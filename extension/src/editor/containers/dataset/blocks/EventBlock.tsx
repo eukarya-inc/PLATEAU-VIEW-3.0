@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
+import { FeatureClickEventType, FeatureClickUrlType } from "../../../../shared/api/types";
 import {
   BlockContentWrapper,
   EditorBlock,
@@ -9,24 +10,14 @@ import {
   EditorTextField,
 } from "../../ui-components";
 
-export const DEFAULT_EVENT_BLOCK_VALUE: {
-  eventType: "openFeatureInspector" | "openNewTab";
-  urlType: "manual" | "fromData";
-  websiteURL: string;
-  fieldName: string;
-} = {
-  eventType: "openFeatureInspector",
-  urlType: "manual",
-  websiteURL: "",
-  fieldName: "",
-};
+type FeatureClickEventTypeOption = Exclude<FeatureClickEventType, undefined> | "inherit";
+type FeatureClickUrlTypeOption = Exclude<FeatureClickUrlType, undefined> | "inherit";
 
-export type EventBlockProps = EditorBlockProps & {
-  setting?: DraftSetting;
-  updateSetting?: UpdateSetting;
-};
-
-const eventTypeOptions = [
+const eventTypeOptions: { label: string; value: FeatureClickEventTypeOption }[] = [
+  {
+    label: "Inherit",
+    value: "inherit",
+  },
   {
     label: "Open feature inspector",
     value: "openFeatureInspector",
@@ -37,7 +28,11 @@ const eventTypeOptions = [
   },
 ];
 
-const urlTypeOptions = [
+const urlTypeOptions: { label: string; value: FeatureClickUrlTypeOption }[] = [
+  {
+    label: "Inherit",
+    value: "inherit",
+  },
   {
     label: "Manual",
     value: "manual",
@@ -48,31 +43,29 @@ const urlTypeOptions = [
   },
 ];
 
-export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, ...props }) => {
-  const [eventType, setEventType] = useState(
-    setting?.general?.featureClickEvent?.eventType ?? DEFAULT_EVENT_BLOCK_VALUE.eventType,
-  );
+export type EventBlockProps = EditorBlockProps & {
+  setting?: DraftSetting;
+  updateSetting?: UpdateSetting;
+};
 
-  const [urlType, setUrlType] = useState(
-    setting?.general?.featureClickEvent?.urlType ?? DEFAULT_EVENT_BLOCK_VALUE.urlType,
+export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, ...props }) => {
+  const [eventType, setEventType] = useState<FeatureClickEventTypeOption>(
+    setting?.general?.featureClickEvent?.eventType ?? "inherit",
+  );
+  const [urlType, setUrlType] = useState<FeatureClickUrlTypeOption>(
+    setting?.general?.featureClickEvent?.urlType ?? "inherit",
   );
   const [websiteURL, setWebsiteURL] = useState(
-    setting?.general?.featureClickEvent?.websiteURL ?? DEFAULT_EVENT_BLOCK_VALUE.websiteURL,
+    setting?.general?.featureClickEvent?.websiteURL ?? "",
   );
-  const [fieldName, setFieldName] = useState(
-    setting?.general?.featureClickEvent?.fieldName ?? DEFAULT_EVENT_BLOCK_VALUE.fieldName,
-  );
+  const [fieldName, setFieldName] = useState(setting?.general?.featureClickEvent?.fieldName ?? "");
 
   const handleEventTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "openFeatureInspector" || e.target.value === "openNewTab") {
-      setEventType(e.target.value);
-    }
+    setEventType(e.target.value as FeatureClickEventTypeOption);
   }, []);
 
   const handleUrlTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "manual" || e.target.value === "fromData") {
-      setUrlType(e.target.value);
-    }
+    setUrlType(e.target.value as FeatureClickUrlTypeOption);
   }, []);
 
   const handleWebsiteUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,19 +83,38 @@ export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, 
         ...s,
         general: {
           ...s?.general,
-          featureClickEvent: {
-            eventType,
-            urlType,
-            websiteURL,
-            fieldName,
-          },
+          featureClickEvent:
+            eventType !== "inherit" || urlType !== "inherit" || websiteURL || fieldName
+              ? {
+                  eventType: eventType !== "inherit" ? eventType : undefined,
+                  urlType: urlType !== "inherit" ? urlType : undefined,
+                  websiteURL: websiteURL ? websiteURL : undefined,
+                  fieldName: fieldName ? fieldName : undefined,
+                }
+              : undefined,
         },
       };
     });
   }, [eventType, urlType, websiteURL, fieldName, updateSetting]);
 
+  const clearBlock = useCallback(() => {
+    setEventType("inherit");
+    setUrlType("inherit");
+    setWebsiteURL("");
+    setFieldName("");
+  }, []);
+
+  const actions = useMemo(() => {
+    return [
+      {
+        label: "Clear",
+        onClick: clearBlock,
+      },
+    ];
+  }, [clearBlock]);
+
   return (
-    <EditorBlock title="Event" expandable {...props}>
+    <EditorBlock title="Event" expandable actions={actions} {...props}>
       <BlockContentWrapper>
         <EditorSelect
           label="Feature Click Event Type"
