@@ -137,10 +137,6 @@ const findSetting = (settings: Setting[], currentDataId: string | undefined) => 
     fieldComponents: hasGroups || hasTemplate ? fieldComponents : defaultSetting?.fieldComponents,
   });
 
-  console.log("defaultSetting", defaultSetting);
-  console.log("setting", setting);
-  console.log("mergedSetting", mergedSetting);
-
   return mergedSetting as Setting | undefined;
 };
 

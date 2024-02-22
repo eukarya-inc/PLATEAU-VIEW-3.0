@@ -1,5 +1,5 @@
 import { InputAdornment } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
 import { DataFetchingEnableType } from "../../../../shared/api/types";
@@ -75,8 +75,22 @@ export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
     });
   }, [enabled, timeInterval, updateSetting]);
 
+  const clearBlock = useCallback(() => {
+    setEnabled("inherit");
+    setTimeInterval("");
+  }, []);
+
+  const actions = useMemo(() => {
+    return [
+      {
+        label: "Clear",
+        onClick: clearBlock,
+      },
+    ];
+  }, [clearBlock]);
+
   return (
-    <EditorBlock title="Data Fetching" expandable {...props}>
+    <EditorBlock title="Data Fetching" actions={actions} expandable {...props}>
       <BlockContentWrapper>
         <EditorSelect
           label="Enable realtime data fetching"
@@ -84,7 +98,7 @@ export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
           options={dataFetchingEnableTypeOptions}
           onChange={handleEnabledChange}
         />
-        {enabled && (
+        {enabled === "true" && (
           <EditorTextField
             label="Time Interval"
             value={timeInterval}

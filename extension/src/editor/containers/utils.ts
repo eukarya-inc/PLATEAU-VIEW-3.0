@@ -102,7 +102,8 @@ export function hasBeenEdited(
     return (
       !!setting.general?.camera ||
       !!setting.general?.dataFetching ||
-      !!setting.general?.featureClickEvent
+      !!setting.general?.featureClickEvent ||
+      !!setting.general?.initialLayer
     );
   } else if (type === "fieldComponents") {
     return (

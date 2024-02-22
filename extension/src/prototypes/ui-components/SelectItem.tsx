@@ -30,7 +30,7 @@ const StyledMenuItem = styled(MenuItem, {
     },
   },
   minHeight: "auto",
-  maxWidth: 320,
+  maxWidth: 340,
 }));
 
 export const SelectItem = forwardRef<

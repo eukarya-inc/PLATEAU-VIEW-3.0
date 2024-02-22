@@ -62,10 +62,19 @@ export const EventBlock: React.FC<EventBlockProps> = ({ setting, updateSetting, 
 
   const handleEventTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setEventType(e.target.value as FeatureClickEventTypeOption);
+    if (e.target.value === "inherit") {
+      setUrlType("inherit");
+      setWebsiteURL("");
+      setFieldName("");
+    }
   }, []);
 
   const handleUrlTypeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setUrlType(e.target.value as FeatureClickUrlTypeOption);
+    if (e.target.value === "inherit") {
+      setWebsiteURL("");
+      setFieldName("");
+    }
   }, []);
 
   const handleWebsiteUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
