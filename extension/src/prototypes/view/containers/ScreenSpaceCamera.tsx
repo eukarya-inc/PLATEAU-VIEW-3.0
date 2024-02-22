@@ -67,9 +67,14 @@ export const ScreenSpaceCamera = ({
 
   const cb = useCallback(() => {
     const cameraPotion = window?.reearth?.camera?.position;
-    const checkNegToPi = window.reearth?.scene?.negatuvePiToPi(cameraPotion?.roll);
+    const negativePiToPi = window.reearth?.scene?.negativePiToPi(cameraPotion?.roll);
+    console.log(negativePiToPi);
     if (!cameraPotion || !useKeyboard) return;
-    if (checkNegToPi) window.reearth?.camera?.keyboardCameraRotate();
+    if (typeof negativePiToPi !== "undefined") {
+      if (Math.abs(negativePiToPi) > Math.PI / 86400) {
+        window.reearth?.camera?.rollCameraHorizontal();
+      }
+    }
   }, [useKeyboard]);
 
   const { start, stop } = useFrame(cb);

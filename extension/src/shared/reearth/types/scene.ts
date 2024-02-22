@@ -161,7 +161,7 @@ export type Scene = {
     z: number,
     options?: { useGlobeEllipsoid?: boolean },
   ) => [lng: number, lat: number, height: number] | undefined;
-  readonly negatuvePiToPi: (angle: number | undefined) => void;
+  readonly negativePiToPi: (angle: number | undefined) => void;
   readonly convertScreenToPositionOffset: (
     rawPosition: [x: number, y: number, z: number],
     screenOffset: [x: number, y: number],
