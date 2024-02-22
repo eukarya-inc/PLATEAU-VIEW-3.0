@@ -93,7 +93,7 @@ const MunicipalityItem: FC<{
   }
   return (
     <DatasetTreeItem
-      nodeId={municipality.code}
+      nodeId={municipality.id}
       label={joinPath([...parents, municipality.name])}
       loading={query.loading}>
       {groups?.map(({ groupId, datasets }) => {
@@ -110,12 +110,13 @@ const PrefectureItem: FC<{
   const query = useAreas({
     parentCode: prefecture.code,
   });
-  if (query.data?.areas.length === 1) {
-    return <MunicipalityItem municipality={query.data.areas[0]} parents={[prefecture.name]} />;
+  const areas = useMemo(() => query.data?.areas.filter(a => a.code.length !== 2) ?? [], [query]);
+  if (areas.length === 1) {
+    return <MunicipalityItem municipality={areas[0]} parents={[prefecture.name]} />;
   }
   return (
     <DatasetTreeItem nodeId={prefecture.code} label={prefecture.name} loading={query.loading}>
-      {query.data?.areas.map(municipality => (
+      {areas.map(municipality => (
         <MunicipalityItem key={municipality.code} municipality={municipality} />
       ))}
     </DatasetTreeItem>
