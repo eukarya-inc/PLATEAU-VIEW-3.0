@@ -2,6 +2,7 @@ import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useState, useMemo, useCallback, useEffect, ReactElement } from "react";
 
 import { BasicFieldProps } from "..";
+import { SettingComponent } from "../../../../../../shared/api/types";
 import { generateID } from "../../../../../../shared/utils/id";
 import {
   PropertyBox,
@@ -20,6 +21,7 @@ export type FillColorConditionFieldPresetRule = {
   id: string;
   propertyName?: string;
   legendName?: string;
+  asDefaultRule?: boolean;
   conditions?: FillColorConditionFieldPresetRuleCondition[];
 };
 
@@ -226,7 +228,14 @@ export const EditorFillColorConditionField = ({
             onRemove={handleRuleRemove}
             onSelect={handleRuleSelect}
             mainPanel={<RuleMainPanel rule={rule} onRuleUpdate={handleRuleUpdate} />}
-            legendPanel={<RuleLegendPanel rule={rule} onRuleUpdate={handleRuleUpdate} />}
+            legendPanel={
+              <RuleLegendPanel
+                rule={rule}
+                onRuleUpdate={handleRuleUpdate}
+                component={component}
+                onUpdate={onUpdate}
+              />
+            }
           />
         ))}
         <PropertyButton onClick={handleRuleCreate}>
@@ -267,6 +276,8 @@ export const EditorFillColorConditionField = ({
 type RulePanelProps = {
   rule: FillColorConditionFieldPresetRule;
   onRuleUpdate: (rule: FillColorConditionFieldPresetRule) => void;
+  component?: SettingComponent<SupportedFieldTypes>;
+  onUpdate?: (component: SettingComponent<SupportedFieldTypes>) => void;
 };
 
 const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
@@ -289,7 +300,7 @@ const RuleMainPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
   );
 };
 
-const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
+const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate, component, onUpdate }) => {
   const handleLegendNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onRuleUpdate({
@@ -300,12 +311,45 @@ const RuleLegendPanel: React.FC<RulePanelProps> = ({ rule, onRuleUpdate }) => {
     [rule, onRuleUpdate],
   );
 
+  const handleAsDefaultRuleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!component?.id) return;
+      onUpdate?.({
+        ...component,
+        preset: {
+          ...component?.preset,
+          rules: component.preset?.rules?.map(r =>
+            r.id === rule.id
+              ? {
+                  ...r,
+                  asDefaultRule: !!e.target.checked,
+                }
+              : e.target.checked
+              ? {
+                  ...r,
+                  asDefaultRule: false,
+                }
+              : r,
+          ),
+        },
+      });
+    },
+    [rule, component, onUpdate],
+  );
+
   return (
-    <PropertyInputField
-      placeholder="Rule Name"
-      value={rule.legendName ?? ""}
-      onChange={handleLegendNameChange}
-    />
+    <>
+      <PropertyInputField
+        placeholder="Rule Name"
+        value={rule.legendName ?? ""}
+        onChange={handleLegendNameChange}
+      />
+      <PropertySwitch
+        label="As Default"
+        checked={rule.asDefaultRule}
+        onChange={handleAsDefaultRuleChange}
+      />
+    </>
   );
 };
 

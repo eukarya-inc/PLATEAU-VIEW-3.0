@@ -23,6 +23,11 @@ import {
   makeColorSchemeForComponent,
 } from "../state/colorSchemeForComponent";
 
+type FillColorConditionFieldPresetRuleBasic = {
+  id: string;
+  asDefaultRule?: boolean;
+};
+
 const StyledButton = styled(Button)(({ theme }) => ({
   ...theme.typography.body2,
   display: "block",
@@ -91,7 +96,10 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
                   isConditionalColorSchemeComponent(componentValue) ||
                   isGradientColorSchemeComponent(componentValue)
                 ) {
-                  useNone = !componentValue.value?.useDefault;
+                  useNone = !(
+                    componentValue.value?.useDefault ||
+                    componentValue.preset?.rules?.some(r => r.asDefaultRule)
+                  );
                   return componentValue.preset?.rules?.map(rule =>
                     rule.propertyName || rule.legendName ? rule : undefined,
                   );
@@ -122,9 +130,17 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isConditionalColorSchemeComponent(componentValue) ||
               isGradientColorSchemeComponent(componentValue)
             ) {
-              const ruleId = componentValue.value?.useDefault
-                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0]?.id
-                : componentValue.value?.currentRuleId;
+              const ruleId =
+                componentValue.value?.useDefault ||
+                componentValue.preset?.rules?.some(r => r.asDefaultRule)
+                  ? componentValue.value?.currentRuleId ??
+                    (
+                      componentValue.preset?.rules as
+                        | FillColorConditionFieldPresetRuleBasic[]
+                        | undefined
+                    )?.find(r => !!r.asDefaultRule)?.id ??
+                    componentValue.preset?.rules?.[0]?.id
+                  : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
               }
