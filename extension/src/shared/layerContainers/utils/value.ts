@@ -101,7 +101,9 @@ export const makeConditionalExpression = (
   if (!comp) return;
 
   const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0]?.id
+    ? comp.value?.currentRuleId ??
+      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+      comp.preset?.rules?.[0]?.id
     : comp.value?.currentRuleId;
 
   return {
@@ -150,7 +152,9 @@ export const makeStrokeColorConditionalExpression = (
   if (!comp) return;
 
   const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0]?.id
+    ? comp.value?.currentRuleId ??
+      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+      comp.preset?.rules?.[0]?.id
     : comp.value?.currentRuleId;
 
   return {
@@ -203,7 +207,9 @@ export const makeGradientExpression = (
   const preset = comp.preset;
   const value = comp.value;
   const currentRuleId = comp.value?.useDefault
-    ? comp.value?.currentRuleId ?? comp.preset?.rules?.[0]?.id
+    ? comp.value?.currentRuleId ??
+      comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+      comp.preset?.rules?.[0]?.id
     : comp.value?.currentRuleId;
   const rule = preset?.rules?.find(r => r.id === currentRuleId);
 
@@ -305,7 +311,9 @@ export const makeVisibilityFilterExpression = (
     | undefined,
 ): ExpressionContainer | undefined => {
   const rule =
-    comp?.preset?.rules?.find(rule => rule.id === comp.value) ?? comp?.preset?.rules?.[0];
+    comp?.preset?.rules?.find(rule => rule.id === comp.value) ??
+    comp?.preset?.rules?.find(rule => rule.asDefaultRule) ??
+    comp?.preset?.rules?.[0];
   const property = rule?.propertyName;
 
   if (!rule?.conditions || !property) return;
@@ -338,7 +346,10 @@ export const makeConditionalImageExpression = (
   comp: Component<typeof POINT_USE_IMAGE_CONDITION_FIELD> | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
-  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0]?.id;
+  const currentRuleId =
+    comp.value?.currentRuleId ??
+    comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+    comp.preset?.rules?.[0]?.id;
   return {
     expression: {
       conditions: [
@@ -382,7 +393,10 @@ export const makeConditionalImageColorExpression = (
   opacity: number | undefined,
 ): ExpressionContainer | undefined => {
   if (!comp) return;
-  const currentRuleId = comp.value?.currentRuleId ?? comp.preset?.rules?.[0]?.id;
+  const currentRuleId =
+    comp.value?.currentRuleId ??
+    comp.preset?.rules?.find(r => r.asDefaultRule)?.id ??
+    comp.preset?.rules?.[0]?.id;
   return {
     expression: {
       conditions: [

@@ -2,6 +2,9 @@ import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC, useState, SetStateAction } from "react";
 
+import type { FillAndStrokeColorConditionFieldPresetRule } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillAndStrokeColorConditionField";
+import type { FillColorConditionFieldPresetRule } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
+import type { FillColorGradientFieldPresetRule } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import {
   ColorMapParameterItem,
@@ -123,7 +126,22 @@ export const ColorSchemeSectionForComponentField: FC<ColorSchemeSectionForCompon
               isGradientColorSchemeComponent(componentValue)
             ) {
               const ruleId = componentValue.value?.useDefault
-                ? componentValue.value?.currentRuleId ?? componentValue.preset?.rules?.[0]?.id
+                ? componentValue.value?.currentRuleId ??
+                  (
+                    (componentValue.preset?.rules as unknown[] | undefined)?.find(
+                      r =>
+                        (
+                          r as
+                            | FillColorConditionFieldPresetRule
+                            | FillAndStrokeColorConditionFieldPresetRule
+                            | FillColorGradientFieldPresetRule
+                        ).asDefaultRule,
+                    ) as
+                      | FillColorConditionFieldPresetRule
+                      | FillAndStrokeColorConditionFieldPresetRule
+                      | FillColorGradientFieldPresetRule
+                  ).id ??
+                  componentValue.preset?.rules?.[0]?.id
                 : componentValue.value?.currentRuleId;
               if (ruleId) {
                 return ruleId;
