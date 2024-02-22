@@ -9,6 +9,7 @@ import {
 } from "../../prototypes/screen-space-selection";
 import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
+import { interactionModeAtom } from "../../shared/states/interactionMode";
 import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
@@ -19,6 +20,7 @@ import {
   TILESET_BUILDING_MODEL_FILTER,
   TILESET_CLIPPING,
   TILESET_WIREFRAME,
+  TILESET_DISABLE_DEFAULT_MATERIAL,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { SearchedFeatures } from "../view-layers";
@@ -134,6 +136,11 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   );
   const wireframeAtom = useFindComponent(componentAtoms, TILESET_WIREFRAME);
 
+  const disableDefaultMaterialAtom = useFindComponent(
+    componentAtoms,
+    TILESET_DISABLE_DEFAULT_MATERIAL,
+  );
+
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
   const hiddenFeaturesConditions: ConditionsExpression = {
     conditions: [[`${JSON.stringify(hiddenFeatures)}` + "== ${gml_id}", "false"]],
@@ -168,6 +175,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const opacity = useOptionalAtomValue(opacityAtom);
   const wireframeView = useOptionalAtomValue(wireframeAtom);
+  const disableDefaultMaterial = useOptionalAtomValue(disableDefaultMaterialAtom);
 
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
@@ -182,9 +190,16 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const enableShadow = !opacity?.value || opacity.value === 1;
 
+  const [interactionMode] = useAtom(interactionModeAtom);
+
+  const disabledSelection = useMemo(() => {
+    const mode = interactionMode.value as unknown;
+    return mode === "default" || mode === "move";
+  }, [interactionMode]);
+
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
-      pbr: textured ? "withTexture" : false,
+      pbr: disableDefaultMaterial ? false : textured ? "withTexture" : false,
       ...(color
         ? {
             color: {
@@ -203,6 +218,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: clippingBox,
       showWireframe: wireframeView?.value?.wireframe,
+      disabledSelection: disabledSelection,
     }),
     [
       textured,
@@ -214,6 +230,8 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       theme.palette.primary.main,
       clippingBox,
       wireframeView,
+      disableDefaultMaterial,
+      disabledSelection,
     ],
   );
 

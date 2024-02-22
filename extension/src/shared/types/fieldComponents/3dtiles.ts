@@ -84,6 +84,11 @@ export type TilesetWireframeField = FieldBase<{
   };
 }>;
 
+export const TILESET_DISABLE_DEFAULT_MATERIAL = "TILESET_DISABLE_DEFAULT_MATERIAL";
+export type TileSetDefaultMaterialField = FieldBase<{
+  type: typeof TILESET_DISABLE_DEFAULT_MATERIAL;
+}>;
+
 export type TilesetFields =
   | TilesetBuildingModelColorField
   | TilesetFloodModelColorField
@@ -93,4 +98,5 @@ export type TilesetFields =
   | TilesetClippingField
   | TilesetBuildingModelFilterField
   | TilesetFloodModelFilterField
-  | TilesetWireframeField;
+  | TilesetWireframeField
+  | TileSetDefaultMaterialField;

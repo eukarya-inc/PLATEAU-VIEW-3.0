@@ -1,11 +1,35 @@
+import MonacoEditor from "@monaco-editor/react";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import OpenInFullIcon from "@mui/icons-material/OpenInFull";
 import { styled, svgIconClasses } from "@mui/material";
-import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { BasicFieldProps } from "..";
-import { PropertyBox, PropertyWrapper } from "../../../../ui-components";
+import {
+  EditorDialog,
+  PropertyBox,
+  PropertyInlineWrapper,
+  PropertySwitchField,
+  PropertyWrapper,
+} from "../../../../ui-components";
+
+const options = {
+  bracketPairColorization: {
+    enabled: true,
+  },
+  automaticLayout: true,
+  minimap: {
+    enabled: false,
+  },
+  selectOnLineNumbers: true,
+  fontSize: 12,
+};
+
+export type StyleCodeFieldPreset = {
+  code?: string;
+  enableTransparencySlider?: boolean;
+};
 
 export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">> = ({
   component,
@@ -24,7 +48,7 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
   }, [code]);
 
   const handleCodeChange = useCallback(
-    (code: string) => {
+    (code: string | undefined) => {
       onUpdate({
         ...component,
         preset: {
@@ -36,49 +60,122 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
     [component, onUpdate],
   );
 
+  const handleEnableTransparencySliderChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onUpdate({
+        ...component,
+        preset: {
+          ...component.preset,
+          enableTransparencySlider: !!e.target.checked,
+        },
+      });
+    },
+    [component, onUpdate],
+  );
+
+  const [fullsizeEditorOpen, setFullsizeEditorOpen] = useState(false);
+  const openFullsizeEditor = useCallback(() => {
+    setEditorCode(code);
+    setFullsizeEditorOpen(true);
+  }, [code]);
+  const closeFullsizeEditor = useCallback(() => {
+    setFullsizeEditorOpen(false);
+  }, []);
+
+  const [editorCode, setEditorCode] = useState<string | undefined>(code);
+  useEffect(() => {
+    setEditorCode(code);
+  }, [code]);
+  const handleEditorCodeChange = useCallback(
+    (code: string | undefined) => {
+      setEditorCode(code);
+    },
+    [setEditorCode],
+  );
+  const submitEditorCode = useCallback(() => {
+    handleCodeChange(editorCode);
+    closeFullsizeEditor();
+  }, [handleCodeChange, editorCode, closeFullsizeEditor]);
+
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <CodeEditor
-          value={code}
-          language="json"
-          placeholder="Style JSON here."
-          onChange={evn => handleCodeChange(evn.target.value)}
-          padding={10}
-          data-color-mode="light"
-          minHeight={200}
-          style={{
-            fontSize: 12,
-            lineHeight: 1.25,
-            backgroundColor: "#fff",
-            fontFamily:
-              "ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace",
-          }}
-        />
-        <ValidTip valid={codeValid ? 1 : 0}>
-          {codeValid ? <CheckOutlinedIcon /> : <ErrorOutlineOutlinedIcon />}JSON
-        </ValidTip>
+        <CodeEditorWrapper>
+          <StyledMonacoEditor
+            language="json"
+            value={code}
+            options={options}
+            onChange={handleCodeChange}
+          />
+        </CodeEditorWrapper>
+        <PropertyInlineWrapper label="">
+          <Tools>
+            <Tool valid={codeValid ? 1 : 0}>
+              {codeValid ? <CheckOutlinedIcon /> : <ErrorOutlineOutlinedIcon />}JSON
+            </Tool>
+            <Tool valid={1} clickable={1} onClick={openFullsizeEditor}>
+              <OpenInFullIcon />
+            </Tool>
+          </Tools>
+        </PropertyInlineWrapper>
+        <PropertyInlineWrapper label="Transparency Bar">
+          <PropertySwitchField
+            checked={!!component.preset?.enableTransparencySlider}
+            onChange={handleEnableTransparencySliderChange}
+          />
+        </PropertyInlineWrapper>
       </PropertyBox>
+      <EditorDialog
+        title="Style code editor"
+        open={fullsizeEditorOpen}
+        fullWidth
+        onClose={closeFullsizeEditor}
+        onSubmit={submitEditorCode}>
+        <MonacoEditor
+          language="json"
+          height={"80vh"}
+          value={editorCode}
+          options={options}
+          onChange={handleEditorCodeChange}
+        />
+      </EditorDialog>
     </PropertyWrapper>
   );
 };
 
-const ValidTip = styled("div")<{ valid: number }>(({ valid, theme }) => ({
-  position: "absolute",
-  bottom: theme.spacing(0.5),
-  right: theme.spacing(0.5),
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#fff",
-  fontSize: "11px",
-  padding: theme.spacing(0.2, 0.5),
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: valid ? theme.palette.success.light : theme.palette.error.light,
-  opacity: 0.5,
+const CodeEditorWrapper = styled("div")({
+  position: "relative",
+  height: 200,
+  width: "100%",
+});
 
-  [`& .${svgIconClasses.root}`]: {
-    fontSize: 16,
-    marginRight: theme.spacing(0.5),
-  },
+const Tools = styled("div")(({ theme }) => ({
+  display: "flex",
+  gap: theme.spacing(0.5),
+  alignItems: "center",
+  justifyContent: "flex-end",
+}));
+
+const Tool = styled("div")<{ valid: number; clickable?: number }>(
+  ({ valid, clickable, theme }) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: theme.spacing(0.5),
+    color: "#fff",
+    fontSize: "11px",
+    padding: theme.spacing(0.2, 0.5),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: valid ? theme.palette.success.light : theme.palette.error.light,
+    opacity: 0.5,
+    cursor: clickable ? "pointer" : "default",
+
+    [`& .${svgIconClasses.root}`]: {
+      fontSize: 16,
+    },
+  }),
+);
+
+const StyledMonacoEditor = styled(MonacoEditor)(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
 }));

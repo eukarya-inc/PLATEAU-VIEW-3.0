@@ -7,11 +7,11 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
+import { CameraPosition } from "../../shared/reearth/types";
 import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
 import { MVTLayer } from "../reearth/layers/mvt";
 import { WMSLayer } from "../reearth/layers/wms";
-import { CameraPosition } from "../reearth/types";
 import { Properties } from "../reearth/utils";
 import { ComponentAtom } from "../view-layers/component";
 
