@@ -20,6 +20,9 @@ export type GeneralSetting = {
     websiteURL?: string | undefined;
     fieldName?: string | undefined;
   };
+  initialLayer?: {
+    isInitialLayer?: boolean;
+  };
 };
 
 export type Setting = {

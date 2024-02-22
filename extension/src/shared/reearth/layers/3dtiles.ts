@@ -1,8 +1,12 @@
 import { FC, useMemo } from "react";
 
+import {
+  BoxAppearance,
+  Cesium3DTilesAppearance,
+  LayerAppearance,
+} from "../../../shared/reearth/types";
 import { TileFeatureIndex } from "../../plateau";
 import { useLayer } from "../hooks";
-import { BoxAppearance, Cesium3DTilesAppearance, LayerAppearance } from "../types";
 import { Data } from "../types/layer";
 
 export const TILESET_FEATURE = "TILESET_FEATURE";

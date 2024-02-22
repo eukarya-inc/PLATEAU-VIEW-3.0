@@ -1,9 +1,9 @@
-export type WidgetProps<DefaultProperty, AppearanceProperty> = {
+export type WidgetProps<DefaultProperty, OptionalProperty> = {
   inEditor: boolean;
   widget: {
     property: {
       default: DefaultProperty;
-      appearance?: AppearanceProperty;
+      optional?: OptionalProperty;
     };
   };
 };

@@ -58,11 +58,6 @@ const yml = {
                 title: "Admin用データカタログURL",
               },
               {
-                id: "catalogProjectName",
-                type: "string",
-                title: "データカタログのプロジェクト名",
-              },
-              {
                 id: "geoURL",
                 type: "string",
                 title: "GeoサーバーバックエンドURL",
@@ -95,9 +90,20 @@ const yml = {
             ],
           },
           {
-            id: "appearance",
-            title: "外観",
+            id: "optional",
+            title: "任意設定",
             fields: [
+              {
+                id: "cityName",
+                type: "string",
+                title: "都市名",
+              },
+              {
+                id: "primaryColor",
+                type: "string",
+                ui: "color",
+                title: "プライマリカラー",
+              },
               {
                 id: "logo",
                 type: "url",
@@ -105,10 +111,14 @@ const yml = {
                 title: "ロゴ",
               },
               {
-                id: "primaryColor",
+                id: "siteUrl",
                 type: "string",
-                ui: "color",
-                title: "プライマリカラー",
+                title: "サイトURL",
+              },
+              {
+                id: "pedestrian",
+                type: "camera",
+                title: "歩行者視点",
               },
             ],
           },
