@@ -22,7 +22,7 @@ export const DatasetGroup: FC<{
   invariant(datasets.length > 0);
   if (datasets.length > 1) {
     return (
-      <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name}>
+      <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
         {datasets.map(dataset => (
           <DatasetListItem
             key={dataset.id}
@@ -95,7 +95,8 @@ const MunicipalityItem: FC<{
     <DatasetTreeItem
       nodeId={municipality.id}
       label={joinPath([...parents, municipality.name])}
-      loading={query.loading}>
+      loading={query.loading}
+      disabled={!groups?.length}>
       {groups?.map(({ groupId, datasets }) => {
         invariant(query.data?.area?.code != null);
         return <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />;
@@ -115,7 +116,11 @@ const PrefectureItem: FC<{
     return <MunicipalityItem municipality={areas[0]} parents={[prefecture.name]} />;
   }
   return (
-    <DatasetTreeItem nodeId={prefecture.code} label={prefecture.name} loading={query.loading}>
+    <DatasetTreeItem
+      nodeId={prefecture.code}
+      label={prefecture.name}
+      loading={query.loading}
+      disabled={!areas.length}>
       {areas.map(municipality => (
         <MunicipalityItem key={municipality.code} municipality={municipality} />
       ))}
