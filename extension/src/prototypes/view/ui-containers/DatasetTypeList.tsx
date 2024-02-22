@@ -3,10 +3,9 @@ import { atomWithReset } from "jotai/utils";
 import { unionBy } from "lodash-es";
 import { useCallback, type FC, useContext, useMemo } from "react";
 
-import { useAreaDatasets, useAreas, useDatasetTypes, useDatasets } from "../../../shared/graphql";
+import { useAreaDatasets, useAreas, useDatasetTypes } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
-import { datasetTypeNames } from "../constants/datasetTypeNames";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -34,30 +33,13 @@ const MunicipalityItem: FC<{
     <DatasetTreeItem
       nodeId={`${datasetType}:${municipality.code}`}
       label={joinPath([...parents, municipality.name])}
-      loading={query.loading}>
+      loading={query.loading}
+      disabled={!query.data?.area?.datasets?.length}>
       {query.data?.area?.datasets?.map(dataset => (
         <DatasetListItem
           key={dataset.id}
           municipalityCode={municipality.code}
           dataset={dataset}
-          label={dataset.name}
-        />
-      ))}
-    </DatasetTreeItem>
-  );
-};
-
-const GlobalItem: FC<{}> = () => {
-  const query = useDatasets({
-    includeTypes: ["global"],
-  });
-  return (
-    <DatasetTreeItem nodeId="global" label={datasetTypeNames.global} loading={query.loading}>
-      {query.data?.datasets?.map(dataset => (
-        <DatasetListItem
-          key={dataset.id}
-          dataset={dataset}
-          municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
           label={dataset.name}
         />
       ))}
@@ -86,7 +68,8 @@ const PrefectureItem: FC<{
     <DatasetTreeItem
       nodeId={`${datasetType}:${prefecture.code}`}
       label={prefecture.name}
-      loading={query.loading}>
+      loading={query.loading}
+      disabled={!query.data?.areas.length}>
       {query.data?.areas.map(municipality => (
         <MunicipalityItem
           key={municipality.code}
@@ -107,8 +90,12 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType; name: string }> = (
     includeParents: true,
   });
   return (
-    <DatasetTreeItem nodeId={datasetType} label={name} title={name} loading={query.loading}>
-      {datasetType === PlateauDatasetType.UseCase && <GlobalItem />}
+    <DatasetTreeItem
+      nodeId={datasetType}
+      label={name}
+      title={name}
+      loading={query.loading}
+      disabled={!query.data?.areas.length}>
       {query.data?.areas.map(
         prefecture =>
           prefecture.__typename === "Prefecture" && (
