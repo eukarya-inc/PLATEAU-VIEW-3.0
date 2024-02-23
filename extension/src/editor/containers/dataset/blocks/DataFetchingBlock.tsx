@@ -1,13 +1,13 @@
 import { InputAdornment } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, UpdateSetting } from "..";
+import { DataFetchingEnableType } from "../../../../shared/api/types";
 import {
   BlockContentWrapper,
   EditorBlock,
   EditorBlockProps,
-  EditorCommonField,
-  EditorSwitch,
+  EditorSelect,
   EditorTextField,
 } from "../../ui-components";
 
@@ -16,24 +16,39 @@ type DataFetchingBlockProps = EditorBlockProps & {
   updateSetting?: UpdateSetting;
 };
 
-export const DEFAULT_DATA_FETCHING_BLOCK_VALUE = {
-  enabled: false,
-};
+type DataFetchingEnableTypeOption =
+  | Exclude<DataFetchingEnableType, undefined | boolean>
+  | "inherit"
+  | "true"
+  | "false";
+
+const dataFetchingEnableTypeOptions: { label: string; value: DataFetchingEnableTypeOption }[] = [
+  {
+    label: "Inherit",
+    value: "inherit",
+  },
+  {
+    label: "Enabled",
+    value: "true",
+  },
+  {
+    label: "Disabled",
+    value: "false",
+  },
+];
 
 export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
   setting,
   updateSetting,
   ...props
 }) => {
-  const [enabled, setEnabled] = useState(
-    setting?.general?.dataFetching?.enabled ?? DEFAULT_DATA_FETCHING_BLOCK_VALUE.enabled,
-  );
+  const [enabled, setEnabled] = useState(setting?.general?.dataFetching?.enabled ?? "inherit");
   const [timeInterval, setTimeInterval] = useState<number | string>(
     setting?.general?.dataFetching?.timeInterval ?? "",
   );
 
   const handleEnabledChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setEnabled(e.target.checked);
+    setEnabled(e.target.value);
   }, []);
 
   const handleTimeIntervalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,22 +63,42 @@ export const DataFetchingBlock: React.FC<DataFetchingBlockProps> = ({
         ...s,
         general: {
           ...s?.general,
-          dataFetching: {
-            enabled,
-            timeInterval: timeInterval === "" ? undefined : Number(timeInterval),
-          },
+          dataFetching:
+            enabled !== "inherit"
+              ? {
+                  enabled: enabled === "true" ? true : enabled === "false" ? false : undefined,
+                  timeInterval: timeInterval === "" ? undefined : Number(timeInterval),
+                }
+              : undefined,
         },
       };
     });
   }, [enabled, timeInterval, updateSetting]);
 
+  const clearBlock = useCallback(() => {
+    setEnabled("inherit");
+    setTimeInterval("");
+  }, []);
+
+  const actions = useMemo(() => {
+    return [
+      {
+        label: "Clear",
+        onClick: clearBlock,
+      },
+    ];
+  }, [clearBlock]);
+
   return (
-    <EditorBlock title="Data Fetching" expandable {...props}>
+    <EditorBlock title="Data Fetching" actions={actions} expandable {...props}>
       <BlockContentWrapper>
-        <EditorCommonField label="Enable realtime data fetching" inline>
-          <EditorSwitch checked={enabled} onChange={handleEnabledChange} />
-        </EditorCommonField>
-        {enabled && (
+        <EditorSelect
+          label="Enable realtime data fetching"
+          value={enabled}
+          options={dataFetchingEnableTypeOptions}
+          onChange={handleEnabledChange}
+        />
+        {enabled === "true" && (
           <EditorTextField
             label="Time Interval"
             value={timeInterval}

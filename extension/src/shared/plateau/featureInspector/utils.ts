@@ -47,7 +47,8 @@ export const makePropertyForFeatureInspector = ({
   builtin?: boolean;
 }) => {
   const shouldUseSettingProperty =
-    (!builtin && featureInspector?.basic?.displayType === "auto") ||
+    (!builtin &&
+      (featureInspector?.basic?.displayType === "auto" || !featureInspector?.basic?.displayType)) ||
     featureInspector?.basic?.displayType === "propertyList";
 
   const convertedFeatureInspectorProperties = shouldUseSettingProperty

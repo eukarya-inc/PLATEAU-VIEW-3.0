@@ -1,3 +1,5 @@
+import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
+
 import { CameraBlock } from "./blocks/CameraBlock";
 import { DataBlock } from "./blocks/DataBlock";
 import { DataFetchingBlock } from "./blocks/DataFetchingBlock";
@@ -41,11 +43,13 @@ export const GeneralPage: React.FC<GeneralPageProps> = ({
         setting={setting}
         updateSetting={updateSetting}
       />
-      <InitialLayerBlock
-        key={`${setting.datasetId}-${setting.dataId}-initial-layer`}
-        setting={setting}
-        updateSetting={updateSetting}
-      />
+      {setting.dataId !== DEFAULT_SETTING_DATA_ID && (
+        <InitialLayerBlock
+          key={`${setting.datasetId}-${setting.dataId}-initial-layer`}
+          setting={setting}
+          updateSetting={updateSetting}
+        />
+      )}
     </>
   );
 };
