@@ -2,6 +2,7 @@ import { useAtomValue } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { updateOrderAtom } from "../../../prototypes/view-layers";
+import { layerItemProps } from "../../layerContainers/general";
 import { useLayer } from "../hooks";
 import { CameraPosition, LayerAppearanceTypes } from "../types";
 import { Data } from "../types/layer";
@@ -16,7 +17,7 @@ export type MVTProps = {
   visible?: boolean;
   appearances?: MVTAppearances;
   layers?: string[];
-  index?: number;
+  smallIndexMvtLayer?: layerItemProps;
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -49,7 +50,14 @@ type MVTMeta = Omit<RawMVTMeta, "center" | "bounds"> & {
   bounds: [x: number, y: number, z: number];
 };
 
-export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, layers, index }) => {
+export const MVTLayer: FC<MVTProps> = ({
+  url,
+  onLoad,
+  visible,
+  appearances,
+  layers,
+  smallIndexMvtLayer,
+}) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
   const updateOrder = useAtomValue(updateOrderAtom);
   useEffect(() => {
@@ -110,21 +118,16 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
     }),
     [url, layers],
   );
-
-  const prevIndexRef = useRef<number>();
   const preUpdateOrder = useRef<number>();
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-      if (layerId && prevIndexRef.current !== undefined && index !== undefined) {
-        if (
-          index < prevIndexRef.current ||
-          (index < 1 && preUpdateOrder.current !== updateOrder && visible)
-        ) {
-          window.reearth?.layers?.bringToFront?.(layerId);
+
+      if (layerId) {
+        if (smallIndexMvtLayer?.layerId) {
+          window.reearth?.layers?.bringToFront?.(smallIndexMvtLayer.layerId);
         }
       }
-      prevIndexRef.current = index;
 
       preUpdateOrder.current = updateOrder;
       onLoad?.(layerId, {
@@ -136,7 +139,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
         roll: 0,
       });
     },
-    [index, meta, onLoad, updateOrder, visible],
+    [meta, onLoad, smallIndexMvtLayer?.layerId, updateOrder],
   );
 
   useLayer({
