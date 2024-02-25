@@ -6,6 +6,7 @@ import invariant from "tiny-invariant";
 
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { flyToCamera, flyToLayerId, lookAtXYZ } from "../../../shared/reearth/utils";
+import { areasAtom } from "../../../shared/states/address";
 import { findRootLayerAtom, rootLayersAtom } from "../../../shared/states/rootLayer";
 import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSearchPanel";
 import { Fields } from "../../../shared/view/fields/Fields";
@@ -157,6 +158,12 @@ export function LayerContent<T extends SupportedLayerType>({
 
   const layerName = layerTypeNames[type] ?? rootLayer?.layerName;
 
+  const areas = useAtomValue(areasAtom);
+
+  if (areas == null) {
+    return null;
+  }
+
   return (
     <>
       <List disablePadding>
@@ -212,7 +219,7 @@ export function LayerContent<T extends SupportedLayerType>({
           onClose={handleClose}
         />
         <LayerHiddenFeaturesSection layers={values} />
-        <OpenDataLink layers={values} />
+        <OpenDataLink area={areas} />
         <SwitchDataset layers={values} />
         <SwitchGroup layers={values} />
         <LayerHeatmapSection layers={values} />

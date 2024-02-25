@@ -1,60 +1,79 @@
 import { Divider, Button, styled } from "@mui/material";
-import { atom, useAtomValue } from "jotai";
-import { useMemo, type FC, SetStateAction } from "react";
+import { groupBy, unionBy } from "lodash-es";
+import { type FC, useMemo } from "react";
 
+import { isNotNullish } from "../../../prototypes/type-helpers";
 import { InspectorItem } from "../../../prototypes/ui-components";
-import { useDatasetById } from "../../graphql";
-import { rootLayersAtom } from "../../states/rootLayer";
-import { LayerModel, RootLayerConfigForDataset } from "../../view-layers";
+import { useAreaDatasets, useDatasetTypes } from "../../../shared/graphql";
+import { Area } from "../../../shared/states/address";
 
 export interface SwitchDatasetProps {
-  layers: readonly LayerModel[];
+  area: Area[];
 }
 
-export const OpenDataLink: FC<SwitchDatasetProps> = ({ layers }) => {
-  const layer = layers[0];
-  const { data } = useDatasetById(layer.id);
-  //   const propertyItems = useMemo(() => data.node?.items.map(item => [item.id, item.name]), [data]);
-  const rootLayers = useAtomValue(rootLayersAtom);
-  const rootLayer = useMemo(
-    () =>
-      rootLayers.find(
-        (r): r is RootLayerConfigForDataset => r.type === "dataset" && r.id === layer.id,
-      ),
-    [rootLayers, layer],
+export const OpenDataLink: FC<SwitchDatasetProps> = ({ area }) => {
+  const { data: datasetTypeOrder } = useDatasetTypes();
+  const filteredDatasetTypeOrder = useMemo(
+    () => unionBy(datasetTypeOrder, "name"),
+    [datasetTypeOrder],
   );
+  const query = useAreaDatasets(area[0].code);
 
-  const propertyAtoms = useMemo(
-    () => [
-      atom(
-        get => {
-          if (!rootLayer) return null;
-          return get(rootLayer.currentDataIdAtom) ?? null;
-        },
-        (get, set, action: SetStateAction<string | null>) => {
-          if (!rootLayer) return;
-          const update =
-            typeof action === "function"
-              ? action(get(rootLayer.currentDataIdAtom) ?? null)
-              : action;
-          set(rootLayer.currentDataIdAtom, update ?? undefined);
-        },
+  const datasetGroups = useMemo(() => {
+    const datasets = query.data?.area?.datasets;
+    if (!datasets) {
+      return;
+    }
+    const groups = Object.entries(
+      groupBy(
+        datasets.filter(d =>
+          !d.cityCode
+            ? area[0].code === d.prefectureCode
+            : !d.wardCode
+            ? d.cityCode === area[0].code
+            : d.wardCode
+            ? d.wardCode === area[0].code
+            : false,
+        ),
+        d => d.type.name,
       ),
-    ],
-    [rootLayer],
-  );
+    );
 
-  if (layers.length !== 1 || propertyAtoms == null || !rootLayer || data.node?.items.length <= 1) {
-    return null;
-  }
+    return filteredDatasetTypeOrder
+      ?.map(orderedType => groups.find(([type]) => type === orderedType.name))
+      .filter(isNotNullish)
+      .map(([, datasets]) => datasets);
+  }, [query.data, filteredDatasetTypeOrder, area]);
+
+  const firstOpenDataUrl = useMemo(() => {
+    const firstDatasetWithOpenDataUrl = datasetGroups?.flat().find(dataset => dataset.openDataUrl);
+    return firstDatasetWithOpenDataUrl?.openDataUrl ?? null;
+  }, [datasetGroups]);
+
+  const hasDatasets = datasetGroups != null && datasetGroups.length > 0;
+
   return (
     <>
-      <Divider />
-      <InspectorItem>
-        <CustomButton size="small" variant="outlined" fullWidth onClick={() => console.log("ff")}>
-          オープンデータを入手
-        </CustomButton>
-      </InspectorItem>
+      {hasDatasets && (
+        <>
+          <Divider />
+          <InspectorItem>
+            <CustomButton
+              size="small"
+              variant="outlined"
+              fullWidth
+              onClick={() => {
+                if (firstOpenDataUrl) {
+                  window.open(firstOpenDataUrl, "_blank");
+                } else {
+                  console.log("OpenDataUrl が存在しません。");
+                }
+              }}>
+              オープンデータを入手
+            </CustomButton>
+          </InspectorItem>
+        </>
+      )}
     </>
   );
 };
