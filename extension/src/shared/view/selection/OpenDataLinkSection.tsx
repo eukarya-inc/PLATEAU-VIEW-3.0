@@ -65,8 +65,6 @@ export const OpenDataLink: FC<SwitchDatasetProps> = ({ area }) => {
               onClick={() => {
                 if (firstOpenDataUrl) {
                   window.open(firstOpenDataUrl, "_blank");
-                } else {
-                  console.log("OpenDataUrl が存在しません。");
                 }
               }}>
               オープンデータを入手
