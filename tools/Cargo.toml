@@ -11,6 +11,6 @@ rayon = "1.8.0"
 regex = "1.10.2"
 sevenz-rust= { version = "0.5.0", features = ["compress"] }
 tempdir = "0.3.7"
-thiserror = "1.0.50"
+thiserror = "1.0.57"
 walkdir = "2.4.0"
 zip = "0.6.6"
