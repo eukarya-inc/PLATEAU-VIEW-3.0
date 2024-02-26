@@ -40,11 +40,13 @@ export const makePropertyForFeatureInspector = ({
   featureInspector,
   layer,
   builtin,
+  sortRootPropertyNames,
 }: {
   featureInspector?: RootLayerForDataset["featureInspector"];
   layer: LayerModel | undefined;
   features: Pick<Feature, "properties">[];
   builtin?: boolean;
+  sortRootPropertyNames?: (names: string[]) => string[];
 }) => {
   const shouldUseSettingProperty =
     (!builtin &&
@@ -109,16 +111,29 @@ export const makePropertyForFeatureInspector = ({
   const datasetType = layer
     ? layerDatasetTypes[layer.type] ?? layerDatasetTypes.USE_CASE_LAYER
     : undefined;
+
+  const rawBuiltInRootPropertyNames = intersection(
+    features.flatMap(f => Object.keys(f.properties ?? {})),
+  );
+  const sortedRawBuiltInRootPropertyNames = sortRootPropertyNames
+    ? sortRootPropertyNames(rawBuiltInRootPropertyNames)
+    : rawBuiltInRootPropertyNames;
   const rawBuiltInRootProperties = !shouldUseSettingProperty
     ? features
         .map(f =>
           layer
-            ? getRootFields(f.properties, datasetType, {
-                name: "title" in layer ? layer?.title : undefined,
-                datasetName: datasetType
-                  ? datasetTypeNames[datasetType] ?? datasetTypeNames.usecase
-                  : undefined,
-              })
+            ? getRootFields(
+                Object.fromEntries(
+                  sortedRawBuiltInRootPropertyNames.map(n => [n, f.properties[n]]),
+                ),
+                datasetType,
+                {
+                  name: "title" in layer ? layer?.title : undefined,
+                  datasetName: datasetType
+                    ? datasetTypeNames[datasetType] ?? datasetTypeNames.usecase
+                    : undefined,
+                },
+              )
             : undefined,
         )
         .filter(v => !!v && !!Object.keys(v).length)
