@@ -26,16 +26,16 @@ const StyledListItemButton = styled(ListItemButton, {
 
   ...(highlighted
     ? {
-        backgroundColor: theme.palette.action.hover,
+        backgroundColor: "#d0d0d0",
         "&:hover": {
-          backgroundColor: theme.palette.action.hover,
+          backgroundColor: "#d0d0d0",
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
             backgroundColor: "transparent",
           },
         },
         [`&.${listItemButtonClasses.selected}:hover`]: {
-          backgroundColor: theme.palette.action.hover,
+          backgroundColor: "#d0d0d0",
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
             backgroundColor: "transparent",
