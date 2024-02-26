@@ -7,7 +7,10 @@ import pkg from "./package.json";
 
 const name = "PlateauView3";
 
+const IS_DEV = process.env.NODE_ENV === "development";
+
 export default defineConfig({
+  mode: IS_DEV ? "development" : "production",
   plugins: [
     react(),
     viteStaticCopy({
@@ -26,6 +29,7 @@ export default defineConfig({
     "process.env.NODE_ENV": JSON.stringify(""),
   },
   build: {
+    minify: IS_DEV ? false : "esbuild",
     lib: {
       name: `ReearthBuiltInPlugin_${name}`,
       formats: ["es"],
