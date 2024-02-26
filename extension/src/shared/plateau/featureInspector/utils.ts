@@ -198,7 +198,7 @@ export const makePropertyName = (name: string, attrVal_?: AttributeValue) => {
   if (attrVal) return attrVal.description;
 
   // Find a name which has a suffix for union.
-  const third = Object.entries(UNION_MAP)
+  const union = Object.entries(UNION_MAP)
     .map(([key, val]) => {
       if (!name.endsWith(key)) return;
 
@@ -208,7 +208,7 @@ export const makePropertyName = (name: string, attrVal_?: AttributeValue) => {
       return attr + val;
     })
     .filter(Boolean)[0];
-  if (third) return third;
+  if (union) return union;
 
   return name.replaceAll("_", "");
 };
@@ -217,9 +217,15 @@ export const getPropertyAttributeValue = (name: string) => {
   const first = getAttributeLabel(name);
   if (first) return first;
 
-  const lastName = name.split("_")[1];
-  const second = getAttributeLabel(lastName);
+  // Replace urf_function into urf:function.
+  const second = getAttributeLabel(name.replace("_", ":"));
   if (second) return second;
+
+  // Find last name, because the nested structure is expressed by `_`.
+  // For example, `parent_child_attr` should be `attr`.
+  const lastName = name.split("_")[1];
+  const third = getAttributeLabel(lastName);
+  if (third) return third;
 };
 
 export const makePropertyValue = (attr: AttributeValue, val: string | number) => {
