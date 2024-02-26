@@ -44,6 +44,7 @@ export type Camera = {
       }
     | undefined;
   readonly setView: (camera: CameraPosition) => void;
+  readonly forceHorizontalRoll: (enable: boolean) => void;
 };
 
 export type FlyToDestination = {

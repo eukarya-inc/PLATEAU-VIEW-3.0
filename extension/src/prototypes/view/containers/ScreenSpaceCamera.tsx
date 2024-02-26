@@ -1,8 +1,7 @@
 import { useAtomValue } from "jotai";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
-import { useFrame } from "../hooks/useFrame";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";
@@ -65,27 +64,6 @@ export const ScreenSpaceCamera = ({
     [minimumZoomDistance, maximumZoomDistance, useKeyboard],
   );
 
-  const cb = useCallback(() => {
-    const cameraPotion = window?.reearth?.camera?.position;
-    const negativePiToPi = window.reearth?.scene?.negativePiToPi(cameraPotion?.roll);
-    console.log(negativePiToPi);
-    if (!cameraPotion || !useKeyboard) return;
-    if (typeof negativePiToPi !== "undefined") {
-      if (Math.abs(negativePiToPi) > Math.PI / 86400) {
-        window.reearth?.camera?.rollCameraHorizontal();
-      }
-    }
-  }, [useKeyboard]);
-
-  const { start, stop } = useFrame(cb);
-
-  useEffect(() => {
-    if (useKeyboard) start();
-    return () => {
-      stop();
-    };
-  }, [start, stop, useKeyboard]);
-
   useEffect(() => {
     if (useKeyboard) {
       window?.reearth?.camera?.overrideScreenSpaceController(optionsWhenUseKeyboard);
@@ -95,6 +73,10 @@ export const ScreenSpaceCamera = ({
       window?.reearth?.camera?.overrideScreenSpaceController();
     }
   }, [useKeyboard, tiltByRightButton, optionsWhenUseKeyboard, optionsWhenTiltByRightButton]);
+
+  useEffect(() => {
+    window?.reearth?.camera?.forceHorizontalRoll(true);
+  }, []);
 
   return useKeyboard ? <KeyboardHandlers isMoving={useKeyboard} /> : null;
 };
