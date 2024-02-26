@@ -120,7 +120,6 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
             dataset.name,
             dataset.__typename === "PlateauDataset" ? dataset.subname ?? "" : "",
           ].join(" "),
-          secondary: dataset?.prefecture?.name,
         }}
         secondaryAction={
           <StyledButton
