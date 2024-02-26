@@ -6,8 +6,9 @@ import { makePropertyForFeatureInspector } from "../../../shared/plateau/feature
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { Feature } from "../../../shared/reearth/types/layer";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
-import { RootLayerForDataset } from "../../../shared/view-layers";
+import { BuildingLayerModel, RootLayerForDataset } from "../../../shared/view-layers";
 import { LayerModel, useFindLayer } from "../../layers";
+import { isNotNullish } from "../../type-helpers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { type SCREEN_SPACE_SELECTION, type SelectionGroup } from "../states/selection";
 
@@ -45,6 +46,9 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
     }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayerForDataset }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
+  const tilesetLayer = layers[0].layer as BuildingLayerModel;
+  const tilesetProperties = useAtomValue(tilesetLayer.propertiesAtom);
+
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
     const properties = layers.reduce((res, { features, layer, rootLayer }) => {
@@ -54,12 +58,21 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
           layer,
           featureInspector: rootLayer?.featureInspector,
           builtin: true,
+          sortRootPropertyNames: names => {
+            const properties = tilesetProperties?.value;
+            const propertyKeys = properties?.map(p => p.name) ?? [];
+            const restNames = names.filter(n => !propertyKeys?.includes(n));
+            const sortedNames = propertyKeys
+              .map(p => names.find(n => n === p))
+              .filter(isNotNullish);
+            return [...sortedNames, ...restNames];
+          },
         }),
       );
     }, [] as Feature["properties"][]);
 
     return intersectionBy(properties, "name");
-  }, [layers]);
+  }, [layers, tilesetProperties]);
 
   return (
     <ParameterList>
