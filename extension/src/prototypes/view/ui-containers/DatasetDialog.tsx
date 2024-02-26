@@ -118,7 +118,8 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
         title={{
           primary: [
             dataset.name,
-            dataset.__typename === "PlateauDataset" ? dataset.subname ?? "" : "",
+            // Currently we don't want subname here, leaving it for future use
+            // dataset.__typename === "PlateauDataset" ? dataset.subname ?? "" : "",
           ].join(" "),
           secondary: dataset?.prefecture?.name,
         }}

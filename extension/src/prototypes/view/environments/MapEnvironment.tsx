@@ -27,6 +27,8 @@ export interface MapEnvironmentProps extends SceneProps {
 export const MapEnvironment: FC<MapEnvironmentProps> = ({
   colorMode = "light",
   tileLabels,
+  enterUnderground,
+  hideUnderground,
   ...props
 }) => {
   // invariant(
@@ -70,6 +72,8 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({
       showSkyBox={false}
       atmosphereSaturationShift={-1}
       groundAtmosphereBrightnessShift={2}
+      hideUnderground={hideUnderground}
+      enterUnderground={enterUnderground}
       // TODO(ReEarth): Use Takram's tile
       // TODO(ReEarth): Support tile brightness
       tiles={tiles}
