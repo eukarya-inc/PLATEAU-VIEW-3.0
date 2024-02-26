@@ -118,22 +118,15 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
   const generalData = useEvaluateGeneralData({ componentAtoms });
   const theme = useTheme();
-  const [smallIndexMvtLayer, setSmalleIndexMvtLayer] = useState<layerItemProps | undefined>();
-
+  const [mvtLayers, setMvtLayer] = useState<layerItemProps[]>();
   useEffect(() => {
-    if (format === "mvt" && LayersList && layerId) {
-      const mvtLayers = LayersList.filter(layer => layer.format === "mvt");
-
-      const smallestIndexLayer = mvtLayers.reduce((acc, cur, index) => {
-        if (!acc || index < mvtLayers.indexOf(acc)) {
-          return cur;
-        } else {
-          return acc;
-        }
-      }, mvtLayers[0]);
-      setSmalleIndexMvtLayer(smallestIndexLayer);
-    }
-  }, [format, LayersList, layerId]);
+    const sortedLayersList = [...LayersList].sort((a, b) => {
+      const indexA = LayersList.findIndex(layer => layer.id === a.id);
+      const indexB = LayersList.findIndex(layer => layer.id === b.id);
+      return indexB - indexA;
+    });
+    setMvtLayer(sortedLayersList);
+  }, [LayersList, layersAtom]);
 
   if (format === "gtfs") {
     return (
@@ -153,7 +146,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
         onLoad={handleLoad}
         appearances={generalAppearances}
         visible={!hidden}
-        smallIndexMvtLayer={smallIndexMvtLayer}
+        mvtLayers={mvtLayers}
       />
     );
   }

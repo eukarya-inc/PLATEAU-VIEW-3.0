@@ -17,7 +17,7 @@ export type MVTProps = {
   visible?: boolean;
   appearances?: MVTAppearances;
   layers?: string[];
-  smallIndexMvtLayer?: layerItemProps;
+  mvtLayers?: layerItemProps[];
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -56,7 +56,7 @@ export const MVTLayer: FC<MVTProps> = ({
   visible,
   appearances,
   layers,
-  smallIndexMvtLayer,
+  mvtLayers,
 }) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
   const updateOrder = useAtomValue(updateOrderAtom);
@@ -122,13 +122,11 @@ export const MVTLayer: FC<MVTProps> = ({
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-
-      if (layerId) {
-        if (smallIndexMvtLayer?.layerId) {
-          window.reearth?.layers?.bringToFront?.(smallIndexMvtLayer.layerId);
+      mvtLayers?.forEach(layer => {
+        if (layer?.layerId) {
+          window.reearth?.layers?.bringToFront?.(layer.layerId);
         }
-      }
-
+      });
       preUpdateOrder.current = updateOrder;
       onLoad?.(layerId, {
         lng: meta.center[0],
@@ -139,7 +137,7 @@ export const MVTLayer: FC<MVTProps> = ({
         roll: 0,
       });
     },
-    [meta, onLoad, smallIndexMvtLayer?.layerId, updateOrder],
+    [meta, mvtLayers, onLoad, updateOrder],
   );
 
   useLayer({
