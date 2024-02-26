@@ -33,13 +33,16 @@ export default () => {
   useReEarthEvent("sketchfeaturecreated", handleSketchFeatureCreated);
 
   useEffect(() => {
-    // View 3.0 always has a sketch tool type while reearth sketch type could be undefined. (to disable sketch). Here we use tool type to determine whether to enable sketch.
-    // But View 3.0 tool type could temporarily changes when space is pressed while drawing. So manually added a check for spacePressed here.
-    if (spacePressed.current) return;
+    // toolType?.type changes before spacePressed.current been set, so we need to defer the update to the next frame.
+    requestAnimationFrame(() => {
+      // View 3.0 always has a sketch tool type while reearth sketch type could be undefined. (to disable sketch). Here we use tool type to determine whether to enable sketch.
+      // But View 3.0 tool type could temporarily changes when space is pressed while drawing. So manually added a check for spacePressed here.
+      if (spacePressed.current) return;
 
-    handleSetType(
-      toolType?.type !== "sketch" ? undefined : sketchGeometryTypeToReearthSketchType(sketchType),
-    );
+      handleSetType(
+        toolType?.type !== "sketch" ? undefined : sketchGeometryTypeToReearthSketchType(sketchType),
+      );
+    });
   }, [sketchType, toolType?.type, handleSetType]);
 
   useEffect(() => {
