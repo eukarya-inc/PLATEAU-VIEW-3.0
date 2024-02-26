@@ -62,6 +62,8 @@ export type SceneProps = EnvironmentProps & {
   terrainHeatmapMinHeight?: number;
   terrainHeatmapLogarithmic?: boolean;
   initialCamera?: CameraPosition;
+  enterUnderground?: boolean;
+  hideUnderground?: boolean;
 };
 
 export const Scene: FC<SceneProps> = ({
@@ -83,6 +85,8 @@ export const Scene: FC<SceneProps> = ({
   showSun = true,
   showMoon = false,
   showSkyBox = true,
+  hideUnderground = false,
+  enterUnderground = true,
   enableFog = true,
   fogDensity = 0.0002,
   showSkyAtmosphere = true,
@@ -106,6 +110,7 @@ export const Scene: FC<SceneProps> = ({
         camera: initialCamera,
         bgcolor: backgroundColor,
         skybox: showSkyBox,
+        allowEnterGround: enterUnderground,
       },
       atmosphere: {
         // Globe
@@ -157,6 +162,7 @@ export const Scene: FC<SceneProps> = ({
       terrain: {
         terrain: true,
         terrainType: "cesiumion",
+        depthTestAgainstTerrain: hideUnderground,
         terrainCesiumIonAccessToken:
           "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5N2UyMjcwOS00MDY1LTQxYjEtYjZjMy00YTU0ZTg5MmViYWQiLCJpZCI6ODAzMDYsImlhdCI6MTY0Mjc0ODI2MX0.dkwAL1CcljUV7NA7fDbhXXnmyZQU_c-G5zRx8PtEcxE",
         terrainCesiumIonAsset: "770371",
@@ -208,6 +214,8 @@ export const Scene: FC<SceneProps> = ({
     terrainHeatmapMaxHeight,
     terrainHeatmapMinHeight,
     initialCamera,
+    enterUnderground,
+    hideUnderground,
   ]);
 
   return null;

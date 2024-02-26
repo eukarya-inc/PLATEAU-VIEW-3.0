@@ -12,6 +12,7 @@ import {
   shareableShowMapLabelAtom,
   shareableLogarithmicTerrainElevationAtom,
   shareableTerrainElevationHeightRangeAtom,
+  shareableUndergroundAtom,
 } from "../../../shared/states/scene";
 import { colorMapTurbo } from "../../color-maps";
 import { colorModeAtom } from "../../shared-states";
@@ -219,6 +220,16 @@ export const EnvironmentSelect: FC = () => {
       ? "elevation"
       : undefined;
 
+  const [underground, setUnderground] = useAtom(shareableUndergroundAtom);
+  const handleUndergroundChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      setUnderground((prevValue: any) => ({
+        ...prevValue,
+        [event.target.name]: checked,
+      }));
+    },
+    [setUnderground],
+  );
   const [showMapLabel, setShowMapLabel] = useAtom(shareableShowMapLabelAtom);
   const handleShowMapLabelChange = useCallback(
     (event: ChangeEvent<HTMLInputElement>, checked: boolean) => {
@@ -246,6 +257,26 @@ export const EnvironmentSelect: FC = () => {
           <Item item="dark-map" selectedItem={selectedItem} onClick={handleDarkMap} />
           <Item item="satellite" selectedItem={selectedItem} onClick={handleSatellite} />
           <Item item="elevation" selectedItem={selectedItem} onClick={handleElevation} />
+          <Divider />
+          {(["hideUnderground", "enterUnderground"] as const).map(name => (
+            <ControlItem key={name}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name={name}
+                    checked={underground[name]}
+                    onChange={handleUndergroundChange}
+                  />
+                }
+                label={
+                  {
+                    hideUnderground: "地下を隠す",
+                    enterUnderground: "地下に入る",
+                  }[name]
+                }
+              />
+            </ControlItem>
+          ))}
           <Divider />
           {(
             [
