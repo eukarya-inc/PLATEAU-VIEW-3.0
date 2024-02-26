@@ -32,6 +32,12 @@ export const terrainTypeAtom = atomWithReset<TerrainType>("plateau");
 export const enableTerrainLightingAtom = atomWithReset(true);
 export const terrainElevationHeightRangeAtom = atomWithReset([0, 4000]);
 export const logarithmicTerrainElevationAtom = atomWithReset(true);
+export const undergroundPrimitiveAtom = atomWithReset<
+  Record<"hideUnderground" | "enterUnderground", boolean>
+>({
+  hideUnderground: false,
+  enterUnderground: true,
+});
 export const showMapLabelPrimitiveAtom = atomWithReset<Record<AnnotationType, boolean>>({
   municipalities: false,
   towns: false,

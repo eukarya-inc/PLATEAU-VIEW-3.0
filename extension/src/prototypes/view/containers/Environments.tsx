@@ -10,6 +10,7 @@ import {
   shareableShowMapLabelAtom,
   shareableGraphicsQualityAtom,
   sharedInitialCameraAtom,
+  shareableUndergroundAtom,
 } from "../../../shared/states/scene";
 import { colorModeAtom, type ColorMode } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
@@ -86,6 +87,7 @@ export const Environments: FC = () => {
   const graphicsQuality = useAtomValue(shareableGraphicsQualityAtom) || undefined;
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
   const initialCamera = useAtomValue(sharedInitialCameraAtom);
+  const undergroundSettings = useAtomValue(shareableUndergroundAtom);
 
   const tileLabels: TileLabels[] = useMemo(() => {
     const styles = Object.entries(showMapLabel).reduce((acc, [key, isVisible]) => {
@@ -114,6 +116,8 @@ export const Environments: FC = () => {
           shadows={shadowProps}
           antialias={antialias}
           initialCamera={initialCamera.value}
+          hideUnderground={undergroundSettings.hideUnderground}
+          enterUnderground={undergroundSettings.enterUnderground}
           tileLabels={tileLabels}
         />
       );
@@ -125,6 +129,8 @@ export const Environments: FC = () => {
           shadows={shadowProps}
           antialias={antialias}
           initialCamera={initialCamera.value}
+          hideUnderground={undergroundSettings.hideUnderground}
+          enterUnderground={undergroundSettings.enterUnderground}
           tileLabels={tileLabels}
         />
       );
@@ -136,6 +142,8 @@ export const Environments: FC = () => {
           shadows={shadowProps}
           antialias={antialias}
           initialCamera={initialCamera.value}
+          hideUnderground={undergroundSettings.hideUnderground}
+          enterUnderground={undergroundSettings.enterUnderground}
           tileLabels={tileLabels}
         />
       );
@@ -146,6 +154,8 @@ export const Environments: FC = () => {
           shadows={shadowProps}
           antialias={antialias}
           initialCamera={initialCamera.value}
+          hideUnderground={undergroundSettings.hideUnderground}
+          enterUnderground={undergroundSettings.enterUnderground}
           tileLabels={tileLabels}
         />
       );
