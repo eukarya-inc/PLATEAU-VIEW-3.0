@@ -42,6 +42,7 @@ export const InitialLayers: FC = () => {
   const [sharedRootLayers, setSharedRootLayers] = useState<SharedRootLayer[] | undefined>();
   const [isSharedDataLoaded, setIsSharedDataLoaded] = useState(false);
   const isAppReady = useAtomValue(isAppReadyAtom);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
     const run = async () => {
@@ -167,7 +168,7 @@ export const InitialLayers: FC = () => {
   const templatesRef = useRef(templates);
   templatesRef.current = templates;
   useEffect(() => {
-    if (query.loading || !isSharedDataLoaded || !isAppReady) return;
+    if (query.loading || !isSharedDataLoaded || !isAppReady || isInitialized.current) return;
 
     let remove: (() => void)[] = [];
     const initialize = async () => {
@@ -213,6 +214,7 @@ export const InitialLayers: FC = () => {
       setReady(true);
     };
     initialize();
+    isInitialized.current = true;
     return () => {
       remove.forEach(remove => {
         remove();
