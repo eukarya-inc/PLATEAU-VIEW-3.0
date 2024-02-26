@@ -83,11 +83,17 @@ const MunicipalityItem: FC<{
   );
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];
+    const isUsecaseType = dataset.type.code === "usecase";
     return (
       <DatasetListItem
         dataset={dataset}
         municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-        label={joinPath([...parents, municipality.name, dataset.type.name])}
+        label={
+          isUsecaseType
+            ? dataset.name
+            : joinPath([...parents, municipality.name, dataset.type.name])
+        }
+        title={dataset.name}
       />
     );
   }
