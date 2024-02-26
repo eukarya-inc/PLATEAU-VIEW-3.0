@@ -8,7 +8,7 @@ import { datasetTypeNames } from "../../../prototypes/view/constants/datasetType
 import { Feature } from "../../reearth/types/layer";
 import { RootLayerForDataset } from "../../view-layers";
 
-import { getAttributeLabel, getRootFields } from "./attributes";
+import { AttributeValue, getAttributeLabel, getRootFields } from "./attributes";
 
 const attributesKey = "attributes";
 
@@ -75,13 +75,16 @@ export const makePropertyForFeatureInspector = ({
       ?.map(p => {
         if (!p.visible) return;
         const lastPathName = p.nodes[0]?.path
-          .slice()
-          .reverse()
-          .find((key): key is string => isNaN(Number(key))); // Find string key
-        const label = lastPathName ? getAttributeLabel(lastPathName) : undefined;
+          .filter(
+            key =>
+              key &&
+              !["$", "[", "]", "(", ")", ".", "{", "}"].includes(String(key)) &&
+              isNaN(Number(key)),
+          )
+          .join("_");
+        const label = lastPathName ? getAttributeLabel(lastPathName)?.description : undefined;
         return {
           name: p.displayName || label || lastPathName,
-          // TODO: Evaluate `process` in here.
           values: p.nodes
             .map(n => {
               if (!n) return;
@@ -109,9 +112,9 @@ export const makePropertyForFeatureInspector = ({
   const rawBuiltInRootProperties = !shouldUseSettingProperty
     ? features
         .map(f =>
-          layer && "title" in layer
+          layer
             ? getRootFields(f.properties, datasetType, {
-                name: layer?.title,
+                name: "title" in layer ? layer?.title : undefined,
                 datasetName: datasetType
                   ? datasetTypeNames[datasetType] ?? datasetTypeNames.usecase
                   : undefined,
@@ -162,10 +165,19 @@ export const makePropertyForFeatureInspector = ({
               if (n === attributesKey) return false;
               return !settingRootPropertyNames?.includes(n);
             })
-            .map(name => ({
-              name: getAttributeLabel(name) || name,
-              values: features.map(f => f.properties?.[name]).filter(Boolean),
-            }))
+            .map(name => {
+              const attrVal = getPropertyAttributeValue(name);
+              return {
+                name: makePropertyName(name, attrVal) || name,
+                values: features
+                  .map(f =>
+                    attrVal
+                      ? makePropertyValue(attrVal, f.properties?.[name])
+                      : f.properties?.[name],
+                  )
+                  .filter(Boolean),
+              };
+            })
             .filter(({ values }) => features.length === values.length),
         ]
       : builtInRootProperties),
@@ -181,27 +193,38 @@ const UNION_MAP = {
   _uom: "単位",
 };
 
-export const makePropertyName = (name: string) => {
-  const split = name.split(/_uro:/);
-  const next = split[1] ? `uro:${split[1]}` : split[0];
-  const first = getAttributeLabel(next);
-  if (first) return first;
-
-  // Find joined a name by `_` instead of `:`.
-  const second = getAttributeLabel(next.replace("_", ":"));
-  if (second) return second;
+export const makePropertyName = (name: string, attrVal_?: AttributeValue) => {
+  const attrVal = attrVal_ ?? getPropertyAttributeValue(name);
+  if (attrVal) return attrVal.description;
 
   // Find a name which has a suffix for union.
   const third = Object.entries(UNION_MAP)
     .map(([key, val]) => {
-      if (!next.endsWith(key)) return;
+      if (!name.endsWith(key)) return;
 
-      const attr = getAttributeLabel(next.split(key)[0]);
+      const attr = getAttributeLabel(name.split(key)[0])?.description;
       if (!attr) return;
 
       return attr + val;
     })
     .filter(Boolean)[0];
   if (third) return third;
-  return next.replaceAll("_", "");
+
+  return name.replaceAll("_", "");
+};
+
+export const getPropertyAttributeValue = (name: string) => {
+  const first = getAttributeLabel(name);
+  if (first) return first;
+
+  const lastName = name.split("_")[1];
+  const second = getAttributeLabel(lastName);
+  if (second) return second;
+};
+
+export const makePropertyValue = (attr: AttributeValue, val: string | number) => {
+  if (["date", "gYear"].includes(attr.dataType ?? "")) {
+    return val === 1 || val === "1" || String(val).startsWith("0001") ? "不明" : val;
+  }
+  return val;
 };

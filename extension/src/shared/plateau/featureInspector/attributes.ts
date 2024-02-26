@@ -1,62 +1,23 @@
 import { omit } from "lodash-es";
 
-import attributesData from "./attributes.csv?raw";
-import type { Json, JsonArray, JsonObject, JsonPrimitive } from "./json";
+import attributesData from "./attributes.txt?raw";
 import type { FldInfo, Properties } from "./types";
-import { makePropertyName } from "./utils";
+import { getPropertyAttributeValue, makePropertyName, makePropertyValue } from "./utils";
 
-export const attributesMap = new Map<string, string>();
-const ignoredSuffix = ["_codeSpace"];
+export type AttributeValue = { featureType?: string; description?: string; dataType?: string };
+
+export const attributesMap = new Map<string, AttributeValue | undefined>();
 
 attributesData
   .split("\n")
-  .map(l => l.split(","))
+  .map(l => l.split(",{"))
   .forEach(l => {
-    if (!l || !l[0] || !l[1] || typeof l[0] !== "string" || typeof l[1] !== "string") return;
-    attributesMap.set(l[0], l[1]);
+    attributesMap.set(l[0], JSON.parse("{" + l[1]));
   });
 
 export const getAttributeLabel = (key: string) => attributesMap?.get(key);
 
-export function getAttributes(attributes: Json, mode?: "both" | "label" | "key"): Json {
-  if (!attributes || typeof attributes !== "object") return attributes;
-  return walk(attributes, attributesMap);
-
-  function walk(obj: JsonObject | JsonArray, keyMap?: Map<string, string>): JsonObject | JsonArray {
-    if (!obj || typeof obj !== "object") return obj;
-
-    if (Array.isArray(obj)) {
-      return obj.map(o => (typeof o === "object" && o ? walk(o, keyMap) : o));
-    }
-
-    return Object.fromEntries(
-      Object.entries(obj)
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([k, v]): [string, JsonPrimitive | JsonObject | JsonArray] | undefined => {
-          const m = k.match(/^(.*)(_.+?)$/);
-          if (m?.[2] && ignoredSuffix.includes(m[2])) return;
-
-          const label = keyMap?.get(m?.[1] || k);
-          const nk =
-            (mode === "both" || mode === "label") && label ? label + (suffix(k, keyMap) ?? "") : "";
-          const ak = nk ? (mode === "both" ? `${nk}（${k}）` : nk) : k;
-          if (typeof v === "object" && v) {
-            return [ak || k, walk(v, keyMap)];
-          }
-
-          return [ak || k, v];
-        })
-        .filter((e): e is [string, JsonPrimitive | JsonObject | JsonArray] => !!e),
-    );
-  }
-
-  function suffix(key: string, keyMap?: Map<string, string>): string {
-    const suf = key.match(/(_.+?)$/)?.[1];
-    return suf ? keyMap?.get(suf) ?? "" : "";
-  }
-}
-
-export function getRootFields(properties: Properties, dataType?: string, _fld?: FldInfo): any {
+export function getRootFields(properties: Properties, _dataType?: string, _fld?: FldInfo): any {
   const overriddenRootPropertyDefinitions = {
     "分類 ※大規模集客施設": "uro:LargeCustomerFacilityAttribute_uro:class",
     "延床面積 ※大規模集客施設": "uro:LargeCustomerFacilityAttribute_uro:totalFloorArea",
@@ -75,11 +36,9 @@ export function getRootFields(properties: Properties, dataType?: string, _fld?: 
     ).map(([k, v]) => {
       if (k.startsWith("_")) return [k, undefined];
       if (typeof v !== "string" && typeof v !== "number") return [k, undefined];
-      let value: string | number | undefined = v;
-      if (k.endsWith("yearOfConstruction")) {
-        value = constructionYear(v, dataType);
-      }
-      return [makePropertyName(k), value];
+      const attrVal = getPropertyAttributeValue(k);
+      const value: string | number | undefined = attrVal ? makePropertyValue(attrVal, v) : v;
+      return [makePropertyName(k, attrVal), value];
     }),
   );
   const overriddenRootProperties = Object.fromEntries(
@@ -117,26 +76,6 @@ const veg = (properties: Record<string, any>) => {
 
   return {};
 };
-
-export function constructionYear(
-  y: number | string | undefined | null,
-  dataType?: string,
-): string | number | undefined {
-  if (y === "" || typeof y === "undefined" || y === null) return undefined;
-
-  if (
-    dataType === "bldg" &&
-    (!y ||
-      (typeof y === "number" && y <= 1) ||
-      y == "0" ||
-      y === "1" ||
-      y === "0000" ||
-      y === "0001")
-  ) {
-    return "不明";
-  }
-  return y;
-}
 
 function filterObjects(obj: any): any {
   return Object.fromEntries(
