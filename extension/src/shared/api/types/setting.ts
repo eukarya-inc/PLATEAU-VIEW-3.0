@@ -3,17 +3,22 @@ import { CameraPosition } from "../../reearth/types";
 import { ComponentGroup } from "./component";
 import { EmphasisProperty } from "./emphasis";
 
+export type FeatureClickEventType = "openFeatureInspector" | "openNewTab" | undefined;
+export type FeatureClickUrlType = "manual" | "fromData" | undefined;
+
+export type DataFetchingEnableType = boolean | undefined;
+
 export type GeneralSetting = {
   camera?: CameraPosition | undefined;
   dataFetching?: {
-    enabled?: boolean;
+    enabled?: DataFetchingEnableType;
     timeInterval?: number;
   };
   featureClickEvent?: {
-    eventType: "openFeatureInspector" | "openNewTab";
-    urlType?: "manual" | "fromData";
-    websiteURL?: string;
-    fieldName?: string;
+    eventType?: FeatureClickEventType;
+    urlType?: FeatureClickUrlType;
+    websiteURL?: string | undefined;
+    fieldName?: string | undefined;
   };
   initialLayer?: {
     isInitialLayer?: boolean;
@@ -33,11 +38,19 @@ export type Setting = {
   featureInspector?: FeatureInspectorSettings;
 };
 
+export type FeatureInspectorTitleType = "datasetType" | "custom" | undefined;
+export type FeatureInspectorDisplayType =
+  | "auto"
+  | "builtin"
+  | "propertyList"
+  | "CZMLDescription"
+  | undefined;
+
 export type FeatureInspectorSettings = {
   basic?: {
-    titleType: "datasetType" | "custom";
-    customTitle: string;
-    displayType: "auto" | "builtin" | "propertyList" | "CZMLDescription";
+    titleType?: FeatureInspectorTitleType;
+    customTitle?: string;
+    displayType?: FeatureInspectorDisplayType;
   };
   emphasisProperty?: {
     useTemplate?: boolean;

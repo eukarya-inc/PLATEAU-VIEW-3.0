@@ -1,5 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
-import { useEffect, type FC, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, type FC, useMemo, useRef, useState } from "react";
 import format from "string-template";
 
 import { LayerType, useAddLayer } from "../../../prototypes/layers";
@@ -18,7 +18,6 @@ import {
 } from "../../../prototypes/view-layers";
 import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
-import { DatasetItem } from "../../graphql/types/catalog";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
 import { settingsAtom } from "../../states/setting";
 import {
@@ -43,6 +42,7 @@ export const InitialLayers: FC = () => {
   const [sharedRootLayers, setSharedRootLayers] = useState<SharedRootLayer[] | undefined>();
   const [isSharedDataLoaded, setIsSharedDataLoaded] = useState(false);
   const isAppReady = useAtomValue(isAppReadyAtom);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
     const run = async () => {
@@ -74,8 +74,14 @@ export const InitialLayers: FC = () => {
     [],
   );
 
-  const getDefaultBuildingIds = useCallback(
-    () => settings.filter(s => !!s.general?.initialLayer?.isInitialLayer).map(s => s.datasetId),
+  const defaultBuildings = useMemo(
+    () =>
+      settings
+        .filter(s => !!s.general?.initialLayer?.isInitialLayer)
+        .map(s => ({
+          datasetId: s.datasetId,
+          dataId: s.dataId,
+        })),
     [settings],
   );
 
@@ -87,8 +93,8 @@ export const InitialLayers: FC = () => {
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : getDefaultBuildingIds(),
-    [shareId, sharedRootLayers, isSharedDataLoaded, getDefaultBuildingIds],
+        : defaultBuildings.map(b => b.datasetId),
+    [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
   );
 
   const query = useDatasetsByIds(datasetIds, {
@@ -162,9 +168,8 @@ export const InitialLayers: FC = () => {
   const templatesRef = useRef(templates);
   templatesRef.current = templates;
   useEffect(() => {
-    if (query.loading || !isSharedDataLoaded || !isAppReady) return;
+    if (query.loading || !isSharedDataLoaded || !isAppReady || isInitialized.current) return;
 
-    let remove: (() => void)[] = [];
     const initialize = async () => {
       const sharedProjectIdUnknown =
         (await getSharedStoreValue(SHARED_PROJECT_ID_KEY)) ?? undefined;
@@ -175,51 +180,46 @@ export const InitialLayers: FC = () => {
         (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
       );
 
-      remove = [
-        ...initialDatasets.map(d => {
-          const dataList = d.items as DatasetItem[];
-          const { dataId, groupId } = sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
-          return addLayer(
-            createRootLayerForDatasetAtom({
-              dataset: d,
-              areaCode: d.wardCode || d.cityCode || d.prefectureCode,
-              settings: settingsRef.current.filter(s => s.datasetId === d.id),
-              templates: templatesRef.current,
-              shareId: sharedProjectId,
-              currentDataId: sharedProjectId
-                ? dataId
-                : dataList.find(v => v.name === "LOD2（テクスチャなし）")?.id,
-              currentGroupId: groupId,
-            }),
-            { autoSelect: false },
-          );
-        }),
-        ...(initialLayers?.map(l =>
-          addLayer(
-            createRootLayerForLayerAtom({
-              ...l,
-              shareId: sharedProjectId,
-            } as RootLayerForLayerAtomParams<LayerType>),
-            {
-              autoSelect: false,
-            },
-          ),
-        ) ?? []),
-      ];
+      initialDatasets.forEach(d => {
+        const { dataId, groupId } = sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
+        addLayer(
+          createRootLayerForDatasetAtom({
+            dataset: d,
+            areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+            settings: settingsRef.current.filter(s => s.datasetId === d.id),
+            templates: templatesRef.current,
+            shareId: sharedProjectId,
+            currentDataId: sharedProjectId
+              ? dataId
+              : defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
+            currentGroupId: groupId,
+          }),
+          { autoSelect: false },
+        );
+      });
+      initialLayers?.forEach(l =>
+        addLayer(
+          createRootLayerForLayerAtom({
+            ...l,
+            shareId: sharedProjectId,
+          } as RootLayerForLayerAtomParams<LayerType>),
+          {
+            autoSelect: false,
+          },
+        ),
+      );
+
       setReady(true);
     };
     initialize();
-    return () => {
-      remove.forEach(remove => {
-        remove();
-      });
-    };
+    isInitialized.current = true;
   }, [
     addLayer,
     initialDatasets,
     shareId,
     query.loading,
     setReady,
+    defaultBuildings,
     initialLayers,
     isSharedDataLoaded,
     isAppReady,

@@ -13,7 +13,7 @@ export type EditorBlockProps = {
   title?: string;
   expandable?: boolean;
   expanded?: boolean;
-  actions?: { title: string; onClick?: () => void }[];
+  actions?: { label: string; onClick?: () => void }[];
   children?: React.ReactNode;
 };
 
@@ -75,7 +75,7 @@ export const EditorBlock: React.FC<EditorBlockProps> = ({
           {actions.map((action, index) => (
             <EditorPopperList key={index}>
               <EditorPopperListItemButton onClick={() => handleActionClick(action.onClick)}>
-                {action.title}
+                {action.label}
               </EditorPopperListItemButton>
             </EditorPopperList>
           ))}

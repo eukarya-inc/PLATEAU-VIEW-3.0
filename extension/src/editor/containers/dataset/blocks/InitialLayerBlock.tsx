@@ -26,20 +26,22 @@ export const InitialLayerBlock: React.FC<InitialLayerBlockProps> = ({
   );
 
   const handleInitialLayerChange = useCallback(
-    () =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
       updateSetting?.(s => {
         if (!s) return s;
         return {
           ...s,
           general: {
             ...s.general,
-            initialLayer: {
-              isInitialLayer: !isInitialLayer,
-            },
+            initialLayer: e.target.checked
+              ? {
+                  isInitialLayer: e.target.checked,
+                }
+              : undefined,
           },
         };
       }),
-    [isInitialLayer, updateSetting],
+    [updateSetting],
   );
 
   return (

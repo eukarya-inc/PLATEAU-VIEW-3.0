@@ -20,7 +20,11 @@ import { atomFamily } from "jotai/utils";
 import { groupBy, max, mean, min, round, intersection } from "lodash-es";
 import { forwardRef, useCallback, type ComponentPropsWithRef, type FC, useMemo } from "react";
 
-import { makePropertyName } from "../../shared/plateau";
+import {
+  getPropertyAttributeValue,
+  makePropertyName,
+  makePropertyValue,
+} from "../../shared/plateau";
 import { roundFloat } from "../../shared/utils";
 import { isNotNullish } from "../type-helpers";
 
@@ -136,12 +140,13 @@ const NumberValue: FC<{
   );
 };
 
-const ObjectValue: FC<{ id: string; name: string; values: object[]; level?: number }> = ({
-  id,
-  name,
-  values,
-  level,
-}) => {
+const ObjectValue: FC<{
+  id: string;
+  name: string;
+  values: object[];
+  level?: number;
+  path?: string[];
+}> = ({ id, name, values, level, path }) => {
   const properties = useMemo(() => {
     return intersection(...values.map(v => Object.keys(v ?? {})))
       .filter(name => !name.startsWith("_"))
@@ -166,7 +171,13 @@ const ObjectValue: FC<{ id: string; name: string; values: object[]; level?: numb
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [values]);
   return (
-    <PropertyGroup id={id} name={name} properties={properties as PropertySet[]} level={level} />
+    <PropertyGroup
+      id={id}
+      name={name}
+      properties={properties as PropertySet[]}
+      level={level}
+      path={path ? [...path, ...(isNaN(Number(name)) ? [name] : [])] : []}
+    />
   );
 };
 
@@ -181,23 +192,42 @@ const PropertyNameCell = styled(TableCell)<{
 const Property: FC<{
   property: PropertySet;
   level?: number;
-}> = ({ property: { id, name, values }, level }) => {
+  path?: string[];
+}> = ({ property: { id, name, values }, level, path }) => {
   const isPrimitive = ["string", "number"].includes(typeof values[0]);
+  const actualName = [...(path ?? []), ...(isNaN(Number(name)) ? [name] : [])].join("_");
+  const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {makePropertyName(name)}
+        {makePropertyName(actualName, attrVal)}
       </PropertyNameCell>
       <TableCell width="50%">
         {typeof values[0] === "string" ? (
-          <StringValue name={name} values={values as string[]} />
+          <StringValue
+            name={name}
+            values={(values as string[]).map(v =>
+              attrVal ? (makePropertyValue(attrVal, v) as string) : v,
+            )}
+          />
         ) : typeof values[0] === "number" ? (
-          <NumberValue name={name} values={values as number[]} />
+          <NumberValue
+            name={name}
+            values={(values as number[]).map(v =>
+              attrVal ? (makePropertyValue(attrVal, v) as number) : v,
+            )}
+          />
         ) : null}
       </TableCell>
     </TableRow>
   ) : (
-    <ObjectValue id={id ?? name} name={name} values={values as object[]} level={level} />
+    <ObjectValue
+      id={id ?? name}
+      name={name}
+      values={values as object[]}
+      level={level}
+      path={path}
+    />
   );
 };
 
@@ -225,7 +255,8 @@ const PropertyGroup: FC<{
   name: string;
   properties: readonly PropertySet[];
   level?: number;
-}> = ({ id = "", name, properties, level = 0 }) => {
+  path?: string[];
+}> = ({ id = "", name, properties, level = 0, path }) => {
   const expandedAtom = groupExpandedAtomFamily(id ?? name);
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleClick = useCallback(() => {
@@ -239,7 +270,9 @@ const PropertyGroup: FC<{
             <TreeArrowButton size="small" onClick={handleClick}>
               {expanded ? <TreeArrowExpandedIcon /> : <TreeArrowCollapsedIcon />}
             </TreeArrowButton>
-            {makePropertyName(name)}
+            {isNaN(Number(name))
+              ? makePropertyName([...(path?.length ? path : [name])].join("_"))
+              : name}
           </PropertyGroupName>
         </PropertyGroupCell>
       </TableRow>
@@ -257,6 +290,7 @@ const PropertyGroup: FC<{
                       name: property.name,
                     }}
                     level={level + 1}
+                    path={path}
                   />
                 ))}
               </TableBody>
