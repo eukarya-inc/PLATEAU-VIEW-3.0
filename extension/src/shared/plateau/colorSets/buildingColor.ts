@@ -53,11 +53,6 @@ export const usageColorSet = atomsWithQualitativeColorSet({
       name: "供給処理施設",
     },
     {
-      value: "併給処理施設",
-      color: chroma.rgb(139, 69, 19).hex(),
-      name: "併給処理施設",
-    },
-    {
       value: "防衛施設",
       color: chroma.rgb(178, 34, 34).hex(),
       name: "防衛施設",
