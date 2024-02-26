@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-import { getRootFields, constructionYear } from "./attributes";
+import { getRootFields } from "./attributes";
 
 test("getRootFields bldg", () => {
   expect(
@@ -74,33 +74,4 @@ test("getRootFields veg", () => {
     地物タイプ: "veg:PlantCover",
     "分類 ※植被": "test",
   });
-});
-
-test("constructionYear", () => {
-  expect(constructionYear("")).toBe(undefined);
-  expect(constructionYear(null)).toBe(undefined);
-  expect(constructionYear(undefined)).toBe(undefined);
-  expect(constructionYear(-1)).toBe(-1);
-  expect(constructionYear(0)).toBe(0);
-  expect(constructionYear(1)).toBe(1);
-  expect(constructionYear("0")).toBe("0");
-  expect(constructionYear("1")).toBe("1");
-  expect(constructionYear("0000")).toBe("0000");
-  expect(constructionYear("0001")).toBe("0001");
-  expect(constructionYear(2001)).toBe(2001);
-  expect(constructionYear("2001")).toBe("2001");
-  expect(constructionYear(2)).toBe(2);
-  expect(constructionYear("", "bldg")).toBe(undefined);
-  expect(constructionYear(null, "bldg")).toBe(undefined);
-  expect(constructionYear(undefined, "bldg")).toBe(undefined);
-  expect(constructionYear(-1, "bldg")).toBe("不明");
-  expect(constructionYear(0, "bldg")).toBe("不明");
-  expect(constructionYear(1, "bldg")).toBe("不明");
-  expect(constructionYear("0", "bldg")).toBe("不明");
-  expect(constructionYear("1", "bldg")).toBe("不明");
-  expect(constructionYear("0000", "bldg")).toBe("不明");
-  expect(constructionYear("0001", "bldg")).toBe("不明");
-  expect(constructionYear(2001, "bldg")).toBe(2001);
-  expect(constructionYear("2001", "bldg")).toBe("2001");
-  expect(constructionYear(2, "bldg")).toBe(2);
 });
