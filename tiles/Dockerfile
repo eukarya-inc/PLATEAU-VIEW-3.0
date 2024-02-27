@@ -39,4 +39,4 @@ ENV NODE_ENV=production
 
 RUN yarn run build
 
-CMD [ "node", "./dist/main.js" ]
+CMD [ "/bin/sh", "-c", "/usr/bin/xvfb-run -a node ./dist/main.js" ]
