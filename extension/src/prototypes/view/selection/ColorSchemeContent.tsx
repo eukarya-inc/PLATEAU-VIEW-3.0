@@ -5,7 +5,6 @@ import invariant from "tiny-invariant";
 
 import { makeColorSchemeAtomForComponent } from "../../../shared/view/state/colorSchemeForComponent";
 import { FLOOD_LAYER_TYPES } from "../../../shared/view-layers";
-import { USAGE_COLORS } from "../../datasets/colorSets/usageColorSet";
 import { LayerType } from "../../layers";
 import {
   ColorMapIcon,
@@ -73,23 +72,16 @@ const QualitativeContent: FC<{
   const [colors, setColors] = useAtom(colorScheme.colorsAtom);
   const [originalColors, setOriginalColors] = useState(colors);
 
-  const defaultColors = useMemo(() => {
-    switch (colorScheme.name) {
-      case "用途":
-        return USAGE_COLORS;
-    }
-    return USAGE_COLORS;
-  }, [colorScheme.name]);
-
   useEffect(() => {
     if (!originalColors) {
-      setOriginalColors(defaultColors);
+      setOriginalColors(colors);
     }
-  }, [originalColors, defaultColors]);
+  }, [originalColors, colors]);
 
   const handleColorReset = useCallback(() => {
+    const { defaultColors } = colorScheme;
     setColors(defaultColors);
-  }, [defaultColors, setColors]);
+  }, [colorScheme, setColors]);
 
   return (
     <List disablePadding>
