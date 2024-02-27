@@ -4,7 +4,7 @@ import { atomsWithQualitativeColorSet } from "../atomsWithQualitativeColorSet";
 
 import { LANDSLIDE_RISK_TYPE_CODES } from "./constants";
 
-// Old values from Takram. Doesn't seem to be used.
+// Old values from Takram. Doesn't seem to be used
 export const landSlideRiskColorSet = atomsWithQualitativeColorSet({
   name: "土砂災害警戒区域",
   // Colors inherited from VIEW 2.0.
@@ -18,7 +18,7 @@ export const landSlideRiskColorSet = atomsWithQualitativeColorSet({
   ],
 });
 
-// Newest values from Eukarya currently in use.
+// Newest values from Eukarya currently in use
 export const LANDSLIDE_RISK_COLORS = [
   {
     value: LANDSLIDE_RISK_TYPE_CODES[0],
