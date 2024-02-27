@@ -1,9 +1,11 @@
 import { ClickAwayListener, Popper, styled, useTheme, type PopperProps } from "@mui/material";
 import { omit } from "lodash";
-import { useCallback, useState, type FC, type ReactNode } from "react";
+import { useCallback, useState, type FC, type ReactNode, useEffect } from "react";
 
 import { Z_INDEX_WAS } from "../../shared/reearth/constants/style";
 import { isNotFalse } from "../type-helpers";
+
+const VIEWER_DOM_CLASS = "cesium-viewer";
 
 const Arrow = styled("div")(({ theme }) => {
   const hypotenuse = `${1 / Math.SQRT2}em`;
@@ -92,6 +94,12 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
       }, 0);
     }
   }, [onClose, pinned]);
+
+  useEffect(() => {
+    return document
+      .getElementsByClassName(VIEWER_DOM_CLASS)?.[0]
+      ?.addEventListener("click", handleClickAway);
+  }, [handleClickAway]);
 
   const [arrowRef, setArrowRef] = useState<HTMLDivElement | null>(null);
 
