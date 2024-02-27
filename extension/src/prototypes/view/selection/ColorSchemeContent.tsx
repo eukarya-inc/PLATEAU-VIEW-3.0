@@ -5,6 +5,7 @@ import invariant from "tiny-invariant";
 
 import { makeColorSchemeAtomForComponent } from "../../../shared/view/state/colorSchemeForComponent";
 import { FLOOD_LAYER_TYPES } from "../../../shared/view-layers";
+import { USAGE_COLORS } from "../../datasets/colorSets/usageColorSet";
 import { LayerType } from "../../layers";
 import {
   ColorMapIcon,
@@ -72,16 +73,23 @@ const QualitativeContent: FC<{
   const [colors, setColors] = useAtom(colorScheme.colorsAtom);
   const [originalColors, setOriginalColors] = useState(colors);
 
+  const defaultColors = useMemo(() => {
+    switch (colorScheme.name) {
+      case "用途":
+        return USAGE_COLORS;
+    }
+    return USAGE_COLORS;
+  }, [colorScheme.name]);
+
   useEffect(() => {
     if (!originalColors) {
-      setOriginalColors(colors);
+      setOriginalColors(defaultColors);
     }
-  }, [originalColors, colors]);
+  }, [originalColors, defaultColors]);
 
-  const handleColorReset = useCallback(
-    () => setColors(originalColors),
-    [setColors, originalColors],
-  );
+  const handleColorReset = useCallback(() => {
+    setColors(defaultColors);
+  }, [defaultColors, setColors]);
 
   return (
     <List disablePadding>
@@ -129,6 +137,11 @@ export const ColorSchemeContent: FC<ColorSchemeContentProps> = ({ values }) => {
   const handleClose = useCallback(() => {
     setSelection([]);
   }, [setSelection]);
+  console.log("DEFAULT", layer);
+  console.log(
+    "DEFAULT !@#!@#",
+    DEFAULT_COLOR_SCHEME_LAYER_TYPES.includes(layer.type) && "colorSchemeAtom",
+  );
 
   const colorScheme = useAtomValue(
     useMemo(
