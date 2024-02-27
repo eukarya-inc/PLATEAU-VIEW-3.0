@@ -13,6 +13,9 @@ export type Camera = {
     options?: CameraOptions & { heading?: number; pitch?: number; range?: number },
   ) => void;
   readonly rotateOnCenter: (radian: number) => void;
+  readonly overrideScreenSpaceController: (options?: ScreenSpaceCameraControllerOptions) => void;
+  readonly rollCameraHorizontal: () => void;
+
   /** Moves the camera position to look at the specified destination. */
   readonly lookAt: (destination: LookAtDestination, options?: CameraOptions) => void;
   /** Rotate the camera around the center of earth. */
@@ -41,6 +44,7 @@ export type Camera = {
       }
     | undefined;
   readonly setView: (camera: CameraPosition) => void;
+  readonly forceHorizontalRoll: (enable: boolean) => void;
 };
 
 export type FlyToDestination = {
@@ -104,4 +108,25 @@ export type CameraOptions = {
   duration?: number;
   easing?: (time: number) => number;
   withoutAnimation?: boolean;
+};
+
+export type Position2d = [x: number, y: number];
+export type Position3d = [x: number, y: number, z: number];
+
+type CameraEventType = "left_drag" | "right_drag" | "middle_drag" | "wheel" | "pinch";
+type KeyboardEventModifier = "ctrl" | "shift" | "alt";
+
+export type ScreenSpaceCameraControllerOptions = {
+  zoomEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  rotateEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  tiltEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  lookEventTypes?: (CameraEventType | ModifiedCameraEventType)[];
+  minimumZoomDistance?: number;
+  maximumZoomDistance?: number;
+  enableCollisionDetection?: boolean;
+};
+
+type ModifiedCameraEventType = {
+  eventType: CameraEventType;
+  modifier: KeyboardEventModifier;
 };

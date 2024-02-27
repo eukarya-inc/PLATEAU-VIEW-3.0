@@ -148,6 +148,7 @@ export type Scene = {
   ) => LngLatHeight | undefined;
   readonly sampleTerrainHeight: (lng: number, lat: number) => Promise<number | undefined>;
   readonly computeGlobeHeight: (lng: number, lat: number, height?: number) => number | undefined;
+  readonly getGlobeHeight: () => void;
   readonly toXYZ: (
     lng: number,
     lat: number,
@@ -160,6 +161,7 @@ export type Scene = {
     z: number,
     options?: { useGlobeEllipsoid?: boolean },
   ) => [lng: number, lat: number, height: number] | undefined;
+  readonly negativePiToPi: (angle: number | undefined) => void;
   readonly convertScreenToPositionOffset: (
     rawPosition: [x: number, y: number, z: number],
     screenOffset: [x: number, y: number],
