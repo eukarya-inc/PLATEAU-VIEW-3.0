@@ -1,5 +1,4 @@
 import {
-  FLOOD_RANK_COLORS,
   QualitativeColor,
   QualitativeColorSet,
   atomsWithQualitativeColorSet,
@@ -9,6 +8,7 @@ import {
   steepSlopeRiskColorSet,
   mudflowRiskColorSet,
   landslideRiskColorSet,
+  floodRankColorSet,
 } from "../../../prototypes/datasets";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { Properties } from "../../reearth/utils";
@@ -35,7 +35,7 @@ const qualitativeProperties: QualitativeProperty[] = [
       // For river flooding risk layers
       propertyName === "rank_code" ||
       propertyName === "uro:rank_code",
-    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
+    colorSet: floodRankColorSet,
     getDisplayName: name =>
       name.endsWith("浸水ランクコード") ? name.replaceAll("_", " ") : "浸水ランク",
     availableFeatures: ["color", "floodFilter"],
@@ -50,7 +50,7 @@ const qualitativeProperties: QualitativeProperty[] = [
       propertyName === "rank_org_code" ||
       propertyName === "uro:rank_org_code" ||
       propertyName === "uro:rankOrg_code",
-    colorSet: (id, name) => atomsWithQualitativeColorSet({ id, name, colors: FLOOD_RANK_COLORS }),
+    colorSet: floodRankColorSet,
     getDisplayName: name =>
       name.endsWith("浸水ランクコード（独自）") ? name.replaceAll("_", " ") : "浸水ランク（独自）",
     availableFeatures: ["color", "floodFilter"],
