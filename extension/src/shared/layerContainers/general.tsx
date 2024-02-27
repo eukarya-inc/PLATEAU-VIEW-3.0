@@ -52,7 +52,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
   const layersAtom = useAtomValue(rootLayersLayersAtom);
-  const LayersList = useAtomValue(
+  const layersList = useAtomValue(
     useMemo(
       () =>
         atom(get =>
@@ -118,15 +118,15 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
   const generalData = useEvaluateGeneralData({ componentAtoms });
   const theme = useTheme();
-  const [mvtLayers, setMvtLayer] = useState<layerItemProps[]>();
+  const [sortedLayers, setSortedLayer] = useState<layerItemProps[]>();
   useEffect(() => {
-    const sortedLayersList = [...LayersList].sort((a, b) => {
-      const indexA = LayersList.findIndex(layer => layer.id === a.id);
-      const indexB = LayersList.findIndex(layer => layer.id === b.id);
+    const sortedLayersList = [...layersList].sort((a, b) => {
+      const indexA = layersList.findIndex(layer => layer.id === a.id);
+      const indexB = layersList.findIndex(layer => layer.id === b.id);
       return indexB - indexA;
     });
-    setMvtLayer(sortedLayersList);
-  }, [LayersList, layersAtom]);
+    setSortedLayer(sortedLayersList);
+  }, [layersList, layersAtom]);
 
   if (format === "gtfs") {
     return (
@@ -146,7 +146,7 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
         onLoad={handleLoad}
         appearances={generalAppearances}
         visible={!hidden}
-        mvtLayers={mvtLayers}
+        sortedLayers={sortedLayers}
       />
     );
   }

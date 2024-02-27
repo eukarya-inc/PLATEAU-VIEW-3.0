@@ -1,7 +1,5 @@
-import { useAtomValue } from "jotai";
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
-import { updateOrderAtom } from "../../../prototypes/view-layers";
 import { layerItemProps } from "../../layerContainers/general";
 import { useLayer } from "../hooks";
 import { CameraPosition, LayerAppearanceTypes } from "../types";
@@ -17,7 +15,7 @@ export type MVTProps = {
   visible?: boolean;
   appearances?: MVTAppearances;
   layers?: string[];
-  mvtLayers?: layerItemProps[];
+  sortedLayers?: layerItemProps[];
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -56,10 +54,9 @@ export const MVTLayer: FC<MVTProps> = ({
   visible,
   appearances,
   layers,
-  mvtLayers,
+  sortedLayers,
 }) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
-  const updateOrder = useAtomValue(updateOrderAtom);
   useEffect(() => {
     const fetchMVTMeta = async () => {
       const mvtBaseURL = url.match(/(.+)(\/{z}\/{x}\/{y}.mvt)/)?.[1];
@@ -118,16 +115,17 @@ export const MVTLayer: FC<MVTProps> = ({
     }),
     [url, layers],
   );
-  const preUpdateOrder = useRef<number>();
+
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-      mvtLayers?.forEach(layer => {
-        if (layer?.layerId) {
-          window.reearth?.layers?.bringToFront?.(layer.layerId);
-        }
-      });
-      preUpdateOrder.current = updateOrder;
+      if (visible) {
+        sortedLayers?.forEach(layer => {
+          if (layer?.layerId) {
+            window.reearth?.layers?.bringToFront?.(layer.layerId);
+          }
+        });
+      }
       onLoad?.(layerId, {
         lng: meta.center[0],
         lat: meta.center[1],
@@ -137,7 +135,7 @@ export const MVTLayer: FC<MVTProps> = ({
         roll: 0,
       });
     },
-    [meta, mvtLayers, onLoad, updateOrder],
+    [meta, onLoad, sortedLayers, visible],
   );
 
   useLayer({
