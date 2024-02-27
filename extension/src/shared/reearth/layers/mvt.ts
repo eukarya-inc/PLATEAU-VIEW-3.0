@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
+import { layerItemProps } from "../../layerContainers/general";
 import { useLayer } from "../hooks";
 import { CameraPosition, LayerAppearanceTypes } from "../types";
 import { Data } from "../types/layer";
@@ -14,6 +15,7 @@ export type MVTProps = {
   visible?: boolean;
   appearances?: MVTAppearances;
   layers?: string[];
+  sortedLayers?: layerItemProps[];
 };
 
 const DEFAULT_APPEARNACES: Partial<LayerAppearanceTypes> = {
@@ -46,9 +48,15 @@ type MVTMeta = Omit<RawMVTMeta, "center" | "bounds"> & {
   bounds: [x: number, y: number, z: number];
 };
 
-export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, layers }) => {
+export const MVTLayer: FC<MVTProps> = ({
+  url,
+  onLoad,
+  visible,
+  appearances,
+  layers,
+  sortedLayers,
+}) => {
   const [meta, setMeta] = useState<MVTMeta | undefined>();
-
   useEffect(() => {
     const fetchMVTMeta = async () => {
       const mvtBaseURL = url.match(/(.+)(\/{z}\/{x}\/{y}.mvt)/)?.[1];
@@ -111,7 +119,13 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
   const handleOnLoad = useCallback(
     (layerId: string) => {
       if (!meta) return;
-
+      if (visible) {
+        sortedLayers?.forEach(layer => {
+          if (layer?.layerId) {
+            window.reearth?.layers?.bringToFront?.(layer.layerId);
+          }
+        });
+      }
       onLoad?.(layerId, {
         lng: meta.center[0],
         lat: meta.center[1],
@@ -121,7 +135,7 @@ export const MVTLayer: FC<MVTProps> = ({ url, onLoad, visible, appearances, laye
         roll: 0,
       });
     },
-    [meta, onLoad],
+    [meta, onLoad, sortedLayers, visible],
   );
 
   useLayer({
