@@ -1,8 +1,9 @@
 import { ClickAwayListener, Popper, styled, useTheme, type PopperProps } from "@mui/material";
 import { omit } from "lodash";
-import { useCallback, useState, type FC, type ReactNode } from "react";
+import { useCallback, useState, type FC, type ReactNode, useEffect } from "react";
 
 import { Z_INDEX_WAS } from "../../shared/reearth/constants/style";
+import { getCesiumCanvas } from "../../shared/reearth/utils";
 import { isNotFalse } from "../type-helpers";
 
 const Arrow = styled("div")(({ theme }) => {
@@ -92,6 +93,10 @@ export const OverlayPopper: FC<OverlayPopperProps> = ({
       }, 0);
     }
   }, [onClose, pinned]);
+
+  useEffect(() => {
+    return getCesiumCanvas()?.addEventListener("click", handleClickAway);
+  }, [handleClickAway]);
 
   const [arrowRef, setArrowRef] = useState<HTMLDivElement | null>(null);
 
