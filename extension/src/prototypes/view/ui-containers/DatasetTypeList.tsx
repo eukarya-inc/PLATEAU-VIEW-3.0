@@ -26,12 +26,16 @@ const MunicipalityItem: FC<{
       dataset.type.code === PlateauDatasetType.UseCase
         ? dataset.name
         : joinPath([...parents, municipality.name]);
-
+    const titleString =
+      dataset.type.code === PlateauDatasetType.UseCase
+        ? dataset.name
+        : `${parents.join(" ")} ${municipality.name} ${dataset.type.name}`;
     return (
       <DatasetListItem
         dataset={query.data.area.datasets[0]}
         municipalityCode={municipality.code}
         label={label}
+        title={titleString}
       />
     );
   }
