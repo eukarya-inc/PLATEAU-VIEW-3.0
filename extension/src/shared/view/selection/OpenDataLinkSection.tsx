@@ -1,4 +1,4 @@
-import { Divider, Button, styled } from "@mui/material";
+import { Divider, Button, ButtonProps, styled } from "@mui/material";
 import { type FC } from "react";
 
 import { InspectorItem } from "../../../prototypes/ui-components";
@@ -6,6 +6,10 @@ import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 
 export interface DatasetProps {
   dataset?: DatasetFragmentFragment;
+}
+
+interface CustomButtonProps extends ButtonProps {
+  target?: string;
 }
 
 export const OpenDataLink: FC<DatasetProps> = ({ dataset }) => {
@@ -22,11 +26,8 @@ export const OpenDataLink: FC<DatasetProps> = ({ dataset }) => {
               size="small"
               variant="outlined"
               fullWidth
-              onClick={() => {
-                if (openDataUrl) {
-                  window.open(openDataUrl, "_blank");
-                }
-              }}>
+              href={openDataUrl}
+              target="_blank">
               オープンデータを入手
             </CustomButton>
           </InspectorItem>
@@ -36,7 +37,7 @@ export const OpenDataLink: FC<DatasetProps> = ({ dataset }) => {
   );
 };
 
-const CustomButton = styled(Button)({
+const CustomButton = styled(Button)<CustomButtonProps>({
   borderRadius: "2px",
   borderColor: "#D9D9D9",
 });
