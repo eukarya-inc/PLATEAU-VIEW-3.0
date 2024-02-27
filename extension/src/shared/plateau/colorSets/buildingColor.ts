@@ -29,7 +29,7 @@ export const usageColorSet = atomsWithQualitativeColorSet({
     },
     {
       value: "文教厚生施設",
-      color: chroma.rgb(0, 255, 255).hex(),
+      color: chroma.rgb(46, 30, 244).hex(),
       name: "文教厚生施設",
     },
     {
@@ -39,18 +39,18 @@ export const usageColorSet = atomsWithQualitativeColorSet({
     },
     {
       value: "工場",
-      color: chroma.rgb(0, 128, 0).hex(),
+      color: chroma.rgb(135, 206, 250).hex(),
       name: "工場",
     },
     {
       value: "農林漁業用施設",
-      color: chroma.rgb(135, 206, 250).hex(),
+      color: chroma.rgb(0, 128, 0).hex(),
       name: "農林漁業用施設",
     },
     {
-      value: "併給処理施設",
-      color: chroma.rgb(139, 69, 19).hex(),
-      name: "併給処理施設",
+      value: "供給処理施設",
+      color: chroma.rgb(123, 71, 32).hex(),
+      name: "供給処理施設",
     },
     {
       value: "防衛施設",
