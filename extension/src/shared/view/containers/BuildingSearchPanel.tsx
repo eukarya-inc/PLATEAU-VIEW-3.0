@@ -129,27 +129,29 @@ const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accesso
   "gml:name",
   "構造種別",
   "uro:BuildingDetailAttribute_uro:buildingStructureType",
+  "uro:BuildingDetailAttribute_uro:buildingStructureOrgType",
   "用途",
   "bldg:usage",
   "耐火構造種別",
   "uro:BuildingDetailAttribute_uro:fireproofStructureType",
+  "uro:BuildingDetailAttribute_uro:fireproofStructureOrgType",
   [
     "uro:majorUsage",
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:majorUsage"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:majorUsage`,
   ],
   [
-    "uro:orgUsage",
+    "uro:BuildingDetailAttribute_uro:orgUsage",
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage`,
   ],
   [
-    "uro:orgUsage2",
+    "uro:BuildingDetailAttribute_uro:orgUsage2",
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:orgUsage2"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:orgUsage2`,
   ],
   [
-    "uro:detailedUsage",
+    "uro:BuildingDetailAttribute_uro:detailedUsage",
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:detailedUsage"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:detailedUsage`,
   ],
@@ -162,10 +164,20 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const handleTabChange = useCallback((_event: unknown, value: number) => {
     setTab(value);
   }, []);
+  const featureIndex = useOptionalAtomValue(
+    useMemo(
+      () =>
+        ("featureIndexAtom" in layer ? layer.featureIndexAtom : undefined) as
+          | PrimitiveAtom<TileFeatureIndex | null>
+          | undefined,
+      [layer],
+    ),
+  );
+  const featureIds = useMemo(() => (state.isOpen ? featureIndex?.featureIds : []), [state.isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initialized = useRef(false);
   if (state.isOpen && !initialized.current) {
-    initialized.current = true;
+    initialized.current = !!featureIds?.length;
   }
 
   const properties = useOptionalAtomValue(
@@ -176,15 +188,6 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
     }, [layer, initialized.current]), // eslint-disable-line react-hooks/exhaustive-deps
   );
 
-  const featureIndex = useOptionalAtomValue(
-    useMemo(
-      () =>
-        ("featureIndexAtom" in layer ? layer.featureIndexAtom : undefined) as
-          | PrimitiveAtom<TileFeatureIndex | null>
-          | undefined,
-      [layer],
-    ),
-  );
   const [searchedFeatures, setSearchedFeatures] = useAtom(
     useOptionalPrimitiveAtom(
       useMemo(
@@ -201,9 +204,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
   const allFeatures = useMemo(
     () =>
       initialized.current
-        ? window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIndex?.featureIds ?? [])
-        : undefined,
-    [layerId, featureIndex, initialized.current], // eslint-disable-line react-hooks/exhaustive-deps
+        ? window.reearth?.layers?.findFeaturesByIds?.(layerId ?? "", featureIds ?? [])
+        : [],
+    [layerId, featureIds, initialized.current], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const [groups, setGroups] = useState<

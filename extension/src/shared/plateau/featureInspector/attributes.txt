@@ -157,6 +157,7 @@ uro:BuildingDetailAttribute_uro:developmentArea,{"featureType":"bldg:Building","
 uro:BuildingDetailAttribute_uro:buildingStructureType,{"featureType":"bldg:Building","description":"構造種別"}
 uro:BuildingDetailAttribute_uro:buildingStructureOrgType,{"featureType":"bldg:Building","description":"構造種別（独自）"}
 uro:BuildingDetailAttribute_uro:fireproofStructureType,{"featureType":"bldg:Building","description":"耐火構造種別"}
+uro:BuildingDetailAttribute_uro:fireproofStructureOrgType,{"featureType":"bldg:Building","description":"耐火構造種別（独自）"}
 uro:BuildingDetailAttribute_uro:implementingBody,{"featureType":"bldg:Building","description":"事業主体"}
 uro:BuildingDetailAttribute_uro:urbanPlanType,{"featureType":"bldg:Building","description":"都市計画区域"}
 uro:BuildingDetailAttribute_uro:areaClassificationType,{"featureType":"bldg:Building","description":"区域区分"}

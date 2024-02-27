@@ -158,6 +158,7 @@
 31,bldg,bldg:Building,2,,uro:BuildingDetailAttribute,uro:buildingStructureType,,,構造種別,,○,✓,,✓
 32,bldg,bldg:Building,,,uro:BuildingDetailAttribute,uro:buildingStructureOrgType,,,構造種別（独自）,,,,,
 33,bldg,bldg:Building,2,,uro:BuildingDetailAttribute,uro:fireproofStructureType,,,耐火構造種別,,○,✓,,✓
+33,bldg,bldg:Building,2,,uro:BuildingDetailAttribute,uro:fireproofStructureOrgType,,,耐火構造種別（独自）,,○,✓,,✓
 34,bldg,bldg:Building,,,uro:BuildingDetailAttribute,uro:implementingBody,,,事業主体,,,,,
 35,bldg,bldg:Building,2,,uro:BuildingDetailAttribute,uro:urbanPlanType,,,都市計画区域,,○,✓,,
 36,bldg,bldg:Building,2,,uro:BuildingDetailAttribute,uro:areaClassificationType,,,区域区分,,○,✓,,
