@@ -20,29 +20,42 @@ export const DatasetGroup: FC<{
   datasets: DatasetFragmentFragment[];
 }> = ({ groupId, datasets }) => {
   invariant(datasets.length > 0);
+
+  const isUsecaseType = datasets.some(dataset => dataset.type.code === "usecase");
+
   if (datasets.length > 1) {
     return (
       <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
-        {datasets.map(dataset => (
-          <DatasetListItem
-            key={dataset.id}
-            municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-            dataset={dataset}
-            label={dataset.name}
-            title={dataset.name}
-          />
-        ))}
+        {datasets.map(dataset => {
+          const label = isUsecaseType ? dataset.name : dataset.type.name;
+          const title = label;
+
+          return (
+            <DatasetListItem
+              key={dataset.id}
+              municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+              dataset={dataset}
+              label={label}
+              title={title}
+            />
+          );
+        })}
       </DatasetTreeItem>
     );
+  } else {
+    const dataset = datasets[0];
+    const label = isUsecaseType ? dataset.name : dataset.type.name;
+    const title = label;
+
+    return (
+      <DatasetListItem
+        dataset={dataset}
+        municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+        label={label}
+        title={title}
+      />
+    );
   }
-  return (
-    <DatasetListItem
-      dataset={datasets[0]}
-      municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
-      label={datasets[0].type.name}
-      title={datasets[0].type.name}
-    />
-  );
 };
 
 const GlobalItem: FC<{}> = () => {
