@@ -142,7 +142,7 @@ export const BuildingFilterSection: FC<BuildingFilterSectionProps> = ({
               max={prop.maximum}
               range
               step={1}
-              allowFloat={prop.type === "number"}
+              allowFloat={false}
             />
           ))}
         </ParameterList>
