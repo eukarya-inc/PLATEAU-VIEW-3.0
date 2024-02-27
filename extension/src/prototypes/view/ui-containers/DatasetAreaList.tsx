@@ -93,7 +93,7 @@ const MunicipalityItem: FC<{
         municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
         label={
           isUsecaseType
-            ? dataset.name
+            ? joinPath([...parents, dataset.name])
             : joinPath([...parents, municipality.name, dataset.type.name])
         }
         title={titleString}

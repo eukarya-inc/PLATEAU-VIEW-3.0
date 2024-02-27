@@ -24,7 +24,7 @@ const MunicipalityItem: FC<{
     const dataset = query.data.area.datasets[0];
     const label =
       dataset.type.code === PlateauDatasetType.UseCase
-        ? dataset.name
+        ? joinPath([...parents, dataset.name])
         : joinPath([...parents, municipality.name]);
     const titleString =
       dataset.type.code === PlateauDatasetType.UseCase
