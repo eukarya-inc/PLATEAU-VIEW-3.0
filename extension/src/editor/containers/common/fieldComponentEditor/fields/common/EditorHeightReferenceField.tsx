@@ -14,16 +14,16 @@ export type HeightReferenceFieldPreset = {
 
 const OPTIONS = [
   {
+    label: "None",
+    value: "none",
+  },
+  {
     label: "Clamp to ground",
     value: "clamp",
   },
   {
     label: "Relative to ground",
     value: "relative",
-  },
-  {
-    label: "None",
-    value: "none",
   },
 ];
 
@@ -53,7 +53,7 @@ export const EditorHeightReferenceField: React.FC<BasicFieldProps<SupportedField
         <PropertyInlineWrapper label="Height Reference">
           <PropertySelectField
             options={OPTIONS}
-            value={component.preset?.defaultValue || "clamp"}
+            value={component.preset?.defaultValue || "none"}
             onChange={handleValueChange}
           />
         </PropertyInlineWrapper>
