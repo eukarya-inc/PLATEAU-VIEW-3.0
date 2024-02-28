@@ -21,11 +21,21 @@ const MunicipalityItem: FC<{
     includeTypes: [datasetType],
   });
   if (query.data?.area?.datasets?.length === 1) {
+    const dataset = query.data.area.datasets[0];
+    const label =
+      dataset.type.code === PlateauDatasetType.UseCase
+        ? joinPath([...parents, dataset.name])
+        : joinPath([...parents, municipality.name]);
+    const titleString =
+      dataset.type.code === PlateauDatasetType.UseCase
+        ? dataset.name
+        : `${parents.join(" ")} ${municipality.name} ${dataset.type.name}`;
     return (
       <DatasetListItem
         dataset={query.data.area.datasets[0]}
         municipalityCode={municipality.code}
-        label={joinPath([...parents, municipality.name])}
+        label={label}
+        title={titleString}
       />
     );
   }
