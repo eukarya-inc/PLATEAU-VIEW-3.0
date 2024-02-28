@@ -129,11 +129,6 @@ export const ColorSchemeContent: FC<ColorSchemeContentProps> = ({ values }) => {
   const handleClose = useCallback(() => {
     setSelection([]);
   }, [setSelection]);
-  console.log("DEFAULT", layer);
-  console.log(
-    "DEFAULT !@#!@#",
-    DEFAULT_COLOR_SCHEME_LAYER_TYPES.includes(layer.type) && "colorSchemeAtom",
-  );
 
   const colorScheme = useAtomValue(
     useMemo(
