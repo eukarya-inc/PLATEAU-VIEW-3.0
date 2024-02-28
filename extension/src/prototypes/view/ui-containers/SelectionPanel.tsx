@@ -47,7 +47,6 @@ export const SelectionPanel: FC = () => {
   if (selectionGroups.length === 1) {
     const [selectionGroup] = selectionGroups;
     const { type, subtype } = selectionGroup;
-    console.log("ASDFSDF", selectionGroup);
     switch (type) {
       case LAYER_SELECTION:
         switch (subtype) {
