@@ -96,7 +96,7 @@ const QualitativeContent: FC<{
         size="small"
         style={{ float: "right", marginRight: "10px", marginTop: "8px" }}
         onClick={handleColorReset}>
-        Color Reset
+        色をリセット
       </Button>
       <ListItem>
         <ListItemText>
