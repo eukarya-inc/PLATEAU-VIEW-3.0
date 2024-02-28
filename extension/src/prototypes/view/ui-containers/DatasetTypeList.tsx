@@ -51,6 +51,7 @@ const MunicipalityItem: FC<{
           municipalityCode={municipality.code}
           dataset={dataset}
           label={dataset.name}
+          title={dataset.name}
         />
       ))}
     </DatasetTreeItem>
