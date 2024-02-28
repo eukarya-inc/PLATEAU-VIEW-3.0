@@ -172,7 +172,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const treeRef = useRef(tree);
   treeRef.current = tree;
 
-  const [draftSetting, updateDraftSetting] = useState<DraftSetting>();
+  const [draftSetting, updateDraftSetting] = useState<DraftSetting | undefined>();
 
   const [expanded, setExpanded] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
@@ -181,18 +181,21 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
     if (treeRef.current.length > 0) {
       setSelected(treeRef.current[0].id);
       setContentType("status");
-      setDataId(DEFAULT_SETTING_DATA_ID);
     }
     setExpanded(treeRef.current.map(item => item.id));
-  }, [dataset?.id]);
+    setDataId(undefined);
+    cache?.clear();
+  }, [dataset?.id, cache]);
 
   useEffect(() => {
-    if (!dataset?.id || !dataId) return;
     // get cache
-    const cacheSetting = cache?.get(`dataset-${dataset.id}-${dataId}`);
+    const cacheSetting =
+      dataset?.id && dataId ? cache?.get(`dataset-${dataset.id}-${dataId}`) : undefined;
 
     updateDraftSetting(
-      cacheSetting
+      !(dataset?.id && dataId)
+        ? undefined
+        : cacheSetting
         ? cloneDeep(cacheSetting)
         : settings.find(s => s.datasetId === dataset.id && s.dataId === dataId) ?? {
             datasetId: dataset.id,
@@ -207,7 +210,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const handleItemClick = useCallback(
     ({ id, dataId: nextDataId, type }: EditorTreeSelection) => {
       // save cache
-      if (draftSetting) {
+      if (draftSetting && dataset?.id && dataId) {
         cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
       }
       // update state
@@ -294,10 +297,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         setIsSaving(false);
       });
   }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
-
-  useEffect(() => {
-    cache?.clear();
-  }, [cache, dataset?.id]);
 
   return layer && dataset ? (
     <EditorSection
