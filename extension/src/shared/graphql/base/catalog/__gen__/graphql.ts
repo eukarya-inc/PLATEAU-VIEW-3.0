@@ -139,12 +139,12 @@ export type Dataset = {
   /** データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。 */
   groups?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
-  // データセットの公開データのURL。
-  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットのアイテム。 */
   items: Array<DatasetItem>;
   /** データセット名 */
   name: Scalars['String']['output'];
+  /** データセットの公開データのURL。 */
+  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットが属する都道府県。 */
   prefecture?: Maybe<Prefecture>;
   /** データセットが属する都道府県コード。2桁の数字から成る文字列です。 */
@@ -298,12 +298,12 @@ export type GenericDataset = Dataset & Node & {
   /** データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。 */
   groups?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
-  // データセットの公開データのURL。
-  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットのアイテム。 */
   items: Array<GenericDatasetItem>;
   /** データセット名 */
   name: Scalars['String']['output'];
+  /** データセットの公開データのURL。 */
+  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットが属する都道府県。 */
   prefecture?: Maybe<Prefecture>;
   /** データセットが属する都道府県コード。2桁の数字から成る文字列です。 */
@@ -391,12 +391,12 @@ export type PlateauDataset = Dataset & Node & {
   /** データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。 */
   groups?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
-  // データセットの公開データのURL。
-  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットのアイテム。 */
   items: Array<PlateauDatasetItem>;
   /** データセット名 */
   name: Scalars['String']['output'];
+  /** データセットの公開データのURL。 */
+  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットが準拠するPLATEAU都市モデルの仕様。 */
   plateauSpecMinor: PlateauSpecMinor;
   /** データセットが準拠するPLATEAU都市モデルの仕様のマイナーバージョンへのID。 */
@@ -632,12 +632,12 @@ export type RelatedDataset = Dataset & Node & {
   /** データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。 */
   groups?: Maybe<Array<Scalars['String']['output']>>;
   id: Scalars['ID']['output'];
-  // データセットの公開データのURL。
-  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットのアイテム。 */
   items: Array<RelatedDatasetItem>;
   /** データセット名 */
   name: Scalars['String']['output'];
+  /** データセットの公開データのURL。 */
+  openDataUrl?: Maybe<Scalars['String']['output']>;
   /** データセットが属する都道府県。 */
   prefecture?: Maybe<Prefecture>;
   /** データセットが属する都道府県コード。2桁の数字から成る文字列です。 */
