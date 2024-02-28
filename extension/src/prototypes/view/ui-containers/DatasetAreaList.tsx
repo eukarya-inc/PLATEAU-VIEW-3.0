@@ -9,6 +9,7 @@ import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/typ
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
+import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -21,7 +22,7 @@ export const DatasetGroup: FC<{
 }> = ({ groupId, datasets }) => {
   invariant(datasets.length > 0);
 
-  const isUsecaseType = datasets.some(dataset => dataset.type.code === "usecase");
+  const isUsecaseType = datasets.some(dataset => dataset.type.code === PlateauDatasetType.UseCase);
 
   if (datasets.length > 1) {
     return (
@@ -96,7 +97,7 @@ const MunicipalityItem: FC<{
   );
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];
-    const isUsecaseType = dataset.type.code === "usecase";
+    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
     const titleString = isUsecaseType
       ? dataset.name
       : `${parents.join(" ")} ${municipality.name} ${dataset.type.name}`;
