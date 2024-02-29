@@ -244,7 +244,17 @@ export const getPropertyAttributeValue = (name: string) => {
   }
 
   // Replace urf_function into urf:function.
-  const second = getAttributeLabel(name.replace("_", ":"));
+  const second = getAttributeLabel(
+    featureType
+      ? [
+          featureType,
+          name
+            .split(featureType + "_")
+            .slice(-1)[0]
+            .replace("_", ":"),
+        ].join("_")
+      : name.replace("_", ":"),
+  );
   if (second) return second;
 
   // Find last name, because the nested structure is expressed by `_`.

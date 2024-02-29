@@ -10,10 +10,10 @@ import {
   landslideRiskColorSet,
   floodRankColorSet,
 } from "../../../prototypes/datasets";
-import { BUILDING_FEATURE_TYPE } from "../constants";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { Properties } from "../../reearth/utils";
 import { TilesetFloodColorField } from "../../types/fieldComponents/3dtiles";
+import { BUILDING_FEATURE_TYPE } from "../constants";
 import { makePropertyName } from "../featureInspector";
 
 export type AvailableFeatures = ("color" | "buildingFilter" | "floodFilter")[];
