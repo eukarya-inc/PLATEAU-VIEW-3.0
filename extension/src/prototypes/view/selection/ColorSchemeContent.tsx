@@ -1,5 +1,5 @@
-import { Divider, List, ListItem, ListItemText } from "@mui/material";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { Button, Divider, List, ListItem, ListItemText } from "@mui/material";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
@@ -69,9 +69,12 @@ const QualitativeContent: FC<{
   continuous?: boolean;
   onClose?: () => void;
 }> = ({ colorScheme, continuous = false, onClose }) => {
-  const colors = useAtomValue(
-    useMemo(() => atom(get => get(colorScheme.colorsAtom)), [colorScheme]),
-  );
+  const [colors, setColors] = useAtom(colorScheme.colorsAtom);
+
+  const handleColorReset = useCallback(() => {
+    const { defaultColors } = colorScheme;
+    setColors(defaultColors);
+  }, [colorScheme, setColors]);
 
   return (
     <List disablePadding>
@@ -81,6 +84,13 @@ const QualitativeContent: FC<{
         onClose={onClose}
       />
       <Divider />
+      <Button
+        variant="outlined"
+        size="small"
+        style={{ float: "right", marginRight: "10px", marginTop: "8px" }}
+        onClick={handleColorReset}>
+        色をリセット
+      </Button>
       <ListItem>
         <ListItemText>
           <ColorSetList colorsAtom={colorScheme.colorAtomsAtom} continuous={continuous} />

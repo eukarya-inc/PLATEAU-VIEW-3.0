@@ -1,7 +1,7 @@
 import { IconButton, ListItem, Popover, Stack, styled, Typography } from "@mui/material";
 import { useAtom, type PrimitiveAtom } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
-import { useCallback, useId, useRef, useState, type FC, useMemo } from "react";
+import { useCallback, useId, useRef, useState, type FC, useMemo, useEffect } from "react";
 import { ChromePicker, type ColorChangeHandler } from "react-color";
 
 import { type QualitativeColor } from "../datasets";
@@ -64,6 +64,12 @@ export const ColorSetListItem: FC<ColorSetListItemProps> = ({
   const [indeterminateStrokeColor, setIndeterminateStrokeColor] = useState(
     color.strokeColor === "" ? color.color : color.strokeColor ?? "",
   );
+
+  useEffect(() => {
+    if (indeterminateColor && indeterminateColor !== color.color) {
+      setIndeterminateColor(color.color);
+    }
+  }, [color.color, indeterminateColor]);
 
   const hasStroke = useMemo(() => "strokeColor" in color, [color]);
 
