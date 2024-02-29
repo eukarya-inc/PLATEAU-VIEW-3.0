@@ -45,9 +45,22 @@ export const DescriptionFeatureContent: React.FC<Props> = ({ html, additionalHei
     // Update the content of the existing or new style element
     style.textContent = `
     html { font-size: 16px }
-    body, body * { color:${theme.typography.body2.color ?? getComputedStyle(frame).color}; 
+    body, body * { margin: 0; color:${
+      theme.typography.body2.color ?? getComputedStyle(frame).color
+    }; 
     font-family: ${theme.typography.body2.fontFamily ?? getComputedStyle(frame).fontFamily};
     font-size: ${theme.typography.body2.fontSize}; } 
+    table { width: 100%; border-collapse: collapse;
+    }
+    th { color: #00000073;}
+    td, th { 
+    line-height: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: left;
+    padding: 6px 16px;
+    border-spacing: 0;
+    width: 50%;
+    }
     a { color:${theme.typography.body2.color ?? getComputedStyle(frame).color};}`;
 
     const resize = () => {
@@ -70,7 +83,7 @@ export const DescriptionFeatureContent: React.FC<Props> = ({ html, additionalHei
 
   const { gridHeightAtom } = useContext(AppOverlayLayoutContext);
   const gridHeight = useAtomValue(gridHeightAtom);
-
+  
   return (
     <Wrapper style={{ maxHeight: gridHeight - additionalHeight }}>
       <IFrame
@@ -90,7 +103,6 @@ const Wrapper = styled("div")`
   width: 100%;
   min-width: 100%;
   box-sizing: border-box;
-  padding: 5px;
 `;
 
 const IFrame = styled("iframe")`
