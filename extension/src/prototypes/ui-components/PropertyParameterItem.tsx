@@ -146,7 +146,8 @@ const ObjectValue: FC<{
   values: object[];
   level?: number;
   path?: string[];
-}> = ({ id, name, values, level, path }) => {
+  featureType: string;
+}> = ({ id, name, values, level, path, featureType }) => {
   const properties = useMemo(() => {
     return intersection(...values.map(v => Object.keys(v ?? {})))
       .filter(name => !name.startsWith("_"))
@@ -177,6 +178,7 @@ const ObjectValue: FC<{
       properties={properties as PropertySet[]}
       level={level}
       path={path ? [...path, ...(isNaN(Number(name)) ? [name] : [])] : []}
+      featureType={featureType}
     />
   );
 };
@@ -193,14 +195,18 @@ const Property: FC<{
   property: PropertySet;
   level?: number;
   path?: string[];
-}> = ({ property: { id, name, values }, level, path }) => {
+  featureType: string;
+}> = ({ property: { id, name, values }, level, path, featureType }) => {
   const isPrimitive = ["string", "number"].includes(typeof values[0]);
-  const actualName = [...(path ?? []), ...(isNaN(Number(name)) ? [name] : [])].join("_");
+  const actualName = `${featureType}_${[
+    ...(path ?? []),
+    ...(isNaN(Number(name)) ? [name] : []),
+  ].join("_")}`;
   const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {makePropertyName(actualName, attrVal)}
+        {makePropertyName(actualName, name, attrVal)}
       </PropertyNameCell>
       <TableCell width="50%">
         {typeof values[0] === "string" ? (
@@ -227,6 +233,7 @@ const Property: FC<{
       values={values as object[]}
       level={level}
       path={path}
+      featureType={featureType}
     />
   );
 };
@@ -256,7 +263,8 @@ const PropertyGroup: FC<{
   properties: readonly PropertySet[];
   level?: number;
   path?: string[];
-}> = ({ id = "", name, properties, level = 0, path }) => {
+  featureType: string;
+}> = ({ id = "", name, properties, level = 0, path, featureType }) => {
   const expandedAtom = groupExpandedAtomFamily(id ?? name);
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleClick = useCallback(() => {
@@ -271,7 +279,10 @@ const PropertyGroup: FC<{
               {expanded ? <TreeArrowExpandedIcon /> : <TreeArrowCollapsedIcon />}
             </TreeArrowButton>
             {isNaN(Number(name))
-              ? makePropertyName([...(path?.length ? path : [name])].join("_"))
+              ? makePropertyName(
+                  `${featureType}_${[...(path?.length ? path : [name])].join("_")}`,
+                  name,
+                )
               : name}
           </PropertyGroupName>
         </PropertyGroupCell>
@@ -291,6 +302,7 @@ const PropertyGroup: FC<{
                     }}
                     level={level + 1}
                     path={path}
+                    featureType={featureType}
                   />
                 ))}
               </TableBody>
@@ -306,10 +318,11 @@ export interface PropertyParameterItemProps
   extends Omit<ComponentPropsWithRef<typeof Root>, "children"> {
   properties: readonly PropertySet[];
   labelFontSize?: "small" | "medium";
+  featureType: string;
 }
 
 export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParameterItemProps>(
-  ({ properties, ...props }, ref) => {
+  ({ properties, featureType, ...props }, ref) => {
     const groups = Object.entries(groupBy(properties, property => property.name))
       .map(([name, properties]) => ({ name, properties }))
       .filter(({ name }) => !name.startsWith("_"));
@@ -319,9 +332,19 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
           <TableBody>
             {groups.map(({ name, properties }) =>
               properties.length === 1 ? (
-                <Property key={properties[0].name} property={properties[0]} />
+                <Property
+                  key={properties[0].name}
+                  property={properties[0]}
+                  featureType={featureType}
+                />
               ) : (
-                <PropertyGroup key={name} name={name} id={name} properties={properties} />
+                <PropertyGroup
+                  key={name}
+                  name={name}
+                  id={name}
+                  properties={properties}
+                  featureType={featureType}
+                />
               ),
             )}
           </TableBody>

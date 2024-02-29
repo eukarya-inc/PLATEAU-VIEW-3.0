@@ -28,6 +28,7 @@ import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex, makePropertyName } from "../../plateau";
+import { BUILDING_FEATURE_TYPE } from "../../plateau/constants";
 import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
@@ -236,7 +237,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         const accessor = typeof value === "string" ? undefined : value[2];
         return {
           key: property ?? name,
-          title: makePropertyName(name) ?? name,
+          title: makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ?? name,
           options: uniqBy(
             allFeatures.reduce((res, f) => {
               const propertyValue = get(f.properties, accessor ?? value);
