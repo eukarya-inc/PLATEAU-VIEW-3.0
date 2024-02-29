@@ -1,8 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { mergeConfig } from "vite";
 
-// 7.6.17
-
 const config: StorybookConfig = {
   stories: ["../src/**/*.story.@(js|jsx|mjs|ts|tsx)"],
   addons: ["@storybook/addon-essentials", "@storybook/addon-themes"],
