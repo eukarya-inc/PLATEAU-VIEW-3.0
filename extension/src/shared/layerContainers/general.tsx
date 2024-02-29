@@ -1,18 +1,20 @@
 import { useTheme } from "@mui/material";
-import { PrimitiveAtom, useAtom, useSetAtom } from "jotai";
-import { FC, useCallback, useEffect, useRef } from "react";
+import { PrimitiveAtom, atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
 import { LayerType } from "../../prototypes/layers";
 import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
-import { CameraPosition } from "../../shared/reearth/types";
+import { CameraPosition, DataType } from "../../shared/reearth/types";
 import { useOptionalPrimitiveAtom } from "../hooks";
 import { GeneralProps, GeneralLayer, GENERAL_FEATURE, GTFSLayer } from "../reearth/layers";
 import { MVTLayer } from "../reearth/layers/mvt";
 import { WMSLayer } from "../reearth/layers/wms";
 import { Properties } from "../reearth/utils";
+import { rootLayersLayersAtom } from "../states/rootLayer";
+import { LayerModel } from "../view-layers";
 import { ComponentAtom } from "../view-layers/component";
 
 import { useEvaluateGeneralAppearance } from "./hooks/useEvaluateGeneralAppearance";
@@ -28,7 +30,13 @@ type GeneralContainerProps = Omit<GeneralProps, "appearances" | "appendData"> & 
   componentAtoms: ComponentAtom[] | undefined;
   layers?: string[];
   cameraAtom?: PrimitiveAtom<CameraPosition | undefined>;
-  index?: number;
+};
+
+export type layerItemProps = {
+  url: string | undefined;
+  id: string;
+  format: DataType | undefined;
+  layerId: string | null;
 };
 
 export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
@@ -40,12 +48,28 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   hidden,
   format,
   cameraAtom,
-  index,
   ...props
 }) => {
   const [layerId, setLayerId] = useAtom(layerIdAtom);
-  const [, setCamera] = useAtom(useOptionalPrimitiveAtom(cameraAtom));
+  const layersAtom = useAtomValue(rootLayersLayersAtom);
+  const layersList = useAtomValue(
+    useMemo(
+      () =>
+        atom(get =>
+          layersAtom.map((layer: LayerModel) => {
+            return {
+              url: layer.url,
+              id: layer.id,
+              format: layer.format,
+              layerId: get(layer.layerIdAtom),
+            };
+          }),
+        ),
+      [layersAtom],
+    ),
+  );
 
+  const [, setCamera] = useAtom(useOptionalPrimitiveAtom(cameraAtom));
   useScreenSpaceSelectionResponder({
     type: GENERAL_FEATURE,
     convertToSelection: object => {
@@ -94,17 +118,15 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
   const generalAppearances = useEvaluateGeneralAppearance({ componentAtoms });
   const generalData = useEvaluateGeneralData({ componentAtoms });
   const theme = useTheme();
-
-  const prevIndexRef = useRef<number>();
-
+  const [sortedLayers, setSortedLayer] = useState<layerItemProps[]>();
   useEffect(() => {
-    if (layerId && index !== undefined) {
-      if (prevIndexRef.current !== undefined && index < prevIndexRef.current) {
-        window.reearth?.layers?.bringToFront?.(layerId);
-      }
-      prevIndexRef.current = index;
-    }
-  }, [index, layerId]);
+    const sortedLayersList = [...layersList].sort((a, b) => {
+      const indexA = layersList.findIndex(layer => layer.id === a.id);
+      const indexB = layersList.findIndex(layer => layer.id === b.id);
+      return indexB - indexA;
+    });
+    setSortedLayer(sortedLayersList);
+  }, [layersList, layersAtom]);
 
   if (format === "gtfs") {
     return (
@@ -119,7 +141,13 @@ export const GeneralLayerContainer: FC<GeneralContainerProps> = ({
 
   if (format === "mvt") {
     return (
-      <MVTLayer {...props} onLoad={handleLoad} appearances={generalAppearances} visible={!hidden} />
+      <MVTLayer
+        {...props}
+        onLoad={handleLoad}
+        appearances={generalAppearances}
+        visible={!hidden}
+        sortedLayers={sortedLayers}
+      />
     );
   }
 

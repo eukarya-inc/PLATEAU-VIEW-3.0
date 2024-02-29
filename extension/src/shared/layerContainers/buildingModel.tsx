@@ -142,9 +142,12 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   );
 
   const hiddenFeatures = useAtomValue(hiddenFeaturesAtom);
-  const hiddenFeaturesConditions: ConditionsExpression = {
-    conditions: [[`${JSON.stringify(hiddenFeatures)}` + "== ${gml_id}", "false"]],
-  };
+  const hiddenFeaturesConditions: ConditionsExpression = useMemo(
+    () => ({
+      conditions: [[`${JSON.stringify(hiddenFeatures)}` + "== ${gml_id}", "false"]],
+    }),
+    [hiddenFeatures],
+  );
 
   const searchedFeatures = useAtomValue(searchedFeaturesAtom);
   const shownSearchedFeaturesConditions: ConditionsExpression | undefined = useMemo(

@@ -238,7 +238,9 @@ export const useEvaluateGeneralAppearance = ({
             makeVisibilityFilterExpression(polylineVisibilityFilter) ??
             makeVisibilityConditionExpression(polylineVisibilityCondition),
           clampToGround: polylineHeightReference?.preset?.defaultValue
-            ? polylineHeightReference.preset.defaultValue === "clamp"
+            ? polylineHeightReference?.preset?.defaultValue === "clamp"
+              ? true
+              : false
             : undefined,
           classificationType: polylineClassificationType?.preset?.defaultValue,
         },

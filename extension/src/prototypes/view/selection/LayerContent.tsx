@@ -9,6 +9,7 @@ import { flyToCamera, flyToLayerId, lookAtXYZ } from "../../../shared/reearth/ut
 import { findRootLayerAtom, rootLayersAtom } from "../../../shared/states/rootLayer";
 import { BuildingSearchPanel } from "../../../shared/view/containers/BuildingSearchPanel";
 import { Fields } from "../../../shared/view/fields/Fields";
+import { OpenDataLink } from "../../../shared/view/selection/OpenDataLinkSection";
 import { SwitchDataset } from "../../../shared/view/selection/SwitchDatasetSection";
 import { SwitchGroup } from "../../../shared/view/selection/SwitchGroupSection";
 import { BuildingLayerModel, RootLayerConfigForDataset } from "../../../shared/view-layers";
@@ -211,6 +212,7 @@ export function LayerContent<T extends SupportedLayerType>({
           onClose={handleClose}
         />
         <LayerHiddenFeaturesSection layers={values} />
+        <OpenDataLink dataset={rootLayerConfig?.rawDataset} />
         <SwitchDataset layers={values} />
         <SwitchGroup layers={values} />
         <LayerHeatmapSection layers={values} />

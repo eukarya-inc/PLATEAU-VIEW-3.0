@@ -9,6 +9,7 @@ import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/typ
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
+import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
@@ -20,29 +21,38 @@ export const DatasetGroup: FC<{
   datasets: DatasetFragmentFragment[];
 }> = ({ groupId, datasets }) => {
   invariant(datasets.length > 0);
+
   if (datasets.length > 1) {
     return (
       <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
-        {datasets.map(dataset => (
-          <DatasetListItem
-            key={dataset.id}
-            municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-            dataset={dataset}
-            label={dataset.name}
-            title={dataset.name}
-          />
-        ))}
+        {datasets.map(dataset => {
+          return (
+            <DatasetListItem
+              key={dataset.id}
+              municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+              dataset={dataset}
+              label={dataset.name}
+              title={dataset.name}
+            />
+          );
+        })}
       </DatasetTreeItem>
     );
+  } else {
+    const dataset = datasets[0];
+    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
+    const label = isUsecaseType ? dataset.name : dataset.type.name;
+    const title = label;
+
+    return (
+      <DatasetListItem
+        dataset={dataset}
+        municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
+        label={label}
+        title={title}
+      />
+    );
   }
-  return (
-    <DatasetListItem
-      dataset={datasets[0]}
-      municipalityCode={datasets[0].wardCode ?? datasets[0].cityCode ?? datasets[0].prefectureCode}
-      label={datasets[0].type.name}
-      title={datasets[0].type.name}
-    />
-  );
 };
 
 const GlobalItem: FC<{}> = () => {
@@ -83,11 +93,20 @@ const MunicipalityItem: FC<{
   );
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area?.datasets[0];
+    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
+    const titleString = isUsecaseType
+      ? dataset.name
+      : `${parents.join(" ")} ${municipality.name} ${dataset.type.name}`;
     return (
       <DatasetListItem
         dataset={dataset}
         municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-        label={joinPath([...parents, municipality.name, dataset.type.name])}
+        label={
+          isUsecaseType
+            ? joinPath([...parents, dataset.name])
+            : joinPath([...parents, municipality.name, dataset.type.name])
+        }
+        title={titleString}
       />
     );
   }
