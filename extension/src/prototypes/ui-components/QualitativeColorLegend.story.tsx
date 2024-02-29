@@ -19,7 +19,9 @@ type Story = StoryObj<typeof QualitativeColorLegend>;
 const Component: FC = () => {
   return (
     <Stack spacing={2}>
-      <QualitativeColorLegend colors={useAtomValue(floodRankColorSet.colorsAtom)} />
+      <QualitativeColorLegend
+        colors={useAtomValue(floodRankColorSet("iddid", "浸水ランクコード").colorsAtom)}
+      />
       <QualitativeColorLegend colors={useAtomValue(landUseColorSet.colorsAtom)} />
     </Stack>
   );

@@ -18,6 +18,7 @@ export interface QualitativeColorSet {
   name: string;
   colorsAtom: PrimitiveAtom<QualitativeColor[]>;
   colorAtomsAtom: SplitAtom<QualitativeColor>;
+  defaultColors: QualitativeColor[];
 }
 
 export interface QualitativeColorSetOptions {
@@ -38,11 +39,15 @@ export function atomsWithQualitativeColorSet({
     { shouldInitialize: true },
   );
   const colorAtomsAtom = splitAtom(colorsAtom);
+
+  const defaultColors = [...colors];
+
   return {
     id,
     type: "qualitative",
     name,
     colorsAtom,
     colorAtomsAtom,
+    defaultColors,
   };
 }
