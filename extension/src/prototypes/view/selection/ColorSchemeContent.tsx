@@ -1,6 +1,6 @@
 import { Button, Divider, List, ListItem, ListItemText } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { useCallback, useMemo, type FC, useState, useEffect } from "react";
+import { useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { makeColorSchemeAtomForComponent } from "../../../shared/view/state/colorSchemeForComponent";
@@ -70,13 +70,6 @@ const QualitativeContent: FC<{
   onClose?: () => void;
 }> = ({ colorScheme, continuous = false, onClose }) => {
   const [colors, setColors] = useAtom(colorScheme.colorsAtom);
-  const [originalColors, setOriginalColors] = useState(colors);
-
-  useEffect(() => {
-    if (!originalColors) {
-      setOriginalColors(colors);
-    }
-  }, [originalColors, colors]);
 
   const handleColorReset = useCallback(() => {
     const { defaultColors } = colorScheme;
