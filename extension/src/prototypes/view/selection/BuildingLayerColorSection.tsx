@@ -74,6 +74,7 @@ const Legend: FC<{
               };
             case "qualitative":
               return {
+                id: colorScheme.id,
                 type: "qualitative" as const,
                 name: colorScheme.name,
                 colors: get(colorScheme.colorsAtom),

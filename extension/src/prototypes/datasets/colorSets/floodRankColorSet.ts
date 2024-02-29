@@ -11,7 +11,9 @@ export const FLOOD_RANK_COLORS = [
   { value: 1, color: chroma.rgb(247, 245, 169).hex(), name: "1: 〜0.5m" },
 ];
 
-export const floodRankColorSet = atomsWithQualitativeColorSet({
-  name: "浸水ランク",
-  colors: FLOOD_RANK_COLORS,
-});
+export const floodRankColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id,
+    name,
+    colors: FLOOD_RANK_COLORS,
+  });

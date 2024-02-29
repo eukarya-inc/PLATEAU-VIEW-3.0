@@ -22,22 +22,17 @@ export const DatasetGroup: FC<{
 }> = ({ groupId, datasets }) => {
   invariant(datasets.length > 0);
 
-  const isUsecaseType = datasets.some(dataset => dataset.type.code === PlateauDatasetType.UseCase);
-
   if (datasets.length > 1) {
     return (
       <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
         {datasets.map(dataset => {
-          const label = isUsecaseType ? dataset.name : dataset.type.name;
-          const title = label;
-
           return (
             <DatasetListItem
               key={dataset.id}
               municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
               dataset={dataset}
-              label={label}
-              title={title}
+              label={dataset.name}
+              title={dataset.name}
             />
           );
         })}
@@ -45,6 +40,7 @@ export const DatasetGroup: FC<{
     );
   } else {
     const dataset = datasets[0];
+    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
     const label = isUsecaseType ? dataset.name : dataset.type.name;
     const title = label;
 
