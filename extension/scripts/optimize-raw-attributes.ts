@@ -27,10 +27,10 @@ const main = async (filename: string, newFileName: string) => {
     const tag4 = parseDepricatedTag(columns[5]);
     const description = columns[6];
     const dataType = (() => {
-      switch (columns[10]) {
-        case "日付型（xs:date）":
+      switch (columns[7]) {
+        case "xs:date":
           return "date";
-        case "グレゴリオ年型（xs:gYear）":
+        case "xs:gYear":
           return "gYear";
       }
     })();
@@ -71,5 +71,5 @@ const main = async (filename: string, newFileName: string) => {
 //   await fs.writeFile(path.resolve(__dirname, newFileName), result.join("\n"));
 // };
 
-await main("../attributes_raw_v2.csv", "../attributes.txt");
+await main("../attributes_raw_v3.csv", "../attributes.txt");
 // await temp("../attributes_v3_raw.csv", "../attributes_temp.txt");
