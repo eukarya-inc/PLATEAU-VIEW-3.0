@@ -58,14 +58,18 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
     }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayerForDataset | undefined }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
+  const featureType = useMemo(() => layers[0].features[0].properties["feature_type"], [layers]);
+
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
     return layers.reduce((res, { features, rootLayer, layer }) => {
+      const featureType = features[0].properties["feature_type"];
       return res.concat(
         ...makePropertyForFeatureInspector({
           features,
           layer,
           featureInspector: rootLayer?.featureInspector,
+          featureType,
         }),
       );
     }, [] as Feature["properties"][]);
@@ -73,7 +77,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
 
   return (
     <ParameterList>
-      <PropertyParameterItem properties={properties} />
+      <PropertyParameterItem properties={properties} featureType={featureType} />
     </ParameterList>
   );
 };

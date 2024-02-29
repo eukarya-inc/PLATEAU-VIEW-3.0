@@ -10,6 +10,7 @@ import {
   landslideRiskColorSet,
   floodRankColorSet,
 } from "../../../prototypes/datasets";
+import { BUILDING_FEATURE_TYPE } from "../constants";
 import { isNotNullish } from "../../../prototypes/type-helpers";
 import { Properties } from "../../reearth/utils";
 import { TilesetFloodColorField } from "../../types/fieldComponents/3dtiles";
@@ -211,7 +212,9 @@ export class PlateauTilesetProperties extends Properties {
               ? qualitativeProperty?.getMinMax?.(minimum, maximum) ?? [minimum, maximum]
               : [];
           const displayName =
-            qualitativeProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name;
+            qualitativeProperty.getDisplayName?.(name) ??
+            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
+            name;
           return {
             name,
             type: "qualitative" as const,
@@ -246,7 +249,10 @@ export class PlateauTilesetProperties extends Properties {
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName: numberProperty.getDisplayName?.(name) ?? makePropertyName(name) ?? name,
+              displayName:
+                numberProperty.getDisplayName?.(name) ??
+                makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
+                name,
               availableFeatures: numberProperty.availableFeatures,
               accessor: makeAccessor(name),
             };
