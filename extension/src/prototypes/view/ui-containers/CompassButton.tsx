@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 
 import { useCamera } from "../../../shared/reearth/hooks";
 import { AppIconButton, CompassIcon } from "../../ui-components";
@@ -8,17 +8,13 @@ export const CompassButton: FC = () => {
 
   const { getCameraPosition } = useCamera();
   const camera = getCameraPosition();
+  const radianToDegree = useCallback((rad: number) => rad * (180 / Math.PI), []);
 
-  console.log("camera position", camera?.lat, camera?.lng);
   useEffect(() => {
     if (camera?.heading) {
-      const headingDegrees = (camera.heading * 180) / Math.PI;
-      setRotationAngle(headingDegrees);
+      setRotationAngle(360 - radianToDegree(camera?.heading));
     }
-  }, [camera?.heading]);
-
-  console.log("rotationAngle", rotationAngle);
-  console.log("camera.height", camera?.heading);
+  }, [camera?.heading, radianToDegree]);
 
   return (
     <AppIconButton title="Navigator">
