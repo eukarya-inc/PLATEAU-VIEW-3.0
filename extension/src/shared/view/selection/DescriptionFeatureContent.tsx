@@ -83,7 +83,7 @@ export const DescriptionFeatureContent: React.FC<Props> = ({ html, additionalHei
 
   const { gridHeightAtom } = useContext(AppOverlayLayoutContext);
   const gridHeight = useAtomValue(gridHeightAtom);
-  
+
   return (
     <Wrapper style={{ maxHeight: gridHeight - additionalHeight }}>
       <IFrame
@@ -103,6 +103,7 @@ const Wrapper = styled("div")`
   width: 100%;
   min-width: 100%;
   box-sizing: border-box;
+  padding: 5px;
 `;
 
 const IFrame = styled("iframe")`
