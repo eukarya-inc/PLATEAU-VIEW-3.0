@@ -135,6 +135,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const parseDepricatedTag = (v: string) => v.match(/^\((.+)\)$/)?.[1] || v;
 
+const splitTag = (v: string) => v.split(".");
+
 const main = async (filename: string, newFileName: string) => {
   const filePath = path.resolve(__dirname, filename);
   const file = await fs.readFile(filePath, { encoding: "utf-8" });
@@ -150,10 +152,10 @@ const main = async (filename: string, newFileName: string) => {
     const columns = line.split(",");
 
     const featureType = columns[1];
-    const [tag1_1, tag1_2] = columns[2].split(".").map(parseDepricatedTag);
-    const tag2 = parseDepricatedTag(columns[3]);
-    const tag3 = parseDepricatedTag(columns[4]);
-    const tag4 = parseDepricatedTag(columns[5]);
+    const tag1 = splitTag(columns[2]).map(parseDepricatedTag);
+    const tag2 = splitTag(columns[3]).map(parseDepricatedTag);
+    const tag3 = splitTag(columns[4]).map(parseDepricatedTag);
+    const tag4 = splitTag(columns[5]).map(parseDepricatedTag);
     const description = columns[6];
     const dataType = (() => {
       switch (columns[7]) {
@@ -164,14 +166,17 @@ const main = async (filename: string, newFileName: string) => {
       }
     })();
 
-    if (tag1_1) {
-      const key1 = [featureType, tag1_1, tag2, tag3, tag4].filter(Boolean).join("_");
-      result.push([key1, JSON.stringify({ description, dataType })].join(","));
-    }
-    if (tag1_2) {
-      const key2 = [featureType, tag1_2, tag2, tag3, tag4].filter(Boolean).join("_");
-      result.push([key2, JSON.stringify({ description, dataType })].join(","));
-    }
+    const joinedTags = tag1.flatMap(tag1 =>
+      tag2.flatMap(tag2 =>
+        tag3.flatMap(tag3 =>
+          tag4.flatMap(tag4 => [featureType, tag1, tag2, tag3, tag4].filter(Boolean).join("_")),
+        ),
+      ),
+    );
+
+    joinedTags.forEach(key => {
+      result.push([key, JSON.stringify({ description, dataType })].join(","));
+    });
   }
 
   await fs.writeFile(path.resolve(__dirname, newFileName), result.join("\n"));
