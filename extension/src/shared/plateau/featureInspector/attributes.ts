@@ -18,6 +18,7 @@ attributesData
 export const getAttributeLabel = (key: string) => attributesMap?.get(key);
 
 export function getRootFields(properties: Properties, _dataType?: string, _fld?: FldInfo): any {
+  const featureType = properties["feature_type"];
   const overriddenRootPropertyDefinitions = {
     "分類 ※大規模集客施設": "uro:LargeCustomerFacilityAttribute_uro:class",
     "延床面積 ※大規模集客施設": "uro:LargeCustomerFacilityAttribute_uro:totalFloorArea",
@@ -36,9 +37,10 @@ export function getRootFields(properties: Properties, _dataType?: string, _fld?:
     ).map(([k, v]) => {
       if (k.startsWith("_")) return [k, undefined];
       if (typeof v !== "string" && typeof v !== "number") return [k, undefined];
-      const attrVal = getPropertyAttributeValue(k);
+      const key = `${featureType}_${k}`;
+      const attrVal = getPropertyAttributeValue(key);
       const value: string | number | undefined = attrVal ? makePropertyValue(attrVal, v) : v;
-      return [makePropertyName(k, attrVal), value];
+      return [makePropertyName(key, k, attrVal), value];
     }),
   );
   const overriddenRootProperties = Object.fromEntries(

@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const parseDepricatedTag = (v: string) => v.match(/^\((.+)\)$/)?.[1] || v;
+
 const main = async (filename: string, newFileName: string) => {
   const filePath = path.resolve(__dirname, filename);
   const file = await fs.readFile(filePath, { encoding: "utf-8" });
@@ -18,24 +20,24 @@ const main = async (filename: string, newFileName: string) => {
 
     const columns = line.split(",");
 
-    const featureType = columns[2];
-    const tag1 = columns[5];
-    const tag2 = columns[6];
-    const tag3 = columns[7];
-    const tag4 = columns[8];
-    const description = columns[9];
+    const featureType = columns[1];
+    const tag1 = parseDepricatedTag(columns[2].split(".").slice(-1)[0]);
+    const tag2 = parseDepricatedTag(columns[3]);
+    const tag3 = parseDepricatedTag(columns[4]);
+    const tag4 = parseDepricatedTag(columns[5]);
+    const description = columns[6];
     const dataType = (() => {
-      switch (columns[10]) {
-        case "日付型（xs:date）":
+      switch (columns[7]) {
+        case "xs:date":
           return "date";
-        case "グレゴリオ年型（xs:gYear）":
+        case "xs:gYear":
           return "gYear";
       }
     })();
 
-    const key = [tag1, tag2, tag3, tag4].filter(Boolean).join("_");
+    const key = [featureType, tag1, tag2, tag3, tag4].filter(Boolean).join("_");
 
-    result.push([key, JSON.stringify({ featureType, description, dataType })].join(","));
+    result.push([key, JSON.stringify({ description, dataType })].join(","));
   }
 
   await fs.writeFile(path.resolve(__dirname, newFileName), result.join("\n"));
@@ -69,5 +71,5 @@ const main = async (filename: string, newFileName: string) => {
 //   await fs.writeFile(path.resolve(__dirname, newFileName), result.join("\n"));
 // };
 
-await main("../attributes_raw.csv", "../attributes.txt");
+await main("../attributes_raw_v3.csv", "../attributes.txt");
 // await temp("../attributes_v3_raw.csv", "../attributes_temp.txt");

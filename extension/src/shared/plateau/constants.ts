@@ -20,3 +20,5 @@ export const FEATURE_PROPERTIES_CONFIG = [
     name: "全ての属性",
   },
 ];
+
+export const BUILDING_FEATURE_TYPE = "bldg:Building";
