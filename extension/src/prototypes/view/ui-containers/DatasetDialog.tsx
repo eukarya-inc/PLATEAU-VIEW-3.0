@@ -41,6 +41,7 @@ const StyledEntityTitle = styled(EntityTitle)(({ theme }) => ({
   [`& .${listItemTextClasses.secondary}`]: {
     fontSize: theme.typography.h6.fontSize,
   },
+  flexShrink: 0,
 }));
 
 const StyledDialogContentText = styled(DialogContentText)(({ theme }) => ({
