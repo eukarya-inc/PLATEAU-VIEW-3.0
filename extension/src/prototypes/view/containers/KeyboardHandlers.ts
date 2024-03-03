@@ -1,8 +1,21 @@
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
 import { useConstant, useWindowEvent } from "../../react-helpers";
+import { toolMachineAtom } from "../states/tool";
 
-const directions = ["forward", "backward", "right", "left", "up", "down"] as const;
+const directions = [
+  "forward",
+  "backward",
+  "right",
+  "left",
+  "up",
+  "down",
+  "select",
+  "pedestrian",
+  "sketch",
+  "story",
+] as const;
 
 type Direction = (typeof directions)[number];
 
@@ -28,6 +41,10 @@ const defaultKeyAssignments: KeyAssignments = {
   Space: "up",
   ControlLeft: "down",
   ShiftLeft: "sprint",
+  KeyV: "select",
+  KeyP: "pedestrian",
+  KeyG: "sketch",
+  KeyT: "story",
 };
 
 type KeyboardHandlersProps = {
@@ -42,6 +59,8 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   const modesRef = useRef<{
     sprint?: boolean;
   }>({});
+
+  const send = useSetAtom(toolMachineAtom);
 
   const keyRef = useRef<string | null>(null);
 
@@ -119,6 +138,26 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
       event.preventDefault();
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = true;
+      event.preventDefault();
+    }
+
+    if (event.code === "KeyV") {
+      send({ type: "SELECT" });
+      event.preventDefault();
+    }
+
+    if (event.code === "KeyP") {
+      send({ type: "PEDESTRIAN" });
+      event.preventDefault();
+    }
+
+    if (event.code === "KeyG") {
+      send({ type: "SKETCH" });
+      event.preventDefault();
+    }
+
+    if (event.code === "KeyT") {
+      send({ type: "STORY" });
       event.preventDefault();
     }
   });
