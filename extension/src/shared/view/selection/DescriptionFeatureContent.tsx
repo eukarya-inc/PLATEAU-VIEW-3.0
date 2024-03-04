@@ -52,14 +52,19 @@ export const DescriptionFeatureContent: React.FC<Props> = ({ html, additionalHei
     font-size: ${theme.typography.body2.fontSize}; } 
     table { width: 100%; border-collapse: collapse;
     }
+    tr{
+      border-bottom: 1px solid #e0e0e0;
+    }
     th { color: #00000073;}
     td, th { 
     line-height: 1.5rem;
-    border-bottom: 1px solid #e0e0e0;
     text-align: left;
     padding: 6px 16px;
     border-spacing: 0;
     width: 50%;
+    }
+    tr:last-child{
+      border-bottom: none;
     }
     a { color:${theme.typography.body2.color ?? getComputedStyle(frame).color};}`;
 
