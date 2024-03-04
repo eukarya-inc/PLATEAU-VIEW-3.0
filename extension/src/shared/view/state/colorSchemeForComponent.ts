@@ -198,7 +198,14 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             };
 
             if (hasStroke) {
-              c.strokeColor = overriddenStrokeColor !== "" ? overriddenStrokeColor : cond.color;
+              const condStrokeColor =
+                typeof cond === "object" &&
+                "strokeColor" in cond &&
+                typeof cond.strokeColor === "string"
+                  ? cond.strokeColor
+                  : "";
+
+              c.strokeColor = overriddenStrokeColor || condStrokeColor || cond.color;
               dc.strokeColor =
                 typeof cond === "object" &&
                 "strokeColor" in cond &&
