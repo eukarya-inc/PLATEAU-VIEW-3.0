@@ -28,6 +28,7 @@ import { InspectorHeader, Space } from "../../../prototypes/ui-components";
 import { BUILDING_LAYER } from "../../../prototypes/view-layers";
 import { useOptionalAtomValue, useOptionalPrimitiveAtom } from "../../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex, makePropertyName } from "../../plateau";
+import { BUILDING_FEATURE_TYPE } from "../../plateau/constants";
 import { lookAtTileFeature } from "../../reearth/utils";
 import {
   MultipleSelectSearch,
@@ -129,14 +130,22 @@ const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accesso
   "gml:name",
   "構造種別",
   "uro:BuildingDetailAttribute_uro:buildingStructureType",
-  "uro:BuildingDetailAttribute_uro:buildingStructureOrgType",
+  [
+    "uro:BuildingDetailAttribute_uro:buildingStructureOrgType",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:buildingStructureOrgType"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:buildingStructureOrgType`,
+  ],
   "用途",
   "bldg:usage",
   "耐火構造種別",
   "uro:BuildingDetailAttribute_uro:fireproofStructureType",
-  "uro:BuildingDetailAttribute_uro:fireproofStructureOrgType",
   [
-    "uro:majorUsage",
+    "uro:BuildingDetailAttribute_uro:fireproofStructureOrgType",
+    `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:fireproofStructureOrgType"]`,
+    `attributes.uro:BuildingDetailAttribute.[0].uro:fireproofStructureOrgType`,
+  ],
+  [
+    "uro:BuildingDetailAttribute_uro:majorUsage",
     `rootProperties["attributes"]["uro:BuildingDetailAttribute"][0]["uro:majorUsage"]`,
     `attributes.uro:BuildingDetailAttribute.[0].uro:majorUsage`,
   ],
@@ -236,7 +245,7 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         const accessor = typeof value === "string" ? undefined : value[2];
         return {
           key: property ?? name,
-          title: makePropertyName(name) ?? name,
+          title: makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ?? name,
           options: uniqBy(
             allFeatures.reduce((res, f) => {
               const propertyValue = get(f.properties, accessor ?? value);

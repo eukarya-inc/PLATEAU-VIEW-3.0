@@ -40,6 +40,7 @@ export const makePropertyForFeatureInspector = ({
   featureInspector,
   layer,
   builtin,
+  featureType,
   sortRootPropertyNames,
 }: {
   featureInspector?: RootLayerForDataset["featureInspector"];
@@ -47,6 +48,7 @@ export const makePropertyForFeatureInspector = ({
   features: Pick<Feature, "properties">[];
   builtin?: boolean;
   sortRootPropertyNames?: (names: string[]) => string[];
+  featureType: string;
 }) => {
   const shouldUseSettingProperty =
     (!builtin &&
@@ -84,7 +86,9 @@ export const makePropertyForFeatureInspector = ({
               isNaN(Number(key)),
           )
           .join("_");
-        const label = lastPathName ? getAttributeLabel(lastPathName)?.description : undefined;
+        const label = lastPathName
+          ? getAttributeLabel(`${featureType}_${lastPathName}`)?.description
+          : undefined;
         return {
           name: p.displayName || label || lastPathName,
           values: p.nodes
@@ -181,9 +185,10 @@ export const makePropertyForFeatureInspector = ({
               return !settingRootPropertyNames?.includes(n);
             })
             .map(name => {
-              const attrVal = getPropertyAttributeValue(name);
+              const joinedName = `${featureType}_${name}`;
+              const attrVal = getPropertyAttributeValue(joinedName);
               return {
-                name: makePropertyName(name, attrVal) || name,
+                name: makePropertyName(joinedName, name, attrVal) || name,
                 values: features
                   .map(f =>
                     attrVal
@@ -208,7 +213,7 @@ const UNION_MAP = {
   _uom: "単位",
 };
 
-export const makePropertyName = (name: string, attrVal_?: AttributeValue) => {
+export const makePropertyName = (name: string, defaultName: string, attrVal_?: AttributeValue) => {
   const attrVal = attrVal_ ?? getPropertyAttributeValue(name);
   if (attrVal) return attrVal.description;
 
@@ -225,20 +230,36 @@ export const makePropertyName = (name: string, attrVal_?: AttributeValue) => {
     .filter(Boolean)[0];
   if (union) return union;
 
-  return name.replaceAll("_", "");
+  return defaultName.replaceAll("_", "");
 };
 
 export const getPropertyAttributeValue = (name: string) => {
   const first = getAttributeLabel(name);
   if (first) return first;
 
+  const featureType = name.split("_")[0];
+  if (featureType) {
+    const withoutFeatureType = getAttributeLabel(name.split(featureType + "_").slice(-1)[0]);
+    if (withoutFeatureType) return withoutFeatureType;
+  }
+
   // Replace urf_function into urf:function.
-  const second = getAttributeLabel(name.replace("_", ":"));
+  const second = getAttributeLabel(
+    featureType
+      ? [
+          featureType,
+          name
+            .split(featureType + "_")
+            .slice(-1)[0]
+            .replace("_", ":"),
+        ].join("_")
+      : name.replace("_", ":"),
+  );
   if (second) return second;
 
   // Find last name, because the nested structure is expressed by `_`.
   // For example, `parent_child_attr` should be `attr`.
-  const lastName = name.split("_")[1];
+  const lastName = name.split("_").slice(-1)[0];
   const third = getAttributeLabel(lastName);
   if (third) return third;
 };

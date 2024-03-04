@@ -49,9 +49,12 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
   const tilesetLayer = layers[0].layer as BuildingLayerModel;
   const tilesetProperties = useAtomValue(tilesetLayer.propertiesAtom);
 
+  const featureType = useMemo(() => layers[0].features[0].properties["feature_type"], [layers]);
+
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
     const properties = layers.reduce((res, { features, layer, rootLayer }) => {
+      const featureType = features[0].properties["feature_type"];
       return res.concat(
         ...makePropertyForFeatureInspector({
           features,
@@ -67,6 +70,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
               .filter(isNotNullish);
             return [...sortedNames, ...restNames];
           },
+          featureType,
         }),
       );
     }, [] as Feature["properties"][]);
@@ -76,7 +80,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
 
   return (
     <ParameterList>
-      <PropertyParameterItem properties={properties} />
+      <PropertyParameterItem properties={properties} featureType={featureType} />
     </ParameterList>
   );
 };

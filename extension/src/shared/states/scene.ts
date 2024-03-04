@@ -1,3 +1,4 @@
+import { colorModeAtom } from "../../prototypes/shared-states";
 import {
   environmentTypeAtom,
   showMapLabelPrimitiveAtom,
@@ -27,6 +28,8 @@ export const shareableShowMapLabelAtom = sharedStoreAtomWrapper(
   "ShowMapLabel",
   showMapLabelPrimitiveAtom,
 );
+
+export const shareableColorMode = sharedStoreAtomWrapper("ColorMode", colorModeAtom);
 
 export const shareableTerrainElevationHeightRangeAtom = sharedStoreAtomWrapper(
   "terrainElevationHeightRange",
