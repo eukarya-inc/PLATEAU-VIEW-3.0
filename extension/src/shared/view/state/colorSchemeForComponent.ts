@@ -293,6 +293,19 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
               },
             ]
           : [];
+
+        const defaultColors: QualitativeColor[] = [
+          {
+            id: component.id,
+            value: component.preset?.defaultValue ?? "",
+            color: component.preset?.defaultValue ?? "",
+            name: component.preset?.legendName ?? "",
+          },
+        ];
+        if (hasStroke) {
+          defaultColors[0].strokeColor = component.preset?.strokeValue;
+        }
+
         const colorsAtom = atom(
           () => colors,
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
@@ -311,6 +324,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           ? ({
               type: "qualitative" as const,
               name: get(layer.titleAtom),
+              defaultColors,
               colorsAtom: colorsAtom,
               colorAtomsAtom: splitAtom(colorsAtom),
             } as QualitativeColorSet)
