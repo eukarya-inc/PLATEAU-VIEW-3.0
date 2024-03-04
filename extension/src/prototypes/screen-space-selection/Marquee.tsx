@@ -2,7 +2,8 @@ import { alpha, styled } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useEffect, useRef, type FC } from "react";
 
-import { colorModeAtom, type ColorMode } from "../shared-states";
+import { shareableColorMode } from "../../shared/states/scene";
+import { type ColorMode } from "../shared-states";
 
 import { screenSpaceSelectionHandlerAtom } from "./states";
 
@@ -61,6 +62,6 @@ export const Marquee: FC = () => {
     };
   }, [handler]);
 
-  const colorMode = useAtomValue(colorModeAtom);
+  const colorMode = useAtomValue(shareableColorMode);
   return <Root ref={ref} colorMode={colorMode} />;
 };

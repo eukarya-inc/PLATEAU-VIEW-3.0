@@ -13,9 +13,9 @@ import {
   shareableLogarithmicTerrainElevationAtom,
   shareableTerrainElevationHeightRangeAtom,
   shareableUndergroundAtom,
+  shareableColorMode,
 } from "../../../shared/states/scene";
 import { colorMapTurbo } from "../../color-maps";
-import { colorModeAtom } from "../../shared-states";
 import {
   AppIconButton,
   FloatingPanel,
@@ -175,7 +175,7 @@ const ElevationLegendButton: FC = () => {
 export const EnvironmentSelect: FC = () => {
   // FIXME
   const [environmentType, setEnvironmentType] = useAtom(shareableEnvironmentTypeAtom);
-  const [colorMode, setColorMode] = useAtom(colorModeAtom);
+  const [colorMode, setColorMode] = useAtom(shareableColorMode);
 
   const id = useId();
   const popupState = usePopupState({
