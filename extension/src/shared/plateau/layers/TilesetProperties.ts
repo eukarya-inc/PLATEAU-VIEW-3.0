@@ -130,6 +130,7 @@ const numberProperties: NumberProperty[] = [
     testProperty: propertyName =>
       propertyName === "地下階数" || propertyName === "bldg:storeysBelowGround",
     availableFeatures: ["buildingFilter"],
+    getMinMax: (min, max) => [Math.min(min, 0), max],
   },
 ];
 

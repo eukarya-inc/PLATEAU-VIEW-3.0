@@ -11,8 +11,9 @@ import {
   shareableGraphicsQualityAtom,
   sharedInitialCameraAtom,
   shareableUndergroundAtom,
+  shareableColorMode,
 } from "../../../shared/states/scene";
-import { colorModeAtom, type ColorMode } from "../../shared-states";
+import { type ColorMode } from "../../shared-states";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
 import { GooglePhotorealisticEnvironment } from "../environments/GooglePhotorealisticEnvironment";
 import { MapEnvironment } from "../environments/MapEnvironment";
@@ -79,7 +80,7 @@ const STYLE_OVERRIDES: Record<ColorMode, any> = {
 
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
-  const colorMode = useAtomValue(colorModeAtom);
+  const colorMode = useAtomValue(shareableColorMode);
   const showMapLabel = useAtomValue(shareableShowMapLabelAtom);
   const debugSphericalHarmonics = useAtomValue(debugSphericalHarmonicsAtom);
   const shadowProps = useAtomValue(shadowMapPropsAtom);
