@@ -1,6 +1,7 @@
 import { atomsWithQualitativeColorSet } from "../atomsWithQualitativeColorSet";
 
 export const landUseColorSet = atomsWithQualitativeColorSet({
+  id: "land_use",
   name: "土地利用",
   // Colors inherited from VIEW 2.0.
   // List of codes: https://www.mlit.go.jp/plateaudocument/#toc4_08_04
