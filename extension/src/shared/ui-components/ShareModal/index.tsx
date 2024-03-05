@@ -2,6 +2,7 @@ import { IconButton, Typography, styled } from "@mui/material";
 import Box from "@mui/material/Box";
 import { FC } from "react";
 
+import { darkTheme } from "../../../prototypes/ui-components";
 import { PaperPlane, CopyIcon, ShareLoading } from "../../../prototypes/ui-components/icons";
 import Modal from "../Modal";
 
@@ -26,15 +27,15 @@ const Loading = styled(ShareLoading)(({ theme }) => ({
   },
 }));
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled(Box)({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
   margin: "0px",
   padding: "12px 24px",
   marginBottom: "12px",
-  color: theme.palette.text.primary,
-}));
+  color: darkTheme.palette.background.default,
+});
 
 const StyledField = styled("div")(({ theme }) => ({
   // TODO: What's neutral/5 color in figma??
@@ -54,6 +55,10 @@ const IconButtonStyled = styled(IconButton)(({ theme }) => ({
   borderLeft: "none",
   borderRadius: "0 2px 2px 0",
 }));
+
+const StyledCopyIcon = styled(CopyIcon)({
+  color: darkTheme.palette.background.default,
+});
 
 export type Props = {
   show: boolean;
@@ -75,7 +80,8 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError })
       isVisible={show}
       title="シェア"
       titleIcon={<PaperPlane sx={{ mt: 0.85 }} />}
-      onClose={onClose}>
+      onClose={onClose}
+      isWhiteTheme={true}>
       {loading ? (
         <Container>
           <Loading />
@@ -88,7 +94,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError })
           <FieldContainer>
             <StyledField>{url ? url : "URL TODO: Dyamic Value from Prop"} </StyledField>
             <IconButtonStyled onClick={() => handleCopyToClipboard(url)}>
-              <CopyIcon />
+              <StyledCopyIcon />
             </IconButtonStyled>
           </FieldContainer>
 
@@ -96,7 +102,7 @@ const ShareModal: FC<Props> = ({ show, onClose, loading, url, iframe, isError })
           <FieldContainer>
             <StyledField>{iframe ? iframe : "Iframe TODO: Dyamic Value from Prop"} </StyledField>
             <IconButtonStyled onClick={() => handleCopyToClipboard(iframe)}>
-              <CopyIcon />
+              <StyledCopyIcon />
             </IconButtonStyled>
           </FieldContainer>
         </StyledBox>
