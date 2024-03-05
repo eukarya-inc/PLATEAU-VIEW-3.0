@@ -68,6 +68,7 @@ export const USAGE_COLORS = [
 ];
 
 export const usageColorSet = atomsWithQualitativeColorSet({
+  id: "usage",
   name: "用途",
   colors: USAGE_COLORS,
 });
