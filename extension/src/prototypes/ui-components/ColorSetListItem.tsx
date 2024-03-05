@@ -66,6 +66,12 @@ export const ColorSetListItem: FC<ColorSetListItemProps> = ({
   );
 
   useEffect(() => {
+    if (color) {
+      setIndeterminateStrokeColor(color.strokeColor === "" ? color.color : color.strokeColor ?? "");
+    }
+  }, [color]);
+
+  useEffect(() => {
     if (indeterminateColor && indeterminateColor !== color.color) {
       setIndeterminateColor(color.color);
     }

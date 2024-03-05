@@ -39,7 +39,9 @@ export const STRUCTURE_TYPE_COLORS = [
   },
 ];
 
-export const structureTypeColorSet = atomsWithQualitativeColorSet({
-  name: "構造種別",
-  colors: STRUCTURE_TYPE_COLORS,
-});
+export const structureTypeColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id: `${id}-structure_type`,
+    name,
+    colors: STRUCTURE_TYPE_COLORS,
+  });

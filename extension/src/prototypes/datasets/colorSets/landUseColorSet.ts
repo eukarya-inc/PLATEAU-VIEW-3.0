@@ -1,11 +1,13 @@
 import { atomsWithQualitativeColorSet } from "../atomsWithQualitativeColorSet";
 
-export const landUseColorSet = atomsWithQualitativeColorSet({
-  name: "土地利用",
-  // Colors inherited from VIEW 2.0.
-  // List of codes: https://www.mlit.go.jp/plateaudocument/#toc4_08_04
-  // prettier-ignore
-  colors: [
+export const landUseColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id: `${id}-land_use`,
+    name,
+    // Colors inherited from VIEW 2.0.
+    // List of codes: https://www.mlit.go.jp/plateaudocument/#toc4_08_04
+    // prettier-ignore
+    colors: [
     { value: '201', color: '#f9f06f', name: '田（水田）' },
     { value: '202', color: '#f5bc55', name: '畑（畑、樹園地、採草地、養鶏（牛・豚）場）' },
     { value: '203', color: '#009357', name: '山林（樹林地）' },
@@ -32,4 +34,4 @@ export const landUseColorSet = atomsWithQualitativeColorSet({
     { value: '262', color: '#cecece', name: '道路・鉄軌道敷（道路と交通施設用地が混在）' },
     { value: '263', color: '#f1c7ff', name: '空地（その他の空地①～④の区分が無い）' }
   ],
-});
+  });

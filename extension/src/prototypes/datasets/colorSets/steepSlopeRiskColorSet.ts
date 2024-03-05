@@ -17,7 +17,9 @@ export const STEEP_SLOPE_RISK_COLORS = [
   },
 ];
 
-export const steepSlopeRiskColorSet = atomsWithQualitativeColorSet({
-  name: "急傾斜地の崩落",
-  colors: STEEP_SLOPE_RISK_COLORS,
-});
+export const steepSlopeRiskColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id: `${id}-steep_slope_risk`,
+    name,
+    colors: STEEP_SLOPE_RISK_COLORS,
+  });
