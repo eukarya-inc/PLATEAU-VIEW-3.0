@@ -90,7 +90,12 @@ function useDatasetSearchOptions({
         })
         .map(dataset => ({
           type: "dataset" as const,
-          name: inEditor() && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
+          name:
+            inEditor() && dataset.year
+              ? `[${dataset.year}]${dataset.type?.name}(${dataset.city?.name}${
+                  dataset.ward ? `${dataset.ward.name}` : ""
+                })`
+              : dataset.name,
           index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
             dataset.ward?.name ?? ""
           }`,
