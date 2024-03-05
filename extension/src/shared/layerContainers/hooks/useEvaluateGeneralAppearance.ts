@@ -271,7 +271,7 @@ export const useEvaluateGeneralAppearance = ({
             }
           : undefined,
         "3dtiles": {
-          pbr: tilesetDisableDefaultMaterial ? false : "withTexture",
+          pbr: tilesetDisableDefaultMaterial ? false : undefined,
           color:
             makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
             makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??

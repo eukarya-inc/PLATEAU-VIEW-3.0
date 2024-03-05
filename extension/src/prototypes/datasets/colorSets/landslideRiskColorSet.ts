@@ -6,6 +6,7 @@ import { LANDSLIDE_RISK_TYPE_CODES } from "./constants";
 
 // Old values from Takram. Doesn't seem to be used
 export const landSlideRiskColorSet = atomsWithQualitativeColorSet({
+  id: "landslide_risk",
   name: "土砂災害警戒区域",
   // Colors inherited from VIEW 2.0.
   // List of codes: https://www.mlit.go.jp/plateaudocument/#toc4_09_04
