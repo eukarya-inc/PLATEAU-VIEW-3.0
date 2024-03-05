@@ -1,6 +1,7 @@
 import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
+import { hideAppOverlayAtom, showDeveloperPanelsAtom } from "../../../prototypes/view/states/app";
 import { useConstant, useWindowEvent } from "../../react-helpers";
 import { toolMachineAtom } from "../states/tool";
 
@@ -15,6 +16,8 @@ const directions = [
   "pedestrian",
   "sketch",
   "story",
+  "hide-ui",
+  "developer",
 ] as const;
 
 type Direction = (typeof directions)[number];
@@ -45,6 +48,8 @@ const defaultKeyAssignments: KeyAssignments = {
   KeyP: "pedestrian",
   KeyG: "sketch",
   KeyT: "story",
+  Slash: "hide-ui",
+  Backslash: "developer",
 };
 
 type KeyboardHandlersProps = {
@@ -61,6 +66,8 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   }>({});
 
   const send = useSetAtom(toolMachineAtom);
+  const setHideAppOverlay = useSetAtom(hideAppOverlayAtom);
+  const setShowDeveloperPanels = useSetAtom(showDeveloperPanelsAtom);
 
   const keyRef = useRef<string | null>(null);
 
@@ -131,6 +138,7 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   useWindowEvent("keydown", event => {
     const assignment = defaultKeyAssignments[event.code];
     if (assignment == null) return;
+    const isCtrlOrCmdPressed = event.ctrlKey || event.metaKey;
 
     if (isDirection(assignment)) {
       directionsRef.current[assignment] = true;
@@ -159,6 +167,16 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     if (event.code === "KeyT") {
       send({ type: "STORY" });
       event.preventDefault();
+    }
+
+    if (isCtrlOrCmdPressed && event.code === "Slash") {
+      event.preventDefault();
+      setHideAppOverlay(value => !value);
+    }
+
+    if (isCtrlOrCmdPressed && event.code === "Backslash") {
+      event.preventDefault();
+      setShowDeveloperPanels(value => !value);
     }
   });
 
