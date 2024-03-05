@@ -38,6 +38,7 @@ export const AppHeader: FC = () => {
       <IconButton>
         <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
       </IconButton>
+      {isMobile && <IconButton size="small">AR</IconButton>}
       {showShareModal && (
         <ShareModal showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
       )}
