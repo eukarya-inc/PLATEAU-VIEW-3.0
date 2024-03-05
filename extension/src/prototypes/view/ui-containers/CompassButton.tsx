@@ -28,7 +28,7 @@ export const CompassButton: FC = () => {
   }, [autoRotateCamera, camera, flyTo, initialCamera, setAutoRotateCameraAtom]);
 
   return (
-    <AppIconButton title="Navigator" onClick={handleClick}>
+    <AppIconButton title="コンパス" onClick={handleClick}>
       <CompassIcon style={{ transform: `rotate(${rotationAngle}deg)` }} />
     </AppIconButton>
   );
