@@ -113,26 +113,20 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             onClick={handleClick}>
             3D都市モデルダウンロード
           </SelectItem>
-          <SelectItem data-name="my-data" selected={showDeveloperPanels} onClick={handleClick}>
+          <SelectItem data-name="my-data" onClick={handleClick}>
             Myデータ
           </SelectItem>
           <SelectItem disabled data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
-          <SelectItem data-name="feedback" selected={showDeveloperPanels} onClick={handleClick}>
+          <SelectItem data-name="feedback" onClick={handleClick}>
             フィードバック
           </SelectItem>
           <Divider />
-          <SelectItem selected={showDeveloperPanels} data-name="hide-ui" onClick={handleClick}>
+          <SelectItem data-name="hide-ui" onClick={handleClick}>
             UIを{hideAppOverlay ? "表示" : "隠す"}
             <ListItemSecondaryAction>
               <Shortcut platform={platform} shortcutKey="/" commandKey />
-            </ListItemSecondaryAction>
-          </SelectItem>
-          <SelectItem selected={showDeveloperPanels} data-name="developer" onClick={handleClick}>
-            開発者パネル
-            <ListItemSecondaryAction>
-              <Shortcut platform={platform} shortcutKey="\" commandKey />
             </ListItemSecondaryAction>
           </SelectItem>
         </Menu>
