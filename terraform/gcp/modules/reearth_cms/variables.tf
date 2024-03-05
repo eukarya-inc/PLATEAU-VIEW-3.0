@@ -3,6 +3,12 @@ variable "auth0_domain" {
   description = "Auth0のドメイン"
 }
 
+variable "ckan_token" {
+  type        = string
+  description = "FMEトークン"
+  sensitive   = true
+}
+
 variable "domain" {
   type        = string
   description = "PLATEAU VIEWを提供するドメイン名"
@@ -10,8 +16,13 @@ variable "domain" {
 
 variable "dns_managed_zone_name" {
   type        = string
-  default     = null
-  description = "CloudDNSのゾーン名を指定してください"
+  description = "Cloud DNSマネージドゾーンの名前"
+}
+
+variable "fme_token" {
+  type        = string
+  description = "FMEトークン"
+  sensitive   = true
 }
 
 variable "gcp_project_id" {
@@ -36,6 +47,22 @@ variable "mongodb_connection_string" {
   sensitive   = true
 }
 
+variable "plateau_view" {
+  type = object({
+    ckan_org                  = string
+    ckan_base_url             = string
+    cms_plateau_project       = string
+    cms_system_project        = string
+    datacatalog_cache_size    = string
+    datacatalog_cache_percent = number
+    fme_baseurl               = string
+    fme_skip_quality_check    = string
+    fme_url_v3                = string
+    option_to                 = string
+    option_from               = string
+  })
+}
+
 variable "prefix" {
   type        = string
   description = "作成されるリソース名のプレフィックス"
@@ -46,13 +73,8 @@ variable "reearth_version" {
   default = "0.14.1"
 }
 
-variable "reearth_marketplace_secret" {
+variable "sendgrid_api_key" {
   type        = string
-  description = "Re:Earth Marketplaceのシークレット"
+  description = "SendGridのAPIキー"
   sensitive   = true
-}
-
-variable "cesium_ion_access_token" {
-  type    = string
-  default = ""
 }

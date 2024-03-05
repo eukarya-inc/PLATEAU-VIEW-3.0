@@ -1,0 +1,40 @@
+domain = "" # PLATEAU VIEWを提供するドメイン名 (例: reearth.io)
+prefix = ""
+
+# Google Cloud Platform (GCP)
+gcp_project_id = ""
+gcp_region     = ""
+gcs_bucket     = ""
+
+# Auth0
+auth0_client_id     = ""
+auth0_client_secret = ""
+auth0_domain        = ""
+
+# CKAN
+ckan_token = ""
+
+# FME
+fme_token = ""
+
+# MongoDB
+mongodb_connection_string = ""
+
+# Re:Earth
+reearth_marketplace_secret = ""
+
+# PLATEAU View
+plateau_view = {
+  fme_baseurl            = ""
+  fme_skip_quality_check = false
+  fme_url_v3             = ""
+  ckan_base_url          = ""
+  ckan_org               = ""
+  cms_system_project     = ""
+  option_to              = ""
+  option_from            = ""
+  cms_plateau_project    = ""
+}
+
+# SendGrid
+sendgrid_api_key = ""

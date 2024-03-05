@@ -41,12 +41,18 @@ resource "auth0_client" "m2m" {
   ]
 }
 
+resource "auth0_client_credentials" "m2m" {
+  client_id             = auth0_client.m2m.id
+  authentication_method = "client_secret_post"
+}
+
 resource "auth0_resource_server" "signup" {
   name       = var.spa_name
   identifier = "https://${var.identifier_domain}"
 }
 
-resource "auth0_action" "singup" {
+resource "auth0_action" "signup" {
+  count   = var.require_post_signup_action ? 1 : 0
   name    = var.signup_name
   runtime = "node16"
   deploy  = true
@@ -64,7 +70,7 @@ resource "auth0_action" "singup" {
 
   secrets {
     name  = "secret"
-    value = random_string.action_secret.result
+    value = random_password.action_secret.result
   }
 
   secrets {
@@ -73,7 +79,7 @@ resource "auth0_action" "singup" {
   }
 }
 
-resource "random_string" "action_secret" {
+resource "random_password" "action_secret" {
   length  = 32
   special = false
 }
