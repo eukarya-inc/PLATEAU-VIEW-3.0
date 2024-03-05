@@ -23,9 +23,9 @@ export const CompassButton: FC = () => {
   const [autoRotateCamera, setAutoRotateCameraAtom] = useAtom(autoRotateCameraAtom);
 
   const handleClick = useCallback(() => {
-    if (initialCamera) flyTo(initialCamera);
+    if (initialCamera) flyTo({ ...camera, heading: 0 });
     if (autoRotateCamera) setAutoRotateCameraAtom(value => !value);
-  }, [autoRotateCamera, flyTo, initialCamera, setAutoRotateCameraAtom]);
+  }, [autoRotateCamera, camera, flyTo, initialCamera, setAutoRotateCameraAtom]);
 
   return (
     <AppIconButton title="Navigator" onClick={handleClick}>
