@@ -13,12 +13,7 @@ import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 import { LOGO, SITE_URL } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
-import {
-  hideAppOverlayAtom,
-  showDeveloperPanelsAtom,
-  showFeedbackModalAtom,
-  showMyDataModalAtom,
-} from "../states/app";
+import { hideAppOverlayAtom, showFeedbackModalAtom, showMyDataModalAtom } from "../states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {
   onClick?: (event: MouseEvent<HTMLElement>, name: string) => void;
@@ -33,7 +28,6 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     });
 
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
-    const [showDeveloperPanels, setShowDeveloperPanels] = useAtom(showDeveloperPanelsAtom);
     const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
     const [, setShowMyDataModal] = useAtom(showMyDataModalAtom);
 
@@ -50,9 +44,6 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           case "hide-ui":
             setHideAppOverlay(value => !value);
             break;
-          case "developer":
-            setShowDeveloperPanels(value => !value);
-            break;
           case "feedback":
             setShowFeedbackModal(value => !value);
             break;
@@ -62,13 +53,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
         onClickRef.current?.(event, name);
         popupState.close();
       },
-      [
-        popupState,
-        setHideAppOverlay,
-        setShowDeveloperPanels,
-        setShowFeedbackModal,
-        setShowMyDataModal,
-      ],
+      [popupState, setHideAppOverlay, setShowFeedbackModal, setShowMyDataModal],
     );
 
     const platform = useAtomValue(platformAtom);
