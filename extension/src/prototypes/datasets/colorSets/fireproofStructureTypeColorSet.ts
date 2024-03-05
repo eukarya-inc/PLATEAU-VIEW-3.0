@@ -17,8 +17,9 @@ export const FIREPROOF_STRUCTURE_TYPE_COLORS = [
   { value: "不明", color: chroma.rgb(120, 194, 243).hex(), name: "不明" },
 ];
 
-export const fireproofStructureTypeColorSet = atomsWithQualitativeColorSet({
-  id: "fireproof_structure_type",
-  name: "耐火構造種別",
-  colors: FIREPROOF_STRUCTURE_TYPE_COLORS,
-});
+export const fireproofStructureTypeColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id: `${id}-fireproof_structure_type`,
+    name,
+    colors: FIREPROOF_STRUCTURE_TYPE_COLORS,
+  });
