@@ -30,6 +30,7 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
+import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
 
 type DefaultProps = {
   geoURL?: string;
@@ -94,6 +95,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <ToolMachineEvents />
         <Notifications />
         <InitialLayers />
+        <JapanPlateauPolygon />
         <SelectionCoordinator />
         <ScreenSpaceSelection />
         <ScreenSpaceCamera tiltByRightButton />

@@ -15,7 +15,7 @@ export function useCameraZoom(): CameraZoom {
   }, [camera]);
 
   const zoomIn = useCallback(() => {
-    camera?.zoomIn(1.5);
+    camera?.zoomIn(3);
   }, [camera]);
 
   return { zoomIn, zoomOut };
