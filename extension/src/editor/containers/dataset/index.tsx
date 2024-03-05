@@ -332,31 +332,30 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       }
       main={
         <>
-          {draftSetting &&
-            (contentType === "status" ? (
-              <StatusPage dataset={dataset} />
-            ) : contentType === "general" ? (
-              <GeneralPage
-                key={`${dataset.id}-${dataId}-general`}
-                dataset={dataset}
-                dataId={dataId}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : contentType === "fieldComponents" ? (
-              <FieldComponentsPage
-                key={`${dataset.id}-${dataId}-fieldComponents`}
-                dataset={dataset}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : contentType === "featureInspector" ? (
-              <FeatureInspectorPage
-                key={`${dataset.id}-${dataId}-featureInspector`}
-                setting={draftSetting}
-                updateSetting={updateDraftSetting}
-              />
-            ) : null)}
+          {contentType === "status" ? (
+            <StatusPage dataset={dataset} />
+          ) : draftSetting && contentType === "general" ? (
+            <GeneralPage
+              key={`${dataset.id}-${dataId}-general`}
+              dataset={dataset}
+              dataId={dataId}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : draftSetting && contentType === "fieldComponents" ? (
+            <FieldComponentsPage
+              key={`${dataset.id}-${dataId}-fieldComponents`}
+              dataset={dataset}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : draftSetting && contentType === "featureInspector" ? (
+            <FeatureInspectorPage
+              key={`${dataset.id}-${dataId}-featureInspector`}
+              setting={draftSetting}
+              updateSetting={updateDraftSetting}
+            />
+          ) : null}
         </>
       }
     />
