@@ -21,7 +21,7 @@ const Root = styled(FloatingPanel, {
   hidden?: boolean;
 }>(({ theme, hidden = false }) => ({
   minWidth: 0,
-  maxWidth: `calc(100vw - ${theme.spacing(2)})`,
+  maxWidth: `calc(100vw - ${theme.spacing(4)})`,
   margin: `0 ${theme.spacing(1)}`,
   ...(hidden && {
     visibility: "hidden",
@@ -37,6 +37,7 @@ const RoundedBox = styled("div")(({ theme }) => ({
   padding: theme.spacing(0.5),
   minHeight: theme.spacing(6),
   borderRadius: theme.shape.borderRadius,
+  boxSizing: "border-box",
 }));
 
 const StyledDivider = styled(Divider)(({ theme, orientation }) => ({
@@ -79,6 +80,10 @@ const OverflowButton = styled("div", {
   };
 });
 
+// We need to hardcode the single line height since we want it be expanded by default
+// therefore it has no chance to record the intrinsicHeight
+const SINGLE_LINE_HEIGHT = 48;
+
 export interface ContextBarProps extends ComponentPropsWithRef<typeof Root> {
   orientation?: "horizontal" | "vertical";
   expanded?: boolean;
@@ -101,7 +106,7 @@ export const ContextBar = forwardRef<HTMLDivElement, ContextBarProps>(
     },
     forwardedRef,
   ) => {
-    const [overflow, setOverflow] = useState(false);
+    const [overflow, setOverflow] = useState(true);
 
     const expandedRef = useRef(expanded);
     expandedRef.current = expanded;
@@ -116,12 +121,11 @@ export const ContextBar = forwardRef<HTMLDivElement, ContextBarProps>(
 
       let containerRect = container.getBoundingClientRect();
       let contentRect = content.getBoundingClientRect();
-      const intrinsicHeight = container.getBoundingClientRect().height;
 
       if (!expandedRef.current) {
         setOverflow(containerRect.width < contentRect.width);
       } else {
-        setOverflow(contentRect.height > intrinsicHeight);
+        setOverflow(contentRect.height > SINGLE_LINE_HEIGHT);
       }
 
       const observer = new ResizeObserver(entries => {
@@ -138,7 +142,7 @@ export const ContextBar = forwardRef<HTMLDivElement, ContextBarProps>(
         if (!expandedRef.current) {
           setOverflow(containerRect.width < contentRect.width);
         } else {
-          setOverflow(contentRect.height > intrinsicHeight);
+          setOverflow(contentRect.height > SINGLE_LINE_HEIGHT);
         }
       });
 

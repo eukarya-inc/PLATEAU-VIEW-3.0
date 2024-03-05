@@ -30,7 +30,8 @@ const StyledMenuItem = styled(MenuItem, {
     },
   },
   minHeight: "auto",
-  maxWidth: 340,
+  maxWidth: theme.breakpoints.values.mobile,
+  whiteSpace: "normal",
 }));
 
 export const SelectItem = forwardRef<
