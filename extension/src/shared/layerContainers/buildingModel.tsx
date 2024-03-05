@@ -7,7 +7,6 @@ import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
-import { colorModeAtom } from "../../prototypes/shared-states";
 import { ViewLayerModel } from "../../prototypes/view-layers";
 import { interactionModeAtom } from "../../shared/states/interactionMode";
 import { numberOrString, variable } from "../helpers";
@@ -15,6 +14,7 @@ import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
 import { Cesium3DTilesAppearance, ConditionsExpression, LayerAppearance } from "../reearth/types";
+import { shareableColorMode } from "../states/scene";
 import {
   TILESET_BUILDING_MODEL_COLOR,
   TILESET_BUILDING_MODEL_FILTER,
@@ -174,7 +174,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     ],
   );
 
-  const colorMode = useAtomValue(colorModeAtom);
+  const colorMode = useAtomValue(shareableColorMode);
 
   const opacity = useOptionalAtomValue(opacityAtom);
   const wireframeView = useOptionalAtomValue(wireframeAtom);

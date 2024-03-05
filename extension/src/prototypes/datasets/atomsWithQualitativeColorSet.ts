@@ -32,7 +32,7 @@ export function atomsWithQualitativeColorSet({
   name,
   colors,
 }: QualitativeColorSetOptions): QualitativeColorSet {
-  const shareId = `COLOR_SET_${id}`;
+  const shareId = `COLOR_SET_${id || name}`;
   const colorsAtom = sharedStoreAtomWrapper(
     shareId,
     storageStoreAtomWrapper(shareId, atom([...colors]), true),

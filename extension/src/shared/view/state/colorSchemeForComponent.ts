@@ -158,6 +158,8 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
       }
       case CONDITIONAL_COLOR_SCHEME: {
         if (!isConditionalColorSchemeComponent(component)) return;
+        const currentColors: QualitativeColor[] = [];
+        const defaultColors: QualitativeColor[] = [];
 
         const currentRuleId =
           colorScheme.useDefault || component.preset?.rules?.some(r => r.asDefaultRule)
@@ -166,50 +168,64 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
               component.preset?.rules?.[0]?.id
             : colorScheme.currentRuleId;
         const rule = component.preset?.rules?.find(rule => rule.id === currentRuleId);
+
         if (!rule?.propertyName || !rule.conditions) return;
-        const colors = rule?.conditions
-          ?.map((c): QualitativeColor | undefined => {
-            if (!c.asLegend) return;
 
-            const overriddenCondition = component.value?.overrideRules.find(
-              o => o.ruleId === rule.id && o.conditionId === c.id,
-            );
-            const color = (overriddenCondition?.color || c.color) ?? "";
+        rule?.conditions?.forEach((cond): QualitativeColor | undefined => {
+          if (!cond.asLegend) return;
 
-            // Polygon always has stroke to compat exists data
-            const hasStroke = component.type === POLYGON_FILL_COLOR_CONDITION_FIELD;
-            const strokeColor =
-              (overriddenCondition?.strokeColor ||
-                (typeof c === "object" && "strokeColor" in c && typeof c.strokeColor === "string"
-                  ? c.strokeColor
-                  : "")) ??
-              "";
+          const overriddenCondition = component.value?.overrideRules.find(
+            o => o.ruleId === rule.id && o.conditionId === cond.id,
+          );
+          const overriddenColor = overriddenCondition?.color;
 
-            return hasStroke
-              ? c.value
-                ? {
-                    id: c.id,
-                    value: c.value,
-                    color,
-                    // use fill color if strokeColor is not set
-                    strokeColor: strokeColor === "" ? color : strokeColor,
-                    name: c.legendName || c.value,
-                  }
-                : undefined
-              : c.value && color
-              ? {
-                  id: c.id,
-                  value: c.value,
-                  color,
-                  name: c.legendName || c.value,
-                }
-              : undefined;
-          })
-          .filter(isNotNullish);
+          // Polygon always has stroke to compat exists data
+          const hasStroke = component.type === POLYGON_FILL_COLOR_CONDITION_FIELD;
+          const overriddenStrokeColor = overriddenCondition?.strokeColor;
+
+          if (cond.color && cond.value) {
+            const c: QualitativeColor = {
+              id: cond.id,
+              value: cond.value,
+              color: overriddenColor ?? cond.color ?? "",
+              name: cond.legendName || cond.value,
+            };
+            const dc: QualitativeColor = {
+              id: cond.id,
+              value: cond.value,
+              color: cond.color,
+              name: cond.legendName || cond.value,
+            };
+
+            if (hasStroke) {
+              const condStrokeColor =
+                typeof cond === "object" &&
+                "strokeColor" in cond &&
+                typeof cond.strokeColor === "string"
+                  ? cond.strokeColor
+                  : "";
+
+              c.strokeColor = overriddenStrokeColor || condStrokeColor || cond.color;
+              dc.strokeColor =
+                typeof cond === "object" &&
+                "strokeColor" in cond &&
+                typeof cond.strokeColor === "string"
+                  ? cond.strokeColor
+                  : cond.color;
+            }
+            if (isNotNullish(c)) {
+              currentColors.push(c);
+            }
+            if (isNotNullish(dc)) {
+              defaultColors.push(dc);
+            }
+          }
+        });
+
         const colorsAtom = atom(
-          () => colors,
+          () => currentColors,
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
-            const update = typeof action === "function" ? action(colors) : action;
+            const update = typeof action === "function" ? action(currentColors) : action;
             const currentRuleId =
               colorScheme.useDefault || component.preset?.rules?.some(r => r.asDefaultRule)
                 ? colorScheme.currentRuleId ??
@@ -238,10 +254,11 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
             });
           },
         ) as unknown as PrimitiveAtom<QualitativeColor[]>; // For compat
-        return colors.length
+        return currentColors.length
           ? ({
               type: "qualitative" as const,
               name: rule.legendName || rule.propertyName,
+              defaultColors,
               colorsAtom: colorsAtom,
               colorAtomsAtom: splitAtom(colorsAtom),
             } as QualitativeColorSet)
@@ -276,6 +293,19 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
               },
             ]
           : [];
+
+        const defaultColors: QualitativeColor[] = [
+          {
+            id: component.id,
+            value: component.preset?.defaultValue ?? "",
+            color: component.preset?.defaultValue ?? "",
+            name: component.preset?.legendName ?? "",
+          },
+        ];
+        if (hasStroke) {
+          defaultColors[0].strokeColor = component.preset?.strokeValue;
+        }
+
         const colorsAtom = atom(
           () => colors,
           (_get, set, action: SetStateAction<QualitativeColor[]>) => {
@@ -294,6 +324,7 @@ export const makeColorSchemeAtomForComponent = (layers: readonly LayerModel[]) =
           ? ({
               type: "qualitative" as const,
               name: get(layer.titleAtom),
+              defaultColors,
               colorsAtom: colorsAtom,
               colorAtomsAtom: splitAtom(colorsAtom),
             } as QualitativeColorSet)

@@ -1,7 +1,8 @@
-import type { Preview } from "@storybook/react";
+import type { Preview, Renderer } from "@storybook/react";
 import React, { StrictMode } from "react";
 import { CssBaseline, darkTheme, lightTheme } from "../src/prototypes/ui-components";
 import { ThemeProvider } from "@mui/material";
+import { withThemeFromJSXProvider } from '@storybook/addon-themes';
 
 const preview: Preview = {
   parameters: {
@@ -31,15 +32,16 @@ const preview: Preview = {
     },
   },
   decorators: [
-    Story => (
-      <StrictMode>
-        <ThemeProvider theme={lightTheme}>
-          <CssBaseline />
-          <Story />
-        </ThemeProvider>
-      </StrictMode>
-    )
-  ]
+       withThemeFromJSXProvider<Renderer>({
+         themes: {
+           light: lightTheme,
+           dark: darkTheme,
+         },
+         defaultTheme: 'light',
+         Provider: ThemeProvider,
+         GlobalStyles: CssBaseline,
+       }),
+     ],
 };
 
 export default preview;

@@ -18,6 +18,7 @@ export const FIREPROOF_STRUCTURE_TYPE_COLORS = [
 ];
 
 export const fireproofStructureTypeColorSet = atomsWithQualitativeColorSet({
+  id: "fireproof_structure_type",
   name: "耐火構造種別",
   colors: FIREPROOF_STRUCTURE_TYPE_COLORS,
 });
