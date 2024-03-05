@@ -1,3 +1,4 @@
+import { type FeatureCollection } from "geojson";
 import { FC, useMemo } from "react";
 
 import { useLayer } from "../hooks";
@@ -6,15 +7,18 @@ import { Data, LayerAppearanceTypes } from "../types";
 export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon">>;
 
 export type PolygonProps = {
-  features: any;
+  polygonFeatures: FeatureCollection;
   onLoad?: (layerId: string) => void;
   visible?: boolean;
   appearances?: PolygonAppearances;
 };
 
-export const POLYGON_LAYER_ID_PROPERTY = "polygonLayerID";
-
-export const PolygonLayer: FC<PolygonProps> = ({ features, onLoad, visible, appearances }) => {
+export const PolygonLayer: FC<PolygonProps> = ({
+  polygonFeatures,
+  onLoad,
+  visible,
+  appearances,
+}) => {
   const mergedAppearances: PolygonAppearances | undefined = useMemo(
     () => ({
       ...appearances,
@@ -26,16 +30,15 @@ export const PolygonLayer: FC<PolygonProps> = ({ features, onLoad, visible, appe
     [appearances],
   );
 
-  console.log("features", features)
   const data: Data = useMemo(
     () => ({
       type: "geojson",
       value: {
         type: "FeatureCollection",
-        features: features.map(f => ({ ...f })),
+        features: polygonFeatures.features.map(f => f),
       },
     }),
-    [features],
+    [polygonFeatures],
   );
 
   useLayer({
