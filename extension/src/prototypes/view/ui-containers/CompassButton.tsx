@@ -12,8 +12,6 @@ export const CompassButton: FC = () => {
   const camera = getCameraPosition();
   const radianToDegree = useCallback((rad: number) => rad * (180 / Math.PI), []);
 
-  const [initialCamera] = useState(camera);
-
   useEffect(() => {
     if (camera?.heading) {
       setRotationAngle(360 - radianToDegree(camera?.heading));
@@ -23,9 +21,9 @@ export const CompassButton: FC = () => {
   const [autoRotateCamera, setAutoRotateCameraAtom] = useAtom(autoRotateCameraAtom);
 
   const handleClick = useCallback(() => {
-    if (initialCamera) flyTo({ ...camera, heading: 0 });
+    flyTo({ ...camera, heading: 0 });
     if (autoRotateCamera) setAutoRotateCameraAtom(value => !value);
-  }, [autoRotateCamera, camera, flyTo, initialCamera, setAutoRotateCameraAtom]);
+  }, [autoRotateCamera, camera, flyTo, setAutoRotateCameraAtom]);
 
   return (
     <AppIconButton title="コンパス" onClick={handleClick}>
