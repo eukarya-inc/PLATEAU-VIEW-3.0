@@ -13,7 +13,7 @@ const DEFAULT_ATTRIBUTES = [
   `meshcode,{"featureType":"custom","description":"メッシュコード"}`,
   `city,{"featureType":"custom","description":"市区町村"}`,
   `city_code,{"featureType":"custom","description":"市区町村コード"}`,
-  `city_name,{"featureType":"custom","description":"市区町村名"}`,
+  `city_name,{"featureType":"custom","description":"整備対象都市"}`,
   `lod1HeightType,{"featureType":"custom","description":"LOD1の立ち上げに使用する建築物の高さ"}`,
   `buildingID,{"featureType":"custom","description":"建物ID"}`,
   `prefecture,{"featureType":"custom","description":"都道府県"}`,
