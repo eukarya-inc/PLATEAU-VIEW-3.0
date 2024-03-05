@@ -13,7 +13,6 @@ const StyledButton = styled(Button)(({ theme }) => ({
   [`& .${buttonClasses.startIcon}`]: {
     marginRight: theme.spacing(0.75),
   },
-  // whiteSpace: "normal",
 }));
 
 export interface ContextButtonProps extends Omit<ButtonProps, "startIcon"> {
