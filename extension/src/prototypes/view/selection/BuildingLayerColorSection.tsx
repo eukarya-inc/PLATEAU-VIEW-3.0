@@ -176,7 +176,6 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
     useMemo(
       () =>
         atom((get): Array<[null, string] | [string, string]> => {
-          console.log(buildingLayers.map(layer => get(layer.propertiesAtom)));
           const names = intersectionBy(
             ...buildingLayers.map(layer =>
               "propertiesAtom" in layer
@@ -203,8 +202,6 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
       [buildingLayers, recalcPropertyItems], // eslint-disable-line react-hooks/exhaustive-deps
     ),
   );
-
-  console.log("ITEM: ", propertyItems);
 
   const colorPropertyAtoms = useMemo(() => {
     const atoms = buildingLayers.map(layer =>
