@@ -1,6 +1,6 @@
 import { Button, Stack, styled, Typography } from "@mui/material";
 import { atom, useAtomValue, useSetAtom, type Getter } from "jotai";
-import { intersection, isEqual, min, uniqWith, uniqBy } from "lodash-es";
+import { isEqual, min, uniqWith, uniqBy, intersectionBy } from "lodash-es";
 import { useCallback, useMemo, type FC, useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -176,7 +176,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
     useMemo(
       () =>
         atom((get): Array<[null, string] | [string, string]> => {
-          const names = intersection(
+          const names = intersectionBy(
             ...buildingLayers.map(layer =>
               "propertiesAtom" in layer
                 ? get(layer.propertiesAtom)
@@ -189,6 +189,7 @@ export const BuildingLayerColorSection: FC<BuildingLayerColorSectionProps> = ({ 
                     .filter(isNotNullish) ?? []
                 : [],
             ),
+            v => v[0],
           );
           return [
             [null, "なし"],
