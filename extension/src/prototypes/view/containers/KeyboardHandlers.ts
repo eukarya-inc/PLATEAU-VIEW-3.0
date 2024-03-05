@@ -17,7 +17,6 @@ const directions = [
   "sketch",
   "story",
   "hide-ui",
-  "developer",
 ] as const;
 
 type Direction = (typeof directions)[number];
