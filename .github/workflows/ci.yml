@@ -15,6 +15,7 @@ jobs:
       extension: ${{ steps.extension.outputs.any_changed }}
       server: ${{ steps.server.outputs.any_changed }}
       geo: ${{ steps.geo.outputs.any_changed }}
+      tiles: ${{ steps.tiles.outputs.any_changed }}
       tools: ${{ steps.tools.outputs.any_changed }}
     steps:
       - uses: actions/checkout@v3
@@ -96,7 +97,7 @@ jobs:
     uses: ./.github/workflows/ci-geo.yml
   ci-tiles:
     needs: prepare
-    if: needs.prepare.outputs.geo == 'true' || github.event.inputs.action_type == 'tiles'
+    if: needs.prepare.outputs.tiles == 'true' || github.event.inputs.action_type == 'tiles'
     uses: ./.github/workflows/ci-tiles.yml
   ci:
     runs-on: ubuntu-latest
