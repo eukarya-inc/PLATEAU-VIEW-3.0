@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       action_type:
-        description: 'Action type'
+        description: "Action type"
         required: true
 jobs:
   prepare:
@@ -57,6 +57,17 @@ jobs:
             .github/workflows/build-geo.yml
             .github/workflows/deploy-geo-dev.yml
             .github/workflows/deploy-geo-prod.yml
+      - name: changed files for tiles
+        id: tiles
+        uses: tj-actions/changed-files@v36
+        with:
+          files: |
+            tiles
+            .github/workflows/ci-tiles.yml
+            .github/workflows/build-tiles.yml
+            .github/workflows/deploy-tiles-dev.yml
+            .github/workflows/deploy-tiles-prod.yml
+
   # ci-extension-version-update:
   #   needs: prepare
   #   if: ${{ !failure() && needs.prepare.outputs.extension == 'true' && github.event_name == 'push' && github.ref_name == 'main' }}
@@ -83,6 +94,10 @@ jobs:
     needs: prepare
     if: needs.prepare.outputs.geo == 'true' || github.event.inputs.action_type == 'geo'
     uses: ./.github/workflows/ci-geo.yml
+  ci-tiles:
+    needs: prepare
+    if: needs.prepare.outputs.geo == 'true' || github.event.inputs.action_type == 'tiles'
+    uses: ./.github/workflows/ci-tiles.yml
   ci:
     runs-on: ubuntu-latest
     needs:
@@ -90,7 +105,8 @@ jobs:
       - ci-server
       - ci-tools
       - ci-geo
-    if: '!failure()'
+      - ci-tiles
+    if: "!failure()"
     steps:
       - run: echo OK
   deploy-extension-dev:
@@ -126,3 +142,16 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           event-type: deploy-geo-dev
+
+  build-tiles:
+    needs: ci-geo
+    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+    uses: ./.github/workflows/build-tiles.yml
+  deploy-tiles-dev:
+    needs: build-tiles
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-tiles-dev
