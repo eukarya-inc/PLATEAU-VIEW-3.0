@@ -39,7 +39,7 @@ write_files:
       [Service]
       Type=service
       Environment="HOME=/home/cloudservice"
-      ExecStart=/usr/bin/docker run --rm -u 2000 --name=reearth-plateau-tiles --device /dev/nvidia0:/dev/nvidia0 -p 8888:8888 -e PORT=8888 -e TILE_CACHE_ROOT=gs://${cache_bucket} -e ALLOW_ORIGIN='["https://${reearth_domain}", "https://*.${reearth_domain}"]' us-docker.pkg.dev/cloudrun/container/hello:latest:v3.0.0
+      ExecStart=/usr/bin/docker run --rm -u 2000 --name=reearth-plateau-tiles --device /dev/nvidia0:/dev/nvidia0 -p 8888:8888 -e PORT=8888 -e TILE_CACHE_ROOT=gs://${cache_bucket} -e ALLOW_ORIGIN='["https://${reearth_domain}", "https://*.${reearth_domain}"]' us-docker.pkg.dev/cloudrun/container/hello:latest
       ExecStop=/usr/bin/docker stop reearth-plateau-tiles
       ExecStopPost=/usr/bin/docker rm reearth-plateau-tiles
       RemainAfterExit=true

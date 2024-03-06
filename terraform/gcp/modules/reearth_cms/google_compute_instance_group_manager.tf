@@ -7,7 +7,7 @@ resource "google_compute_instance_group_manager" "plateauview_tiles" {
 
   auto_healing_policies {
     health_check      = google_compute_health_check.plateauview_tiles.id
-    initial_delay_sec = 180 # 3 minutes
+    initial_delay_sec = 300 # 5 minutes
   }
 
   named_port {

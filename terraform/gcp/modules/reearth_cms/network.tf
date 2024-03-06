@@ -27,10 +27,6 @@ resource "google_compute_managed_ssl_certificate" "common" {
       local.worker_cms_domain
     ]
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "google_compute_managed_ssl_certificate" "common_1" {
@@ -44,12 +40,9 @@ resource "google_compute_managed_ssl_certificate" "common_1" {
       local.assets_cms_domain,
       local.cms_domain,
       local.geo_domain,
+      local.tiles_domain,
       local.worker_cms_domain
     ]
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 

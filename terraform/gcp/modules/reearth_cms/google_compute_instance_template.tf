@@ -54,8 +54,6 @@ resource "google_compute_instance_template" "plateauview_tiles" {
   }
 
   tags = [
-    # Default health check from GCP load balancer
-    # See https://console.cloud.google.com/net-security/firewall-manager/firewall-policies/details/default-allow-health-check?project=reearth-plateau
     "lb-health-check",
   ]
 
