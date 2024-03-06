@@ -60,6 +60,7 @@ const qualitativeProperties: QualitativeProperty[] = [
   },
   {
     testProperty: propertyName => propertyName === "用途" || propertyName === "bldg:usage",
+    getDisplayName: () => "用途",
     colorSet: usageColorSet,
     availableFeatures: ["color"],
   },
@@ -67,6 +68,7 @@ const qualitativeProperties: QualitativeProperty[] = [
     testProperty: propertyName =>
       propertyName === "構造種別" ||
       propertyName === "uro:BuildingDetailAttribute_uro:buildingStructureType",
+    getDisplayName: () => "構造種別",
     colorSet: structureTypeColorSet,
     availableFeatures: ["color"],
   },
@@ -74,6 +76,7 @@ const qualitativeProperties: QualitativeProperty[] = [
     testProperty: propertyName =>
       propertyName === "耐火構造種別" ||
       propertyName === "uro:BuildingDetailAttribute_uro:fireproofStructureType",
+    getDisplayName: () => "耐火構造種別",
     colorSet: fireproofStructureTypeColorSet,
     availableFeatures: ["color"],
   },

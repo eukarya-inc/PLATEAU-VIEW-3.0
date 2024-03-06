@@ -17,8 +17,9 @@ export const MUDFLOW_RISK_COLORS = [
   },
 ];
 
-export const mudflowRiskColorSet = atomsWithQualitativeColorSet({
-  id: "mudflow_risk",
-  name: "土石流",
-  colors: MUDFLOW_RISK_COLORS,
-});
+export const mudflowRiskColorSet = (id: string, name: string) =>
+  atomsWithQualitativeColorSet({
+    id: `${id}-mudflow_risk`,
+    name,
+    colors: MUDFLOW_RISK_COLORS,
+  });
