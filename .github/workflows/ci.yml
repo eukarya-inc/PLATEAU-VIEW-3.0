@@ -145,7 +145,7 @@ jobs:
           event-type: deploy-geo-dev
 
   build-tiles:
-    needs: ci-geo
+    needs: ci-tiles
     if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-tiles.yml
   deploy-tiles-dev:
