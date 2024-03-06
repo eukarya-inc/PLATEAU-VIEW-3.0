@@ -22,7 +22,9 @@ const Component: FC = () => {
       <QualitativeColorLegend
         colors={useAtomValue(floodRankColorSet("iddid", "浸水ランクコード").colorsAtom)}
       />
-      <QualitativeColorLegend colors={useAtomValue(landUseColorSet.colorsAtom)} />
+      <QualitativeColorLegend
+        colors={useAtomValue(landUseColorSet("myID", "Land Use").colorsAtom)}
+      />
     </Stack>
   );
 };
