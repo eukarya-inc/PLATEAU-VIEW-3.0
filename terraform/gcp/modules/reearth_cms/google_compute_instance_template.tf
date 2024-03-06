@@ -1,6 +1,6 @@
 resource "google_compute_instance_template" "plateauview_tiles" {
   project     = data.google_project.project.project_id
-  name_prefix = "plateau-tiles-"
+  name_prefix = "plateauview-tiles-"
   description = "Run Re:Earth Plateau Tiles on GPU instances"
 
   instance_description = "description assigned to instances"

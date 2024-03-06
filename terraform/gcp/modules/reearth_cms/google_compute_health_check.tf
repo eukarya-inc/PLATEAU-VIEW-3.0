@@ -7,7 +7,7 @@ resource "google_compute_health_check" "plateauview_tiles" {
   unhealthy_threshold = 10
 
   http_health_check {
-    request_path = "/tiles"
+    request_path = "/" # TODO: Change to /tiles
     port         = 8888
   }
 }
