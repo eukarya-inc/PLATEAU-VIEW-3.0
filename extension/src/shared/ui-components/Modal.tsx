@@ -24,11 +24,7 @@ const SharedModal: React.FC<Props> = ({ title, isVisible, children, titleIcon, o
           <IconButton
             aria-label="close"
             onClick={onClose}
-            sx={{
-              position: "absolute",
-              top: 10,
-              right: 10,
-            }}>
+            sx={{ position: "absolute", top: 10, right: 10 }}>
             <CancelIcon />
           </IconButton>
         </Typography>
