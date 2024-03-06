@@ -9,9 +9,11 @@ import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/typ
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
+import { isGenericDatasetType } from "../constants/generic";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
+import { DatasetFolderList } from "./DatasetFolderList";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
 
 const expandedAtom = atomWithReset<string[]>([]);
@@ -23,7 +25,11 @@ export const DatasetGroup: FC<{
   invariant(datasets.length > 0);
 
   if (datasets.length > 1) {
-    return (
+    return isGenericDatasetType(datasets[0].type.code) ? (
+      <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
+        <DatasetFolderList folderId={groupId} datasets={datasets} />
+      </DatasetTreeItem>
+    ) : (
       <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
         {datasets.map(dataset => {
           return (
@@ -61,15 +67,7 @@ const GlobalItem: FC<{}> = () => {
   });
   return (
     <DatasetTreeItem nodeId="global" label={datasetTypeNames.global} loading={query.loading}>
-      {query.data?.datasets?.map(dataset => (
-        <DatasetListItem
-          key={dataset.id}
-          dataset={dataset}
-          municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-          label={dataset.name}
-          title={dataset.name}
-        />
-      ))}
+      <DatasetFolderList folderId="global" datasets={query.data?.datasets} />
     </DatasetTreeItem>
   );
 };
