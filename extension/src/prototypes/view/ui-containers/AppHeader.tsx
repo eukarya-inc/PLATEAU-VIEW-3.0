@@ -1,9 +1,8 @@
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useState, type FC, useEffect } from "react";
 
-import { SharedRootLayer, getSharedRootLayersAtom } from "../../../shared/states/share";
-import { isAppReadyAtom } from "../../../shared/view/state/app";
+import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import ShareModal from "../../../shared/view/ui-container/ShareModal";
 import { AppBar, PaperPlaneTilt, Space } from "../../ui-components";
 import { hideAppOverlayAtom, showShareModalAtom } from "../states/app";
@@ -16,27 +15,32 @@ import { MainMenuButton } from "./MainMenuButton";
 import { SettingsButton } from "./SettingsButton";
 import { ToolButtons } from "./ToolButtons";
 
-export const AppHeader: FC = () => {
+type Props = {
+  arURL?: string;
+};
+
+export const AppHeader: FC<Props> = ({ arURL }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   const [showShareModal, setShowShareModal] = useAtom(showShareModalAtom);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
-  const getSharedRootLayers = useSetAtom(getSharedRootLayersAtom);
-  const [sharedRootLayers, setSharedRootLayers] = useState<SharedRootLayer[] | undefined>();
-  const isAppReady = useAtomValue(isAppReadyAtom);
+  const getRootLayers = useAtomValue(rootLayersAtom);
+  const [arSharedLayers, setArSharedLayers] = useState<string | undefined>();
 
   useEffect(() => {
     (async () => {
-      if (!isAppReady) return;
-      const layers = await getSharedRootLayers();
-      setSharedRootLayers(layers);
+      if (!getRootLayers || getRootLayers?.length === 0) return;
+      const layers = getRootLayers.map(({ type, id }) => ({
+        type,
+        id,
+      }));
+      setArSharedLayers(encodeURI(JSON.stringify(layers)));
     })();
-  }, [isAppReady, getSharedRootLayers]);
+  }, [getRootLayers, setArSharedLayers]);
+
   if (hidden) {
     return null;
   }
-
-  console.log(sharedRootLayers);
 
   return (
     <AppBar>
@@ -54,7 +58,11 @@ export const AppHeader: FC = () => {
       <IconButton>
         <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
       </IconButton>
-      {isMobile && <IconButton size="small">AR</IconButton>}
+      {isMobile && arSharedLayers && (
+        <IconButton size="small" onClick={() => console.log(arURL, "?dataList=", arSharedLayers)}>
+          AR
+        </IconButton>
+      )}
       {showShareModal && (
         <ShareModal showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
       )}

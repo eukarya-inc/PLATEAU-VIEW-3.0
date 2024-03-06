@@ -77,7 +77,11 @@ const yml = {
                 type: "string",
                 title: "Re:Earthプロジェクトの公開URL",
               },
-              // TODO: Add AR website/app link
+              {
+                id: "arURL",
+                type: "string",
+                title: "AR App URL",
+              },
               {
                 id: "enableGeoPub",
                 type: "bool",
