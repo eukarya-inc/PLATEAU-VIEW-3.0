@@ -1,23 +1,8 @@
-import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 
-import { hideAppOverlayAtom } from "../../../prototypes/view/states/app";
 import { useConstant, useWindowEvent } from "../../react-helpers";
-import { toolMachineAtom } from "../states/tool";
 
-const directions = [
-  "forward",
-  "backward",
-  "right",
-  "left",
-  "up",
-  "down",
-  "select",
-  "pedestrian",
-  "sketch",
-  "story",
-  "hide-ui",
-] as const;
+const directions = ["forward", "backward", "right", "left", "up", "down"] as const;
 
 type Direction = (typeof directions)[number];
 
@@ -43,11 +28,6 @@ const defaultKeyAssignments: KeyAssignments = {
   Space: "up",
   ControlLeft: "down",
   ShiftLeft: "sprint",
-  KeyV: "select",
-  KeyP: "pedestrian",
-  KeyG: "sketch",
-  KeyT: "story",
-  Slash: "hide-ui",
 };
 
 type KeyboardHandlersProps = {
@@ -62,9 +42,6 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   const modesRef = useRef<{
     sprint?: boolean;
   }>({});
-
-  const send = useSetAtom(toolMachineAtom);
-  const setHideAppOverlay = useSetAtom(hideAppOverlayAtom);
 
   const keyRef = useRef<string | null>(null);
 
@@ -135,7 +112,6 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
   useWindowEvent("keydown", event => {
     const assignment = defaultKeyAssignments[event.code];
     if (assignment == null) return;
-    const isCtrlOrCmdPressed = event.ctrlKey || event.metaKey;
 
     if (isDirection(assignment)) {
       directionsRef.current[assignment] = true;
@@ -144,31 +120,6 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     } else if (isMode(assignment)) {
       modesRef.current[assignment] = true;
       event.preventDefault();
-    }
-
-    if (event.code === "KeyV") {
-      send({ type: "SELECT" });
-      event.preventDefault();
-    }
-
-    if (event.code === "KeyP") {
-      send({ type: "PEDESTRIAN" });
-      event.preventDefault();
-    }
-
-    if (event.code === "KeyG") {
-      send({ type: "SKETCH" });
-      event.preventDefault();
-    }
-
-    if (event.code === "KeyT") {
-      send({ type: "STORY" });
-      event.preventDefault();
-    }
-
-    if (isCtrlOrCmdPressed && event.code === "Slash") {
-      event.preventDefault();
-      setHideAppOverlay(value => !value);
     }
   });
 
