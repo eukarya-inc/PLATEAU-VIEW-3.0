@@ -29,14 +29,15 @@ export const AppHeader: FC<Props> = ({ arURL }) => {
 
   useEffect(() => {
     (async () => {
-      if (!getRootLayers || getRootLayers?.length === 0) return;
+      if (!getRootLayers || getRootLayers?.length === 0 || !arURL) return;
       const layers = getRootLayers.map(({ type, id }) => ({
         type,
         id,
       }));
-      setArSharedLayers(encodeURI(JSON.stringify(layers)));
+      const url = arURL + "?dataList=" + encodeURI(JSON.stringify(layers));
+      setArSharedLayers(url);
     })();
-  }, [getRootLayers, setArSharedLayers]);
+  }, [getRootLayers, setArSharedLayers, arURL]);
 
   if (hidden) {
     return null;
@@ -59,7 +60,9 @@ export const AppHeader: FC<Props> = ({ arURL }) => {
         <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
       </IconButton>
       {isMobile && arSharedLayers && (
-        <IconButton size="small" onClick={() => console.log(arURL, "?dataList=", arSharedLayers)}>
+        <IconButton
+          size="small"
+          onClick={() => window.open(arSharedLayers, "_blank", "noopener,noreferrer")}>
           AR
         </IconButton>
       )}
