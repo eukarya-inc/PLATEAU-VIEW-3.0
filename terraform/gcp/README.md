@@ -101,7 +101,7 @@ $ terraform import google_storage_bucket.terraform <バケット名>
 
 ### 3.5 Auth0のセットアップ
 
-Auth0テナントを作成した後、[公式のQuick Start](https://github.com/auth0/terraform-provider-auth0/blob/main/docs/guides/quickstart.md)を参考に、アプリケーションを作成してください。作成後、クライアントシークレットを取得してください。
+[Auth0](https://auth0.com/)にログインして、テナントを作成した後、[公式のQuick Start](https://github.com/auth0/terraform-provider-auth0/blob/main/docs/guides/quickstart.md)を参考に、アプリケーションを作成してください。作成後、クライアントシークレットを取得してください。
 
 ### 3.6 Terraform変数の設定
 
@@ -144,10 +144,7 @@ gcloud dns record-sets list --zone <マネージドゾーン名> --format='value
 terraform apply
 ```
 
-しばらく時間を要し、今回は失敗します。あとで再度実行するので、このまま進めてください。
-
-そして、先程失敗してしまっていたTerraformの実行を再度行います。
-成功すると、以下のような出力が表示されます。
+実行が成功すると、以下のような出力が表示されます。
 
 ```console
 $ terraform apply
@@ -161,7 +158,7 @@ plateau_view_sidebar_token = <sensitive>
 plateau_view_sidecar_url = "*"
 ```
 
-これらはあとでログインなどに使います。なお、もう一度表示したいときは`terraform output`コマンドで表示可能です。
+これらの出力は、あとでログインするときに使います。なお、もう一度表示したいときは`terraform output`コマンドで表示することができます。
 
 | 変数 | 説明 |
 | --- | --- |

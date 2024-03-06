@@ -3,6 +3,14 @@ variable "auth0_domain" {
   description = "Auth0のドメイン"
 }
 
+variable "cesium_ion_access_token" {
+  type        = string
+  description = "Cesium IONのアクセストークン"
+
+  # Note: Cesium Ion Access Token is not a secret which will be expose to the frontend, but it is sensitive information.
+  sensitive = true
+}
+
 variable "ckan_token" {
   type        = string
   description = "FMEトークン"
@@ -71,6 +79,13 @@ variable "prefix" {
 variable "reearth_version" {
   type    = string
   default = "0.14.1"
+}
+
+variable "reearth_cms_web_config" {
+  type = object({
+    coverImageUrl = string
+    logoUrl       = string
+  })
 }
 
 variable "sendgrid_api_key" {

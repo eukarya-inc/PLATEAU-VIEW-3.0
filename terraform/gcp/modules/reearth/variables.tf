@@ -3,6 +3,14 @@ variable "auth0_domain" {
   description = "Auth0のドメイン"
 }
 
+variable "cesium_ion_access_token" {
+  type        = string
+  description = "Cesium IONのアクセストークン"
+
+  # Note: Cesium Ion Access Token is not a secret which will be expose to the frontend, but it is sensitive information.
+  sensitive = true
+}
+
 variable "domain" {
   type        = string
   description = "PLATEAU VIEWを提供するドメイン名"
@@ -41,6 +49,16 @@ variable "prefix" {
   description = "作成されるリソース名のプレフィックス"
 }
 
+variable "reearth_web_config" {
+  type = object({
+    brand = object({
+      background = string
+      logoUrl    = string
+    })
+  })
+  description = "Re:Earthの設定"
+}
+
 variable "reearth_version" {
   type    = string
   default = "0.14.1"
@@ -50,9 +68,4 @@ variable "reearth_marketplace_secret" {
   type        = string
   description = "Re:Earth Marketplaceのシークレット"
   sensitive   = true
-}
-
-variable "cesium_ion_access_token" {
-  type    = string
-  default = ""
 }

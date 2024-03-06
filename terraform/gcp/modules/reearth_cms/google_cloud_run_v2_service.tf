@@ -317,11 +317,6 @@ resource "google_cloud_run_v2_service" "reearth_cms" {
       }
 
       env {
-        name  = "REEARTH_CMS_TASK_GCPREGION"
-        value = google_cloud_tasks_queue.cms_decompress.location
-      }
-
-      env {
         name  = "REEARTH_CMS_TASK_SUBSCRIBERURL"
         value = "https://${local.worker_cms_domain}/api/decompress"
       }
@@ -329,6 +324,17 @@ resource "google_cloud_run_v2_service" "reearth_cms" {
       env {
         name  = "REEARTH_CMS_TASK_TOPIC"
         value = google_pubsub_topic.cms_webhook.name
+      }
+
+      env {
+        name = "REEARTH_CMS_WEB_CONFIG"
+        # Note: Cesium Ion Access Token is not a secret which will be expose to the frontend, but it is sensitive information.
+        value = jsonencode({
+          cesiumIonAccessToken = var.cesium_ion_access_token,
+          coverImageUrl        = var.reearth_cms_web_config.coverImageUrl
+          editorUrl            = "https://${local.reearth_domain}"
+          logoUrl              = var.reearth_cms_web_config.logoUrl
+        })
       }
     }
 

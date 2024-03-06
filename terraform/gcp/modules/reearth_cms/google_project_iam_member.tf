@@ -27,9 +27,3 @@ resource "google_project_iam_member" "plateauview_geo" {
   member  = "serviceAccount:${google_service_account.plateauview_geo.email}"
   project = data.google_project.project.project_id
 }
-
-resource "google_project_iam_member" "plateauview_api_worker" {
-  role    = google_project_iam_custom_role.plateauview_api_worker.id
-  member  = "serviceAccount:${google_service_account.plateauview_api_worker.email}"
-  project = data.google_project.project.project_id
-}

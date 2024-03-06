@@ -94,21 +94,3 @@ resource "google_project_iam_custom_role" "plateauview_geo" {
     "storage.objects.update",
   ]
 }
-
-resource "google_project_iam_custom_role" "plateauview_api_worker" {
-  role_id     = "plateauviewapiworker"
-  project     = data.google_project.project.project_id
-  title       = "plateauview-api-worker"
-  description = "IAM role for PLATEAU VIEW API WORKER"
-  stage       = "GA"
-  permissions = [
-    "cloudprofiler.profiles.create",
-    "cloudprofiler.profiles.update",
-    "pubsub.topics.publish",
-    "secretmanager.versions.access",
-    "storage.objects.create",
-    "storage.objects.delete",
-    "storage.objects.get",
-    "storage.objects.update",
-  ]
-}

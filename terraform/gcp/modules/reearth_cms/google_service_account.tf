@@ -27,9 +27,3 @@ resource "google_service_account" "plateauview_geo" {
   account_id   = "plateauview-geo"
   display_name = "Service Account for PLATEAU Geo"
 }
-
-resource "google_service_account" "plateauview_api_worker" {
-  project      = data.google_project.project.project_id
-  account_id   = "plateauview-api-worker"
-  display_name = "Service Account for PLATEAU View API worker"
-}
