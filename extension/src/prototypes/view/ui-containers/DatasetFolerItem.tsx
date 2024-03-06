@@ -37,7 +37,7 @@ export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, leve
         title={folderItem.label}
         disabled={!folderItem.datasets.length}
         secondaryAction={
-          folderItem.folderDataset && (
+          !!folderItem.folderDataset?.description && (
             <IconButton size="small" onClick={handleInfo}>
               <InfoIcon />
             </IconButton>
@@ -49,7 +49,7 @@ export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, leve
           level={level}
         />
       </DatasetTreeItem>
-      {folderItem.folderDataset && (
+      {!!folderItem.folderDataset?.description && (
         <DatasetDialog
           open={infoOpen}
           dataset={folderItem.folderDataset}
