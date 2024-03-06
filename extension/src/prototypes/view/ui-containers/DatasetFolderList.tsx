@@ -2,15 +2,9 @@ import { groupBy } from "lodash-es";
 import { FC, useMemo } from "react";
 
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
-import { DatasetTreeItem } from "../../ui-components";
 
+import { DatasetFolderItem, FolderItem } from "./DatasetFolerItem";
 import { DatasetListItem } from "./DatasetListItem";
-
-type FolderItem = {
-  label: string;
-  subFolderId: string;
-  datasets: DatasetFragmentFragment[];
-};
 
 type DatasetFolderListProps = {
   folderId: string;
@@ -23,7 +17,7 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
   datasets,
   level = 0,
 }) => {
-  const subFolders = useMemo(() => {
+  const folderList = useMemo(() => {
     const folders: FolderItem[] = [];
     Object.entries(groupBy(datasets, d => d.name.split("/")[level])).forEach(([key, value]) => {
       if (key !== "undefined") {
@@ -31,9 +25,13 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
           label: key,
           subFolderId: `${folderId}:${key}${value.length === 1 ? `:${value[0].id}` : ""}`,
           datasets: value.sort((a, b) => a.type.order - b.type.order),
+          folderDataset:
+            value.find(v => v.name.split("/")[level + 1] === undefined && v.items.length === 0) ??
+            undefined,
         });
       } else {
         value.forEach((v, index) => {
+          if (v.items.length === 0) return;
           folders.push({
             label: `${index}`,
             subFolderId: `${folderId}:${v.id}}`,
@@ -47,36 +45,25 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
 
   return (
     <>
-      {Object.entries(subFolders).map(([key, value]) => {
-        if (value.datasets.length === 1) {
-          const label = value.datasets[0].name.split("/").pop();
+      {Object.values(folderList).map(folder => {
+        if (folder.datasets.length === 1) {
+          const label = folder.datasets[0].name.split("/").pop();
           return (
             <DatasetListItem
-              key={value.datasets[0].id}
+              key={folder.datasets[0].id}
               municipalityCode={
-                value.datasets[0].wardCode ??
-                value.datasets[0].cityCode ??
-                value.datasets[0].prefectureCode
+                folder.datasets[0].wardCode ??
+                folder.datasets[0].cityCode ??
+                folder.datasets[0].prefectureCode
               }
-              dataset={value.datasets[0]}
+              dataset={folder.datasets[0]}
               label={label}
-              title={value.datasets[0].name}
+              title={folder.datasets[0].name}
             />
           );
         } else {
           return (
-            <DatasetTreeItem
-              key={key}
-              nodeId={value.subFolderId}
-              label={value.label}
-              title={value.label}
-              disabled={!value.datasets.length}>
-              <DatasetFolderList
-                folderId={value.subFolderId}
-                datasets={value.datasets}
-                level={level + 1}
-              />
-            </DatasetTreeItem>
+            <DatasetFolderItem key={folder.subFolderId} folderItem={folder} level={level + 1} />
           );
         }
       })}
