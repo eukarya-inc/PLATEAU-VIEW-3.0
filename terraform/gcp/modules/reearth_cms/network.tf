@@ -24,8 +24,13 @@ resource "google_compute_managed_ssl_certificate" "common" {
       local.assets_cms_domain,
       local.cms_domain,
       local.geo_domain,
+      local.tiles_domain,
       local.worker_cms_domain
     ]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -132,6 +137,19 @@ resource "google_compute_url_map" "cms" {
   path_matcher {
     default_service = google_compute_backend_service.plateauview_geo.self_link
     name            = "path-matcher-5"
+  }
+
+
+  host_rule {
+    hosts = [
+      local.tiles_domain,
+    ]
+    path_matcher = "path-matcher-6"
+  }
+
+  path_matcher {
+    default_service = google_compute_backend_service.plateauview_tiles.self_link
+    name            = "path-matcher-6"
   }
 }
 

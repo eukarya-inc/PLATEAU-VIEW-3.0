@@ -5,11 +5,6 @@ terraform {
       version = "~> 5.18"
     }
 
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "~> 5.18"
-    }
-
     random = {
       source  = "hashicorp/random"
       version = "~> 3.6"
