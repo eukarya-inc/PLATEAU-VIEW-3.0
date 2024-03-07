@@ -76,22 +76,37 @@ const CurrentTime = styled("div")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
 }));
 
-const speedOptions = [
+const speedUnitOptions = [
   {
-    value: 60,
-    label: "1分 / 秒",
+    value: 1,
+    label: "秒",
   },
   {
-    value: 1800,
-    label: "30分 / 秒",
+    value: 60,
+    label: "分",
   },
   {
     value: 3600,
-    label: "1時間 / 秒",
+    label: "時間",
+  },
+];
+
+const speedAmountOptions = [
+  {
+    value: 1,
+    label: "1",
   },
   {
-    value: 36000,
-    label: "10時間 / 秒",
+    value: 5,
+    label: "5",
+  },
+  {
+    value: 10,
+    label: "10",
+  },
+  {
+    value: 30,
+    label: "30",
   },
 ];
 
@@ -123,16 +138,25 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   const isActive = useRef(false);
   const [playState, setPlayState] = useState<"play" | "pause" | "reverse" | undefined>(undefined);
 
-  const [speed, setSpeed] = useState(speedOptions[0].value);
-
-  const handleSpeedChange = useCallback(
+  const [speedAmount, setSpeedAmount] = useState(speedAmountOptions[0].value);
+  const [speedUnit, setSpeedUnit] = useState(speedUnitOptions[1].value);
+  const handleSpeedAmountChange = useCallback(
     (event: SelectChangeEvent<number>) => {
-      setSpeed(Number(event.target.value));
+      setSpeedAmount(Number(event.target.value));
       if (playState === "play" || playState === "reverse") {
-        onSetSpeed?.((playState === "reverse" ? -1 : 1) * Number(event.target.value));
+        onSetSpeed?.((playState === "reverse" ? -1 : 1) * Number(event.target.value) * speedUnit);
       }
     },
-    [playState, onSetSpeed],
+    [playState, speedUnit, onSetSpeed],
+  );
+  const handleSpeedUnitChange = useCallback(
+    (event: SelectChangeEvent<number>) => {
+      setSpeedUnit(Number(event.target.value));
+      if (playState === "play" || playState === "reverse") {
+        onSetSpeed?.((playState === "reverse" ? -1 : 1) * Number(event.target.value) * speedAmount);
+      }
+    },
+    [playState, speedAmount, onSetSpeed],
   );
 
   const handlePlay = useCallback(() => {
@@ -144,9 +168,18 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
       start: startDate,
       stop: endDate,
       current: currentDate,
-      speed,
+      speed: speedAmount * speedUnit,
     });
-  }, [startDate, endDate, currentDate, speed, id, onPlay, setActiveTimelineComponentId]);
+  }, [
+    startDate,
+    endDate,
+    currentDate,
+    speedAmount,
+    speedUnit,
+    id,
+    onPlay,
+    setActiveTimelineComponentId,
+  ]);
 
   const handlePause = useCallback(() => {
     setActiveTimelineComponentId(id);
@@ -164,9 +197,18 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
       start: startDate,
       stop: endDate,
       current: currentDate,
-      speed,
+      speed: speedAmount * speedUnit,
     });
-  }, [startDate, endDate, currentDate, speed, id, onPlayReverse, setActiveTimelineComponentId]);
+  }, [
+    startDate,
+    endDate,
+    currentDate,
+    speedAmount,
+    speedUnit,
+    id,
+    onPlayReverse,
+    setActiveTimelineComponentId,
+  ]);
 
   const handleJumpTime = useCallback(
     (_: Event, value: number | number[]) => {
@@ -241,13 +283,25 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
           </ButtonWrapper>
         </ButtonsWrapper>
         <SelectWrapper>
-          <Select size="small" variant="filled" value={speed} onChange={handleSpeedChange}>
-            {speedOptions.map(option => (
+          <Select
+            size="small"
+            variant="filled"
+            value={speedAmount}
+            onChange={handleSpeedAmountChange}>
+            {speedAmountOptions.map(option => (
               <SelectItem key={option.value} value={option.value}>
                 <Typography variant="body2">{option.label}</Typography>
               </SelectItem>
             ))}
           </Select>
+          <Select size="small" variant="filled" value={speedUnit} onChange={handleSpeedUnitChange}>
+            {speedUnitOptions.map(option => (
+              <SelectItem key={option.value} value={option.value}>
+                <Typography variant="body2">{option.label}</Typography>
+              </SelectItem>
+            ))}
+          </Select>
+          <SpeedTick>/秒</SpeedTick>
         </SelectWrapper>
       </Controls>
       <TimelineBar
@@ -279,3 +333,7 @@ const formatDateWithTimezone = (date: Date, timezone: string) => {
     HH < 10 ? "0" + HH : HH
   }:${MM < 10 ? "0" + MM : MM}:${SS < 10 ? "0" + SS : SS} (UTC${timezone})`;
 };
+
+const SpeedTick = styled("span")(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+}));
