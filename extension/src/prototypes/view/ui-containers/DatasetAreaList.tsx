@@ -129,7 +129,28 @@ const PrefectureItem: FC<{
     parentCode: prefecture.code,
   });
   const areas = useMemo(() => query.data?.areas.filter(a => a.code.length !== 2) ?? [], [query]);
-  if (areas.length === 1) {
+
+  // Handle the datasets belongs to this perfecture but no municipality
+  const prefectureDatasetQuery = useAreaDatasets(prefecture.code);
+  const groups = useMemo(
+    () =>
+      prefectureDatasetQuery.data?.area?.datasets != null
+        ? Object.entries(
+            groupBy(
+              prefectureDatasetQuery.data.area.datasets.filter(d => !d.cityCode),
+              d => d.type.name,
+            ),
+          )
+            .map(([, value]) => value)
+            .map(value => ({
+              groupId: value.map(({ id }) => id).join(":"),
+              datasets: value.sort((a, b) => a.type.order - b.type.order),
+            }))
+        : [],
+    [prefectureDatasetQuery.data?.area?.datasets],
+  );
+
+  if (areas.length === 1 && groups.length === 0) {
     return <MunicipalityItem municipality={areas[0]} parents={[prefecture.name]} />;
   }
   return (
@@ -141,6 +162,9 @@ const PrefectureItem: FC<{
       {areas.map(municipality => (
         <MunicipalityItem key={municipality.code} municipality={municipality} />
       ))}
+      {groups?.map(({ groupId, datasets }) => {
+        return <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />;
+      })}
     </DatasetTreeItem>
   );
 };
