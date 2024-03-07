@@ -27,15 +27,23 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
     handleTimelineOnTickEventRemove,
   } = useTimeline();
 
-  return component.preset ? (
+  const start = useMemo(
+    () => component.preset?.start ?? new Date().toISOString(),
+    [component.preset],
+  );
+  const current = useMemo(() => component.preset?.current ?? start, [component.preset, start]);
+  const end = useMemo(() => component.preset?.end ?? start, [component.preset, start]);
+  const timezone = useMemo(() => component.preset?.timezone ?? "+9", [component.preset]);
+
+  return start && current && end && timezone !== undefined ? (
     <ParameterList>
       <ParameterItem label="タイムライン">
         <TimelineParameterItem
           id={id}
-          start={component.preset.start}
-          current={component.preset.current}
-          end={component.preset.end}
-          timezone={component.preset.timezone}
+          start={start}
+          current={current}
+          end={end}
+          timezone={timezone}
           activeIdAtom={activeTimelineComponentIdAtom}
           onPlay={handleTimelinePlay}
           onPlayReverse={handleTimelinePlayReverse}
