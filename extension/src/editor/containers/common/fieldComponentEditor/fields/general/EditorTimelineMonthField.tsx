@@ -5,7 +5,7 @@ export const EditorTimelineMonthField: React.FC<BasicFieldProps<"TIMELINE_MONTH_
   return (
     <PropertyWrapper>
       <PropertyBox>
-        <PropertyInfo preset="no-settings" />;
+        <PropertyInfo preset="no-settings" />
       </PropertyBox>
     </PropertyWrapper>
   );
