@@ -162,9 +162,9 @@ const PrefectureItem: FC<{
       {areas.map(municipality => (
         <MunicipalityItem key={municipality.code} municipality={municipality} />
       ))}
-      {groups?.map(({ groupId, datasets }) => {
-        return <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />;
-      })}
+      {groups?.map(({ groupId, datasets }) => (
+        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />
+      ))}
     </DatasetTreeItem>
   );
 };
