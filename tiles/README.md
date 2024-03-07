@@ -5,7 +5,7 @@ This app refers [takram-design-engineering/plateau-view](https://github.com/takr
 ## Installation
 
 ```bash
-$ yarn install
+yarn install
 ```
 
 ## Running the app
