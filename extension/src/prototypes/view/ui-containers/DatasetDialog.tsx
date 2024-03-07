@@ -63,9 +63,15 @@ const StyledButton = styled(Button, {
 export interface DatasetDialogProps extends Omit<DialogProps, "children"> {
   municipalityCode: string;
   dataset: DatasetFragmentFragment;
+  isFolder?: boolean;
 }
 
-export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCode, ...props }) => {
+export const DatasetDialog: FC<DatasetDialogProps> = ({
+  dataset,
+  municipalityCode,
+  isFolder,
+  ...props
+}) => {
   const { data } = useDatasetById(dataset.id);
 
   // TODO: Separate into hook
@@ -125,20 +131,22 @@ export const DatasetDialog: FC<DatasetDialogProps> = ({ dataset, municipalityCod
           secondary: dataset?.prefecture?.name,
         }}
         secondaryAction={
-          <StyledButton
-            variant="contained"
-            startIcon={
-              layer == null ? (
-                <PrefixedAddSmallIcon fontSize="small" />
-              ) : (
-                <PrefixedCheckSmallIcon fontSize="small" />
-              )
-            }
-            checked={layer != null}
-            disabled={layerType == null}
-            onClick={handleClick}>
-            {layer == null ? "追加" : "追加済み"}
-          </StyledButton>
+          !isFolder && (
+            <StyledButton
+              variant="contained"
+              startIcon={
+                layer == null ? (
+                  <PrefixedAddSmallIcon fontSize="small" />
+                ) : (
+                  <PrefixedCheckSmallIcon fontSize="small" />
+                )
+              }
+              checked={layer != null}
+              disabled={layerType == null}
+              onClick={handleClick}>
+              {layer == null ? "追加" : "追加済み"}
+            </StyledButton>
+          )
         }
         allowWrap
       />

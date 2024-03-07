@@ -352,6 +352,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           ) : draftSetting && contentType === "featureInspector" ? (
             <FeatureInspectorPage
               key={`${dataset.id}-${dataId}-featureInspector`}
+              dataset={dataset}
               setting={draftSetting}
               updateSetting={updateDraftSetting}
             />

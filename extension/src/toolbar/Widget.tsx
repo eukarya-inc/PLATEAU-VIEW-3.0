@@ -7,6 +7,7 @@ import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
 import { AutoRotateCamera } from "../prototypes/view/containers/AutoRotateCamera";
 import { Environments } from "../prototypes/view/containers/Environments";
 import { HighlightedAreas } from "../prototypes/view/containers/HighlightedAreas";
+import { KeyBindings } from "../prototypes/view/containers/KeyBindings";
 import { PedestrianTool } from "../prototypes/view/containers/PedestrianTool";
 import { ReverseGeocoding } from "../prototypes/view/containers/ReverseGeocoding";
 import { ScreenSpaceCamera } from "../prototypes/view/containers/ScreenSpaceCamera";
@@ -16,6 +17,7 @@ import { SketchTool } from "../prototypes/view/containers/SketchTool";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
+import { FileDrop } from "../prototypes/view/ui-containers/FileDrop";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { CameraPosition } from "../shared/reearth/types";
@@ -97,7 +99,9 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <InitialLayers />
         <JapanPlateauPolygon />
         <SelectionCoordinator />
+        <KeyBindings />
         <ScreenSpaceSelection />
+        <FileDrop />
         <ScreenSpaceCamera tiltByRightButton />
         <HighlightedAreas />
         <ReverseGeocoding />

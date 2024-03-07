@@ -13,12 +13,7 @@ import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 import { LOGO, SITE_URL } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
-import {
-  hideAppOverlayAtom,
-  showDeveloperPanelsAtom,
-  showFeedbackModalAtom,
-  showMyDataModalAtom,
-} from "../states/app";
+import { hideAppOverlayAtom, showFeedbackModalAtom, showMyDataModalAtom } from "../states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {
   onClick?: (event: MouseEvent<HTMLElement>, name: string) => void;
@@ -33,7 +28,6 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     });
 
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
-    const [showDeveloperPanels, setShowDeveloperPanels] = useAtom(showDeveloperPanelsAtom);
     const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
     const [, setShowMyDataModal] = useAtom(showMyDataModalAtom);
 
@@ -50,9 +44,6 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           case "hide-ui":
             setHideAppOverlay(value => !value);
             break;
-          case "developer":
-            setShowDeveloperPanels(value => !value);
-            break;
           case "feedback":
             setShowFeedbackModal(value => !value);
             break;
@@ -62,13 +53,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
         onClickRef.current?.(event, name);
         popupState.close();
       },
-      [
-        popupState,
-        setHideAppOverlay,
-        setShowDeveloperPanels,
-        setShowFeedbackModal,
-        setShowMyDataModal,
-      ],
+      [popupState, setHideAppOverlay, setShowFeedbackModal, setShowMyDataModal],
     );
 
     const platform = useAtomValue(platformAtom);
@@ -113,26 +98,20 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             onClick={handleClick}>
             3D都市モデルダウンロード
           </SelectItem>
-          <SelectItem data-name="my-data" selected={showDeveloperPanels} onClick={handleClick}>
+          <SelectItem data-name="my-data" onClick={handleClick}>
             Myデータ
           </SelectItem>
           <SelectItem disabled data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
-          <SelectItem data-name="feedback" selected={showDeveloperPanels} onClick={handleClick}>
+          <SelectItem data-name="feedback" onClick={handleClick}>
             フィードバック
           </SelectItem>
           <Divider />
-          <SelectItem selected={showDeveloperPanels} data-name="hide-ui" onClick={handleClick}>
+          <SelectItem data-name="hide-ui" onClick={handleClick}>
             UIを{hideAppOverlay ? "表示" : "隠す"}
             <ListItemSecondaryAction>
               <Shortcut platform={platform} shortcutKey="/" commandKey />
-            </ListItemSecondaryAction>
-          </SelectItem>
-          <SelectItem selected={showDeveloperPanels} data-name="developer" onClick={handleClick}>
-            開発者パネル
-            <ListItemSecondaryAction>
-              <Shortcut platform={platform} shortcutKey="\" commandKey />
             </ListItemSecondaryAction>
           </SelectItem>
         </Menu>

@@ -58,6 +58,11 @@ export type Timeline = {
 };
 
 export type SceneProperty = {
+  camera?: {
+    camera?: CameraPosition;
+    allowEnterGround?: boolean;
+    fov?: number;
+  };
   default?: {
     camera?: Partial<CameraPosition>;
     allowEnterGround?: boolean;

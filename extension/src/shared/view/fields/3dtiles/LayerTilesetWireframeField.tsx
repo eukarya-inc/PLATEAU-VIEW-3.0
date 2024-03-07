@@ -48,7 +48,7 @@ export const LayerTilesetWireframeField: FC<LayerWireframeFieldProps> = ({ atoms
           checked={component.value?.wireframe}
           labelPlacement="start"
           control={<Switch size="small" />}
-          label={"Wireframe Display"}
+          label={"ワイヤーフレーム表示"}
           onChange={handleWireframeDisplayChange}
         />
       </StyledFormGroup>
