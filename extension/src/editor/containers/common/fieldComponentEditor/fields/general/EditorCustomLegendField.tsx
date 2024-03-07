@@ -10,6 +10,7 @@ import {
   EditorDialog,
   PropertyBox,
   PropertyButton,
+  PropertyInfo,
   PropertyInlineWrapper,
   PropertyWrapper,
 } from "../../../../ui-components";
@@ -109,6 +110,9 @@ export const EditorCustomLegendField: React.FC<BasicFieldProps<"CUSTOM_LEGEND_FI
             </Tool>
           </Tools>
         </PropertyInlineWrapper>
+        <PropertyInfo>
+          Plasese Don&apos;t use this together with other color components.
+        </PropertyInfo>
       </PropertyBox>
       <EditorDialog
         title="Custom Legend Editor"
