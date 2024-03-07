@@ -1,14 +1,16 @@
 import { FeatureInspectorBasicBlock } from "./blocks/FeatureInspectorBasicBlock";
 import { FeatureInspectorEmphasisPropertyBlock } from "./blocks/FeatureInspectorEmphasisPropertyBlock";
 
-import { DraftSetting, UpdateSetting } from ".";
+import { DraftSetting, EditorDataset, UpdateSetting } from ".";
 
 type FeatureInspectorPageProps = {
+  dataset: EditorDataset;
   setting: DraftSetting;
   updateSetting: UpdateSetting;
 };
 
 export const FeatureInspectorPage: React.FC<FeatureInspectorPageProps> = ({
+  dataset,
   setting,
   updateSetting,
 }) => {
@@ -22,6 +24,7 @@ export const FeatureInspectorPage: React.FC<FeatureInspectorPageProps> = ({
       <FeatureInspectorEmphasisPropertyBlock
         key={`${setting.datasetId}-${setting.dataId}-feature-inspector-emphasis-property`}
         setting={setting}
+        dataset={dataset}
         updateSetting={updateSetting}
       />
     </>
