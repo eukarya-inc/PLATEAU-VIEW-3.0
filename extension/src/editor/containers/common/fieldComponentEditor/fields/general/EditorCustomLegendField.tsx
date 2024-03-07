@@ -177,13 +177,13 @@ type CustomLegendItem = {
 
 export type CustomLegends = {
   type?: CustomLegendType;
-  legendTitle?: string;
+  name?: string;
   legends?: CustomLegendItem[];
 };
 
 const TEMPLATE_CODE = `{
     "type": "square",
-    "legendTitle": "Legend of types",
+    "name": "Legend of types",
     "legends": [
         {
             "title": "square-1",
@@ -207,7 +207,7 @@ const TEMPLATE_CODE = `{
         },
         {
             "title": "line-1",
-            "color": "#FF0099",
+            "strokeColor": "#FF0099",
             "type": "line"
         },
         {
@@ -217,7 +217,14 @@ const TEMPLATE_CODE = `{
         },
         {
             "title": "icon-1",
-            "url": "https://cdn-icons-png.flaticon.com/512/181/181508.png",
+            "url": "https://assets.cms.plateau.reearth.io/assets/ac/1bee01-4080-4ee4-9cdb-58e755e26648/legend_circle.png",
+            "color": "#FFFF00",
+            "type": "icon"
+        },
+        {
+            "title": "icon-2",
+            "url": "https://assets.cms.plateau.reearth.io/assets/ac/1bee01-4080-4ee4-9cdb-58e755e26648/legend_circle.png",
+            "color": "#FF00FF",
             "type": "icon"
         }
     ]

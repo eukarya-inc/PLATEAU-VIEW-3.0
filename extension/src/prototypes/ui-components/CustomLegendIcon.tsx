@@ -136,10 +136,10 @@ const LineItem: FC<{ legend: CustomLegend }> = ({ legend }) => {
   const style = useMemo(
     () => ({
       height: "2px",
-      backgroundColor: legend.color,
-      borderColor: legend.strokeColor ?? "transparent",
+      backgroundColor: legend.strokeColor,
+      border: "none",
     }),
-    [legend.color, legend.strokeColor],
+    [legend.strokeColor],
   );
 
   return <Item style={style} />;

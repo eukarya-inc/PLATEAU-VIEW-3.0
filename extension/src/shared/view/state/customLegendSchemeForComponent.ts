@@ -50,7 +50,7 @@ export const makeCustomLegendSchemeAtomForComponent = (layers: readonly LayerMod
     try {
       const legends: {
         type: CustomLegendType;
-        legendTitle?: string;
+        name?: string;
         legends?: CustomLegend[];
       } = JSON.parse(code);
 
@@ -76,7 +76,7 @@ export const makeCustomLegendSchemeAtomForComponent = (layers: readonly LayerMod
 
       return {
         type: "customLegend" as const,
-        name: legends.legendTitle,
+        name: legends.name,
         customLegendsAtom: customLegendsAtom,
         customLegendAtomsAtom: splitAtom(customLegendsAtom),
       } as CustomLegendSet;
