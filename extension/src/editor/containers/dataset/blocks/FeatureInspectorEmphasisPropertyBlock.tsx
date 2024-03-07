@@ -120,9 +120,12 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
             onChange={handleTemplateIdChange}
           />
         )}
-        {!useTemplate && defaultTemplateName && (
-          <EditorCommonField>Default template detected: {defaultTemplateName}</EditorCommonField>
-        )}
+        {!useTemplate &&
+          defaultTemplateName &&
+          (!setting?.featureInspector?.emphasisProperty?.properties ||
+            setting?.featureInspector?.emphasisProperty?.properties?.length === 0) && (
+            <EditorCommonField>Default template detected: {defaultTemplateName}</EditorCommonField>
+          )}
       </BlockContentWrapper>
       {!useTemplate && (
         <>
