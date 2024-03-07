@@ -1,4 +1,3 @@
-import { type FeatureCollection } from "geojson";
 import { FC, useMemo } from "react";
 
 import { useLayer } from "../hooks";
@@ -7,18 +6,12 @@ import { Data, LayerAppearanceTypes } from "../types";
 export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon">>;
 
 export type PolygonProps = {
-  polygonFeatures: FeatureCollection;
   onLoad?: (layerId: string) => void;
   visible?: boolean;
   appearances?: PolygonAppearances;
 };
 
-export const PolygonLayer: FC<PolygonProps> = ({
-  polygonFeatures,
-  onLoad,
-  visible,
-  appearances,
-}) => {
+export const PolygonLayer: FC<PolygonProps> = ({ onLoad, visible, appearances }) => {
   const mergedAppearances: PolygonAppearances | undefined = useMemo(
     () => ({
       ...appearances,
@@ -30,15 +23,13 @@ export const PolygonLayer: FC<PolygonProps> = ({
     [appearances],
   );
 
+  const url = "https://api.plateau.reearth.io/govpolygon/plateaugovs.geojson";
   const data: Data = useMemo(
     () => ({
       type: "geojson",
-      value: {
-        type: "FeatureCollection",
-        features: polygonFeatures.features.map(f => f),
-      },
+      url,
     }),
-    [polygonFeatures],
+    [],
   );
 
   useLayer({
