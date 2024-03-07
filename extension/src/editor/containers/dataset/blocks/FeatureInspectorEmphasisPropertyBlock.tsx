@@ -2,7 +2,7 @@ import { Divider } from "@mui/material";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { DraftSetting, UpdateSetting } from "..";
+import { DraftSetting, EditorDataset, UpdateSetting } from "..";
 import { useTemplateAPI } from "../../../../shared/api";
 import { EmphasisProperty, EmphasisPropertyTemplate } from "../../../../shared/api/types";
 import { EmphasisPropertyEditor } from "../../common/emphasisPropertyEditor";
@@ -17,12 +17,13 @@ import {
 
 type FeatureInspectorEmphasisPropertyBlockProps = EditorBlockProps & {
   setting: DraftSetting;
+  dataset: EditorDataset;
   updateSetting: UpdateSetting;
 };
 
 export const FeatureInspectorEmphasisPropertyBlock: React.FC<
   FeatureInspectorEmphasisPropertyBlockProps
-> = ({ setting, updateSetting }) => {
+> = ({ dataset, setting, updateSetting }) => {
   const [useTemplate, setUseTemplate] = useState(
     !!setting?.featureInspector?.emphasisProperty?.useTemplate,
   );
@@ -93,6 +94,17 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
     [updateSetting],
   );
 
+  const defaultTemplateName = useMemo(
+    () =>
+      emphasisPropertyTemplates.find(t =>
+        [
+          dataset.type.name,
+          dataset?.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined,
+        ].includes(t.name.split("/").slice(-1)[0]),
+      )?.name,
+    [dataset, emphasisPropertyTemplates],
+  );
+
   return (
     <EditorBlock title="Emphasis Property" expandable>
       <BlockContentWrapper>
@@ -107,6 +119,9 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
             disabled={!useTemplate}
             onChange={handleTemplateIdChange}
           />
+        )}
+        {!useTemplate && defaultTemplateName && (
+          <EditorCommonField>Default template detected: {defaultTemplateName}</EditorCommonField>
         )}
       </BlockContentWrapper>
       {!useTemplate && (
