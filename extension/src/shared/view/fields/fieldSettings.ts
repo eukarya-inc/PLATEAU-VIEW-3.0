@@ -47,6 +47,7 @@ export const fieldSettings: {
   TIMELINE_MONTH_FIELD: {
     hasLayerUI: true,
   },
+  PRIORITIZE_PERFORMANCE_GEOJSON_FIELD: {},
   LINK_BUTTON_FIELD: {},
   DATASET_STORY_FIELD: {},
   // point
