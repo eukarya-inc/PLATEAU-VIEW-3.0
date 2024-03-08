@@ -11,7 +11,7 @@ resource "google_compute_health_check" "plateauview_tiles" {
   }
 
   http_health_check {
-    request_path = "/" # TODO: Change to /tiles
+    request_path = "/tiles" # TODO: Change to /tiles
     port         = 8888
   }
 }

@@ -10,7 +10,7 @@ resource "google_compute_target_https_proxy" "cms" {
   project          = data.google_project.project.project_id
   name             = "${var.prefix}-common-https-targetproxy"
   url_map          = google_compute_url_map.cms.id
-  ssl_certificates = [google_compute_managed_ssl_certificate.common.id]
+  ssl_certificates = [google_compute_managed_ssl_certificate.common.id, google_compute_managed_ssl_certificate.common_1.id]
 }
 
 resource "google_compute_managed_ssl_certificate" "common" {
