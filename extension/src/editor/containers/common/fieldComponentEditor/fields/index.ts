@@ -44,6 +44,7 @@ import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionFie
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorLinkButtonField } from "./general/EditorLinkButtonField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
+import { EditorPrioritizePerformanceGeoJSONField } from "./general/EditorPrioritizePerformanceGeoJSONField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
 import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
@@ -111,6 +112,11 @@ export const fields: {
     group: FILED_GROUP_GENERAL_TIMELINE,
     name: "Month",
     Component: EditorTimelineMonthField,
+  },
+  PRIORITIZE_PERFORMANCE_GEOJSON_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Prioritize Performance (GeoJSON)",
+    Component: EditorPrioritizePerformanceGeoJSONField,
   },
   LINK_BUTTON_FIELD: {
     category: FIELD_CATEGORY_GENERAL,

@@ -65,6 +65,11 @@ export type TimelineMonthField = FieldBase<{
   type: typeof TIMELINE_MONTH_FIELD;
 }>;
 
+export const PRIORITIZE_PERFORMANCE_GEOJSON_FIELD = "PRIORITIZE_PERFORMANCE_GEOJSON_FIELD";
+export type PrioritizePerformanceGeoJSONField = FieldBase<{
+  type: typeof PRIORITIZE_PERFORMANCE_GEOJSON_FIELD;
+}>;
+
 export const LINK_BUTTON_FIELD = "LINK_BUTTON_FIELD";
 export type LinkButtonField = FieldBase<{
   type: typeof LINK_BUTTON_FIELD;
@@ -92,6 +97,7 @@ export type GeneralFields =
   | ApplyTimeValueField
   | TimelineCustomizedField
   | TimelineMonthField
+  | PrioritizePerformanceGeoJSONField
   | LinkButtonField
   | DatasetStoryField
   | CustomLegendField;
