@@ -34,12 +34,10 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       groupBy(
         datasets.filter(d =>
           !d.cityCode
-            ? area.code === d.prefectureCode
+            ? d.prefectureCode === area.code
             : !d.wardCode
             ? d.cityCode === area.code
-            : d.wardCode
-            ? d.wardCode === area.code
-            : false,
+            : d.wardCode === area.code,
         ),
         d => d.type.name,
       ),
@@ -51,7 +49,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       .map(([, datasets]) => datasets);
   }, [query.data, area.code, filteredDatasetTypeOrder]);
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
   const handleCollapse = useCallback(() => {
     setExpanded(false);
   }, []);
@@ -82,7 +80,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
   );
   const handleClose = useCallback(() => {
     onClose();
-    setExpanded(false);
+    setExpanded(true);
   }, [onClose]);
 
   const hasDatasets = datasetGroups != null && datasetGroups.length > 0;

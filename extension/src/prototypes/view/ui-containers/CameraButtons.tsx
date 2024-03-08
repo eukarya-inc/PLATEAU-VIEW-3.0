@@ -11,6 +11,7 @@ import {
 } from "../../ui-components";
 import { autoRotateCameraAtom, enableKeyboardCameraControlAtom } from "../states/app";
 
+import { CompassButton } from "./CompassButton";
 import { GeolocationButton } from "./GeolocationButton";
 
 function useBooleanAtomProps(atom: PrimitiveAtom<boolean>): {
@@ -45,6 +46,7 @@ export const CameraButtons: FC = () => {
       <AppIconButton title="拡大" onClick={zoomIn}>
         <PlusIcon />
       </AppIconButton>
+      <CompassButton />
     </>
   );
 };
