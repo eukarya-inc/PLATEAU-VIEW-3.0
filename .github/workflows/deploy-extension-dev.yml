@@ -52,4 +52,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: plateauview-extension
-          path: plateauview-extension.tar.gz
+          path: extension/plateauview-extension.tar.gz
