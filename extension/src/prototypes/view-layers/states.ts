@@ -238,3 +238,17 @@ export {
   removeImageSchemeSelectionAtom,
   clearImageSchemeSelectionAtom,
 };
+
+const {
+  selectionAtom: customLegendSchemeSelectionAtom,
+  addAtom: addCustomLegendSchemeSelectionAtom,
+  removeAtom: removeCustomLegendSchemeSelectionAtom,
+  clearAtom: clearCustomLegendSchemeSelectionAtom,
+} = atomsWithSelection<string>();
+
+export {
+  customLegendSchemeSelectionAtom,
+  addCustomLegendSchemeSelectionAtom,
+  removeCustomLegendSchemeSelectionAtom,
+  clearCustomLegendSchemeSelectionAtom,
+};
