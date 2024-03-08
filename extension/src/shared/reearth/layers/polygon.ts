@@ -4,7 +4,7 @@ import { PLATEAU_GEOJSON_URL } from "../../constants";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 
-export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon">>;
+export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon" | "resource">>;
 
 export type PolygonProps = {
   onLoad?: (layerId: string) => void;
@@ -24,13 +24,12 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, visible, appearances })
     [appearances],
   );
 
-  const url = `${PLATEAU_GEOJSON_URL}/govpolygon/plateaugovs.geojson`;
   const data: Data = useMemo(
     () => ({
       type: "geojson",
-      url,
+      url: PLATEAU_GEOJSON_URL,
     }),
-    [url],
+    [],
   );
 
   useLayer({
