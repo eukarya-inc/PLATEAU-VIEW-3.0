@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { intersectionBy, uniqBy } from "lodash-es";
 import { useMemo, type FC } from "react";
 
+import { useOptionalAtomValue } from "../../../shared/hooks";
 import { makePropertyForFeatureInspector } from "../../../shared/plateau/featureInspector";
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
 import { Feature } from "../../../shared/reearth/types/layer";
@@ -46,8 +47,8 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
     }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer?: RootLayerForDataset }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
-  const tilesetLayer = layers[0].layer as BuildingLayerModel;
-  const tilesetProperties = useAtomValue(tilesetLayer.propertiesAtom);
+  const tilesetLayer = layers[0].layer as BuildingLayerModel | undefined;
+  const tilesetProperties = useOptionalAtomValue(tilesetLayer?.propertiesAtom);
 
   const featureType = useMemo(() => layers[0].features[0].properties["feature_type"], [layers]);
 
