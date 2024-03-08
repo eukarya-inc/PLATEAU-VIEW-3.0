@@ -34,12 +34,10 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       groupBy(
         datasets.filter(d =>
           !d.cityCode
-            ? area.code === d.prefectureCode
+            ? d.prefectureCode === area.code
             : !d.wardCode
             ? d.cityCode === area.code
-            : d.wardCode
-            ? d.wardCode === area.code
-            : false,
+            : d.wardCode === area.code,
         ),
         d => d.type.name,
       ),

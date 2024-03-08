@@ -19,6 +19,7 @@ import { SKETCH_OBJECT } from "../../sketch";
 import { Inspector } from "../../ui-components";
 import { PEDESTRIAN_LAYER, STORY_LAYER } from "../../view-layers";
 import { ColorSchemeContent } from "../selection/ColorSchemeContent";
+import { CustomLegendSchemeContent } from "../selection/CustomLegendSchemeContent";
 import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
 import { PedestrianLayerContent } from "../selection/PedestrianLayerContent";
@@ -29,6 +30,7 @@ import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom, pedestrianInspectorWidthAtom, viewportWidthAtom } from "../states/app";
 import {
   COLOR_SCHEME_SELECTION,
+  CUSTOM_LEGEND_SCHEME_SELECTION,
   IMAGE_SCHEME_SELECTION,
   LAYER_SELECTION,
   SCREEN_SPACE_SELECTION,
@@ -115,6 +117,14 @@ export const SelectionPanel: FC = () => {
         content = (
           <>
             <ImageSchemeContent values={selectionGroup.values} />
+            <LegendDescriptionSection values={selectionGroup.values} />
+          </>
+        );
+        break;
+      case CUSTOM_LEGEND_SCHEME_SELECTION:
+        content = (
+          <>
+            <CustomLegendSchemeContent values={selectionGroup.values} />
             <LegendDescriptionSection values={selectionGroup.values} />
           </>
         );

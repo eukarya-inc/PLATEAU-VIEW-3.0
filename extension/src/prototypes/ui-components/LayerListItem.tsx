@@ -53,13 +53,15 @@ const HoverMenu: FC<HoverMenuProps> = ({
     <Stack direction="row" onMouseDown={stopPropagation}>
       {onMove && (
         <Tooltip title="移動">
-          <IconButton
-            color="inherit"
-            aria-label="移動"
-            disabled={isButtonDisabled}
-            onClick={onMove}>
-            <AddressIcon fontSize="small" />
-          </IconButton>
+          <span>
+            <IconButton
+              color="inherit"
+              aria-label="移動"
+              disabled={isButtonDisabled}
+              onClick={onMove}>
+              <AddressIcon fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>
       )}
       {(hovered || !hidden) && (

@@ -206,28 +206,27 @@ export const makePropertyForFeatureInspector = ({
   ];
 };
 
-const UNION_MAP = {
-  code: "コード",
-  _code: "コード",
-  uom: "単位",
-  _uom: "単位",
-};
+const UNION_MAP = [
+  ["_code", "コード"],
+  ["code", "コード"],
+  ["_uom", "単位"],
+  ["uom", "単位"],
+] as const;
 
 export const makePropertyName = (name: string, defaultName: string, attrVal_?: AttributeValue) => {
   const attrVal = attrVal_ ?? getPropertyAttributeValue(name);
   if (attrVal) return attrVal.description;
 
   // Find a name which has a suffix for union.
-  const union = Object.entries(UNION_MAP)
-    .map(([key, val]) => {
-      if (!name.endsWith(key)) return;
+  const union = UNION_MAP.map(([key, val]) => {
+    if (!name.endsWith(key)) return;
 
-      const attr = getAttributeLabel(name.split(key)[0])?.description;
-      if (!attr) return;
+    const attr =
+      getAttributeLabel(name.split(key)[0])?.description ||
+      defaultName.split(key)[0].replaceAll("_", "");
 
-      return attr + val;
-    })
-    .filter(Boolean)[0];
+    return attr + val;
+  }).filter(Boolean)[0];
   if (union) return union;
 
   return defaultName.replaceAll("_", "");
@@ -267,6 +266,9 @@ export const getPropertyAttributeValue = (name: string) => {
 export const makePropertyValue = (attr: AttributeValue, val: string | number) => {
   if (["date", "gYear"].includes(attr.dataType ?? "")) {
     return val === 1 || val === "1" || String(val).startsWith("0001") ? "不明" : val;
+  }
+  if (val === "Null" || val === "null") {
+    return "不明";
   }
   return val;
 };
