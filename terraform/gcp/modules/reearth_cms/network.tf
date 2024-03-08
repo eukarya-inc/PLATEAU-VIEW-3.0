@@ -10,28 +10,12 @@ resource "google_compute_target_https_proxy" "cms" {
   project          = data.google_project.project.project_id
   name             = "${var.prefix}-common-https-targetproxy"
   url_map          = google_compute_url_map.cms.id
-  ssl_certificates = [google_compute_managed_ssl_certificate.common.id, google_compute_managed_ssl_certificate.common_1.id]
+  ssl_certificates = [google_compute_managed_ssl_certificate.common.id]
 }
 
 resource "google_compute_managed_ssl_certificate" "common" {
   project = data.google_project.project.project_id
   name    = "${var.prefix}-common-cert"
-
-  managed {
-    domains = [
-      local.api_domain,
-      local.api_cms_domain,
-      local.assets_cms_domain,
-      local.cms_domain,
-      local.geo_domain,
-      local.worker_cms_domain
-    ]
-  }
-}
-
-resource "google_compute_managed_ssl_certificate" "common_1" {
-  project = data.google_project.project.project_id
-  name    = "${var.prefix}-common-cert-1" # Index it because the name should be unique and certificate changes are always destructive
 
   managed {
     domains = [
