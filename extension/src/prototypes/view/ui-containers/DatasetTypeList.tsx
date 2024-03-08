@@ -77,7 +77,16 @@ const PrefectureItem: FC<{
     parentCode: prefecture.code,
     datasetTypes: [datasetType],
   });
-  if (query.data?.areas?.length === 1) {
+
+  // Handle the datasets belongs to this perfecture but no municipality
+  const prefectureDatasetQuery = useAreaDatasets(prefecture.code);
+  const prefectureDatasets = useMemo(
+    () => prefectureDatasetQuery.data?.area?.datasets?.filter(d => !d.cityCode) ?? [],
+    [prefectureDatasetQuery.data?.area?.datasets],
+  );
+  const isGenericDataset = isGenericDatasetType(datasetType);
+
+  if (query.data?.areas?.length === 1 && prefectureDatasets.length === 0) {
     return (
       <MunicipalityItem
         datasetType={datasetType}
@@ -100,6 +109,22 @@ const PrefectureItem: FC<{
           municipality={municipality}
         />
       ))}
+      {isGenericDataset ? (
+        <DatasetFolderList
+          folderId={`${datasetType}:prefecture:direct`}
+          datasets={prefectureDatasets}
+        />
+      ) : (
+        prefectureDatasets.map(dataset => (
+          <DatasetListItem
+            key={dataset.id}
+            municipalityCode={"direct"}
+            dataset={dataset}
+            label={dataset.name}
+            title={dataset.name}
+          />
+        ))
+      )}
     </DatasetTreeItem>
   );
 };

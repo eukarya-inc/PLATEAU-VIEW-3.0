@@ -1,9 +1,11 @@
+import { CustomLegendFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorCustomLegendField";
 import { DatasetStoryFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorDatasetStoryField";
 import { LinkButtonFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorLinkButtonField";
 import { StyleCodeFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorStyleCodeField";
 import { EditorTimelineCustomizedFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/general/EditorTimelineCustomizedField";
 
 import { FieldBase } from "./base";
+import { CustomLegendSchemeValue } from "./customLegendScheme";
 
 export const OPACITY_FIELD = "OPACITY_FIELD";
 export type OpacityField = FieldBase<{
@@ -80,6 +82,13 @@ export type DatasetStoryField = FieldBase<{
   preset: DatasetStoryFieldPreset;
 }>;
 
+export const CUSTOM_LEGEND_FIELD = "CUSTOM_LEGEND_FIELD";
+export type CustomLegendField = FieldBase<{
+  type: typeof CUSTOM_LEGEND_FIELD;
+  preset: CustomLegendFieldPreset;
+  value?: CustomLegendSchemeValue;
+}>;
+
 export type GeneralFields =
   | OpacityField
   | LayerDescriptionField
@@ -90,4 +99,5 @@ export type GeneralFields =
   | TimelineMonthField
   | PrioritizePerformanceGeoJSONField
   | LinkButtonField
-  | DatasetStoryField;
+  | DatasetStoryField
+  | CustomLegendField;

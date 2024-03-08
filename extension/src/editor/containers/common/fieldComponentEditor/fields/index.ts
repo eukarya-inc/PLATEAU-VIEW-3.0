@@ -38,6 +38,7 @@ import {
   fieldGroupTitles,
 } from "./constants";
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
+import { EditorCustomLegendField } from "./general/EditorCustomLegendField";
 import { EditorDatasetStoryField } from "./general/EditorDatasetStoryField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
@@ -126,6 +127,11 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Dataset Story",
     Component: EditorDatasetStoryField,
+  },
+  CUSTOM_LEGEND_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Custom Legend",
+    Component: EditorCustomLegendField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {

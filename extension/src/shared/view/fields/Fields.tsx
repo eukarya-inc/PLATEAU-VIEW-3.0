@@ -26,6 +26,7 @@ import {
   DATASET_STORY_FIELD,
   STYLE_CODE_FIELD,
   StyleCodeField,
+  CUSTOM_LEGEND_FIELD,
 } from "../../types/fieldComponents/general";
 import {
   POINT_FILL_COLOR_CONDITION_FIELD,
@@ -51,6 +52,7 @@ import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillC
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
 import { LayerApplyTimeValueField } from "./general/LayerApplyTimeValueField";
+import { LayerCustomLegendField } from "./general/LayerCustomLegendField";
 import { LayerDatasetStoryField } from "./general/LayerDatasetStoryField";
 import { LayerLayerDescriptionField } from "./general/LayerLayerDescriptionField";
 import { LayerLinkButtonField } from "./general/LayerLinkButtonField";
@@ -132,6 +134,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
     case DATASET_STORY_FIELD: {
       component = (
         <LayerDatasetStoryField atoms={atoms as ComponentAtom<"DATASET_STORY_FIELD">["atom"][]} />
+      );
+      break;
+    }
+    case CUSTOM_LEGEND_FIELD: {
+      component = (
+        <LayerCustomLegendField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"CUSTOM_LEGEND_FIELD">["atom"][]}
+        />
       );
       break;
     }

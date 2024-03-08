@@ -50,6 +50,7 @@ export const fieldSettings: {
   PRIORITIZE_PERFORMANCE_GEOJSON_FIELD: {},
   LINK_BUTTON_FIELD: {},
   DATASET_STORY_FIELD: {},
+  CUSTOM_LEGEND_FIELD: {},
   // point
   POINT_STYLE_FIELD: {
     defaultValue: "image",
