@@ -138,7 +138,8 @@ bldg:Building_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:Building_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:Building_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:Building_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:Building_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:Building_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:Building_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:Building_bldg:class,{"description":"区分"}
 bldg:Building_bldg:function,{"description":"機能"}
 bldg:Building_bldg:usage,{"description":"用途"}
@@ -360,23 +361,23 @@ bldg:Building_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳�
 bldg:Building_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
 bldg:Building_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
 bldg:Building_uro:keyValuePairAttribute,{"description":"拡張属性"}
-bldg:Building_uro:KeyValuePair,{"description":"拡張属性"}
+bldg:Building_uro:KeyValuePairAttribute,{"description":"拡張属性"}
 bldg:Building_uro:keyValuePairAttribute_uro:key,{"description":"（コードに該当する説明を使用する）"}
-bldg:Building_uro:KeyValuePair_uro:key,{"description":"（コードに該当する説明を使用する）"}
+bldg:Building_uro:KeyValuePairAttribute_uro:key,{"description":"（コードに該当する説明を使用する）"}
 bldg:Building_uro:keyValuePairAttribute_uro:codeValue,{"description":"値"}
-bldg:Building_uro:KeyValuePair_uro:codeValue,{"description":"値"}
+bldg:Building_uro:KeyValuePairAttribute_uro:codeValue,{"description":"値"}
 bldg:Building_uro:keyValuePairAttribute_uro:stringValue,{"description":"ー"}
-bldg:Building_uro:KeyValuePair_uro:stringValue,{"description":"ー"}
+bldg:Building_uro:KeyValuePairAttribute_uro:stringValue,{"description":"ー"}
 bldg:Building_uro:keyValuePairAttribute_uro:intValue,{"description":"ー"}
-bldg:Building_uro:KeyValuePair_uro:intValue,{"description":"ー"}
+bldg:Building_uro:KeyValuePairAttribute_uro:intValue,{"description":"ー"}
 bldg:Building_uro:keyValuePairAttribute_uro:doubleValue,{"description":"ー"}
-bldg:Building_uro:KeyValuePair_uro:doubleValue,{"description":"ー"}
+bldg:Building_uro:KeyValuePairAttribute_uro:doubleValue,{"description":"ー"}
 bldg:Building_uro:keyValuePairAttribute_uro:measureValue,{"description":"ー"}
-bldg:Building_uro:KeyValuePair_uro:measureValue,{"description":"ー"}
+bldg:Building_uro:KeyValuePairAttribute_uro:measureValue,{"description":"ー"}
 bldg:Building_uro:keyValuePairAttribute_uro:dateValue,{"description":"ー","dataType":"date"}
-bldg:Building_uro:KeyValuePair_uro:dateValue,{"description":"ー","dataType":"date"}
+bldg:Building_uro:KeyValuePairAttribute_uro:dateValue,{"description":"ー","dataType":"date"}
 bldg:Building_uro:keyValuePairAttribute_uro:uriValue,{"description":"ー"}
-bldg:Building_uro:KeyValuePair_uro:uriValue,{"description":"ー"}
+bldg:Building_uro:KeyValuePairAttribute_uro:uriValue,{"description":"ー"}
 bldg:Building_uro:ifcBuildingAttribute,{"description":"プロジェクト情報"}
 bldg:Building_uro:IfcProject,{"description":"プロジェクト情報"}
 bldg:Building_uro:ifcBuildingAttribute_uro:globalId,{"description":"グローバルID"}
@@ -1577,19 +1578,19 @@ bldg:Building_DmAnnotation_uro:spacing,{"description":"字隔"}
 bldg:Building_uro:bldgDmAttribute_uro:lod0AnchorPoint,{"description":"挿入位置"}
 bldg:Building_DmAnnotation_uro:lod0AnchorPoint,{"description":"挿入位置"}
 bldg:Building_uro:bldgRealEstateIDAttribute,{"description":"不動産ID"}
-bldg:Building_RealEstateIDAttribute,{"description":"不動産ID"}
+bldg:Building_uro:RealEstateIDAttribute,{"description":"不動産ID"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:realEstateIDOfBuilding,{"description":"建築物不動産ID"}
-bldg:Building_RealEstateIDAttribute_uro:realEstateIDOfBuilding,{"description":"建築物不動産ID"}
+bldg:Building_uro:RealEstateIDAttribute_uro:realEstateIDOfBuilding,{"description":"建築物不動産ID"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:numberOfBuildingUnitOwnership,{"description":"区分所有数"}
-bldg:Building_RealEstateIDAttribute_uro:numberOfBuildingUnitOwnership,{"description":"区分所有数"}
+bldg:Building_uro:RealEstateIDAttribute_uro:numberOfBuildingUnitOwnership,{"description":"区分所有数"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:realEstateIDOfBuildingUnitOwnership,{"description":"区分不動産ID"}
-bldg:Building_RealEstateIDAttribute_uro:realEstateIDOfBuildingUnitOwnership,{"description":"区分不動産ID"}
+bldg:Building_uro:RealEstateIDAttribute_uro:realEstateIDOfBuildingUnitOwnership,{"description":"区分不動産ID"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:numberOfRealEstateIDOfLand,{"description":"土地不動産ID数"}
-bldg:Building_RealEstateIDAttribute_uro:numberOfRealEstateIDOfLand,{"description":"土地不動産ID数"}
+bldg:Building_uro:RealEstateIDAttribute_uro:numberOfRealEstateIDOfLand,{"description":"土地不動産ID数"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:realEstateIDOfLand,{"description":"土地不動産ID数"}
-bldg:Building_RealEstateIDAttribute_uro:realEstateIDOfLand,{"description":"土地不動産ID数"}
+bldg:Building_uro:RealEstateIDAttribute_uro:realEstateIDOfLand,{"description":"土地不動産ID数"}
 bldg:Building_uro:bldgRealEstateIDAttribute_uro:matchingScore,{"description":"マッチングスコア"}
-bldg:Building_RealEstateIDAttribute_uro:matchingScore,{"description":"マッチングスコア"}
+bldg:Building_uro:RealEstateIDAttribute_uro:matchingScore,{"description":"マッチングスコア"}
 bldg:BuildingPart,{"description":"建築物部分"}
 bldg:BuildingPart_gml:description,{"description":"説明"}
 bldg:BuildingPart_gml:name,{"description":"名称"}
@@ -1604,7 +1605,8 @@ bldg:BuildingPart_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:BuildingPart_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:BuildingPart_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:BuildingPart_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:BuildingPart_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:BuildingPart_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:BuildingPart_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:BuildingPart_bldg:class,{"description":"分類"}
 bldg:BuildingPart_bldg:function,{"description":"機能"}
 bldg:BuildingPart_bldg:usage,{"description":"用途"}
@@ -1745,7 +1747,8 @@ bldg:Room_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:Room_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:Room_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:Room_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:Room_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:Room_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:Room_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:Room_bldg:class,{"description":"分類"}
 bldg:Room_bldg:function,{"description":"機能"}
 bldg:Room_bldg:usage,{"description":"用途"}
@@ -1888,7 +1891,8 @@ bldg:BuildingInstallation_gen:doubleAttribute,{"description":"汎用属性（実
 bldg:BuildingInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:BuildingInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:BuildingInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:BuildingInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:BuildingInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:BuildingInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:BuildingInstallation_bldg:class,{"description":"分類"}
 bldg:BuildingInstallation_bldg:function,{"description":"機能"}
 bldg:BuildingInstallation_bldg:usage,{"description":"用途"}
@@ -1942,7 +1946,8 @@ bldg:RoofSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:RoofSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:RoofSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:RoofSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:RoofSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:RoofSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:RoofSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:RoofSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:RoofSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:RoofSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2009,7 +2014,8 @@ bldg:WallSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:WallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:WallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:WallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:WallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:WallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:WallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:WallSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:WallSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:WallSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2176,7 +2182,8 @@ bldg:GroundSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 bldg:GroundSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:GroundSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:GroundSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:GroundSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:GroundSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:GroundSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:GroundSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:GroundSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:GroundSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2227,7 +2234,8 @@ bldg:OuterFloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数
 bldg:OuterFloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:OuterFloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:OuterFloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:OuterFloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:OuterFloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:OuterFloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:OuterFloorSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:OuterFloorSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:OuterFloorSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2278,13 +2286,14 @@ bldg:OuterCeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 bldg:OuterCeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:OuterCeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:OuterCeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:OuterCeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:OuterCeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:OuterCeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:OuterCeilingSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:OuterCeilingSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:OuterCeilingSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
 bldg:OuterCeilingSurface_bldg:opening,{"description":"開口部"}
-bldg:OuterCeilingSurface_(uro:ifcBoundarySurfaceAttribute,{"description":"BIMモデルからの変換情報"}
-bldg:OuterCeilingSurface_uro:IfcBuildingElement),{"description":"BIMモデルからの変換情報"}
+bldg:OuterCeilingSurface_uro:ifcBoundarySurfaceAttribute,{"description":"BIMモデルからの変換情報"}
+bldg:OuterCeilingSurface_uro:IfcBuildingElement,{"description":"BIMモデルからの変換情報"}
 bldg:ClosureSurface,{"description":"閉鎖面"}
 bldg:ClosureSurface_gml:description,{"description":"説明"}
 bldg:ClosureSurface_gml:name,{"description":"名称"}
@@ -2299,7 +2308,8 @@ bldg:ClosureSurface_gen:doubleAttribute,{"description":"汎用属性（実数）
 bldg:ClosureSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:ClosureSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:ClosureSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:ClosureSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:ClosureSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:ClosureSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:ClosureSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:ClosureSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:ClosureSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2318,7 +2328,8 @@ bldg:InteriorWallSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 bldg:InteriorWallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:InteriorWallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:InteriorWallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:InteriorWallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:InteriorWallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:InteriorWallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:InteriorWallSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:InteriorWallSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:InteriorWallSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2356,7 +2367,8 @@ bldg:FloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:FloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:FloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:FloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:FloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:FloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:FloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:FloorSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:FloorSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:FloorSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2394,7 +2406,8 @@ bldg:CeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実数）
 bldg:CeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:CeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:CeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:CeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:CeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:CeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:CeilingSurface_bldg:lod2MultiSurface,{"description":"lod2面"}
 bldg:CeilingSurface_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:CeilingSurface_bldg:lod4MultiSurface,{"description":"lod4面"}
@@ -2432,7 +2445,8 @@ bldg:Window_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:Window_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:Window_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:Window_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:Window_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:Window_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:Window_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:Window_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:Window_bldg:lod4MultiSurface,{"description":"lod4面"}
 bldg:Window_uro:ifcOpeningAttribute,{"description":"開口部情報"}
@@ -2551,7 +2565,8 @@ bldg:Door_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 bldg:Door_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:Door_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:Door_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:Door_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:Door_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:Door_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:Door_bldg:lod3MultiSurface,{"description":"lod3面"}
 bldg:Door_bldg:lod4MultiSurface,{"description":"lod4面"}
 bldg:Door_uro:ifcOpeningAttribute,{"description":"開口部情報"}
@@ -2676,7 +2691,8 @@ bldg:IntBuildingInstallation_gen:doubleAttribute,{"description":"汎用属性（
 bldg:IntBuildingInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:IntBuildingInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:IntBuildingInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:IntBuildingInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:IntBuildingInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:IntBuildingInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:IntBuildingInstallation_bldg:class,{"description":"分類"}
 bldg:IntBuildingInstallation_bldg:function,{"description":"機能"}
 bldg:IntBuildingInstallation_bldg:usage,{"description":"用途"}
@@ -2766,7 +2782,8 @@ bldg:BuildingFurniture_gen:doubleAttribute,{"description":"汎用属性（実数
 bldg:BuildingFurniture_gen:dateAttribute,{"description":"汎用属性（日付）"}
 bldg:BuildingFurniture_gen:uriAttribute,{"description":"汎用属性（URI）"}
 bldg:BuildingFurniture_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-bldg:BuildingFurniture_gen:genericAttributeSet,{"description":"汎用属性セット"}
+bldg:BuildingFurniture_gen:genericAttributeset,{"description":"汎用属性セット"}
+bldg:BuildingFurniture_gen:genericAttribute,{"description":"汎用属性セット"}
 bldg:BuildingFurniture_bldg:class,{"description":"分類"}
 bldg:BuildingFurniture_bldg:function,{"description":"機能"}
 bldg:BuildingFurniture_bldg:usage,{"description":"用途"}
@@ -2821,7 +2838,8 @@ grp:CityObjectGroup_gen:doubleAttribute,{"description":"汎用属性（実数）
 grp:CityObjectGroup_gen:dateAttribute,{"description":"汎用属性（日付）"}
 grp:CityObjectGroup_gen:uriAttribute,{"description":"汎用属性（URI）"}
 grp:CityObjectGroup_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-grp:CityObjectGroup_gen:genericAttributeSet,{"description":"汎用属性セット"}
+grp:CityObjectGroup_gen:genericAttributeset,{"description":"汎用属性セット"}
+grp:CityObjectGroup_gen:genericAttribute,{"description":"汎用属性セット"}
 grp:CityObjectGroup_grp:class,{"description":"分類"}
 grp:CityObjectGroup_grp:function,{"description":"機能"}
 grp:CityObjectGroup_grp:usage,{"description":"用途"}
@@ -2893,7 +2911,8 @@ luse:LandUse_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 luse:LandUse_gen:dateAttribute,{"description":"汎用属性（日付）"}
 luse:LandUse_gen:uriAttribute,{"description":"汎用属性（URI）"}
 luse:LandUse_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-luse:LandUse_gen:genericAttributeSet,{"description":"汎用属性セット"}
+luse:LandUse_gen:genericAttributeset,{"description":"汎用属性セット"}
+luse:LandUse_gen:genericAttribute,{"description":"汎用属性セット"}
 luse:LandUse_luse:class,{"description":"土地利用区分"}
 luse:LandUse_luse:function,{"description":"機能"}
 luse:LandUse_luse:usage,{"description":"用途"}
@@ -3904,7 +3923,8 @@ tran:Road_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:Road_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:Road_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:Road_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:Road_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:Road_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:Road_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:Road_uro:tranDmAttribute,{"description":"図式情報"}
 tran:Road_DmGeometricAttribute,{"description":"図式情報"}
 tran:Road_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -4929,22 +4949,6 @@ tran:Road_ParkFacilityLongevityPlan_uro:longevityMeasures_descriptin,{"descripti
 tran:Road_ParkFacilityLongevityPlan_LongevityMeasures_descriptin,{"description":"対策内容"}
 tran:Road_uro:tranFacilityAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
 tran:Road_ParkFacilityLongevityPlan_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
-tran:Road_uro:traFacilityAttribute,{"description":"点検工事記録"}
-tran:Road_MaintenanceHistoryAttribute,{"description":"点検工事記録"}
-tran:Road_uro:traFacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
-tran:Road_MaintenanceHistoryAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
-tran:Road_uro:traFacilityAttribute_uro:maintenanceType,{"description":"点検・工事の種類"}
-tran:Road_MaintenanceHistoryAttribute_uro:maintenanceType,{"description":"点検・工事の種類"}
-tran:Road_uro:traFacilityAttribute_uro:maintenanceFiscalYear,{"description":"点検・工事を行った西暦年度","dataType":"gYear"}
-tran:Road_MaintenanceHistoryAttribute_uro:maintenanceFiscalYear,{"description":"点検・工事を行った西暦年度","dataType":"gYear"}
-tran:Road_uro:traFacilityAttribute_uro:maintenanceYear,{"description":"点検・工事を行った西暦年","dataType":"gYear"}
-tran:Road_MaintenanceHistoryAttribute_uro:maintenanceYear,{"description":"点検・工事を行った西暦年","dataType":"gYear"}
-tran:Road_uro:traFacilityAttribute_uro:maintenanceDate,{"description":"点検・工事の日付","dataType":"date"}
-tran:Road_MaintenanceHistoryAttribute_uro:maintenanceDate,{"description":"点検・工事の日付","dataType":"date"}
-tran:Road_uro:traFacilityAttribute_uro:status,{"description":"点検、工事の状況"}
-tran:Road_MaintenanceHistoryAttribute_uro:status,{"description":"点検、工事の状況"}
-tran:Road_uro:traFacilityAttribute_uro:description,{"description":"点検・工事の内容"}
-tran:Road_MaintenanceHistoryAttribute_uro:description,{"description":"点検・工事の内容"}
 tran:Road_uro:tranFacilityAttribute,{"description":"点検工事記録"}
 tran:Road_MaintenanceHistoryAttribute,{"description":"点検工事記録"}
 tran:Road_uro:tranFacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
@@ -4962,11 +4966,17 @@ tran:Road_MaintenanceHistoryAttribute_uro:status,{"description":"点検、工事
 tran:Road_uro:tranFacilityAttribute_uro:description,{"description":"点検・工事の内容"}
 tran:Road_MaintenanceHistoryAttribute_uro:description,{"description":"点検・工事の内容"}
 tran:Road_uro:tranDataQualityAttribute,{"description":"データ品質属性"}
+tran:Road_uro:TransportationDataQualityAttribute,{"description":"データ品質属性"}
 tran:Road_uro:tranDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+tran:Road_uro:TransportationDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 tran:Road_uro:tranDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+tran:Road_uro:TransportationDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 tran:Road_uro:tranDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+tran:Road_uro:TransportationDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 tran:Road_uro:tranDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+tran:Road_uro:TransportationDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 tran:Road_uro:tranDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+tran:Road_uro:TransportationDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 tran:Road_uro:roadStructureAttribute,{"description":"道路構造"}
 tran:Road_uro:RoadStructureAttribute,{"description":"道路構造"}
 tran:Road_uro:roadStructureAttribute_uro:widthType,{"description":"幅員区分"}
@@ -5021,7 +5031,8 @@ tran:TrafficArea_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:TrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:TrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:TrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:TrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:TrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:TrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:TrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -5106,7 +5117,8 @@ tran:AuxiliaryTrafficArea_gen:doubleAttribute,{"description":"汎用属性（実
 tran:AuxiliaryTrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:AuxiliaryTrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:AuxiliaryTrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:AuxiliaryTrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -5187,7 +5199,8 @@ tran:Railway_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:Railway_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:Railway_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:Railway_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:Railway_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:Railway_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:Railway_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:Railway_uro:tranDmAttribute,{"description":"図式情報"}
 tran:Railway_DmGeometricAttribute,{"description":"図式情報"}
 tran:Railway_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -6268,7 +6281,8 @@ tran:TrafficArea_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:TrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:TrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:TrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:TrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:TrafficArea_uro:tranDmAttribute,{"description":"DM属性"}
 tran:TrafficArea_tran:class,{"description":"分類"}
 tran:TrafficArea_tran:function,{"description":"機能"}
@@ -6452,7 +6466,8 @@ tran:AuxiliaryTrafficArea_gen:doubleAttribute,{"description":"汎用属性（実
 tran:AuxiliaryTrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:AuxiliaryTrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:AuxiliaryTrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:AuxiliaryTrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute,{"description":"DM属性"}
 tran:AuxiliaryTrafficArea_tran:class,{"description":"分類"}
 tran:AuxiliaryTrafficArea_tran:function,{"description":"機能"}
@@ -6474,7 +6489,8 @@ tran:Track_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:Track_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:Track_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:Track_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:Track_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:Track_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:Track_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:Track_uro:tranDmAttribute,{"description":"図式情報"}
 tran:Track_DmGeometricAttribute,{"description":"図式情報"}
 tran:Track_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -7543,7 +7559,8 @@ tran:TrafficArea_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:TrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:TrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:TrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:TrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:TrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:TrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:TrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -7628,7 +7645,8 @@ tran:AuxiliaryTrafficArea_gen:doubleAttribute,{"description":"汎用属性（実
 tran:AuxiliaryTrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:AuxiliaryTrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:AuxiliaryTrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:AuxiliaryTrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -7709,7 +7727,8 @@ tran:Square_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:Square_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:Square_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:Square_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:Square_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:Square_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:Square_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:Square_uro:tranDmAttribute,{"description":"図式情報"}
 tran:Square_DmGeometricAttribute,{"description":"図式情報"}
 tran:Square_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -8900,7 +8919,8 @@ tran:TrafficArea_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:TrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:TrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:TrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:TrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:TrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:TrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:TrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -8985,7 +9005,8 @@ tran:AuxiliaryTrafficArea_gen:doubleAttribute,{"description":"汎用属性（実
 tran:AuxiliaryTrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:AuxiliaryTrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:AuxiliaryTrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:AuxiliaryTrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:AuxiliaryTrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_DmGeometricAttribute,{"description":"図式情報"}
 tran:AuxiliaryTrafficArea_uro:tranDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -9066,7 +9087,8 @@ uro:Waterway_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Waterway_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Waterway_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Waterway_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Waterway_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Waterway_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Waterway_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Waterway_uro:tranDmAttribute,{"description":"DM属性"}
 uro:Waterway_tran:class,{"description":"分類"}
 uro:Waterway_tran:function,{"description":"機能"}
@@ -10076,7 +10098,8 @@ tran:TrafficArea_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tran:TrafficArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tran:TrafficArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tran:TrafficArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tran:TrafficArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+tran:TrafficArea_gen:genericAttribute,{"description":"汎用属性セット"}
 tran:TrafficArea_uro:tranDmAttribute,{"description":"DM属性"}
 tran:TrafficArea_uro:tranDmAttribute_DmGeometricAttribute,{"description":"図式情報"}
 tran:TrafficArea_uro:tranDmAttribute_DmElement,{"description":"数値地形図要素情報"}
@@ -10101,7 +10124,8 @@ wtr:WaterBody_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 wtr:WaterBody_gen:dateAttribute,{"description":"汎用属性（日付）"}
 wtr:WaterBody_gen:uriAttribute,{"description":"汎用属性（URI）"}
 wtr:WaterBody_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-wtr:WaterBody_gen:genericAttributeSet,{"description":"汎用属性セット"}
+wtr:WaterBody_gen:genericAttributeset,{"description":"汎用属性セット"}
+wtr:WaterBody_gen:genericAttribute,{"description":"汎用属性セット"}
 wtr:WaterBody_wtr:class,{"description":"分類"}
 wtr:WaterBody_wtr:function,{"description":"機能"}
 wtr:WaterBody_wtr:usage,{"description":"用途"}
@@ -10166,7 +10190,8 @@ urf:SedimentDisasterProneArea_gen:doubleAttribute,{"description":"汎用属性�
 urf:SedimentDisasterProneArea_gen:dateAttribute,{"description":"汎用属性（日付）"}
 urf:SedimentDisasterProneArea_gen:uriAttribute,{"description":"汎用属性（URI）"}
 urf:SedimentDisasterProneArea_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-urf:SedimentDisasterProneArea_gen:genericAttributeSet,{"description":"汎用属性セット"}
+urf:SedimentDisasterProneArea_gen:genericAttributeset,{"description":"汎用属性セット"}
+urf:SedimentDisasterProneArea_gen:genericAttribute,{"description":"汎用属性セット"}
 urf:SedimentDisasterProneArea_urf:class,{"description":"分類"}
 urf:SedimentDisasterProneArea_urf:function,{"description":"区域の種類"}
 urf:SedimentDisasterProneArea_urf:usage,{"description":"用途"}
@@ -10191,8 +10216,8 @@ urf:SedimentDisasterProneArea_urf:reason,{"description":"理由"}
 urf:SedimentDisasterProneArea_urf:note,{"description":"備考"}
 urf:SedimentDisasterProneArea_urf:surveyYear,{"description":"調査年度","dataType":"gYear"}
 urf:SedimentDisasterProneArea_urf:lod1MultiSurface,{"description":"LOD1面（区域）"}
-urf:SedimentDisasterProneArea_(urf:boundary,{"description":"境界"}
-urf:SedimentDisasterProneArea_Boundary),{"description":"境界"}
+urf:SedimentDisasterProneArea_urf:boundary,{"description":"境界"}
+urf:SedimentDisasterProneArea_Boundary,{"description":"境界"}
 urf:SedimentDisasterProneArea_urf:location,{"description":"所在地"}
 urf:SedimentDisasterProneArea_urf:disasterType,{"description":"災害種別"}
 urf:SedimentDisasterProneArea_urf:areaType,{"description":"区域区分"}
@@ -12214,35 +12239,65 @@ urf:TrafficFacility_urf:viaLocations,{"description":"経過地"}
 urf:TrafficFacility_urf:length,{"description":"延長"}
 urf:TrafficFacility_urf:width,{"description":"幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute,{"description":"道路属性"}
+urf:TrafficFacility_urf:UrbanRoadAttribute,{"description":"道路属性"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:routeTypeNumber,{"description":"区分"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:routeTypeNumber,{"description":"区分"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:routeSizeNumber,{"description":"規模"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:routeSizeNumber,{"description":"規模"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:routeSerialNumber,{"description":"一連番号"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:routeSerialNumber,{"description":"一連番号"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:roadType,{"description":"道路の種類"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:roadType,{"description":"道路の種類"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:numberOfLanes,{"description":"車線数"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:numberOfLanes,{"description":"車線数"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:roadStructure,{"description":"道路の構造"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:roadStructure,{"description":"道路の構造"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structureType,{"description":"構造種別"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structureType,{"description":"構造種別"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:crossType,{"description":"交差種別"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:crossType,{"description":"交差種別"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:trafficPlazas,{"description":"交通広場の有無"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:trafficPlazas,{"description":"交通広場の有無"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails,{"description":"構造の内訳"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails,{"description":"構造の内訳"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails,{"description":"構造の内訳"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails,{"description":"構造の内訳"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:startLocation,{"description":"起点"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:startLocation,{"description":"起点"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:startLocation,{"description":"起点"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:startLocation,{"description":"起点"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:endLocation,{"description":"終点"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:endLocation,{"description":"終点"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:endLocation,{"description":"終点"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:endLocation,{"description":"終点"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:viaLocations,{"description":"経過地"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:viaLocations,{"description":"経過地"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:viaLocations,{"description":"経過地"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:viaLocations,{"description":"経過地"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:length,{"description":"延長"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:length,{"description":"延長"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:length,{"description":"延長"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:length,{"description":"延長"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:structureType,{"description":"構造の形式"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:structureType,{"description":"構造の形式"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:structureType,{"description":"構造の形式"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:structureType,{"description":"構造の形式"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:minimumWidth,{"description":"最小幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:minimumWidth,{"description":"最小幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:minimumWidth,{"description":"最小幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:minimumWidth,{"description":"最小幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:maximumWidth,{"description":"最大幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:maximumWidth,{"description":"最大幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:maximumWidth,{"description":"最大幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:maximumWidth,{"description":"最大幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:standardWidth,{"description":"標準幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:standardWidth,{"description":"標準幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:standardWidth,{"description":"標準幅員"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:standardWidth,{"description":"標準幅員"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:structuralDetails_urf:crossType,{"description":"交差種別"}
 urf:TrafficFacility_urf:urbanRoadAttribute_urf:StructureDetails_urf:crossType,{"description":"交差種別"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:structuralDetails_urf:crossType,{"description":"交差種別"}
+urf:TrafficFacility_urf:UrbanRoadAttribute_urf:StructureDetails_urf:crossType,{"description":"交差種別"}
 urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute,{"description":"都市高速道路属性"}
 urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute_urf:structureType,{"description":"構造種別"}
 urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute_urf:crossType,{"description":"交差種別"}
@@ -12277,8 +12332,11 @@ urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute_urf_urf:crossType,{"d
 urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute_structuralDetails_urf:crossType,{"description":"交差種別"}
 urf:TrafficFacility_urf:urbanRapidTransitRailroadAttribute_urf:StructureDetails_urf:crossType,{"description":"交差種別"}
 urf:TrafficFacility_urf:parkingPlaceAttribute,{"description":"駐車場属性"}
+urf:TrafficFacility_urf:ParkingPlaceAttribute,{"description":"駐車場属性"}
 urf:TrafficFacility_urf:parkingPlaceAttribute_urf:storeysAboveGround,{"description":"地上階数"}
+urf:TrafficFacility_urf:ParkingPlaceAttribute_urf:storeysAboveGround,{"description":"地上階数"}
 urf:TrafficFacility_urf:parkingPlaceAttribute_urf:storeysBelowGround,{"description":"地下階数"}
+urf:TrafficFacility_urf:ParkingPlaceAttribute_urf:storeysBelowGround,{"description":"地下階数"}
 urf:TrafficFacility_urf:vehicleTerminalAttribute,{"description":"自動車ターミナル属性"}
 urf:TrafficFacility_urf:vehicleTerminalAttribute_urf:terminalType,{"description":"自動車ターミナルの種類"}
 urf:OpenSpaceForPublicUse,{"description":"公共空地（urf:functionの値により決定）"}
@@ -12331,9 +12389,13 @@ urf:OpenSpaceForPublicUse_urf:location,{"description":"位置"}
 urf:OpenSpaceForPublicUse_urf:number,{"description":"番号"}
 urf:OpenSpaceForPublicUse_urf:threeDimensionalExtent,{"description":"立体的な範囲"}
 urf:OpenSpaceForPublicUse_urf:parkAttribute,{"description":"公園属性"}
+urf:OpenSpaceForPublicUse_urf:ParkAttribute,{"description":"公園属性"}
 urf:OpenSpaceForPublicUse_urf:parkAttribute_urf:parkTypeNumber,{"description":"区分"}
+urf:OpenSpaceForPublicUse_urf:ParkAttribute_urf:parkTypeNumber,{"description":"区分"}
 urf:OpenSpaceForPublicUse_urf:parkAttribute_urf:parkSizeNumber,{"description":"規模"}
+urf:OpenSpaceForPublicUse_urf:ParkAttribute_urf:parkSizeNumber,{"description":"規模"}
 urf:OpenSpaceForPublicUse_urf:parkAttribute_urf:parkSerialNumber,{"description":"一連番号"}
+urf:OpenSpaceForPublicUse_urf:ParkAttribute_urf:parkSerialNumber,{"description":"一連番号"}
 urf:SupplyFacility,{"description":"供給施設（urf:functionの値により決定）"}
 urf:SupplyFacility_gml:description,{"description":"説明"}
 urf:SupplyFacility_gml:name,{"description":"名称"}
@@ -12440,60 +12502,60 @@ urf:TreatmentFacility_urf:sewerSystemAttribute_urf:startLocation,{"description":
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:endLocation,{"description":"終点"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:systemType,{"description":"種別"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:drainageArea,{"description":"排水区域"}
-urf:WaterWay,{"description":"水路（urf:functionの値により決定）"}
-urf:WaterWay_gml:description,{"description":"説明"}
-urf:WaterWay_gml:name,{"description":"名称"}
-urf:WaterWay_gml:boundedBy,{"description":"範囲"}
-urf:WaterWay_core:creationDate,{"description":"データ作成日","dataType":"date"}
-urf:WaterWay_core:terminationDate,{"description":"データ削除日","dataType":"date"}
-urf:WaterWay_core:relativeToTerrain,{"description":"地表との関係"}
-urf:WaterWay_core:relativeToWater,{"description":"水面との関係"}
-urf:WaterWay_urf:class,{"description":"分類"}
-urf:WaterWay_urf:function,{"description":"都市施設の種類"}
-urf:WaterWay_urf:usage,{"description":"用途"}
-urf:WaterWay_urf:validFrom,{"description":"効力を生じる日","dataType":"date"}
-urf:WaterWay_urf:validFromType,{"description":"効力を生じる日の区分"}
-urf:WaterWay_urf:enactmentFiscalYear,{"description":"決定年度","dataType":"gYear"}
-urf:WaterWay_urf:validTo,{"description":"効力を失う日","dataType":"date"}
-urf:WaterWay_urf:validToType,{"description":"効力を失う日の区分"}
-urf:WaterWay_urf:expirationFiscalYear,{"description":"廃止年度","dataType":"gYear"}
-urf:WaterWay_urf:legalGrounds,{"description":"法的背景"}
-urf:WaterWay_urf:custodian,{"description":"決定者"}
-urf:WaterWay_urf:notificationNumber,{"description":"告示番号（当初）"}
-urf:WaterWay_urf:finalNotificationNumber,{"description":"告示番号（最終）"}
-urf:WaterWay_urf:finalNotificationDate,{"description":"告示日（最終）","dataType":"date"}
-urf:WaterWay_urf:urbanPlanType,{"description":"都市計画区域"}
-urf:WaterWay_urf:areaClassificationType,{"description":"区域区分"}
-urf:WaterWay_urf:nominalArea,{"description":"面積"}
-urf:WaterWay_urf:prefecture,{"description":"都道府県名"}
-urf:WaterWay_urf:city,{"description":"市区町村名"}
-urf:WaterWay_urf:reference,{"description":"参考"}
-urf:WaterWay_urf:reason,{"description":"理由"}
-urf:WaterWay_urf:note,{"description":"備考"}
-urf:WaterWay_urf:surveyYear,{"description":"調査年度","dataType":"gYear"}
-urf:WaterWay_urf:lod1MultiSurface,{"description":"LOD1面（区域）"}
-urf:WaterWay_urf:boundary,{"description":"境界"}
-urf:WaterWay_Boundary,{"description":"境界"}
-urf:WaterWay_urf:boundary_urf:class,{"description":"区分"}
-urf:WaterWay_Boundary_urf:class,{"description":"区分"}
-urf:WaterWay_urf:boundary_urf:function,{"description":"境界線の種類"}
-urf:WaterWay_Boundary_urf:function,{"description":"境界線の種類"}
-urf:WaterWay_urf:boundary_urf:usage,{"description":"区域の種類"}
-urf:WaterWay_Boundary_urf:usage,{"description":"区域の種類"}
-urf:WaterWay_urf:boundary_urf:offset,{"description":"オフセット量"}
-urf:WaterWay_Boundary_urf:offset,{"description":"オフセット量"}
-urf:WaterWay_urf:boundary_urf:offsetDirection,{"description":"オフセット向き"}
-urf:WaterWay_Boundary_urf:offsetDirection,{"description":"オフセット向き"}
-urf:WaterWay_urf:boundary_urf:location,{"description":"境界線位置"}
-urf:WaterWay_Boundary_urf:location,{"description":"境界線位置"}
-urf:WaterWay_urf:location,{"description":"位置"}
-urf:WaterWay_urf:number,{"description":"番号"}
-urf:WaterWay_urf:threeDimensionalExtent,{"description":"立体的な範囲"}
-urf:WaterWay_urf:startLocation,{"description":"起点"}
-urf:WaterWay_urf:endLocation,{"description":"終点"}
-urf:WaterWay_urf:structure,{"description":"構造"}
-urf:WaterWay_urf:length,{"description":"延長"}
-urf:WaterWay_urf:width,{"description":"幅員"}
+urf:Waterway,{"description":"水路（urf:functionの値により決定）"}
+urf:Waterway_gml:description,{"description":"説明"}
+urf:Waterway_gml:name,{"description":"名称"}
+urf:Waterway_gml:boundedBy,{"description":"範囲"}
+urf:Waterway_core:creationDate,{"description":"データ作成日","dataType":"date"}
+urf:Waterway_core:terminationDate,{"description":"データ削除日","dataType":"date"}
+urf:Waterway_core:relativeToTerrain,{"description":"地表との関係"}
+urf:Waterway_core:relativeToWater,{"description":"水面との関係"}
+urf:Waterway_urf:class,{"description":"分類"}
+urf:Waterway_urf:function,{"description":"都市施設の種類"}
+urf:Waterway_urf:usage,{"description":"用途"}
+urf:Waterway_urf:validFrom,{"description":"効力を生じる日","dataType":"date"}
+urf:Waterway_urf:validFromType,{"description":"効力を生じる日の区分"}
+urf:Waterway_urf:enactmentFiscalYear,{"description":"決定年度","dataType":"gYear"}
+urf:Waterway_urf:validTo,{"description":"効力を失う日","dataType":"date"}
+urf:Waterway_urf:validToType,{"description":"効力を失う日の区分"}
+urf:Waterway_urf:expirationFiscalYear,{"description":"廃止年度","dataType":"gYear"}
+urf:Waterway_urf:legalGrounds,{"description":"法的背景"}
+urf:Waterway_urf:custodian,{"description":"決定者"}
+urf:Waterway_urf:notificationNumber,{"description":"告示番号（当初）"}
+urf:Waterway_urf:finalNotificationNumber,{"description":"告示番号（最終）"}
+urf:Waterway_urf:finalNotificationDate,{"description":"告示日（最終）","dataType":"date"}
+urf:Waterway_urf:urbanPlanType,{"description":"都市計画区域"}
+urf:Waterway_urf:areaClassificationType,{"description":"区域区分"}
+urf:Waterway_urf:nominalArea,{"description":"面積"}
+urf:Waterway_urf:prefecture,{"description":"都道府県名"}
+urf:Waterway_urf:city,{"description":"市区町村名"}
+urf:Waterway_urf:reference,{"description":"参考"}
+urf:Waterway_urf:reason,{"description":"理由"}
+urf:Waterway_urf:note,{"description":"備考"}
+urf:Waterway_urf:surveyYear,{"description":"調査年度","dataType":"gYear"}
+urf:Waterway_urf:lod1MultiSurface,{"description":"LOD1面（区域）"}
+urf:Waterway_urf:boundary,{"description":"境界"}
+urf:Waterway_Boundary,{"description":"境界"}
+urf:Waterway_urf:boundary_urf:class,{"description":"区分"}
+urf:Waterway_Boundary_urf:class,{"description":"区分"}
+urf:Waterway_urf:boundary_urf:function,{"description":"境界線の種類"}
+urf:Waterway_Boundary_urf:function,{"description":"境界線の種類"}
+urf:Waterway_urf:boundary_urf:usage,{"description":"区域の種類"}
+urf:Waterway_Boundary_urf:usage,{"description":"区域の種類"}
+urf:Waterway_urf:boundary_urf:offset,{"description":"オフセット量"}
+urf:Waterway_Boundary_urf:offset,{"description":"オフセット量"}
+urf:Waterway_urf:boundary_urf:offsetDirection,{"description":"オフセット向き"}
+urf:Waterway_Boundary_urf:offsetDirection,{"description":"オフセット向き"}
+urf:Waterway_urf:boundary_urf:location,{"description":"境界線位置"}
+urf:Waterway_Boundary_urf:location,{"description":"境界線位置"}
+urf:Waterway_urf:location,{"description":"位置"}
+urf:Waterway_urf:number,{"description":"番号"}
+urf:Waterway_urf:threeDimensionalExtent,{"description":"立体的な範囲"}
+urf:Waterway_urf:startLocation,{"description":"起点"}
+urf:Waterway_urf:endLocation,{"description":"終点"}
+urf:Waterway_urf:structure,{"description":"構造"}
+urf:Waterway_urf:length,{"description":"延長"}
+urf:Waterway_urf:width,{"description":"幅員"}
 urf:EducationalAndCulturalFacility,{"description":"教育文化施設（urf:functionの値により決定）"}
 urf:EducationalAndCulturalFacility_gml:description,{"description":"説明"}
 urf:EducationalAndCulturalFacility_gml:name,{"description":"名称"}
@@ -15365,7 +15427,8 @@ gen:GenericCityObject（作成対象とする場合は、様式A-5を作成す�
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:dateAttribute,{"description":"汎用属性（日付）"}
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:uriAttribute,{"description":"汎用属性（URI）"}
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttributeSet,{"description":"汎用属性セット"}
+gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttributeset,{"description":"汎用属性セット"}
+gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttribute,{"description":"汎用属性セット"}
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod0Geometry,{"description":"lod0幾何"}
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod1Geometry,{"description":"lod1幾何"}
 gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod2Geometry,{"description":"lod2幾何"}
@@ -15385,7 +15448,8 @@ grp:CityObjectGroup_gen:doubleAttribute,{"description":"汎用属性（実数）
 grp:CityObjectGroup_gen:dateAttribute,{"description":"汎用属性（日付）"}
 grp:CityObjectGroup_gen:uriAttribute,{"description":"汎用属性（URI）"}
 grp:CityObjectGroup_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-grp:CityObjectGroup_gen:genericAttributeSet,{"description":"汎用属性セット"}
+grp:CityObjectGroup_gen:genericAttributeset,{"description":"汎用属性セット"}
+grp:CityObjectGroup_gen:genericAttribute,{"description":"汎用属性セット"}
 grp:CityObjectGroup_grp:class,{"description":"分類"}
 grp:CityObjectGroup_grp:function,{"description":"機能"}
 grp:CityObjectGroup_grp:usage,{"description":"用途"}
@@ -15410,7 +15474,8 @@ brid:Bridge_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:Bridge_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:Bridge_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:Bridge_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:Bridge_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:Bridge_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:Bridge_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:Bridge_brid:lod1Solid,{"description":"lod1立体"}
 brid:Bridge_brid:lod1MultiSurface,{"description":"LOD1面（区域）"}
 brid:Bridge_brid:lod1TerrainIntersection,{"description":"lod1地形との交線"}
@@ -16624,7 +16689,8 @@ brid:BridgePart_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:BridgePart_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:BridgePart_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:BridgePart_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:BridgePart_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:BridgePart_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:BridgePart_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:BridgePart_brid:lod1Solid,{"description":"lod1立体"}
 brid:BridgePart_brid:lod1MultiSurface,{"description":"LOD1面（区域）"}
 brid:BridgePart_brid:lod1TerrainIntersection,{"description":"lod1地形との交線"}
@@ -16701,7 +16767,7 @@ brid:BridgePart_uro:bridDataQualityAttribute_uro:lod1HeightType,{"description":"
 brid:BridgePart_uro:ConstructionDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の高さ"}
 brid:BridgePart_uro:bridDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 brid:BridgePart_uro:ConstructionDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
-brid:BridgePart_(uro:bridFacilityTypeAttribute,{"description":"施設分類属性"}
+brid:BridgePart_uro:bridFacilityTypeAttribute,{"description":"施設分類属性"}
 brid:BridgePart_uro:bridFacilityIdAttribute,{"description":"施設識別属性"}
 brid:BridgePart_uro:bridFacilityAttribute,{"description":"施設属性"}
 brid:BridgePart_uro:bridDmAttribute,{"description":"図式情報"}
@@ -16719,7 +16785,8 @@ brid:BridgeConstructionElement_gen:doubleAttribute,{"description":"汎用属性�
 brid:BridgeConstructionElement_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:BridgeConstructionElement_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:BridgeConstructionElement_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:BridgeConstructionElement_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:BridgeConstructionElement_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:BridgeConstructionElement_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:BridgeConstructionElement_brid:class,{"description":"分類"}
 brid:BridgeConstructionElement_brid:function,{"description":"機能"}
 brid:BridgeConstructionElement_brid:usage,{"description":"用途"}
@@ -16741,7 +16808,8 @@ brid:BridgeRoom_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:BridgeRoom_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:BridgeRoom_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:BridgeRoom_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:BridgeRoom_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:BridgeRoom_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:BridgeRoom_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:BridgeRoom_brid:class,{"description":"分類"}
 brid:BridgeRoom_brid:function,{"description":"機能"}
 brid:BridgeRoom_brid:usage,{"description":"用途"}
@@ -16764,7 +16832,8 @@ brid:BridgeInstallation_gen:doubleAttribute,{"description":"汎用属性（実�
 brid:BridgeInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:BridgeInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:BridgeInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:BridgeInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:BridgeInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:BridgeInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:BridgeInstallation_brid:class,{"description":"分類"}
 brid:BridgeInstallation_brid:function,{"description":"機能"}
 brid:BridgeInstallation_brid:usage,{"description":"用途"}
@@ -16786,7 +16855,8 @@ brid:RoofSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:RoofSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:RoofSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:RoofSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:RoofSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:RoofSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:RoofSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:RoofSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:RoofSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:RoofSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16805,7 +16875,8 @@ brid:WallSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:WallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:WallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:WallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:WallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:WallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:WallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:WallSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:WallSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:WallSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16824,7 +16895,8 @@ brid:GroundSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 brid:GroundSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:GroundSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:GroundSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:GroundSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:GroundSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:GroundSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:GroundSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:GroundSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:GroundSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16843,7 +16915,8 @@ brid:OuterFloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数
 brid:OuterFloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:OuterFloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:OuterFloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:OuterFloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:OuterFloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:OuterFloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:OuterFloorSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:OuterFloorSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:OuterFloorSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16862,7 +16935,8 @@ brid:OuterCeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 brid:OuterCeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:OuterCeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:OuterCeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:OuterCeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:OuterCeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:OuterCeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:OuterCeilingSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:OuterCeilingSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:OuterCeilingSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16881,7 +16955,8 @@ brid:ClosureSurface_gen:doubleAttribute,{"description":"汎用属性（実数）
 brid:ClosureSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:ClosureSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:ClosureSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:ClosureSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:ClosureSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:ClosureSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:ClosureSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:ClosureSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:ClosureSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16900,7 +16975,8 @@ brid:InteriorWallSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 brid:InteriorWallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:InteriorWallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:InteriorWallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:InteriorWallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:InteriorWallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:InteriorWallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:InteriorWallSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:InteriorWallSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:InteriorWallSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16919,7 +16995,8 @@ brid:FloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:FloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:FloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:FloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:FloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:FloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:FloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:FloorSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:FloorSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:FloorSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16938,7 +17015,8 @@ brid:CeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実数）
 brid:CeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:CeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:CeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:CeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:CeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:CeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:CeilingSurface_brid:lod2MultiSurface,{"description":"lod2面"}
 brid:CeilingSurface_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:CeilingSurface_brid:lod4MultiSurface,{"description":"lod4面"}
@@ -16957,7 +17035,8 @@ brid:Window_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:Window_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:Window_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:Window_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:Window_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:Window_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:Window_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:Window_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:Window_brid:lod4MultiSurface,{"description":"lod4面"}
 brid:Door,{"description":"扉"}
@@ -16974,7 +17053,8 @@ brid:Door_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 brid:Door_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:Door_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:Door_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:Door_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:Door_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:Door_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:Door_brid:lod3MultiSurface,{"description":"lod3面"}
 brid:Door_brid:lod4MultiSurface,{"description":"lod4面"}
 brid:IntBridgeInstallation,{"description":"橋梁内部付属物"}
@@ -16991,7 +17071,8 @@ brid:IntBridgeInstallation_gen:doubleAttribute,{"description":"汎用属性（�
 brid:IntBridgeInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:IntBridgeInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:IntBridgeInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:IntBridgeInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:IntBridgeInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:IntBridgeInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:IntBridgeInstallation_brid:class,{"description":"分類"}
 brid:IntBridgeInstallation_brid:function,{"description":"機能"}
 brid:IntBridgeInstallation_brid:usage,{"description":"用途"}
@@ -17011,7 +17092,8 @@ brid:BridgeFurniture_gen:doubleAttribute,{"description":"汎用属性（実数�
 brid:BridgeFurniture_gen:dateAttribute,{"description":"汎用属性（日付）"}
 brid:BridgeFurniture_gen:uriAttribute,{"description":"汎用属性（URI）"}
 brid:BridgeFurniture_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-brid:BridgeFurniture_gen:genericAttributeSet,{"description":"汎用属性セット"}
+brid:BridgeFurniture_gen:genericAttributeset,{"description":"汎用属性セット"}
+brid:BridgeFurniture_gen:genericAttribute,{"description":"汎用属性セット"}
 brid:BridgeFurniture_brid:class,{"description":"分類"}
 brid:BridgeFurniture_brid:function,{"description":"機能"}
 brid:BridgeFurniture_brid:usage,{"description":"用途"}
@@ -17035,7 +17117,8 @@ tun:Tunnel_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:Tunnel_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:Tunnel_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:Tunnel_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:Tunnel_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:Tunnel_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:Tunnel_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:Tunnel_tun:lod1Solid,{"description":"lod1立体"}
 tun:Tunnel_tun:lod1MultiSurface,{"description":"LOD1面（区域）"}
 tun:Tunnel_tun:lod1TerrainIntersection,{"description":"lod1地形との交線"}
@@ -17113,15 +17196,15 @@ tun:Tunnel_uro:TunnelFunctionalAttribute_uro:directionType,{"description":"分�
 tun:Tunnel_uro:tunFunctionalAttribute_uro:userType,{"description":"利用者種類"}
 tun:Tunnel_uro:TunnelFunctionalAttribute_uro:userType,{"description":"利用者種類"}
 tun:Tunnel_uro:tunRiskAssessmentAttribute,{"description":"損傷マップ属性"}
-tun:Tunnel_5)	uro:ConstructionRiskAssessmentAttribute,{"description":"損傷マップ属性"}
+tun:Tunnel_5	uro:ConstructionRiskAssessmentAttribute,{"description":"損傷マップ属性"}
 tun:Tunnel_uro:tunRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
-tun:Tunnel_5)	uro:ConstructionRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
+tun:Tunnel_5	uro:ConstructionRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
 tun:Tunnel_uro:tunRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
-tun:Tunnel_5)	uro:ConstructionRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
+tun:Tunnel_5	uro:ConstructionRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
 tun:Tunnel_uro:tunRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
-tun:Tunnel_5)	uro:ConstructionRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
+tun:Tunnel_5	uro:ConstructionRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
 tun:Tunnel_uro:tunRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
-tun:Tunnel_5)	uro:ConstructionRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
+tun:Tunnel_5	uro:ConstructionRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
 tun:Tunnel_uro:tunDisasterRiskAttribute,{"description":"洪水浸水リスク"}
 tun:Tunnel_uro:RiverFloodingRiskAttribute,{"description":"洪水浸水リスク"}
 tun:Tunnel_uro:tunDisasterRiskAttribute_uro:description,{"description":"指定河川名称"}
@@ -18242,7 +18325,8 @@ tun:TunnelPart_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:TunnelPart_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:TunnelPart_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:TunnelPart_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:TunnelPart_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:TunnelPart_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:TunnelPart_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:TunnelPart_tun:lod1Solid,{"description":"lod1立体"}
 tun:TunnelPart_tun:lod1MultiSurface,{"description":"LOD1面（区域）"}
 tun:TunnelPart_tun:lod1TerrainIntersection,{"description":"lod1地形との交線"}
@@ -18320,15 +18404,15 @@ tun:TunnelPart_uro:TunnelFunctionalAttribute_uro:directionType,{"description":"�
 tun:TunnelPart_uro:tunFunctionalAttribute_uro:userType,{"description":"利用者種類"}
 tun:TunnelPart_uro:TunnelFunctionalAttribute_uro:userType,{"description":"利用者種類"}
 tun:TunnelPart_uro:tunRiskAssessmentAttribute,{"description":"損傷マップ属性"}
-tun:TunnelPart_5)	uro:ConstructionRiskAssessmentAttribute,{"description":"損傷マップ属性"}
+tun:TunnelPart_5	uro:ConstructionRiskAssessmentAttribute,{"description":"損傷マップ属性"}
 tun:TunnelPart_uro:tunRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
-tun:TunnelPart_5)	uro:ConstructionRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
+tun:TunnelPart_5	uro:ConstructionRiskAssessmentAttribute_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
 tun:TunnelPart_uro:tunRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
-tun:TunnelPart_5)	uro:ConstructionRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
+tun:TunnelPart_5	uro:ConstructionRiskAssessmentAttribute_uro:riskType,{"description":"危険度"}
 tun:TunnelPart_uro:tunRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
-tun:TunnelPart_5)	uro:ConstructionRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
+tun:TunnelPart_5	uro:ConstructionRiskAssessmentAttribute_uro:status,{"description":"対応状況"}
 tun:TunnelPart_uro:tunRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
-tun:TunnelPart_5)	uro:ConstructionRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
+tun:TunnelPart_5	uro:ConstructionRiskAssessmentAttribute_uro:referenceDate,{"description":"更新時点","dataType":"date"}
 tun:TunnelPart_uro:tunDisasterRiskAttribute,{"description":"災害リスク"}
 tun:TunnelPart_uro:tunDataQualityAttribute,{"description":"データ品質属性"}
 tun:TunnelPart_uro:tunDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
@@ -18357,7 +18441,8 @@ tun:HollowSpace_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:HollowSpace_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:HollowSpace_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:HollowSpace_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:HollowSpace_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:HollowSpace_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:HollowSpace_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:HollowSpace_tun:class,{"description":"分類"}
 tun:HollowSpace_tun:function,{"description":"機能"}
 tun:HollowSpace_tun:usage,{"description":"用途"}
@@ -18380,7 +18465,8 @@ tun:RoofSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:RoofSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:RoofSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:RoofSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:RoofSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:RoofSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:RoofSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:RoofSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:RoofSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:RoofSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18399,7 +18485,8 @@ tun:WallSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:WallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:WallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:WallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:WallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:WallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:WallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:WallSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:WallSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:WallSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18418,7 +18505,8 @@ tun:GroundSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:GroundSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:GroundSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:GroundSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:GroundSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:GroundSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:GroundSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:GroundSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:GroundSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:GroundSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18437,7 +18525,8 @@ tun:OuterFloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数�
 tun:OuterFloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:OuterFloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:OuterFloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:OuterFloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:OuterFloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:OuterFloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:OuterFloorSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:OuterFloorSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:OuterFloorSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18456,7 +18545,8 @@ tun:OuterCeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 tun:OuterCeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:OuterCeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:OuterCeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:OuterCeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:OuterCeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:OuterCeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:OuterCeilingSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:OuterCeilingSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:OuterCeilingSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18475,7 +18565,8 @@ tun:ClosureSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 tun:ClosureSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:ClosureSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:ClosureSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:ClosureSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:ClosureSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:ClosureSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:ClosureSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:ClosureSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:ClosureSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18494,7 +18585,8 @@ tun:InteriorWallSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 tun:InteriorWallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:InteriorWallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:InteriorWallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:InteriorWallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:InteriorWallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:InteriorWallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:InteriorWallSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:InteriorWallSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:InteriorWallSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18513,7 +18605,8 @@ tun:FloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:FloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:FloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:FloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:FloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:FloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:FloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:FloorSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:FloorSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:FloorSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18532,7 +18625,8 @@ tun:CeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 tun:CeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:CeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:CeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:CeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:CeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:CeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:CeilingSurface_tun:lod2MultiSurface,{"description":"lod2面"}
 tun:CeilingSurface_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:CeilingSurface_tun:lod4MultiSurface,{"description":"lod4面"}
@@ -18551,7 +18645,8 @@ tun:Window_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:Window_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:Window_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:Window_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:Window_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:Window_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:Window_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:Window_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:Window_tun:lod4MultiSurface,{"description":"lod4面"}
 tun:Door,{"description":"扉"}
@@ -18568,7 +18663,8 @@ tun:Door_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 tun:Door_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:Door_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:Door_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:Door_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:Door_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:Door_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:Door_tun:lod3MultiSurface,{"description":"lod3面"}
 tun:Door_tun:lod4MultiSurface,{"description":"lod4面"}
 tun:TunnelInstallation,{"description":"トンネル付属物"}
@@ -18585,7 +18681,8 @@ tun:TunnelInstallation_gen:doubleAttribute,{"description":"汎用属性（実数
 tun:TunnelInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:TunnelInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:TunnelInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:TunnelInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:TunnelInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:TunnelInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:TunnelInstallation_tun:class,{"description":"分類"}
 tun:TunnelInstallation_tun:function,{"description":"機能"}
 tun:TunnelInstallation_tun:usage,{"description":"用途"}
@@ -18607,7 +18704,8 @@ tun:IntTunnelInstallation_gen:doubleAttribute,{"description":"汎用属性（実
 tun:IntTunnelInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:IntTunnelInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:IntTunnelInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:IntTunnelInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:IntTunnelInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:IntTunnelInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:IntTunnelInstallation_tun:class,{"description":"分類"}
 tun:IntTunnelInstallation_tun:function,{"description":"機能"}
 tun:IntTunnelInstallation_tun:usage,{"description":"用途"}
@@ -18627,7 +18725,8 @@ tun:TunnelFurniture_gen:doubleAttribute,{"description":"汎用属性（実数）
 tun:TunnelFurniture_gen:dateAttribute,{"description":"汎用属性（日付）"}
 tun:TunnelFurniture_gen:uriAttribute,{"description":"汎用属性（URI）"}
 tun:TunnelFurniture_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-tun:TunnelFurniture_gen:genericAttributeSet,{"description":"汎用属性セット"}
+tun:TunnelFurniture_gen:genericAttributeset,{"description":"汎用属性セット"}
+tun:TunnelFurniture_gen:genericAttribute,{"description":"汎用属性セット"}
 tun:TunnelFurniture_tun:class,{"description":"分類"}
 tun:TunnelFurniture_tun:function,{"description":"機能"}
 tun:TunnelFurniture_tun:usage,{"description":"用途"}
@@ -18656,7 +18755,8 @@ uro:OtherConstruction_gen:doubleAttribute,{"description":"汎用属性（実数�
 uro:OtherConstruction_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:OtherConstruction_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:OtherConstruction_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:OtherConstruction_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:OtherConstruction_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:OtherConstruction_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:OtherConstruction_uro:lod0Geometry,{"description":"lod0幾何"}
 uro:OtherConstruction_uro:lod1Geometry,{"description":"lod1幾何"}
 uro:OtherConstruction_uro:lod2Geometry,{"description":"lod2幾何"}
@@ -19802,7 +19902,8 @@ uro:RoofSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:RoofSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:RoofSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:RoofSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:RoofSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:RoofSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:RoofSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:RoofSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:RoofSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:WallSurface,{"description":"外壁面"}
@@ -19819,7 +19920,8 @@ uro:WallSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:WallSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:WallSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:WallSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:WallSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:WallSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:WallSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:WallSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:WallSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:GroundSurface,{"description":"底面"}
@@ -19836,7 +19938,8 @@ uro:GroundSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:GroundSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:GroundSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:GroundSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:GroundSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:GroundSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:GroundSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:GroundSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:GroundSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:OuterFloorSurface,{"description":"屋外床面"}
@@ -19853,7 +19956,8 @@ uro:OuterFloorSurface_gen:doubleAttribute,{"description":"汎用属性（実数�
 uro:OuterFloorSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:OuterFloorSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:OuterFloorSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:OuterFloorSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:OuterFloorSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:OuterFloorSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:OuterFloorSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:OuterFloorSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:OuterCeilingSurface,{"description":"屋外天井面"}
@@ -19870,7 +19974,8 @@ uro:OuterCeilingSurface_gen:doubleAttribute,{"description":"汎用属性（実�
 uro:OuterCeilingSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:OuterCeilingSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:OuterCeilingSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:OuterCeilingSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:OuterCeilingSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:OuterCeilingSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:OuterCeilingSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:OuterCeilingSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:ClosureSurface,{"description":"閉鎖面"}
@@ -19887,7 +19992,8 @@ uro:ClosureSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 uro:ClosureSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:ClosureSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:ClosureSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:ClosureSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:ClosureSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:ClosureSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:ClosureSurface_uro:lod2MultiSurface,{"description":"lod2面"}
 uro:ClosureSurface_uro:lod3MultiSurface,{"description":"lod3面"}
 uro:ConstructionInstallation,{"description":"橋梁付属物"}
@@ -19904,7 +20010,8 @@ uro:ConstructionInstallation_gen:doubleAttribute,{"description":"汎用属性（
 uro:ConstructionInstallation_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:ConstructionInstallation_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:ConstructionInstallation_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:ConstructionInstallation_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:ConstructionInstallation_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:ConstructionInstallation_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:ConstructionInstallation_uro:class,{"description":"分類"}
 uro:ConstructionInstallation_uro:function,{"description":"機能"}
 uro:ConstructionInstallation_uro:usage,{"description":"用途"}
@@ -19924,7 +20031,8 @@ frn:CityFurniture_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 frn:CityFurniture_gen:dateAttribute,{"description":"汎用属性（日付）"}
 frn:CityFurniture_gen:uriAttribute,{"description":"汎用属性（URI）"}
 frn:CityFurniture_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-frn:CityFurniture_gen:genericAttributeSet,{"description":"汎用属性セット"}
+frn:CityFurniture_gen:genericAttributeset,{"description":"汎用属性セット"}
+frn:CityFurniture_gen:genericAttribute,{"description":"汎用属性セット"}
 frn:CityFurniture_frn:class,{"description":"分類"}
 frn:CityFurniture_frn:function,{"description":"機能"}
 frn:CityFurniture_frn:usage,{"description":"用途"}
@@ -19936,11 +20044,17 @@ frn:CityFurniture_uro:cityFurnitureDetailAttribute,{"description":"都市設備�
 frn:CityFurniture_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 frn:CityFurniture_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 frn:CityFurniture_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+frn:CityFurniture_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 frn:CityFurniture_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 frn:CityFurniture_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 frn:CityFurniture_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -20986,7 +21100,8 @@ uro:WaterPipe_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:WaterPipe_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:WaterPipe_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:WaterPipe_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:WaterPipe_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:WaterPipe_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:WaterPipe_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:WaterPipe_frn:class,{"description":"分類"}
 uro:WaterPipe_frn:function,{"description":"機能"}
 uro:WaterPipe_frn:usage,{"description":"用途"}
@@ -20998,11 +21113,17 @@ uro:WaterPipe_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳�
 uro:WaterPipe_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:WaterPipe_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:WaterPipe_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:WaterPipe_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:WaterPipe_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:WaterPipe_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:WaterPipe_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -22079,7 +22200,8 @@ uro:SewerPipe_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:SewerPipe_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:SewerPipe_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:SewerPipe_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:SewerPipe_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:SewerPipe_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:SewerPipe_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:SewerPipe_frn:class,{"description":"分類"}
 uro:SewerPipe_frn:function,{"description":"機能"}
 uro:SewerPipe_frn:usage,{"description":"用途"}
@@ -22091,11 +22213,17 @@ uro:SewerPipe_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳�
 uro:SewerPipe_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:SewerPipe_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:SewerPipe_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:SewerPipe_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:SewerPipe_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:SewerPipe_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:SewerPipe_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -23174,7 +23302,8 @@ uro:ThermalPipe_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:ThermalPipe_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:ThermalPipe_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:ThermalPipe_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:ThermalPipe_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:ThermalPipe_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:ThermalPipe_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:ThermalPipe_frn:class,{"description":"分類"}
 uro:ThermalPipe_frn:function,{"description":"機能"}
 uro:ThermalPipe_frn:usage,{"description":"用途"}
@@ -23186,11 +23315,17 @@ uro:ThermalPipe_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳
 uro:ThermalPipe_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:ThermalPipe_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:ThermalPipe_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:ThermalPipe_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:ThermalPipe_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:ThermalPipe_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:ThermalPipe_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -24267,7 +24402,8 @@ uro:OilGasCemicalPipe_gen:doubleAttribute,{"description":"汎用属性（実数�
 uro:OilGasCemicalPipe_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:OilGasCemicalPipe_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:OilGasCemicalPipe_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:OilGasCemicalPipe_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:OilGasCemicalPipe_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:OilGasCemicalPipe_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:OilGasCemicalPipe_frn:class,{"description":"分類"}
 uro:OilGasCemicalPipe_frn:function,{"description":"機能"}
 uro:OilGasCemicalPipe_frn:usage,{"description":"用途"}
@@ -24279,11 +24415,17 @@ uro:OilGasCemicalPipe_uro:cityFurnitureDetailAttribute,{"description":"都市設
 uro:OilGasCemicalPipe_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:OilGasCemicalPipe_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:OilGasCemicalPipe_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:OilGasCemicalPipe_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:OilGasCemicalPipe_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:OilGasCemicalPipe_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -25360,7 +25502,8 @@ uro:Pipe_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Pipe_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Pipe_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Pipe_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Pipe_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Pipe_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Pipe_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Pipe_frn:class,{"description":"分類"}
 uro:Pipe_frn:function,{"description":"機能"}
 uro:Pipe_frn:usage,{"description":"用途"}
@@ -25372,11 +25515,17 @@ uro:Pipe_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳細情�
 uro:Pipe_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Pipe_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Pipe_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Pipe_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Pipe_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Pipe_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Pipe_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -26453,7 +26602,8 @@ uro:TelecommunicationsCable_gen:doubleAttribute,{"description":"汎用属性（�
 uro:TelecommunicationsCable_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:TelecommunicationsCable_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:TelecommunicationsCable_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:TelecommunicationsCable_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:TelecommunicationsCable_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:TelecommunicationsCable_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:TelecommunicationsCable_frn:class,{"description":"分類"}
 uro:TelecommunicationsCable_frn:function,{"description":"機能"}
 uro:TelecommunicationsCable_frn:usage,{"description":"用途"}
@@ -26465,11 +26615,17 @@ uro:TelecommunicationsCable_uro:cityFurnitureDetailAttribute,{"description":"都
 uro:TelecommunicationsCable_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:TelecommunicationsCable_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:TelecommunicationsCable_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:TelecommunicationsCable_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:TelecommunicationsCable_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:TelecommunicationsCable_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:TelecommunicationsCable_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -27546,7 +27702,8 @@ uro:ElectricityCable_gen:doubleAttribute,{"description":"汎用属性（実数�
 uro:ElectricityCable_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:ElectricityCable_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:ElectricityCable_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:ElectricityCable_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:ElectricityCable_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:ElectricityCable_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:ElectricityCable_frn:class,{"description":"分類"}
 uro:ElectricityCable_frn:function,{"description":"機能"}
 uro:ElectricityCable_frn:usage,{"description":"用途"}
@@ -27558,11 +27715,17 @@ uro:ElectricityCable_uro:cityFurnitureDetailAttribute,{"description":"都市設�
 uro:ElectricityCable_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:ElectricityCable_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:ElectricityCable_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:ElectricityCable_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:ElectricityCable_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:ElectricityCable_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:ElectricityCable_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -28639,7 +28802,8 @@ uro:Cable_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Cable_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Cable_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Cable_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Cable_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Cable_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Cable_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Cable_frn:class,{"description":"分類"}
 uro:Cable_frn:function,{"description":"機能"}
 uro:Cable_frn:usage,{"description":"用途"}
@@ -28651,11 +28815,17 @@ uro:Cable_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳細情
 uro:Cable_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Cable_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Cable_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Cable_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Cable_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Cable_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Cable_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -29732,7 +29902,8 @@ uro:Duct_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Duct_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Duct_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Duct_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Duct_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Duct_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Duct_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Duct_frn:class,{"description":"分類"}
 uro:Duct_frn:function,{"description":"機能"}
 uro:Duct_frn:usage,{"description":"用途"}
@@ -29744,11 +29915,17 @@ uro:Duct_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳細情�
 uro:Duct_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Duct_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Duct_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Duct_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Duct_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Duct_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Duct_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -30822,7 +30999,8 @@ uro:Appurtenance_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Appurtenance_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Appurtenance_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Appurtenance_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Appurtenance_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Appurtenance_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Appurtenance_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Appurtenance_frn:class,{"description":"分類"}
 uro:Appurtenance_frn:function,{"description":"機能"}
 uro:Appurtenance_frn:usage,{"description":"用途"}
@@ -30834,11 +31012,17 @@ uro:Appurtenance_uro:cityFurnitureDetailAttribute,{"description":"都市設備�
 uro:Appurtenance_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Appurtenance_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Appurtenance_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Appurtenance_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Appurtenance_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Appurtenance_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Appurtenance_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -31902,7 +32086,8 @@ uro:Manhole_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Manhole_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Manhole_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Manhole_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Manhole_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Manhole_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Manhole_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Manhole_frn:class,{"description":"分類"}
 uro:Manhole_frn:function,{"description":"機能"}
 uro:Manhole_frn:usage,{"description":"用途"}
@@ -31914,11 +32099,17 @@ uro:Manhole_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳細�
 uro:Manhole_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Manhole_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Manhole_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Manhole_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Manhole_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Manhole_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Manhole_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -32987,7 +33178,8 @@ uro:Handhole_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 uro:Handhole_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:Handhole_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:Handhole_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:Handhole_gen:genericAttributeSet,{"description":"汎用属性セット"}
+uro:Handhole_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:Handhole_gen:genericAttribute,{"description":"汎用属性セット"}
 uro:Handhole_frn:class,{"description":"分類"}
 uro:Handhole_frn:function,{"description":"機能"}
 uro:Handhole_frn:usage,{"description":"用途"}
@@ -32999,11 +33191,17 @@ uro:Handhole_uro:cityFurnitureDetailAttribute,{"description":"都市設備詳細
 uro:Handhole_uro:cityFurnitureDetailAttribute_uro:facilityType,{"description":"施設詳細区分"}
 uro:Handhole_uro:cityFurnitureDetailAttribute_uro:description,{"description":"施設内容"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute,{"description":"データ品質属性"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 uro:Handhole_uro:cityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+uro:Handhole_uro:CityFurnitureDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 uro:Handhole_uro:frnFacilityTypeAttribute,{"description":"施設分類属性"}
 uro:Handhole_uro:frnFacilityTypeAttribute_uro:class,{"description":"分野"}
 uro:Handhole_uro:frnFacilityTypeAttribute_uro:function,{"description":"施設区分"}
@@ -34071,8 +34269,9 @@ uro:UndergroundBuilding_gen:doubleAttribute,{"description":"汎用属性（実�
 uro:UndergroundBuilding_gen:dateAttribute,{"description":"汎用属性（日付）"}
 uro:UndergroundBuilding_gen:uriAttribute,{"description":"汎用属性（URI）"}
 uro:UndergroundBuilding_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-uro:UndergroundBuilding_gen:genericAttributeSet,{"description":"汎用属性セット"}
-uro:UndergroundBuilding_(bldg:class) ,{"description":"分類"}
+uro:UndergroundBuilding_gen:genericAttributeset,{"description":"汎用属性セット"}
+uro:UndergroundBuilding_gen:genericAttribute,{"description":"汎用属性セット"}
+uro:UndergroundBuilding_bldg:class ,{"description":"分類"}
 uro:UndergroundBuilding_bldg:function,{"description":"機能"}
 uro:UndergroundBuilding_bldg:usage,{"description":"用途"}
 uro:UndergroundBuilding_bldg:yearOfConstruction,{"description":"建築年","dataType":"gYear"}
@@ -34293,23 +34492,23 @@ uro:UndergroundBuilding_uro:BuildingDataQualityAttribute_uro:lodType,{"descripti
 uro:UndergroundBuilding_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
 uro:UndergroundBuilding_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute,{"description":"拡張属性"}
-uro:UndergroundBuilding_uro:KeyValuePair,{"description":"拡張属性"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute,{"description":"拡張属性"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:key,{"description":"（コードに該当する説明を使用する）"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:key,{"description":"（コードに該当する説明を使用する）"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:key,{"description":"（コードに該当する説明を使用する）"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:codeValue,{"description":"値"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:codeValue,{"description":"値"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:codeValue,{"description":"値"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:stringValue,{"description":"ー"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:stringValue,{"description":"ー"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:stringValue,{"description":"ー"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:intValue,{"description":"ー"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:intValue,{"description":"ー"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:intValue,{"description":"ー"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:doubleValue,{"description":"ー"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:doubleValue,{"description":"ー"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:doubleValue,{"description":"ー"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:measureValue,{"description":"ー"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:measureValue,{"description":"ー"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:measureValue,{"description":"ー"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:dateValue,{"description":"ー","dataType":"date"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:dateValue,{"description":"ー","dataType":"date"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:dateValue,{"description":"ー","dataType":"date"}
 uro:UndergroundBuilding_uro:keyValuePairAttribute_uro:uriValue,{"description":"ー"}
-uro:UndergroundBuilding_uro:KeyValuePair_uro:uriValue,{"description":"ー"}
+uro:UndergroundBuilding_uro:KeyValuePairAttribute_uro:uriValue,{"description":"ー"}
 uro:UndergroundBuilding_uro:ifcBuildingAttribute,{"description":"プロジェクト情報"}
 uro:UndergroundBuilding_uro:IfcProject,{"description":"プロジェクト情報"}
 uro:UndergroundBuilding_uro:ifcBuildingAttribute_uro:globalId,{"description":"グローバルID"}
@@ -35495,7 +35694,8 @@ veg:SolitaryVegetationObject_gen:doubleAttribute,{"description":"汎用属性（
 veg:SolitaryVegetationObject_gen:dateAttribute,{"description":"汎用属性（日付）"}
 veg:SolitaryVegetationObject_gen:uriAttribute,{"description":"汎用属性（URI）"}
 veg:SolitaryVegetationObject_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-veg:SolitaryVegetationObject_gen:genericAttributeSet,{"description":"汎用属性セット"}
+veg:SolitaryVegetationObject_gen:genericAttributeset,{"description":"汎用属性セット"}
+veg:SolitaryVegetationObject_gen:genericAttribute,{"description":"汎用属性セット"}
 veg:SolitaryVegetationObject_veg:class,{"description":"分類"}
 veg:SolitaryVegetationObject_veg:function,{"description":"機能"}
 veg:SolitaryVegetationObject_veg:usage,{"description":"用途"}
@@ -36538,10 +36738,15 @@ veg:SolitaryVegetationObject_DmAnnotation_uro:spacing,{"description":"字隔"}
 veg:SolitaryVegetationObject_uro:vegDmAttribute_uro:lod0AnchorPoint,{"description":"挿入位置"}
 veg:SolitaryVegetationObject_DmAnnotation_uro:lod0AnchorPoint,{"description":"挿入位置"}
 veg:SolitaryVegetationObject_uro:vegetationDataQualityAttribute,{"description":"データ品質属性"}
+veg:SolitaryVegetationObject_uro:VegetationDataQualityAttribute,{"description":"データ品質属性"}
 veg:SolitaryVegetationObject_uro:vegetationDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+veg:SolitaryVegetationObject_uro:VegetationDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 veg:SolitaryVegetationObject_uro:vegetationDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+veg:SolitaryVegetationObject_uro:VegetationDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 veg:SolitaryVegetationObject_uro:vegetationDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+veg:SolitaryVegetationObject_uro:VegetationDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 veg:SolitaryVegetationObject_uro:vegetationDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+veg:SolitaryVegetationObject_uro:VegetationDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 veg:PlantCover,{"description":"植被"}
 veg:PlantCover_gml:description,{"description":"説明"}
 veg:PlantCover_gml:name,{"description":"名称"}
@@ -36556,7 +36761,8 @@ veg:PlantCover_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 veg:PlantCover_gen:dateAttribute,{"description":"汎用属性（日付）"}
 veg:PlantCover_gen:uriAttribute,{"description":"汎用属性（URI）"}
 veg:PlantCover_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-veg:PlantCover_gen:genericAttributeSet,{"description":"汎用属性セット"}
+veg:PlantCover_gen:genericAttributeset,{"description":"汎用属性セット"}
+veg:PlantCover_gen:genericAttribute,{"description":"汎用属性セット"}
 veg:PlantCover_veg:class,{"description":"分類"}
 veg:PlantCover_veg:function,{"description":"機能"}
 veg:PlantCover_veg:usage,{"description":"用途"}
@@ -37599,10 +37805,15 @@ veg:PlantCover_DmAnnotation_uro:spacing,{"description":"字隔"}
 veg:PlantCover_uro:vegDmAttribute_uro:lod0AnchorPoint,{"description":"挿入位置"}
 veg:PlantCover_DmAnnotation_uro:lod0AnchorPoint,{"description":"挿入位置"}
 veg:PlantCover_uro:vegetationDataQualityAttribute,{"description":"データ品質属性"}
+veg:PlantCover_uro:VegetationDataQualityAttribute,{"description":"データ品質属性"}
 veg:PlantCover_uro:vegetationDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+veg:PlantCover_uro:VegetationDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
 veg:PlantCover_uro:vegetationDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+veg:PlantCover_uro:VegetationDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
 veg:PlantCover_uro:vegetationDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+veg:PlantCover_uro:VegetationDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
 veg:PlantCover_uro:vegetationDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+veg:PlantCover_uro:VegetationDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
 wtr:WaterBody,{"description":"水部（河川、湖沼、海）"}
 wtr:WaterBody_gml:description,{"description":"説明"}
 wtr:WaterBody_gml:name,{"description":"名称"}
@@ -37617,7 +37828,8 @@ wtr:WaterBody_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 wtr:WaterBody_gen:dateAttribute,{"description":"汎用属性（日付）"}
 wtr:WaterBody_gen:uriAttribute,{"description":"汎用属性（URI）"}
 wtr:WaterBody_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-wtr:WaterBody_gen:genericAttributeSet,{"description":"汎用属性セット"}
+wtr:WaterBody_gen:genericAttributeset,{"description":"汎用属性セット"}
+wtr:WaterBody_gen:genericAttribute,{"description":"汎用属性セット"}
 wtr:WaterBody_wtr:class,{"description":"分類"}
 wtr:WaterBody_wtr:function,{"description":"機能"}
 wtr:WaterBody_wtr:usage,{"description":"用途"}
@@ -38695,7 +38907,8 @@ wtr:GroundSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 wtr:GroundSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 wtr:GroundSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 wtr:GroundSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-wtr:GroundSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+wtr:GroundSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+wtr:GroundSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 wtr:GroundSurface_wtr:lod2MultiSurface,{"description":"lod2面"}
 wtr:GroundSurface_wtr:lod3MultiSurface,{"description":"lod3面"}
 wtr:WaterSurface,{"description":"屋外床面"}
@@ -38712,7 +38925,8 @@ wtr:WaterSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 wtr:WaterSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 wtr:WaterSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 wtr:WaterSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-wtr:WaterSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+wtr:WaterSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+wtr:WaterSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 wtr:WaterSurface_wtr:waterLevel,{"description":"水位の状況"}
 wtr:WaterSurface_wtr:lod2MultiSurface,{"description":"lod2面"}
 wtr:WaterSurface_wtr:lod3MultiSurface,{"description":"lod3面"}
@@ -38730,7 +38944,8 @@ wtr:ClosureSurface_gen:doubleAttribute,{"description":"汎用属性（実数）"
 wtr:ClosureSurface_gen:dateAttribute,{"description":"汎用属性（日付）"}
 wtr:ClosureSurface_gen:uriAttribute,{"description":"汎用属性（URI）"}
 wtr:ClosureSurface_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-wtr:ClosureSurface_gen:genericAttributeSet,{"description":"汎用属性セット"}
+wtr:ClosureSurface_gen:genericAttributeset,{"description":"汎用属性セット"}
+wtr:ClosureSurface_gen:genericAttribute,{"description":"汎用属性セット"}
 wtr:ClosureSurface_wtr:lod2MultiSurface,{"description":"lod2面"}
 wtr:ClosureSurface_wtr:lod3MultiSurface,{"description":"lod3面"}
 dem:ReliefFeature,{"description":"地形"}
@@ -38747,7 +38962,8 @@ dem:ReliefFeature_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 dem:ReliefFeature_gen:dateAttribute,{"description":"汎用属性（日付）"}
 dem:ReliefFeature_gen:uriAttribute,{"description":"汎用属性（URI）"}
 dem:ReliefFeature_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-dem:ReliefFeature_gen:genericAttributeSet,{"description":"汎用属性セット"}
+dem:ReliefFeature_gen:genericAttributeset,{"description":"汎用属性セット"}
+dem:ReliefFeature_gen:genericAttribute,{"description":"汎用属性セット"}
 dem:ReliefFeature_dem:lod,{"description":"lod"}
 dem:ReliefFeature_dem:reliefComponent,{"description":"地形構成要素"}
 dem:TINRelief,{"description":"TIN地形"}
@@ -38764,7 +38980,8 @@ dem:TINRelief_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 dem:TINRelief_gen:dateAttribute,{"description":"汎用属性（日付）"}
 dem:TINRelief_gen:uriAttribute,{"description":"汎用属性（URI）"}
 dem:TINRelief_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-dem:TINRelief_gen:genericAttributeSet,{"description":"汎用属性セット"}
+dem:TINRelief_gen:genericAttributeset,{"description":"汎用属性セット"}
+dem:TINRelief_gen:genericAttribute,{"description":"汎用属性セット"}
 dem:TINRelief_dem:lod,{"description":"lod"}
 dem:TINRelief_dem:extent,{"description":"範囲"}
 dem:TINRelief_uro:demDmAttribute,{"description":"図式情報"}
@@ -38842,7 +39059,8 @@ dem:MassPointRelief_gen:doubleAttribute,{"description":"汎用属性（実数）
 dem:MassPointRelief_gen:dateAttribute,{"description":"汎用属性（日付）"}
 dem:MassPointRelief_gen:uriAttribute,{"description":"汎用属性（URI）"}
 dem:MassPointRelief_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-dem:MassPointRelief_gen:genericAttributeSet,{"description":"汎用属性セット"}
+dem:MassPointRelief_gen:genericAttributeset,{"description":"汎用属性セット"}
+dem:MassPointRelief_gen:genericAttribute,{"description":"汎用属性セット"}
 dem:MassPointRelief_dem:lod,{"description":"lod"}
 dem:MassPointRelief_dem:extent,{"description":"範囲"}
 dem:MassPointRelief_uro:demDmAttribute,{"description":"図式情報"}
@@ -38920,7 +39138,8 @@ dem:BreaklineRelief_gen:doubleAttribute,{"description":"汎用属性（実数）
 dem:BreaklineRelief_gen:dateAttribute,{"description":"汎用属性（日付）"}
 dem:BreaklineRelief_gen:uriAttribute,{"description":"汎用属性（URI）"}
 dem:BreaklineRelief_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-dem:BreaklineRelief_gen:genericAttributeSet,{"description":"汎用属性セット"}
+dem:BreaklineRelief_gen:genericAttributeset,{"description":"汎用属性セット"}
+dem:BreaklineRelief_gen:genericAttribute,{"description":"汎用属性セット"}
 dem:BreaklineRelief_dem:lod,{"description":"lod"}
 dem:BreaklineRelief_dem:extent,{"description":"範囲"}
 dem:BreaklineRelief_uro:demDmAttribute,{"description":"図式情報"}
@@ -39024,7 +39243,8 @@ urf:Zone_gen:doubleAttribute,{"description":"汎用属性（実数）"}
 urf:Zone_gen:dateAttribute,{"description":"汎用属性（日付）"}
 urf:Zone_gen:uriAttribute,{"description":"汎用属性（URI）"}
 urf:Zone_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-urf:Zone_gen:genericAttributeSet,{"description":"汎用属性セット"}
+urf:Zone_gen:genericAttributeset,{"description":"汎用属性セット"}
+urf:Zone_gen:genericAttribute,{"description":"汎用属性セット"}
 urf:Zone_urf:boundary,{"description":"境界"}
 urf:Zone_Boundary,{"description":"境界"}
 urf:Zone_urf:boundary_urf:class,{"description":"区分"}
