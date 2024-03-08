@@ -73,6 +73,11 @@ const yml = {
                 title: "Google Street View API Key",
               },
               {
+                id: "geojsonURL",
+                type: "string",
+                title: "GeoJson URL",
+              },
+              {
                 id: "reearthURL",
                 type: "string",
                 title: "Re:Earthプロジェクトの公開URL",

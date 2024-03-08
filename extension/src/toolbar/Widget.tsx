@@ -24,6 +24,7 @@ import { CameraPosition } from "../shared/reearth/types";
 import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
+import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
 import FeedBack from "../shared/view/ui-container/Feedback";
 import MyData from "../shared/view/ui-container/MyData";
 import { StoryCreator } from "../shared/view/ui-container/story/StoryCreator";
@@ -32,7 +33,6 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
-import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
 
 type DefaultProps = {
   geoURL?: string;
@@ -43,6 +43,7 @@ type DefaultProps = {
   catalogURLForAdmin?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
+  geojsonURL?: string;
 };
 
 type OptionalProps = {
@@ -76,6 +77,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         geoUrl={widget.property.default.geoURL}
         gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+        geojsonURL={widget.property.default.geojsonURL}
         cityName={widget.property.optional?.cityName}
         customPrimaryColor={widget.property.optional?.primaryColor}
         customLogo={widget.property.optional?.logo}

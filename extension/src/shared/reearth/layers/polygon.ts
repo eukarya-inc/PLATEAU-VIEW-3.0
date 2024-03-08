@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react";
 
+import { PLATEAU_GEOJSON_URL } from "../../constants";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 
@@ -23,13 +24,13 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, visible, appearances })
     [appearances],
   );
 
-  const url = "https://api.plateau.reearth.io/govpolygon/plateaugovs.geojson";
+  const url = `${PLATEAU_GEOJSON_URL}/govpolygon/plateaugovs.geojson`;
   const data: Data = useMemo(
     () => ({
       type: "geojson",
       url,
     }),
-    [],
+    [url],
   );
 
   useLayer({
