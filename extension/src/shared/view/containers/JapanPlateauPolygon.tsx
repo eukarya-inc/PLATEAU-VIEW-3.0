@@ -5,17 +5,18 @@ import { PolygonAppearances, PolygonLayer } from "../../reearth/layers";
 
 const CAMERA_ZOOM_LEVEL_HEIGHT = 300000;
 const appererances: PolygonAppearances = {
+  resource: {
+    fill: "rgba(0, 190, 190, 0.5)",
+    stroke: "rgba(0, 190, 190, 1)",
+    strokeWidth: 1,
+  },
   polygon: {
     heightReference: "clamp",
     classificationType: "terrain",
     fill: true,
-    fillColor: {
-      expression: "color('#00BEBE',0.5)",
-    },
+    fillColor: "rgba(0, 190, 190, 0.5)",
     stroke: true,
-    strokeColor: {
-      expression: "color('#00BEBE')",
-    },
+    strokeColor: "rgba(0, 190, 190, 1)",
   },
 };
 const JapanPlateauPolygon: FC = () => {
