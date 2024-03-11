@@ -146,6 +146,11 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     );
 
     const showDataFormats = useAtomValue(showDataFormatsAtom);
+
+    console.log("datesets", datasets);
+
+    console.log("datesetType", datasetTypeNames);
+
     return (
       <ContextSelect
         label={datasets[0].type.name ?? datasetTypeNames.usecase}
@@ -153,7 +158,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
         onChange={handleChange}
         disabled={disabled}>
         {datasets.flatMap((dataset, index) => {
-          if (dataset.items.length > 1) {
+          if (dataset.items.length) {
             if (dataset.name === "") {
               return dataset.items.map(datum => (
                 <SelectItem
