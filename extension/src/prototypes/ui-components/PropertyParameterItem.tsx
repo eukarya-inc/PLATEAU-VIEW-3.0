@@ -190,6 +190,22 @@ const PropertyNameCell = styled(TableCell)<{
     paddingLeft: theme.spacing(level * 2.5 + 2),
   }),
 }));
+const breakLongWords = (text: string, maxLength: number) => {
+  const words = text.split(" ");
+  return words
+    .map(word => {
+      if (word.length > maxLength) {
+        const parts = [];
+        for (let i = 0; i < word.length; i += maxLength) {
+          parts.push(word.substr(i, maxLength));
+        }
+        return parts.join(" ");
+      } else {
+        return word;
+      }
+    })
+    .join(" ");
+};
 
 const Property: FC<{
   property: PropertySet;
@@ -203,17 +219,18 @@ const Property: FC<{
     ...(isNaN(Number(name)) ? [name] : []),
   ].join("_")}`;
   const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
+
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {makePropertyName(actualName, name, attrVal)}
+        {breakLongWords(makePropertyName(actualName, name, attrVal) || "", 16)}
       </PropertyNameCell>
       <TableCell width="50%">
         {typeof values[0] === "string" ? (
           <StringValue
             name={name}
             values={(values as string[]).map(v =>
-              attrVal ? (makePropertyValue(attrVal, v) as string) : v,
+              breakLongWords(attrVal ? (makePropertyValue(attrVal, v) as string) : v, 20),
             )}
           />
         ) : typeof values[0] === "number" ? (
