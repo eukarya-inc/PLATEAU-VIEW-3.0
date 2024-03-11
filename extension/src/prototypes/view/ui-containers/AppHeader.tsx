@@ -1,6 +1,6 @@
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
-import { useAtom, useAtomValue } from "jotai";
-import { useState, type FC, useEffect } from "react";
+import { atom, useAtom, useAtomValue } from "jotai";
+import { useState, type FC, useEffect, useMemo } from "react";
 
 import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import ShareModal from "../../../shared/view/ui-container/ShareModal";
@@ -24,20 +24,35 @@ export const AppHeader: FC<Props> = ({ arURL }) => {
   const [showShareModal, setShowShareModal] = useAtom(showShareModalAtom);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
-  const getRootLayers = useAtomValue(rootLayersAtom);
   const [arSharedLayers, setArSharedLayers] = useState<string | undefined>();
+  const rootLayersForAR = useAtomValue(
+    useMemo(
+      () =>
+        atom(get => {
+          const rootLayers = get(rootLayersAtom);
+          return rootLayers
+            .map(({ id, ...rest }) =>
+              rest.type === "dataset"
+                ? {
+                    datasetId: id,
+                    dataId: get(rest.currentDataIdAtom),
+                  }
+                : undefined,
+            )
+            .filter(Boolean);
+        }),
+      [],
+    ),
+  );
 
   useEffect(() => {
     (async () => {
-      if (!getRootLayers || getRootLayers?.length === 0 || !arURL) return;
-      const layers = getRootLayers.map(({ type, id }) => ({
-        type,
-        id,
-      }));
-      const url = arURL + "?dataList=" + encodeURI(JSON.stringify(layers));
+      if (!rootLayersForAR || rootLayersForAR?.length === 0 || !arURL) return;
+
+      const url = arURL + "?dataList=" + encodeURI(JSON.stringify(rootLayersForAR));
       setArSharedLayers(url);
     })();
-  }, [getRootLayers, setArSharedLayers, arURL]);
+  }, [rootLayersForAR, setArSharedLayers, arURL]);
 
   if (hidden) {
     return null;
@@ -60,9 +75,7 @@ export const AppHeader: FC<Props> = ({ arURL }) => {
         <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
       </IconButton>
       {isMobile && arSharedLayers && (
-        <IconButton
-          size="small"
-          onClick={() => window.open(arSharedLayers, "_blank", "noopener,noreferrer")}>
+        <IconButton size="small" href={arSharedLayers} target="_blank">
           AR
         </IconButton>
       )}
