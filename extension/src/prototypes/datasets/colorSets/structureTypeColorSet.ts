@@ -23,16 +23,6 @@ export const STRUCTURE_TYPE_COLORS = [
   },
   { value: "非木造", color: chroma.rgb(137, 182, 220).hex(), name: "非木造" },
   {
-    value: "耐火",
-    color: chroma.rgb(127, 123, 133).hex(),
-    name: "耐火",
-  },
-  {
-    value: "簡易耐火",
-    color: chroma.rgb(140, 155, 177).hex(),
-    name: "簡易耐火",
-  },
-  {
     value: "不明",
     color: chroma.rgb(34, 34, 34).hex(),
     name: "不明",
