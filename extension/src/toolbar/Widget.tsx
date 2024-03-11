@@ -17,12 +17,14 @@ import { SketchTool } from "../prototypes/view/containers/SketchTool";
 import { ToolMachineEvents } from "../prototypes/view/containers/ToolMachineEvents";
 import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
+import { FileDrop } from "../prototypes/view/ui-containers/FileDrop";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { CameraPosition } from "../shared/reearth/types";
 import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
+import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
 import FeedBack from "../shared/view/ui-container/Feedback";
 import MyData from "../shared/view/ui-container/MyData";
 import { StoryCreator } from "../shared/view/ui-container/story/StoryCreator";
@@ -42,6 +44,7 @@ type DefaultProps = {
   catalogURLForAdmin?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
+  geojsonURL?: string;
 };
 
 type OptionalProps = {
@@ -75,6 +78,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         geoUrl={widget.property.default.geoURL}
         gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+        geojsonURL={widget.property.default.geojsonURL}
         cityName={widget.property.optional?.cityName}
         customPrimaryColor={widget.property.optional?.primaryColor}
         customLogo={widget.property.optional?.logo}
@@ -96,9 +100,11 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <ToolMachineEvents />
         <Notifications />
         <InitialLayers />
+        <JapanPlateauPolygon />
         <SelectionCoordinator />
         <KeyBindings />
         <ScreenSpaceSelection />
+        <FileDrop />
         <ScreenSpaceCamera tiltByRightButton />
         <HighlightedAreas />
         <ReverseGeocoding />

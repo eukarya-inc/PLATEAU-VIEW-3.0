@@ -51,3 +51,8 @@ export let INITIAL_PEDESTRIAN_COORDINATES: CameraPosition | undefined;
 export const setInitialPededstrianCoordinates = (camera?: CameraPosition) => {
   INITIAL_PEDESTRIAN_COORDINATES = camera;
 };
+
+export let PLATEAU_GEOJSON_URL: string | undefined;
+export const setPlateauGeojsonUrl = (url: string) => {
+  PLATEAU_GEOJSON_URL = url;
+};

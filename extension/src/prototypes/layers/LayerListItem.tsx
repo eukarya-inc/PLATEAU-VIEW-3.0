@@ -15,6 +15,7 @@ import { mergeRefs } from "react-merge-refs";
 
 import { MULTIPLE_SELECTABLE_TYPES } from "../../shared/view/hooks";
 import { makeColorSchemeAtomForComponent } from "../../shared/view/state/colorSchemeForComponent";
+import { makeCustomLegendSchemeAtomForComponent } from "../../shared/view/state/customLegendSchemeForComponent";
 import { makeImageSchemeAtomForComponent } from "../../shared/view/state/imageSchemaForComponent";
 
 import { addLayerSelectionAtom, layerSelectionAtom } from "./states";
@@ -69,6 +70,11 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
       return atom(get => get(layer.imageSchemeAtom) || get(generalImageScheme) || null);
     }, [layer]);
 
+    const customLegendSchemeAtom = useMemo(() => {
+      const customLegendScheme = makeCustomLegendSchemeAtomForComponent([layer]);
+      return atom(get => get(layer.customLegendSchemeAtom) || get(customLegendScheme) || null);
+    }, [layer]);
+
     const ItemComponent = itemComponent;
     return (
       <Root
@@ -84,6 +90,7 @@ export const LayerListItem = forwardRef<HTMLDivElement, LayerListItemProps>(
           {...layer}
           colorSchemeAtom={colorSchemeAtom}
           imageSchemeAtom={imageSchemeAtom}
+          customLegendSchemeAtom={customLegendSchemeAtom}
           index={index}
           selected={selection.some(s => s.id === layer.id)}
           itemProps={{

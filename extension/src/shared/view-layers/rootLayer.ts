@@ -148,17 +148,13 @@ const findComponentTemplate = (
 ): ComponentTemplate | undefined => {
   const { useTemplate, templateId, groups } = setting?.fieldComponents ?? {};
 
+  // Should not use template if there's component settings
+  if ((!useTemplate || !templateId) && groups?.some(g => !!g.components.length)) return;
+
   // Default template
   const templateWithName = dataName
     ? templates.find(t => [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]))
     : undefined;
-
-  if (
-    (!useTemplate || !templateId) &&
-    // If there is no group, use the default template
-    (groups?.some(g => !!g.components.length) || !templateWithName)
-  )
-    return;
 
   const template =
     !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
@@ -170,17 +166,19 @@ const findEmphasisProperties = (
   featureInspector: FeatureInspectorSettings | undefined,
   templates: Template[],
   dataName: string | undefined,
+  dataSubName: string | undefined,
 ): EmphasisProperty[] | undefined => {
   const { useTemplate, templateId, properties } = featureInspector?.emphasisProperty ?? {};
 
+  if ((!useTemplate || !templateId) && !!properties?.length) return properties;
+
   // Default template
   const templateWithName = dataName
-    ? templates.find(t => t.name.split("/").slice(-1)[0] === dataName)
+    ? templates.find(
+        t =>
+          t.type === "emphasis" && [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]),
+      )
     : undefined;
-
-  // If there is no emphasis property, use the default template
-  if ((!useTemplate || !templateId) && (!!properties?.length || !templateWithName))
-    return properties;
 
   const template =
     !useTemplate || !templateId ? templateWithName : templates.find(t => t.id === templateId);
@@ -251,6 +249,7 @@ const createRootLayerForDataset = ({
     setting?.featureInspector,
     templates,
     datasetType.name,
+    subName,
   );
   const componentGroup = findComponentGroup(setting, componentTemplate, currentGroupId);
 

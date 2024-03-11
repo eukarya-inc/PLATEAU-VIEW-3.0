@@ -5,6 +5,7 @@ import { type LayerModelBase } from "../../prototypes/layers";
 import { XYZ } from "../../shared/reearth/types";
 import { LayerModelOverrides as ReEarthLayerModelOverrides } from "../../shared/view-layers";
 import {
+  type CustomLegendSet,
   type ImageIconSet,
   type QualitativeColorSet,
   type QuantitativeColorMap,
@@ -24,6 +25,8 @@ export type LayerColorScheme = QuantitativeColorMap | QualitativeColorSet;
 
 export type LayerImageScheme = ImageIconSet;
 
+export type LayerCustomLegendScheme = CustomLegendSet;
+
 declare module "../layers" {
   interface LayerModelBase {
     titleAtom: PrimitiveAtom<LayerTitle | null>;
@@ -34,6 +37,7 @@ declare module "../layers" {
     layerIdAtom: PrimitiveAtom<string | null>;
     colorSchemeAtom: Atom<LayerColorScheme | null>;
     imageSchemeAtom: Atom<LayerImageScheme | null>;
+    customLegendSchemeAtom: Atom<LayerCustomLegendScheme | null>;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-interface

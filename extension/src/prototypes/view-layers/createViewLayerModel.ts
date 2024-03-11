@@ -8,6 +8,7 @@ import {
   type ConfigurableLayerModelBase,
   type LayerColorScheme,
   type LayerTitle,
+  LayerCustomLegendScheme,
 } from "./types";
 
 export interface ViewLayerModelParams {
@@ -15,6 +16,7 @@ export interface ViewLayerModelParams {
   title?: string;
   colorScheme?: LayerColorScheme;
   imageScheme?: LayerImageScheme;
+  customLegendScheme?: LayerCustomLegendScheme;
 }
 
 export interface ViewLayerModel extends LayerModelBase {
@@ -35,5 +37,6 @@ export function createViewLayerModel(
     boundingSphereAtom: atom<XYZ | null>(null),
     colorSchemeAtom: atom<LayerColorScheme | null>(params.colorScheme ?? null),
     imageSchemeAtom: atom<LayerImageScheme | null>(params.imageScheme ?? null),
+    customLegendSchemeAtom: atom<LayerCustomLegendScheme | null>(params.customLegendScheme ?? null),
   };
 }

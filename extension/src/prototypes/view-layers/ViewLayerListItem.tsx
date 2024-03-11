@@ -7,10 +7,12 @@ import { flyToCamera, flyToLayerId, lookAtXYZ } from "../../shared/reearth/utils
 import { findRootLayerAtom } from "../../shared/states/rootLayer";
 import { removeLayerAtom, type LayerProps, type LayerType } from "../layers";
 import { ColorMapIcon, ColorSetIcon, ImageIconSetIcon, LayerListItem } from "../ui-components";
+import { CustomLegendSetIcon } from "../ui-components/CustomLegendSetIcon";
 
 import { layerTypeIcons } from "./layerTypeIcons";
 import {
   colorSchemeSelectionAtom,
+  customLegendSchemeSelectionAtom,
   highlightedLayersAtom,
   imageSchemeSelectionAtom,
 } from "./states";
@@ -122,6 +124,29 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
       setImageSchemeSelection([id]);
     }, [id, setImageSchemeSelection]);
 
+    const customLegendScheme = useAtomValue(props.customLegendSchemeAtom);
+    const customLegends = useAtomValue(
+      useMemo(
+        () =>
+          atom(get =>
+            customLegendScheme?.type === "customLegend"
+              ? get(customLegendScheme?.customLegendsAtom)
+              : null,
+          ),
+        [customLegendScheme],
+      ),
+    );
+    const [customLegendSchemeSelection, setCustomLegendSchemeSelection] = useAtom(
+      customLegendSchemeSelectionAtom,
+    );
+    const customLegendSchemeSelected = useMemo(
+      () => customLegendSchemeSelection.includes(id),
+      [id, customLegendSchemeSelection],
+    );
+    const handleCustomLegendSchemeClick = useCallback(() => {
+      setCustomLegendSchemeSelection([id]);
+    }, [id, setCustomLegendSchemeSelection]);
+
     return (
       <LayerListItem
         {...itemProps}
@@ -162,6 +187,19 @@ export const ViewLayerListItem: FC<ViewLayerListItemProps> = memo(
                 onDoubleClick={stopPropagation}
                 onClick={handleImageSchemeClick}>
                 <ImageIconSetIcon imageIcons={imageIcons} selected={imageSchemeSelected} />
+              </IconButton>
+            </Tooltip>
+          ) : customLegends != null ? (
+            <Tooltip title={customLegendScheme?.name}>
+              <IconButton
+                aria-label={customLegendScheme?.name}
+                onMouseDown={stopPropagation}
+                onDoubleClick={stopPropagation}
+                onClick={handleCustomLegendSchemeClick}>
+                <CustomLegendSetIcon
+                  customLegends={customLegends}
+                  selected={customLegendSchemeSelected}
+                />
               </IconButton>
             </Tooltip>
           ) : undefined

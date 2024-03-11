@@ -2,7 +2,10 @@ import { useMemo } from "react";
 
 import { useOptionalAtomValue } from "../../hooks";
 import { GeneralData } from "../../reearth/layers";
-import { APPLY_TIME_VALUE_FIELD } from "../../types/fieldComponents/general";
+import {
+  APPLY_TIME_VALUE_FIELD,
+  PRIORITIZE_PERFORMANCE_GEOJSON_FIELD,
+} from "../../types/fieldComponents/general";
 import { POINT_CONVERT_FROM_CSV } from "../../types/fieldComponents/point";
 import { ComponentAtom } from "../../view-layers/component";
 import { useFindComponent } from "../../view-layers/hooks";
@@ -22,6 +25,11 @@ export const useEvaluateGeneralData = ({
     useFindComponent(componentAtoms ?? [], POINT_CONVERT_FROM_CSV),
   );
 
+  // GeoJSON
+  const prioritizePerformanceGeoJSON = useOptionalAtomValue(
+    useFindComponent(componentAtoms ?? [], PRIORITIZE_PERFORMANCE_GEOJSON_FIELD),
+  );
+
   const generalData: GeneralData = useMemo(
     () => ({
       time:
@@ -35,8 +43,11 @@ export const useEvaluateGeneralData = ({
             heightColumn: csvProperty.preset.heightColumn,
           }
         : undefined,
+      geojson: {
+        useAsResource: prioritizePerformanceGeoJSON ? true : undefined,
+      },
     }),
-    [timeProperty, csvProperty],
+    [timeProperty, csvProperty, prioritizePerformanceGeoJSON],
   );
 
   return generalData;
