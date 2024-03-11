@@ -190,6 +190,7 @@ const PropertyNameCell = styled(TableCell)<{
     paddingLeft: theme.spacing(level * 2.5 + 2),
   }),
 }));
+
 const breakLongWords = (text: string, maxLength: number) => {
   const words = text.split(" ");
   return words
