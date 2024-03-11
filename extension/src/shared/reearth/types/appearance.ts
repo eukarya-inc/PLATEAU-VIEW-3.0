@@ -225,6 +225,7 @@ export type ResourceAppearance = {
   stroke?: string;
   strokeWidth?: number;
   fill?: string;
+  hideIndicator?: boolean;
 };
 
 export type RasterAppearance = {
