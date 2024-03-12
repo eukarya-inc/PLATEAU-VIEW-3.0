@@ -52,7 +52,6 @@ const Component: FC = () => {
   }, []);
 
   const handleClickAway = useCallback(() => {
-    console.log("sample sample");
     setFocused(false);
   }, []);
 
@@ -138,21 +137,4 @@ const Component: FC = () => {
 
 export const Default: Story = {
   render: () => <Component />,
-};
-
-export const Sample: Story = {
-  render: () => (
-    <Resizable
-      enable={{
-        left: true,
-        right: true,
-      }}>
-      <div
-        style={{
-          border: "1px solid red",
-        }}>
-        Sample things here
-      </div>
-    </Resizable>
-  ),
 };
