@@ -24,7 +24,7 @@ mongodb_connection_string = ""
 reearth_marketplace_secret = ""
 
 # PLATEAU View
-plateau_view = {
+plateauview = {
   fme_baseurl            = ""
   fme_skip_quality_check = false
   fme_url_v3             = ""

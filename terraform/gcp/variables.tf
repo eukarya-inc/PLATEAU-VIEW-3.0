@@ -90,7 +90,7 @@ variable "reearth_web_config" {
   description = "Re:Earthの設定"
 }
 
-variable "plateau_view" {
+variable "plateauview" {
   type = object({
     ckan_org                  = string
     ckan_base_url             = string

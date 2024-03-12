@@ -55,7 +55,7 @@ variable "mongodb_connection_string" {
   sensitive   = true
 }
 
-variable "plateau_view" {
+variable "plateauview" {
   type = object({
     ckan_org                  = string
     ckan_base_url             = string

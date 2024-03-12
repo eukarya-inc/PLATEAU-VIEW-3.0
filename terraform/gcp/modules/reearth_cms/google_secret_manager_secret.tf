@@ -18,8 +18,8 @@ resource "google_secret_manager_secret" "reearth_cms_worker" {
   }
 }
 
-resource "google_secret_manager_secret" "plateau_view" {
-  for_each  = toset(local.plateau_view_secrets)
+resource "google_secret_manager_secret" "plateauview" {
+  for_each  = toset(local.plateauview_secrets)
   project   = data.google_project.project.project_id
   secret_id = "plateau-view-${each.value}"
 
