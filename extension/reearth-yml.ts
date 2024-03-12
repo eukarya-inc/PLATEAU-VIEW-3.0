@@ -83,6 +83,11 @@ const yml = {
                 title: "Re:Earthプロジェクトの公開URL",
               },
               {
+                id: "arURL",
+                type: "string",
+                title: "AR App URL",
+              },
+              {
                 id: "enableGeoPub",
                 type: "bool",
                 title: "G空間情報センターに公開",
