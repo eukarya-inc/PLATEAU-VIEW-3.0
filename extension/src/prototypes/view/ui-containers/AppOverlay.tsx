@@ -1,6 +1,6 @@
 import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtomValue } from "jotai";
-import { type FC } from "react";
+import { type FC, useState } from "react";
 
 import { Spacer } from "../../../shared/ui-components/Spacer";
 import { AppOverlayLayout } from "../../ui-components";
@@ -20,11 +20,14 @@ export const AppOverlay: FC<Props> = ({ type, width, height }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+  const [mainWidth, setMainWidth] = useState(320);
+
   return (
     <>
       <AppOverlayLayout
         hidden={hidden}
-        main={type === "main" ? <MainPanel /> : null}
+        mainWidth={mainWidth}
+        main={type === "main" ? <MainPanel onWidthChange={setMainWidth} /> : null}
         aside={type === "aside" ? <SelectionPanel /> : null}
         // developer={<DeveloperPanels />}
       />

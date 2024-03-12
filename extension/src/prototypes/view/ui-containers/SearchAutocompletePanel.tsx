@@ -9,6 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAtomValue } from "jotai";
+import { Resizable } from "re-resizable";
 import {
   useCallback,
   useContext,
@@ -79,9 +80,13 @@ function filterOptions(
 
 export interface SearchAutocompletePanelProps {
   children?: ReactNode;
+  onWidthChange?: (width: number) => void;
 }
 
-export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ children }) => {
+export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
+  children,
+  onWidthChange,
+}) => {
   const textFieldRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
   const handleFocus = useCallback(() => {
@@ -179,51 +184,65 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({ chil
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
   return (
     <ViewClickAwayListener onClickAway={handleClickAway}>
       <FloatingPanel>
-        <SearchAutocomplete
-          inputRef={textFieldRef}
-          placeholder="データセット、建築物、住所を検索"
-          options={options}
-          filterOptions={filterOptions}
-          filters={filters}
-          maxHeight={maxMainHeight}
-          onFocus={handleFocus}
-          onChange={handleChange}
-          onInputChange={handleInputChange}
-          endAdornment={
-            <Shortcut variant="outlined" platform={platform} shortcutKey="K" commandKey />
-          }>
-          <Divider />
-          {!focused ? (
-            children
-          ) : (
-            <StyledScrollable>
-              <StyledTabs
-                value={deferredTab}
-                variant={isMobile ? "fullWidth" : "standard"}
-                onChange={handleTabChange}>
-                <Tab value="search" label="検索" />
-                {CITY_NAME && <Tab value="city" label={CITY_NAME} />}
-                <Tab value="area" label="都道府県" />
-                <Tab value="type" label="カテゴリー" />
-              </StyledTabs>
-              {tab === "search" && (
-                <SearchList
-                  datasets={searchOptions.datasets}
-                  buildings={searchOptions.buildings}
-                  areas={searchOptions.areas}
-                  onOptionSelect={handleOptionSelect}
-                  onFiltersChange={handleFiltersChange}
-                />
-              )}
-              {tab === "city" && CITY_NAME && <CityDatasetsList cityName={CITY_NAME} />}
-              {tab === "area" && <DatasetAreaList />}
-              {tab === "type" && <DatasetTypeList />}
-            </StyledScrollable>
-          )}
-        </SearchAutocomplete>
+        <Resizable
+          enable={
+            onWidthChange
+              ? {
+                  left: true,
+                  right: true,
+                }
+              : false
+          }
+          onResize={(...val) => {
+            onWidthChange?.(val[2].clientWidth);
+          }}>
+          <SearchAutocomplete
+            inputRef={textFieldRef}
+            placeholder="データセット、建築物、住所を検索"
+            options={options}
+            filterOptions={filterOptions}
+            filters={filters}
+            maxHeight={maxMainHeight}
+            onFocus={handleFocus}
+            onChange={handleChange}
+            onInputChange={handleInputChange}
+            endAdornment={
+              <Shortcut variant="outlined" platform={platform} shortcutKey="K" commandKey />
+            }>
+            <Divider />
+            {!focused ? (
+              children
+            ) : (
+              <StyledScrollable>
+                <StyledTabs
+                  value={deferredTab}
+                  variant={isMobile ? "fullWidth" : "standard"}
+                  onChange={handleTabChange}>
+                  <Tab value="search" label="検索" />
+                  {CITY_NAME && <Tab value="city" label={CITY_NAME} />}
+                  <Tab value="area" label="都道府県" />
+                  <Tab value="type" label="カテゴリー" />
+                </StyledTabs>
+                {tab === "search" && (
+                  <SearchList
+                    datasets={searchOptions.datasets}
+                    buildings={searchOptions.buildings}
+                    areas={searchOptions.areas}
+                    onOptionSelect={handleOptionSelect}
+                    onFiltersChange={handleFiltersChange}
+                  />
+                )}
+                {tab === "city" && CITY_NAME && <CityDatasetsList cityName={CITY_NAME} />}
+                {tab === "area" && <DatasetAreaList />}
+                {tab === "type" && <DatasetTypeList />}
+              </StyledScrollable>
+            )}
+          </SearchAutocomplete>
+        </Resizable>
       </FloatingPanel>
     </ViewClickAwayListener>
   );

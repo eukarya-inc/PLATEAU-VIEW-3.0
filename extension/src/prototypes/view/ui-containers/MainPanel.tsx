@@ -7,7 +7,11 @@ import { ViewLayerListItem } from "../../view-layers";
 
 import { SearchAutocompletePanel } from "./SearchAutocompletePanel";
 
-export const MainPanel: FC = () => {
+type Props = {
+  onWidthChange?: (width: number) => void;
+};
+
+export const MainPanel: FC<Props> = ({ onWidthChange }) => {
   const layerAtoms = useAtomValue(layerAtomsAtom);
   const [layersOpen, setLayersOpen] = useState(false);
   const handleLayersOpen = useCallback(() => {
@@ -30,7 +34,7 @@ export const MainPanel: FC = () => {
 
   return (
     <AutoHeight>
-      <SearchAutocompletePanel>
+      <SearchAutocompletePanel onWidthChange={onWidthChange}>
         <LayerListComponent
           listRef={listRef}
           footer={`${layerAtoms.length}項目`}
