@@ -188,25 +188,9 @@ const PropertyNameCell = styled(TableCell)<{
 }>(({ theme, level }) => ({
   ...(level != null && {
     paddingLeft: theme.spacing(level * 2.5 + 2),
+    wordBreak: "break-all",
   }),
 }));
-
-const breakLongWords = (text: string, maxLength: number) => {
-  const words = text.split(" ");
-  return words
-    .map(word => {
-      if (word.length > maxLength) {
-        const parts = [];
-        for (let i = 0; i < word.length; i += maxLength) {
-          parts.push(word.substr(i, maxLength));
-        }
-        return parts.join(" ");
-      } else {
-        return word;
-      }
-    })
-    .join(" ");
-};
 
 const Property: FC<{
   property: PropertySet;
@@ -224,14 +208,14 @@ const Property: FC<{
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {breakLongWords(makePropertyName(actualName, name, attrVal) || "", 16)}
+        {makePropertyName(actualName, name, attrVal)}
       </PropertyNameCell>
-      <TableCell width="50%">
+      <TableCell width="50%" style={{ wordBreak: "break-all" }}>
         {typeof values[0] === "string" ? (
           <StringValue
             name={name}
             values={(values as string[]).map(v =>
-              breakLongWords(attrVal ? (makePropertyValue(attrVal, v) as string) : v, 20),
+              attrVal ? (makePropertyValue(attrVal, v) as string) : v,
             )}
           />
         ) : typeof values[0] === "number" ? (
