@@ -66,14 +66,12 @@ const Component: FC = () => {
         <ClickAwayListener onClickAway={handleClickAway}>
           <FloatingPanel>
             <Resizable
+              minWidth={320}
               enable={{
                 left: true,
                 right: true,
               }}
               onResize={(...val) => {
-                // console.log(val[3].width);
-                // setMainWidth(mainWidth + val[3].width);
-                console.log(val[2].clientWidth);
                 setMainWidth(val[2].clientWidth);
               }}>
               <SearchAutocomplete

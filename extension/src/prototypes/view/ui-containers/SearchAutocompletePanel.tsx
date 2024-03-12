@@ -9,7 +9,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useAtomValue } from "jotai";
-import { Resizable } from "re-resizable";
+import { Resizable, ResizeCallback } from "re-resizable";
 import {
   useCallback,
   useContext,
@@ -185,10 +185,18 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
 
+  const handleWidthChange: ResizeCallback = useCallback(
+    (_event, _direction, element, _delta) => {
+      onWidthChange?.(element.clientWidth);
+    },
+    [onWidthChange],
+  );
+
   return (
     <ViewClickAwayListener onClickAway={handleClickAway}>
       <FloatingPanel>
         <Resizable
+          minWidth={320}
           enable={
             onWidthChange
               ? {
@@ -197,9 +205,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
                 }
               : false
           }
-          onResize={(...val) => {
-            onWidthChange?.(val[2].clientWidth);
-          }}>
+          onResize={handleWidthChange}>
           <SearchAutocomplete
             inputRef={textFieldRef}
             placeholder="データセット、建築物、住所を検索"
