@@ -37,6 +37,7 @@ import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
 type DefaultProps = {
   geoURL?: string;
   gsiTileURL?: string;
+  arURL?: string;
   plateauURL?: string;
   plateauAccessToken?: string;
   catalogURL?: string;
@@ -84,7 +85,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         customPedestrian={widget.property.optional?.pedestrian}
         customSiteUrl={widget.property.optional?.siteUrl}>
         <InitializeApp />
-        <AppFrame header={<AppHeader />} />
+        <AppFrame header={<AppHeader arURL={widget.property.default.arURL} />} />
         {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
         <Loading />
         {/* <Suspense>
