@@ -152,10 +152,12 @@ $ terraform apply
 plateauview_cms_url = "*"
 plateauview_cms_webhook_secret = <sensitive>
 plateauview_cms_webhook_url = "*"
+plateauview_geo_url = "*"
 plateauview_reearth_url = "*"
 plateauview_sdk_token = <sensitive>
 plateauview_sidebar_token = <sensitive>
 plateauview_sidecar_url = "*"
+plateauview_tiles_url = "*"
 ```
 
 これらの出力は、あとでログインするときに使います。なお、もう一度表示したいときは`terraform output`コマンドで表示することができます。
@@ -165,10 +167,12 @@ plateauview_sidecar_url = "*"
 | `plateauview_cms_url` | CMS（Re:Earth CMS）のURL |
 | `plateauview_cms_webhook_secret` | 下記「CMS インテグレーション設定」で使用 |
 | `plateauview_cms_webhook_url` | 下記「CMS インテグレーション設定」で使用 |
+| `plateauview_geo_url` | タイルなどを変換・処理するサーバーのURL |
 | `plateauview_reearth_url` | エディタ（Re:Earth）のURL |
 | `plateauview_sdk_token` | PLATEAU SDK用のトークン。SDKのUIで設定する（詳しくはマニュアルを参照） |
 | `plateauview_sidebar_token` | ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照） |
 | `plateauview_sidecar_url` | サイドカーサーバーのURL。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照） |
+| `plateauview_tiles_url` | タイル配信サーバーのURL |
 
 ### 3.10 DNS・ロードバランサ・証明書のデプロイ完了の確認
 
