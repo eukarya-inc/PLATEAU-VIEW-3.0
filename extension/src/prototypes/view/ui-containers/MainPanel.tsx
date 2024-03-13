@@ -1,10 +1,13 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { ResizeCallback } from "re-resizable";
 import { useCallback, useState, type FC, useRef, MouseEvent } from "react";
 
 import { clearLayerSelectionAtom, layerAtomsAtom, LayerList } from "../../layers";
 import { AutoHeight, LayerList as LayerListComponent } from "../../ui-components";
 import { ViewLayerListItem } from "../../view-layers";
+import { mainWidthAtom } from "../states/app";
 
+import { ResizeableWrapper } from "./ResizeableWrapper";
 import { SearchAutocompletePanel } from "./SearchAutocompletePanel";
 
 export const MainPanel: FC = () => {
@@ -28,19 +31,29 @@ export const MainPanel: FC = () => {
     [clearLayerSelection],
   );
 
+  const [mainWidth, setMainWidth] = useAtom(mainWidthAtom);
+  const handleResizeStop: ResizeCallback = useCallback(
+    (_event, _direction, _element, delta) => {
+      setMainWidth(prevValue => prevValue + delta.width);
+    },
+    [setMainWidth],
+  );
+
   return (
     <AutoHeight>
-      <SearchAutocompletePanel>
-        <LayerListComponent
-          listRef={listRef}
-          footer={`${layerAtoms.length}項目`}
-          open={layersOpen}
-          onOpen={handleLayersOpen}
-          onClose={handleLayersClose}
-          onClick={handleLayersClick}>
-          <LayerList itemComponent={ViewLayerListItem} unmountWhenEmpty />
-        </LayerListComponent>
-      </SearchAutocompletePanel>
+      <ResizeableWrapper defaultWidth={mainWidth} onResizeStop={handleResizeStop}>
+        <SearchAutocompletePanel>
+          <LayerListComponent
+            listRef={listRef}
+            footer={`${layerAtoms.length}項目`}
+            open={layersOpen}
+            onOpen={handleLayersOpen}
+            onClose={handleLayersClose}
+            onClick={handleLayersClick}>
+            <LayerList itemComponent={ViewLayerListItem} unmountWhenEmpty />
+          </LayerListComponent>
+        </SearchAutocompletePanel>
+      </ResizeableWrapper>
     </AutoHeight>
   );
 };
