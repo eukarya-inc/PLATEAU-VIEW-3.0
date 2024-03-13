@@ -21,6 +21,7 @@ const DEFAULT_ATTRIBUTES = [
   `prefecture_name,{"featureType":"custom","description":"都道府県名"}`,
   `uro:WaterBodyRiverFloodingRiskAttribute,{"featureType":"custom","description":"損傷状況"}`,
   `uro:rank,{"featureType":"custom","description":"浸水ランク"}`,
+  `uro:rankOrg,{"featureType":"custom","description":"浸水ランク（独自）"}`,
   `uro:rank_code,{"featureType":"custom","description":"浸水ランクコード"}`,
   `uro:rankOrg_code,{"featureType":"custom","description":"浸水ランク（独自）コード"}`,
   `uro:adminType,{"featureType":"custom","description":"指定機関"}`,

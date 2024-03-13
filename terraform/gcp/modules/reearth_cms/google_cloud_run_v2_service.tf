@@ -24,12 +24,12 @@ resource "google_cloud_run_v2_service" "plateauview_api" {
       }
 
       dynamic "env" {
-        for_each = { for i in local.plateau_view_secrets : i => i }
+        for_each = { for i in local.plateauview_secrets : i => i }
         content {
           name = env.value
           value_source {
             secret_key_ref {
-              secret  = google_secret_manager_secret.plateau_view[env.value].secret_id
+              secret  = google_secret_manager_secret.plateauview[env.value].secret_id
               version = "latest"
             }
           }
@@ -53,52 +53,52 @@ resource "google_cloud_run_v2_service" "plateauview_api" {
 
       env {
         name  = "REEARTH_PLATEAUVIEW_CKAN_BASEURL"
-        value = var.plateau_view.ckan_base_url
+        value = var.plateauview.ckan_base_url
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_CKAN_ORG"
-        value = var.plateau_view.ckan_org
+        value = var.plateauview.ckan_org
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_CMS_PLATEAUPROJECT"
-        value = var.plateau_view.cms_plateau_project
+        value = var.plateauview.cms_plateau_project
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_CMS_SYSTEMPROJECT"
-        value = var.plateau_view.cms_system_project
+        value = var.plateauview.cms_system_project
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_DATACATALOG_CACHEGCPARCENT"
-        value = var.plateau_view.datacatalog_cache_percent
+        value = var.plateauview.datacatalog_cache_percent
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_DATACATALOG_CACHESIZE"
-        value = var.plateau_view.datacatalog_cache_size
+        value = var.plateauview.datacatalog_cache_size
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_FME_BASEURL"
-        value = var.plateau_view.fme_baseurl
+        value = var.plateauview.fme_baseurl
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_FME_URL_V3"
-        value = var.plateau_view.fme_url_v3
+        value = var.plateauview.fme_url_v3
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_OPINION_TO"
-        value = var.plateau_view.option_to
+        value = var.plateauview.option_to
       }
 
       env {
         name  = "REEARTH_PLATEAUVIEW_OPINION_FROM"
-        value = var.plateau_view.option_from
+        value = var.plateauview.option_from
       }
     }
 
@@ -114,11 +114,11 @@ resource "google_cloud_run_v2_service" "plateauview_api" {
   }
 
   depends_on = [
-    google_secret_manager_secret_version.plateau_view_ckan_token,
-    google_secret_manager_secret_version.plateau_view_cms_token,
-    google_secret_manager_secret_version.plateau_view_fme_token,
-    google_secret_manager_secret_version.plateau_view_secret,
-    google_secret_manager_secret_version.plateau_view_sendgrid_api_key
+    google_secret_manager_secret_version.plateauview_ckan_token,
+    google_secret_manager_secret_version.plateauview_cms_token,
+    google_secret_manager_secret_version.plateauview_fme_token,
+    google_secret_manager_secret_version.plateauview_secret,
+    google_secret_manager_secret_version.plateauview_sendgrid_api_key
   ]
 
   lifecycle {
@@ -449,6 +449,6 @@ resource "google_cloud_run_v2_service" "reearth_cms_worker" {
   }
 
   depends_on = [
-    google_secret_manager_secret_version.plateau_view_cms_webhook_secret,
+    google_secret_manager_secret_version.plateauview_cms_webhook_secret,
   ]
 }

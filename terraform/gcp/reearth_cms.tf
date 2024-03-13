@@ -9,7 +9,7 @@ module "reearth_cms" {
   fme_token                 = var.fme_token
   gcp_project_id            = data.google_project.project.project_id
   mongodb_connection_string = var.mongodb_connection_string
-  plateau_view              = var.plateau_view
+  plateauview               = var.plateauview
   prefix                    = var.prefix
   reearth_cms_web_config    = var.reearth_cms_web_config
   sendgrid_api_key          = var.sendgrid_api_key
