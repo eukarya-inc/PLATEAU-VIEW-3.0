@@ -84,3 +84,9 @@ export const pedestrianInspectorWidthAtom = atomWithStorageValidation({
   initialValue: 540,
   validate: isNumber,
 });
+
+export const mainWidthAtom = atomWithStorageValidation({
+  key: "mainWidth",
+  initialValue: 360,
+  validate: isNumber,
+});
