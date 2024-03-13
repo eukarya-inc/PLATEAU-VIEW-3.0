@@ -70,6 +70,7 @@ export const GeneralLayer: FC<GeneralProps> = ({
       resource: {
         ...DEFAULT_APPEARNACES.resource,
         ...(appearances?.resource ?? {}),
+        hideIndicator: true,
       },
       marker: {
         ...DEFAULT_APPEARNACES.marker,

@@ -18,7 +18,6 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, visible, appearances })
       ...appearances,
       polygon: {
         ...(appearances?.polygon ?? {}),
-        hideIndicator: true,
       },
     }),
     [appearances],

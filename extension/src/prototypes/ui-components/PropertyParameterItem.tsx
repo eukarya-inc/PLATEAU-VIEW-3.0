@@ -188,6 +188,7 @@ const PropertyNameCell = styled(TableCell)<{
 }>(({ theme, level }) => ({
   ...(level != null && {
     paddingLeft: theme.spacing(level * 2.5 + 2),
+    wordBreak: "break-all",
   }),
 }));
 
@@ -203,12 +204,13 @@ const Property: FC<{
     ...(isNaN(Number(name)) ? [name] : []),
   ].join("_")}`;
   const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
+
   return isPrimitive ? (
     <TableRow>
       <PropertyNameCell variant="head" width="50%" level={level}>
         {makePropertyName(actualName, name, attrVal)}
       </PropertyNameCell>
-      <TableCell width="50%">
+      <TableCell width="50%" style={{ wordBreak: "break-all" }}>
         {typeof values[0] === "string" ? (
           <StringValue
             name={name}
