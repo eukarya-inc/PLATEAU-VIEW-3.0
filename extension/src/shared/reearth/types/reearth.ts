@@ -3,6 +3,7 @@
 import { Camera } from "./camera";
 import { Clock } from "./clock";
 import { ReearthEventType } from "./event";
+import { Helper } from "./helper";
 import { InteractionMode } from "./interactionMode";
 import { Layers } from "./layer";
 import { Scene } from "./scene";
@@ -18,6 +19,7 @@ export type ReEarth = {
   readonly layers?: Layers;
   readonly viewport?: Viewport;
   readonly sketch?: Sketch;
+  readonly helper?: Helper;
   readonly on: <T extends keyof ReearthEventType>(
     type: T,
     callback: (...args: ReearthEventType[T]) => void,

@@ -19,6 +19,7 @@ export const ViewButton: FC<ViewButtonProps> = ({ children, ...props }) => {
 
 export const StyledButton = styled(MuiButton)(({ theme }) => ({
   fontSize: theme.typography.body1.fontSize,
+  fontWeight: theme.typography.body1.fontWeight,
   [`&.${buttonClasses.containedPrimary}`]: {
     color: "#fff",
   },

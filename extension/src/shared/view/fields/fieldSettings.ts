@@ -225,6 +225,14 @@ export const fieldSettings: {
     },
     hasLayerUI: true,
   },
+  TILESET_DRAW_CLIPPING: {
+    value: {
+      enabled: false,
+      visible: true,
+      direction: "inside",
+    },
+    hasLayerUI: true,
+  },
   TILESET_BUILDING_MODEL_FILTER: {
     value: {
       filters: {},

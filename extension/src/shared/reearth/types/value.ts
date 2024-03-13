@@ -93,6 +93,15 @@ export type EXPERIMENTAL_clipping = {
   roll?: number;
   direction?: "inside" | "outside";
   disabledSelection?: boolean;
+  // draw
+  draw?: {
+    enabled?: boolean;
+    surfacePoints?: LngLat[];
+    direction?: "inside" | "outside";
+    top?: number;
+    bottom?: number;
+    visible?: boolean;
+  };
 };
 
 // Don't forget adding a new field to valueTypeMapper also!

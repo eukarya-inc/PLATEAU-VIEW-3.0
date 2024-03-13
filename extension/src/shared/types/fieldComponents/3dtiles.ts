@@ -46,6 +46,19 @@ export type TilesetClippingField = FieldBase<{
   };
 }>;
 
+export const TILESET_DRAW_CLIPPING = "TILESET_DRAW_CLIPPING";
+export type TilesetDrawClippingField = FieldBase<{
+  type: typeof TILESET_DRAW_CLIPPING;
+  value: {
+    enabled?: boolean;
+    visible?: boolean;
+    direction?: "inside" | "outside";
+    drawGeometryCoordinates?: [lng: number, lat: number][];
+    top?: number;
+    bottom?: number;
+  };
+}>;
+
 export const TILESET_BUILDING_MODEL_FILTER = "TILESET_BUILDING_MODEL_FILTER";
 export type TilesetBuildingModelFilterField = FieldBase<{
   type: typeof TILESET_BUILDING_MODEL_FILTER;
@@ -96,6 +109,7 @@ export type TilesetFields =
   | TilesetFillGradientColorField
   | TilesetFloodColorField
   | TilesetClippingField
+  | TilesetDrawClippingField
   | TilesetBuildingModelFilterField
   | TilesetFloodModelFilterField
   | TilesetWireframeField
