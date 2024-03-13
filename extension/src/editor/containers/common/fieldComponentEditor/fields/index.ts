@@ -38,11 +38,13 @@ import {
   fieldGroupTitles,
 } from "./constants";
 import { EditorApplyTimeValueField } from "./general/EditorApplyTimeValueField";
+import { EditorCustomLegendField } from "./general/EditorCustomLegendField";
 import { EditorDatasetStoryField } from "./general/EditorDatasetStoryField";
 import { EditorLayerDescriptionField } from "./general/EditorLayerDescriptionField";
 import { EditorLegendDescriptionField } from "./general/EditorLegendDescriptionField";
 import { EditorLinkButtonField } from "./general/EditorLinkButtonField";
 import { EditorOpacityField } from "./general/EditorOpacityField";
+import { EditorPrioritizePerformanceGeoJSONField } from "./general/EditorPrioritizePerformanceGeoJSONField";
 import { EditorStyleCodeField } from "./general/EditorStyleCodeField";
 import { EditorTimelineCustomizedField } from "./general/EditorTimelineCustomizedField";
 import { EditorTimelineMonthField } from "./general/EditorTimelineMonthField";
@@ -111,6 +113,11 @@ export const fields: {
     name: "Month",
     Component: EditorTimelineMonthField,
   },
+  PRIORITIZE_PERFORMANCE_GEOJSON_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Prioritize Performance (GeoJSON)",
+    Component: EditorPrioritizePerformanceGeoJSONField,
+  },
   LINK_BUTTON_FIELD: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Link Button",
@@ -120,6 +127,11 @@ export const fields: {
     category: FIELD_CATEGORY_GENERAL,
     name: "Dataset Story",
     Component: EditorDatasetStoryField,
+  },
+  CUSTOM_LEGEND_FIELD: {
+    category: FIELD_CATEGORY_GENERAL,
+    name: "Custom Legend",
+    Component: EditorCustomLegendField,
   },
   // point
   POINT_VISIBILITY_CONDITION_FIELD: {

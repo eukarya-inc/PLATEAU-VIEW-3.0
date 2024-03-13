@@ -6,8 +6,10 @@ import { useCallback, type FC, useContext, useMemo } from "react";
 import { useAreaDatasets, useAreas, useDatasetTypes } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
+import { isGenericDatasetType } from "../constants/generic";
 import { PlateauDatasetType } from "../constants/plateau";
 
+import { DatasetFolderList } from "./DatasetFolderList";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
 
 const expandedAtom = atomWithReset<string[]>([]);
@@ -20,6 +22,7 @@ const MunicipalityItem: FC<{
   const query = useAreaDatasets(municipality.code, {
     includeTypes: [datasetType],
   });
+  const isGenericDataset = isGenericDatasetType(datasetType);
   if (query.data?.area?.datasets?.length === 1) {
     const dataset = query.data.area.datasets[0];
     const label =
@@ -41,19 +44,27 @@ const MunicipalityItem: FC<{
   }
   return (
     <DatasetTreeItem
-      nodeId={`${datasetType}:${municipality.code}`}
+      nodeId={`${datasetType}:municipality:${municipality.code}`}
       label={joinPath([...parents, municipality.name])}
+      title={municipality.name}
       loading={query.loading}
       disabled={!query.data?.area?.datasets?.length}>
-      {query.data?.area?.datasets?.map(dataset => (
-        <DatasetListItem
-          key={dataset.id}
-          municipalityCode={municipality.code}
-          dataset={dataset}
-          label={dataset.name}
-          title={dataset.name}
+      {isGenericDataset && query.data?.area?.datasets ? (
+        <DatasetFolderList
+          folderId={`${datasetType}:municipality:${municipality.code}`}
+          datasets={query.data?.area?.datasets}
         />
-      ))}
+      ) : (
+        query.data?.area?.datasets?.map(dataset => (
+          <DatasetListItem
+            key={dataset.id}
+            municipalityCode={municipality.code}
+            dataset={dataset}
+            label={dataset.name}
+            title={dataset.name}
+          />
+        ))
+      )}
     </DatasetTreeItem>
   );
 };
@@ -66,7 +77,16 @@ const PrefectureItem: FC<{
     parentCode: prefecture.code,
     datasetTypes: [datasetType],
   });
-  if (query.data?.areas?.length === 1) {
+
+  // Handle the datasets belongs to this perfecture but no municipality
+  const prefectureDatasetQuery = useAreaDatasets(prefecture.code);
+  const prefectureDatasets = useMemo(
+    () => prefectureDatasetQuery.data?.area?.datasets?.filter(d => !d.cityCode) ?? [],
+    [prefectureDatasetQuery.data?.area?.datasets],
+  );
+  const isGenericDataset = isGenericDatasetType(datasetType);
+
+  if (query.data?.areas?.length === 1 && prefectureDatasets.length === 0) {
     return (
       <MunicipalityItem
         datasetType={datasetType}
@@ -77,8 +97,9 @@ const PrefectureItem: FC<{
   }
   return (
     <DatasetTreeItem
-      nodeId={`${datasetType}:${prefecture.code}`}
+      nodeId={`${datasetType}:prefecture:${prefecture.code}`}
       label={prefecture.name}
+      title={prefecture.name}
       loading={query.loading}
       disabled={!query.data?.areas.length}>
       {query.data?.areas.map(municipality => (
@@ -88,6 +109,22 @@ const PrefectureItem: FC<{
           municipality={municipality}
         />
       ))}
+      {isGenericDataset ? (
+        <DatasetFolderList
+          folderId={`${datasetType}:prefecture:direct`}
+          datasets={prefectureDatasets}
+        />
+      ) : (
+        prefectureDatasets.map(dataset => (
+          <DatasetListItem
+            key={dataset.id}
+            municipalityCode={"direct"}
+            dataset={dataset}
+            label={dataset.name}
+            title={dataset.name}
+          />
+        ))
+      )}
     </DatasetTreeItem>
   );
 };

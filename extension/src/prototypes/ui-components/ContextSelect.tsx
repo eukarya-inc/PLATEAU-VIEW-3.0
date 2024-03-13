@@ -97,7 +97,10 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
         }
         if (ref.current?.contains(event.target) === true) {
           setOpen(true);
-        } else if (menuRef.current?.contains(event.target) !== true) {
+        } else if (
+          menuRef.current?.contains(event.target) !== true &&
+          menuRef.current?.parentElement !== event.target
+        ) {
           setOpen(false);
         }
       };

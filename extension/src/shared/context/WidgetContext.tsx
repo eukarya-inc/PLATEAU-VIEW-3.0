@@ -32,6 +32,8 @@ import {
   setCityName,
   INITIAL_PEDESTRIAN_COORDINATES,
   setInitialPededstrianCoordinates,
+  PLATEAU_GEOJSON_URL,
+  setPlateauGeojsonUrl,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
@@ -47,6 +49,7 @@ type Props = {
   catalogUrl?: string;
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
+  geojsonURL?: string;
   // Custom settings
   cityName?: string;
   customPrimaryColor?: string;
@@ -71,6 +74,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   customLogo,
   customPedestrian,
   customSiteUrl,
+  geojsonURL,
 }) => {
   useEffect(() => {
     if (!PLATEAU_API_URL && plateauUrl) {
@@ -149,6 +153,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setInitialPededstrianCoordinates(customPedestrian);
     }
   }, [customPedestrian]);
+
+  useEffect(() => {
+    if (!PLATEAU_GEOJSON_URL && geojsonURL) {
+      setPlateauGeojsonUrl(geojsonURL);
+    }
+  }, [geojsonURL]);
 
   useEffect(() => {
     if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {

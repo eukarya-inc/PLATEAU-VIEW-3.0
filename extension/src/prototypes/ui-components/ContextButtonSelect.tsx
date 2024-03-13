@@ -77,7 +77,10 @@ export const ContextButtonSelect = forwardRef<HTMLDivElement, ContextButtonSelec
       const handler = (event: MouseEvent): void => {
         if (selectRef.current?.contains(event.target as Node) === true) {
           setOpen(true);
-        } else if (menuRef.current?.contains(event.target as Node) !== true) {
+        } else if (
+          menuRef.current?.contains(event.target as Node) !== true &&
+          menuRef.current?.parentElement !== event.target
+        ) {
           setOpen(false);
         }
       };

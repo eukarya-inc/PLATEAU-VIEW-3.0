@@ -84,6 +84,7 @@ const Component: FC = () => {
       <IconButton>
         <PlusIcon />
       </IconButton>
+      <IconButton size="small">AR</IconButton>
     </AppBar>
   );
 };

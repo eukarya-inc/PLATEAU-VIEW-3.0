@@ -88,14 +88,38 @@ function useDatasetSearchOptions({
             }) == null
           );
         })
-        .map(dataset => ({
-          type: "dataset" as const,
-          name: inEditor() && dataset.year ? `[${dataset.year}]${dataset.name}` : dataset.name,
-          index: `${dataset.name}${dataset.prefecture?.name ?? ""}${dataset.city?.name ?? ""}${
-            dataset.ward?.name ?? ""
-          }`,
-          dataset,
-        })) ?? []
+        .map(dataset => {
+          const labelParts = [];
+          if (inEditor() && dataset.year) {
+            labelParts.push(`[${dataset.year}]`);
+          }
+          labelParts.push(dataset.name);
+
+          const locationParts = [];
+          if (dataset.prefecture?.name) {
+            locationParts.push(dataset.prefecture.name);
+          }
+          if (dataset.city?.name) {
+            locationParts.push(dataset.city.name);
+          }
+          if (dataset.ward?.name) {
+            locationParts.push(dataset.ward.name);
+          }
+
+          if (locationParts.length > 0) {
+            labelParts.push(`[${locationParts.join(".")}]`);
+          }
+
+          const formattedLabel = labelParts.join(" ");
+
+          return {
+            type: "dataset" as const,
+            name: formattedLabel,
+            index: formattedLabel,
+            dataset,
+            title: formattedLabel,
+          };
+        }) ?? []
     );
   }, [skip, query, layers, findLayer]);
 }
@@ -137,10 +161,13 @@ function useBuildingSearchOption({
           ) ?? [];
         const addedIds: string[] = [];
         return fs.reduce<BuildingSearchOption[]>((res, f) => {
-          if (f?.properties?.["名称"] && !addedIds.includes(f.id)) {
+          if (
+            (f?.properties?.["名称"] || f?.properties?.["gml:name"]) &&
+            !addedIds.includes(f.id)
+          ) {
             res.push({
               type: "building" as const,
-              name: f?.properties?.["名称"],
+              name: f?.properties?.["名称"] ?? f?.properties?.["gml:name"],
               featureIndex,
               id: f?.id,
               datasetId: id,

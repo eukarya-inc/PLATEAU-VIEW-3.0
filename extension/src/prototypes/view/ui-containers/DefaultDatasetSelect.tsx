@@ -5,14 +5,14 @@ import { memo, useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
-import { rootLayersAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
+import { rootLayersAtom } from "../../../shared/states/rootLayer";
 import { settingsAtom } from "../../../shared/states/setting";
 import { templatesAtom } from "../../../shared/states/template";
 import {
   RootLayerConfigForDataset,
   createRootLayerForDatasetAtom,
 } from "../../../shared/view-layers";
-import { removeLayerAtom, useAddLayer, useFilterLayers } from "../../layers";
+import { removeLayerAtom, useAddLayer } from "../../layers";
 import { isNotNullish } from "../../type-helpers";
 import { ContextSelect, SelectGroupItem, SelectItem } from "../../ui-components";
 import { datasetTypeLayers } from "../constants/datasetTypeLayers";
@@ -53,30 +53,22 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
   ({ datasets, municipalityCode, disabled }) => {
     invariant(datasets.length > 0);
     const rootLayers = useAtomValue(rootLayersAtom);
-    const layers = useAtomValue(rootLayersLayersAtom);
     const settings = useAtomValue(settingsAtom);
     const templates = useAtomValue(templatesAtom);
     // Assume that all the datasets share the same type.
     const layerType =
       datasetTypeLayers[datasets[0].type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
+
     invariant(layerType !== "BUILDING_LAYER", "Building layer is not supported.");
-    const filterLayers = useFilterLayers();
-    const filteredLayers = useMemo(
-      () =>
-        layerType != null
-          ? filterLayers(layers, {
-              type: layerType,
-            })
-          : [],
-      [layers, layerType, filterLayers],
-    );
+
+    const datasetIds = useMemo(() => datasets.map(d => d.id), [datasets]);
+
     const filteredRootLayers = useMemo(
       () =>
         rootLayers.filter(
-          (l): l is RootLayerConfigForDataset =>
-            l.type === "dataset" && !!filteredLayers.find(f => l.id === f.id),
+          (l): l is RootLayerConfigForDataset => l.type === "dataset" && datasetIds.includes(l.id),
         ),
-      [rootLayers, filteredLayers],
+      [rootLayers, datasetIds],
     );
 
     const addLayer = useAddLayer();
@@ -154,6 +146,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
     );
 
     const showDataFormats = useAtomValue(showDataFormatsAtom);
+
     return (
       <ContextSelect
         label={datasets[0].type.name ?? datasetTypeNames.usecase}
@@ -161,7 +154,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
         onChange={handleChange}
         disabled={disabled}>
         {datasets.flatMap((dataset, index) => {
-          if (dataset.items.length > 1) {
+          if (dataset.items.length) {
             if (dataset.name === "") {
               return dataset.items.map(datum => (
                 <SelectItem
