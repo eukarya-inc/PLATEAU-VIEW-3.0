@@ -1,12 +1,11 @@
-# PLATEAU VIEW 3.0 実証環境構築マニュアル (Terraform)
+# PLATEAU VIEW 3.0 Terraform for GCP
 
-PLATEAU VIEW 3.0（CMS・エディタ・ビューワ）を構築するためのTerraform用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
-
-PLATEAU VIEW 3.0のホスティングはGoogle Cloud Platform（GCP）のみ対応しています。オンプレミスや他のクラウドプロバイダでのホスティングできません。
+PLATEAU VIEW 3.0（CMS・Editor・VIEW）をGCP（Google Cloud Platform）で構築するためのTerraform用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
 
 ## 1. 改訂履歴
 
-- 2024/03/04: 初版
+- 2024/03/13: PLATEAU VIEW 3.0 へのアップデートにあたり改訂
+- 2023/03/31: 初版
 
 ## 2. 使用ツール
 
@@ -226,7 +225,9 @@ gcloud run deploy plateauview-api \
 
 ### 4. 完了
 
-以下のアプリケーションにログインし、正常に使用できることを確認します。ここの `${DOMAIN}` はドメインです。。
+以下のアプリケーションにログインし、正常に使用できることを確認します。ここの `${DOMAIN}` はドメインです。
 
 - Re:Earth: Terraformのoutputsの `plateauview_reearth_url` の値（`https://reearth.${DOMAIN}`）
 - Re:Earth CMS: Terraformのoutputsの `plateauview_cms_url` の値（`https://cms.${DOMAIN}`）
+
+この後は画面上での設定作業になります。続きは[マニュアル](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)をご覧ください。
