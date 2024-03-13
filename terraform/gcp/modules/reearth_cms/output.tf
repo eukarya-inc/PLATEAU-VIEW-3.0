@@ -3,7 +3,7 @@ output "auth0_action_signup" {
 }
 
 output "plateauview_cms_url" {
-  value = local.cms_domain
+  value = "https://${local.cms_domain}"
 }
 
 output "plateauview_cms_webhook_secret" {
@@ -11,7 +11,7 @@ output "plateauview_cms_webhook_secret" {
 }
 
 output "plateauview_geo_url" {
-  value = local.geo_domain
+  value = "https://${local.geo_domain}"
 }
 
 output "plateauview_sdk_token" {
@@ -23,9 +23,9 @@ output "plateauview_sidebar_token" {
 }
 
 output "plateauview_tiles_url" {
-  value = local.tiles_domain
+  value = "https://${local.tiles_domain}"
 }
 
 output "plateauview_url" {
-  value = local.api_domain
+  value = "https://${local.api_domain}"
 }
