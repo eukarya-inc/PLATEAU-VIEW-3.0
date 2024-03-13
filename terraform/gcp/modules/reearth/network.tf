@@ -1,5 +1,6 @@
 
 resource "google_compute_target_http_proxy" "reearth" {
+  project    = data.google_project.project.project_id
   name       = "reearth-common-http-targetproxy"
   proxy_bind = "false"
   url_map    = google_compute_url_map.reearth.id
@@ -8,16 +9,19 @@ resource "google_compute_target_http_proxy" "reearth" {
 
 
 resource "google_compute_target_https_proxy" "reearth" {
+  project         = data.google_project.project.project_id
   name            = "reearth-common-https-targetproxy"
   url_map         = google_compute_url_map.reearth.id
   certificate_map = "//certificatemanager.googleapis.com/${google_certificate_manager_certificate_map.reearth.id}"
 }
 
 resource "google_certificate_manager_certificate_map" "reearth" {
-  name = "reearth-cert-map"
+  project = data.google_project.project.project_id
+  name    = "reearth-cert-map"
 }
 
 resource "google_certificate_manager_certificate_map_entry" "reearth_primary" {
+  project     = data.google_project.project.project_id
   name        = "reearth-cert-map-primary"
   description = "reearth wildcard"
   map         = google_certificate_manager_certificate_map.reearth.name
@@ -28,6 +32,7 @@ resource "google_certificate_manager_certificate_map_entry" "reearth_primary" {
 }
 
 resource "google_certificate_manager_certificate" "reearth_wildcard" {
+  project     = data.google_project.project.project_id
   name        = "reearth-wildcard"
   description = "reearth wildcard cert"
   scope       = "DEFAULT"
@@ -43,16 +48,19 @@ resource "google_certificate_manager_certificate" "reearth_wildcard" {
 }
 
 resource "google_certificate_manager_dns_authorization" "reearth_wildcard" {
+  project     = data.google_project.project.project_id
   name        = "reearth-wildcard-dns-auth"
   description = "reearth wildcard dns auth"
   domain      = local.reearth_domain
 }
 
 resource "google_compute_global_address" "reearth_lb" {
-  name = "reearth-common-lb"
+  project = data.google_project.project.project_id
+  name    = "reearth-common-lb"
 }
 
 resource "google_compute_global_forwarding_rule" "reearth_https" {
+  project    = data.google_project.project.project_id
   name       = "reearth-common-https"
   target     = google_compute_target_https_proxy.reearth.self_link
   port_range = "443"
@@ -63,6 +71,7 @@ resource "google_compute_global_forwarding_rule" "reearth_https" {
 
 
 resource "google_compute_global_forwarding_rule" "reearth_http" {
+  project    = data.google_project.project.project_id
   name       = "reearth-common-http-redirect"
   target     = google_compute_target_http_proxy.reearth.self_link
   port_range = "80"
@@ -72,7 +81,8 @@ resource "google_compute_global_forwarding_rule" "reearth_http" {
 }
 
 resource "google_compute_url_map" "reearth_redirect" {
-  name = "reearth-https-redirect"
+  project = data.google_project.project.project_id
+  name    = "reearth-https-redirect"
   default_url_redirect {
     https_redirect         = "true"
     redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
@@ -83,6 +93,7 @@ resource "google_compute_url_map" "reearth_redirect" {
 }
 
 resource "google_compute_url_map" "reearth" {
+  project     = data.google_project.project.project_id
   name        = "reearth-common-urlmap"
   description = "reearth common urlmap"
 
@@ -104,6 +115,7 @@ resource "google_compute_url_map" "reearth" {
 }
 
 resource "google_compute_backend_bucket" "static_backend" {
+  project     = data.google_project.project.project_id
   name        = "reearth-static-backend"
   bucket_name = google_storage_bucket.static.name
   enable_cdn  = true
@@ -114,15 +126,17 @@ resource "google_compute_backend_bucket" "static_backend" {
 
 
 resource "google_compute_region_network_endpoint_group" "reearth_api" {
+  project               = data.google_project.project.project_id
   name                  = "reearth-api-neg"
   network_endpoint_type = "SERVERLESS"
   region                = "asia-northeast1"
   cloud_run {
-    service = google_cloud_run_service.reearth_api.name
+    service = google_cloud_run_v2_service.reearth_api.name
   }
 }
 
 resource "google_compute_backend_service" "reearth_api" {
+  project                 = data.google_project.project.project_id
   affinity_cookie_ttl_sec = "0"
   enable_cdn              = true
   cdn_policy {
