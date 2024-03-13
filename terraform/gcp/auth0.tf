@@ -1,19 +1,14 @@
 locals {
   action_binding = [
     {
-      id   = module.reearth-api.auth0_action_singup.id,
-      name = module.reearth-api.auth0_action_singup.name
-    },
-    {
-      id   = module.reearth-cms.auth0_action_singup.id,
-      name = module.reearth-cms.auth0_action_singup.name
+      id   = module.reearth_cms.auth0_action_signup[0].id,
+      name = module.reearth_cms.auth0_action_signup[0].name
     }
   ]
 
 }
 
 resource "auth0_trigger_binding" "reearth_login" {
-
   trigger = "post-user-registration"
   dynamic "actions" {
     for_each = local.action_binding

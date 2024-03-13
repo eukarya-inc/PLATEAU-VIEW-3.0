@@ -166,13 +166,15 @@ const main = async (filename: string, newFileName: string) => {
       }
     })();
 
-    const joinedTags = tag1.flatMap(tag1 =>
-      tag2.flatMap(tag2 =>
-        tag3.flatMap(tag3 =>
-          tag4.flatMap(tag4 => [featureType, tag1, tag2, tag3, tag4].filter(Boolean).join("_")),
+    const joinedTags = tag1
+      .flatMap(tag1 =>
+        tag2.flatMap(tag2 =>
+          tag3.flatMap(tag3 =>
+            tag4.flatMap(tag4 => [featureType, tag1, tag2, tag3, tag4].filter(Boolean).join("_")),
+          ),
         ),
-      ),
-    );
+      )
+      .filter(Boolean);
 
     joinedTags.forEach(key => {
       result.push([key, JSON.stringify({ description, dataType })].join(","));
