@@ -1,5 +1,5 @@
-resource "random_password" "plateau_view_env" {
-  for_each = toset(local.plateau_view_randoms)
+resource "random_password" "plateauview_env" {
+  for_each = toset(local.plateauview_randoms)
   length   = 32
   special  = false
 }

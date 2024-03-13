@@ -27,3 +27,9 @@ resource "google_service_account" "plateauview_geo" {
   account_id   = "plateauview-geo"
   display_name = "Service Account for PLATEAU Geo"
 }
+
+resource "google_service_account" "plateauview_tiles" {
+  project      = data.google_project.project.project_id
+  account_id   = "plateauview-tiles"
+  display_name = "plateauview-tiles"
+}
