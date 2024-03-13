@@ -160,7 +160,11 @@ plateauview_sidecar_url = "*"
 plateauview_tiles_url = "*"
 ```
 
-これらの出力は、あとでログインするときに使います。なお、もう一度表示したいときは`terraform output`コマンドで表示することができます。
+これらの出力は、あとでログインするときに使います。なお、もう一度表示したいときは`terraform output`コマンドで表示することができます。また、`sensitive`と表示されているものは、マスクされており、以下のようなコマンドで実際の値を確認してください。
+
+```console
+terraform output <確認したいOutput>
+```
 
 | 変数 | 説明 |
 | --- | --- |
