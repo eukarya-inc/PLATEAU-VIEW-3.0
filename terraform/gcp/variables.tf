@@ -90,7 +90,12 @@ variable "reearth_web_config" {
   description = "Re:Earthの設定"
 }
 
-variable "plateau_view" {
+variable "prefix" {
+  type        = string
+  description = "作成されるリソース名のプレフィックス"
+}
+
+variable "plateauview" {
   type = object({
     ckan_org                  = string
     ckan_base_url             = string
@@ -104,11 +109,6 @@ variable "plateau_view" {
     option_to                 = string
     option_from               = string
   })
-}
-
-variable "prefix" {
-  type        = string
-  description = "作成されるリソース名のプレフィックス"
 }
 
 variable "sendgrid_api_key" {
