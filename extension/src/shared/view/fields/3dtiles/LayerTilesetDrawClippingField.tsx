@@ -133,7 +133,9 @@ export const LayerTilesetDrawClippingField: FC<LayerTilesetDrawClippingFieldProp
 
       // Need to delay the type set since tool type could be changed.
       requestAnimationFrame(() => {
-        handleSetType(type);
+        requestAnimationFrame(() => {
+          handleSetType(type);
+        });
       });
     },
     [
