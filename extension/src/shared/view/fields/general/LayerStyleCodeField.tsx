@@ -18,7 +18,7 @@ export const LayerStyleCodeField: FC<LayerStyleCodeFieldProps> = ({ atoms }) => 
     () =>
       atoms.map(a =>
         atom(
-          get => get(a).value?.opacity ?? 1,
+          get => get(a).value?.opacity ?? get(a).preset?.defaultOpacity ?? 1,
           (get, set, update: number) => {
             set(a, {
               ...get(a),

@@ -121,7 +121,7 @@ export const EntityTitleButton = forwardRef<HTMLDivElement, EntityTitleButtonPro
           secondaryTypographyProps={{
             variant: "body2",
           }}
-          title={typeof title === "object" ? title?.primary : title}
+          title={typeof title === "object" ? `${title?.primary}${title?.secondary}` : title}
         />
         {children}
       </StyledListItemButton>
