@@ -176,5 +176,13 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
     [color, colorProperty, theme.palette.primary.main, filter, disableDefaultMaterial],
   );
 
-  return <TilesetLayer {...props} onLoad={handleLoad} appearance={appearance} visible={!hidden} />;
+  return (
+    <TilesetLayer
+      {...props}
+      noId // Flood model doesn't have id, so we can't cache each feature
+      onLoad={handleLoad}
+      appearance={appearance}
+      visible={!hidden}
+    />
+  );
 };

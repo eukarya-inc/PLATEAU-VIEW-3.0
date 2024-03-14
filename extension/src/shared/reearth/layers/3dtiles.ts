@@ -33,6 +33,7 @@ export type TilesetProps = {
   visible?: boolean;
   appearance: LayerAppearance<Cesium3DTilesAppearance>;
   boxAppearance?: LayerAppearance<BoxAppearance>;
+  noId?: boolean;
 };
 
 export const TilesetLayer: FC<TilesetProps> = ({
@@ -41,14 +42,15 @@ export const TilesetLayer: FC<TilesetProps> = ({
   visible,
   appearance,
   boxAppearance,
+  noId,
 }) => {
   const data: Data = useMemo(
     () => ({
       type: "3dtiles",
-      idProperty: "gml_id",
+      idProperty: !noId ? "gml_id" : undefined,
       url,
     }),
-    [url],
+    [url, noId],
   );
   const appearances = useMemo(
     () => ({
