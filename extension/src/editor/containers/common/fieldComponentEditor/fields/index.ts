@@ -5,6 +5,7 @@ import { EditorTilesetBuildingModelColorField } from "./3dtiles/EditorTilesetBui
 import { EditorTilesetBuildingModelFilterField } from "./3dtiles/EditorTilesetBuildingModelFilterField";
 import { EditorTilesetClippingField } from "./3dtiles/EditorTilesetClippingField";
 import { EditorDisableDefaultMaterialField } from "./3dtiles/EditorTilesetDisableDefaultMaterialField";
+import { EditorTilesetDrawClippingField } from "./3dtiles/EditorTilesetDrawClippingField";
 import { EditorTilesetFloodColorField } from "./3dtiles/EditorTilesetFloodColorField";
 import { EditorTilesetFloodModelColorField } from "./3dtiles/EditorTilesetFloodModelColorField";
 import { EditorTilesetFloodModelFilterField } from "./3dtiles/EditorTilesetFloodModelFilterField";
@@ -31,6 +32,7 @@ import {
   FIELD_GROUP_POLYGON_VISIBILITY,
   FIELD_GROUP_POLYLINE_FILL_COLOR,
   FIELD_GROUP_POLYLINE_VISIBILITY,
+  FIELD_GROUP_THREE_D_TILES_CLIPPING,
   FIELD_GROUP_THREE_D_TILES_FILL_COLOR,
   FIELD_GROUP_THREE_D_TILES_FILTER,
   FILED_GROUP_GENERAL_TIMELINE,
@@ -369,8 +371,15 @@ export const fields: {
   },
   TILESET_CLIPPING: {
     category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_CLIPPING,
     name: "Clipping",
     Component: EditorTilesetClippingField,
+  },
+  TILESET_DRAW_CLIPPING: {
+    category: FIELD_CATEGORY_THREE_D_TILES,
+    group: FIELD_GROUP_THREE_D_TILES_CLIPPING,
+    name: "Draw clipping",
+    Component: EditorTilesetDrawClippingField,
   },
   TILESET_BUILDING_MODEL_FILTER: {
     category: FIELD_CATEGORY_THREE_D_TILES,

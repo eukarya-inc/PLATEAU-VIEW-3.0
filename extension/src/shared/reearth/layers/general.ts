@@ -105,10 +105,12 @@ export const GeneralLayer: FC<GeneralProps> = ({
     [url, updateInterval, format, appendData],
   );
 
+  const memoedEvents = useMemo(() => events ?? {}, [events]);
+
   useLayer({
     data,
     visible,
-    events: events ?? {},
+    events: memoedEvents,
     appearances: mergedAppearances,
     onLoad,
   });

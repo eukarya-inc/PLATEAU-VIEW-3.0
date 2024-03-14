@@ -9,6 +9,7 @@ import {
   TILESET_BUILDING_MODEL_COLOR,
   TILESET_BUILDING_MODEL_FILTER,
   TILESET_CLIPPING,
+  TILESET_DRAW_CLIPPING,
   TILESET_FILL_COLOR_CONDITION_FIELD,
   TILESET_FILL_COLOR_GRADIENT_FIELD,
   TILESET_FLOOD_COLOR_FIELD,
@@ -48,6 +49,7 @@ import { useIsMultipleSelectableField } from "../hooks/useIsMultipleSelectableFi
 import { BuildingFilterSection } from "../selection/BuildingFilterSection";
 
 import { LayerTilesetClippingField } from "./3dtiles/LayerTilesetClippingField";
+import { LayerTilesetDrawClippingField } from "./3dtiles/LayerTilesetDrawClippingField";
 import { LayerTilesetFillColorConditionField } from "./3dtiles/LayerTilesetFillColorConditionField";
 import { LayerTilesetFillGradientColorField } from "./3dtiles/LayerTilesetFillGradientColorField";
 import { LayerTilesetWireframeField } from "./3dtiles/LayerTilesetWireframeField";
@@ -251,6 +253,15 @@ export const Fields: FC<Props> = ({ layers, type, atoms }) => {
         <LayerTilesetClippingField
           layers={layers}
           atoms={atoms as ComponentAtom<"TILESET_CLIPPING">["atom"][]}
+        />
+      );
+      break;
+    }
+    case TILESET_DRAW_CLIPPING: {
+      component = (
+        <LayerTilesetDrawClippingField
+          layers={layers}
+          atoms={atoms as ComponentAtom<"TILESET_DRAW_CLIPPING">["atom"][]}
         />
       );
       break;

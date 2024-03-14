@@ -21,6 +21,7 @@ import {
   TILESET_CLIPPING,
   TILESET_WIREFRAME,
   TILESET_DISABLE_DEFAULT_MATERIAL,
+  TILESET_DRAW_CLIPPING,
 } from "../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD } from "../types/fieldComponents/general";
 import { SearchedFeatures } from "../view-layers";
@@ -28,6 +29,7 @@ import { ComponentAtom } from "../view-layers/component";
 import { useFindComponent } from "../view-layers/hooks";
 
 import { useClippingBox } from "./hooks/useClippingBox";
+import { useDrawClipping } from "./hooks/useDrawClipping";
 import { useEvaluateFeatureColor } from "./hooks/useEvaluateFeatureColor";
 import { useEvaluateFilter } from "./hooks/useEvaluateFilter";
 
@@ -131,6 +133,10 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
   );
 
+  const drawClipping = useDrawClipping(
+    useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_DRAW_CLIPPING)),
+  );
+
   const filter = useEvaluateFilter(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_FILTER)),
   );
@@ -219,7 +225,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       },
       shadows: enableShadow ? "enabled" : "disabled",
       selectedFeatureColor: theme.palette.primary.main,
-      experimental_clipping: clippingBox,
+      experimental_clipping: { ...clippingBox, ...drawClipping },
       showWireframe: wireframeView?.value?.wireframe,
       disabledSelection: disabledSelection,
     }),
@@ -231,6 +237,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       filter.conditions,
       enableShadow,
       theme.palette.primary.main,
+      drawClipping,
       clippingBox,
       wireframeView,
       disableDefaultMaterial,
