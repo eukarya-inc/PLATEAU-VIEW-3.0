@@ -3,7 +3,7 @@ import chroma from "chroma-js";
 import { atomsWithQualitativeColorSet } from "../atomsWithQualitativeColorSet";
 
 export const FIREPROOF_STRUCTURE_TYPE_COLORS = [
-  { value: "耐火", color: chroma.rgb(127, 123, 133).hex(), name: "耐火" },
+  { value: "耐火", color: chroma.rgb(92, 92, 94).hex(), name: "耐火" },
   {
     value: "準耐火造",
     color: chroma.rgb(140, 155, 177).hex(),
