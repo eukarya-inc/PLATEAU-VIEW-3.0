@@ -26,6 +26,7 @@ resource "google_project_iam_custom_role" "reearth_cms" {
   description = "IAM role for reearth-cms-api"
   stage       = "GA"
   permissions = [
+    "cloudbuild.builds.create",
     "cloudprofiler.profiles.create",
     "cloudprofiler.profiles.update",
     "cloudtasks.tasks.create",

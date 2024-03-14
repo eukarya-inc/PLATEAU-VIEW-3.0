@@ -114,6 +114,7 @@ resource "google_cloud_run_v2_service" "reearth_api" {
             logoUrl    = var.reearth_web_config.brand.logoUrl
           }
           cesiumIonAccessToken = var.cesium_ion_access_token
+          developerMode        = true
           ip                   = google_compute_global_address.reearth_lb.address
           unsafePluginUrls : [
             "https://${local.api_domain}/PlateauView3.js"

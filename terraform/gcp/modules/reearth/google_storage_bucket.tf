@@ -8,6 +8,9 @@ resource "google_storage_bucket" "static" {
     max_age_seconds = 60
     method = [
       "GET",
+      "PATCH",
+      "POST",
+      "PUT",
       "HEAD",
       "OPTIONS",
     ]
