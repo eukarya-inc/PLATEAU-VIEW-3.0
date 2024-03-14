@@ -258,7 +258,7 @@ export const makeSimpleColorWithOpacity = (
   if (!comp || !originColor) return;
   return {
     expression: {
-      conditions: [["true", color(originColor, comp.value ?? 1)]],
+      conditions: [["true", color(originColor, comp.value ?? comp?.preset?.defaultValue ?? 1)]],
     },
   };
 };

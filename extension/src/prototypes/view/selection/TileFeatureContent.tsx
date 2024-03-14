@@ -103,13 +103,13 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
         title={title}
         iconComponent={Icon}
         actions={
-          isBuildingModel ? (
-            <>
-              <Tooltip title="レイヤーを選択">
-                <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
-                  <LayerIcon />
-                </IconButton>
-              </Tooltip>
+          <>
+            <Tooltip title="レイヤーを選択">
+              <IconButton aria-label="レイヤーを選択" onClick={handleSelectLayers}>
+                <LayerIcon />
+              </IconButton>
+            </Tooltip>
+            {isBuildingModel && (
               <Tooltip title={hidden ? "表示" : "隠す"}>
                 <IconButton
                   aria-label={hidden ? "表示" : "隠す"}
@@ -117,8 +117,8 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
                   {hidden ? <VisibilityOffIcon /> : <VisibilityOnIcon />}
                 </IconButton>
               </Tooltip>
-            </>
-          ) : undefined
+            )}
+          </>
         }
         onClose={handleClose}
       />

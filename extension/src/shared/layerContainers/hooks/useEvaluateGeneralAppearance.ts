@@ -187,7 +187,11 @@ export const useEvaluateGeneralAppearance = ({
   const styleCode = useOptionalAtomValue(useFindComponent(componentAtoms ?? [], STYLE_CODE_FIELD));
 
   const appearanceObjectFromStyleCode = useMemo(
-    () => getAppearanceObject(styleCode?.preset?.code, styleCode?.value?.opacity) ?? {},
+    () =>
+      getAppearanceObject(
+        styleCode?.preset?.code,
+        styleCode?.value?.opacity ?? styleCode?.preset?.defaultOpacity,
+      ) ?? {},
     [styleCode],
   );
 
@@ -197,9 +201,15 @@ export const useEvaluateGeneralAppearance = ({
         marker: {
           style: pointStyle?.preset?.style,
           pointColor:
-            makeSimpleColorValue(pointColor, opacity?.value) ??
-            makeConditionalExpression(pointFillColorCondition, opacity?.value) ??
-            makeGradientExpression(pointFillGradientColor, opacity?.value) ??
+            makeSimpleColorValue(pointColor, opacity?.value ?? opacity?.preset?.defaultValue) ??
+            makeConditionalExpression(
+              pointFillColorCondition,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
+            makeGradientExpression(
+              pointFillGradientColor,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           pointSize: pointSize?.preset?.defaultValue,
           pointOutlineColor:
@@ -212,7 +222,10 @@ export const useEvaluateGeneralAppearance = ({
           imageColor:
             makeSimpleColorWithOpacity(opacity, pointImageValue?.preset?.imageColor) ??
             pointImageValue?.preset?.imageColor ??
-            makeConditionalImageColorExpression(pointImageCondition, opacity?.value),
+            makeConditionalImageColorExpression(
+              pointImageCondition,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ),
           imageSize: pointImageSize?.preset?.defaultValue,
           imageSizeInMeters: pointImageSize?.preset?.enableSizeInMeters,
           show:
@@ -236,8 +249,11 @@ export const useEvaluateGeneralAppearance = ({
         },
         polyline: {
           strokeColor:
-            makeSimpleColorValue(polylineColor, opacity?.value) ??
-            makeConditionalExpression(polylineFillColorCondition, opacity?.value) ??
+            makeSimpleColorValue(polylineColor, opacity?.value ?? opacity?.preset?.defaultValue) ??
+            makeConditionalExpression(
+              polylineFillColorCondition,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           strokeWidth: polylineStrokeWeight?.preset?.defaultValue,
           show:
@@ -252,14 +268,23 @@ export const useEvaluateGeneralAppearance = ({
         },
         polygon: {
           fillColor:
-            makeSimpleColorValue(polygonFillAndStrokeColor, opacity?.value) ??
-            makeConditionalExpression(polygonFillAndStrokeColorCondition, opacity?.value) ??
+            makeSimpleColorValue(
+              polygonFillAndStrokeColor,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
+            makeConditionalExpression(
+              polygonFillAndStrokeColorCondition,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           strokeColor:
-            makeSimpleValueForStrokeColor(polygonFillAndStrokeColor, opacity?.value) ??
+            makeSimpleValueForStrokeColor(
+              polygonFillAndStrokeColor,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
             makeStrokeColorConditionalExpression(
               polygonFillAndStrokeColorCondition,
-              opacity?.value,
+              opacity?.value ?? opacity?.preset?.defaultValue,
             ) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           strokeWidth: polygonStrokeWeight?.preset?.defaultValue,
@@ -279,8 +304,14 @@ export const useEvaluateGeneralAppearance = ({
         "3dtiles": {
           pbr: tilesetDisableDefaultMaterial ? false : undefined,
           color:
-            makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
-            makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
+            makeConditionalExpression(
+              tilesetFillColorCondition,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
+            makeGradientExpression(
+              tilesetFillGradientColor,
+              opacity?.value ?? opacity?.preset?.defaultValue,
+            ) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
           experimental_clipping: { ...clippingBox, ...drawClipping },
           disableSelection: clippingBox?.disabledSelection,
