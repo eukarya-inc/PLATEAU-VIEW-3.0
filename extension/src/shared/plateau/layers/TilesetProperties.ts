@@ -116,6 +116,7 @@ interface NumberProperty {
   getDisplayName?: (name: string) => string;
   getMinMax?: (min: number, max: number) => [min: number, max: number];
   availableFeatures?: AvailableFeatures;
+  defaultValue?: number;
 }
 
 const numberProperties: NumberProperty[] = [
@@ -134,6 +135,7 @@ const numberProperties: NumberProperty[] = [
       propertyName === "地下階数" || propertyName === "bldg:storeysBelowGround",
     availableFeatures: ["buildingFilter"],
     getMinMax: (min, max) => [Math.min(min, 0), max],
+    defaultValue: 0,
   },
 ];
 
@@ -142,6 +144,7 @@ export type PlateauTilesetProperty = {
   availableFeatures: AvailableFeatures;
   displayName: string;
   accessor: string;
+  defaultValue?: number;
 } & (
   | { type: "unknown" }
   | {
@@ -259,6 +262,7 @@ export class PlateauTilesetProperties extends Properties {
                 name,
               availableFeatures: numberProperty.availableFeatures,
               accessor: makeAccessor(name),
+              defaultValue: numberProperty.defaultValue,
             };
           }
         }
