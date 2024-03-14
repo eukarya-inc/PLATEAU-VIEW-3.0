@@ -27,7 +27,11 @@ const OptionItem: FC<{
     [option, onClick],
   );
   return (
-    <EntityTitleButton iconComponent={iconComponent} title={option.name} onClick={handleClick} />
+    <EntityTitleButton
+      iconComponent={iconComponent}
+      title={option.displayName ?? option.name}
+      onClick={handleClick}
+    />
   );
 };
 
