@@ -50,7 +50,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
   const tilesetLayer = layers[0].layer as BuildingLayerModel | undefined;
   const tilesetProperties = useOptionalAtomValue(tilesetLayer?.propertiesAtom);
 
-  const featureType = useMemo(() => layers[0].features[0].properties["feature_type"], [layers]);
+  const featureType = useMemo(() => layers[0].features[0]?.properties["feature_type"], [layers]);
 
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath

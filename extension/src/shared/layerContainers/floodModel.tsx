@@ -147,7 +147,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
   const color = useEvaluateFeatureColor({
     colorProperty: floodModelColorAtom || floodColor ? colorProperty ?? undefined : undefined,
     colorScheme: floodModelColorAtom || floodColor ? colorScheme ?? undefined : undefined,
-    opacity: opacity?.value,
+    opacity: opacity?.value ?? opacity?.preset?.defaultValue,
     selections,
     defaultColor: {
       r: primaryRGB[0],

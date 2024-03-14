@@ -89,35 +89,32 @@ function useDatasetSearchOptions({
           );
         })
         .map(dataset => {
-          const labelParts = [];
-          if (inEditor() && dataset.year) {
-            labelParts.push(`[${dataset.year}]`);
-          }
-          labelParts.push(dataset.name);
+          const name = `[${inEditor() && dataset.year ? dataset.year : ""}] ${dataset.name}`;
+          const locations = [];
 
-          const locationParts = [];
           if (dataset.prefecture?.name) {
-            locationParts.push(dataset.prefecture.name);
+            locations.push(dataset.prefecture.name);
           }
           if (dataset.city?.name) {
-            locationParts.push(dataset.city.name);
+            locations.push(dataset.city.name);
           }
           if (dataset.ward?.name) {
-            locationParts.push(dataset.ward.name);
+            locations.push(dataset.ward.name);
           }
 
-          if (locationParts.length > 0) {
-            labelParts.push(`[${locationParts.join(".")}]`);
-          }
-
-          const formattedLabel = labelParts.join(" ");
+          const nameWithLocation = `${name}${
+            locations.length > 0 ? ` [${locations.join(".")}]` : ""
+          }`;
 
           return {
             type: "dataset" as const,
-            name: formattedLabel,
-            index: formattedLabel,
+            name: nameWithLocation,
+            displayName: {
+              primary: name,
+              secondary: locations.length > 0 ? `${locations.join(" ")}` : "",
+            },
+            index: nameWithLocation,
             dataset,
-            title: formattedLabel,
           };
         }) ?? []
     );

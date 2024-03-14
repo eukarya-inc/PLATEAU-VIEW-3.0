@@ -15,6 +15,8 @@ type TimelineParameterItemProps = {
   current?: string;
   end?: string;
   timezone?: string;
+  defaultUnit?: number;
+  defaultAmount?: number;
   activeIdAtom: PrimitiveAtom<string>;
   onPlay?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
   onPlayReverse?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
@@ -116,6 +118,8 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   current,
   end,
   timezone = "+9",
+  defaultUnit = 60,
+  defaultAmount = 1,
   activeIdAtom,
   onPlay,
   onPlayReverse,
@@ -138,8 +142,8 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   const isActive = useRef(false);
   const [playState, setPlayState] = useState<"play" | "pause" | "reverse" | undefined>(undefined);
 
-  const [speedAmount, setSpeedAmount] = useState(speedAmountOptions[0].value);
-  const [speedUnit, setSpeedUnit] = useState(speedUnitOptions[1].value);
+  const [speedAmount, setSpeedAmount] = useState(defaultAmount);
+  const [speedUnit, setSpeedUnit] = useState(defaultUnit);
   const handleSpeedAmountChange = useCallback(
     (event: SelectChangeEvent<number>) => {
       setSpeedAmount(Number(event.target.value));

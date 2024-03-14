@@ -34,6 +34,8 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
   const current = useMemo(() => component.preset?.current ?? start, [component.preset, start]);
   const end = useMemo(() => component.preset?.end ?? start, [component.preset, start]);
   const timezone = useMemo(() => component.preset?.timezone ?? "+9", [component.preset]);
+  const defaultUnit = useMemo(() => component.preset?.defaultUnit, [component.preset]);
+  const defaultAmount = useMemo(() => component.preset?.defaultAmount, [component.preset]);
 
   return start && current && end && timezone !== undefined ? (
     <ParameterList>
@@ -44,6 +46,8 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
           current={current}
           end={end}
           timezone={timezone}
+          defaultUnit={defaultUnit}
+          defaultAmount={defaultAmount}
           activeIdAtom={activeTimelineComponentIdAtom}
           onPlay={handleTimelinePlay}
           onPlayReverse={handleTimelinePlayReverse}
