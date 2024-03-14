@@ -101,6 +101,7 @@ export interface SearchOption {
   id?: string;
   name: string;
   index?: string;
+  displayName?: string | { primary: string; secondary?: string };
 }
 
 const iconComponents: Record<Exclude<SearchOptionType, "filter">, ComponentType> = {
@@ -134,7 +135,7 @@ function renderOption(props: HTMLAttributes<HTMLLIElement>, option: SearchOption
   return (
     // @ts-expect-error TODO
     <EntityTitleButton
-      title={option.name}
+      title={option.displayName ?? option.name}
       // @ts-expect-error TODO
       iconComponent={iconComponents[option.type]}
       {...props}
