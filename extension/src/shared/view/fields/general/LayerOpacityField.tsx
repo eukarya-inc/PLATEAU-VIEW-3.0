@@ -18,7 +18,7 @@ export const LayerOpacityField: FC<LayerOpacityFieldProps> = ({ atoms }) => {
     () =>
       atoms.map(a =>
         atom(
-          get => get(a).value ?? 1,
+          get => get(a).value ?? get(a).preset?.defaultValue ?? 1,
           (get, set, update: number) => {
             set(a, { ...get(a), value: update });
           },

@@ -58,7 +58,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
     }, [] as { features: Pick<Feature, "properties">[]; layer?: LayerModel; rootLayer: RootLayerForDataset | undefined }[]);
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
-  const featureType = useMemo(() => layers[0].features[0].properties["feature_type"], [layers]);
+  const featureType = useMemo(() => layers[0].features[0]?.properties["feature_type"], [layers]);
 
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
