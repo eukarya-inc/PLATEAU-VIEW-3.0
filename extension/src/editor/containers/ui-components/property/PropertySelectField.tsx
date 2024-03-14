@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 
 export type PropertySelectFieldProps = TextFieldProps & {
-  options: { value: string; label: string }[];
+  options: { value: string | number; label: string }[];
 };
 
 export const PropertySelectField: React.FC<PropertySelectFieldProps> = ({ options, ...props }) => {

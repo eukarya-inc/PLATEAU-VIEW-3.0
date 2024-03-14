@@ -10,6 +10,7 @@ import {
   EditorDialog,
   PropertyBox,
   PropertyInlineWrapper,
+  PropertyInputField,
   PropertySwitchField,
   PropertyWrapper,
 } from "../../../../ui-components";
@@ -29,6 +30,7 @@ const options = {
 export type StyleCodeFieldPreset = {
   code?: string;
   enableTransparencySlider?: boolean;
+  defaultOpacity?: number;
 };
 
 export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">> = ({
@@ -72,6 +74,31 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
     },
     [component, onUpdate],
   );
+
+  const [localOpacity, setLocalOpacity] = useState(component.preset?.defaultOpacity ?? "1");
+
+  const handleLocalOpacityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocalOpacity(e.target.value);
+  }, []);
+
+  useEffect(() => {
+    const numberValue = Number(localOpacity);
+    if (
+      isNaN(numberValue) ||
+      numberValue > 1 ||
+      numberValue < 0 ||
+      numberValue === component.preset?.defaultOpacity
+    )
+      return;
+
+    onUpdate?.({
+      ...component,
+      preset: {
+        ...component.preset,
+        defaultOpacity: numberValue,
+      },
+    });
+  }, [localOpacity, component, onUpdate]);
 
   const [fullsizeEditorOpen, setFullsizeEditorOpen] = useState(false);
   const openFullsizeEditor = useCallback(() => {
@@ -122,6 +149,13 @@ export const EditorStyleCodeField: React.FC<BasicFieldProps<"STYLE_CODE_FIELD">>
           <PropertySwitchField
             checked={!!component.preset?.enableTransparencySlider}
             onChange={handleEnableTransparencySliderChange}
+          />
+        </PropertyInlineWrapper>
+        <PropertyInlineWrapper label="Default Opacity">
+          <PropertyInputField
+            value={localOpacity}
+            placeholder="0 ~ 1"
+            onChange={handleLocalOpacityChange}
           />
         </PropertyInlineWrapper>
       </PropertyBox>
