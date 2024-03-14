@@ -20,10 +20,10 @@ PLATEAU VIEW 3.0（CMS・Editor・VIEW）をGCP（Google Cloud Platform）で構
 
 ### 3.1 Terraform変数ファイルの用意
 
-最初に、[terraform.tfvars.example](./env/terraform.tfvars.example) をコピーします。
+最初に、[terraform.tfvars.example](./terraform.tfvars.example) をコピーします。
 
 ```console
-cp env/erraform.tfvars.example terraform.tfvars
+cp terraform.tfvars.example terraform.tfvars
 ```
 
 > [!TIP]
@@ -117,7 +117,7 @@ $ terraform apply --target google_project_service.project
 
 実行の承認を求められるので、`yes`を入力してください（以降の`terraform apply`の実行でも同様にしてください）。
 
-### 3.8 Cloud DNSマネージドゾーンの作成およびドメイン解決の移譲
+### 3.8 Cloud DNSマネージドゾーンの作成およびドメイン解決の委譲
 
 以下のコマンドでCloud DNSマネージドゾーンを作成します。
 
