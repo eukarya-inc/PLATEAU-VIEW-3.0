@@ -189,7 +189,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const color = useEvaluateFeatureColor({
     colorProperty: buildingModelColorAtom ? colorProperty ?? undefined : undefined,
     colorScheme: buildingModelColorAtom ? colorScheme ?? undefined : undefined,
-    opacity: opacity?.value,
+    opacity: opacity?.value ?? opacity?.preset?.defaultValue,
     selections,
     defaultColor:
       colorMode === "light" ? { r: 255, g: 255, b: 255, a: 1 } : { r: 68, g: 68, b: 68, a: 1 },
@@ -197,7 +197,9 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
 
   const theme = useTheme();
 
-  const enableShadow = !opacity?.value || opacity.value === 1;
+  const enableShadow =
+    !(opacity?.value ?? opacity?.preset?.defaultValue) ||
+    (opacity.value ?? opacity?.preset?.defaultValue) === 1;
 
   const [interactionMode] = useAtom(interactionModeAtom);
 
