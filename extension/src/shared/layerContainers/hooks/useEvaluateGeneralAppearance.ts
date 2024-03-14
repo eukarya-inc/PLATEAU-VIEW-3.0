@@ -9,6 +9,7 @@ import {
   TILESET_FILL_COLOR_GRADIENT_FIELD,
   TILESET_WIREFRAME,
   TILESET_DISABLE_DEFAULT_MATERIAL,
+  TILESET_DRAW_CLIPPING,
 } from "../../types/fieldComponents/3dtiles";
 import { OPACITY_FIELD, STYLE_CODE_FIELD } from "../../types/fieldComponents/general";
 import {
@@ -63,6 +64,7 @@ import {
 } from "../utils/value";
 
 import { useClippingBox } from "./useClippingBox";
+import { useDrawClipping } from "./useDrawClipping";
 
 export const useEvaluateGeneralAppearance = ({
   componentAtoms,
@@ -167,6 +169,10 @@ export const useEvaluateGeneralAppearance = ({
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms ?? [], TILESET_CLIPPING)),
   );
+  const drawClipping = useDrawClipping(
+    useOptionalAtomValue(useFindComponent(componentAtoms ?? [], TILESET_DRAW_CLIPPING)),
+  );
+
   const tilesetWireframe = useOptionalAtomValue(
     useFindComponent(componentAtoms ?? [], TILESET_WIREFRAME),
   );
@@ -276,7 +282,7 @@ export const useEvaluateGeneralAppearance = ({
             makeConditionalExpression(tilesetFillColorCondition, opacity?.value) ??
             makeGradientExpression(tilesetFillGradientColor, opacity?.value) ??
             makeSimpleColorWithOpacity(opacity, DEFAULT_COLOR),
-          experimental_clipping: clippingBox,
+          experimental_clipping: { ...clippingBox, ...drawClipping },
           disableSelection: clippingBox?.disabledSelection,
           showWireframe: tilesetWireframe?.value?.wireframe,
         },
@@ -318,6 +324,7 @@ export const useEvaluateGeneralAppearance = ({
       tilesetFillColorCondition,
       tilesetFillGradientColor,
       clippingBox,
+      drawClipping,
       tilesetWireframe?.value?.wireframe,
       tilesetDisableDefaultMaterial,
       boxAppearance,

@@ -39,6 +39,7 @@ export const polygonFieldName = {
 
 export const threeDFieldName = {
   clipping: "クリッピング",
+  drawClipping: "クリッピング",
   buildingFilter: "フィルター（建築物）",
   buildingTransparency: "透明度",
   buildingColor: "色分け（建築物）",

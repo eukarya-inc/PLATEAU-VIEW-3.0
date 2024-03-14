@@ -20,7 +20,10 @@ export default () => {
 
   const {
     handleSetType,
+    handleSetColor,
     handleCreateDataOnly,
+    handleDisableShadow,
+    handleEnableRelativeHeight,
     handleAllowRightClickToAbort,
     handleAllowAutoResetInteractionMode,
   } = useSketch();
@@ -38,12 +41,21 @@ export default () => {
       // View 3.0 always has a sketch tool type while reearth sketch type could be undefined. (to disable sketch). Here we use tool type to determine whether to enable sketch.
       // But View 3.0 tool type could temporarily changes when space is pressed while drawing. So manually added a check for spacePressed here.
       if (spacePressed.current) return;
-
+      handleSetColor("#00BEBE");
+      handleDisableShadow(false);
+      handleEnableRelativeHeight(false);
       handleSetType(
         toolType?.type !== "sketch" ? undefined : sketchGeometryTypeToReearthSketchType(sketchType),
       );
     });
-  }, [sketchType, toolType?.type, handleSetType]);
+  }, [
+    sketchType,
+    toolType?.type,
+    handleSetColor,
+    handleSetType,
+    handleDisableShadow,
+    handleEnableRelativeHeight,
+  ]);
 
   useEffect(() => {
     handleCreateDataOnly(true);

@@ -7,8 +7,20 @@ export const useSketch = () => {
     window.reearth?.sketch?.setType(type);
   }, []);
 
+  const handleSetColor = useCallback((color: string) => {
+    window.reearth?.sketch?.setColor(color);
+  }, []);
+
   const handleCreateDataOnly = useCallback((dataOnly: boolean) => {
     window.reearth?.sketch?.createDataOnly(dataOnly);
+  }, []);
+
+  const handleDisableShadow = useCallback((disable: boolean) => {
+    window.reearth?.sketch?.disableShadow(disable);
+  }, []);
+
+  const handleEnableRelativeHeight = useCallback((enable: boolean) => {
+    window.reearth?.sketch?.enableRelativeHeight(enable);
   }, []);
 
   const handleAllowRightClickToAbort = useCallback((allow: boolean) => {
@@ -21,7 +33,10 @@ export const useSketch = () => {
 
   return {
     handleSetType,
+    handleSetColor,
     handleCreateDataOnly,
+    handleDisableShadow,
+    handleEnableRelativeHeight,
     handleAllowRightClickToAbort,
     handleAllowAutoResetInteractionMode,
   };
