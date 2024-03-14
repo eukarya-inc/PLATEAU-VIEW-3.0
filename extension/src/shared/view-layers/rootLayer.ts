@@ -104,6 +104,13 @@ const findComponentGroup = (
   return currentGroupId ? groups?.find(g => g.id === currentGroupId) : groups?.[0];
 };
 
+const findComponentGroupIds = (
+  setting: Setting | undefined,
+  template: ComponentTemplate | undefined,
+): string[] | undefined => {
+  return (template ? template.groups : setting?.fieldComponents?.groups)?.map(g => g.id);
+};
+
 const findSetting = (settings: Setting[], currentDataId: string | undefined) => {
   const result: (Setting | undefined)[] = new Array(2); // [found setting, default setting];
   for (const setting of settings) {
@@ -353,8 +360,17 @@ export const createRootLayerForDatasetAtom = (
     (get, set, update: string | undefined) => {
       const currentDataId = get(currentDataIdAtom);
       if (currentDataId === update) return;
+      // set current group id when data id changes
+      const setting = findSetting(get(settingsPrimitiveAtom), update);
+      const template = findComponentTemplate(
+        setting,
+        get(templatesAtom),
+        dataset.type.name,
+        subName,
+      );
+      const currentGroupId = findComponentGroupIds(setting, template)?.[0];
+      set(currentGroupIdAtom, currentGroupId);
 
-      const currentGroupId = get(currentGroupIdAtom);
       set(
         rootLayerAtom,
         createRootLayerForDataset({
