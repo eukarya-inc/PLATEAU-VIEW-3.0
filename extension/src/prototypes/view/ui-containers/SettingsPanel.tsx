@@ -2,12 +2,8 @@ import { styled } from "@mui/material";
 import { type FC } from "react";
 
 import { shareableGraphicsQualityAtom } from "../../../shared/states/scene";
-import {
-  FloatingPanel,
-  ParameterList,
-  SegmentParameterItem,
-  SwitchParameterItem,
-} from "../../ui-components";
+import { FloatingPanel, ParameterList, SwitchParameterItem } from "../../ui-components";
+import SegmentParameterItem from "../../ui-components/SegmentParameterItem";
 import { nativeResolutionEnabledAtom } from "../states/graphics";
 
 const Root = styled(FloatingPanel)(({ theme }) => ({
@@ -25,6 +21,7 @@ const Title = styled("div")(({ theme }) => ({
 }));
 
 export const SettingsPanel: FC = () => {
+
   return (
     <Root>
       <Title>設定</Title>

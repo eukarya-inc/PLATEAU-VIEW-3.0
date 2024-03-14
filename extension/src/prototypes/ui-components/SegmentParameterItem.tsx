@@ -2,8 +2,10 @@ import {
   styled,
   ToggleButton,
   ToggleButtonGroup,
+  useMediaQuery,
   type ToggleButtonGroupProps,
   type ToggleButtonProps,
+  useTheme,
 } from "@mui/material";
 import { useAtom, type WritableAtom } from "jotai";
 import {
@@ -12,7 +14,10 @@ import {
   type MouseEvent,
   type PropsWithoutRef,
   type ReactNode,
-  type RefAttributes,
+  useEffect,
+  memo,
+  RefAttributes,
+  useState, // Import useState
 } from "react";
 
 import { ParameterItem, type ParameterItemProps } from "./ParameterItem";
@@ -35,12 +40,13 @@ export interface SegmentParameterItemProps<
     [Exclusive extends true ? T : T[]],
     void
   >;
+  val?: string;
   items?: ReadonlyArray<
     readonly [T, ReactNode] | readonly [T, ReactNode, Partial<ToggleButtonProps>]
   >;
 }
 
-export const SegmentParameterItem = forwardRef<HTMLDivElement, SegmentParameterItemProps>(
+const SegmentParameterItem = forwardRef<HTMLDivElement, SegmentParameterItemProps>(
   (
     {
       label,
@@ -56,14 +62,30 @@ export const SegmentParameterItem = forwardRef<HTMLDivElement, SegmentParameterI
     ref,
   ) => {
     const [value, setValue] = useAtom(atom);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
+    const [defaultValueSet, setDefaultValueSet] = useState(false);
 
     const handleChange = useCallback(
       (event: MouseEvent<HTMLElement>, value: (string | number) | Array<string | number>) => {
         setValue(value);
         onChange?.(event, value);
+        if (isMobile) {
+          localStorage.setItem("graphicValue", JSON.stringify(value));
+        }
       },
-      [onChange, setValue],
+      [isMobile, onChange, setValue],
     );
+
+    const storedValue = localStorage.getItem("graphicValue");
+    useEffect(() => {
+      if (isMobile && !defaultValueSet && !storedValue) {
+        const defaultValue = items?.find(item => item[0] === "low");
+        defaultValue && setValue(defaultValue[0]);
+        setDefaultValueSet(value => !value);
+      }
+    }, [isMobile, setValue, items, value, defaultValueSet, storedValue]);
 
     return (
       <ParameterItem
@@ -92,4 +114,6 @@ export const SegmentParameterItem = forwardRef<HTMLDivElement, SegmentParameterI
   },
 ) as <T extends string | number, Exclusive extends boolean = false>(
   props: SegmentParameterItemProps<T, Exclusive> & RefAttributes<HTMLDivElement>,
-) => JSX.Element; // For generics
+) => JSX.Element;
+
+export default memo(SegmentParameterItem) as typeof SegmentParameterItem;
