@@ -206,11 +206,11 @@ const Property: FC<{
   const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
 
   return isPrimitive ? (
-    <TableRow>
+    <TableRow style={{ wordBreak: "break-all" }}>
       <PropertyNameCell variant="head" width="50%" level={level}>
         {makePropertyName(actualName, name, attrVal)}
       </PropertyNameCell>
-      <TableCell width="50%" style={{ wordBreak: "break-all" }}>
+      <TableCell width="50%">
         {typeof values[0] === "string" ? (
           <StringValue
             name={name}
