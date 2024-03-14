@@ -230,7 +230,7 @@ export const LayerTilesetDrawClippingField: FC<LayerTilesetDrawClippingFieldProp
               disabled={!enabled}
             />
             <SliderParameterItem
-              label={"地形から高さ"}
+              label={"地形からの高さ"}
               atom={topAtom}
               min={0}
               max={maxTop}
