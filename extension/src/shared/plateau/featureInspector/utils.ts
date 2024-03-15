@@ -10,7 +10,8 @@ import { RootLayerForDataset } from "../../view-layers";
 
 import { AttributeValue, getAttributeLabel, getRootFields } from "./attributes";
 
-const attributesKey = "attributes";
+export const attributesKey = "attributes";
+export const ancestorsKey = "ancestors";
 
 const parseJsonPathAsNodes = (obj: any, path: string) => {
   try {

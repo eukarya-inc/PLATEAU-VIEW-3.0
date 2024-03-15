@@ -8,7 +8,11 @@ import {
   type SCREEN_SPACE_SELECTION,
   type SelectionGroup,
 } from "../../../prototypes/view/states/selection";
-import { makePropertyForFeatureInspector } from "../../plateau/featureInspector";
+import {
+  ancestorsKey,
+  attributesKey,
+  makePropertyForFeatureInspector,
+} from "../../plateau/featureInspector";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
 import { findRootLayerAtom, rootLayersLayersAtom } from "../../states/rootLayer";
@@ -59,6 +63,10 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
   }, [values, findLayer, findRootLayer, rootLayersLayers]);
 
   const featureType = useMemo(() => layers[0].features[0]?.properties["feature_type"], [layers]);
+  const ancestorsFeatureType = useMemo(
+    () => layers[0].features[0]?.properties[attributesKey]?.[ancestorsKey]?.[0]?.["feature_type"],
+    [layers],
+  );
 
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
@@ -77,7 +85,11 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
 
   return (
     <ParameterList>
-      <PropertyParameterItem properties={properties} featureType={featureType} />
+      <PropertyParameterItem
+        properties={properties}
+        featureType={featureType}
+        ancestorsFeatureType={ancestorsFeatureType}
+      />
     </ParameterList>
   );
 };
