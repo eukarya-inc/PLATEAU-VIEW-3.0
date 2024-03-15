@@ -15,7 +15,6 @@ import {
   type PropsWithoutRef,
   type ReactNode,
   useEffect,
-  memo,
   RefAttributes,
   useState, // Import useState
 } from "react";
@@ -116,4 +115,4 @@ const SegmentParameterItem = forwardRef<HTMLDivElement, SegmentParameterItemProp
   props: SegmentParameterItemProps<T, Exclusive> & RefAttributes<HTMLDivElement>,
 ) => JSX.Element;
 
-export default memo(SegmentParameterItem) as typeof SegmentParameterItem;
+export default SegmentParameterItem;
