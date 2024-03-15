@@ -6,7 +6,7 @@ import { colorMapMagma, type ColorMap } from "../color-maps";
 import { ButtonParameterItem } from "./ButtonParameterItem";
 import { ColorMapParameterItem } from "./ColorMapParameterItem";
 import { ParameterList } from "./ParameterList";
-import SegmentParameterItem from "./SegmentParameterItem";
+import { SegmentParameterItem } from "./SegmentParameterItem";
 import { SelectParameterItem } from "./SelectParameterItem";
 import { SliderParameterItem } from "./SliderParameterItem";
 import { SwitchParameterItem } from "./SwitchParameterItem";
