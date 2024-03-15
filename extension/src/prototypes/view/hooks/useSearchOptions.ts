@@ -89,7 +89,7 @@ function useDatasetSearchOptions({
           );
         })
         .map(dataset => {
-          const name = `[${inEditor() && dataset.year ? dataset.year : ""}] ${dataset.name}`;
+          const name = (inEditor() && dataset.year ? `[${dataset.year}] ` : "") + dataset.name;
           const locations = [];
 
           if (dataset.prefecture?.name) {

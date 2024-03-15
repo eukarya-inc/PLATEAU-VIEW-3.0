@@ -69,6 +69,7 @@ export type TilesetBuildingModelFilterField = FieldBase<{
         value: [min: number, max: number];
         range: [min: number, max: number];
         accessor: string | undefined;
+        defaultValue?: number;
       }
     >;
   };
@@ -84,6 +85,7 @@ export type TilesetFloodModelFilterField = FieldBase<{
         value: [min: number, max: number];
         range: [min: number, max: number];
         accessor: string | undefined;
+        defaultValue?: number;
       }
     >;
   };
