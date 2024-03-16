@@ -8,6 +8,7 @@ module "reearth_cms" {
   dns_managed_zone_name     = google_dns_managed_zone.zone.name
   fme_token                 = var.fme_token
   gcp_project_id            = data.google_project.project.project_id
+  gcp_region                = var.gcp_region
   mongodb_connection_string = var.mongodb_connection_string
   plateauview               = var.plateauview
   prefix                    = var.prefix
