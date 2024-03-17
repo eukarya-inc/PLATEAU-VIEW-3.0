@@ -8,6 +8,14 @@ on:
       action_type:
         description: "Action type"
         required: true
+        type: choice
+        options:
+          - extension
+          - geo
+          - server
+          - tiles
+          - tools
+          - worker
 
 jobs:
   prepare:
@@ -154,7 +162,7 @@ jobs:
 
   deploy-geo-dev:
     needs: build-geo
-    if: ${{ success() }}
+    if: ${{ always() && needs.build-geo.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -174,7 +182,7 @@ jobs:
 
   deploy-server-dev:
     needs: build-server
-    if: ${{ success() }}
+    if: ${{ always() && needs.build-server.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -189,7 +197,7 @@ jobs:
 
   deploy-tiles-dev:
     needs: build-tiles
-    if: ${{ success() }}
+    if: ${{ always() && needs.build-tiles.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -204,7 +212,7 @@ jobs:
 
   deploy-worker-dev:
     needs: build-worker
-    if: ${{ success() }}
+    if: ${{ always() && needs.build-worker.result == 'success' }}
     uses: ./.github/workflows/deploy-worker-dev.yml
     with:
       use_local: true
