@@ -1,7 +1,7 @@
 import {
   AdditionalData,
   DataCatalogItem,
-} from "../../../../../plateau-api-migrator/src/types/view2/core";
+} from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
 
 export type UserDataItem = Partial<DataCatalogItem> & {
   description?: string;

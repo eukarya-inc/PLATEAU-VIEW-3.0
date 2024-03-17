@@ -4,7 +4,7 @@ import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import { ChangeEvent, Fragment, useCallback, useState } from "react";
 
-import { AdditionalData } from "../../../../../plateau-api-migrator/src/types/view2/core";
+import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
 
 import { Label } from "./Label";
