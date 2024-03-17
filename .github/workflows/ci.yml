@@ -132,6 +132,13 @@ jobs:
       - ci-tools
       - ci-worker
     if: '!failure()'
+    outputs:
+      extension: ${{ needs.ci-extension.result }}
+      geo: ${{ needs.ci-geo.result }}
+      server: ${{ needs.ci-server.result }}
+      tiles: ${{ needs.ci-tiles.result }}
+      tools: ${{ needs.ci-tools.result }}
+      worker: ${{ needs.ci-worker.result }}
     steps:
       - run: echo OK
 
@@ -161,12 +168,11 @@ jobs:
 
   build-server:
     needs:
-      - ci-server
-      - ci-extension
-    if: ${{ needs.ci-server.result == 'success' && github.event_name == 'push' && github.ref_name == 'main' }}
+      - ci
+    if: ${{ needs.ci.outputs.server == 'success' && github.event_name == 'push' && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-server.yml
     with:
-      local: ${{ needs.ci-extension.result == 'success' }}
+      local: ${{ needs.ci.outputs.extension == 'success' }}
 
   deploy-server-dev:
     needs: build-server
