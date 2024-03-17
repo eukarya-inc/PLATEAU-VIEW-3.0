@@ -19,8 +19,7 @@ import (
 
 const dirpath = "govpolygondata"
 
-// var cahceDuration = 24 * time.Hour
-var cahceDuration = 0 * time.Hour
+var cahceDuration = 6 * time.Hour
 
 type Handler struct {
 	// e.g. "http://[::]:8080"
