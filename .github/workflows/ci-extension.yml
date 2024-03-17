@@ -30,3 +30,8 @@ jobs:
         run: yarn test
       - name: Build
         run: yarn build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: extension
+          path: extension/dist/**

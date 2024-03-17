@@ -1,4 +1,4 @@
-name: ⭐️ Deploy PLATEAU Extension prod
+name: ⭐️ Deploy PLATEAU Extension production
 on:
   workflow_dispatch:
 env:

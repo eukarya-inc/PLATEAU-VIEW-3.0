@@ -160,9 +160,13 @@ jobs:
           event-type: deploy-geo-dev
 
   build-server:
-    needs: ci-server
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    needs:
+      - ci-server
+      - ci-extension
+    if: ${{ needs.ci-server.result == 'success' && github.event_name == 'push' && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-server.yml
+    with:
+      local: ${{ needs.ci-extension.result == 'success' }}
 
   deploy-server-dev:
     needs: build-server
@@ -173,11 +177,11 @@ jobs:
         with:
           event-type: deploy-server-dev
 
-
   build-tiles:
     needs: ci-tiles
     if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-tiles.yml
+
   deploy-tiles-dev:
     needs: build-tiles
     runs-on: ubuntu-latest
