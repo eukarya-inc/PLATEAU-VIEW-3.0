@@ -35,17 +35,14 @@ func TestHandler(t *testing.T) {
 
 func TestProcessor(t *testing.T) {
 	p := &Processor{
-		dirpath:           dirpath,
-		key1:              key1,
-		key2:              key2,
-		simplifyTolerance: 0,
+		path: "govpolygondata/japan_city.geojson",
 	}
 	write := false
 
 	ctx := context.Background()
-	geojson, notfound, err := p.ComputeGeoJSON(ctx, nil, nil)
+	geojson, notfound, err := p.ComputeGeoJSON(ctx, nil)
 	assert.NoError(t, err)
-	assert.Nil(t, notfound)
+	assert.Empty(t, notfound)
 	assert.NotEmpty(t, geojson)
 
 	if write {

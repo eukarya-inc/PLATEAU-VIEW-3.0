@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -17,12 +18,6 @@ import (
 )
 
 const dirpath = "govpolygondata"
-const key1 = "N03_001"
-const key2 = "N03_004"
-
-// https://mourner.github.io/simplify-js/
-// const simplifyTolerance = 0.01
-const simplifyTolerance = 0 // disable simplification because no much effect
 
 var cahceDuration = 24 * time.Hour
 
@@ -40,7 +35,7 @@ type Handler struct {
 func New(gqlEndpoint string, updateIfNotExists bool) *Handler {
 	return &Handler{
 		gqlEndpoint:       gqlEndpoint,
-		processor:         NewProcessor(dirpath, key1, key2, simplifyTolerance),
+		processor:         NewProcessor(filepath.Join(dirpath, "japan_city.geojson")),
 		httpClient:        http.DefaultClient,
 		updateIfNotExists: updateIfNotExists,
 	}
@@ -85,12 +80,12 @@ func (h *Handler) Update(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	values, citycodem, err := h.getCityNames(ctx)
+	codes, err := h.getCityCodes(ctx)
 	if err != nil {
 		return err
 	}
 
-	g, notfound, err := h.processor.ComputeGeoJSON(ctx, values, citycodem)
+	g, notfound, err := h.processor.ComputeGeoJSON(ctx, codes)
 	if err != nil {
 		return err
 	}
@@ -114,7 +109,7 @@ func (h *Handler) Update(c echo.Context) error {
 	return nil
 }
 
-func (h *Handler) getCityNames(ctx context.Context) ([]string, map[string]string, error) {
+func (h *Handler) getCityCodes(ctx context.Context) ([]string, error) {
 	query := `
 		{
 			areas(input:{
@@ -135,28 +130,28 @@ func (h *Handler) getCityNames(ctx context.Context) ([]string, map[string]string
 		"query": query,
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to marshal request body: %w", err)
+		return nil, fmt.Errorf("failed to marshal request body: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, h.gqlEndpoint, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := h.httpClient.Do(req)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read response body: %w", err)
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	var responseData struct {
@@ -172,28 +167,13 @@ func (h *Handler) getCityNames(ctx context.Context) ([]string, map[string]string
 	}
 
 	if err := json.Unmarshal(body, &responseData); err != nil {
-		return nil, nil, fmt.Errorf("failed to unmarshal response body: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal response body: %w", err)
 	}
 
-	m := map[string]string{}
-	cityNames := make([]string, len(responseData.Data.Areas))
+	cityCodes := make([]string, len(responseData.Data.Areas))
 	for i, city := range responseData.Data.Areas {
-		cityNames[i] = city.Prefecture.Name + city.Name
-		m[cityNames[i]] = city.Code
+		cityCodes[i] = city.Code
 	}
 
-	return cityNames, m, nil
+	return cityCodes, nil
 }
-
-// func errorLogger(next echo.HandlerFunc) echo.HandlerFunc {
-// 	return func(c echo.Context) error {
-// 		err := next(c)
-// 		if err != nil {
-// 			log.Errorfc(c.Request().Context(), "govpolygon: %v", err)
-// 			if !c.Response().Committed {
-// 				return c.JSON(http.StatusInternalServerError, map[string]any{"error": "internal"})
-// 			}
-// 		}
-// 		return nil
-// 	}
-// }
