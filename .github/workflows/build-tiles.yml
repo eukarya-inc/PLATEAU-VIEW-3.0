@@ -9,7 +9,7 @@ jobs:
     name: Build and push Docker image
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ghcr.io/eukarya-inc/reearth-plateauview/plateauview-tiles:latest
+      IMAGE_NAME: ghcr.io/eukarya-inc/PLATEAU-VIEW-3.0/plateauview-tiles:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
