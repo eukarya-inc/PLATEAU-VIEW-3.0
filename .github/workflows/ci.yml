@@ -8,6 +8,10 @@ on:
       action_type:
         description: "Action type"
         required: true
+
+env:
+  BUILD: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -119,7 +123,7 @@ jobs:
 
   ci-worker:
     needs: prepare
-    if: ${{ !failure() && needs.prepare.outputs.worker == 'true' }}
+    if: ${{ needs.prepare.outputs.worker == 'true' || github.event.inputs.action_type == 'worker' }}
     uses: ./.github/workflows/ci-worker.yml
 
   ci:
@@ -132,13 +136,6 @@ jobs:
       - ci-tools
       - ci-worker
     if: '!failure()'
-    outputs:
-      extension: ${{ needs.ci-extension.result }}
-      geo: ${{ needs.ci-geo.result }}
-      server: ${{ needs.ci-server.result }}
-      tiles: ${{ needs.ci-tiles.result }}
-      tools: ${{ needs.ci-tools.result }}
-      worker: ${{ needs.ci-worker.result }}
     steps:
       - run: echo OK
 
@@ -168,11 +165,12 @@ jobs:
 
   build-server:
     needs:
-      - ci
-    if: ${{ needs.ci.outputs.server == 'success' && github.event_name == 'push' && github.ref_name == 'main' }}
+      - ci-server
+      - ci-extension
+    if: ${{ !failure() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     uses: ./.github/workflows/build-server.yml
     with:
-      local: ${{ needs.ci.outputs.extension == 'success' }}
+      local: ${{ needs.ci-extension.result == 'success' }}
 
   deploy-server-dev:
     needs: build-server
