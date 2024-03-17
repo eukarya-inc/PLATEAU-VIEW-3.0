@@ -4,7 +4,7 @@ on:
   repository_dispatch:
     types: [deploy-tiles-dev]
 env:
-  IMAGE: ghcr.io/eukarya-inc/PLATEAU-VIEW-3.0/plateauview-tiles:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-tiles:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-tiles:latest
   GCP_SERVICE_ACCOUNT: github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
   GCP_WORKLOAD_IDENTITY_PROVIDER: projects/383489516390/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
