@@ -9,9 +9,6 @@ on:
         description: "Action type"
         required: true
 
-env:
-  BUILD: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
-
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -22,6 +19,7 @@ jobs:
       tiles: ${{ steps.tiles.outputs.any_changed }}
       tools: ${{ steps.tools.outputs.any_changed }}
       worker: ${{ steps.worker.outputs.any_changed }}
+      build: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -140,8 +138,8 @@ jobs:
       - run: echo OK
 
   deploy-extension-dev:
-    needs: ci-extension
-    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+    needs: [prepare, ci-extension]
+    if: ${{ success() && needs.prepare.outputs.build == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -150,12 +148,13 @@ jobs:
           event-type: deploy-extension-dev
 
   build-geo:
-    needs: ci-geo
-    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+    needs: [prepare, ci-geo]
+    if: ${{ success() && needs.prepare.outputs.build == 'true' }}
     uses: ./.github/workflows/build-geo.yml
 
   deploy-geo-dev:
     needs: build-geo
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -165,15 +164,17 @@ jobs:
 
   build-server:
     needs:
+      - prepare
       - ci-server
       - ci-extension
-    if: ${{ !failure() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+    if: ${{ !failure() && needs.ci-server.result == 'success' && needs.prepare.outputs.build == 'true' }}
     uses: ./.github/workflows/build-server.yml
     with:
       local: ${{ needs.ci-extension.result == 'success' }}
 
   deploy-server-dev:
     needs: build-server
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -182,12 +183,13 @@ jobs:
           event-type: deploy-server-dev
 
   build-tiles:
-    needs: ci-tiles
-    if: ${{ success() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
+    needs: [prepare, ci-tiles]
+    if: ${{ success() && needs.prepare.outputs.build == 'true' }}
     uses: ./.github/workflows/build-tiles.yml
 
   deploy-tiles-dev:
     needs: build-tiles
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
@@ -196,12 +198,13 @@ jobs:
           event-type: deploy-tiles-dev
 
   build-worker:
-    needs: ci-worker
-    if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+    needs: [prepare, ci-worker]
+    if: ${{ success() && needs.prepare.outputs.build == 'true' }}
     uses: ./.github/workflows/build-worker.yml
 
   deploy-worker-dev:
     needs: build-worker
+    if: ${{ success() }}
     uses: ./.github/workflows/deploy-worker-dev.yml
     with:
       use_local: true
