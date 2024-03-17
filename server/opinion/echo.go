@@ -50,6 +50,7 @@ func Echo(g *echo.Group, conf Config) {
 	client := sendgrid.NewSendClient(conf.SendGridAPIKey)
 
 	g.POST("", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		r := req{}
 		if err := c.Bind(&r); err != nil {
 			return err
@@ -100,7 +101,7 @@ func Echo(g *echo.Group, conf Config) {
 				e = fmt.Sprintf("code=%d,body=%s", response.StatusCode, response.Body)
 			}
 
-			log.Errorf("opinion: failed to send email: %s", e)
+			log.Errorfc(ctx, "opinion: failed to send email: %s", e)
 			return c.JSON(http.StatusBadGateway, "failed to send email")
 		}
 

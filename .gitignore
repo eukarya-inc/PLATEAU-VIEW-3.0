@@ -3,7 +3,7 @@ node_modules
 *.log
 /.idea/
 
-/server/.env*
-/server/server
-
+.env*
 /extension/dist
+/server/server
+/tools/*/target

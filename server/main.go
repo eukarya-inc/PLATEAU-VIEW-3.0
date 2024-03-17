@@ -4,17 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"runtime"
 	"runtime/debug"
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
+	"github.com/eukarya-inc/reearth-plateauview/server/tool"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
+	"github.com/reearth/reearthx/appx"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
@@ -22,15 +25,23 @@ import (
 )
 
 func main() {
-	log.Infof("reearth-plateauview\n")
-
 	conf := lo.Must(NewConfig())
-	log.Infof("config: %s", conf.Print())
+
+	if len(os.Args) > 1 && os.Args[1] != "" {
+		tool.Main(&tool.Config{
+			CMS_BaseURL: conf.CMS_BaseURL,
+			CMS_Token:   conf.CMS_Token,
+		}, os.Args[1:])
+		return
+	}
 
 	main2(conf)
 }
 
 func main2(conf *Config) {
+	log.Infof("reearth-plateauview\n")
+	log.Infof("config: %s", conf.Print())
+
 	if conf.GCParcent > 0 {
 		debug.SetGCPercent(conf.GCParcent)
 	}
@@ -38,11 +49,13 @@ func main2(conf *Config) {
 	logger := log.NewEcho()
 	e := echo.New()
 	e.HideBanner = true
+	e.HidePort = true
 	e.Logger = logger
 	e.HTTPErrorHandler = errorHandler(e.DefaultHTTPErrorHandler)
 	e.Validator = &customValidator{validator: validator.New()}
 	e.Use(
 		middleware.Recover(),
+		echo.WrapMiddleware(appx.RequestIDMiddleware()),
 		logger.AccessLogger(),
 		middleware.CORSWithConfig(middleware.CORSConfig{
 			AllowOrigins: conf.Origin,
@@ -79,7 +92,8 @@ func main2(conf *Config) {
 
 	log.Infof("enabled services: %v", serviceNames)
 	addr := fmt.Sprintf("[::]:%d", conf.Port)
-	log.Fatalln(e.StartH2CServer(addr, &http2.Server{}))
+	log.Infof("http server started on %s", addr)
+	log.Fatalf("%v", e.StartH2CServer(addr, &http2.Server{}))
 }
 
 func errorHandler(next func(error, echo.Context)) func(error, echo.Context) {

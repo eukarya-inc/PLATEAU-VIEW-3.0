@@ -104,9 +104,9 @@ func (s *Storage) Set(ctx context.Context, item StorageItem) (err error) {
 	citem := cms.Item{}
 	cms.Marshal(item, &citem)
 	if citem.ID == "" {
-		_, err = s.c.CreateItemByKey(ctx, s.pid, storageModel, citem.Fields)
+		_, err = s.c.CreateItemByKey(ctx, s.pid, storageModel, citem.Fields, nil)
 	} else if len(item.Asset) > 0 {
-		_, err = s.c.UpdateItem(ctx, citem.ID, citem.Fields)
+		_, err = s.c.UpdateItem(ctx, citem.ID, citem.Fields, nil)
 	} else {
 		err = s.Delete(ctx, item.ID)
 	}

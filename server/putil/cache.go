@@ -52,6 +52,8 @@ func NewCacheMiddleware(cfg CacheConfig) *CacheMiddleware {
 func (m *CacheMiddleware) Middleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			ctx := c.Request().Context()
+
 			if m.cfg.Disabled {
 				return next(c)
 			}
@@ -84,9 +86,9 @@ func (m *CacheMiddleware) Middleware() echo.MiddlewareFunc {
 				defer func() { _ = f.Close() }()
 				writing = true
 				c.Response().Writer = &responseWriter{Writer: f, ResponseWriter: c.Response().Writer}
-				log.Debugf("cache: new: key=%s", key)
+				log.Debugfc(ctx, "cache: new: key=%s", key)
 			} else {
-				log.Errorf("cache: failed to create a file: key=%s, err=%v", key, err)
+				log.Errorfc(ctx, "cache: failed to create a file: key=%s, err=%v", key, err)
 			}
 
 			if err := next(c); err != nil {
@@ -99,7 +101,7 @@ func (m *CacheMiddleware) Middleware() echo.MiddlewareFunc {
 
 			e := m.save(key, c)
 			maxAge := m.setCacheControl(c, m.cfg.TTL)
-			log.Debugf("cache: created: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
+			log.Debugfc(ctx, "cache: created: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
 			return nil
 		}
 	}
@@ -119,15 +121,17 @@ func (m *CacheMiddleware) key(c echo.Context) string {
 }
 
 func (m *CacheMiddleware) load(c echo.Context, key string) error {
+	ctx := c.Request().Context()
+
 	if e, ok := m.m.Load(key); ok && e.Active(m.now()) {
 		r, err := m.readFile(key)
 		if r != nil {
 			defer func() { _ = r.Close() }()
 			maxAge := m.setCacheControl(c, e.Expires.Sub(util.Now()))
-			log.Debugf("cache: hit: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
+			log.Debugfc(ctx, "cache: hit: key=%s, expires_at=%d, content_type=%s, max-age=%d", key, e.Expires.Unix(), e.ContentType, maxAge)
 			return c.Stream(http.StatusOK, e.ContentType, r)
 		} else {
-			log.Errorf("cache: failed to load a file: key=%s, err=%v", key, err)
+			log.Errorfc(ctx, "cache: failed to load a file: key=%s, err=%v", key, err)
 		}
 	}
 	return nil

@@ -1,5 +1,5 @@
-FROM golang:1.20-bullseye AS build
-ARG TAG=release
+FROM golang:1.21-bullseye AS build
+ARG TAG=release,draco
 ARG VERSION
 
 WORKDIR /app
@@ -15,7 +15,9 @@ FROM debian:bullseye
 RUN apt-get update && apt-get install -y ca-certificates && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/server /app/reearth-plateauview
+COPY govpolygon/govpolygondata/ /app/govpolygondata/
+COPY PlateauView3.js* /app/
 
 WORKDIR /app
 
-CMD [ "./reearth-plateauview" ]
+CMD [ "/app/reearth-plateauview" ]

@@ -3,6 +3,7 @@ package indexer
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -34,6 +35,7 @@ func TestIndexer(t *testing.T) {
 		return
 	}
 
+	ctx := context.Background()
 	b := bytes.NewBuffer(nil)
 	zw := zip.NewWriter(b)
 
@@ -41,7 +43,7 @@ func TestIndexer(t *testing.T) {
 	output := NewZipOutputFS(zw, "")
 	indexer := NewIndexer(config, input, output, true)
 
-	err = indexer.BuildAndWrite()
+	err = indexer.BuildAndWrite(ctx)
 	assert.NoError(t, err)
 	err = zw.Close()
 	assert.NoError(t, err)
@@ -63,12 +65,13 @@ func TestIndexerWithHTTPFS(t *testing.T) {
 	t.Log(u)
 	b := bytes.NewBuffer(nil)
 	zw := zip.NewWriter(b)
+	ctx := context.Background()
 
 	input := NewHTTPFS(nil, u)
 	output := NewZipOutputFS(zw, "")
 	indexer := NewIndexer(config, input, output, true)
 
-	err := indexer.BuildAndWrite()
+	err := indexer.BuildAndWrite(ctx)
 	assert.NoError(t, err)
 	err = zw.Close()
 	assert.NoError(t, err)

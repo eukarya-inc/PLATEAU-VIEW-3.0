@@ -63,18 +63,18 @@ func NewZipIndexer(cms cms.Interface, pid string, base *url.URL, debug bool) *In
 }
 
 func (i *Indexer) BuildIndex(ctx context.Context, name string) (string, error) {
-	indfs, err := i.fs()
+	indfs, err := i.fs(ctx)
 	if err != nil {
 		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)
 	}
 
 	ind := indexer.NewIndexer(builtinConfig, indfs, nil, i.debug)
-	res, err := ind.Build()
+	res, err := ind.Build(ctx)
 	if err != nil {
 		return "", fmt.Errorf("インデックスを作成できませんでした。%w", err)
 	}
 
-	log.Infof("indexer webhook: suceeded to build indexes for %s", name)
+	log.Infofc(ctx, "indexer webhook: suceeded to build indexes for %s", name)
 
 	if i.bufferMode {
 		return i.uploadWithBuffer(ctx, name, res)
@@ -95,7 +95,7 @@ func (i *Indexer) uploadWithPipe(ctx context.Context, name string, res indexer.R
 
 	zw := zip.NewWriter(pw)
 	zfs := indexer.NewZipOutputFS(zw, "")
-	if err := indexer.NewWriter(i.config, zfs).Write(res); err != nil {
+	if err := indexer.NewWriter(i.config, zfs).Write(ctx, res); err != nil {
 		return "", fmt.Errorf("failed to save files to zip: %w", err)
 	}
 
@@ -107,7 +107,7 @@ func (i *Indexer) uploadWithPipe(ctx context.Context, name string, res indexer.R
 		return "", fmt.Errorf("結果のアップロードに失敗しました。(2) %w", err)
 	}
 
-	log.Debugf("indexer webhook: waiting for finishing asset upload of indexes for %s", name)
+	log.Debugfc(ctx, "indexer webhook: waiting for finishing asset upload of indexes for %s", name)
 
 	aid := <-aids
 	err := <-errs
@@ -115,7 +115,7 @@ func (i *Indexer) uploadWithPipe(ctx context.Context, name string, res indexer.R
 		return "", fmt.Errorf("結果のアップロードに失敗しました。(3) %w", err)
 	}
 
-	log.Debugf("indexer webhook: succeeded to zip indexes for %s", name)
+	log.Debugfc(ctx, "indexer webhook: succeeded to zip indexes for %s", name)
 	return aid, nil
 }
 
@@ -124,7 +124,7 @@ func (i *Indexer) uploadWithBuffer(ctx context.Context, name string, res indexer
 
 	zw := zip.NewWriter(b)
 	zfs := indexer.NewZipOutputFS(zw, "")
-	if err := indexer.NewWriter(i.config, zfs).Write(res); err != nil {
+	if err := indexer.NewWriter(i.config, zfs).Write(ctx, res); err != nil {
 		return "", fmt.Errorf("failed to save files to zip: %w", err)
 	}
 
@@ -132,21 +132,21 @@ func (i *Indexer) uploadWithBuffer(ctx context.Context, name string, res indexer
 		return "", fmt.Errorf("failed to close zip: %w", err)
 	}
 
-	log.Debugf("indexer webhook: succeeded to zip indexes for %s", name)
+	log.Debugfc(ctx, "indexer webhook: succeeded to zip indexes for %s", name)
 
 	aid, err := i.cms.UploadAssetDirectly(ctx, i.pid, fmt.Sprintf("%s_index.zip", name), b)
 	if err != nil {
 		return "", fmt.Errorf("結果のアップロードに失敗しました。(3) %w", err)
 	}
 
-	log.Debugf("indexer webhook: succeeded to upload indexes for %s", name)
+	log.Debugfc(ctx, "indexer webhook: succeeded to upload indexes for %s", name)
 	return aid, nil
 }
 
-func (i *Indexer) fs() (indexer.FS, error) {
+func (i *Indexer) fs(ctx context.Context) (indexer.FS, error) {
 	if i.zipMode {
 		u := i.base.String()
-		log.Infof("indexer webhook: zip indexer donwloads %s", u)
+		log.Debugfc(ctx, "indexer webhook: zip indexer donwloads %s", u)
 		res, err := http.DefaultClient.Get(u)
 		if err != nil {
 			return nil, fmt.Errorf("3D TilesのZipファイルのダウンロードに失敗しました。%w", err)
@@ -166,7 +166,7 @@ func (i *Indexer) fs() (indexer.FS, error) {
 			return nil, fmt.Errorf("3D TilesのZipファイルのダウンロードに失敗しました。%w", err)
 		}
 
-		log.Infof("indexer webhook: zip indexer donwloaded %s from %s", humanize.Bytes(uint64(size)), u)
+		log.Debugfc(ctx, "indexer webhook: zip indexer donwloaded %s from %s", humanize.Bytes(uint64(size)), u)
 
 		z, err := zip.NewReader(bytes.NewReader(b.Bytes()), size)
 		if err != nil {

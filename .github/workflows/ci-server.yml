@@ -2,7 +2,7 @@ name: ci-server
 on:
   workflow_call:
 env:
-  GO_VERSION: '1.20'
+  GO_VERSION: '1.21'
 jobs:
   ci-server-lint:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.52
+          version: v1.54
           working-directory: server
           args: --timeout=5m
   ci-server-test:
@@ -28,37 +28,4 @@ jobs:
           cache-dependency-path: server/go.sum
       - name: test
         working-directory: server
-        run: go test ./... -v -race
-  # ci-server-test-index:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: 'indexer test: is testdata available'
-  #       id: testdata
-  #       run: echo $TESTDATA >> $GITHUB_OUTPUT
-  #       env:
-  #         TESTDATA: ${{ secrets.TESTDATA && 'testdata=1' || 'testdata=' }}
-  #     - uses: actions/checkout@v3
-  #       if: steps.testdata.outputs.testdata
-  #     - uses: actions/setup-go@v4
-  #       if: steps.testdata.outputs.testdata
-  #       with:
-  #         go-version: ${{ env.GO_VERSION }}
-  #         cache-dependency-path: server/go.sum
-  #     - name: 'indexer test: download test 3D Tiles data'
-  #       if: steps.testdata.outputs.testdata
-  #       working-directory: server
-  #       run: curl -O $TESTDATA && mkdir -p searchindex/indexer/testdata && unzip -d searchindex/indexer/testdata "${TESTDATA##*/}"
-  #       env:
-  #         TESTDATA: ${{ secrets.TESTDATA }}
-  #     - name: 'indexer test: run indexer test'
-  #       if: steps.testdata.outputs.testdata
-  #       working-directory: server
-  #       run: go test ./searchindex/indexer -v
-  #     - name: 'indexer test: list result files'
-  #       if: steps.testdata.outputs.testdata
-  #       working-directory: server
-  #       run: ls searchindex/indexer/testdata/result
-  #     - name: 'indexer test: cat resultsData.csv'
-  #       if: steps.testdata.outputs.testdata
-  #       working-directory: server
-  #       run: cat searchindex/indexer/testdata/result/resultsData.csv
+        run: go test ./... -v -race -tags draco

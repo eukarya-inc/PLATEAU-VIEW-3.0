@@ -21,7 +21,7 @@ type Item struct {
 	SearchIndexStatus Status `json:"search_index_status,omitempty" cms:"search_index_status,select"`
 }
 
-func (i Item) Fields() (fields []cms.Field) {
+func (i Item) Fields() (fields []*cms.Field) {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 	return item.Fields

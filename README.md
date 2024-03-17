@@ -1,7 +1,5 @@
 # PLATEAU VIEW 3.0
 
-**※開発中です / Under in development**
-
 PLATEAU VIEW 3.0 は以下のシステムにより構成されます。
 
 - **PLATEAU CMS**: ビューワーに掲載する各種データの管理・配信を行う。
@@ -13,10 +11,12 @@ PLATEAU VIEW 3.0 は以下のシステムにより構成されます。
 - [cms](cms): PLATEAU CMS（[Re:Earth CMS](https://github.com/reearth/reearth-cms)）
 - [editor](editor): PLATEAU Editor（[Re:Earth](https://github.com/reearth/reearth)）
 - [extension](extension): PLATEAU VIEW で使用する Re:Earth のエクステンション
-- [geo](geo): PLATEAU VIEW の一部機能（住所検索など）を動作させるためのサーバー
+- [geo](geo): PLATEAU VIEW の一部機能（住所検索など）を動作させるためのサーバーアプリケーション
 - [server](server): PLATEAU CMS のサイドカーサーバー（CMSと共に補助的に動作するサーバーアプリケーション）
-- [tools](tools): PLATEAU CMS でのデータ登録作業などを補助するCLIツール
 - [terraform](terraform): PLATEAU VIEW 3.0　をクラウド上に構築するための Terraform
+- [tiles](tiles): geoからタイル配信の機能のみを独立させたサーバーアプリケーション
+- [tools](tools): PLATEAU CMS でのデータ登録作業や移行作業を補助するCLIツール
+- [worker](worker): サイドカーサーバーから呼び出され非同期に実行されるワーカーアプリケーション
 
 ## ライセンス
 

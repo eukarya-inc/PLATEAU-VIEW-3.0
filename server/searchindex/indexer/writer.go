@@ -1,6 +1,7 @@
 package indexer
 
 import (
+	"context"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
@@ -25,18 +26,18 @@ func NewWriter(config *Config, o OutputFS) *Writer {
 	}
 }
 
-func (w *Writer) Write(r Result) error {
-	resultsDataUrl, err := w.WriteResultsData(r.Data)
+func (w *Writer) Write(ctx context.Context, r Result) error {
+	resultsDataUrl, err := w.WriteResultsData(ctx, r.Data)
 	if err != nil {
 		return err
 	}
 
-	indexes, err := w.WriteIndexes(r.IndexBuilders)
+	indexes, err := w.WriteIndexes(ctx, r.IndexBuilders)
 	if err != nil {
 		return err
 	}
 
-	return w.writeIndexRoot(IndexRoot{
+	return w.writeIndexRoot(ctx, IndexRoot{
 		ResultDataUrl: resultsDataUrl,
 		IdProperty:    w.config.IdProperty,
 		Indexes:       indexes,
@@ -44,9 +45,9 @@ func (w *Writer) Write(r Result) error {
 }
 
 // Writes the data.csv file and returns its path.
-func (w *Writer) WriteResultsData(data ResultData) (string, error) {
+func (w *Writer) WriteResultsData(ctx context.Context, data ResultData) (string, error) {
 	fileName := resultsDataCSV
-	f, err := w.o.Open(fileName)
+	f, err := w.o.Open(ctx, fileName)
 	if err != nil {
 		return "", fmt.Errorf("failed to open file: %v", err)
 	}
@@ -81,10 +82,10 @@ func (w *Writer) WriteResultsData(data ResultData) (string, error) {
 	return fileName, nil
 }
 
-func (w *Writer) writeIndexRoot(indexRoot IndexRoot) error {
+func (w *Writer) writeIndexRoot(ctx context.Context, indexRoot IndexRoot) error {
 	fileName := indexRootJSON
 
-	fw, err := w.o.Open(fileName)
+	fw, err := w.o.Open(ctx, fileName)
 	if err != nil {
 		return fmt.Errorf("error while writing the indexRoot: %v", err)
 	}
@@ -99,14 +100,14 @@ func (w *Writer) writeIndexRoot(indexRoot IndexRoot) error {
 }
 
 // Write indexes using the index builders and returns a IndexRoot.indexes map
-func (w *Writer) WriteIndexes(indexBuilders []IndexBuilder) (_ map[string]any, err error) {
+func (w *Writer) WriteIndexes(ctx context.Context, indexBuilders []IndexBuilder) (_ map[string]any, err error) {
 	indexes := make(map[string]any)
 	count := 0
 
 	for _, b := range indexBuilders {
 		switch t := b.(type) {
 		case EnumIndexBuilder:
-			indexes[t.Property], err = w.WriteIndex(t, count)
+			indexes[t.Property], err = w.WriteIndex(ctx, t, count)
 			if err != nil {
 				return nil, fmt.Errorf("failed to write index: %v", err)
 			}
@@ -119,12 +120,12 @@ func (w *Writer) WriteIndexes(indexBuilders []IndexBuilder) (_ map[string]any, e
 	return indexes, nil
 }
 
-func (w *Writer) WriteIndex(enumBuilder EnumIndexBuilder, fileId int) (_ *EnumIndex, err error) {
+func (w *Writer) WriteIndex(ctx context.Context, enumBuilder EnumIndexBuilder, fileId int) (_ *EnumIndex, err error) {
 	values := make(map[string]*EnumValue)
 	count := 0
 
 	for name, value := range enumBuilder.ValueIds {
-		values[name], err = w.WriteValueIndex(fileId, count, value)
+		values[name], err = w.WriteValueIndex(ctx, fileId, count, value)
 		if err != nil {
 			return nil, fmt.Errorf("failed to write value index: %v", err)
 		}
@@ -137,9 +138,9 @@ func (w *Writer) WriteIndex(enumBuilder EnumIndexBuilder, fileId int) (_ *EnumIn
 	}, nil
 }
 
-func (w *Writer) WriteValueIndex(fileId int, valueId int, ids []Ids) (*EnumValue, error) {
+func (w *Writer) WriteValueIndex(ctx context.Context, fileId int, valueId int, ids []Ids) (*EnumValue, error) {
 	fileName := strconv.Itoa(fileId) + "-" + strconv.Itoa(valueId) + ".csv"
-	f, err := w.o.Open(fileName)
+	f, err := w.o.Open(ctx, fileName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create file: %v", err)
 	}

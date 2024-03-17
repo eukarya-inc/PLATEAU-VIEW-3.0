@@ -153,7 +153,7 @@ func Retry(RetriableFunc RetriableFunc) error {
 	for shouldRetry {
 		err := RetriableFunc()
 		if err != nil {
-			log.Errorf("retry error (%d): %v", n, err)
+			log.Errorfc(config.context, "retry error (%d): %v", n, err)
 
 			// if this is last attempt - don't wait
 			if n == config.attempts-1 {

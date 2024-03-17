@@ -11,7 +11,7 @@ import (
 func cmsWebhookHandler(g *echo.Group, secret []byte, handlers []cmswebhook.Handler) {
 	m := echo.WrapMiddleware(cmswebhook.Middleware(cmswebhook.MiddlewareConfig{
 		Secret: secret,
-		Logger: log.Debugf,
+		Logger: log.Debugfc,
 	}))
 
 	g.POST("", func(c echo.Context) error {

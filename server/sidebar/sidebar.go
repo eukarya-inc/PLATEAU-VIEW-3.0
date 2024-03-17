@@ -6,9 +6,11 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
 )
 
@@ -22,13 +24,22 @@ const (
 	limit             = 10
 )
 
+var authMethods = plateaucms.HTTPMethodsExceptGET
+
 func Echo(g *echo.Group, c Config) error {
 	h, err := NewHandler(c)
 	if err != nil {
 		return err
 	}
 
-	g.Use(middleware.CORS(), middleware.BodyLimit("5M"), h.AuthMiddleware(false))
+	g.Use(
+		middleware.CORS(),
+		middleware.BodyLimit("5M"),
+		h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+			Key:         "pid",
+			AuthMethods: authMethods,
+		}),
+	)
 
 	g.GET("/:pid", h.fetchRoot())
 	g.GET("/:pid/data", h.getAllDataHandler())
@@ -49,12 +60,18 @@ func Echo(g *echo.Group, c Config) error {
 func (h *Handler) fetchRoot() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		md := getCMSMetadataFromContext(ctx)
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
-		if hit, err := h.lastModified(c, md.ProjectAlias, dataModelKey, templateModelKey); err != nil {
+		if hit, err := h.cms.LastModified(c, md.ProjectAlias, dataModelKey, templateModelKey); err != nil {
 			return err
 		} else if hit {
 			return nil
@@ -115,12 +132,18 @@ func (h *Handler) fetchRoot() func(c echo.Context) error {
 func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		md := getCMSMetadataFromContext(ctx)
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
-		if hit, err := h.lastModified(c, md.ProjectAlias, dataModelKey); err != nil {
+		if hit, err := h.cms.LastModified(c, md.ProjectAlias, dataModelKey); err != nil {
 			return err
 		} else if hit {
 			return nil
@@ -145,7 +168,14 @@ func (h *Handler) getAllDataHandler() func(c echo.Context) error {
 func (h *Handler) getDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		itemID := c.Param("iid")
 		if itemID == "" {
@@ -175,8 +205,14 @@ func (h *Handler) getDataHandler() func(c echo.Context) error {
 func (h *Handler) createDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		md := getCMSMetadataFromContext(ctx)
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
@@ -187,11 +223,11 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 			return errors.New("invalid json")
 		}
 
-		fields := []cms.Field{{
+		fields := []*cms.Field{{
 			Key:   dataField,
 			Value: string(b),
 		}}
-		item, err := cmsh.CreateItemByKey(ctx, md.ProjectAlias, dataModelKey, fields)
+		item, err := cmsh.CreateItemByKey(ctx, md.ProjectAlias, dataModelKey, fields, nil)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -212,7 +248,14 @@ func (h *Handler) createDataHandler() func(c echo.Context) error {
 func (h *Handler) updateDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		itemID := c.Param("iid")
 		b, err := io.ReadAll(c.Request().Body)
@@ -224,12 +267,12 @@ func (h *Handler) updateDataHandler() func(c echo.Context) error {
 			return errors.New("invalid json")
 		}
 
-		fields := []cms.Field{{
+		fields := []*cms.Field{{
 			Key:   dataField,
 			Value: string(b),
 		}}
 
-		item, err := cmsh.UpdateItem(ctx, itemID, fields)
+		item, err := cmsh.UpdateItem(ctx, itemID, fields, nil)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -250,7 +293,15 @@ func (h *Handler) updateDataHandler() func(c echo.Context) error {
 func (h *Handler) deleteDataHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
+
 		itemID := c.Param("iid")
 
 		if err := cmsh.DeleteItem(ctx, itemID); err != nil {
@@ -268,12 +319,18 @@ func (h *Handler) deleteDataHandler() func(c echo.Context) error {
 func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		md := getCMSMetadataFromContext(ctx)
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, must-revalidate")
 
-		if hit, err := h.lastModified(c, md.ProjectAlias, templateModelKey); err != nil {
+		if hit, err := h.cms.LastModified(c, md.ProjectAlias, templateModelKey); err != nil {
 			return err
 		} else if hit {
 			return nil
@@ -295,7 +352,14 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		templateID := c.Param("tid")
 		template, err := cmsh.GetItem(ctx, templateID, false)
@@ -319,8 +383,14 @@ func (h *Handler) fetchTemplateHandler() func(c echo.Context) error {
 func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
-		md := getCMSMetadataFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		b, err := io.ReadAll(c.Request().Body)
 		if err != nil {
@@ -331,12 +401,12 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 			return errors.New("invalid json")
 		}
 
-		fields := []cms.Field{{
+		fields := []*cms.Field{{
 			Key:   dataField,
 			Value: string(b),
 		}}
 
-		template, err := cmsh.CreateItemByKey(ctx, md.ProjectAlias, templateModelKey, fields)
+		template, err := cmsh.CreateItemByKey(ctx, md.ProjectAlias, templateModelKey, fields, nil)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -357,7 +427,14 @@ func (h *Handler) createTemplateHandler() func(c echo.Context) error {
 func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		templateID := c.Param("tid")
 		b, err := io.ReadAll(c.Request().Body)
@@ -369,12 +446,12 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 			return errors.New("invalid json")
 		}
 
-		fields := []cms.Field{{
+		fields := []*cms.Field{{
 			Key:   dataField,
 			Value: string(b),
 		}}
 
-		template, err := cmsh.UpdateItem(ctx, templateID, fields)
+		template, err := cmsh.UpdateItem(ctx, templateID, fields, nil)
 		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) {
 				return c.JSON(http.StatusNotFound, "not found")
@@ -395,7 +472,14 @@ func (h *Handler) updateTemplateHandler() func(c echo.Context) error {
 func (h *Handler) deleteTemplateHandler() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		cmsh := getCMSFromContext(ctx)
+		md := plateaucms.GetCMSMetadataFromContext(ctx)
+		if md.ProjectAlias == "" {
+			return rerror.ErrNotFound
+		}
+		cmsh := plateaucms.GetCMSFromContext(ctx)
+		if cmsh == nil {
+			return rerror.ErrNotFound
+		}
 
 		templateID := c.Param("tid")
 
@@ -418,7 +502,8 @@ func itemsToJSONs(items []cms.Item) []any {
 }
 
 func itemJSON(f *cms.Field, id string) any {
-	j, err := f.ValueJSON()
+	var j any
+	err := f.GetValue().JSON(&j)
 	if j == nil || err != nil {
 		return nil
 	}

@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	"github.com/labstack/echo/v4"
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -42,12 +43,17 @@ func TestHandler(t *testing.T) {
 	ctx.SetParamNames("pid")
 	ctx.SetParamValues(project)
 
-	h := &Handler{
-		cmsbase:         base,
-		cmsTokenProject: tokenProject,
-		cmsMain:         lo.Must(cms.New(base, token)),
-	}
-	handler := h.AuthMiddleware(false)(h.fetchRoot())
+	h := lo.Must(NewHandler(Config{
+		Config: plateaucms.Config{
+			CMSBaseURL:      base,
+			CMSMainToken:    token,
+			CMSTokenProject: tokenProject,
+		},
+	}))
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.fetchRoot())
 	assert.NoError(t, handler(ctx))
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
 	assert.Equal(t, "", rec.Body.String())
@@ -69,14 +75,17 @@ func TestHandler_getDataHandler(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: itemID,
-			Fields: []cms.Field{
+			Fields: []*cms.Field{
 				{Key: dataField, Value: expected},
 			},
 		})
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.getDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.getDataHandler())
 
 	p := path.Join("/", testCMSProject, "data", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, nil)
@@ -115,14 +124,17 @@ func TestHandler_getDataHandler2(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: itemID,
-			Fields: []cms.Field{
+			Fields: []*cms.Field{
 				{Key: dataField, Value: expected},
 			},
 		})
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.getDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.getDataHandler())
 
 	p := path.Join("/", "prjprj", "data", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, nil)
@@ -166,11 +178,11 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 			Items: []cms.Item{
 				{
 					ID:     "a",
-					Fields: []cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
+					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
 				},
 				{
 					ID:     "b",
-					Fields: []cms.Field{{Key: dataField, Value: `{"hoge":"bar"}`}},
+					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"bar"}`}},
 				},
 			},
 			Page:       1,
@@ -180,7 +192,10 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	)
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.getAllDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.getAllDataHandler())
 
 	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "data"), nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -209,8 +224,8 @@ func TestHandler_createDataHandler(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: "a",
-			Fields: []cms.Field{
-				{Key: dataField, Value: i.FieldByKey(dataField).ValueString()},
+			Fields: []*cms.Field{
+				{Key: dataField, Value: i.FieldByKey(dataField).GetValue().String()},
 			},
 		},
 		)
@@ -218,7 +233,10 @@ func TestHandler_createDataHandler(t *testing.T) {
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")), responder)
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.createDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.createDataHandler())
 
 	req := httptest.NewRequest(http.MethodPost, path.Join("/", testCMSProject, "data"), strings.NewReader(`{"hoge":"foo"}`))
 	req.Header.Set("Content-Type", "application/json")
@@ -260,8 +278,8 @@ func TestHandler_updateDataHandler(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: itemID,
-			Fields: []cms.Field{
-				{Key: dataField, Value: i.FieldByKey(dataField).ValueString()},
+			Fields: []*cms.Field{
+				{Key: dataField, Value: i.FieldByKey(dataField).GetValue().String()},
 			},
 		},
 		)
@@ -275,7 +293,10 @@ func TestHandler_updateDataHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.updateDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.updateDataHandler())
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
@@ -301,7 +322,10 @@ func TestHandler_deleteDataHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.deleteDataHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.deleteDataHandler())
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "iid")
@@ -324,11 +348,11 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 			Items: []cms.Item{
 				{
 					ID:     "a",
-					Fields: []cms.Field{{Key: dataField, Value: `{"hoge":"hoge"}`}},
+					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"hoge"}`}},
 				},
 				{
 					ID:     "b",
-					Fields: []cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
+					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
 				},
 			},
 			Page:       1,
@@ -343,7 +367,10 @@ func TestHandler_fetchTemplatesHandler(t *testing.T) {
 	)
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.fetchTemplatesHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.fetchTemplatesHandler())
 
 	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates"), nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -368,7 +395,7 @@ func TestHandler_fetchTemplateHandler(t *testing.T) {
 	responder := func(req *http.Request) (*http.Response, error) {
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID:     templateID,
-			Fields: []cms.Field{{Key: dataField, Value: `{"hoge":"hoge"}`}},
+			Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"hoge"}`}},
 		})
 	}
 	httpmock.RegisterResponder("GET", lo.Must(url.JoinPath(testCMSHost, "api", "items", templateID)), responder)
@@ -378,7 +405,10 @@ func TestHandler_fetchTemplateHandler(t *testing.T) {
 	rec := httptest.NewRecorder()
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.fetchTemplateHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.fetchTemplateHandler())
 
 	ctx := echo.New().NewContext(req, rec)
 	ctx.SetParamNames("pid", "tid")
@@ -401,8 +431,8 @@ func TestHandler_createTemplateHandler(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: "a",
-			Fields: []cms.Field{
-				{Key: dataField, Value: i.FieldByKey(dataField).ValueString()},
+			Fields: []*cms.Field{
+				{Key: dataField, Value: i.FieldByKey(dataField).GetValue().String()},
 			},
 		},
 		)
@@ -410,7 +440,10 @@ func TestHandler_createTemplateHandler(t *testing.T) {
 	httpmock.RegisterResponder("POST", lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", templateModelKey, "items")), responder)
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.createTemplateHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.createTemplateHandler())
 
 	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates"), strings.NewReader(`{"hoge":"hoge"}`))
 	req.Header.Set("Content-Type", "application/json")
@@ -437,8 +470,8 @@ func TestHandler_updateTemplateHandler(t *testing.T) {
 
 		return httpmock.NewJsonResponse(http.StatusOK, cms.Item{
 			ID: itemID,
-			Fields: []cms.Field{
-				{Key: dataField, Value: i.FieldByKey(dataField).ValueString()},
+			Fields: []*cms.Field{
+				{Key: dataField, Value: i.FieldByKey(dataField).GetValue().String()},
 			},
 		},
 		)
@@ -446,7 +479,10 @@ func TestHandler_updateTemplateHandler(t *testing.T) {
 	httpmock.RegisterResponder("PATCH", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), responder)
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.updateTemplateHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.updateTemplateHandler())
 
 	p := path.Join("/", testCMSProject, "templates", itemID)
 	req := httptest.NewRequest(http.MethodGet, p, strings.NewReader(`{"hoge":"hoge"}`))
@@ -471,7 +507,10 @@ func TestHandler_deleteTemplateHandler(t *testing.T) {
 	httpmock.RegisterResponder("DELETE", lo.Must(url.JoinPath(testCMSHost, "api", "items", itemID)), httpmock.NewBytesResponder(http.StatusNoContent, nil))
 
 	h := newHandler()
-	handler := h.AuthMiddleware(false)(h.deleteTemplateHandler())
+	handler := h.cms.AuthMiddleware(plateaucms.AuthMiddlewareConfig{
+		Key:         "pid",
+		AuthMethods: authMethods,
+	})(h.deleteTemplateHandler())
 
 	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "templates", itemID), nil)
 	req.Header.Set("Content-Type", "application/json")
@@ -487,11 +526,13 @@ func TestHandler_deleteTemplateHandler(t *testing.T) {
 }
 
 func newHandler() *Handler {
-	return &Handler{
-		cmsbase:         testCMSHost,
-		cmsTokenProject: tokenProject,
-		cmsMain:         lo.Must(cms.New(testCMSHost, testCMSToken)),
-	}
+	return lo.Must(NewHandler(Config{
+		Config: plateaucms.Config{
+			CMSBaseURL:      testCMSHost,
+			CMSMainToken:    testCMSToken,
+			CMSTokenProject: tokenProject,
+		},
+	}))
 }
 
 func mockCMS(t *testing.T) {
@@ -507,7 +548,7 @@ func mockCMS(t *testing.T) {
 			Items: []cms.Item{
 				{
 					ID: "1",
-					Fields: []cms.Field{
+					Fields: []*cms.Field{
 						{Key: tokenProjectField, Value: testCMSProject},
 						{Key: "cms_apikey", Value: testCMSToken},
 						{Key: "sidebar_access_token", Value: testSidebarAccessToken},
@@ -515,7 +556,7 @@ func mockCMS(t *testing.T) {
 				},
 				{
 					ID: "2",
-					Fields: []cms.Field{
+					Fields: []*cms.Field{
 						{Key: tokenProjectField, Value: "prjprj"},
 						{Key: "cms_apikey", Value: "token!"},
 						{Key: "sidebar_access_token", Value: "ac"},

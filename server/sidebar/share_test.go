@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/rerror"
@@ -30,9 +31,11 @@ func TestShareEcho(t *testing.T) {
 
 	g := e.Group("/share")
 	assert.NoError(t, ShareEcho(g, Config{
-		CMSBaseURL:     "https://cms.example.com",
-		CMSMainToken:   "token",
-		CMSMainProject: "prj",
+		Config: plateaucms.Config{
+			CMSBaseURL:     "https://cms.example.com",
+			CMSMainToken:   "token",
+			CMSMainProject: "prj",
+		},
 	}))
 
 	r := httptest.NewRequest("GET", "/share/prj/aaaa", nil)

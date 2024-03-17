@@ -2,65 +2,82 @@ package main
 
 import (
 	"fmt"
-	"net/url"
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
-	"github.com/eukarya-inc/reearth-plateauview/server/dataconv"
-	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
-	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
-	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
+	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/joho/godotenv"
+	"github.com/k0kubun/pp/v3"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/reearth/reearthx/log"
-	"github.com/reearth/reearthx/util"
 )
+
+var noColorPP *pp.PrettyPrinter
+
+func init() {
+	noColorPP = pp.New()
+	noColorPP.SetColoringEnabled(false)
+}
 
 const configPrefix = "REEARTH_PLATEAUVIEW"
 
 type Config struct {
-	Port                              uint   `default:"8080" envconfig:"PORT"`
-	Host                              string `default:"http://localhost:8080"`
-	Debug                             bool
-	Origin                            []string
-	Secret                            string
-	Delegate_URL                      string
-	CMS_Webhook_Secret                string
-	CMS_BaseURL                       string
-	CMS_Token                         string
-	CMS_IntegrationID                 string
-	CMS_PlateauProject                string
-	CMS_SystemProject                 string
-	CMS_TokenProject                  string
-	FME_BaseURL                       string
-	FME_Mock                          bool
-	FME_Token                         string
-	FME_SkipQualityCheck              bool
-	Ckan_BaseURL                      string
-	Ckan_Org                          string
-	Ckan_Token                        string
-	Ckan_Private                      bool
-	SDK_Token                         string
-	SendGrid_APIKey                   string
-	Opinion_From                      string
-	Opinion_FromName                  string
-	Opinion_To                        string
-	Opinion_ToName                    string
-	Sidebar_Token                     string
-	Share_Disable                     bool
-	Geospatialjp_Publication_Disable  bool
-	Geospatialjp_CatalocCheck_Disable bool
-	DataConv_Disable                  bool
-	Indexer_Delegate                  bool
-	DataCatalog_DisableCache          bool
-	DataCatalog_CacheTTL              int
-	SDKAPI_DisableCache               bool
-	SDKAPI_CacheTTL                   int
-	GCParcent                         int
+	Port                               uint     `default:"8080" envconfig:"PORT"`
+	Host                               string   `default:"http://localhost:8080"`
+	GOOGLE_CLOUD_PROJECT               string   `envconfig:"GOOGLE_CLOUD_PROJECT" pp:",omitempty"`
+	GOOGLE_CLOUD_REGION                string   `envconfig:"GOOGLE_CLOUD_REGION" pp:",omitempty"`
+	Debug                              bool     `pp:",omitempty"`
+	Origin                             []string `pp:",omitempty"`
+	Secret                             string   `pp:",omitempty"`
+	Delegate_URL                       string   `pp:",omitempty"`
+	CMS_Webhook_Secret                 string   `pp:",omitempty"`
+	CMS_BaseURL                        string   `pp:",omitempty"`
+	CMS_Token                          string   `pp:",omitempty"`
+	CMS_IntegrationID                  string   `pp:",omitempty"`
+	CMS_PlateauProject                 string   `pp:",omitempty"`
+	CMS_SystemProject                  string   `pp:",omitempty"`
+	CMS_TokenProject                   string   `pp:",omitempty"`
+	FME_BaseURL                        string   `pp:",omitempty"`
+	FME_BaseURL_V2                     string   `pp:",omitempty"`
+	FME_URL_V3                         string   `pp:",omitempty"`
+	FME_Mock                           bool     `pp:",omitempty"`
+	FME_Token                          string   `pp:",omitempty"`
+	FME_SkipQualityCheck               bool     `pp:",omitempty"`
+	Ckan_BaseURL                       string   `pp:",omitempty"`
+	Ckan_Org                           string   `pp:",omitempty"`
+	Ckan_Token                         string   `pp:",omitempty"`
+	Ckan_Private                       bool     `pp:",omitempty"`
+	SDK_Token                          string   `pp:",omitempty"`
+	SendGrid_APIKey                    string   `pp:",omitempty"`
+	Opinion_From                       string   `pp:",omitempty"`
+	Opinion_FromName                   string   `pp:",omitempty"`
+	Opinion_To                         string   `pp:",omitempty"`
+	Opinion_ToName                     string   `pp:",omitempty"`
+	Sidebar_Token                      string   `pp:",omitempty"`
+	Share_Disable                      bool     `pp:",omitempty"`
+	Geospatialjp_Publication_Disable   bool     `pp:",omitempty"`
+	Geospatialjp_CatalocCheck_Disable  bool     `pp:",omitempty"`
+	Geospatialjp_BuildType             string   `pp:",omitempty"`
+	Geospatialjp_JobName               string   `pp:",omitempty"`
+	Geospatialjp_CloudBuildImage       string   `pp:",omitempty"`
+	Geospatialjp_CloudBuildMachineType string   `pp:",omitempty"`
+	Geospatialjp_CloudBuildProject     string   `pp:",omitempty"`
+	Geospatialjp_CloudBuildRegion      string   `pp:",omitempty"`
+	Geospatialjp_CloudBuildDiskSizeGb  int64    `pp:",omitempty"`
+	DataConv_Disable                   bool     `pp:",omitempty"`
+	Indexer_Delegate                   bool     `pp:",omitempty"`
+	DataCatalog_DisableCache           bool     `pp:",omitempty"`
+	DataCatalog_CacheUpdateKey         string   `pp:",omitempty"`
+	DataCatalog_PlaygroundEndpoint     string   `pp:",omitempty"`
+	DataCatalog_CacheTTL               int      `pp:",omitempty"`
+	DataCatalog_GQL_MaxComplexity      int      `pp:",omitempty"`
+	DataCatalog_PanicOnInit            bool     `pp:",omitempty"`
+	GCParcent                          int      `pp:",omitempty"`
 }
 
 func NewConfig() (*Config, error) {
@@ -77,22 +94,52 @@ func NewConfig() (*Config, error) {
 }
 
 func (c *Config) Print() string {
-	s := fmt.Sprintf("%+v", c)
-	return s
+	return noColorPP.Sprint(c)
+}
+
+func (c *Config) LocalURL(path string) string {
+	return fmt.Sprintf("http://[::]:%d%s", c.Port, path)
 }
 
 func (c *Config) CMSIntegration() cmsintegration.Config {
+	cloudBuildProject := c.Geospatialjp_CloudBuildProject
+	if cloudBuildProject == "" {
+		cloudBuildProject = c.GOOGLE_CLOUD_PROJECT
+	}
+
+	cloudBuildRegion := c.Geospatialjp_CloudBuildRegion
+	if cloudBuildRegion == "" {
+		cloudBuildRegion = c.GOOGLE_CLOUD_REGION
+	}
+
 	return cmsintegration.Config{
-		FMEMock:             c.FME_Mock,
-		FMEBaseURL:          c.FME_BaseURL,
-		FMEToken:            c.FME_Token,
-		FMEResultURL:        util.DR(url.JoinPath(c.Host, "notify_fme")),
-		FMESkipQualityCheck: c.FME_SkipQualityCheck,
-		CMSBaseURL:          c.CMS_BaseURL,
-		CMSToken:            c.CMS_Token,
-		CMSIntegration:      c.CMS_IntegrationID,
-		Secret:              c.Secret,
-		Debug:               c.Debug,
+		Host:                              c.Host,
+		FMEMock:                           c.FME_Mock,
+		FMEBaseURL:                        c.FME_BaseURL,
+		FMEToken:                          c.FME_Token,
+		FMEBaseURLV2:                      c.FME_BaseURL_V2,
+		FMEURLV3:                          c.FME_URL_V3,
+		FMESkipQualityCheck:               c.FME_SkipQualityCheck,
+		CMSBaseURL:                        c.CMS_BaseURL,
+		CMSToken:                          c.CMS_Token,
+		CMSIntegration:                    c.CMS_IntegrationID,
+		Secret:                            c.Secret,
+		Debug:                             c.Debug,
+		CkanBaseURL:                       c.Ckan_BaseURL,
+		CkanOrg:                           c.Ckan_Org,
+		CkanToken:                         c.Ckan_Token,
+		CkanPrivate:                       c.Ckan_Private,
+		DisableGeospatialjpPublication:    c.Geospatialjp_Publication_Disable,
+		DisableGeospatialjpCatalogCheck:   c.Geospatialjp_CatalocCheck_Disable,
+		DisableDataConv:                   c.DataConv_Disable,
+		APIToken:                          c.Sidebar_Token,
+		GeospatialjpBuildType:             c.Geospatialjp_BuildType,
+		GeospatialjpCloudRunJobsJobName:   c.Geospatialjp_JobName,
+		GeospatialjpCloudBuildImage:       c.Geospatialjp_CloudBuildImage,
+		GeospatialjpCloudBuildMachineType: c.Geospatialjp_CloudBuildMachineType,
+		GeospatialjpCloudBuildProject:     cloudBuildProject,
+		GeospatialjpCloudBuildRegion:      cloudBuildRegion,
+		GeospatialjpCloudBuildDiskSizeGb:  c.Geospatialjp_CloudBuildDiskSizeGb,
 	}
 }
 
@@ -109,28 +156,10 @@ func (c *Config) SearchIndex() searchindex.Config {
 	}
 }
 
-func (c *Config) SDK() sdk.Config {
-	return sdk.Config{
-		FMEBaseURL:     c.FME_BaseURL,
-		FMEToken:       c.FME_Token,
-		FMEResultURL:   util.DR(url.JoinPath(c.Host, "notify_sdk")),
-		CMSBase:        c.CMS_BaseURL,
-		CMSToken:       c.CMS_Token,
-		CMSIntegration: c.CMS_IntegrationID,
-		FMESecret:      c.Secret,
-		APIToken:       c.Sidebar_Token,
-	}
-}
-
-func (c *Config) SDKAPI() sdkapi.Config {
-	return sdkapi.Config{
-		CMSBaseURL: c.CMS_BaseURL,
-		CMSToken:   c.CMS_Token,
-		Project:    c.CMS_PlateauProject,
-		// Model:      c.CMS_SDKModel,
-		Token:        c.SDK_Token,
-		DisableCache: c.SDKAPI_DisableCache,
-		CacheTTL:     c.SDKAPI_CacheTTL,
+func (c *Config) SDKAPI() sdkapiv3.Config {
+	return sdkapiv3.Config{
+		DataCatagloAPIURL: c.LocalURL("/datacatalog"),
+		Token:             c.SDK_Token,
 	}
 }
 
@@ -144,48 +173,32 @@ func (c *Config) Opinion() opinion.Config {
 	}
 }
 
-func (c *Config) Geospatialjp() geospatialjp.Config {
-	return geospatialjp.Config{
-		CkanBase:            c.Ckan_BaseURL,
-		CkanOrg:             c.Ckan_Org,
-		CkanToken:           c.Ckan_Token,
-		CkanPrivate:         c.Ckan_Private,
-		CMSToken:            c.CMS_Token,
-		CMSBase:             c.CMS_BaseURL,
-		CMSIntegration:      c.CMS_IntegrationID,
-		DisablePublication:  c.Geospatialjp_Publication_Disable,
-		DisableCatalogCheck: c.Geospatialjp_CatalocCheck_Disable,
-		PublicationToken:    c.Sidebar_Token,
-		// EnablePulicationOnWebhook: c.Geospatialjp_EnablePulicationOnWebhook,
-	}
-}
-
 func (c *Config) Sidebar() sidebar.Config {
 	return sidebar.Config{
-		CMSBaseURL:      c.CMS_BaseURL,
-		CMSMainToken:    c.CMS_Token,
-		CMSTokenProject: c.CMS_TokenProject,
-		DisableShare:    c.Share_Disable,
-		// compat
-		CMSMainProject: c.CMS_SystemProject,
-		AdminToken:     c.Sidebar_Token,
+		Config:       c.plateauCMS(),
+		DisableShare: c.Share_Disable,
 	}
 }
 
 func (c *Config) DataCatalog() datacatalog.Config {
 	return datacatalog.Config{
-		CMSBase:      c.CMS_BaseURL,
-		DisableCache: c.DataCatalog_DisableCache,
-		CacheTTL:     c.DataCatalog_CacheTTL,
+		Config:               c.plateauCMS(),
+		CacheUpdateKey:       c.DataCatalog_CacheUpdateKey,
+		PlaygroundEndpoint:   c.DataCatalog_PlaygroundEndpoint,
+		GraphqlMaxComplexity: c.DataCatalog_GQL_MaxComplexity,
+		DisableCache:         c.DataCatalog_DisableCache,
+		CacheTTL:             c.DataCatalog_CacheTTL,
+		ErrorOnInit:          c.DataCatalog_PanicOnInit,
 	}
 }
 
-func (c *Config) DataConv() dataconv.Config {
-	return dataconv.Config{
-		Disable:  c.DataConv_Disable,
-		CMSBase:  c.CMS_BaseURL,
-		CMSToken: c.CMS_Token,
-		APIToken: c.Sidebar_Token,
-		// CMSModel: ,
+func (c *Config) plateauCMS() plateaucms.Config {
+	return plateaucms.Config{
+		CMSBaseURL:      c.CMS_BaseURL,
+		CMSMainToken:    c.CMS_Token,
+		CMSTokenProject: c.CMS_TokenProject,
+		// compat
+		CMSMainProject: c.CMS_SystemProject,
+		AdminToken:     c.Sidebar_Token,
 	}
 }

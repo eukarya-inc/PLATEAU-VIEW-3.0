@@ -1,9 +1,6 @@
 name: build-server
 on:
   workflow_call:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
-  cancel-in-progress: true
 jobs:
   docker:
     name: Build and push Docker image

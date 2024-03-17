@@ -3,6 +3,7 @@ package indexer
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/fs"
@@ -16,11 +17,11 @@ import (
 )
 
 type FS interface {
-	Open(name string) (io.ReadCloser, error)
+	Open(ctx context.Context, name string) (io.ReadCloser, error)
 }
 
 type OutputFS interface {
-	Open(name string) (WriteCloser, error)
+	Open(ctx context.Context, name string) (WriteCloser, error)
 }
 
 type WriteCloser interface {
@@ -55,7 +56,7 @@ func NewFSFS(f fs.FS) *FSFS {
 	return &FSFS{fs: f}
 }
 
-func (f *FSFS) Open(name string) (io.ReadCloser, error) {
+func (f *FSFS) Open(ctx context.Context, name string) (io.ReadCloser, error) {
 	file, err := f.fs.Open(name)
 	if err != nil {
 		return nil, err
@@ -71,7 +72,7 @@ func NewZipFS(z *zip.Reader) *ZipFS {
 	return &ZipFS{z: z}
 }
 
-func (f *ZipFS) Open(name string) (io.ReadCloser, error) {
+func (f *ZipFS) Open(ctx context.Context, name string) (io.ReadCloser, error) {
 	file, err := f.z.Open(name)
 	if err != nil {
 		return nil, err
@@ -95,7 +96,7 @@ func NewOSOutputFS(base string) *OSOutputFS {
 	return &OSOutputFS{base: base}
 }
 
-func (f *OSOutputFS) Open(name string) (w WriteCloser, err error) {
+func (f *OSOutputFS) Open(ctx context.Context, name string) (w WriteCloser, err error) {
 	if err := f.mkdir(); err != nil {
 		return nil, err
 	}
@@ -118,7 +119,7 @@ func NewZipOutputFS(w *zip.Writer, base string) *ZipOutputFS {
 	return &ZipOutputFS{base: base, w: w}
 }
 
-func (f *ZipOutputFS) Open(name string) (WriteCloser, error) {
+func (f *ZipOutputFS) Open(ctx context.Context, name string) (WriteCloser, error) {
 	w, err := f.w.Create(path.Join(f.base, name))
 	return NewNopCloser(w), err
 }
@@ -135,13 +136,13 @@ func NewHTTPFS(c *http.Client, base string) *HTTPFS {
 	return &HTTPFS{c: c, base: base}
 }
 
-func (f *HTTPFS) Open(name string) (io.ReadCloser, error) {
+func (f *HTTPFS) Open(ctx context.Context, name string) (io.ReadCloser, error) {
 	u, err := url.JoinPath(f.base, name)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get url from %s and %s: %w", f.base, name, err)
 	}
 
-	log.Debugf("indexer: http get: %s", u)
+	log.Debugfc(ctx, "indexer: http get: %s", u)
 	res, err := f.c.Get(u)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get from %s: %w", u, err)

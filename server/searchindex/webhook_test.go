@@ -435,7 +435,7 @@ func (c *mockedCMS) GetItemsByKey(ctx context.Context, projectIDOrAlias, modelID
 	}, nil
 }
 
-func (c *mockedCMS) CreateItemByKey(ctx context.Context, projectID, modelID string, fields []cms.Field) (*cms.Item, error) {
+func (c *mockedCMS) CreateItemByKey(ctx context.Context, projectID, modelID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 	m := c.m(projectID, modelID)
 	if m == nil {
 		return nil, rerror.ErrNotFound
@@ -445,7 +445,8 @@ func (c *mockedCMS) CreateItemByKey(ctx context.Context, projectID, modelID stri
 	item := &cms.Item{
 		ID:      id,
 		ModelID: modelID,
-		Fields: lo.Map(fields, func(f cms.Field, _ int) cms.Field {
+		Fields: lo.Map(fields, func(f *cms.Field, _ int) *cms.Field {
+			f = f.Clone()
 			f.ID = randSeq(12)
 			return f
 		}),
@@ -454,14 +455,14 @@ func (c *mockedCMS) CreateItemByKey(ctx context.Context, projectID, modelID stri
 	return item, nil
 }
 
-func (c *mockedCMS) UpdateItem(ctx context.Context, itemID string, fields []cms.Field) (*cms.Item, error) {
+func (c *mockedCMS) UpdateItem(ctx context.Context, itemID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 	i, m := c.l(itemID)
 	if i == nil {
 		return nil, rerror.ErrNotFound
 	}
-	newFields := make([]cms.Field, 0, len(i.Fields)+len(fields))
+	newFields := make([]*cms.Field, 0, len(i.Fields)+len(fields))
 	for _, f := range fields {
-		_, j, found := lo.FindIndexOf(i.Fields, func(g cms.Field) bool { return f.ID == g.ID })
+		_, j, found := lo.FindIndexOf(i.Fields, func(g *cms.Field) bool { return f.ID == g.ID })
 		if !found {
 			newFields = append(newFields, f)
 		} else {

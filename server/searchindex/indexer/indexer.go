@@ -1,13 +1,13 @@
 package indexer
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 
-	"github.com/qmuntal/draco-go/gltf/draco"
 	"github.com/qmuntal/gltf"
 	b3dms "github.com/reearth/go3dtiles/b3dm"
 	tiles "github.com/reearth/go3dtiles/tileset"
@@ -22,6 +22,7 @@ const (
 )
 
 const semaphoreLimit = 2
+const DRACO_EXT = "KHR_draco_mesh_compression" // draco.ExtensionName
 
 type Indexer struct {
 	config *Config
@@ -46,20 +47,20 @@ type Result struct {
 
 type ResultData []map[string]string
 
-func (indexer *Indexer) BuildAndWrite() error {
-	res, err := indexer.Build()
+func (indexer *Indexer) BuildAndWrite(ctx context.Context) error {
+	res, err := indexer.Build(ctx)
 	if err != nil {
 		return err
 	}
 
-	return indexer.writer.Write(res)
+	return indexer.writer.Write(ctx, res)
 }
 
-func (indexer *Indexer) Build() (res Result, errMsg error) {
+func (indexer *Indexer) Build(ctx context.Context) (res Result, errMsg error) {
 	var indexBuilders []IndexBuilder
 	var resultData ResultData
 
-	ts, err := indexer.fs.Open(tilesetJSONName)
+	ts, err := indexer.fs.Open(ctx, tilesetJSONName)
 	if err != nil {
 		errMsg = fmt.Errorf("failed to open the tileset: %w", err)
 		return
@@ -77,13 +78,13 @@ func (indexer *Indexer) Build() (res Result, errMsg error) {
 		indexBuilders = append(indexBuilders, createIndexBuilder(property, config))
 	}
 
-	features, err := ReadTilesetFeatures(tileset, indexer.config, indexer.fs, indexer.debug)
+	features, err := ReadTilesetFeatures(ctx, tileset, indexer.config, indexer.fs, indexer.debug)
 	if err != nil {
 		errMsg = fmt.Errorf("failed to read features: %w", err)
 		return
 	}
 
-	log.Debugf("Number of features counted: %d", len(features))
+	log.Debugfc(ctx, "indexer: Number of features counted: %d", len(features))
 
 	for idValue, tilsetFeature := range features {
 		// taking all positionProperties map entries as string for better writing experience
@@ -118,7 +119,7 @@ type TilesetFeature struct {
 	Position   Cartographic
 }
 
-func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, fsys FS, debug bool) (map[string]TilesetFeature, error) {
+func ReadTilesetFeatures(ctx context.Context, ts *tiles.Tileset, config *Config, fsys FS, debug bool) (map[string]TilesetFeature, error) {
 	uniqueFeatures := make(map[string]TilesetFeature)
 	tilesetQueue := []*tiles.Tileset{ts}
 	rMutex := sync.RWMutex{}
@@ -131,7 +132,7 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, fsys FS, debug bool)
 			}
 
 			if debug {
-				log.Debugln(tileUri)
+				log.Debugfc(ctx, "indexer: %s", tileUri)
 			}
 
 			if strings.HasSuffix(tileUri, ".json") {
@@ -140,7 +141,7 @@ func ReadTilesetFeatures(ts *tiles.Tileset, config *Config, fsys FS, debug bool)
 				return nil
 			}
 
-			b3dmFile, err := fsys.Open(tileUri)
+			b3dmFile, err := fsys.Open(ctx, tileUri)
 			if err != nil {
 				return fmt.Errorf("failed to open b3dm file: %v", err)
 			}
@@ -224,7 +225,7 @@ func computeFeaturePositionsFromGltfVertices(doc *gltf.Document, tileTransform, 
 	batchIdPositions := make([][]Cartographic, batchLength)
 
 	extensionsUsed := doc.ExtensionsUsed
-	dracoCompressionUsed := slices.Contains(extensionsUsed, draco.ExtensionName)
+	dracoCompressionUsed := slices.Contains(extensionsUsed, DRACO_EXT)
 
 	for _, node := range nodes {
 		mesh := meshes[*node.Mesh]
@@ -245,19 +246,11 @@ func computeFeaturePositionsFromGltfVertices(doc *gltf.Document, tileTransform, 
 			var positions [][3]float32
 
 			if dracoCompressionUsed {
-				primitiveExt := primitive.Extensions[draco.ExtensionName].(*draco.PrimitiveExt)
-				pd, err := draco.UnmarshalMesh(doc, doc.BufferViews[primitiveExt.BufferView])
+				bi, pos, err := readAttrFromDracoMesh(doc, primitive)
 				if err != nil {
-					return nil, fmt.Errorf("error while unmarshalling mesh: %v", err)
+					return nil, err
 				}
-				bi, _ := pd.ReadAttr(primitive, "_BATCHID", nil)
-				if err != nil {
-					return nil, fmt.Errorf("failed to read batchIds: %v", err)
-				}
-				pos, err := pd.ReadAttr(primitive, "POSITION", nil)
-				if err != nil {
-					return nil, fmt.Errorf("failed to read positions: %v", err)
-				}
+
 				positions = pos.([][3]float32)
 
 				var ok bool

@@ -5,11 +5,10 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
-	"github.com/eukarya-inc/reearth-plateauview/server/dataconv"
-	"github.com/eukarya-inc/reearth-plateauview/server/geospatialjp"
+	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
-	"github.com/eukarya-inc/reearth-plateauview/server/sdk"
-	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/putil"
+	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
 	"github.com/labstack/echo/v4"
@@ -26,14 +25,13 @@ type Service struct {
 
 var services = [](func(*Config) (*Service, error)){
 	CMSIntegration,
-	Geospatialjp,
-	SDK,
 	SDKAPI,
 	SearchIndex,
 	Opinion,
 	Sidebar,
 	DataCatalog,
-	DataConv,
+	GovPolygon,
+	Embed,
 }
 
 func Services(conf *Config) (srv []*Service, _ error) {
@@ -52,13 +50,8 @@ func Services(conf *Config) (srv []*Service, _ error) {
 
 func CMSIntegration(conf *Config) (*Service, error) {
 	c := conf.CMSIntegration()
-	if c.CMSBaseURL == "" || c.CMSToken == "" || c.FMEBaseURL == "" || c.FMEResultURL == "" || c.FMEToken == "" {
+	if c.CMSBaseURL == "" || c.CMSToken == "" || c.FMEBaseURL == "" || c.Host == "" || c.FMEToken == "" {
 		return nil, nil
-	}
-
-	e, err := cmsintegration.NotifyHandler(c)
-	if err != nil {
-		return nil, err
 	}
 
 	w, err := cmsintegration.WebhookHandler(c)
@@ -69,37 +62,7 @@ func CMSIntegration(conf *Config) (*Service, error) {
 	return &Service{
 		Name: "cmsintegration",
 		Echo: func(g *echo.Group) error {
-			g.POST("/notify_fme", e)
-			return nil
-		},
-		Webhook: w,
-	}, nil
-}
-
-func Geospatialjp(conf *Config) (*Service, error) {
-	c := conf.Geospatialjp()
-	if c.CMSBase == "" || c.CMSToken == "" || c.CkanBase == "" || c.CkanToken == "" || c.CkanOrg == "" {
-		return nil, nil
-	}
-
-	e, err := geospatialjp.Handler(c)
-	if err != nil {
-		return nil, err
-	}
-
-	w, err := geospatialjp.WebhookHandler(c)
-	if err != nil {
-		return nil, err
-	}
-	if w == nil {
-		return nil, nil
-	}
-
-	return &Service{
-		Name: "geospatialjp",
-		Echo: func(g *echo.Group) error {
-			g.POST("/publish_to_geospatialjp", e)
-			return nil
+			return cmsintegration.Handler(c, g)
 		},
 		Webhook: w,
 	}, nil
@@ -122,46 +85,15 @@ func SearchIndex(conf *Config) (*Service, error) {
 	}, nil
 }
 
-func SDK(conf *Config) (*Service, error) {
-	c := conf.SDK()
-	if c.CMSBase == "" || c.CMSToken == "" || c.FMEBaseURL == "" || c.FMEResultURL == "" || c.FMEToken == "" {
-		return nil, nil
-	}
-
-	e, err := sdk.NotifyHandler(c)
-	if err != nil {
-		return nil, err
-	}
-
-	w, err := sdk.WebhookHandler(c)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Service{
-		Name: "sdk",
-		Echo: func(g *echo.Group) error {
-			g.POST("/notify_sdk", e)
-			if err := sdk.RequestHandler(c, g); err != nil {
-				return err
-			}
-			return nil
-		},
-		Webhook: w,
-	}, nil
-}
-
 func SDKAPI(conf *Config) (*Service, error) {
 	c := conf.SDKAPI()
-	if c.CMSBaseURL == "" || c.Project == "" {
-		return nil, nil
-	}
 
 	return &Service{
 		Name:           "sdkapi",
 		DisableNoCache: true,
 		Echo: func(g *echo.Group) error {
-			return sdkapi.Handler(c, g.Group("/sdk"))
+			_, err := sdkapiv3.Handler(c, g.Group("/sdk"))
+			return err
 		},
 	}, nil
 }
@@ -201,8 +133,11 @@ func Sidebar(conf *Config) (*Service, error) {
 
 func DataCatalog(conf *Config) (*Service, error) {
 	c := conf.DataCatalog()
-	if c.CMSBase == "" {
+	if c.Config.CMSBaseURL == "" {
 		return nil, nil
+	}
+	if c.PlaygroundEndpoint == "" {
+		c.PlaygroundEndpoint = "/datacatalog"
 	}
 
 	return &Service{
@@ -214,33 +149,24 @@ func DataCatalog(conf *Config) (*Service, error) {
 	}, nil
 }
 
-func DataConv(conf *Config) (*Service, error) {
-	c := conf.DataConv()
-	if c.CMSBase == "" || c.CMSToken == "" {
-		return nil, nil
-	}
-
-	w, err := dataconv.WebhookHandler(c)
-	if err != nil {
-		return nil, err
-	}
-
-	api, err := dataconv.Handler(c)
-	if err != nil {
-		return nil, err
-	}
-
-	if w == nil && api == nil {
-		return nil, nil
-	}
-
+func GovPolygon(conf *Config) (*Service, error) {
 	return &Service{
-		Name:    "dataconv",
-		Webhook: w,
+		Name: "govpolygon",
 		Echo: func(g *echo.Group) error {
-			if api != nil {
-				g.POST("/dataconv", echo.WrapHandler(api))
-			}
+			govpolygon.New(
+				conf.LocalURL("/datacatalog/graphql"),
+				true,
+			).Route(g.Group("/govpolygon"))
+			return nil
+		},
+	}, nil
+}
+
+func Embed(conf *Config) (*Service, error) {
+	return &Service{
+		Name: "embed",
+		Echo: func(g *echo.Group) error {
+			_ = putil.DeliverFile(g, "PlateauView3.js", "text/javascript")
 			return nil
 		},
 	}, nil

@@ -153,6 +153,14 @@ type City implements Area & Node {
   平面直角座標系のEPSGコード。例えば、東京都の場合は "6677" です。
   """
   planarCrsEpsgCode: String
+  """
+  CityGMLデータセットのID。
+  """
+  citygmlId: ID
+  """
+  CityGMLデータセット。
+  """
+  citygml: CityGMLDataset
 }
 
 """
@@ -286,9 +294,13 @@ interface Dataset implements Node {
   """
   description: String
   """
-  データセットの公開年度（西暦）
+  データセットの整備年度（西暦）
   """
   year: Int!
+  """
+  データセットの登録年度（西暦）
+  """
+  registerationYear: Int!
   """
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
@@ -506,9 +518,13 @@ type PlateauDataset implements Dataset & Node {
   """
   description: String
   """
-  データセットの公開年度（西暦）
+  データセットの整備年度（西暦）
   """
   year: Int!
+  """
+  データセットの公開年度（西暦）
+  """
+  registerationYear: Int!
   """
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
@@ -751,9 +767,13 @@ type RelatedDataset implements Dataset & Node {
   """
   description: String
   """
-  データセットの公開年度（西暦）
+  データセットの整備年度（西暦）
   """
   year: Int!
+  """
+  データセットの公開年度（西暦）
+  """
+  registerationYear: Int!
   """
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
@@ -905,9 +925,13 @@ type GenericDataset implements Dataset & Node {
   """
   description: String
   """
-  データセットの公開年度（西暦）
+  データセットの整備年度（西暦）
   """
   year: Int!
+  """
+  データセットの公開年度（西暦）
+  """
+  registerationYear: Int!
   """
   データセットを分類するグループ。グループが階層構造になっている場合は、親から子の順番で複数のグループ名が存在することがあります。
   """
@@ -1033,6 +1057,65 @@ type GenericDatasetType implements DatasetType & Node {
   datasets(input: DatasetsInput): [GenericDataset!]!
 }
 
+"""
+PLATEAU標準製品仕様書に基づくCityGMLのデータセット。
+"""
+type CityGMLDataset implements Node {
+  id: ID!
+  """
+  データセットの整備年度（西暦）。
+  """
+  year: Int!
+  """
+  データセットの登録年度（西暦）。
+  """
+  registrationYear: Int!
+  """
+  データセットが属する都道府県のID。
+  """
+  prefectureId: ID!
+  """
+  データセットが属する都道府県コード。2桁の数字から成る文字列です。
+  """
+  prefectureCode: AreaCode!
+  """
+  データセットが属する市のID。
+  """
+  cityId: ID!
+  """
+  データセットが属する市コード。先頭に都道府県コードを含む5桁の数字から成る文字列です。
+  """
+  cityCode: AreaCode!
+  """
+  データセットが準拠するPLATEAU都市モデルの仕様のマイナーバージョンへのID。
+  """
+  plateauSpecMinorId: ID!
+  """
+  CityGMLのzip形式のファイルのURL。
+  """
+  url: String!
+  """
+  データセットが属する都道府県。
+  """
+  prefecture: Prefecture!
+  """
+  データセットが属する市。
+  """
+  city: City!
+  """
+  データセットが準拠するPLATEAU都市モデルの仕様。
+  """
+  plateauSpecMinor: PlateauSpecMinor!
+  """
+  CityGMLが含む地物型コードのリスト。
+  """
+  featureTypes: [String!]!
+  """
+  管理者用
+  """
+  admin: Any
+}
+
 # Queries
 
 """
@@ -1099,9 +1182,13 @@ input DatasetsInput {
   """
   plateauSpec: String
   """
-  データの整備年度または公開年度（西暦）。
+  データの整備年度（西暦）。
   """
   year: Int
+  """
+  データの公開年度（西暦）。
+  """
+  registrationYear: Int
   """
   検索結果から除外するデータセットの種類コード。種類コードは例えば "bldg"（建築物モデル）の他、"plateau"（PLATEAU都市モデルデータセット）、"related"（関連データセット）、"generic"（その他のデータセット）が使用可能です。
   """

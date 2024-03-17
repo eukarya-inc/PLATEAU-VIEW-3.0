@@ -3,6 +3,7 @@ package indexer
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"io"
 	"testing"
 
@@ -14,8 +15,9 @@ func TestZipOutputFS(t *testing.T) {
 	b := bytes.NewBuffer(nil)
 	zw := zip.NewWriter(b)
 	zofs := NewZipOutputFS(zw, "")
+	ctx := context.Background()
 
-	f, err := zofs.Open("test.txt")
+	f, err := zofs.Open(ctx, "test.txt")
 	assert.NoError(t, err)
 	_, err = f.Write([]byte("hello world!"))
 	assert.NoError(t, err)
