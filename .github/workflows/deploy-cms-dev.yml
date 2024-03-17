@@ -9,9 +9,6 @@ env:
   WORKER_IMAGE_NAME: reearth/reearth-cms-worker:rc
   WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-worker:latest
   WORKER_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau-dev/reearth-cms-worker:latest
-  GCP_WORKLOAD_IDENTITY_PROVIDER: projects/383489516390/locations/global/workloadIdentityPools/github-actions-oidc/providers/github-provider
-  GCP_SERVICE_ACCOUNT:  github-cicd-oidc@reearth-plateau-dev.iam.gserviceaccount.com
-  GCP_REGION: asia-northeast1
 concurrency:
   group: ${{ github.workflow }}
 jobs:
@@ -19,6 +16,7 @@ jobs:
   deploy_web:
     runs-on: ubuntu-latest
     if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    environment: dev
     permissions:
       contents: read
       id-token: write
@@ -26,8 +24,8 @@ jobs:
     steps:
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
       - name: Download CMS web
@@ -65,6 +63,7 @@ jobs:
           path: reearth-cms-web.tar.gz
   deploy_server_worker:
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       contents: read
       id-token: write
@@ -73,8 +72,8 @@ jobs:
     steps:
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ env.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ env.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
       - name: Configure docker
@@ -111,3 +110,5 @@ jobs:
             --region $GCP_REGION \
             --platform managed \
             --quiet
+        env:
+          GCP_REGION: ${{ vars.GCP_REGION }}
