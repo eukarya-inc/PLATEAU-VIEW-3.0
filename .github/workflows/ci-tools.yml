@@ -14,14 +14,14 @@ jobs:
           components: clippy
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: tools -> tools/target
+          workspaces: tools -> tools/plateau-view-tool/target
       - uses: giraffate/clippy-action@v1
         with:
           reporter: 'github-pr-review'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          workdir: tools
+          workdir: tools/plateau-view-tool
       - name: test
-        working-directory: tools
+        working-directory: tools/plateau-view-tool
         run: cargo test --all
 
   ci-tools-build:
@@ -48,19 +48,19 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          workspaces: tools -> tools/target
+          workspaces: tools -> tools/plateau-view-tool/target
       - name: Build binary
         uses: houseabsolute/actions-rust-cross@v0
         with:
           target: ${{ matrix.platform.target }}
           args: "--locked --release"
           strip: true
-          working-directory: tools
+          working-directory: tools/plateau-view-tool
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.platform.name }}
-          path: tools/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
+          path: tools/plateau-view-tool/target/${{ matrix.platform.target }}/release/${{ matrix.platform.bin }}
           if-no-files-found: error
 
   ci-tools-release:

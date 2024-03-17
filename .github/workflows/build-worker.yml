@@ -26,7 +26,7 @@ jobs:
           push: false
       - name: Save docker image
         run: docker save ${{ env.IMAGE_NAME }} | gzip > plateauview-api-worker.tar.gz
-      - name: Save imaged to artifact
+      - name: Save image to artifact
         uses: actions/upload-artifact@v3
         with:
           name: plateauview-api-worker
