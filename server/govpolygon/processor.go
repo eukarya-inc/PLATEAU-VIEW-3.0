@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	geojson "github.com/paulmach/go.geojson"
 	"github.com/samber/lo"
@@ -38,9 +39,15 @@ func (p *Processor) ComputeGeoJSON(ctx context.Context, codes []string) (*geojso
 func computeGeojsonFeatures2(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
 	nameMap := map[string]struct{}{}
 	notfound := map[string]struct{}{}
+	citiesWithWards := map[string]struct{}{}
 	for _, n := range names {
 		nameMap[n] = struct{}{}
 		notfound[n] = struct{}{}
+
+		s := strings.Split(n, "/")
+		if len(s) >= 3 && s[2] != "" {
+			citiesWithWards[s[0]+"/"+s[1]] = struct{}{}
+		}
 	}
 
 	result := geojson.NewFeatureCollection()
@@ -72,6 +79,9 @@ func computeGeojsonFeatures2(features []*geojson.Feature, names []string) (*geoj
 
 		cityName = pref + "/" + city
 		_, cityHit = nameMap[cityName]
+		if ward == "" && !cityHit {
+			_, cityHit = citiesWithWards[cityName]
+		}
 		if cityHit {
 			delete(notfound, cityName)
 		}
