@@ -19,7 +19,8 @@ import (
 
 const dirpath = "govpolygondata"
 
-var cahceDuration = 24 * time.Hour
+// var cahceDuration = 24 * time.Hour
+var cahceDuration = 0 * time.Hour
 
 type Handler struct {
 	// e.g. "http://[::]:8080"
@@ -80,7 +81,7 @@ func (h *Handler) Update(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	codes, err := h.getCityCodes(ctx)
+	codes, err := h.getCityNames(ctx)
 	if err != nil {
 		return err
 	}
@@ -109,16 +110,24 @@ func (h *Handler) Update(c echo.Context) error {
 	return nil
 }
 
-func (h *Handler) getCityCodes(ctx context.Context) ([]string, error) {
+func (h *Handler) getCityNames(ctx context.Context) ([]string, error) {
 	query := `
 		{
 			areas(input:{
-				areaTypes: [CITY]
+				areaTypes: [CITY, WARD]
 			}) {
 				name
 				code
 				... on City {
 					prefecture {
+						name
+					}
+				}
+				... on Ward {
+					prefecture {
+						name
+					}
+					city {
 						name
 					}
 				}
@@ -162,6 +171,9 @@ func (h *Handler) getCityCodes(ctx context.Context) ([]string, error) {
 				Prefecture struct {
 					Name string `json:"name"`
 				} `json:"prefecture"`
+				City struct {
+					Name string `json:"name"`
+				} `json:"city"`
 			} `json:"areas"`
 		} `json:"data"`
 	}
@@ -170,10 +182,20 @@ func (h *Handler) getCityCodes(ctx context.Context) ([]string, error) {
 		return nil, fmt.Errorf("failed to unmarshal response body: %w", err)
 	}
 
-	cityCodes := make([]string, len(responseData.Data.Areas))
-	for i, city := range responseData.Data.Areas {
-		cityCodes[i] = city.Code
+	names := make([]string, len(responseData.Data.Areas))
+	for i, area := range responseData.Data.Areas {
+		if area.City.Name == "東京都23区" {
+			area.City.Name = ""
+		}
+
+		if area.City.Name != "" {
+			names[i] = area.Prefecture.Name + "/" + area.City.Name + "/" + area.Name
+		} else if area.Prefecture.Name != area.Name {
+			names[i] = area.Prefecture.Name + "/" + area.Name
+		} else {
+			names[i] = area.Name
+		}
 	}
 
-	return cityCodes, nil
+	return names, nil
 }

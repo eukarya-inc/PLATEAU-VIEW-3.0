@@ -31,36 +31,58 @@ func (p *Processor) ComputeGeoJSON(ctx context.Context, codes []string) (*geojso
 		return nil, nil, fmt.Errorf("no features found")
 	}
 
-	res, notfound := computeGeojsonFeatures2(features, "code", codes)
+	res, notfound := computeGeojsonFeatures2(features, codes)
 	return res, notfound, nil
 }
 
-func computeGeojsonFeatures2(features []*geojson.Feature, key string, codes []string) (*geojson.FeatureCollection, []string) {
-	valueSet := map[string]struct{}{}
-	for _, v := range codes {
-		valueSet[v] = struct{}{}
+func computeGeojsonFeatures2(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
+	nameMap := map[string]struct{}{}
+	notfound := map[string]struct{}{}
+	for _, n := range names {
+		nameMap[n] = struct{}{}
+		notfound[n] = struct{}{}
 	}
 
-	notfound := map[string]struct{}{}
 	result := geojson.NewFeatureCollection()
+
 	for _, f := range features {
-		v, ok := f.Properties[key].(string)
-		if !ok {
+		code, ok := f.Properties["code"].(string)
+		if !ok || code == "" {
 			continue
 		}
+		pref, ok := f.Properties["prefecture"].(string)
+		if !ok || pref == "" {
+			continue
+		}
+		city, ok := f.Properties["city"].(string)
+		if !ok || city == "" {
+			continue
+		}
+		ward, _ := f.Properties["ward"].(string)
 
-		if len(valueSet) > 0 {
-			_, ok = valueSet[v]
-		} else {
-			ok = true
+		var wardName, cityName string
+		var wardHit, cityHit, prefHit bool
+		if ward != "" {
+			wardName = pref + "/" + city + "/" + ward
+			_, wardHit = nameMap[wardName]
+			if wardHit {
+				delete(notfound, wardName)
+			}
 		}
 
-		if ok {
-			properties := f.Properties
-			f.Properties = properties
+		cityName = pref + "/" + city
+		_, cityHit = nameMap[cityName]
+		if cityHit {
+			delete(notfound, cityName)
+		}
+
+		_, prefHit = nameMap[pref]
+		if prefHit {
+			delete(notfound, pref)
+		}
+
+		if wardHit || cityHit || prefHit {
 			result.AddFeature(f)
-		} else {
-			notfound[v] = struct{}{}
 		}
 	}
 
