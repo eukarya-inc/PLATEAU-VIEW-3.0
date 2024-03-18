@@ -1,4 +1,4 @@
-import { styled } from "@mui/material";
+import { styled, useMediaQuery, useTheme } from "@mui/material";
 import { atom, type Atom, useSetAtom } from "jotai";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { createContext, memo, useEffect, useMemo, useRef, type FC, type ReactNode } from "react";
@@ -204,26 +204,29 @@ export const AppOverlayLayout: FC<AppOverlayLayoutProps> = memo(
     const setMaxMainHeight = useSetAtom(maxMainHeightAtom);
     const setGridHeight = useSetAtom(gridHeightAtom);
 
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
     const rootRef = useRef<HTMLDivElement>(null);
     const mainRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       invariant(rootRef.current != null);
       invariant(mainRef.current != null);
       setGridHeight(rootRef.current.getBoundingClientRect().height);
-      setMaxMainHeight(mainRef.current.getBoundingClientRect().height);
+      setMaxMainHeight(mainRef.current.getBoundingClientRect().height * (isMobile ? 0.75 : 1));
       const observerForRoot = new ResizeObserver(([entry]) => {
         setGridHeight(entry.contentRect.height);
       });
       observerForRoot.observe(rootRef.current);
       const observerForMain = new ResizeObserver(([entry]) => {
-        setMaxMainHeight(entry.contentRect.height);
+        setMaxMainHeight(entry.contentRect.height * (isMobile ? 0.75 : 1));
       });
       observerForMain.observe(mainRef.current);
       return () => {
         observerForRoot.disconnect();
         observerForMain.disconnect();
       };
-    }, [setMaxMainHeight, setGridHeight]);
+    }, [isMobile, setMaxMainHeight, setGridHeight]);
 
     const contextValue = useMemo(
       () => ({ maxMainHeightAtom, gridHeightAtom, searchHeaderHeight: HEADER_HEIGHT + 8 }),
