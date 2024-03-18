@@ -55,7 +55,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
     const properties = layers.reduce((res, { features, layer, rootLayer }) => {
-      const featureType = features[0].properties["feature_type"];
+      const featureType = features[0]?.properties["feature_type"];
       return res.concat(
         ...makePropertyForFeatureInspector({
           features,

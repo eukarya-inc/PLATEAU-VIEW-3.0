@@ -1,4 +1,4 @@
-import { useTheme } from "@mui/material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { FC, useCallback, useMemo } from "react";
 
@@ -8,7 +8,6 @@ import {
   useScreenSpaceSelectionResponder,
 } from "../../prototypes/screen-space-selection";
 import { ViewLayerModel } from "../../prototypes/view-layers";
-import { interactionModeAtom } from "../../shared/states/interactionMode";
 import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
 import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
@@ -201,12 +200,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     !(opacity?.value ?? opacity?.preset?.defaultValue) ||
     (opacity.value ?? opacity?.preset?.defaultValue) === 1;
 
-  const [interactionMode] = useAtom(interactionModeAtom);
-
-  const disabledSelection = useMemo(() => {
-    const mode = interactionMode.value as unknown;
-    return mode === "default" || mode === "move";
-  }, [interactionMode]);
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
 
   const appearance: LayerAppearance<Cesium3DTilesAppearance> = useMemo(
     () => ({
@@ -229,7 +223,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       selectedFeatureColor: theme.palette.primary.main,
       experimental_clipping: { ...clippingBox, ...drawClipping },
       showWireframe: wireframeView?.value?.wireframe,
-      disabledSelection: disabledSelection,
+      disableIndexingFeature: isMobile,
     }),
     [
       textured,
@@ -243,7 +237,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       clippingBox,
       wireframeView,
       disableDefaultMaterial,
-      disabledSelection,
+      isMobile,
     ],
   );
 

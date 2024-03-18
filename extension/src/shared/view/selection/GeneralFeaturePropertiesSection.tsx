@@ -71,7 +71,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
   const properties = useMemo(() => {
     // TODO: Replace properties by JSONPath
     return layers.reduce((res, { features, rootLayer, layer }) => {
-      const featureType = features[0].properties["feature_type"];
+      const featureType = features[0]?.properties["feature_type"];
       return res.concat(
         ...makePropertyForFeatureInspector({
           features,

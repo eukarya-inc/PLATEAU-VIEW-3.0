@@ -190,6 +190,7 @@ export type Cesium3DTilesAppearance = {
   sphericalHarmonicCoefficients?: [x: number, y: number, z: number][];
   imageBasedLightIntensity?: number;
   selectedFeatureColor?: string;
+  disableIndexingFeature?: boolean;
   onLoadFeature?: (feature: Partial<Feature> | undefined) => void;
 };
 
