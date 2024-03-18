@@ -156,7 +156,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseUp = (event: MouseEvent): void => {
-    if (this.disabled && !this.allowClickWhenDisabled) {
+    if (this.disabled) {
       return;
     }
 
