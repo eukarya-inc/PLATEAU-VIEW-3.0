@@ -4,6 +4,8 @@ import { type Shadows } from "@mui/material/styles/shadows";
 import { merge } from "lodash";
 import { type CSSProperties } from "react";
 
+import { MOBILE_WIDTH } from "../../view/constants/ui";
+
 import { MuiButton } from "./components/MuiButton";
 import { MuiChip } from "./components/MuiChip";
 import { MuiDivider } from "./components/MuiDivider";
@@ -136,7 +138,7 @@ export const themeOptions: ThemeOptions = {
   },
   breakpoints: {
     values: {
-      mobile: 768,
+      mobile: MOBILE_WIDTH,
     },
   },
   components: {

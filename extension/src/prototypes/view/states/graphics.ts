@@ -4,7 +4,10 @@ import { atomWithReset, type RESET } from "jotai/utils";
 import { fromPairs, isEqual } from "lodash";
 
 import { atomWithStorageValidation, type AtomValue } from "../../shared-states";
+import { MOBILE_WIDTH } from "../constants/ui";
 import { AmbientOcclusionOutputType } from "../types/hbao";
+
+const initialWithMobile = !!window.matchMedia(`(max-width: ${MOBILE_WIDTH}px)`).matches;
 
 export type AntialiasType = "none" | "fxaa" | "msaa2x" | "msaa4x" | "msaa8x";
 
@@ -28,7 +31,7 @@ export const explicitRenderingEnabledAtom = atomWithReset(true);
 
 export const antialiasTypeAtom = atomWithStorageValidation({
   key: "antialiasType",
-  initialValue: "msaa4x" as AntialiasType,
+  initialValue: (initialWithMobile ? "none" : "msaa4x") as AntialiasType,
   validate: isAntialiasType,
 });
 
@@ -46,19 +49,19 @@ export const shadowMapEnabledAtom = atomWithStorageValidation({
 
 export const shadowMapSizeAtom = atomWithStorageValidation({
   key: "shadowMapSize",
-  initialValue: 4096 as ShadowMapSize,
+  initialValue: (initialWithMobile ? 1024 : 4096) as ShadowMapSize,
   validate: isShadowMapSize,
 });
 
 export const shadowMapSoftShadowsAtom = atomWithStorageValidation({
   key: "shadowMapSoftShadows",
-  initialValue: true,
+  initialValue: initialWithMobile ? false : true,
   validate: isBoolean,
 });
 
 export const ambientOcclusionEnabledAtom = atomWithStorageValidation({
   key: "ambientOcclusionEnabled",
-  initialValue: true,
+  initialValue: initialWithMobile ? false : true,
   validate: isBoolean,
 });
 
@@ -74,7 +77,7 @@ export const ambientOcclusionDirectionsAtom = atomWithStorageValidation({
 
 export const ambientOcclusionStepsAtom = atomWithStorageValidation({
   key: "ambientOcclusionSteps",
-  initialValue: 8,
+  initialValue: initialWithMobile ? 4 : 8,
   validate: isNumber,
 });
 
