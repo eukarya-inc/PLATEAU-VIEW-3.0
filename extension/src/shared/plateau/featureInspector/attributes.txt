@@ -20909,119 +20909,119 @@ frn:CityFurniture_FishingPortCapacity_uro:people,{"description":"能力_最大�
 frn:CityFurniture_uro:frnFacilityAttribute_uro:other,{"description":"能力_その他"}
 frn:CityFurniture_FishingPortCapacity_uro:other,{"description":"能力_その他"}
 frn:CityFurniture_uro:FacilityAttribute,{"description":"公園施設長寿命化計画"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan,{"description":"公園施設長寿命化計画"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute,{"description":"公園施設長寿命化計画"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkCode,{"description":"公園コード"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkCode,{"description":"公園コード"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkCode,{"description":"公園コード"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkName,{"description":"公園名"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkName,{"description":"公園名"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkName,{"description":"公園名"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkType,{"description":"公園種別"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkType,{"description":"公園種別"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkType,{"description":"公園種別"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityName,{"description":"公園施設名"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityName,{"description":"公園施設名"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityName,{"description":"公園施設名"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
 frn:CityFurniture_uro:FacilityAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:specificFacilityName,{"description":"具体的施設名称"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities,{"description":"施設数量"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities,{"description":"施設数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities,{"description":"施設数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities,{"description":"施設数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities,{"description":"施設数量"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities_uro:quantity,{"description":"数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:size,{"description":"規模"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:size,{"description":"規模"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:size,{"description":"規模"}
 frn:CityFurniture_uro:FacilityAttribute_uro:mainMaterial,{"description":"主要部材"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:mainMaterial,{"description":"主要部材"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterial,{"description":"主要部材"}
 frn:CityFurniture_uro:FacilityAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
 frn:CityFurniture_uro:FacilityAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
 frn:CityFurniture_uro:FacilityAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment,{"description":"健全度調査結果"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment,{"description":"健全度調査結果"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_condition,{"description":"健全度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_condition,{"description":"健全度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_urgency,{"description":"緊急度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
 frn:CityFurniture_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:managementType,{"description":"管理者の名称累計"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
 frn:CityFurniture_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures,{"description":"長寿命化対策"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures,{"description":"長寿命化対策"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures,{"description":"長寿命化対策"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures,{"description":"長寿命化対策"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_descriptin,{"description":"対策内容"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_descriptin,{"description":"対策内容"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
 frn:CityFurniture_uro:FacilityAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
 frn:CityFurniture_uro:frnFacilityAttribute,{"description":"点検工事記録"}
 frn:CityFurniture_MaintenanceHistoryAttribute,{"description":"点検工事記録"}
 frn:CityFurniture_uro:frnFacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
@@ -21039,37 +21039,37 @@ frn:CityFurniture_MaintenanceHistoryAttribute_uro:status,{"description":"点検�
 frn:CityFurniture_uro:frnFacilityAttribute_uro:description,{"description":"点検・工事の内容"}
 frn:CityFurniture_MaintenanceHistoryAttribute_uro:description,{"description":"点検・工事の内容"}
 frn:CityFurniture_uro:frnDmAttribute,{"description":"図式情報"}
-frn:CityFurniture_DmGeometricAttribute,{"description":"図式情報"}
+frn:CityFurniture_uro:DmGeometricAttribute,{"description":"図式情報"}
 frn:CityFurniture_uro:frnDmAttribute_uro:dmCode,{"description":"DMコード"}
-frn:CityFurniture_DmGeometricAttribute_uro:dmCode,{"description":"DMコード"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:dmCode,{"description":"DMコード"}
 frn:CityFurniture_uro:frnDmAttribute_uro:meshCode,{"description":"メッシュコード"}
-frn:CityFurniture_DmGeometricAttribute_uro:meshCode,{"description":"メッシュコード"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:meshCode,{"description":"メッシュコード"}
 frn:CityFurniture_uro:frnDmAttribute_uro:dmElement,{"description":"数値地形図要素情報"}
 frn:CityFurniture_uro:frnDmAttribute_uro:DmElement,{"description":"数値地形図要素情報"}
-frn:CityFurniture_DmGeometricAttribute_uro:dmElement,{"description":"数値地形図要素情報"}
-frn:CityFurniture_DmGeometricAttribute_uro:DmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:dmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:DmElement,{"description":"数値地形図要素情報"}
 frn:CityFurniture_uro:frnDmAttribute_uro:geometryType,{"description":"レコードタイプ"}
-frn:CityFurniture_DmGeometricAttribute_uro:geometryType,{"description":"レコードタイプ"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:geometryType,{"description":"レコードタイプ"}
 frn:CityFurniture_uro:frnDmAttribute_uro:mapLevel,{"description":"地図情報レベル"}
-frn:CityFurniture_DmGeometricAttribute_uro:mapLevel,{"description":"地図情報レベル"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:mapLevel,{"description":"地図情報レベル"}
 frn:CityFurniture_uro:frnDmAttribute_uro:shapeType,{"description":"図形区分"}
-frn:CityFurniture_DmGeometricAttribute_uro:shapeType,{"description":"図形区分"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:shapeType,{"description":"図形区分"}
 frn:CityFurniture_uro:frnDmAttribute_uro:visibility,{"description":"可視性"}
-frn:CityFurniture_DmGeometricAttribute_uro:visibility,{"description":"可視性"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:visibility,{"description":"可視性"}
 frn:CityFurniture_uro:frnDmAttribute_uro:is3d,{"description":"3Dフラグ"}
-frn:CityFurniture_DmGeometricAttribute_uro:is3d,{"description":"3Dフラグ"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:is3d,{"description":"3Dフラグ"}
 frn:CityFurniture_uro:frnDmAttribute_uro:isInstallation,{"description":"付属図形フラグ"}
-frn:CityFurniture_DmGeometricAttribute_uro:isInstallation,{"description":"付属図形フラグ"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:isInstallation,{"description":"付属図形フラグ"}
 frn:CityFurniture_uro:frnDmAttribute_uro:isEdited,{"description":"編集フラグ"}
-frn:CityFurniture_DmGeometricAttribute_uro:isEdited,{"description":"編集フラグ"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:isEdited,{"description":"編集フラグ"}
 frn:CityFurniture_uro:frnDmAttribute_uro:isSupplementarySymbol,{"description":"補助記号フラグ"}
-frn:CityFurniture_DmGeometricAttribute_uro:isSupplementarySymbol,{"description":"補助記号フラグ"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:isSupplementarySymbol,{"description":"補助記号フラグ"}
 frn:CityFurniture_uro:frnDmAttribute_uro:angle,{"description":"角度"}
-frn:CityFurniture_DmGeometricAttribute_uro:angle,{"description":"角度"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:angle,{"description":"角度"}
 frn:CityFurniture_uro:frnDmAttribute_uro:elevation,{"description":"標高"}
-frn:CityFurniture_DmGeometricAttribute_uro:elevation,{"description":"標高"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:elevation,{"description":"標高"}
 frn:CityFurniture_uro:frnDmAttribute_uro:lod0Geometry,{"description":"図式情報"}
-frn:CityFurniture_DmGeometricAttribute_uro:lod0Geometry,{"description":"図式情報"}
+frn:CityFurniture_uro:DmGeometricAttribute_uro:lod0Geometry,{"description":"図式情報"}
 frn:CityFurniture_uro:frnDmAttribute,{"description":"注記情報"}
 frn:CityFurniture_DmAnnotation,{"description":"注記情報"}
 frn:CityFurniture_uro:frnDmAttribute_uro:dmCode,{"description":"DMコード"}
@@ -39471,3 +39471,18 @@ bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:lodType,{"description":"�
 bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
 bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
 bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+frn:CityFurniture_dm_uro:dmCode,{"description":"DMコード"}
+frn:CityFurniture_dm_uro:meshCode,{"description":"メッシュコード"}
+frn:CityFurniture_dm_uro:dmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_dm_uro:DmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_dm_uro:geometryType,{"description":"レコードタイプ"}
+frn:CityFurniture_dm_uro:mapLevel,{"description":"地図情報レベル"}
+frn:CityFurniture_dm_uro:shapeType,{"description":"図形区分"}
+frn:CityFurniture_dm_uro:visibility,{"description":"可視性"}
+frn:CityFurniture_dm_uro:is3d,{"description":"3Dフラグ"}
+frn:CityFurniture_dm_uro:isInstallation,{"description":"付属図形フラグ"}
+frn:CityFurniture_dm_uro:isEdited,{"description":"編集フラグ"}
+frn:CityFurniture_dm_uro:isSupplementarySymbol,{"description":"補助記号フラグ"}
+frn:CityFurniture_dm_uro:angle,{"description":"角度"}
+frn:CityFurniture_dm_uro:elevation,{"description":"標高"}
+frn:CityFurniture_dm_uro:lod0Geometry,{"description":"図式情報"}

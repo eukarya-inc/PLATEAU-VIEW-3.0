@@ -15,6 +15,10 @@ export type LayerVisibilityEvent = {
   layerId: string | undefined;
 };
 
+export type LayerLoadEvent = {
+  layerId: string | undefined;
+};
+
 export type ReearthEventType = {
   update: [];
   close: [];
@@ -49,4 +53,5 @@ export type ReearthEventType = {
     },
   ];
   layerVisibility: [e: LayerVisibilityEvent];
+  layerload: [e: LayerLoadEvent];
 };

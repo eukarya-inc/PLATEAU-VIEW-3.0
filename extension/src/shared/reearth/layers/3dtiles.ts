@@ -67,6 +67,7 @@ export const TilesetLayer: FC<TilesetProps> = ({
     visible,
     appearances,
     onLoad,
+    useLayerLoadEvent: true,
   });
 
   return null;

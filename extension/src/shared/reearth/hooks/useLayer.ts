@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Events, LayerAppearanceTypes } from "../types";
+import { Events, LayerAppearanceTypes, LayerLoadEvent } from "../types";
 import { Data } from "../types/layer";
 
 export type LayerHookOptions = {
@@ -10,6 +10,7 @@ export type LayerHookOptions = {
   events?: Events;
   onLoad?: (layerId: string) => void;
   loading?: boolean;
+  useLayerLoadEvent?: boolean;
 };
 
 export const useLayer = ({
@@ -19,6 +20,7 @@ export const useLayer = ({
   events,
   onLoad,
   loading,
+  useLayerLoadEvent,
 }: LayerHookOptions) => {
   const layerIdRef = useRef<string>();
   const [loaded, setLoaded] = useState(false);
@@ -55,11 +57,22 @@ export const useLayer = ({
   useEffect(() => {
     const layerId = layerIdRef.current;
     if (!layerId) return;
-    setTimeout(() => {
-      if (layerId) {
-        onLoad?.(layerId);
-      }
-      setLoaded(true);
-    }, 300);
-  }, [onLoad, data.url]);
+    if (useLayerLoadEvent) {
+      const load = ({ layerId }: LayerLoadEvent) => {
+        if (layerId) {
+          onLoad?.(layerId);
+        }
+        setLoaded(true);
+      };
+      window.reearth?.on?.("layerload", load);
+      return () => window.reearth?.off?.("layerload", load);
+    } else {
+      setTimeout(() => {
+        if (layerId) {
+          onLoad?.(layerId);
+        }
+        setLoaded(true);
+      }, 300);
+    }
+  }, [onLoad, data.url, useLayerLoadEvent]);
 };
