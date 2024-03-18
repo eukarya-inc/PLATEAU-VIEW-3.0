@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { type FC } from "react";
 
+import { streetViewAtom, streetViewVisibleAtom } from "../../pedestrian";
 import { useWindowEvent } from "../../react-helpers";
 import { platformAtom } from "../../shared-states";
 import { testShortcut } from "../../ui-components";
@@ -12,6 +13,9 @@ export const KeyBindings: FC = () => {
   const setHideAppOverlay = useSetAtom(hideAppOverlayAtom);
   const setShowDeveloperPanels = useSetAtom(showDeveloperPanelsAtom);
   const send = useSetAtom(toolMachineAtom);
+
+  const streetViewVisible = useAtomValue(streetViewVisibleAtom);
+  const streetView = useAtomValue(streetViewAtom);
 
   useWindowEvent("keydown", event => {
     if (
@@ -68,6 +72,22 @@ export const KeyBindings: FC = () => {
           send({ type: "PEDESTRIAN" });
           return;
       }
+    }
+    if (
+      streetViewVisible &&
+      streetView != null &&
+      (event.key === "w" ||
+        event.key === "a" ||
+        event.key === "s" ||
+        event.key === "d" ||
+        event.code === "ArrowUp" ||
+        event.code === "ArrowDown" ||
+        event.code === "ArrowLeft" ||
+        event.code === "ArrowRight")
+    ) {
+      event.preventDefault();
+      // TODO: This misses the first key input.
+      streetView.panorama.focus();
     }
   });
 
