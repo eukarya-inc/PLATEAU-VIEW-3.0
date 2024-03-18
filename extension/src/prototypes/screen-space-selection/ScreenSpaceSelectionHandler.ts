@@ -71,6 +71,12 @@ export class ScreenSpaceSelectionHandler {
 
     // TODO(reearth): Support event with `shift` key
     window.reearth?.on?.("select", this.handleSelect);
+
+    // This is for mobile.
+    // Because if you use mousedown and mouseup to handle the click behavior,
+    // it will conflict with pinch motion.
+    window.reearth?.on?.("click", this.handleClickOnMobile);
+
     window.reearth?.on?.("mousedown", this.handleMouseDown);
     window.reearth?.on?.("mouseup", this.handleMouseUp);
     window.reearth?.on?.("mousemove", this.handleMouseMove);
@@ -80,6 +86,7 @@ export class ScreenSpaceSelectionHandler {
     window.removeEventListener("keydown", this.handleKeyDown);
 
     window.reearth?.off?.("select", this.handleSelect);
+    window.reearth?.off?.("click", this.handleClickOnMobile);
     window.reearth?.off?.("mousedown", this.handleMouseDown);
     window.reearth?.off?.("mouseup", this.handleMouseUp);
     window.reearth?.off?.("mousemove", this.handleMouseMove);
@@ -112,6 +119,11 @@ export class ScreenSpaceSelectionHandler {
   private handleKeyDown(e: KeyboardEvent) {
     this.currentKeyName = e.key;
   }
+
+  private readonly handleClickOnMobile = (event: MouseEvent): void => {
+    if (this.disabled && !this.allowClickWhenDisabled) return;
+    this.handleClick([event.x ?? 0, event.y ?? 0], this.currentKeyName);
+  };
 
   private readonly handleClick = (position: [x: number, y: number], keyName?: string): void => {
     if (
@@ -173,10 +185,6 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseMove = (event: MouseEvent, indeterminate = true): void => {
-    // Need to set moving so that when mouse up on mobile it won't be a click.
-    if (this.allowClickWhenDisabled) {
-      this.moving = true;
-    }
     if (this.disabled) {
       return;
     }

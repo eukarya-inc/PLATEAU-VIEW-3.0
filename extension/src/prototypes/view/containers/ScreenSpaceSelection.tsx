@@ -31,7 +31,9 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = props => {
       {...props}
       disabled={tool?.type !== "select" && tool?.type !== "story"}
       allowClickWhenDisabled={isMobile}
-      allowedEvents={tool?.type === "select" ? EVENTS_ON_SELECT_TOOL : EVENTS_ON_STORY_TOOL}
+      allowedEvents={
+        isMobile || tool?.type === "select" ? EVENTS_ON_SELECT_TOOL : EVENTS_ON_STORY_TOOL
+      }
     />
   );
 };
