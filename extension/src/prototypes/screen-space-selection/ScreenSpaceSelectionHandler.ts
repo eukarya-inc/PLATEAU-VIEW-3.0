@@ -146,7 +146,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseDown = (event: MouseEvent): void => {
-    if (this.disabled && !this.allowClickWhenDisabled) {
+    if (this.disabled) {
       return;
     }
     // TODO(ReEarth): Support selecting multiple feature
