@@ -58,10 +58,9 @@ export const useLayer = ({
     const layerId = layerIdRef.current;
     if (!layerId) return;
     if (useLayerLoadEvent) {
-      const load = ({ layerId }: LayerLoadEvent) => {
-        if (layerId) {
-          onLoad?.(layerId);
-        }
+      const load = ({ layerId: actualLayerId }: LayerLoadEvent) => {
+        if (!actualLayerId || layerId !== actualLayerId) return;
+        onLoad?.(layerId);
         setLoaded(true);
       };
       window.reearth?.on?.("layerload", load);
