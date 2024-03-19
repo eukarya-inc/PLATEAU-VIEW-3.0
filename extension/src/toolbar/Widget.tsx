@@ -26,6 +26,7 @@ import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewC
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
 import FeedBack from "../shared/view/ui-container/Feedback";
+import Help from "../shared/view/ui-container/Help";
 import MyData from "../shared/view/ui-container/MyData";
 import { StoryCreator } from "../shared/view/ui-container/story/StoryCreator";
 import { layerComponents } from "../shared/view-layers/layerComponents";
@@ -111,6 +112,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <PedestrianTool />
         <SketchTool />
         <MyData />
+        <Help />
         <AutoRotateCamera />
         <FeedBack />
         <StoryCreator />
