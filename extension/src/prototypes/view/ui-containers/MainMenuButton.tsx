@@ -13,7 +13,12 @@ import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 import { LOGO, SITE_URL } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
-import { hideAppOverlayAtom, showFeedbackModalAtom, showMyDataModalAtom } from "../states/app";
+import {
+  hideAppOverlayAtom,
+  showFeedbackModalAtom,
+  showHelpModalAtom,
+  showMyDataModalAtom,
+} from "../states/app";
 
 export interface MainMenuButtonProps extends Omit<IconButtonProps, "onClick"> {
   onClick?: (event: MouseEvent<HTMLElement>, name: string) => void;
@@ -30,6 +35,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
     const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
     const [, setShowMyDataModal] = useAtom(showMyDataModalAtom);
+    const [, setShowHelpModal] = useAtom(showHelpModalAtom);
 
     const onClickRef = useRef(onClick);
     onClickRef.current = onClick;
@@ -49,11 +55,15 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             break;
           case "my-data":
             setShowMyDataModal(value => !value);
+            break;
+          case "help":
+            setShowHelpModal(value => !value);
+            break;
         }
         onClickRef.current?.(event, name);
         popupState.close();
       },
-      [popupState, setHideAppOverlay, setShowFeedbackModal, setShowMyDataModal],
+      [popupState, setHideAppOverlay, setShowFeedbackModal, setShowMyDataModal, setShowHelpModal],
     );
 
     const platform = useAtomValue(platformAtom);
@@ -101,7 +111,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           <SelectItem data-name="my-data" onClick={handleClick}>
             Myデータ
           </SelectItem>
-          <SelectItem disabled data-name="help" onClick={handleClick}>
+          <SelectItem data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
           <SelectItem data-name="feedback" onClick={handleClick}>
