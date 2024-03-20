@@ -68,7 +68,7 @@ export const LoadingScreen: FC = () => (
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 1 }}>
-          VIEW 3.0 Design & Technology Preview
+          Map the New World
         </Name>
       </Stack>
     </motion.div>
