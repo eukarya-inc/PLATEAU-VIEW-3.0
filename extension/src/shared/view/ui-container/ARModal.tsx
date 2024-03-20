@@ -76,6 +76,7 @@ const ContentWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   gap: theme.spacing(2),
+  borderTop: `1px solid ${theme.palette.divider}`,
 }));
 
 const Description = styled("div")(({ theme }) => ({
