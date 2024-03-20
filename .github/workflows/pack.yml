@@ -13,7 +13,7 @@ jobs:
           ref: plateau
           path: plateau
       - name: Clean the repo except .git
-        run: find plateau -type f -not -path '.git/*' -delete
+        run: find plateau -type f -not -path '.git/*' -delete; tree -a
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
@@ -49,6 +49,5 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add .
-          git commit -m "Update"
+          git commit -m "Update" -a
           git push
