@@ -14,6 +14,7 @@ import {
 export interface ViewLayerModelParams {
   id?: string;
   title?: string;
+  hidden?: boolean;
   colorScheme?: LayerColorScheme;
   imageScheme?: LayerImageScheme;
   customLegendScheme?: LayerCustomLegendScheme;
@@ -32,7 +33,7 @@ export function createViewLayerModel(
     isViewLayer: true,
     titleAtom: atom<LayerTitle | null>(params.title ?? null),
     loadingAtom: atom(false),
-    hiddenAtom: atom(false),
+    hiddenAtom: atom(!!params.hidden),
     layerIdAtom: atom<string | null>(null),
     boundingSphereAtom: atom<XYZ | null>(null),
     colorSchemeAtom: atom<LayerColorScheme | null>(params.colorScheme ?? null),
