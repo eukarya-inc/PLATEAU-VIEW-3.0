@@ -53,6 +53,7 @@ export interface HeatmapLayerModel extends ViewLayerModel {
 
 export type SharedHeatmapLayer = {
   type: "heatmap";
+  id: string;
   datasetId: string;
   dataId: string;
 };
