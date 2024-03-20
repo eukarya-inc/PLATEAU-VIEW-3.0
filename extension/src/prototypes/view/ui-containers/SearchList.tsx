@@ -1,8 +1,10 @@
 import { Button, ListItemSecondaryAction, ListSubheader, MenuList } from "@mui/material";
-import { useCallback, type FC, type MouseEvent } from "react";
+import { useAtomValue } from "jotai";
+import { useCallback, type FC, type MouseEvent, useContext } from "react";
 
 import {
   AddressIcon,
+  AppOverlayLayoutContext,
   BuildingIcon,
   DatasetIcon,
   EntityTitleButton,
@@ -74,8 +76,11 @@ export const SearchList: FC<SearchListProps> = ({
     [onFiltersChange],
   );
 
+  const { maxMainHeightAtom, searchHeaderHeight } = useContext(AppOverlayLayoutContext);
+  const maxMainHeight = useAtomValue(maxMainHeightAtom);
+
   return (
-    <MenuList component="div" dense>
+    <MenuList component="div" dense sx={{ maxHeight: `${maxMainHeight - searchHeaderHeight}px` }}>
       {datasets.length > 0 && [
         <ListSubheader component="div" key="datasets">
           周辺のデータセット

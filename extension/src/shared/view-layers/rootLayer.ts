@@ -215,7 +215,7 @@ const createViewLayerWithComponentGroup = (
       title,
       datasetId,
       shareId,
-      textured: data?.name !== "LOD1" && data?.name !== "LOD2（テクスチャなし）",
+      textured: !data?.name.includes("（テクスチャなし）"),
       shouldInitializeAtom: shouldInitialize,
     }),
     componentAtoms: makeComponentAtoms(

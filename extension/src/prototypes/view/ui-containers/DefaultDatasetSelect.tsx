@@ -154,7 +154,10 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
         onChange={handleChange}
         disabled={disabled}>
         {datasets.flatMap((dataset, index) => {
-          if (dataset.items.length) {
+          if (
+            dataset.items.length > 1 ||
+            dataset.type.code === PlateauDatasetType.RiverFloodingRisk
+          ) {
             if (dataset.name === "") {
               return dataset.items.map(datum => (
                 <SelectItem

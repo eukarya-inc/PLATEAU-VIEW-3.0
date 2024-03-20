@@ -195,14 +195,14 @@ export const DatasetAreaList: FC = () => {
     },
     [setExpanded],
   );
-  const { gridHeightAtom, searchHeaderHeight } = useContext(AppOverlayLayoutContext);
-  const gridHeight = useAtomValue(gridHeightAtom);
+  const { maxMainHeightAtom, searchHeaderHeight } = useContext(AppOverlayLayoutContext);
+  const maxMainHeight = useAtomValue(maxMainHeightAtom);
 
   return (
     <DatasetTreeView
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
-      maxheight={gridHeight - searchHeaderHeight}>
+      maxheight={maxMainHeight - searchHeaderHeight}>
       <RegionalMeshItem />
       <GlobalItem />
       {query.data?.areas.map(

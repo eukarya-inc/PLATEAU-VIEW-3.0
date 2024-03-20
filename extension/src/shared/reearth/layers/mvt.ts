@@ -111,7 +111,7 @@ export const MVTLayer: FC<MVTProps> = ({
       type: "mvt",
       url,
       layers,
-      jsonProperties: ["attributes"],
+      jsonProperties: ["attributes", "dm_attributes"],
     }),
     [url, layers],
   );

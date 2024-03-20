@@ -1639,17 +1639,17 @@ bldg:BuildingPart_bldg:interiorRoom,{"description":"部屋"}
 bldg:BuildingPart_bldg:consistsOfBuildingPart,{"description":"建物部品"}
 bldg:BuildingPart_bldg:address,{"description":"住所"}
 bldg:BuildingPart_uro:buildingIDAttribute,{"description":"建物識別情報"}
-bldg:BuildingPart_uro:buildingIDAttribute,{"description":"建物識別情報"}
+bldg:BuildingPart_uro:BuildingIDAttribute,{"description":"建物識別情報"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
 bldg:BuildingPart_uro:buildingDetailAttribute,{"description":"建物利用現況"}
 bldg:BuildingPart_uro:BuildingDetailAttribute,{"description":"建物利用現況"}
 bldg:BuildingPart_uro:buildingDetailAttribute_uro:serialNumberOfBuildingCertification,{"description":"建築確認申請番号"}
@@ -1731,6 +1731,7 @@ bldg:BuildingPart_uro:BuildingDetailAttribute_uro:surveyYear,{"description":"調
 bldg:BuildingPart_uro:largeCustomerFacilityAttribute,{"description":"大規模小売店舗等の立地状況"}
 bldg:BuildingPart_uro:buildingDisasterRiskAttribute,{"description":"災害リスク情報"}
 bldg:BuildingPart_uro:keyValuePairAttribute,{"description":"拡張属性"}
+bldg:BuildingPart_uro:KeyValuePairAttribute,{"description":"拡張属性"}
 bldg:BuildingPart_uro:buildingDataQualityAttribute,{"description":"データ品質属性"}
 bldg:BuildingPart_uro:ifcBuildingAttribute,{"description":"BIMモデルからの変換情報"}
 bldg:BuildingPart_uro:indoorBuildingAttribute,{"description":"屋内地図情報"}
@@ -12343,7 +12344,9 @@ urf:TrafficFacility_urf:ParkingPlaceAttribute_urf:storeysAboveGround,{"descripti
 urf:TrafficFacility_urf:parkingPlaceAttribute_urf:storeysBelowGround,{"description":"地下階数"}
 urf:TrafficFacility_urf:ParkingPlaceAttribute_urf:storeysBelowGround,{"description":"地下階数"}
 urf:TrafficFacility_urf:vehicleTerminalAttribute,{"description":"自動車ターミナル属性"}
+urf:TrafficFacility_urf:VehicleTerminalAttribute,{"description":"自動車ターミナル属性"}
 urf:TrafficFacility_urf:vehicleTerminalAttribute_urf:terminalType,{"description":"自動車ターミナルの種類"}
+urf:TrafficFacility_urf:VehicleTerminalAttribute_urf:terminalType,{"description":"自動車ターミナルの種類"}
 urf:OpenSpaceForPublicUse,{"description":"公共空地（urf:functionの値により決定）"}
 urf:OpenSpaceForPublicUse_gml:description,{"description":"説明"}
 urf:OpenSpaceForPublicUse_gml:name,{"description":"名称"}
@@ -12503,10 +12506,15 @@ urf:TreatmentFacility_urf:location,{"description":"位置"}
 urf:TreatmentFacility_urf:number,{"description":"番号"}
 urf:TreatmentFacility_urf:threeDimensionalExtent,{"description":"立体的な範囲"}
 urf:TreatmentFacility_urf:sewerSystemAttribute,{"description":"下水道属性"}
+urf:TreatmentFacility_urf:SewerSystemAttribute,{"description":"下水道属性"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:startLocation,{"description":"起点"}
+urf:TreatmentFacility_urf:SewerSystemAttribute_urf:startLocation,{"description":"起点"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:endLocation,{"description":"終点"}
+urf:TreatmentFacility_urf:SewerSystemAttribute_urf:endLocation,{"description":"終点"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:systemType,{"description":"種別"}
+urf:TreatmentFacility_urf:SewerSystemAttribute_urf:systemType,{"description":"種別"}
 urf:TreatmentFacility_urf:sewerSystemAttribute_urf:drainageArea,{"description":"排水区域"}
+urf:TreatmentFacility_urf:SewerSystemAttribute_urf:drainageArea,{"description":"排水区域"}
 urf:Waterway,{"description":"水路（urf:functionの値により決定）"}
 urf:Waterway_gml:description,{"description":"説明"}
 urf:Waterway_gml:name,{"description":"名称"}
@@ -15415,30 +15423,30 @@ app:X3DMaterial_app:shininess,{"description":"輝きの強さ"}
 app:X3DMaterial_app:transparency,{"description":"透明度"}
 app:X3DMaterial_app:isSmooth,{"description":"補間方法"}
 app:X3DMaterial_app:target,{"description":"対象ジオメトリ"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）,{"description":"汎用都市オブジェクト"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:description,{"description":"説明"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:name,{"description":"名称"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:boundedBy,{"description":"範囲"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:creationDate,{"description":"データ作成日","dataType":"date"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:terminationDate,{"description":"データ削除日","dataType":"date"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:relativeToTerrain,{"description":"地表との関係"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:relativeToWater,{"description":"水面との関係"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:class,{"description":"区分"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:function,{"description":"機能"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:usage,{"description":"用途"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:stringAttribute,{"description":"汎用属性（文字列）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:intAttribute,{"description":"汎用属性（整数）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:doubleAttribute,{"description":"汎用属性（実数）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:dateAttribute,{"description":"汎用属性（日付）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:uriAttribute,{"description":"汎用属性（URI）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttributeset,{"description":"汎用属性セット"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttribute,{"description":"汎用属性セット"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod0Geometry,{"description":"lod0幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod1Geometry,{"description":"lod1幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod2Geometry,{"description":"lod2幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod3Geometry,{"description":"lod3幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod4Geometry,{"description":"lod4幾何"}
+gen:GenericCityObject,{"description":"汎用都市オブジェクト"}
+gen:GenericCityObject_gml:description,{"description":"説明"}
+gen:GenericCityObject_gml:name,{"description":"名称"}
+gen:GenericCityObject_gml:boundedBy,{"description":"範囲"}
+gen:GenericCityObject_core:creationDate,{"description":"データ作成日","dataType":"date"}
+gen:GenericCityObject_core:terminationDate,{"description":"データ削除日","dataType":"date"}
+gen:GenericCityObject_core:relativeToTerrain,{"description":"地表との関係"}
+gen:GenericCityObject_core:relativeToWater,{"description":"水面との関係"}
+gen:GenericCityObject_gen:class,{"description":"区分"}
+gen:GenericCityObject_gen:function,{"description":"機能"}
+gen:GenericCityObject_gen:usage,{"description":"用途"}
+gen:GenericCityObject_gen:stringAttribute,{"description":"汎用属性（文字列）"}
+gen:GenericCityObject_gen:intAttribute,{"description":"汎用属性（整数）"}
+gen:GenericCityObject_gen:doubleAttribute,{"description":"汎用属性（実数）"}
+gen:GenericCityObject_gen:dateAttribute,{"description":"汎用属性（日付）"}
+gen:GenericCityObject_gen:uriAttribute,{"description":"汎用属性（URI）"}
+gen:GenericCityObject_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
+gen:GenericCityObject_gen:genericAttributeset,{"description":"汎用属性セット"}
+gen:GenericCityObject_gen:genericAttribute,{"description":"汎用属性セット"}
+gen:GenericCityObject_lod0Geometry,{"description":"lod0幾何"}
+gen:GenericCityObject_lod1Geometry,{"description":"lod1幾何"}
+gen:GenericCityObject_lod2Geometry,{"description":"lod2幾何"}
+gen:GenericCityObject_lod3Geometry,{"description":"lod3幾何"}
+gen:GenericCityObject_lod4Geometry,{"description":"lod4幾何"}
 grp:CityObjectGroup,{"description":"都市オブジェクトグループ"}
 grp:CityObjectGroup_gml:description,{"description":"説明"}
 grp:CityObjectGroup_gml:name,{"description":"名称"}
@@ -20902,119 +20910,119 @@ frn:CityFurniture_FishingPortCapacity_uro:people,{"description":"能力_最大�
 frn:CityFurniture_uro:frnFacilityAttribute_uro:other,{"description":"能力_その他"}
 frn:CityFurniture_FishingPortCapacity_uro:other,{"description":"能力_その他"}
 frn:CityFurniture_uro:FacilityAttribute,{"description":"公園施設長寿命化計画"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan,{"description":"公園施設長寿命化計画"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute,{"description":"公園施設長寿命化計画"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkCode,{"description":"公園コード"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkCode,{"description":"公園コード"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkCode,{"description":"公園コード"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkName,{"description":"公園名"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkName,{"description":"公園名"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkName,{"description":"公園名"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkType,{"description":"公園種別"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkType,{"description":"公園種別"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkType,{"description":"公園種別"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityName,{"description":"公園施設名"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityName,{"description":"公園施設名"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityName,{"description":"公園施設名"}
 frn:CityFurniture_uro:FacilityAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
 frn:CityFurniture_uro:FacilityAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:specificFacilityName,{"description":"具体的施設名称"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities,{"description":"施設数量"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities,{"description":"施設数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities,{"description":"施設数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities,{"description":"施設数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities,{"description":"施設数量"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities_uro:quantity,{"description":"数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
 frn:CityFurniture_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
 frn:CityFurniture_uro:FacilityAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:size,{"description":"規模"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:size,{"description":"規模"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:size,{"description":"規模"}
 frn:CityFurniture_uro:FacilityAttribute_uro:mainMaterial,{"description":"主要部材"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:mainMaterial,{"description":"主要部材"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterial,{"description":"主要部材"}
 frn:CityFurniture_uro:FacilityAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
 frn:CityFurniture_uro:FacilityAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
 frn:CityFurniture_uro:FacilityAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
 frn:CityFurniture_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment,{"description":"健全度調査結果"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment,{"description":"健全度調査結果"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_condition,{"description":"健全度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_condition,{"description":"健全度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
 frn:CityFurniture_uro:FacilityAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
 frn:CityFurniture_uro:FacilityAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_ParkHealthAssessment_urgency,{"description":"緊急度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
 frn:CityFurniture_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:managementType,{"description":"管理者の名称累計"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
 frn:CityFurniture_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures,{"description":"長寿命化対策"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures,{"description":"長寿命化対策"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures,{"description":"長寿命化対策"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures,{"description":"長寿命化対策"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
 frn:CityFurniture_uro:FacilityAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
 frn:CityFurniture_uro:FacilityAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:longevityMeasures_descriptin,{"description":"対策内容"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_LongevityMeasures_descriptin,{"description":"対策内容"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
 frn:CityFurniture_uro:FacilityAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
-frn:CityFurniture_uro:ParkFacilityLongevityPlan_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+frn:CityFurniture_uro:ParkFacilityLongevityPlanAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
 frn:CityFurniture_uro:frnFacilityAttribute,{"description":"点検工事記録"}
 frn:CityFurniture_MaintenanceHistoryAttribute,{"description":"点検工事記録"}
 frn:CityFurniture_uro:frnFacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
@@ -35706,8 +35714,8 @@ veg:SolitaryVegetationObject_veg:function,{"description":"機能"}
 veg:SolitaryVegetationObject_veg:usage,{"description":"用途"}
 veg:SolitaryVegetationObject_veg:species,{"description":"樹種"}
 veg:SolitaryVegetationObject_veg:height,{"description":"樹高"}
-veg:SolitaryVegetationObject_veg:trunkDiamiter,{"description":"幹径"}
-veg:SolitaryVegetationObject_veg:crownDiamiter,{"description":"樹冠径"}
+veg:SolitaryVegetationObject_veg:trunkDiameter,{"description":"幹径"}
+veg:SolitaryVegetationObject_veg:crownDiameter,{"description":"樹冠径"}
 veg:SolitaryVegetationObject_veg:lod1Geometry,{"description":"lod1幾何"}
 veg:SolitaryVegetationObject_veg:lod2Geometry,{"description":"lod2幾何"}
 veg:SolitaryVegetationObject_veg:lod3Geometry,{"description":"lod3幾何"}
@@ -39396,6 +39404,11 @@ tran:Road_uro:averageInboundTravelSpeedNotCongestion,{"description":"非混雑�
 tran:Road_uro:averageOutboundTravelSpeedNotCongestion,{"description":"非混雑時平均旅行速度（下り）"}
 tran:Road_uro:observationPointName,{"description":"観測地点名"}
 tran:Road_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
 luse:LandUse_uro:id,{"description":"土地利用現況図における識別子"}
 luse:LandUse_uro:orgLandUse,{"description":"土地利用区分（独自分類）"}
 luse:LandUse_uro:nominalArea,{"description":"公称面積"}
@@ -39413,3 +39426,407 @@ luse:LandUse_uro:districtsAndZonesType,{"description":"地域地区"}
 luse:LandUse_uro:prefecture,{"description":"都道府県"}
 luse:LandUse_uro:city,{"description":"市区町村"}
 luse:LandUse_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
+tran:TrafficArea_uro:sectionType,{"description":"区間種別"}
+tran:TrafficArea_uro:tranDataQualityAttribute,{"description":"データ品質属性"}
+tran:TrafficArea_uro:tranDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+tran:TrafficArea_uro:tranDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+tran:TrafficArea_uro:tranDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+tran:TrafficArea_uro:tranDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+tran:TrafficArea_uro:tranDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+tran:TrafficArea_uro:trackAttribute,{"description":"道路構造"}
+tran:TrafficArea_uro:trackAttribute_uro:alternativeName,{"description":"その他の名称"}
+tran:TrafficArea_uro:trackAttribute_uro:adminType,{"description":"管理者区分"}
+tran:TrafficArea_uro:trackAttribute_uro:relativeLevel,{"description":"階層順"}
+tran:TrafficArea_uro:trackAttribute_uro:widthType,{"description":"幅員区分"}
+tran:TrafficArea_uro:trackAttribute_uro:structureType,{"description":"構造区分"}
+tran:TrafficArea_uro:trackAttribute_uro:isTollRoad,{"description":"料金有無区分"}
+tran:TrafficArea_uro:trackAttribute_uro:separator,{"description":"分離帯の幅員"}
+tran:TrafficArea_uro:FacilityAttribute,{"description":"公園施設長寿命化計画"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute,{"description":"公園施設長寿命化計画"}
+tran:TrafficArea_uro:FacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkCode,{"description":"公園コード"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkCode,{"description":"公園コード"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkName,{"description":"公園名"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkName,{"description":"公園名"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkType,{"description":"公園種別"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkType,{"description":"公園種別"}
+tran:TrafficArea_uro:FacilityAttribute_uro:facilityName,{"description":"公園施設名"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityName,{"description":"公園施設名"}
+tran:TrafficArea_uro:FacilityAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+tran:TrafficArea_uro:FacilityAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
+tran:TrafficArea_uro:FacilityAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+tran:TrafficArea_uro:FacilityAttribute_NumberOfFacilities,{"description":"施設数量"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities,{"description":"施設数量"}
+tran:TrafficArea_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+tran:TrafficArea_uro:FacilityAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
+tran:TrafficArea_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:TrafficArea_uro:FacilityAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:TrafficArea_uro:FacilityAttribute_uro:size,{"description":"規模"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:size,{"description":"規模"}
+tran:TrafficArea_uro:FacilityAttribute_uro:mainMaterial,{"description":"主要部材"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterial,{"description":"主要部材"}
+tran:TrafficArea_uro:FacilityAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+tran:TrafficArea_uro:FacilityAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+tran:TrafficArea_uro:FacilityAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+tran:TrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:TrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:TrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:TrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:TrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+tran:TrafficArea_uro:FacilityAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:TrafficArea_uro:FacilityAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+tran:TrafficArea_uro:FacilityAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
+tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+tran:TrafficArea_uro:FacilityAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
+tran:TrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:TrafficArea_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures,{"description":"長寿命化対策"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures,{"description":"長寿命化対策"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+tran:TrafficArea_uro:FacilityAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
+tran:TrafficArea_uro:FacilityAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute,{"description":"データ品質属性"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+tran:AuxiliaryTrafficArea_uro:tranDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute,{"description":"道路構造"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:alternativeName,{"description":"その他の名称"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:adminType,{"description":"管理者区分"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:relativeLevel,{"description":"階層順"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:widthType,{"description":"幅員区分"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:structureType,{"description":"構造区分"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:isTollRoad,{"description":"料金有無区分"}
+tran:AuxiliaryTrafficArea_uro:trackAttribute_uro:separator,{"description":"分離帯の幅員"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute,{"description":"公園施設長寿命化計画"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute,{"description":"公園施設長寿命化計画"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityId,{"description":"工事・点検の対象となる施設の識別子"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkCode,{"description":"公園コード"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkCode,{"description":"公園コード"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkName,{"description":"公園名"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkName,{"description":"公園名"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkType,{"description":"公園種別"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkType,{"description":"公園種別"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:facilityName,{"description":"公園施設名"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityName,{"description":"公園施設名"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:facilityNameOptional,{"description":"公園施設名（任意）"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:specificFacilityName,{"description":"具体的施設名称"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_NumberOfFacilities,{"description":"施設数量"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities,{"description":"施設数量"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities,{"description":"施設数量"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantity,{"description":"数量"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantity,{"description":"数量"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:numberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_NumberOfFacilities_uro:quantityUnit,{"description":"数量単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:size,{"description":"規模"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:size,{"description":"規模"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:mainMaterial,{"description":"主要部材"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterial,{"description":"主要部材"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:mainMaterialOptional,{"description":"主要部材（任意）"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:installationYear,{"description":"設置年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:disposalLimitPeriod,{"description":"処分制限期間"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedUsagePeriod,{"description":"使用見込み期間"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment,{"description":"健全度調査以前に実施した補修"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_reapair,{"description":"補修有無"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:repairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_RepairsBeforeParkHealthAssessment_repairFiscalYear,{"description":"補修実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment,{"description":"健全度調査結果"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment,{"description":"健全度調査結果"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_assesmentFiscalYear,{"description":"年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_deteriarationStatus,{"description":"劣化状況"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_condition,{"description":"健全度"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_condition,{"description":"健全度"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_urgency,{"description":"緊急度"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_ParkHealthAssessment_urgency,{"description":"緊急度"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures,{"description":"長寿命化対策"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures,{"description":"長寿命化対策"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_ficcalYearForCountermeasures,{"description":"対策実施年度","dataType":"gYear"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost,{"description":"対策費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_cost,{"description":"費用"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_countermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_CountermeasuresCost_costUnit,{"description":"費用単位"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:longevityMeasures_descriptin,{"description":"対策内容"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_LongevityMeasures_descriptin,{"description":"対策内容"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:noteForLongevity,{"description":"長寿命化に向けた特記事項"}
+bldg:RoofSurface_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:RoofSurface_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:RoofSurface_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:RoofSurface_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:RoofSurface_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:RoofSurface_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:RoofSurface_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:RoofSurface_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:RoofSurface_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:RoofSurface_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:RoofSurface_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:RoofSurface_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:WallSurface_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:WallSurface_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:WallSurface_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:WallSurface_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:WallSurface_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:WallSurface_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:WallSurface_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:WallSurface_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:WallSurface_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:WallSurface_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:WallSurface_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:WallSurface_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:ClosureSurface_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:ClosureSurface_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:ClosureSurface_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:ClosureSurface_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:ClosureSurface_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:ClosureSurface_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:ClosureSurface_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:ClosureSurface_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:ClosureSurface_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:ClosureSurface_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:ClosureSurface_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:ClosureSurface_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:Room_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:Room_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:Room_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:Room_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:Room_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:Room_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:Room_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:Room_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:Room_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:Room_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:Room_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:Room_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:IntBuildingInstallation_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:IntBuildingInstallation_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:IntBuildingInstallation_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:IntBuildingInstallation_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:IntBuildingInstallation_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:IntBuildingInstallation_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:IntBuildingInstallation_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:IntBuildingInstallation_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:IntBuildingInstallation_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:IntBuildingInstallation_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:IntBuildingInstallation_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:IntBuildingInstallation_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:GroundSurface_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:GroundSurface_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:GroundSurface_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:GroundSurface_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:GroundSurface_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:GroundSurface_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:GroundSurface_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:GroundSurface_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:GroundSurface_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:GroundSurface_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:srcScale,{"description":"地図情報レベル"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:geometrySrcDesc,{"description":"幾何属性作成方法"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:thematicSrcDesc,{"description":"主題属性作成方法"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:appearanceSrcDesc,{"description":"テクスチャ作成方法"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:lodType,{"description":"詳細LOD"}
+bldg:GroundSurface_uro:buildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+bldg:GroundSurface_uro:BuildingDataQualityAttribute_uro:lod1HeightType,{"description":"LOD1の立ち上げに使用する建築物の高さ"}
+frn:CityFurniture_dmuro:dmCode,{"description":"DMコード"}
+frn:CityFurniture_dmuro:meshCode,{"description":"メッシュコード"}
+frn:CityFurniture_dmuro:dmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_uro:DmElement,{"description":"数値地形図要素情報"}
+frn:CityFurniture_dmuro:geometryType,{"description":"レコードタイプ"}
+frn:CityFurniture_dmuro:mapLevel,{"description":"地図情報レベル"}
+frn:CityFurniture_dmuro:shapeType,{"description":"図形区分"}
+frn:CityFurniture_dmuro:visibility,{"description":"可視性"}
+frn:CityFurniture_dmuro:is3d,{"description":"3Dフラグ"}
+frn:CityFurniture_dmuro:isInstallation,{"description":"付属図形フラグ"}
+frn:CityFurniture_dmuro:isEdited,{"description":"編集フラグ"}
+frn:CityFurniture_dmuro:isSupplementarySymbol,{"description":"補助記号フラグ"}
+frn:CityFurniture_dmuro:angle,{"description":"角度"}
+frn:CityFurniture_dmuro:elevation,{"description":"標高"}
+frn:CityFurniture_dmuro:lod0Geometry,{"description":"図式情報"}

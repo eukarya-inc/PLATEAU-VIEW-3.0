@@ -2,6 +2,8 @@
 
 PLATEAU VIEW 3.0（CMS・Editor・VIEW）をAWS（Amazon Web Service）で構築するためのTerraform用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
 
+![AWS diagram](plateauview-aws.drawio.png)
+
 ## 1. 改訂履歴
 
 - 2024/03/15: 初版
@@ -51,9 +53,9 @@ aws sts get-caller-identity
 Terraformのバックエンドで使用するためのS3バケットを作成します。
 ```console
 ##初期セットアップ
-$　terraform init
+terraform init
 
-$　terraform apply -target=module.tfstate
+terraform apply -target=module.tfstate
 ...
 tfstate_bucket_name="${作成されたバケット名}"
 ```
@@ -77,8 +79,7 @@ terraform {
 
 その後、もう一度 `terraform init` を行い、`terraform.tfstate` を S3にアップロードします。
 ```console
-$ terraform init
-
+terraform init
 ```
 
 ### 3.4 MongoDB Atlasのセットアップ
@@ -97,7 +98,7 @@ $ terraform init
 
 これまで構築してきたAWS、MongoDBなどの情報を`terraform.tfvars`に設定します。
 
-### 3.6 Route53 パブリックゾーンの作成およびドメイン解決の移譲
+### 3.6 Route53 パブリックゾーンの作成およびゾーンの委譲
 
 以下のコマンドを実行し、Route53 パブリックゾーンを作成します。
 
@@ -108,7 +109,7 @@ terraform apply --target aws_route53_zone.public_zone
 マネージドゾーン名を取得し、以下のコマンドを実行して`NS`レコードを取得します。
 
 ```console
-$ aws route53 list-resource-record-sets --hosted-zone-id /hostedzone/Z01251093SKX99FOVRAZN --query "ResourceRecordSets[?Type == 'NS'].ResourceRecords[*].Value"
+aws route53 list-resource-record-sets --hosted-zone-id /hostedzone/Z01251093SKX99FOVRAZN --query "ResourceRecordSets[?Type == 'NS'].ResourceRecords[*].Value"
 ```
 
 出力された`NS`レコードを、ドメインのレジストラで、ドメインのネームサーバーとして設定してください。
@@ -129,24 +130,24 @@ export AWS_ACCOUNT_ID="AWSアカウントID"
 export AWS_REGION="作成対象のリージョン"
 #ECRへログイン
 
-$ aws ecr get-login-password  | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+aws ecr get-login-password  | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 #dockerhubからイメージを取得
-$ docker pull eukarya/plateauview2-reearth:latest
-$ docker tag eukarya/plateauview2-reearth:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
-$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
+docker pull eukarya/plateauview2-reearth:latest
+docker tag eukarya/plateauview2-reearth:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
 
-$ docker pull eukarya/plateauview-geo:latest
-$ docker tag eukarya/plateauview-geo:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
-$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
+docker pull eukarya/plateauview-geo:latest
+docker tag eukarya/plateauview-geo:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
 
-$ docker pull eukarya/plateauview-geo:latest
-$ docker tag eukarya/plateauview-geo:latest${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-geo
-$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-geo
+docker pull eukarya/plateauview-geo:latest
+docker tag eukarya/plateauview-geo:latest${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-geo
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-geo
 
-$ docker pul eukarya/plateauview2-reearth-cms:latest
-$ docker tag eukarya/plateauview2-reearth-cms:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
-$ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
+docker pul eukarya/plateauview2-reearth-cms:latest
+docker tag eukarya/plateauview2-reearth-cms:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
 ```
 
 
@@ -176,7 +177,7 @@ terraform apply
 実行が成功すると、以下のような出力が表示されます。
 
 ```console
-$ terraform apply
+terraform apply
 ...
 plateauview_cms_url = "*"
 plateauview_cms_webhook_secret = <sensitive>
