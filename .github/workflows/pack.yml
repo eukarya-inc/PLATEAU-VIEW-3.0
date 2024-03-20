@@ -12,9 +12,15 @@ jobs:
         with:
           ref: plateau
           path: plateau
-          sparse-checkout: .gitkeep
       - name: Clean
-        run: rm plateau/.gitkeep
+        run: |
+          rm plateau/.gitkeep 2>/dev/null
+          rm -r plateau/*
+          rm -r plateau/{.github,.vscode}
+          rm plateau/{.gitignore,.dockerignore}
+          tree -a
+      - working-directory: plateau
+        run: git status
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
