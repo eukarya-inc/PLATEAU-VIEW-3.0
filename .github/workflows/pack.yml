@@ -19,6 +19,7 @@ jobs:
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
           unzip main.zip
           mv PLATEAU-VIEW-3.0-main/* plateau/
+          rmdir PLATEAU-VIEW-3.0-main
           rm main.zip
       - name: Extract PLATEAU-VIEW-AR zip
         run: |
@@ -38,7 +39,7 @@ jobs:
           unzip main.zip
           mv reearth-cms-main plateau/cms
           rm main.zip
-      - run: tree
+      - run: tree -a
       # - name: Commit and push
       #   working-directory: plateau
       #   run: |
