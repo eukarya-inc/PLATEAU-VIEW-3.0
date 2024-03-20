@@ -1,8 +1,6 @@
 name: Pack
 on:
   workflow_dispatch:
-  push: # debug
-    branches: pack
 jobs:
   pack:
     runs-on: ubuntu-latest
