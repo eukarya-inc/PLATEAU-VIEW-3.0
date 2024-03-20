@@ -12,8 +12,9 @@ jobs:
         with:
           ref: plateau
           path: plateau
-      - name: Clean the repo except .git
-        run: find plateau -type f -not -path '.git/*' -delete; tree -a
+          sparse-checkout: .gitkeep
+      - name: Clean
+        run: rm plateau/.gitkeep
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
@@ -45,11 +46,9 @@ jobs:
           rm main.zip
       - run: tree -a
       - name: Commit and push
+        working-directory: plateau
         run: |
-          cd plateau
           git config user.name github-actions
           git config user.email github-actions@github.com
-          echo commit
           git commit -m "Update" -a
-          echo push
-          git push
+          # git push
