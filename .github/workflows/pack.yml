@@ -13,33 +13,32 @@ jobs:
           ref: plateau
           path: plateau
       - name: Delete files without .git in the repo
-        run: |
-          find . -type f -not -path '*/.git/*' -not -name '.git' -delete
-          tree
+        run: find plateau -type f -not -path '*/.git/*' -not -name '.git' -delete
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
           unzip main.zip
-      - name: Move files
-        run: mv PLATEAU-VIEW-3.0-main/* plateau/
+          mv PLATEAU-VIEW-3.0-main/* plateau/
+          rm main.zip
       - name: Extract PLATEAU-VIEW-AR zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-AR/archive/refs/heads/main.zip
           unzip main.zip
           mv PLATEAU-VIEW-AR-main plateau/ar
+          rm main.zip
       - name: Extract Re:Earth zip
         run: |
           wget https://github.com/reearth/reearth/archive/refs/heads/main.zip
           unzip main.zip
           mv reearth-main plateau/editor
+          rm main.zip
       - name: Extract Re:Earth CMS zip
         run: |
           wget https://github.com/reearth/reearth-cms/archive/refs/heads/main.zip
           unzip main.zip
           mv reearth-cms-main plateau/cms
-      - name: Print tree of plateau
-        run: |
-          tree plateau
+          rm main.zip
+      - run: tree
       # - name: Commit and push
       #   working-directory: plateau
       #   run: |
