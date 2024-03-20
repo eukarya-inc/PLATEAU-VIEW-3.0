@@ -2,8 +2,8 @@
 
 import { Event } from "../../shared/helpers";
 import {
-  LayerSelectWithDragEnd,
-  LayerSelectWithDragMove,
+  LayerSelectWithRectEnd,
+  LayerSelectWithRectMove,
   MouseEvent,
   PickedFeature,
 } from "../../shared/reearth/types";
@@ -73,15 +73,15 @@ export class ScreenSpaceSelectionHandler {
     // it will conflict with pinch motion.
     window.reearth?.on?.("click", this.handleClickOnMobile);
 
-    window.reearth?.on?.("layerSelectWithDragMove", this.handleMouseMove);
-    window.reearth?.on?.("layerSelectWithDragEnd", this.handleMouseUp);
+    window.reearth?.on?.("layerSelectWithRectMove", this.handleMouseMove);
+    window.reearth?.on?.("layerSelectWithRectEnd", this.handleMouseUp);
   }
 
   destroy(): void {
     window.reearth?.off?.("select", this.handleSelect);
     window.reearth?.off?.("click", this.handleClickOnMobile);
-    window.reearth?.off?.("layerSelectWithDragMove", this.handleMouseMove);
-    window.reearth?.off?.("layerSelectWithDragEnd", this.handleMouseUp);
+    window.reearth?.off?.("layerSelectWithRectMove", this.handleMouseMove);
+    window.reearth?.off?.("layerSelectWithRectEnd", this.handleMouseUp);
   }
 
   get disabled(): boolean {
@@ -146,7 +146,7 @@ export class ScreenSpaceSelectionHandler {
     this.change.dispatch(imageryEvent);
   };
 
-  private readonly handleMouseUp = (event: LayerSelectWithDragEnd): void => {
+  private readonly handleMouseUp = (event: LayerSelectWithRectEnd): void => {
     if (this.disabled) {
       return;
     }
@@ -166,7 +166,7 @@ export class ScreenSpaceSelectionHandler {
   };
 
   private readonly handleMouseMove = (
-    event: LayerSelectWithDragMove,
+    event: LayerSelectWithRectMove,
     indeterminate = true,
   ): void => {
     this.moving = true;
