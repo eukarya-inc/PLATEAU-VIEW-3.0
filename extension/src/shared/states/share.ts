@@ -40,7 +40,7 @@ export const shareAtom = atom(undefined, async (_get, set) => {
   );
 });
 
-export type SharedRootLayer =
+export type SharedRootLayer = (
   | {
       type: "dataset";
       datasetId: string;
@@ -51,7 +51,8 @@ export type SharedRootLayer =
   | SharedPedestrianLayer
   | SharedMyDataLayer
   | SharedSketchLayer
-  | SharedStoryLayer;
+  | SharedStoryLayer
+) & { hidden?: boolean };
 
 // For share feature
 const SHARED_LAYERS_KEY = "$sharedLayers";
@@ -65,6 +66,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
             datasetId: r.id,
             dataId: get(r.currentDataIdAtom),
             groupId: get(r.currentGroupIdAtom),
+            hidden: get(get(get(r.rootLayerAtom).layer).hiddenAtom),
           };
         case "layer": {
           const rootLayer = get(r.rootLayerAtom);
@@ -76,6 +78,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 type: "heatmap",
                 datasetId: l.datasetId,
                 dataId: l.dataId,
+                hidden: get(l.hiddenAtom),
               };
             }
             case PEDESTRIAN_LAYER: {
@@ -83,6 +86,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
               return {
                 type: "pedestrian",
                 id: l.id,
+                hidden: get(l.hiddenAtom),
               };
             }
             case MY_DATA_LAYER: {
@@ -95,6 +99,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 format: l.format,
                 layers: l.layers,
                 csv: l.csv,
+                hidden: get(l.hiddenAtom),
               };
             }
             case SKETCH_LAYER: {
@@ -104,6 +109,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 id: l.id,
                 title: l.title,
                 features: get(l.featuresAtom),
+                hidden: get(l.hiddenAtom),
               };
             }
             case STORY_LAYER: {
@@ -113,6 +119,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 id: l.id,
                 title: l.title,
                 captures: get(l.capturesAtom),
+                hidden: get(l.hiddenAtom),
               };
             }
           }

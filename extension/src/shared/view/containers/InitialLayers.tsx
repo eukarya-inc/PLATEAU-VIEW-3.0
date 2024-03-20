@@ -124,12 +124,14 @@ export const InitialLayers: FC = () => {
                 valueColumn: data.column,
                 skipHeader: 2,
               },
+              hidden: l.hidden,
             };
           }
           case "pedestrian":
             return {
               id: l.id,
               type: PEDESTRIAN_LAYER,
+              hidden: l.hidden,
             };
           case "myData":
             return {
@@ -140,6 +142,7 @@ export const InitialLayers: FC = () => {
               id: l?.id,
               csv: l?.csv,
               layers: l?.layers,
+              hidden: l.hidden,
             };
           case "sketch":
             return {
@@ -147,6 +150,7 @@ export const InitialLayers: FC = () => {
               title: l.title,
               type: SKETCH_LAYER,
               features: l.features,
+              hidden: l.hidden,
             };
           case "story":
             return {
@@ -154,6 +158,7 @@ export const InitialLayers: FC = () => {
               title: l.title,
               type: STORY_LAYER,
               captures: l.captures,
+              hidden: l.hidden,
             };
         }
       })
@@ -181,7 +186,8 @@ export const InitialLayers: FC = () => {
       );
 
       initialDatasets.forEach(d => {
-        const { dataId, groupId } = sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
+        const { dataId, groupId, hidden } =
+          sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
         addLayer(
           createRootLayerForDatasetAtom({
             dataset: d,
@@ -193,6 +199,7 @@ export const InitialLayers: FC = () => {
               ? dataId
               : defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
             currentGroupId: groupId,
+            hidden,
           }),
           { autoSelect: false },
         );
