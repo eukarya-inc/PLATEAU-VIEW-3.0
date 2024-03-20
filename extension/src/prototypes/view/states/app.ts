@@ -14,6 +14,7 @@ export const hideAppOverlayAtom = atom(false);
 export const showDeveloperPanelsAtom = atom(false);
 export const showFeedbackModalAtom = atom(false);
 export const showMyDataModalAtom = atom(false);
+export const showHelpModalAtom = atom(false);
 export const viewportWidthAtom = atom<number | null>(null);
 export const viewportHeightAtom = atom<number | null>(null);
 export const showShareModalAtom = atom(false);

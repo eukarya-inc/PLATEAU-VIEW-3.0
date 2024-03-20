@@ -1,48 +1,51 @@
-import ClearOutlinedIcon from "@mui/icons-material/ClearOutlined";
-import { Box, IconButton, Modal, Typography, styled } from "@mui/material";
+import { Box, IconButton, Modal, styled } from "@mui/material";
 import React, { ReactNode } from "react";
+
+import { CloseIcon } from "../../prototypes/ui-components";
 
 type Props = {
   title?: string;
   children?: ReactNode;
   isVisible: boolean;
   titleIcon?: ReactNode;
+  width?: number;
   onClose?: () => void;
 };
 
-const SharedModal: React.FC<Props> = ({ title, isVisible, children, titleIcon, onClose }) => {
+const SharedModal: React.FC<Props> = ({
+  title,
+  isVisible,
+  children,
+  titleIcon,
+  width,
+  onClose,
+}) => {
   return (
-    <Modal open={isVisible} aria-labelledby="modal-modal-title">
-      <StyledBox>
-        <Typography
-          sx={{ padding: "14px 22px", display: "flex" }}
-          id="modal-modal-title"
-          variant="subtitle1"
-          component="h2">
-          {titleIcon}
-          {title}{" "}
-          <IconButton
-            aria-label="close"
-            onClick={onClose}
-            sx={{ position: "absolute", top: 10, right: 10 }}>
-            <CancelIcon />
+    <Modal open={isVisible} aria-labelledby="model">
+      <StyledBox width={width}>
+        <ModalHeader>
+          <Title>
+            {titleIcon}
+            {title}
+          </Title>
+          <IconButton aria-label="close" onClick={onClose}>
+            <CloseIcon />
           </IconButton>
-        </Typography>
+        </ModalHeader>
         {children}
       </StyledBox>
     </Modal>
   );
 };
 
-const StyledBox = styled(Box)(({ theme }) => ({
+const StyledBox = styled(Box)<{ width?: number }>(({ theme, width = 560 }) => ({
   position: "absolute" as const,
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 560,
+  width,
   backgroundColor: theme.palette.background.paper,
   color: theme.palette.text.primary,
-  margin: "auto",
   borderRadius: theme.shape.borderRadius,
   boxSizing: "border-box",
   maxHeight: "calc(100vh - 50px)",
@@ -53,8 +56,20 @@ const StyledBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
-  color: theme.palette.text.primary,
+const ModalHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  padding: theme.spacing(1, 1),
+}));
+
+const Title = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: theme.typography.h6.fontSize,
+  fontWeight: theme.typography.body1.fontWeight,
+  padding: theme.spacing(0, 1),
 }));
 
 export default SharedModal;
