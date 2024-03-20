@@ -1,10 +1,8 @@
 name: ⭐️ Deploy PLATEAU worker dev
 on:
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      use_local:
-        type: string
+  repository_dispatch:
+    types: [deploy-worker-dev]
 env:
   IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest
   IMAGE_GCP: asia.gcr.io/reearth-plateau-dev/plateauview-api-worker:latest
@@ -37,7 +35,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Download worker arfiacts
         uses: dawidd6/action-download-artifact@v2
-        if: inputs.use_local != 'true'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
@@ -45,15 +42,3 @@ jobs:
           branch: geospatialjpv3
           name: plateauview-api-worker
           check_artifacts: true
-      - name: Download worker arfiacts from local
-        if: inputs.use_local == 'true'
-        uses: actions/download-artifact@v2
-        with:
-          name: plateauview-api-worker
-      - name: Unpack docker image
-        run: docker load < plateauview-api-worker.tar.gz
-      - name: docker push
-        run: |
-          docker tag $IMAGE $IMAGE_GCP
-          docker push $IMAGE
-          docker push $IMAGE_GCP
