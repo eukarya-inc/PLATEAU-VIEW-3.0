@@ -1,12 +1,11 @@
 import { styled, useMediaQuery, useTheme } from "@mui/material";
 import { atom, type Atom, useSetAtom } from "jotai";
+import css from "overlayscrollbars/overlayscrollbars.css?inline";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
 import { createContext, memo, useEffect, useMemo, useRef, type FC, type ReactNode } from "react";
 import invariant from "tiny-invariant";
 
 import { DarkThemeOverride } from "./DarkThemeOverride";
-
-import "overlayscrollbars/overlayscrollbars.css";
 
 const HEADER_HEIGHT = 81;
 
@@ -269,3 +268,12 @@ export const AppOverlayLayout: FC<AppOverlayLayoutProps> = memo(
     );
   },
 );
+
+function addStyle() {
+  const style = document.createElement("style");
+  style.id = "overlayscrollbars-css";
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+
+addStyle();
