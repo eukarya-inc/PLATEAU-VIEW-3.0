@@ -19,12 +19,13 @@ const (
 	wallHeight          = 100
 	wallImageName       = "yellow_gradient.png"
 	billboardImageDir   = "billboard_image"
-	billboardPaddingH   = 16.0
-	billboardPaddingV   = 8.0
-	billboradFontSize   = 72.0
-	billboardRadius     = 30.0
-	billboardLineWidth  = 2.0
-	billboardLineHeight = 100.0
+	billboardPaddingH   = 8.0
+	billboardPaddingV   = 4.0
+	billboradFontSize   = 36.0
+	billboardRadius     = 15.0
+	billboardLineWidth  = 1.0
+	billboardLineHeight = 50.0
+	billboardScale      = 1.0
 )
 
 var (
@@ -91,7 +92,7 @@ func ConvertLandmark(fc *geojson.FeatureCollection, id string) (any, error) {
 				"pixelOffset": map[string]any{
 					"cartesian2": []any{0.0, 0.0},
 				},
-				"scale":          0.5,
+				"scale":          billboardScale,
 				"show":           true,
 				"sizeInMeters":   true,
 				"verticalOrigin": "BOTTOM",
