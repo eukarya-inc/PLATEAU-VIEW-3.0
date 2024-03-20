@@ -1,7 +1,8 @@
 import { useSetAtom } from "jotai";
-import { useEffect, useMemo, type FC, useRef } from "react";
+import { useEffect, useMemo, type FC } from "react";
 
 import { getGMLId } from "../../shared/plateau/utils";
+import { PickedFeature } from "../../shared/reearth/types";
 import { assignPropertyProps } from "../react-helpers";
 
 import { Marquee } from "./Marquee";
@@ -25,11 +26,15 @@ const defaultOptions = {
 
 type ScreenSpaceSelectionOptions = Partial<typeof defaultOptions>;
 
-export type ScreenSpaceSelectionProps = ScreenSpaceSelectionOptions;
+export type ScreenSpaceSelectionProps = ScreenSpaceSelectionOptions & {
+  filterSelectedFeature?: (f: PickedFeature) => boolean;
+};
 
-export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options }) => {
+export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({
+  filterSelectedFeature,
+  ...options
+}) => {
   const handler = useMemo(() => new ScreenSpaceSelectionHandler(), []);
-  const pointRef = useRef({ x: 0, y: 0 });
 
   if (handler != null) {
     assignPropertyProps(handler, options, defaultOptions);
@@ -45,6 +50,8 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options
   const remove = useSetAtom(removeScreenSpaceSelectionObjectsAtom);
 
   useEffect(() => {
+    const isFeatureBuildingModel = (f: PickedFeature | undefined) =>
+      f?.properties && !!getGMLId(f.properties);
     return handler?.change.addEventListener(event => {
       if (!event) return;
 
@@ -58,26 +65,21 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options
 
       switch (event.type) {
         case "point": {
-          const fs = window.reearth?.scene?.pickManyFromViewport([event.x, event.y], 1, 1);
-          if (fs) {
-            objects = fs;
+          let shouldUseAddAction = true;
+          if (event.feature) {
+            if (filterSelectedFeature && !filterSelectedFeature(event.feature)) return;
+
+            shouldUseAddAction = isFeatureBuildingModel(event.feature);
+            objects = [event.feature];
+          }
+          if (!shouldUseAddAction && event.action === "add") {
+            event.action = "replace";
           }
           break;
         }
         case "rectangle": {
-          const { x, y, width, height } = event.rectangle;
-          if (width > 0 && height > 0) {
-            pointRef.current.x = x + width / 2;
-            pointRef.current.y = y + height / 2;
-            const fs = window.reearth?.scene?.pickManyFromViewport(
-              [pointRef.current.x, pointRef.current.y],
-              width,
-              height,
-              f => f.properties && !!getGMLId(f.properties),
-            );
-            if (fs) {
-              objects = fs;
-            }
+          if (event.features?.length) {
+            objects = event.features.filter(f => isFeatureBuildingModel(f));
           }
           break;
         }
@@ -88,7 +90,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({ ...options
       // scene.groundPrimitives.show = showGroundPrimitives;
       ({ replace, add, remove })[event.action](objects);
     });
-  }, [handler, replace, add, remove]);
+  }, [handler, replace, add, remove, filterSelectedFeature]);
 
-  return <Marquee />;
+  return !options.disabled ? <Marquee /> : null;
 };
