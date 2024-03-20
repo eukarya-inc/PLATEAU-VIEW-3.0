@@ -35,6 +35,7 @@ export type RootLayerForDatasetAtomParams = {
   currentGroupId?: string;
   shareId?: string;
   dataset: DatasetFragmentFragment;
+  hidden?: boolean;
 };
 
 export type RootLayerForDatasetParams = {
@@ -50,6 +51,7 @@ export type RootLayerForDatasetParams = {
   currentGroupId: string | undefined;
   shareId: string | undefined;
   shouldInitialize: boolean;
+  hidden?: boolean;
 };
 
 export type RootLayerForLayerAtomParams<T extends LayerType> = {
@@ -206,6 +208,7 @@ const createViewLayerWithComponentGroup = (
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
   shouldInitialize: boolean,
+  hidden?: boolean,
 ): LayerModel => {
   invariant(type);
   return {
@@ -217,6 +220,7 @@ const createViewLayerWithComponentGroup = (
       shareId,
       textured: !data?.name.includes("（テクスチャなし）"),
       shouldInitializeAtom: shouldInitialize,
+      hidden: !!hidden,
     }),
     componentAtoms: makeComponentAtoms(
       datasetId,
@@ -248,6 +252,7 @@ const createRootLayerForDataset = ({
   currentGroupId,
   shareId,
   shouldInitialize,
+  hidden,
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
@@ -285,6 +290,7 @@ const createRootLayerForDataset = ({
         componentGroup,
         shareId,
         shouldInitialize,
+        hidden,
       ),
     ),
   };
@@ -305,6 +311,7 @@ export const createRootLayerForDatasetAtom = (
   const initialTemplates = params.templates;
   const initialCurrentDataId = params.currentDataId ?? dataList[0].id;
   const initialCurrentGroupId = params.currentGroupId;
+  const initialHidden = !!params.hidden;
   const rootLayerAtom = atom<RootLayerForDataset>(
     createRootLayerForDataset({
       datasetId: dataset.id,
@@ -319,6 +326,7 @@ export const createRootLayerForDatasetAtom = (
       currentGroupId: initialCurrentGroupId,
       shareId,
       shouldInitialize: true,
+      hidden: initialHidden,
     }),
   );
 

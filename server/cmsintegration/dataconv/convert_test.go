@@ -119,7 +119,7 @@ func init() {
 				"pixelOffset": {
 					"cartesian2": [0, 0]
 				},
-				"scale": 0.5,
+				"scale": 1,
 				"show": true,
 				"sizeInMeters": true,
 				"verticalOrigin": "BOTTOM"
@@ -179,4 +179,27 @@ func TestProcessProperties(t *testing.T) {
 	var m map[string]any
 	_ = json.Unmarshal([]byte(`{"名称":"a","高さ":null}`), &m)
 	assert.Equal(t, map[string]any{"名称": "a"}, processProperties(m))
+}
+
+func TestConvertLandmark2(t *testing.T) {
+	filepath := ""
+	if filepath == "" {
+		t.Skip("no filepath")
+	}
+
+	data, err := os.ReadFile(filepath)
+	assert.NoError(t, err)
+
+	var fc *geojson.FeatureCollection
+	assert.NoError(t, json.Unmarshal(data, &fc))
+
+	// fc.Features = fc.Features[0 : len(fc.Features)/2]
+
+	res, err := ConvertLandmark(fc, landmarkName)
+	assert.NoError(t, err)
+
+	j, _ := json.MarshalIndent(res, "", "  ")
+
+	err = os.WriteFile("test.czml", j, 0666)
+	assert.NoError(t, err)
 }
