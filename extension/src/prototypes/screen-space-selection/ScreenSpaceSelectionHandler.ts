@@ -64,6 +64,7 @@ export class ScreenSpaceSelectionHandler {
     rectangle: true,
     imagery: true,
   };
+  #imageryFound = false;
 
   constructor() {
     window.reearth?.on?.("select", this.handleSelect);
@@ -132,7 +133,6 @@ export class ScreenSpaceSelectionHandler {
     if (
       (this.disabled && !this.allowClickWhenDisabled) ||
       !this.#allowedEvents.imagery ||
-      this.moving ||
       !layerId
     ) {
       return;
@@ -141,13 +141,21 @@ export class ScreenSpaceSelectionHandler {
     const type = l?.type === "simple" ? l.data?.type : undefined;
     if (!type || !IMAGERY_LAYER_TYPE.includes(type)) return;
 
+    if (window.reearth?.layers?.selectedFeature) {
+      this.#imageryFound = true;
+    }
+
     imageryEvent.action = "replace";
     imageryEvent.object = { ...window.reearth?.layers?.selectedFeature, layerId } ?? {};
     this.change.dispatch(imageryEvent);
+    requestAnimationFrame(() => {
+      this.#imageryFound = false;
+    });
   };
 
   private readonly handleMouseUp = (event: LayerSelectWithRectEnd): void => {
-    if (this.disabled) {
+    if (this.disabled || this.#imageryFound) {
+      this.moving = false;
       return;
     }
     if (!event.isClick && !this.#allowedEvents.rectangle) return;
@@ -169,6 +177,7 @@ export class ScreenSpaceSelectionHandler {
     event: LayerSelectWithRectMove,
     indeterminate = true,
   ): void => {
+    if (this.#imageryFound) return;
     this.moving = true;
     // TODO(ReEarth): Support selecting multiple feature
     rectangleEvent.action = actionForModifier(event.pressedKey);

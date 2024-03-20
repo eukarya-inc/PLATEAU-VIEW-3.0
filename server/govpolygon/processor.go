@@ -21,7 +21,7 @@ func NewProcessor(path string) *Processor {
 	}
 }
 
-func (p *Processor) ComputeGeoJSON(ctx context.Context, codes []string) (*geojson.FeatureCollection, []string, error) {
+func (p *Processor) ComputeGeoJSON(ctx context.Context, names []string) (*geojson.FeatureCollection, []string, error) {
 	// features, err := loadFeaturesFromTopoJSON(context.Background(), p.dirpath, p.simplifyTolerance)
 	features, err := loadFeaturesFromGeoJSON(p.path)
 	if err != nil {
@@ -32,11 +32,11 @@ func (p *Processor) ComputeGeoJSON(ctx context.Context, codes []string) (*geojso
 		return nil, nil, fmt.Errorf("no features found")
 	}
 
-	res, notfound := computeGeojsonFeatures2(features, codes)
+	res, notfound := computeGeojsonFeatures(features, names)
 	return res, notfound, nil
 }
 
-func computeGeojsonFeatures2(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
+func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
 	nameMap := map[string]struct{}{}
 	notfound := map[string]struct{}{}
 	citiesWithWards := map[string]struct{}{}
