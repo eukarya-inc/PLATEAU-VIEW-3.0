@@ -15,9 +15,9 @@ jobs:
       - name: Clean
         run: |
           rm plateau/.gitkeep 2>/dev/null
-          rm -r plateau/*
-          rm -r plateau/{.github,.vscode}
-          rm plateau/{.gitignore,.dockerignore}
+          rm -r plateau/* 2>/dev/null
+          rm -r plateau/{.github,.vscode} 2>/dev/null
+          rm plateau/{.gitignore,.dockerignore} 2>/dev/null
           tree -a
       - working-directory: plateau
         run: git status
