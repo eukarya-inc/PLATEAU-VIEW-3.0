@@ -1,4 +1,5 @@
 import { CameraPosition } from "./camera";
+import { PickedFeature } from "./scene";
 import { SketchFeature } from "./sketch";
 
 export type MouseEvent = {
@@ -17,6 +18,19 @@ export type LayerVisibilityEvent = {
 
 export type LayerLoadEvent = {
   layerId: string | undefined;
+};
+
+export type LayerSelectWithDrag = MouseEvent & { pressedKey?: "shift" };
+export type LayerSelectWithDragStart = LayerSelectWithDrag;
+export type LayerSelectWithDragMove = LayerSelectWithDrag & {
+  startX?: number;
+  startY?: number;
+  width?: number;
+  height?: number;
+};
+export type LayerSelectWithDragEnd = LayerSelectWithDrag & {
+  features: PickedFeature[] | undefined;
+  isClick?: boolean;
 };
 
 export type ReearthEventType = {
@@ -54,4 +68,7 @@ export type ReearthEventType = {
   ];
   layerVisibility: [e: LayerVisibilityEvent];
   layerload: [e: LayerLoadEvent];
+  layerSelectWithDragStart: [e: LayerSelectWithDragStart];
+  layerSelectWithDragMove: [e: LayerSelectWithDragMove];
+  layerSelectWithDragEnd: [e: LayerSelectWithDragEnd];
 };
