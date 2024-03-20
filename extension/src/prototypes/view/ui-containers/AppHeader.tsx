@@ -1,11 +1,11 @@
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
-import { atom, useAtom, useAtomValue } from "jotai";
-import { type FC, useMemo, useCallback } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { type FC, useCallback } from "react";
 
-import { rootLayersAtom } from "../../../shared/states/rootLayer";
+import ARModal from "../../../shared/view/ui-container/ARModal";
 import ShareModal from "../../../shared/view/ui-container/ShareModal";
-import { AppBar, PaperPlaneTilt, Space } from "../../ui-components";
-import { hideAppOverlayAtom, showShareModalAtom } from "../states/app";
+import { ARIcon, AppBar, PaperPlaneTilt, Space } from "../../ui-components";
+import { hideAppOverlayAtom, showARModalAtom, showShareModalAtom } from "../states/app";
 
 import { CameraButtons } from "./CameraButtons";
 import { DateControlButton } from "./DateControlButton";
@@ -22,31 +22,13 @@ type Props = {
 export const AppHeader: FC<Props> = ({ arURL }) => {
   const hidden = useAtomValue(hideAppOverlayAtom);
   const [showShareModal, setShowShareModal] = useAtom(showShareModalAtom);
+  const setShowARModel = useSetAtom(showARModalAtom);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
-  const rootLayersForAR = useAtomValue(
-    useMemo(
-      () =>
-        atom(get => {
-          return get(rootLayersAtom)
-            .map(({ id, ...rest }) =>
-              rest.type === "dataset"
-                ? {
-                    datasetId: id,
-                    dataId: get(rest.currentDataIdAtom),
-                  }
-                : undefined,
-            )
-            .filter(Boolean);
-        }),
-      [],
-    ),
-  );
 
-  const handleARClick = useCallback(() => {
-    const url = arURL + "?dataList=" + encodeURI(JSON.stringify(rootLayersForAR));
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, [arURL, rootLayersForAR]);
+  const handleARButtonClick = useCallback(() => {
+    setShowARModel(true);
+  }, [setShowARModel]);
 
   if (hidden) {
     return null;
@@ -69,10 +51,11 @@ export const AppHeader: FC<Props> = ({ arURL }) => {
         <PaperPlaneTilt onClick={() => setShowShareModal(true)} />
       </IconButton>
       {isMobile && (
-        <IconButton size="small" onClick={handleARClick}>
-          AR
+        <IconButton onClick={handleARButtonClick}>
+          <ARIcon />
         </IconButton>
       )}
+      <ARModal arURL={arURL} />
       {showShareModal && (
         <ShareModal showShareModal={showShareModal} setShowShareModal={setShowShareModal} />
       )}

@@ -18,6 +18,7 @@ export const showHelpModalAtom = atom(false);
 export const viewportWidthAtom = atom<number | null>(null);
 export const viewportHeightAtom = atom<number | null>(null);
 export const showShareModalAtom = atom(false);
+export const showARModalAtom = atom(false);
 
 const environmentTypePrimitiveAtom = atomWithReset<EnvironmentType>("map");
 export const environmentTypeAtom = atom(
