@@ -49,12 +49,13 @@ func FeatureItemFrom(item *cms.Item) (res FeatureItem, ok bool) {
 		MaxLOD  any             `cms:"maxlod"`
 		Dic     string          `cms:"dic"`
 		Sample  bool            `cms:"sample,bool,metadata"`
+		Skip    bool            `cms:"skip_geospatialjp,bool,metadata"`
 	}
 
 	fi := internalItem{}
 	item.Unmarshal(&fi)
 
-	if fi.Sample {
+	if fi.Sample || fi.Skip {
 		return
 	}
 
