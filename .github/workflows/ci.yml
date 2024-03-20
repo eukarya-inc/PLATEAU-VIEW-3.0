@@ -213,6 +213,9 @@ jobs:
   deploy-worker-dev:
     needs: build-worker
     if: ${{ always() && needs.build-worker.result == 'success' }}
-    uses: ./.github/workflows/deploy-worker-dev.yml
-    with:
-      use_local: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-worker-dev
