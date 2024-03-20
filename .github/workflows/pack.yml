@@ -13,7 +13,7 @@ jobs:
           ref: plateau
           path: plateau
       - name: Delete files without .git in the repo
-        run: find plateau -type f -not -path '*/.git/*' -not -name '.git' -delete
+        run: find plateau -type f -not -path '.git/*' -delete
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
@@ -44,11 +44,11 @@ jobs:
           mv reearth-cms-main plateau/cms
           rm main.zip
       - run: tree -a
-      # - name: Commit and push
-      #   working-directory: plateau
-      #   run: |
-      #     git config --local user.name github-actions
-      #     git config --local user.email github-actions@github.com
-      #     git add .
-      #     git commit -m "Update"
-      #     git push
+      - name: Commit and push
+        working-directory: plateau
+        run: |
+          git config --local user.name github-actions
+          git config --local user.email github-actions@github.com
+          git add .
+          git commit -m "Update"
+          git push
