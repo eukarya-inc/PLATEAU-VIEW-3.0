@@ -113,6 +113,7 @@ export const InitialLayers: FC = () => {
             const data = dataset?.data.find(d => d.id === l.dataId);
             if (!dataset || !data) return;
             return {
+              id: l.id,
               type: HEATMAP_LAYER,
               datasetId: l.datasetId,
               dataId: l.dataId,
@@ -181,40 +182,58 @@ export const InitialLayers: FC = () => {
       const sharedProjectId =
         typeof sharedProjectIdUnknown === "string" ? sharedProjectIdUnknown : undefined;
 
-      const sharedDatasetLayers = sharedRootLayers?.filter(
-        (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
-      );
-
-      initialDatasets.forEach(d => {
-        const { dataId, groupId, hidden } =
-          sharedDatasetLayers?.find(r => r.datasetId === d.id) ?? {};
-        addLayer(
-          createRootLayerForDatasetAtom({
-            dataset: d,
-            areaCode: d.wardCode || d.cityCode || d.prefectureCode,
-            settings: settingsRef.current.filter(s => s.datasetId === d.id),
-            templates: templatesRef.current,
-            shareId: sharedProjectId,
-            currentDataId: sharedProjectId
-              ? dataId
-              : defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
-            currentGroupId: groupId,
-            hidden,
-          }),
-          { autoSelect: false },
+      if (!sharedRootLayers?.length) {
+        initialLayers?.forEach(l =>
+          addLayer(
+            createRootLayerForLayerAtom({
+              ...l,
+              shareId: sharedProjectId,
+            } as RootLayerForLayerAtomParams<LayerType>),
+            {
+              autoSelect: false,
+            },
+          ),
         );
-      });
-      initialLayers?.forEach(l =>
-        addLayer(
-          createRootLayerForLayerAtom({
-            ...l,
-            shareId: sharedProjectId,
-          } as RootLayerForLayerAtomParams<LayerType>),
-          {
-            autoSelect: false,
-          },
-        ),
-      );
+      } else {
+        // add layer with shared root layers' reverse order
+        sharedRootLayers.reverse().forEach(sharedRootLayer => {
+          if (sharedRootLayer.type === "dataset") {
+            const d = initialDatasets.find(
+              initialDataset => initialDataset.id === sharedRootLayer.datasetId,
+            );
+            if (d) {
+              addLayer(
+                createRootLayerForDatasetAtom({
+                  dataset: d,
+                  areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+                  settings: settingsRef.current.filter(s => s.datasetId === d.id),
+                  templates: templatesRef.current,
+                  shareId: sharedProjectId,
+                  currentDataId: sharedProjectId
+                    ? sharedRootLayer.dataId
+                    : defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
+                  currentGroupId: sharedRootLayer.groupId,
+                  hidden: sharedRootLayer.hidden,
+                }),
+                { autoSelect: false },
+              );
+            }
+          } else {
+            const l = initialLayers.find(initialLayer => initialLayer.id === sharedRootLayer.id);
+            if (l) {
+              addLayer(
+                createRootLayerForLayerAtom({
+                  ...l,
+                  shareId: sharedProjectId,
+                } as RootLayerForLayerAtomParams<LayerType>),
+                {
+                  autoSelect: false,
+                },
+              );
+            }
+          }
+        });
+      }
 
       setReady(true);
     };

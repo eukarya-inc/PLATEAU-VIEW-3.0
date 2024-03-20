@@ -76,6 +76,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
               const l = layer as HeatmapLayerModel;
               return {
                 type: "heatmap",
+                id: l.id,
                 datasetId: l.datasetId,
                 dataId: l.dataId,
                 hidden: get(l.hiddenAtom),
