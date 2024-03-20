@@ -18,6 +18,8 @@ import {
 } from "../../../prototypes/view-layers";
 import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
+import { StoryCapture } from "../../layerContainers/story";
+import { Data, SketchFeature } from "../../reearth/types";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
 import { settingsAtom } from "../../states/setting";
 import {
@@ -32,6 +34,64 @@ import {
   createRootLayerForLayerAtom,
 } from "../../view-layers/rootLayer";
 import { isAppReadyAtom } from "../state/app";
+
+type InitialHeatmapLayerParams = {
+  type: string;
+  id: string;
+  datasetId: string;
+  dataId: string;
+  title: string;
+  getUrl: (code: string) => string;
+  codes: string[];
+  parserOptions: {
+    codeColumn: number;
+    valueColumn: number;
+    skipHeader: number;
+  };
+  hidden?: boolean;
+};
+
+type InitialPedestrianLayerParams = {
+  type: string;
+  id: string;
+  hidden?: boolean;
+};
+
+type InitialMyDataLayerParams = {
+  type: string;
+  id: string;
+  title: string;
+  url?: string;
+  format?: string;
+  layers?: string[];
+  csv?: Data["csv"];
+  hidden?: boolean;
+};
+
+type InitialSketchLayerParams = {
+  type: string;
+  id: string;
+  title: string;
+  features: SketchFeature[];
+  hidden?: boolean;
+};
+
+type InitialStoryLayerParams = {
+  type: string;
+  id: string;
+  title: string;
+  captures: StoryCapture[];
+  hidden?: boolean;
+};
+
+type InitialLayerParams = (
+  | RootLayerForLayerAtomParams<LayerType>
+  | InitialHeatmapLayerParams
+  | InitialPedestrianLayerParams
+  | InitialSketchLayerParams
+  | InitialMyDataLayerParams
+  | InitialStoryLayerParams
+)[];
 
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
@@ -103,7 +163,7 @@ export const InitialLayers: FC = () => {
 
   const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
 
-  const initialLayers = useMemo(() => {
+  const initialLayers: InitialLayerParams = useMemo(() => {
     if (!sharedRootLayers?.length) return defaultLayerParams;
     return sharedRootLayers
       .map(l => {
