@@ -70,6 +70,7 @@ const Title = styled("div")(({ theme }) => ({
   fontSize: theme.typography.h6.fontSize,
   fontWeight: theme.typography.body1.fontWeight,
   padding: theme.spacing(0, 1),
+  gap: theme.spacing(1),
 }));
 
 export default SharedModal;
