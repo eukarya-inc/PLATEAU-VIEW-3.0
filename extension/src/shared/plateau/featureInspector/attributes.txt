@@ -1639,17 +1639,17 @@ bldg:BuildingPart_bldg:interiorRoom,{"description":"部屋"}
 bldg:BuildingPart_bldg:consistsOfBuildingPart,{"description":"建物部品"}
 bldg:BuildingPart_bldg:address,{"description":"住所"}
 bldg:BuildingPart_uro:buildingIDAttribute,{"description":"建物識別情報"}
-bldg:BuildingPart_uro:buildingIDAttribute,{"description":"建物識別情報"}
+bldg:BuildingPart_uro:BuildingIDAttribute,{"description":"建物識別情報"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
 bldg:BuildingPart_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
-bldg:BuildingPart_uro:buildingIDAttribute_uro:city,{"description":"市区町村"}
+bldg:BuildingPart_uro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
 bldg:BuildingPart_uro:buildingDetailAttribute,{"description":"建物利用現況"}
 bldg:BuildingPart_uro:BuildingDetailAttribute,{"description":"建物利用現況"}
 bldg:BuildingPart_uro:buildingDetailAttribute_uro:serialNumberOfBuildingCertification,{"description":"建築確認申請番号"}
@@ -1731,6 +1731,7 @@ bldg:BuildingPart_uro:BuildingDetailAttribute_uro:surveyYear,{"description":"調
 bldg:BuildingPart_uro:largeCustomerFacilityAttribute,{"description":"大規模小売店舗等の立地状況"}
 bldg:BuildingPart_uro:buildingDisasterRiskAttribute,{"description":"災害リスク情報"}
 bldg:BuildingPart_uro:keyValuePairAttribute,{"description":"拡張属性"}
+bldg:BuildingPart_uro:KeyValuePairAttribute,{"description":"拡張属性"}
 bldg:BuildingPart_uro:buildingDataQualityAttribute,{"description":"データ品質属性"}
 bldg:BuildingPart_uro:ifcBuildingAttribute,{"description":"BIMモデルからの変換情報"}
 bldg:BuildingPart_uro:indoorBuildingAttribute,{"description":"屋内地図情報"}
@@ -15422,30 +15423,30 @@ app:X3DMaterial_app:shininess,{"description":"輝きの強さ"}
 app:X3DMaterial_app:transparency,{"description":"透明度"}
 app:X3DMaterial_app:isSmooth,{"description":"補間方法"}
 app:X3DMaterial_app:target,{"description":"対象ジオメトリ"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）,{"description":"汎用都市オブジェクト"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:description,{"description":"説明"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:name,{"description":"名称"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gml:boundedBy,{"description":"範囲"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:creationDate,{"description":"データ作成日","dataType":"date"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:terminationDate,{"description":"データ削除日","dataType":"date"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:relativeToTerrain,{"description":"地表との関係"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_core:relativeToWater,{"description":"水面との関係"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:class,{"description":"区分"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:function,{"description":"機能"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:usage,{"description":"用途"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:stringAttribute,{"description":"汎用属性（文字列）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:intAttribute,{"description":"汎用属性（整数）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:doubleAttribute,{"description":"汎用属性（実数）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:dateAttribute,{"description":"汎用属性（日付）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:uriAttribute,{"description":"汎用属性（URI）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttributeset,{"description":"汎用属性セット"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_gen:genericAttribute,{"description":"汎用属性セット"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod0Geometry,{"description":"lod0幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod1Geometry,{"description":"lod1幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod2Geometry,{"description":"lod2幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod3Geometry,{"description":"lod3幾何"}
-gen:GenericCityObject（作成対象とする場合は、様式A-5を作成すること）_lod4Geometry,{"description":"lod4幾何"}
+gen:GenericCityObject,{"description":"汎用都市オブジェクト"}
+gen:GenericCityObject_gml:description,{"description":"説明"}
+gen:GenericCityObject_gml:name,{"description":"名称"}
+gen:GenericCityObject_gml:boundedBy,{"description":"範囲"}
+gen:GenericCityObject_core:creationDate,{"description":"データ作成日","dataType":"date"}
+gen:GenericCityObject_core:terminationDate,{"description":"データ削除日","dataType":"date"}
+gen:GenericCityObject_core:relativeToTerrain,{"description":"地表との関係"}
+gen:GenericCityObject_core:relativeToWater,{"description":"水面との関係"}
+gen:GenericCityObject_gen:class,{"description":"区分"}
+gen:GenericCityObject_gen:function,{"description":"機能"}
+gen:GenericCityObject_gen:usage,{"description":"用途"}
+gen:GenericCityObject_gen:stringAttribute,{"description":"汎用属性（文字列）"}
+gen:GenericCityObject_gen:intAttribute,{"description":"汎用属性（整数）"}
+gen:GenericCityObject_gen:doubleAttribute,{"description":"汎用属性（実数）"}
+gen:GenericCityObject_gen:dateAttribute,{"description":"汎用属性（日付）"}
+gen:GenericCityObject_gen:uriAttribute,{"description":"汎用属性（URI）"}
+gen:GenericCityObject_gen:measureAttribute,{"description":"汎用属性（単位付き計測値）"}
+gen:GenericCityObject_gen:genericAttributeset,{"description":"汎用属性セット"}
+gen:GenericCityObject_gen:genericAttribute,{"description":"汎用属性セット"}
+gen:GenericCityObject_lod0Geometry,{"description":"lod0幾何"}
+gen:GenericCityObject_lod1Geometry,{"description":"lod1幾何"}
+gen:GenericCityObject_lod2Geometry,{"description":"lod2幾何"}
+gen:GenericCityObject_lod3Geometry,{"description":"lod3幾何"}
+gen:GenericCityObject_lod4Geometry,{"description":"lod4幾何"}
 grp:CityObjectGroup,{"description":"都市オブジェクトグループ"}
 grp:CityObjectGroup_gml:description,{"description":"説明"}
 grp:CityObjectGroup_gml:name,{"description":"名称"}
@@ -39297,7 +39298,7 @@ urf:UnclassifiedBlankArea_core:terminationDate,{"description":"データ削除�
 urf:UnclassifiedBlankArea_core:relativeToTerrain,{"description":"地表との関係"}
 urf:UnclassifiedBlankArea_core:relativeToWater,{"description":"水面との関係"}
 urf:UnclassifiedBlankArea_urf:class,{"description":"分類"}
-urf:UnclassifiedBlankArea_urf:UnclassifiedBlankArea,{"description":"区域の種類"}
+urf:UnclassifiedBlankArea_urf:function,{"description":"区域の種類"}
 urf:UnclassifiedBlankArea_urf:usage,{"description":"用途"}
 urf:UnclassifiedBlankArea_urf:validFrom,{"description":"効力を生じる日","dataType":"date"}
 urf:UnclassifiedBlankArea_urf:validFromType,{"description":"効力を生じる日の区分"}
@@ -39403,6 +39404,11 @@ tran:Road_uro:averageInboundTravelSpeedNotCongestion,{"description":"非混雑�
 tran:Road_uro:averageOutboundTravelSpeedNotCongestion,{"description":"非混雑時平均旅行速度（下り）"}
 tran:Road_uro:observationPointName,{"description":"観測地点名"}
 tran:Road_uro:surveyYear,{"description":"調査年","dataType":"gYear"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:prefecture,{"description":"都道府県"}
+bldg:BuildingPart_uro:buildingIDAttributeuro:BuildingIDAttribute_uro:city,{"description":"市区町村"}
 luse:LandUse_uro:id,{"description":"土地利用現況図における識別子"}
 luse:LandUse_uro:orgLandUse,{"description":"土地利用区分（独自分類）"}
 luse:LandUse_uro:nominalArea,{"description":"公称面積"}
