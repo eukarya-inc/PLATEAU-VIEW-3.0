@@ -80,36 +80,54 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     if (!PLATEAU_API_URL && plateauUrl) {
       setPlateauApiUrl(plateauUrl);
     }
+    return () => {
+      setPlateauApiUrl("");
+    };
   }, [plateauUrl]);
 
   useEffect(() => {
     if (!PROJECT_ID && projectId) {
       setProjectId(projectId);
     }
+    return () => {
+      setProjectId("");
+    };
   }, [projectId]);
 
   useEffect(() => {
     if (!GEO_API_URL && geoUrl) {
       setGeoApiUrl(geoUrl);
     }
+    return () => {
+      setGeoApiUrl("");
+    };
   }, [geoUrl]);
 
   useEffect(() => {
     if (!GSI_TILE_URL && gsiTileURL) {
       setGISTileURL(gsiTileURL);
     }
+    return () => {
+      setGISTileURL("");
+    };
   }, [gsiTileURL]);
 
   useEffect(() => {
     if (!GOOGLE_STREET_VIEW_API_KEY && googleStreetViewAPIKey) {
       setGoogleStreetViewAPIKey(googleStreetViewAPIKey);
     }
+    return () => {
+      setGoogleStreetViewAPIKey("");
+    };
   }, [googleStreetViewAPIKey]);
 
   useEffect(() => {
     if (!geoClient && geoUrl) {
       createGeoClient(geoUrl);
     }
+    return () => {
+      createGeoClient("");
+    };
   }, [geoUrl]);
 
   useEffect(() => {
@@ -117,6 +135,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     if (url) {
       createCatalogClient(url, inEditor ? plateauToken : undefined);
     }
+    return () => {
+      createCatalogClient("", undefined);
+    };
   }, [catalogUrl, catalogURLForAdmin, plateauToken, inEditor]);
 
   useEffect(() => {
@@ -137,6 +158,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {
       setSiteURL(customSiteUrl);
     }
+    return () => {
+      setSiteURL("");
+    };
   }, [customSiteUrl]);
 
   useEffect(() => {
@@ -158,6 +182,9 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     if (!PLATEAU_GEOJSON_URL && geojsonURL) {
       setPlateauGeojsonUrl(geojsonURL);
     }
+    return () => {
+      setPlateauGeojsonUrl("");
+    };
   }, [geojsonURL]);
 
   useEffect(() => {
