@@ -15,10 +15,12 @@ jobs:
       - name: Delete files without .git in the repo
         run: |
           find . -type f -not -path '*/.git/*' -not -name '.git' -delete
+          tree
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
           unzip main.zip
+          tree
           mv PLATEAU-VIEW-3.0-main/* plateau
       - name: Extract PLATEAU-VIEW-AR zip
         run: |
