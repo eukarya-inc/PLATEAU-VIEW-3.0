@@ -1,6 +1,6 @@
 module github.com/eukarya-inc/reearth-plateauview/worker
 
-go 1.21
+go 1.22.1
 
 require (
 	github.com/dustin/go-humanize v1.0.1
