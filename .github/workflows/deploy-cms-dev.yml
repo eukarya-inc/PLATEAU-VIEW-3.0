@@ -29,7 +29,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
       - name: Download CMS web
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v3
         with:
           github_token: ${{ secrets.GPT }}
           repo: reearth/reearth-cms
@@ -57,7 +57,7 @@ jobs:
           rm reearth-cms-web.tar.gz
           tar -zcvf reearth-cms-web.tar.gz reearth-cms-web
       - name: Save as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: reearth-cms-web
           path: reearth-cms-web.tar.gz
@@ -79,7 +79,7 @@ jobs:
       - name: Configure docker
         run: gcloud auth configure-docker --quiet
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

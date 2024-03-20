@@ -29,12 +29,12 @@ jobs:
       worker: ${{ steps.worker.outputs.any_changed }}
       build: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref_name == 'main' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: changed files for extension
         id: extension
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           files: |
             extension
@@ -44,7 +44,7 @@ jobs:
             .github/workflows/deploy-extension-prod.yml
       - name: changed files for server
         id: server
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           files: |
             server
@@ -54,14 +54,14 @@ jobs:
             .github/workflows/deploy-server-prod.yml
       - name: changed files for tools
         id: tools
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           files: |
             tools
             .github/workflows/ci-tools.yml
       - name: changed files for geo
         id: geo
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           files: |
             geo
@@ -71,7 +71,7 @@ jobs:
             .github/workflows/deploy-geo-prod.yml
       - name: changed files for tiles
         id: tiles
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           files: |
             tiles
@@ -81,7 +81,7 @@ jobs:
             .github/workflows/deploy-tiles-prod.yml
       - name: changed files for worker
         id: worker
-        uses: tj-actions/changed-files@v36
+        uses: tj-actions/changed-files@v43
         with:
           since_last_remote_commit: true
           files: |
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           event-type: deploy-extension-dev
 
@@ -166,7 +166,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           event-type: deploy-geo-dev
 
@@ -186,7 +186,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           event-type: deploy-server-dev
 
@@ -201,7 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Dispatch deployment
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           event-type: deploy-tiles-dev
 
