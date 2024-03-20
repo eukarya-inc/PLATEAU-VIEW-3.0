@@ -14,10 +14,10 @@ jobs:
           path: plateau
       - name: Clean
         run: |
-          rm plateau/.gitkeep 2>/dev/null
-          rm -r plateau/* 2>/dev/null
-          rm -r plateau/{.github,.vscode} 2>/dev/null
-          rm plateau/{.gitignore,.dockerignore} 2>/dev/null
+          rm -f plateau/.gitkeep
+          rm -rf plateau/*
+          rm -rf plateau/{.github,.vscode}
+          rm -f plateau/{.gitignore,.dockerignore}
           tree -a
       - working-directory: plateau
         run: git status
