@@ -3,8 +3,11 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [deploy-extension-dev]
+
 env:
   GCS_DEST: gs://plateau-dev-reearth-app-bucket
+  PLATEAU_ORIGIN: https://app.reearth.plateau.dev.reearth.io/extension
+
 jobs:
   deploy_extension:
     runs-on: ubuntu-latest
