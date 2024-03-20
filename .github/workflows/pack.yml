@@ -1,7 +1,7 @@
 name: Pack
 on:
   workflow_dispatch:
-  pull_request: # debug
+  push: # debug
     branches: pack
 jobs:
   pack:
