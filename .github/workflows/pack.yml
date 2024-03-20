@@ -45,8 +45,8 @@ jobs:
           rm main.zip
       - run: tree -a
       - name: Commit and push
-        working-directory: plateau
         run: |
+          cd plateau
           git config --local user.name github-actions
           git config --local user.email github-actions@github.com
           git add .
