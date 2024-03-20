@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04 AS base
+FROM nvidia/cuda:12.3.2-base-ubuntu22.04 AS base
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES all
