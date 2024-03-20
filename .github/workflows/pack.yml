@@ -14,10 +14,8 @@ jobs:
           path: plateau
       - name: Clean
         run: |
-          rm -f plateau/.gitkeep
           rm -rf plateau/*
-          rm -rf plateau/{.github,.vscode}
-          rm -f plateau/{.gitignore,.dockerignore}
+          rm -rf plateau/{.github,.vscode,.gitkeep,.gitignore,.dockerignore}
           tree -a
       - run: git status
         working-directory: plateau
@@ -60,4 +58,4 @@ jobs:
           git add .
           git commit -m "Update"
           git status
-          # git push
+          git push
