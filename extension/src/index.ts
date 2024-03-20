@@ -7,8 +7,6 @@ import Search from "./search";
 import StreetView from "./streetView";
 import Toolbar from "./toolbar";
 
-const pluginId = `plateau-view-3~${process.env.VERSION}`;
-
 function loadCSS() {
   const style = document.createElement("style");
   style.id = "overlayscrollbars-css";
@@ -17,6 +15,8 @@ function loadCSS() {
 }
 
 loadCSS();
+
+const pluginId = `plateau-view-3~${process.env.VERSION}`;
 
 const localPlugin = {
   id: pluginId,
