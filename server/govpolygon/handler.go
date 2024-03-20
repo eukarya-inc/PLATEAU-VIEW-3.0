@@ -80,12 +80,12 @@ func (h *Handler) Update(c echo.Context) error {
 	}
 
 	ctx := c.Request().Context()
-	codes, err := h.getCityNames(ctx)
+	q, err := h.getCityNames(ctx)
 	if err != nil {
 		return err
 	}
 
-	g, notfound, err := h.processor.ComputeGeoJSON(ctx, codes)
+	g, notfound, err := h.processor.ComputeGeoJSON(ctx, q)
 	if err != nil {
 		return err
 	}
