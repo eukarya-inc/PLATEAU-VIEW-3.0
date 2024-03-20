@@ -22,9 +22,22 @@ provider "registry.terraform.io/hashicorp/archive" {
 
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "5.41.0"
-  constraints = "~> 5.0"
+  constraints = "~> 5.41"
   hashes = [
+    "h1:/jcTPBFogo2igFvTcXelgD4EQ+Ty0oNXAh7ZLLxqcng=",
+    "h1:1+zOv27y08jIHXzSv8X6vWhvMrn0y4TkIot+b7K4FQw=",
+    "h1:AU5r10w8ac3USvQ12wrMDC0n0zdLZhgHmoThbV5HU54=",
     "h1:DiX7N35G2NUQRyRGy90+gyePnhP4w77f8LrJUronotE=",
+    "h1:LR09pgCHwKJptKLXVXTuTtjE3hKT0N3giJDS7Yk/pKQ=",
+    "h1:MUZ5awKuWdX9QyLYsT1LEobDFRI6WsGy36qNY6v2fpg=",
+    "h1:NHiQRrdPy2ahEqyJdTeV7eKFB/4xJWn1FiX2hc0aMvQ=",
+    "h1:SgIWBDBA1uNB/Y7CaLFeNX/Ju2xboSSQmRv35Vbi46M=",
+    "h1:a47zqOB38ybaDPAGWIrLvzhUK9AEPpoGbhVxoxfSSYw=",
+    "h1:f0w3xPf547lZBP/NjCbeq+1EqLOmuRjX+8klDEFG5PI=",
+    "h1:ftTyCk04Ec0SCvYkFF2afTDrYy84LqOdZgbWAy7n9BM=",
+    "h1:jipPCe8jEr2J4AmYXzsEd2i6tV68gqHRxFrwvabO99g=",
+    "h1:pEStFvb7A3MRib6o9+rsZc2Ac3LxI7Sebjyxw+87qmY=",
+    "h1:uNln7837/ZTVgQBk+hhfgB9Y87icES6X0lMSOfK5c7g=",
     "zh:0553331a6287c146353b6daf6f71987d8c000f407b5e29d6e004ea88faec2e67",
     "zh:1a11118984bb2950e8ee7ef17b0f91fc9eb4a42c8e7a9cafd7eb4aca771d06e4",
     "zh:236fedd266d152a8233a7fe27ffdd99ca27d9e66a9618a988a4c3da1ac24a33f",

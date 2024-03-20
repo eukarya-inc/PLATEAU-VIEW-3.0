@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 5.18"
+      version = "~> 5.21"
     }
 
     random = {
@@ -12,9 +12,9 @@ terraform {
 
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 0.50"
+      version = "~> 1.2"
     }
   }
 
-  required_version = ">= v1.7.4"
+  required_version = ">= 1.7.5"
 }
