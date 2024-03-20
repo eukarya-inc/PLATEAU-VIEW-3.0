@@ -19,7 +19,8 @@ jobs:
           rm -rf plateau/{.github,.vscode}
           rm -f plateau/{.gitignore,.dockerignore}
           tree -a
-          git status
+      - run: git status
+        working-directory: plateau
       - name: Extract PLATEAU-VIEW-3.0 zip
         run: |
           wget https://github.com/eukarya-inc/PLATEAU-VIEW-3.0/archive/refs/heads/main.zip
@@ -53,9 +54,9 @@ jobs:
       - name: Commit and push
         working-directory: plateau
         run: |
-          git status
           git config user.name github-actions
           git config user.email github-actions@github.com
+          git status
           git add .
           git commit -m "Update"
           git status
