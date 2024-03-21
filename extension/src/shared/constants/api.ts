@@ -56,3 +56,17 @@ export let PLATEAU_GEOJSON_URL: string | undefined;
 export const setPlateauGeojsonUrl = (url: string) => {
   PLATEAU_GEOJSON_URL = url;
 };
+
+export const resetAPIValues = () => {
+  setPlateauApiUrl("");
+  setProjectId("");
+  setGeoApiUrl("");
+  setGISTileURL("");
+  setGoogleStreetViewAPIKey("");
+  setCityName("");
+  setPrimaryColor("");
+  setLogo("");
+  setSiteURL("");
+  setInitialPededstrianCoordinates(undefined);
+  setPlateauGeojsonUrl("");
+};

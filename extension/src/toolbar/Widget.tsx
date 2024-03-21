@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
-import { useAtomValue } from "jotai";
-import { FC, memo } from "react";
+import { Provider, useAtomValue } from "jotai";
+import { FC, memo, useRef } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
@@ -19,8 +19,11 @@ import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { FileDrop } from "../prototypes/view/ui-containers/FileDrop";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
+import { resetAPIValues } from "../shared/constants";
+import { PLATEAU_INSTANCE_ID, setPlateauInstanceId } from "../shared/constants/instance";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { CameraPosition } from "../shared/reearth/types";
+import { resetStore, store } from "../shared/states/store";
 import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
@@ -63,60 +66,88 @@ export const Loading: FC = () => {
   return <AnimatePresence>{!ready && <LoadingScreen />}</AnimatePresence>;
 };
 
-export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
+const WidgetContent: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
   useSelectSketchFeature();
 
   return (
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>
-      <WidgetContext
-        inEditor={inEditor}
-        plateauUrl={widget.property.default.plateauURL}
-        projectId={widget.property.default.projectName}
-        plateauToken={widget.property.default.plateauAccessToken}
-        catalogUrl={widget.property.default.catalogURL}
-        catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
-        geoUrl={widget.property.default.geoURL}
-        gsiTileURL={widget.property.default.gsiTileURL}
-        googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-        geojsonURL={widget.property.default.geojsonURL}
-        cityName={widget.property.optional?.cityName}
-        customPrimaryColor={widget.property.optional?.primaryColor}
-        customLogo={widget.property.optional?.logo}
-        customPedestrian={widget.property.optional?.pedestrian}
-        customSiteUrl={widget.property.optional?.siteUrl}>
-        <InitializeApp />
-        <AppFrame header={<AppHeader arURL={widget.property.default.arURL} />} />
-        {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
-        <Loading />
-        {/* <Suspense>
+      <Provider store={store}>
+        <WidgetContext
+          inEditor={inEditor}
+          plateauUrl={widget.property.default.plateauURL}
+          projectId={widget.property.default.projectName}
+          plateauToken={widget.property.default.plateauAccessToken}
+          catalogUrl={widget.property.default.catalogURL}
+          catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
+          geoUrl={widget.property.default.geoURL}
+          gsiTileURL={widget.property.default.gsiTileURL}
+          googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+          geojsonURL={widget.property.default.geojsonURL}
+          cityName={widget.property.optional?.cityName}
+          customPrimaryColor={widget.property.optional?.primaryColor}
+          customLogo={widget.property.optional?.logo}
+          customPedestrian={widget.property.optional?.pedestrian}
+          customSiteUrl={widget.property.optional?.siteUrl}>
+          <InitializeApp />
+          <AppFrame header={<AppHeader arURL={widget.property.default.arURL} />} />
+          {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
+          <Loading />
+          {/* <Suspense>
         <SuspendUntilTilesLoaded
           initialTileCount={35}
           remainingTileCount={30}
           onComplete={handleTilesLoadComplete}> */}
-        <LayersRenderer components={layerComponents} />
-        {/* </SuspendUntilTilesLoaded>
+          <LayersRenderer components={layerComponents} />
+          {/* </SuspendUntilTilesLoaded>
       </Suspense> */}
-        <Environments />
-        <ToolMachineEvents />
-        <Notifications />
-        <InitialLayers />
-        <JapanPlateauPolygon />
-        <SelectionCoordinator />
-        <KeyBindings />
-        <ScreenSpaceSelection />
-        <FileDrop />
-        <ScreenSpaceCamera tiltByRightButton />
-        <HighlightedAreas />
-        <ReverseGeocoding />
-        <PedestrianTool />
-        <SketchTool />
-        <MyData />
-        <Help />
-        <AutoRotateCamera />
-        <FeedBack />
-        <StoryCreator />
-      </WidgetContext>
+          <Environments />
+          <ToolMachineEvents />
+          <Notifications />
+          <InitialLayers />
+          <JapanPlateauPolygon />
+          <SelectionCoordinator />
+          <KeyBindings />
+          <ScreenSpaceSelection />
+          <FileDrop />
+          <ScreenSpaceCamera tiltByRightButton />
+          <HighlightedAreas />
+          <ReverseGeocoding />
+          <PedestrianTool />
+          <SketchTool />
+          <MyData />
+          <Help />
+          <AutoRotateCamera />
+          <FeedBack />
+          <StoryCreator />
+        </WidgetContext>
+      </Provider>
     </div>
+  );
+});
+
+export const Widget: FC<Props> = memo(({ widget, inEditor }) => {
+  const instanceChecked = useRef(false);
+
+  if (!instanceChecked.current) {
+    const paths = window.location.pathname.split("/");
+    const sceneIndex = paths.findIndex(v => v === "scene");
+    const instanceId = sceneIndex !== -1 ? paths[sceneIndex + 1] : "published";
+
+    if (instanceId !== PLATEAU_INSTANCE_ID) {
+      if (!PLATEAU_INSTANCE_ID) {
+        setPlateauInstanceId(instanceId);
+      } else {
+        resetAPIValues();
+        resetStore();
+      }
+    }
+    instanceChecked.current = true;
+  }
+
+  return (
+    <Provider store={store}>
+      <WidgetContent widget={widget} inEditor={inEditor} />
+    </Provider>
   );
 });
