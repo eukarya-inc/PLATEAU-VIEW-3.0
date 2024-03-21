@@ -1,4 +1,4 @@
-import { ApolloProvider } from "@apollo/client";
+import { ApolloClient, ApolloProvider, NormalizedCacheObject } from "@apollo/client";
 import { Theme, ThemeOptions, ThemeProvider, createTheme } from "@mui/material";
 import { merge } from "lodash-es";
 import { SnackbarProvider } from "notistack";
@@ -10,6 +10,8 @@ import {
   settingClient,
   createTemplateClient,
   templateClient,
+  deleteSettingClient,
+  deleteTemplateClient,
 } from "../api/clients";
 import {
   GEO_API_URL,
@@ -35,8 +37,17 @@ import {
   PLATEAU_GEOJSON_URL,
   setPlateauGeojsonUrl,
 } from "../constants";
-import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
+import {
+  geoClient,
+  createGeoClient,
+  catalogClient,
+  createCatalogClient,
+  deleteGeoClient,
+} from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
+
+import useInitializeClientHelper from "./useInitializeClientHelper";
+import useInitializeStateHelper from "./useInitializeStateHelper";
 
 type Props = {
   inEditor?: boolean;
@@ -76,95 +87,102 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   customSiteUrl,
   geojsonURL,
 }) => {
-  useEffect(() => {
-    if (!PLATEAU_API_URL && plateauUrl) {
-      setPlateauApiUrl(plateauUrl);
-    }
-  }, [plateauUrl]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // cleanup
+  useEffect(
+    () => () => {
+      setPlateauApiUrl(undefined);
+      setProjectId(undefined);
+      setGeoApiUrl(undefined);
+      setGISTileURL(undefined);
+      setGoogleStreetViewAPIKey(undefined);
+      setCityName(undefined);
+      setSiteURL(undefined);
+      setLogo(undefined);
+      setInitialPededstrianCoordinates(undefined);
+      setPlateauGeojsonUrl(undefined);
+      setPrimaryColor(undefined);
+      setCustomTheme(undefined);
+      deleteGeoClient();
+      deleteSettingClient();
+      deleteTemplateClient();
+      setIsInitialized(false);
+    },
+    [],
+  );
+
+  // Environment variables
+  useInitializeStateHelper<typeof cityName>(isInitialized, cityName, CITY_NAME, setCityName);
+  useInitializeStateHelper<typeof customSiteUrl>(
+    isInitialized,
+    customSiteUrl,
+    SITE_URL,
+    setSiteURL,
+  );
+  useInitializeStateHelper<typeof customLogo>(isInitialized, customLogo, LOGO, setLogo);
+  useInitializeStateHelper<typeof customPedestrian>(
+    isInitialized,
+    customPedestrian,
+    INITIAL_PEDESTRIAN_COORDINATES,
+    setInitialPededstrianCoordinates,
+  );
+  useInitializeStateHelper<typeof plateauUrl>(
+    isInitialized,
+    plateauUrl,
+    PLATEAU_API_URL,
+    setPlateauApiUrl,
+  );
+  useInitializeStateHelper<typeof projectId>(isInitialized, projectId, PROJECT_ID, setProjectId);
+  useInitializeStateHelper<typeof geoUrl>(isInitialized, geoUrl, GEO_API_URL, setGeoApiUrl);
+  useInitializeStateHelper<typeof gsiTileURL>(
+    isInitialized,
+    gsiTileURL,
+    GSI_TILE_URL,
+    setGISTileURL,
+  );
+  useInitializeStateHelper<typeof googleStreetViewAPIKey>(
+    isInitialized,
+    googleStreetViewAPIKey,
+    GOOGLE_STREET_VIEW_API_KEY,
+    setGoogleStreetViewAPIKey,
+  );
+  useInitializeStateHelper<typeof geojsonURL>(
+    isInitialized,
+    geojsonURL,
+    PLATEAU_GEOJSON_URL,
+    setPlateauGeojsonUrl,
+  );
+  useInitializeStateHelper<typeof customPrimaryColor>(
+    isInitialized,
+    customPrimaryColor,
+    PRIMARY_COLOR,
+    setPrimaryColor,
+  );
+
+  // Clients
+  useInitializeClientHelper<ApolloClient<NormalizedCacheObject> | undefined>(
+    isInitialized,
+    geoUrl,
+    geoClient,
+    createGeoClient,
+  );
+  useInitializeClientHelper<ApolloClient<NormalizedCacheObject> | undefined>(
+    isInitialized,
+    inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl,
+    catalogClient,
+    createCatalogClient,
+    inEditor ? plateauToken : undefined,
+  );
 
   useEffect(() => {
-    if (!PROJECT_ID && projectId) {
-      setProjectId(projectId);
-    }
-  }, [projectId]);
-
-  useEffect(() => {
-    if (!GEO_API_URL && geoUrl) {
-      setGeoApiUrl(geoUrl);
-    }
-  }, [geoUrl]);
-
-  useEffect(() => {
-    if (!GSI_TILE_URL && gsiTileURL) {
-      setGISTileURL(gsiTileURL);
-    }
-  }, [gsiTileURL]);
-
-  useEffect(() => {
-    if (!GOOGLE_STREET_VIEW_API_KEY && googleStreetViewAPIKey) {
-      setGoogleStreetViewAPIKey(googleStreetViewAPIKey);
-    }
-  }, [googleStreetViewAPIKey]);
-
-  useEffect(() => {
-    if (!geoClient && geoUrl) {
-      createGeoClient(geoUrl);
-    }
-  }, [geoUrl]);
-
-  useEffect(() => {
-    const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;
-    if (url) {
-      createCatalogClient(url, inEditor ? plateauToken : undefined);
-    }
-  }, [catalogUrl, catalogURLForAdmin, plateauToken, inEditor]);
-
-  useEffect(() => {
+    if (isInitialized) return;
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
       const sidebar = `${plateauUrl}/sidebar`;
       createSettingClient(projectId, sidebar, plateauToken);
       createTemplateClient(projectId, sidebar, plateauToken);
     }
-  }, [projectId, plateauUrl, plateauToken]);
-
-  useEffect(() => {
-    if (cityName && (!CITY_NAME || CITY_NAME !== cityName)) {
-      setCityName(cityName);
-    }
-  }, [cityName]);
-
-  useEffect(() => {
-    if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {
-      setSiteURL(customSiteUrl);
-    }
-  }, [customSiteUrl]);
-
-  useEffect(() => {
-    if (customLogo && (!LOGO || LOGO !== customLogo)) {
-      setLogo(customLogo);
-    }
-  }, [customLogo]);
-
-  useEffect(() => {
-    if (
-      customPedestrian &&
-      (!INITIAL_PEDESTRIAN_COORDINATES || INITIAL_PEDESTRIAN_COORDINATES !== customPedestrian)
-    ) {
-      setInitialPededstrianCoordinates(customPedestrian);
-    }
-  }, [customPedestrian]);
-
-  useEffect(() => {
-    if (!PLATEAU_GEOJSON_URL && geojsonURL) {
-      setPlateauGeojsonUrl(geojsonURL);
-    }
-  }, [geojsonURL]);
-
-  useEffect(() => {
-    if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {
-      setPrimaryColor(customPrimaryColor);
-    }
-  }, [customPrimaryColor]);
+  }, [projectId, plateauUrl, plateauToken, isInitialized]);
 
   const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
 
@@ -185,7 +203,14 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [customTheme]);
 
   if (!PLATEAU_API_URL || !geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
+    if (isInitialized) {
+      setIsInitialized(false);
+    }
     return null;
+  }
+
+  if (!isInitialized) {
+    setIsInitialized(true);
   }
 
   return (

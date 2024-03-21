@@ -1,4 +1,5 @@
 import { useAtomValue, useSetAtom } from "jotai";
+import { useResetAtom } from "jotai/utils";
 import { useEffect, type FC, useMemo, useRef, useState } from "react";
 import format from "string-template";
 
@@ -21,6 +22,7 @@ import { useDatasetsByIds } from "../../graphql";
 import { StoryCapture } from "../../layerContainers/story";
 import { Data, SketchFeature } from "../../reearth/types";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
+import { rootLayersAtom } from "../../states/rootLayer";
 import { settingsAtom } from "../../states/setting";
 import {
   SHARED_PROJECT_ID_KEY,
@@ -103,6 +105,16 @@ export const InitialLayers: FC = () => {
   const [isSharedDataLoaded, setIsSharedDataLoaded] = useState(false);
   const isAppReady = useAtomValue(isAppReadyAtom);
   const isInitialized = useRef(false);
+
+  const resetLayers = useResetAtom(rootLayersAtom);
+
+  useEffect(
+    () => () => {
+      if (!isInitialized.current) return;
+      resetLayers();
+    },
+    [resetLayers],
+  );
 
   useEffect(() => {
     const run = async () => {
