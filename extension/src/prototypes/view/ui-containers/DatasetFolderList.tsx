@@ -23,11 +23,12 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
       if (key !== "undefined") {
         folders.push({
           label: key,
-          subFolderId: `${folderId}:${key}${value.length === 1 ? `:${value[0].id}` : ""}`,
+          subFolderId: `${folderId}:${key}`,
           datasets: value.sort((a, b) => a.type.order - b.type.order),
           folderDataset:
             value.find(v => v.name.split("/")[level + 1] === undefined && v.items.length === 0) ??
             undefined,
+          isLastLevel: false,
         });
       } else {
         value.forEach((v, index) => {
@@ -36,6 +37,7 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
             label: `${index}`,
             subFolderId: `${folderId}:${v.id}}`,
             datasets: [v],
+            isLastLevel: true,
           });
         });
       }
@@ -46,7 +48,10 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
   return (
     <>
       {Object.values(folderList).map(folder => {
-        if (folder.datasets.length === 1) {
+        if (
+          folder.datasets.length === 1 &&
+          folder.datasets[0].name.split("/").length <= level + 1
+        ) {
           const label = folder.datasets[0].name.split("/").pop();
           return (
             <DatasetListItem
