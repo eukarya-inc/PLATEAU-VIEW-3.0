@@ -7,6 +7,7 @@ import { useAreaDatasets, useDatasetTypes } from "../../../shared/graphql";
 import { Area } from "../../../shared/states/address";
 import { isNotNullish } from "../../type-helpers";
 import { AppBreadcrumbsItem, ContextBar, OverlayPopper } from "../../ui-components";
+import { isGenericDatasetType } from "../constants/generic";
 import { PlateauDatasetType } from "../constants/plateau";
 
 import { BuildingDatasetButtonSelect } from "./BuildingDatasetButtonSelect";
@@ -115,7 +116,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
                   dataset={dataset}
                   municipalityCode={area.code}
                 />
-              ) : dataset.items.length === 1 ? (
+              ) : dataset.items.length === 1 && !isGenericDatasetType(dataset.type.code) ? (
                 <DefaultDatasetButton
                   key={dataset.id}
                   dataset={dataset}

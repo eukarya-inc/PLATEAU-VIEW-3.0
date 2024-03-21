@@ -12,6 +12,7 @@ export type FolderItem = {
   subFolderId: string;
   datasets: DatasetFragmentFragment[];
   folderDataset?: DatasetFragmentFragment;
+  isLastLevel?: boolean;
 };
 
 type DatasetFolderItemProps = {
