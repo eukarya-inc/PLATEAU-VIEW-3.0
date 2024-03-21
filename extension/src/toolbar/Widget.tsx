@@ -72,56 +72,54 @@ const WidgetContent: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
 
   return (
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>
-      <Provider store={store}>
-        <WidgetContext
-          inEditor={inEditor}
-          plateauUrl={widget.property.default.plateauURL}
-          projectId={widget.property.default.projectName}
-          plateauToken={widget.property.default.plateauAccessToken}
-          catalogUrl={widget.property.default.catalogURL}
-          catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
-          geoUrl={widget.property.default.geoURL}
-          gsiTileURL={widget.property.default.gsiTileURL}
-          googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
-          geojsonURL={widget.property.default.geojsonURL}
-          cityName={widget.property.optional?.cityName}
-          customPrimaryColor={widget.property.optional?.primaryColor}
-          customLogo={widget.property.optional?.logo}
-          customPedestrian={widget.property.optional?.pedestrian}
-          customSiteUrl={widget.property.optional?.siteUrl}>
-          <InitializeApp />
-          <AppFrame header={<AppHeader arURL={widget.property.default.arURL} />} />
-          {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
-          <Loading />
-          {/* <Suspense>
+      <WidgetContext
+        inEditor={inEditor}
+        plateauUrl={widget.property.default.plateauURL}
+        projectId={widget.property.default.projectName}
+        plateauToken={widget.property.default.plateauAccessToken}
+        catalogUrl={widget.property.default.catalogURL}
+        catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
+        geoUrl={widget.property.default.geoURL}
+        gsiTileURL={widget.property.default.gsiTileURL}
+        googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+        geojsonURL={widget.property.default.geojsonURL}
+        cityName={widget.property.optional?.cityName}
+        customPrimaryColor={widget.property.optional?.primaryColor}
+        customLogo={widget.property.optional?.logo}
+        customPedestrian={widget.property.optional?.pedestrian}
+        customSiteUrl={widget.property.optional?.siteUrl}>
+        <InitializeApp />
+        <AppFrame header={<AppHeader arURL={widget.property.default.arURL} />} />
+        {/* TODO(ReEarth): Support initial layer loading(Splash screen) */}
+        <Loading />
+        {/* <Suspense>
         <SuspendUntilTilesLoaded
           initialTileCount={35}
           remainingTileCount={30}
           onComplete={handleTilesLoadComplete}> */}
-          <LayersRenderer components={layerComponents} />
-          {/* </SuspendUntilTilesLoaded>
+        <LayersRenderer components={layerComponents} />
+        {/* </SuspendUntilTilesLoaded>
       </Suspense> */}
-          <Environments />
-          <ToolMachineEvents />
-          <Notifications />
-          <InitialLayers />
-          <JapanPlateauPolygon />
-          <SelectionCoordinator />
-          <KeyBindings />
-          <ScreenSpaceSelection />
-          <FileDrop />
-          <ScreenSpaceCamera tiltByRightButton />
-          <HighlightedAreas />
-          <ReverseGeocoding />
-          <PedestrianTool />
-          <SketchTool />
-          <MyData />
-          <Help />
-          <AutoRotateCamera />
-          <FeedBack />
-          <StoryCreator />
-        </WidgetContext>
-      </Provider>
+        <Environments />
+        <ToolMachineEvents />
+        <Notifications />
+        <InitialLayers />
+        <JapanPlateauPolygon />
+        <SelectionCoordinator />
+        <KeyBindings />
+        <ScreenSpaceSelection />
+        <FileDrop />
+        <ScreenSpaceCamera tiltByRightButton />
+        <HighlightedAreas />
+        <ReverseGeocoding />
+        <PedestrianTool />
+        <SketchTool />
+        <MyData />
+        <Help />
+        <AutoRotateCamera />
+        <FeedBack />
+        <StoryCreator />
+      </WidgetContext>
     </div>
   );
 });
