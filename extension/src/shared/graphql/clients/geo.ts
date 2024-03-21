@@ -11,3 +11,7 @@ export const createGeoClient = (url: string) => {
     }),
   });
 };
+
+export const deleteGeoClient = () => {
+  geoClient = undefined;
+};
