@@ -1146,9 +1146,13 @@ input AreasInput {
   """
   searchTokens: [String!]
   """
-  検索結果にその地域の親も含めるかどうか。デフォルトは false です。
+  datasetTypes が指定された場合に、検索結果にその地域の親も含めるかどうか。デフォルトは false です。
   """
   includeParents: Boolean
+  """
+  parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。
+  """
+  deep: Boolean
 }
 
 """

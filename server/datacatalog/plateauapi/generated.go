@@ -13360,7 +13360,7 @@ func (ec *executionContext) unmarshalInputAreasInput(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"parentCode", "datasetTypes", "categories", "areaTypes", "searchTokens", "includeParents"}
+	fieldsInOrder := [...]string{"parentCode", "datasetTypes", "categories", "areaTypes", "searchTokens", "includeParents", "deep"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -13409,6 +13409,13 @@ func (ec *executionContext) unmarshalInputAreasInput(ctx context.Context, obj in
 				return it, err
 			}
 			it.IncludeParents = data
+		case "deep":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deep"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Deep = data
 		}
 	}
 

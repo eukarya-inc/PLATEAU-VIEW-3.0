@@ -120,6 +120,23 @@ func TestFilterArea(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "shallow",
+			area: Ward{Name: "Shinjuku", PrefectureCode: "13", CityCode: "13104"},
+			input: AreasInput{
+				ParentCode: lo.ToPtr(AreaCode("13")),
+			},
+			expected: false,
+		},
+		{
+			name: "deep",
+			area: Ward{Name: "Shinjuku", PrefectureCode: "13", CityCode: "13104"},
+			input: AreasInput{
+				ParentCode: lo.ToPtr(AreaCode("13")),
+				Deep:       lo.ToPtr(true),
+			},
+			expected: true,
+		},
 	}
 
 	for _, tc := range testCases {
