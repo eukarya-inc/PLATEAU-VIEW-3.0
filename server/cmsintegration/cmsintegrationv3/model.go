@@ -9,6 +9,7 @@ import (
 
 const modelPrefix = "plateau-"
 const cityModel = "city"
+const sampleModel = "sample"
 const relatedModel = "related"
 const geospatialjpIndex = "geospatialjp-index"
 const geospatialjpData = "geospatialjp-data"
