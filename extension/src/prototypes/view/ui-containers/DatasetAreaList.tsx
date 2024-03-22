@@ -33,9 +33,9 @@ export const DatasetGroup: FC<{
   }
 
   if (datasets.length > 1) {
-    <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
-      {datasets.map(dataset => {
-        return (
+    return (
+      <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
+        {datasets.map(dataset => (
           <DatasetListItem
             key={dataset.id}
             municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
@@ -43,9 +43,9 @@ export const DatasetGroup: FC<{
             label={dataset.name}
             title={dataset.name}
           />
-        );
-      })}
-    </DatasetTreeItem>;
+        ))}
+      </DatasetTreeItem>
+    );
   } else {
     const dataset = datasets[0];
     const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
@@ -61,7 +61,6 @@ export const DatasetGroup: FC<{
       />
     );
   }
-  return null;
 };
 
 const GlobalItem: FC<{}> = () => {
