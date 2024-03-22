@@ -188,6 +188,8 @@ export const makePropertyForFeatureInspector = ({
             .map(name => {
               const joinedName = `${featureType}_${name}`;
               const attrVal = getPropertyAttributeValue(joinedName);
+              const firstValue = features[0]?.properties?.[name];
+              const isValueObject = firstValue && typeof firstValue === "object";
               return {
                 name: makePropertyName(joinedName, name, attrVal) || name,
                 values: features
@@ -197,6 +199,7 @@ export const makePropertyForFeatureInspector = ({
                       : f.properties?.[name],
                   )
                   .filter(Boolean),
+                path: isValueObject ? [name] : undefined,
               };
             })
             .filter(({ values }) => features.length === values.length),
