@@ -16,7 +16,7 @@ type IndexSeed struct {
 	PlateuaZipPath string
 	RelatedZipPath string
 	Generic        []GspatialjpIndexItemGroup
-	Dic            map[string]string
+	Dic            map[string]map[string]string
 }
 
 type IndexItem struct {

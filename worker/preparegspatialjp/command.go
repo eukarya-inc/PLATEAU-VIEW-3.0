@@ -9,7 +9,6 @@ import (
 
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
 )
 
 const tmpDirBase = "plateau-api-worker-tmp"
@@ -132,9 +131,7 @@ func Command(conf *Config) (err error) {
 
 	log.Infofc(ctx, "feature items: %s", ppp.Sprint(allFeatureItems))
 
-	dic := mergeDics(lo.MapToSlice(allFeatureItems, func(k string, v FeatureItem) string {
-		return v.Dic
-	})...)
+	dic := mergeDics(allFeatureItems)
 	log.Infofc(ctx, "dic: %s", ppp.Sprint(dic))
 
 	mc := MergeContext{

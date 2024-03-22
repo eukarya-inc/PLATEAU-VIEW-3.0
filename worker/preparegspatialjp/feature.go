@@ -104,15 +104,16 @@ func FeatureItemFrom(item *cms.Item) (res FeatureItem, ok bool) {
 	return
 }
 
-func mergeDics(dics ...string) (res map[string]string) {
+func mergeDics(dics map[string]FeatureItem) (res map[string]map[string]string) {
 	type dicEntry struct {
 		Name        *StringOrNumber `json:"name"`
 		Code        *StringOrNumber `json:"code"`
 		Description string          `json:"description"`
 	}
 
-	res = map[string]string{}
-	for _, dic := range dics {
+	res = map[string]map[string]string{}
+	for k, f := range dics {
+		dic := f.Dic
 		if dic == "" {
 			continue
 		}
@@ -128,12 +129,16 @@ func mergeDics(dics ...string) (res map[string]string) {
 					continue
 				}
 
+				if res[k] == nil {
+					res[k] = map[string]string{}
+				}
+
 				if e.Name != nil {
-					res[e.Name.String()] = e.Description
+					res[k][e.Name.String()] = e.Description
 				}
 
 				if e.Code != nil {
-					res[e.Code.String()] = e.Description
+					res[k][e.Code.String()] = e.Description
 				}
 			}
 		}
