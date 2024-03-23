@@ -48,32 +48,17 @@ func PrepareIndex(ctx context.Context, cw *CMSWrapper, seed *IndexSeed) (err err
 }
 
 func GenerateIndex(ctx context.Context, seed *IndexSeed) (string, error) {
-	citygmlSize, err := fileSize(seed.CityGMLZipPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to get citygml zip size: %w", err)
-	}
-
-	plateauSize, err := fileSize(seed.PlateuaZipPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to get plateau zip size: %w", err)
-	}
-
-	relatedSize, err := fileSize(seed.RelatedZipPath)
-	if err != nil {
-		return "", fmt.Errorf("failed to get related zip size: %w", err)
-	}
-
-	citygmlFS, citygmlFSCloser, err := openZip(seed.CityGMLZipPath)
+	citygmlFS, citygmlSize, citygmlFSCloser, err := openZip(seed.CityGMLZipPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to open citygml zip: %w", err)
 	}
 
-	plateauFS, plateauFSCloser, err := openZip(seed.PlateuaZipPath)
+	plateauFS, plateauSize, plateauFSCloser, err := openZip(seed.PlateuaZipPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to open plateau zip: %w", err)
 	}
 
-	relatedFS, relatedFSCloser, err := openZip(seed.RelatedZipPath)
+	relatedFS, relatedSize, relatedFSCloser, err := openZip(seed.RelatedZipPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to open related zip: %w", err)
 	}

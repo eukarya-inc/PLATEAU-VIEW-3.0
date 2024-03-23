@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -24,6 +25,7 @@ type Config struct {
 	SkipIndex   bool
 	SkipRelated bool
 	WetRun      bool
+	Clean       bool
 }
 
 type MergeContext struct {
@@ -34,8 +36,8 @@ type MergeContext struct {
 	WetRun          bool
 }
 
-func Command(conf *Config) (err error) {
-	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated {
+func CommandSingle(conf *Config) (err error) {
+	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
 		return fmt.Errorf("no command to run")
 	}
 
@@ -82,7 +84,7 @@ func Command(conf *Config) (err error) {
 	indexItem := GspatialjpIndexItemFrom(indexItemRaw)
 	log.Infofc(ctx, "geospatialjp index item: %s", ppp.Sprint(indexItem))
 
-	gdataItemRaw, err := cms.GetItem(ctx, cityItem.GeospatialjpData, false)
+	gdataItemRaw, err := cms.GetItem(ctx, cityItem.GeospatialjpData, true)
 	if err != nil {
 		return fmt.Errorf("failed to get geospatialjp data item: %w", err)
 	}
@@ -102,7 +104,7 @@ func Command(conf *Config) (err error) {
 		}
 	}
 
-	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated {
+	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
 		return fmt.Errorf("no command to run")
 	}
 
@@ -121,6 +123,15 @@ func Command(conf *Config) (err error) {
 	tmpDirName := fmt.Sprintf("%s-%d", time.Now().Format("20060102-150405"), rand.Intn(1000))
 	tmpDir := filepath.Join(tmpDirBase, tmpDirName)
 	log.Infofc(ctx, "tmp dir: %s", tmpDir)
+
+	if conf.Clean {
+		defer func() {
+			log.Infofc(ctx, "cleaning up tmp dir...: %s", tmpDir)
+			if err := os.RemoveAll(tmpDir); err != nil {
+				log.Warnf("failed to remove tmp dir: %s", err)
+			}
+		}()
+	}
 
 	log.Infofc(ctx, "getting all feature items...")
 	allFeatureItems, err := getAllFeatureItems(ctx, cms, cityItem)
@@ -153,6 +164,7 @@ func Command(conf *Config) (err error) {
 
 	var citygmlPath, plateauPath, relatedPath string
 
+	// related
 	if !conf.SkipRelated {
 		res, err := PrepareRelated(ctx, cw, mc)
 		if err != nil {
@@ -162,6 +174,15 @@ func Command(conf *Config) (err error) {
 		relatedPath = res
 	}
 
+	if relatedPath == "" && !conf.SkipIndex && gdataItem.RelatedURL != "" {
+		// download zip
+		relatedPath, err = downloadFileTo(ctx, gdataItem.RelatedURL, tmpDir)
+		if err != nil {
+			return fmt.Errorf("failed to download merged related: %w", err)
+		}
+	}
+
+	// citygml
 	if !conf.SkipCityGML {
 		res, err := PrepareCityGML(ctx, cw, mc)
 		if err != nil {
@@ -171,6 +192,15 @@ func Command(conf *Config) (err error) {
 		citygmlPath = res
 	}
 
+	if citygmlPath == "" || !conf.SkipIndex && gdataItem.CityGMLURL != "" {
+		// download zip
+		citygmlPath, err = downloadFileTo(ctx, gdataItem.CityGMLURL, tmpDir)
+		if err != nil {
+			return fmt.Errorf("failed to download merged citygml: %w", err)
+		}
+	}
+
+	// plateau
 	if !conf.SkipPlateau {
 		res, err := PreparePlateau(ctx, cw, mc)
 		if err != nil {
@@ -180,7 +210,15 @@ func Command(conf *Config) (err error) {
 		plateauPath = res
 	}
 
-	if !conf.SkipIndex && citygmlPath != "" && plateauPath != "" && relatedPath != "" {
+	if plateauPath == "" || !conf.SkipIndex && gdataItem.PlateauURL != "" {
+		// download zip
+		plateauPath, err = downloadFileTo(ctx, gdataItem.PlateauURL, tmpDir)
+		if err != nil {
+			return fmt.Errorf("failed to download merged plateau: %w", err)
+		}
+	}
+
+	if !conf.SkipIndex && citygmlPath != "" && plateauPath != "" {
 		if err := PrepareIndex(ctx, cw, &IndexSeed{
 			CityName:       cityItem.CityName,
 			CityCode:       cityItem.CityCode,
@@ -194,6 +232,8 @@ func Command(conf *Config) (err error) {
 		}); err != nil {
 			return err
 		}
+	} else {
+		log.Infofc(ctx, "skip index")
 	}
 
 	log.Infofc(ctx, "done")
