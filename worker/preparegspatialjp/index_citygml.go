@@ -46,7 +46,6 @@ func generateCityGMLIndexItem(seed *IndexSeed, name string, size uint64, f fs.FS
 		}
 
 		if name, ok := citygmlDic[base]; ok {
-			ft = ""
 			return &IndexItem{
 				Name: fmt.Sprintf("**%s**：%s", base, name),
 			}, nil

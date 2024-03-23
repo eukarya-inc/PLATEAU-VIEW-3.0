@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
+
+	"github.com/reearth/reearthx/log"
 )
 
 type IndexSeed struct {
@@ -37,6 +39,8 @@ func PrepareIndex(ctx context.Context, cw *CMSWrapper, seed *IndexSeed) (err err
 	if err != nil {
 		return fmt.Errorf("目録の生成に失敗しました: %w", err)
 	}
+
+	log.Infofc(ctx, "index generated: %s", index)
 
 	if err := cw.UpdateDataItem(ctx, &GspatialjpDataItem{
 		Index: index,

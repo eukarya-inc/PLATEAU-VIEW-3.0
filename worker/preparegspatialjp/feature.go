@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	cms "github.com/reearth/reearth-cms-api/go"
 )
@@ -112,7 +113,7 @@ func mergeDics(dics map[string]FeatureItem) (res map[string]map[string]string) {
 	}
 
 	res = map[string]map[string]string{}
-	for k, f := range dics {
+	for ft, f := range dics {
 		dic := f.Dic
 		if dic == "" {
 			continue
@@ -129,17 +130,26 @@ func mergeDics(dics map[string]FeatureItem) (res map[string]map[string]string) {
 					continue
 				}
 
-				if res[k] == nil {
-					res[k] = map[string]string{}
+				key := e.Name.String()
+				if key == "" {
+					key = e.Code.String()
+				}
+				if key == "" {
+					continue
 				}
 
-				if e.Name != nil {
-					res[k][e.Name.String()] = e.Description
+				desc := e.Description
+				if ft == "fld" {
+					key = strings.TrimSuffix(key, "_l1")
+					key = strings.TrimSuffix(key, "_l2")
+					desc += "洪水浸水想定区域"
 				}
 
-				if e.Code != nil {
-					res[k][e.Code.String()] = e.Description
+				if res[ft] == nil {
+					res[ft] = map[string]string{}
 				}
+
+				res[ft][key] = desc
 			}
 		}
 	}

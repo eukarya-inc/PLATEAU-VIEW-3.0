@@ -7,13 +7,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func TestCommandSingle(t *testing.T) {
+func TestCommand(t *testing.T) {
 	_ = godotenv.Load("../.env")
 
 	conf := Config{
 		CMSURL:      os.Getenv("REEARTH_CMS_URL"),
 		CMSToken:    os.Getenv("REEARTH_CMS_TOKEN"),
-		ProjectID:   "",
+		ProjectID:   os.Getenv("REEARTH_CMS_PROJECT"),
 		CityItemID:  "",
 		SkipCityGML: true,
 		SkipPlateau: true,
@@ -24,11 +24,11 @@ func TestCommandSingle(t *testing.T) {
 		Clean:       true,
 	}
 
-	if conf.ProjectID == "" || conf.CityItemID == "" {
-		t.Skip("ProjectID or CityItemID is empty")
+	if conf.CMSURL == "" || conf.CMSToken == "" || conf.ProjectID == "" || conf.CityItemID == "" {
+		t.Skip("CMS URL, CMS Token, ProjectID, or CityItemID is empty")
 	}
 
-	if err := CommandSingle(&conf); err != nil {
+	if err := Command(&conf); err != nil {
 		t.Fatal(err)
 	}
 }
