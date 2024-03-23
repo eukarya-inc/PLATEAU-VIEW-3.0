@@ -135,6 +135,10 @@ func mockCMS(t *testing.T) {
 		httpmock.NewJsonResponderOrPanic(200, empty),
 	)
 	httpmock.RegisterResponder(
+		"GET", "https://example.com/api/projects/prj/models/plateau-sample/items",
+		httpmock.NewJsonResponderOrPanic(200, empty),
+	)
+	httpmock.RegisterResponder(
 		"GET", "https://example.com/api/projects/prj/models/plateau-geospatialjp-data/items",
 		httpmock.NewJsonResponderOrPanic(200, empty),
 	)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogcommon"
@@ -15,6 +16,7 @@ const modelPrefix = "plateau-"
 const cityModel = "city"
 const relatedModel = "related"
 const genericModel = "generic"
+const sampleModel = "sample"
 const geospatialjpDataModel = "geospatialjp-data"
 const defaultSpec = "第3.2版"
 
@@ -154,7 +156,12 @@ type PlateauFeatureItem struct {
 	Dic     string                    `json:"dic,omitempty" cms:"dic,textarea"`
 	MaxLOD  string                    `json:"maxlod,omitempty" cms:"maxlod,-"`
 	// metadata
-	Sample bool `json:"sample,omitempty" cms:"sample,bool,metadata"`
+	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
+	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+}
+
+func (c *PlateauFeatureItem) IsBeta() bool {
+	return c.Status != nil && c.Status.Name == string(ManagementStatusReady)
 }
 
 func (c PlateauFeatureItem) ReadDic() (d Dic, _ error) {
@@ -289,10 +296,13 @@ type GenericItem struct {
 	Items       []GenericItemDataset `json:"items,omitempty" cms:"items,group"`
 	OpenDataURL string               `json:"open_data_url,omitempty" cms:"open_data_url,url"`
 	Category    string               `json:"category,omitempty" cms:"category,select"`
+	// sample
+	CityGML     string `json:"citygml,omitempty" cms:"citygml,asset"`
+	FeatureType string `json:"feature_type,omitempty" cms:"-"`
+	MaxLODURL   string `json:"maxlodUrl,omitempty" cms:"-"`
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
-	UseAR  bool     `json:"use-ar,omitempty" cms:"use-ar,bool,metadata"`
 }
 
 func (c *GenericItem) Stage() stage {
@@ -303,6 +313,16 @@ func (c *GenericItem) Stage() stage {
 		return stageBeta
 	}
 	return stageAlpha
+}
+
+func (c *GenericItem) IsPublic() bool {
+	stage := c.Stage()
+	return stage == stageGA
+}
+
+func (c *GenericItem) IsPublicOrBeta() bool {
+	stage := c.Stage()
+	return stage == stageGA || stage == stageBeta
 }
 
 type GenericItemDataset struct {
@@ -321,6 +341,19 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURL(item.FieldByKeyAndGroup("data", d.ID).GetValue())
+	}
+
+	i.MaxLODURL = valueToAssetURL(item.FieldByKey("maxlod").GetValue())
+
+	// e.g. "建築物モデル（bldg）" -> Name="建築物モデル", FeatureType="bldg"
+	ft := lo.FromPtr(item.FieldByKey("feature_type").GetValue().String())
+	if strings.Contains(ft, "（") && strings.Contains(ft, "）") {
+		name, s, _ := strings.Cut(ft, "（")
+		s, _, _ = strings.Cut(s, "）")
+		i.FeatureType = s
+		if i.Name == "" {
+			i.Name = name
+		}
 	}
 
 	return

@@ -10,6 +10,7 @@ type AllData struct {
 	City                  []*CityItem
 	Related               []*RelatedItem
 	Generic               []*GenericItem
+	Sample                []*GenericItem
 	Plateau               map[string][]*PlateauFeatureItem
 	GeospatialjpDataItems []*GeospatialjpDataItem
 	CMSInfo               CMSInfo
