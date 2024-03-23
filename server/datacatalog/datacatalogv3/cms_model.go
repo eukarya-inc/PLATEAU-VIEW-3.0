@@ -430,10 +430,11 @@ func geospatialjpURL(cityCode string, cityName string, year int) string {
 }
 
 type GeospatialjpDataItem struct {
-	ID      string `json:"id,omitempty" cms:"id"`
-	City    string `json:"city,omitempty" cms:"city,reference"`
-	CityGML string `json:"citygml,omitempty" cms:"citygml,asset"`
-	MaxLOD  string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	ID       string `json:"id,omitempty" cms:"id"`
+	City     string `json:"city,omitempty" cms:"city,reference"`
+	CityGML  string `json:"citygml,omitempty" cms:"citygml,asset"`
+	MaxLOD   string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	HasIndex bool   `json:"has_index,omitempty" cms:"-"`
 }
 
 func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
@@ -442,6 +443,7 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		City    string `json:"city,omitempty" cms:"city,reference"`
 		CityGML any    `json:"citygml,omitempty" cms:"citygml,asset"`
 		MaxLOD  any    `json:"maxlod,omitempty" cms:"maxlod,asset"`
+		Index   string `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 	}
 
 	it := itemType{}
@@ -451,9 +453,10 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 	maxlod := anyToAssetURL(it.MaxLOD)
 
 	return &GeospatialjpDataItem{
-		ID:      it.ID,
-		City:    it.City,
-		CityGML: citygml,
-		MaxLOD:  maxlod,
+		ID:       it.ID,
+		City:     it.City,
+		CityGML:  citygml,
+		MaxLOD:   maxlod,
+		HasIndex: it.Index != "",
 	}
 }

@@ -34,6 +34,15 @@ func (all *AllData) FeatureTypesOf(cityID string) (res []string) {
 	return res
 }
 
+func (d *AllData) FindGspatialjpDataItemByCityID(cityID string) *GeospatialjpDataItem {
+	for _, i := range d.GeospatialjpDataItems {
+		if i != nil && i.City == cityID {
+			return i
+		}
+	}
+	return nil
+}
+
 type FeatureTypes struct {
 	Plateau []FeatureType
 	Related []FeatureType

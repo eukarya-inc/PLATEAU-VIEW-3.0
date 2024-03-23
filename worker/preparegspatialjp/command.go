@@ -47,7 +47,7 @@ func CommandSingle(conf *Config) (err error) {
 		return fmt.Errorf("failed to initialize CMS client: %w", err)
 	}
 
-	// get items fron CNS
+	// get items fron CMS
 	log.Infofc(ctx, "getting item from CMS...")
 
 	cityItemRaw, err := cms.GetItem(ctx, conf.CityItemID, true)
@@ -61,19 +61,6 @@ func CommandSingle(conf *Config) (err error) {
 
 	if cityItem == nil || cityItem.CityCode == "" || cityItem.CityName == "" || cityItem.CityNameEn == "" || cityItem.GeospatialjpData == "" {
 		return fmt.Errorf("invalid city item: %s", conf.CityItemID)
-	}
-
-	if cityItem.YearInt() == 0 {
-		return fmt.Errorf("invalid year: %s", cityItem.Year)
-	}
-
-	if cityItem.SpecVersionMajorInt() == 0 {
-		return fmt.Errorf("invalid spec version: %s", cityItem.Spec)
-	}
-
-	uc := GetUpdateCount(cityItem.CodeLists)
-	if uc == 0 {
-		return fmt.Errorf("invalid update count: %s", cityItem.CodeLists)
 	}
 
 	indexItemRaw, err := cms.GetItem(ctx, cityItem.GeospatialjpIndex, false)
@@ -118,6 +105,22 @@ func CommandSingle(conf *Config) (err error) {
 		SkipMaxLOD:  conf.SkipMaxLOD,
 		SkipIndex:   conf.SkipIndex,
 		WetRun:      conf.WetRun,
+	}
+
+	if cityItem.YearInt() == 0 {
+		cw.Commentf(ctx, "公開準備処理を開始できません。整備年度が不正です: %s", cityItem.Year)
+		return fmt.Errorf("invalid year: %s", cityItem.Year)
+	}
+
+	if cityItem.SpecVersionMajorInt() == 0 {
+		cw.Commentf(ctx, "公開準備処理を開始できません。仕様書バージョンが不正です: %s", cityItem.Spec)
+		return fmt.Errorf("invalid spec version: %s", cityItem.Spec)
+	}
+
+	uc := GetUpdateCount(cityItem.CodeLists)
+	if uc == 0 {
+		cw.Commentf(ctx, "公開準備処理を開始できません。codeListsのzipファイルの命名規則が不正のため版数を読み取れませんでした。もう一度ファイル名の命名規則を確認してください。_1_op_のような文字が必須です。: %s", cityItem.CodeLists)
+		return fmt.Errorf("invalid update count: %s", cityItem.CodeLists)
 	}
 
 	tmpDirName := fmt.Sprintf("%s-%d", time.Now().Format("20060102-150405"), rand.Intn(1000))
