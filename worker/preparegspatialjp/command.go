@@ -195,7 +195,7 @@ func CommandSingle(conf *Config) (err error) {
 		citygmlPath = res
 	}
 
-	if citygmlPath == "" || !conf.SkipIndex && gdataItem.CityGMLURL != "" {
+	if citygmlPath == "" && !conf.SkipIndex && gdataItem.CityGMLURL != "" {
 		// download zip
 		citygmlPath, err = downloadFileTo(ctx, gdataItem.CityGMLURL, tmpDir)
 		if err != nil {
@@ -213,7 +213,7 @@ func CommandSingle(conf *Config) (err error) {
 		plateauPath = res
 	}
 
-	if plateauPath == "" || !conf.SkipIndex && gdataItem.PlateauURL != "" {
+	if plateauPath == "" && !conf.SkipIndex && gdataItem.PlateauURL != "" {
 		// download zip
 		plateauPath, err = downloadFileTo(ctx, gdataItem.PlateauURL, tmpDir)
 		if err != nil {
