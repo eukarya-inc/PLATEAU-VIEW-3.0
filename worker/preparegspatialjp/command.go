@@ -239,6 +239,7 @@ func CommandSingle(conf *Config) (err error) {
 		log.Infofc(ctx, "skip index")
 	}
 
+	cw.Comment(ctx, "公開準備処理が完了しました。")
 	log.Infofc(ctx, "done")
 	return
 }
