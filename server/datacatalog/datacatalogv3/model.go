@@ -10,6 +10,7 @@ type AllData struct {
 	City                  []*CityItem
 	Related               []*RelatedItem
 	Generic               []*GenericItem
+	Sample                []*GenericItem
 	Plateau               map[string][]*PlateauFeatureItem
 	GeospatialjpDataItems []*GeospatialjpDataItem
 	CMSInfo               CMSInfo
@@ -32,6 +33,15 @@ func (all *AllData) FeatureTypesOf(cityID string) (res []string) {
 	}
 
 	return res
+}
+
+func (d *AllData) FindGspatialjpDataItemByCityID(cityID string) *GeospatialjpDataItem {
+	for _, i := range d.GeospatialjpDataItems {
+		if i != nil && i.City == cityID {
+			return i
+		}
+	}
+	return nil
 }
 
 type FeatureTypes struct {

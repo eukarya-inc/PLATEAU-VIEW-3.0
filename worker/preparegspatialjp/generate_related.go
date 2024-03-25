@@ -22,7 +22,7 @@ func PrepareRelated(ctx context.Context, cw *CMSWrapper, mc MergeContext) (res s
 	dir := mc.TmpDir
 
 	if cityItem.RelatedDataset == "" {
-		return "", nil
+		return "", fmt.Errorf("failed to get related dataset item for the city")
 	}
 
 	item, err := cw.GetItem(ctx, cityItem.RelatedDataset, true)
@@ -34,23 +34,16 @@ func PrepareRelated(ctx context.Context, cw *CMSWrapper, mc MergeContext) (res s
 		return "", nil
 	}
 
-	var mergedv any
-	if merged := item.FieldByKey("merged"); merged != nil {
-		mergedv = merged.Value
+	var id, url string
+	merged := item.FieldByKey("merged").GetValue()
+	if merged != nil {
+		id = merged.AssetID()
+		url = merged.AssetURL()
 	}
 
-	v2, ok := mergedv.(map[string]any)
-	if !ok {
-		return "", nil
-	}
-
-	id, ok := v2["id"].(string)
-	if !ok {
-		return "", nil
-	}
-
-	url, ok := v2["url"].(string)
-	if !ok {
+	if id == "" || url == "" {
+		// related is not found, but it's ok to continue
+		log.Infofc(ctx, "related dataset not found but it's ok to continue")
 		return "", nil
 	}
 

@@ -72,9 +72,10 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 		res.Datasets.Append(plateauapi.DatasetTypeCategoryRelated, datasets)
 	}
 
-	// generic
+	// generic and sample
 	{
-		datasets, w := convertGeneric(all.Generic, res.DatasetTypes[plateauapi.DatasetTypeCategoryGeneric], ic)
+		src := append(all.Generic, all.Sample...)
+		datasets, w := convertGeneric(src, res.DatasetTypes[plateauapi.DatasetTypeCategoryGeneric], ic)
 		warning = append(warning, w...)
 		res.Datasets.Append(plateauapi.DatasetTypeCategoryGeneric, datasets)
 	}

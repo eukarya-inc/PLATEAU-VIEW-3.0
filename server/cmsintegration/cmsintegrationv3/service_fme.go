@@ -20,6 +20,8 @@ import (
 
 var ppp *pp.PrettyPrinter
 
+const ftfield = "feature_type"
+
 func init() {
 	ppp = pp.New()
 	ppp.SetColoringEnabled(false)
@@ -36,6 +38,18 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	}
 
 	featureType := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
+	if featureType == sampleModel {
+		if ft := lo.FromPtr(w.ItemData.Item.FieldByKey(ftfield).GetValue().String()); ft != "" {
+			// extract content inside （）
+			if strings.Contains(ft, "（") && strings.Contains(ft, "）") {
+				ft = strings.Split(strings.Split(ft, "（")[1], "）")[0]
+			}
+
+			featureType = ft
+			log.Debugfc(ctx, "cmsintegrationv3: sample item: feature type is %s", featureType)
+		}
+	}
+
 	if !slices.Contains(featureTypes, featureType) {
 		log.Debugfc(ctx, "cmsintegrationv3: not feature item: %s", featureType)
 		return nil

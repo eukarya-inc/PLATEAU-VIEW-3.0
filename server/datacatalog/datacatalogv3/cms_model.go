@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogcommon"
@@ -15,6 +16,7 @@ const modelPrefix = "plateau-"
 const cityModel = "city"
 const relatedModel = "related"
 const genericModel = "generic"
+const sampleModel = "sample"
 const geospatialjpDataModel = "geospatialjp-data"
 const defaultSpec = "第3.2版"
 
@@ -152,9 +154,15 @@ type PlateauFeatureItem struct {
 	Desc    string                    `json:"desc,omitempty" cms:"desc,textarea"`
 	Items   []PlateauFeatureItemDatum `json:"items,omitempty" cms:"items,group"`
 	Dic     string                    `json:"dic,omitempty" cms:"dic,textarea"`
+	Group   string                    `json:"group,omitempty" cms:"group,text"`
 	MaxLOD  string                    `json:"maxlod,omitempty" cms:"maxlod,-"`
 	// metadata
-	Sample bool `json:"sample,omitempty" cms:"sample,bool,metadata"`
+	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
+	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+}
+
+func (c *PlateauFeatureItem) IsBeta() bool {
+	return c.Status != nil && c.Status.Name == string(ManagementStatusReady)
 }
 
 func (c PlateauFeatureItem) ReadDic() (d Dic, _ error) {
@@ -166,11 +174,12 @@ func (c PlateauFeatureItem) ReadDic() (d Dic, _ error) {
 }
 
 type PlateauFeatureItemDatum struct {
-	ID   string   `json:"id,omitempty" cms:"id"`
-	Data []string `json:"data,omitempty" cms:"data,-"`
-	Name string   `json:"name,omitempty" cms:"name,text"`
-	Desc string   `json:"desc,omitempty" cms:"desc,textarea"`
-	Key  string   `json:"key,omitempty" cms:"key,text"`
+	ID    string   `json:"id,omitempty" cms:"id"`
+	Data  []string `json:"data,omitempty" cms:"data,-"`
+	Name  string   `json:"name,omitempty" cms:"name,text"`
+	Desc  string   `json:"desc,omitempty" cms:"desc,textarea"`
+	Key   string   `json:"key,omitempty" cms:"key,text"`
+	Group string   `json:"group,omitempty" cms:"group,text"`
 	// Simple indicates that this item should not use subcode and subname
 	Simple bool `json:"simple,omitempty" cms:"-"`
 }
@@ -289,10 +298,13 @@ type GenericItem struct {
 	Items       []GenericItemDataset `json:"items,omitempty" cms:"items,group"`
 	OpenDataURL string               `json:"open_data_url,omitempty" cms:"open_data_url,url"`
 	Category    string               `json:"category,omitempty" cms:"category,select"`
+	// sample
+	CityGML     string `json:"citygml,omitempty" cms:"citygml,asset"`
+	FeatureType string `json:"feature_type,omitempty" cms:"-"`
+	MaxLODURL   string `json:"maxlodUrl,omitempty" cms:"-"`
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
-	UseAR  bool     `json:"use-ar,omitempty" cms:"use-ar,bool,metadata"`
 }
 
 func (c *GenericItem) Stage() stage {
@@ -303,6 +315,16 @@ func (c *GenericItem) Stage() stage {
 		return stageBeta
 	}
 	return stageAlpha
+}
+
+func (c *GenericItem) IsPublic() bool {
+	stage := c.Stage()
+	return stage == stageGA
+}
+
+func (c *GenericItem) IsPublicOrBeta() bool {
+	stage := c.Stage()
+	return stage == stageGA || stage == stageBeta
 }
 
 type GenericItemDataset struct {
@@ -321,6 +343,19 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURL(item.FieldByKeyAndGroup("data", d.ID).GetValue())
+	}
+
+	i.MaxLODURL = valueToAssetURL(item.FieldByKey("maxlod").GetValue())
+
+	// e.g. "建築物モデル（bldg）" -> Name="建築物モデル", FeatureType="bldg"
+	ft := lo.FromPtr(item.FieldByKey("feature_type").GetValue().String())
+	if strings.Contains(ft, "（") && strings.Contains(ft, "）") {
+		name, s, _ := strings.Cut(ft, "（")
+		s, _, _ = strings.Cut(s, "）")
+		i.FeatureType = s
+		if i.Name == "" {
+			i.Name = name
+		}
 	}
 
 	return
@@ -430,10 +465,11 @@ func geospatialjpURL(cityCode string, cityName string, year int) string {
 }
 
 type GeospatialjpDataItem struct {
-	ID      string `json:"id,omitempty" cms:"id"`
-	City    string `json:"city,omitempty" cms:"city,reference"`
-	CityGML string `json:"citygml,omitempty" cms:"citygml,asset"`
-	MaxLOD  string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	ID       string `json:"id,omitempty" cms:"id"`
+	City     string `json:"city,omitempty" cms:"city,reference"`
+	CityGML  string `json:"citygml,omitempty" cms:"citygml,asset"`
+	MaxLOD   string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	HasIndex bool   `json:"has_index,omitempty" cms:"-"`
 }
 
 func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
@@ -442,6 +478,7 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		City    string `json:"city,omitempty" cms:"city,reference"`
 		CityGML any    `json:"citygml,omitempty" cms:"citygml,asset"`
 		MaxLOD  any    `json:"maxlod,omitempty" cms:"maxlod,asset"`
+		Index   string `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 	}
 
 	it := itemType{}
@@ -451,9 +488,10 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 	maxlod := anyToAssetURL(it.MaxLOD)
 
 	return &GeospatialjpDataItem{
-		ID:      it.ID,
-		City:    it.City,
-		CityGML: citygml,
-		MaxLOD:  maxlod,
+		ID:       it.ID,
+		City:     it.City,
+		CityGML:  citygml,
+		MaxLOD:   maxlod,
+		HasIndex: it.Index != "",
 	}
 }

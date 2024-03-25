@@ -134,6 +134,7 @@ func seedToDataset(seed plateauDatasetSeed) (res *plateauapi.PlateauDataset, war
 		PlateauSpecMinorID: seed.Spec.ID,
 		River:              seed.River,
 		Admin:              seed.Admin,
+		Groups:             seed.Groups,
 		Items:              items,
 	}
 

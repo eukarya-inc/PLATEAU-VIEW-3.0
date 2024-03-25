@@ -356,17 +356,25 @@ func prefectureIDFrom(d datacatalogv2.DataCatalogItem) *plateauapi.ID {
 }
 
 func cityIDFrom(d datacatalogv2.DataCatalogItem) *plateauapi.ID {
-	if d.CityCode == "" {
+	cityCode := d.CityCode
+	if cityCode == "" {
+		cityCode = d.CityCodeAdmin
+	}
+	if cityCode == "" {
 		return nil
 	}
-	return lo.ToPtr(plateauapi.NewID(d.CityCode, plateauapi.TypeCity))
+	return lo.ToPtr(plateauapi.NewID(cityCode, plateauapi.TypeCity))
 }
 
 func wardIDFrom(d datacatalogv2.DataCatalogItem) *plateauapi.ID {
-	if d.WardCode == "" {
+	wardCode := d.WardCode
+	if wardCode == "" {
+		wardCode = d.WardCodeAdmin
+	}
+	if wardCode == "" {
 		return nil
 	}
-	return lo.ToPtr(plateauapi.NewID(d.WardCode, plateauapi.TypeWard))
+	return lo.ToPtr(plateauapi.NewID(wardCode, plateauapi.TypeWard))
 }
 
 func prefectureCodeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.AreaCode {
@@ -377,17 +385,25 @@ func prefectureCodeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.AreaCode {
 }
 
 func cityCodeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.AreaCode {
-	if d.CityCode == "" {
+	cityCode := d.CityCode
+	if cityCode == "" {
+		cityCode = d.CityCodeAdmin
+	}
+	if cityCode == "" {
 		return nil
 	}
 	return lo.ToPtr(plateauapi.AreaCode(d.CityCode))
 }
 
 func wardCodeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.AreaCode {
-	if d.WardCode == "" {
+	wardCode := d.WardCode
+	if wardCode == "" {
+		wardCode = d.WardCodeAdmin
+	}
+	if wardCode == "" {
 		return nil
 	}
-	return lo.ToPtr(plateauapi.AreaCode(d.WardCode))
+	return lo.ToPtr(plateauapi.AreaCode(wardCode))
 }
 
 func datasetIDFrom(d datacatalogv2.DataCatalogItem) plateauapi.ID {
