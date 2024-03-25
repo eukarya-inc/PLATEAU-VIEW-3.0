@@ -25,10 +25,19 @@ func tagFrom(t fmt.Stringer) *cms.Tag {
 	}
 }
 
-func getBracketContent(s string) string {
+func getLastBracketContent(s string) string {
 	if strings.Contains(s, "（") && strings.Contains(s, "）") {
-		return strings.Split(strings.Split(s, "（")[1], "）")[0]
+		_, s := cutStringRight(s, "（")
+		s, _, _ = strings.Cut(s, "）")
+		return s
 	}
 
 	return ""
+}
+
+func cutStringRight(s string, sep string) (string, string) {
+	if i := strings.LastIndex(s, sep); i >= 0 {
+		return s[:i], s[i+len(sep):]
+	}
+	return s, ""
 }

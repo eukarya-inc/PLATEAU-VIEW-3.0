@@ -44,7 +44,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 
 	featureType := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
 	if featureType == sampleModel && item.FeatureType != "" {
-		if ft := getBracketContent(item.FeatureType); ft != "" {
+		if ft := getLastBracketContent(item.FeatureType); ft != "" {
 			featureType = ft
 			log.Debugfc(ctx, "cmsintegrationv3: sample item: feature type is %s", ft)
 		}

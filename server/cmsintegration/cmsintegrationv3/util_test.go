@@ -7,6 +7,6 @@ import (
 )
 
 func TestGetBracketContent(t *testing.T) {
-	assert.Equal(t, "", getBracketContent("トンネルモデル"))
-	assert.Equal(t, "tun", getBracketContent("トンネルモデル（tun）"))
+	assert.Equal(t, "", getLastBracketContent("トンネルモデル"))
+	assert.Equal(t, "tran", getLastBracketContent("交通（道路）モデル（tran）"))
 }
