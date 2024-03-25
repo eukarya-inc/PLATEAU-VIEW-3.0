@@ -4,6 +4,7 @@ import { useCallback, useId, useMemo, useState, type FC, type MouseEvent } from 
 import invariant from "tiny-invariant";
 
 import { useAreaDatasets, useDatasetTypes } from "../../../shared/graphql";
+import { CITY_CODES_FOR_BUILDING_MODEL } from "../../../shared/plateau";
 import { Area } from "../../../shared/states/address";
 import { isNotNullish } from "../../type-helpers";
 import { AppBreadcrumbsItem, ContextBar, OverlayPopper } from "../../ui-components";
@@ -36,7 +37,9 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
         datasets.filter(d =>
           !d.cityCode
             ? d.prefectureCode === area.code
-            : !d.wardCode
+            : !d.wardCode ||
+              (d.type.code === PlateauDatasetType.Building &&
+                CITY_CODES_FOR_BUILDING_MODEL.includes(d.cityCode))
             ? d.cityCode === area.code
             : d.wardCode === area.code,
         ),
