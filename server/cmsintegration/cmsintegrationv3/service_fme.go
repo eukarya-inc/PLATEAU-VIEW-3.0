@@ -20,8 +20,6 @@ import (
 
 var ppp *pp.PrettyPrinter
 
-const ftfield = "feature_type"
-
 func init() {
 	ppp = pp.New()
 	ppp.SetColoringEnabled(false)
@@ -37,16 +35,18 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return nil
 	}
 
-	featureType := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
-	if featureType == sampleModel {
-		if ft := lo.FromPtr(w.ItemData.Item.FieldByKey(ftfield).GetValue().String()); ft != "" {
-			// extract content inside （）
-			if strings.Contains(ft, "（") && strings.Contains(ft, "）") {
-				ft = strings.Split(strings.Split(ft, "（")[1], "）")[0]
-			}
+	mainItem, err := s.GetMainItemWithMetadata(ctx, w.ItemData.Item)
+	if err != nil {
+		return err
+	}
 
+	item := FeatureItemFrom(mainItem)
+
+	featureType := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
+	if featureType == sampleModel && item.FeatureType != "" {
+		if ft := getBracketContent(item.FeatureType); ft != "" {
 			featureType = ft
-			log.Debugfc(ctx, "cmsintegrationv3: sample item: feature type is %s", featureType)
+			log.Debugfc(ctx, "cmsintegrationv3: sample item: feature type is %s", ft)
 		}
 	}
 
@@ -54,13 +54,6 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		log.Debugfc(ctx, "cmsintegrationv3: not feature item: %s", featureType)
 		return nil
 	}
-
-	mainItem, err := s.GetMainItemWithMetadata(ctx, w.ItemData.Item)
-	if err != nil {
-		return err
-	}
-
-	item := FeatureItemFrom(mainItem)
 
 	skipQC, skipConv := isQCAndConvSkipped(item, featureType)
 	if skipQC && skipConv {

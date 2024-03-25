@@ -2,6 +2,7 @@ package cmsintegrationv3
 
 import (
 	"fmt"
+	"strings"
 
 	cms "github.com/reearth/reearth-cms-api/go"
 )
@@ -22,4 +23,12 @@ func tagFrom(t fmt.Stringer) *cms.Tag {
 	return &cms.Tag{
 		Name: s,
 	}
+}
+
+func getBracketContent(s string) string {
+	if strings.Contains(s, "（") && strings.Contains(s, "）") {
+		return strings.Split(strings.Split(s, "（")[1], "）")[0]
+	}
+
+	return ""
 }
