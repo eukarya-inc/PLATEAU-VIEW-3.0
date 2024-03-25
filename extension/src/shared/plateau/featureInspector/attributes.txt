@@ -173,10 +173,10 @@ bldg:Building_bldg:consistsOfBuildingPart,{"description":"建物部品"}
 bldg:Building_bldg:address,{"description":"住所"}
 bldg:Building_uro:buildingIDAttribute,{"description":"建物識別情報"}
 bldg:Building_uro:BuildingIDAttribute,{"description":"建物識別情報"}
-bldg:Building_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID"}
-bldg:Building_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID"}
-bldg:Building_uro:buildingIDAttribute,{"description":"建物ID枝番"}
-bldg:Building_uro:BuildingIDAttribute,{"description":"建物ID枝番"}
+bldg:Building_uro:buildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:Building_uro:BuildingIDAttribute_uro:buildingID,{"description":"建物ID"}
+bldg:Building_uro:buildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
+bldg:Building_uro:BuildingIDAttribute_uro:branchID,{"description":"建物ID枝番"}
 bldg:Building_uro:buildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
 bldg:Building_uro:BuildingIDAttribute_uro:partID,{"description":"建築物部分ID"}
 bldg:Building_uro:buildingIDAttribute_uro:prefecture,{"description":"都道府県"}
