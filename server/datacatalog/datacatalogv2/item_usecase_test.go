@@ -9,12 +9,12 @@ import (
 
 func TestUsecaseItem_DataCatalogs(t *testing.T) {
 	assert.Equal(t, []DataCatalogItem{{
-		ID:       "id",
-		Type:     "ユースケース",
-		TypeEn:   "usecase",
-		URL:      "url",
-		City:     "city",
-		Ward:     "ward",
+		ID:     "id",
+		Type:   "ユースケース",
+		TypeEn: "usecase",
+		URL:    "url",
+		// City:     "city",
+		// Ward:     "ward",
 		Year:     2023,
 		RootType: true,
 		Category: "aaa",
@@ -35,10 +35,10 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 	}.DataCatalogs())
 
 	assert.Equal(t, []DataCatalogItem{{
-		ID:       "id",
-		Type:     "あああ",
-		TypeEn:   "あああ",
-		City:     "city",
+		ID:     "id",
+		Type:   "あああ",
+		TypeEn: "あああ",
+		// City:     "city",
 		RootType: true,
 		Category: "ユースケース",
 		Family:   "generic",
@@ -50,10 +50,10 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 	}.DataCatalogs())
 
 	assert.Equal(t, []DataCatalogItem{{
-		ID:       "id",
-		Type:     "あああ",
-		TypeEn:   "aaa",
-		City:     "city",
+		ID:     "id",
+		Type:   "あああ",
+		TypeEn: "aaa",
+		// City:     "city",
 		RootType: true,
 		Category: "cat",
 		Family:   "generic",
@@ -73,12 +73,12 @@ func TestUsecaseItem_DataCatalogs(t *testing.T) {
 		Name:     "name",
 		Pref:     "大阪府",
 		PrefCode: "27",
-		City:     "大阪市",
-		CityCode: "27100",
-		Ward:     "北区",
-		WardCode: "27127",
-		Family:   "generic",
-		Edition:  "2022",
+		// City:     "大阪市",
+		// CityCode: "27100",
+		// Ward:     "北区",
+		// WardCode: "27127",
+		Family:  "generic",
+		Edition: "2022",
 	}}, UsecaseItem{
 		ID:         "id",
 		Name:       "name",

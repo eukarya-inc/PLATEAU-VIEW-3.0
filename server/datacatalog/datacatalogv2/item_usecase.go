@@ -43,32 +43,32 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 	pref, prefCodeInt := normalizePref(i.Prefecture)
 	prefCode := jpareacode.FormatPrefectureCode(prefCodeInt)
 
-	var city, ward string
-	if i.WardName != "" {
-		city = i.CityName
-		ward = i.WardName
-	} else {
-		city, ward, _ = strings.Cut(i.CityName, "/")
-	}
+	// var city, ward string
+	// if i.WardName != "" {
+	// 	city = i.CityName
+	// 	ward = i.WardName
+	// } else {
+	// 	city, ward, _ = strings.Cut(i.CityName, "/")
+	// }
 
-	cCode := datacatalogutil.CityCode("", city, "", prefCodeInt)
-	var wCode string
-	if ward != "" {
-		wCode = datacatalogutil.CityCode("", city, ward, prefCodeInt)
-	}
+	// cCode := datacatalogutil.CityCode("", city, "", prefCodeInt)
+	// var wCode string
+	// if ward != "" {
+	// 	wCode = datacatalogutil.CityCode("", city, ward, prefCodeInt)
+	// }
 
 	if i.DataFormat == folder {
 		return []DataCatalogItem{{
-			ID:          i.ID,
-			Name:        i.Name,
-			Type:        folder,
-			TypeEn:      folderEn,
-			Pref:        pref,
-			PrefCode:    prefCode,
-			City:        city,
-			CityCode:    cCode,
-			Ward:        ward,
-			WardCode:    wCode,
+			ID:       i.ID,
+			Name:     i.Name,
+			Type:     folder,
+			TypeEn:   folderEn,
+			Pref:     pref,
+			PrefCode: prefCode,
+			// City:        city,
+			// CityCode:    cCode,
+			// Ward:        ward,
+			// WardCode:    wCode,
 			Description: i.Description,
 			Family:      "generic",
 			Edition:     "2022",
@@ -108,16 +108,16 @@ func (i UsecaseItem) DataCatalogs() []DataCatalogItem {
 	}
 
 	return []DataCatalogItem{{
-		ID:          i.ID,
-		Name:        i.Name,
-		Type:        ty,
-		TypeEn:      tyen,
-		Pref:        pref,
-		PrefCode:    prefCode,
-		City:        city,
-		CityCode:    cCode,
-		Ward:        ward,
-		WardCode:    wCode,
+		ID:       i.ID,
+		Name:     i.Name,
+		Type:     ty,
+		TypeEn:   tyen,
+		Pref:     pref,
+		PrefCode: prefCode,
+		// City:        city,
+		// CityCode:    cCode,
+		// Ward:        ward,
+		// WardCode:    wCode,
 		Format:      f,
 		URL:         datacatalogutil.AssetURLFromFormat(u, f),
 		Description: i.Description,
