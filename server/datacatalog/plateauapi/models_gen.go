@@ -275,6 +275,8 @@ type DatasetsInput struct {
 	// デフォルトはfalseで、指定された地域に間接的に属するデータセットも全て検索します。
 	// 例えば、札幌市を対象にした場合、札幌市には中央区や北区といった区のデータセットも存在しますが、trueにすると札幌市のデータセットのみを返します。
 	Shallow *bool `json:"shallow,omitempty"`
+	// 特殊なグループを持つデータセットのみを検索対象にするかどうか。デフォルトはfalseです。
+	GroupedOnly *bool `json:"groupedOnly,omitempty"`
 }
 
 // ユースケースデータなどを含む、その他のデータセット。

@@ -116,6 +116,10 @@ func filterDataset(d Dataset, input DatasetsInput, stages []string) bool {
 		}
 	}
 
+	if lo.FromPtr(input.GroupedOnly) && len(d.GetGroups()) == 0 {
+		return false
+	}
+
 	return true
 }
 

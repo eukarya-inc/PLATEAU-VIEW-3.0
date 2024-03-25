@@ -41,7 +41,13 @@ func TestFilterDataset(t *testing.T) {
 			TypeCode: "emergency_route",
 		}, DatasetsInput{
 			IncludeTypes: []string{"emergency_route"},
-		}, []string{"beta"}))
+		}, nil))
+	})
+
+	t.Run("groupedOnly", func(t *testing.T) {
+		assert.False(t, filterDataset(PlateauDataset{}, DatasetsInput{
+			GroupedOnly: lo.ToPtr(true),
+		}, nil))
 	})
 }
 
