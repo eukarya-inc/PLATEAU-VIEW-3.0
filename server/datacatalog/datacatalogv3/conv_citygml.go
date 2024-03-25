@@ -73,7 +73,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 	}
 
 	for _, d := range all.Sample {
-		if d.MaxLODURL == "" || d.CityGML == "" {
+		if d.MaxLOD == "" || d.CityGML == "" {
 			continue
 		}
 
@@ -87,12 +87,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			continue
 		}
 
-		stage, _ := citygml.Admin.(map[string]any)["stage"].(string)
-		if stage == string(stageGA) && !d.IsPublic() || stage == string(stageBeta) && !d.IsPublicOrBeta() {
-			continue
-		}
-
-		addCityGML(d.CityGML, d.MaxLODURL, d.FeatureType, citygml)
+		addCityGML(d.CityGML, d.MaxLOD, d.FeatureType, citygml)
 	}
 
 	return res, nil

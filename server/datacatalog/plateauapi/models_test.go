@@ -398,7 +398,7 @@ func TestPlateauDatasetToGenericDataset(t *testing.T) {
 	}
 
 	expected := &GenericDataset{
-		ID:       "d_1_",
+		ID:       "d_1_sample",
 		Admin:    map[string]any{"sample": true},
 		TypeID:   "dt_sample",
 		TypeCode: "sample",
@@ -409,12 +409,12 @@ func TestPlateauDatasetToGenericDataset(t *testing.T) {
 				Name:     "LOD1",
 				URL:      "hoge",
 				Layers:   []string{"layer"},
-				ParentID: "d_1_",
+				ParentID: "d_1_sample",
 			},
 		},
 	}
 
-	actual := PlateauDatasetToGenericDataset(d, "dt_sample", "sample", "d_1_")
+	actual := PlateauDatasetToGenericDataset(d, "dt_sample", "sample", "sample")
 
 	assert.Equal(t, expected, actual)
 }

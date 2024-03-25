@@ -144,6 +144,15 @@ func (d DatasetTypes) All() []DatasetType {
 	})
 }
 
+func (d DatasetTypes) CodeMap(cat DatasetTypeCategory) map[string]DatasetType {
+	res := make(map[string]DatasetType)
+	for _, ds := range d[cat] {
+		ds := ds
+		res[ds.GetCode()] = ds
+	}
+	return res
+}
+
 func (d DatasetTypes) DatasetTypesByCategory(cat DatasetTypeCategory) []DatasetType {
 	if cat == "" {
 		return d.All()
@@ -275,9 +284,26 @@ func getVagueID(n any) string {
 	return ""
 }
 
-func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode string, newID ID) *GenericDataset {
-	if newID == "" {
-		newID = p.ID
+func ToDatasets[T Dataset](p []T) []Dataset {
+	res := make([]Dataset, 0, len(p))
+	for _, ds := range p {
+		res = append(res, ds)
+	}
+	return res
+}
+
+func PlateauDatasetsToGenericDatasets(p []*PlateauDataset, typeID ID, typeCode, idSuffix string) []*GenericDataset {
+	res := make([]*GenericDataset, 0, len(p))
+	for _, ds := range p {
+		res = append(res, PlateauDatasetToGenericDataset(ds, typeID, typeCode, idSuffix))
+	}
+	return res
+}
+
+func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode string, idSuffix string) *GenericDataset {
+	newID := p.ID
+	if idSuffix != "" {
+		newID = ID(string(p.ID) + "_" + idSuffix)
 	}
 
 	items := make([]*GenericDatasetItem, 0, len(p.Items))

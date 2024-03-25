@@ -51,7 +51,7 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 		return c.GetGenericItems(ctx, project)
 	})
 
-	sampleItemsChan := lo.Async2(func() ([]*GenericItem, error) {
+	sampleItemsChan := lo.Async2(func() ([]*PlateauFeatureItem, error) {
 		return c.GetSampleItems(ctx, project)
 	})
 
@@ -104,7 +104,13 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 		if res := <-featureItemsChan; res.C != nil {
 			return nil, fmt.Errorf("failed to get feature items (%s): %w", res.A, res.C)
 		} else {
-			all.Plateau[res.A] = append(all.Plateau[res.A], res.B...)
+			for _, d := range res.B {
+				if d.Sample {
+					all.Sample = append(all.Sample, d)
+				} else {
+					all.Plateau[res.A] = append(all.Plateau[res.A], d)
+				}
+			}
 		}
 	}
 
@@ -147,7 +153,7 @@ func (c *CMS) GetPlateauItems(ctx context.Context, project, feature string) ([]*
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+feature,
 		func(i cms.Item) *PlateauFeatureItem {
-			return PlateauFeatureItemFrom(&i)
+			return PlateauFeatureItemFrom(&i, feature)
 		},
 	)
 	return items, err
@@ -180,17 +186,13 @@ func (c *CMS) GetGenericItems(ctx context.Context, project string) ([]*GenericIt
 	return items, err
 }
 
-func (c *CMS) GetSampleItems(ctx context.Context, project string) ([]*GenericItem, error) {
+func (c *CMS) GetSampleItems(ctx context.Context, project string) ([]*PlateauFeatureItem, error) {
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+sampleModel,
-		func(i cms.Item) *GenericItem {
-			return GenericItemFrom(&i)
+		func(i cms.Item) *PlateauFeatureItem {
+			return PlateauFeatureItemFrom(&i, "")
 		},
 	)
-
-	for _, item := range items {
-		item.Category = "サンプルデータ"
-	}
 
 	return items, err
 }

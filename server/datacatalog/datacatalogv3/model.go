@@ -10,7 +10,7 @@ type AllData struct {
 	City                  []*CityItem
 	Related               []*RelatedItem
 	Generic               []*GenericItem
-	Sample                []*GenericItem
+	Sample                []*PlateauFeatureItem
 	Plateau               map[string][]*PlateauFeatureItem
 	GeospatialjpDataItems []*GeospatialjpDataItem
 	CMSInfo               CMSInfo
@@ -48,6 +48,15 @@ type FeatureTypes struct {
 	Plateau []FeatureType
 	Related []FeatureType
 	Generic []FeatureType
+}
+
+func (ft FeatureTypes) PlateauMap() map[string]*FeatureType {
+	res := make(map[string]*FeatureType)
+	for _, f := range ft.Plateau {
+		f := f
+		res[f.Code] = &f
+	}
+	return res
 }
 
 func (ft FeatureTypes) FindPlateauByCode(code string) *FeatureType {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
-	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogcommon"
@@ -147,15 +146,16 @@ func (i *CityItem) IsPublicOrBeta() bool {
 }
 
 type PlateauFeatureItem struct {
-	ID      string                    `json:"id,omitempty" cms:"id"`
-	City    string                    `json:"city,omitempty" cms:"city,reference"`
-	CityGML string                    `json:"citygml,omitempty" cms:"citygml,-"`
-	Data    []string                  `json:"data,omitempty" cms:"data,-"`
-	Desc    string                    `json:"desc,omitempty" cms:"desc,textarea"`
-	Items   []PlateauFeatureItemDatum `json:"items,omitempty" cms:"items,group"`
-	Dic     string                    `json:"dic,omitempty" cms:"dic,textarea"`
-	Group   string                    `json:"group,omitempty" cms:"group,text"`
-	MaxLOD  string                    `json:"maxlod,omitempty" cms:"maxlod,-"`
+	ID          string                    `json:"id,omitempty" cms:"id"`
+	City        string                    `json:"city,omitempty" cms:"city,reference"`
+	CityGML     string                    `json:"citygml,omitempty" cms:"citygml,-"`
+	Data        []string                  `json:"data,omitempty" cms:"data,-"`
+	Desc        string                    `json:"desc,omitempty" cms:"desc,textarea"`
+	Items       []PlateauFeatureItemDatum `json:"items,omitempty" cms:"items,group"`
+	Dic         string                    `json:"dic,omitempty" cms:"dic,textarea"`
+	Group       string                    `json:"group,omitempty" cms:"group,text"`
+	MaxLOD      string                    `json:"maxlod,omitempty" cms:"maxlod,-"`
+	FeatureType string                    `json:"feature_type,omitempty" cms:"feature_type,select"`
 	// metadata
 	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
@@ -241,7 +241,7 @@ type DicEntry struct {
 	Order             *int            `json:"order"`
 }
 
-func PlateauFeatureItemFrom(item *cms.Item) (i *PlateauFeatureItem) {
+func PlateauFeatureItemFrom(item *cms.Item, code string) (i *PlateauFeatureItem) {
 	i = &PlateauFeatureItem{}
 	item.Unmarshal(i)
 
@@ -250,6 +250,14 @@ func PlateauFeatureItemFrom(item *cms.Item) (i *PlateauFeatureItem) {
 	i.MaxLOD = valueToAssetURL(item.FieldByKey("maxlod").GetValue())
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURLs(item.FieldByKeyAndGroup("data", d.ID).GetValue())
+	}
+	if i.FeatureType != "" {
+		// e.g. "建築物モデル（bldg）" -> Name="建築物モデル", FeatureType="bldg"
+		if _, ft := getLastBracketContent(i.FeatureType); ft != "" {
+			i.FeatureType = ft
+		}
+	} else {
+		i.FeatureType = code
 	}
 
 	return
@@ -298,10 +306,6 @@ type GenericItem struct {
 	Items       []GenericItemDataset `json:"items,omitempty" cms:"items,group"`
 	OpenDataURL string               `json:"open_data_url,omitempty" cms:"open_data_url,url"`
 	Category    string               `json:"category,omitempty" cms:"category,select"`
-	// sample
-	CityGML     string `json:"citygml,omitempty" cms:"citygml,asset"`
-	FeatureType string `json:"feature_type,omitempty" cms:"-"`
-	MaxLODURL   string `json:"maxlodUrl,omitempty" cms:"-"`
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
@@ -315,16 +319,6 @@ func (c *GenericItem) Stage() stage {
 		return stageBeta
 	}
 	return stageAlpha
-}
-
-func (c *GenericItem) IsPublic() bool {
-	stage := c.Stage()
-	return stage == stageGA
-}
-
-func (c *GenericItem) IsPublicOrBeta() bool {
-	stage := c.Stage()
-	return stage == stageGA || stage == stageBeta
 }
 
 type GenericItemDataset struct {
@@ -344,20 +338,6 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURL(item.FieldByKeyAndGroup("data", d.ID).GetValue())
 	}
-
-	i.MaxLODURL = valueToAssetURL(item.FieldByKey("maxlod").GetValue())
-
-	// e.g. "建築物モデル（bldg）" -> Name="建築物モデル", FeatureType="bldg"
-	ft := lo.FromPtr(item.FieldByKey("feature_type").GetValue().String())
-	if strings.Contains(ft, "（") && strings.Contains(ft, "）") {
-		name, s, _ := strings.Cut(ft, "（")
-		s, _, _ = strings.Cut(s, "）")
-		i.FeatureType = s
-		if i.Name == "" {
-			i.Name = name
-		}
-	}
-
 	return
 }
 
