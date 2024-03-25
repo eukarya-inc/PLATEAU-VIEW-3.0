@@ -18,9 +18,10 @@ export type FolderItem = {
 type DatasetFolderItemProps = {
   folderItem: FolderItem;
   level: number;
+  folderBy?: "name" | "group";
 };
 
-export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, level }) => {
+export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, level, folderBy }) => {
   const [infoOpen, setInfoOpen] = useState(false);
   const handleInfo = useCallback((event: MouseEvent) => {
     event.stopPropagation();
@@ -48,6 +49,7 @@ export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, leve
           folderId={folderItem.subFolderId}
           datasets={folderItem.datasets}
           level={level}
+          folderBy={folderBy}
         />
       </DatasetTreeItem>
       {!!folderItem.folderDataset?.description && (

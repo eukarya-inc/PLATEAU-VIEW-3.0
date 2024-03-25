@@ -5,6 +5,7 @@ export const MY_DATA_LAYER = "MY_DATA_LAYER";
 export const STORY_LAYER = "STORY_LAYER";
 
 // Dataset layers
+export const AREA_LAYER = "AREA_LAYER";
 export const BORDER_LAYER = "BORDER_LAYER";
 export const BRIDGE_LAYER = "BRIDGE_LAYER";
 export const BUILDING_LAYER = "BUILDING_LAYER";

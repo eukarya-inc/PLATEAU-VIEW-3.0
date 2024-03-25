@@ -1,4 +1,5 @@
 import {
+  AREA_LAYER,
   BORDER_LAYER,
   BRIDGE_LAYER,
   BUILDING_LAYER,
@@ -53,6 +54,7 @@ export interface LayerModelOverrides {
   [RIVER_FLOODING_RISK_LAYER]: FloodLayerModel; // RiverFloodingRiskLayerModel;
   [TSUNAMI_RISK_LAYER]: FloodLayerModel; // TsunamiRiskLayerModel
   // General
+  [AREA_LAYER]: GeneralLayerModel; // AreaLayerModel
   [BORDER_LAYER]: GeneralLayerModel; // BorderLayerModel
   [BRIDGE_LAYER]: GeneralLayerModel; // BridgeLayerModel;
   [CITY_FURNITURE_LAYER]: GeneralLayerModel; // CityFurnitureLayerModel

@@ -1,5 +1,6 @@
 import { type LayerType } from "../../layers";
 import {
+  AREA_LAYER,
   BORDER_LAYER,
   BRIDGE_LAYER,
   BUILDING_LAYER,
@@ -32,6 +33,7 @@ import {
 import { PlateauDatasetType } from "./plateau";
 
 export const datasetTypeLayers = {
+  [PlateauDatasetType.Area]: AREA_LAYER,
   [PlateauDatasetType.Border]: BORDER_LAYER,
   [PlateauDatasetType.Bridge]: BRIDGE_LAYER,
   [PlateauDatasetType.Building]: BUILDING_LAYER,
@@ -61,6 +63,7 @@ export const datasetTypeLayers = {
 } as const satisfies Record<PlateauDatasetType, LayerType | undefined>;
 
 export const layerDatasetTypes = {
+  [AREA_LAYER]: PlateauDatasetType.Area,
   [BORDER_LAYER]: PlateauDatasetType.Border,
   [BRIDGE_LAYER]: PlateauDatasetType.Bridge,
   [BUILDING_LAYER]: PlateauDatasetType.Building,

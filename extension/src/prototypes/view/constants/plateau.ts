@@ -1,4 +1,5 @@
 export enum PlateauDatasetType {
+  Area = "area",
   Border = "border",
   Bridge = "brid",
   Building = "bldg",

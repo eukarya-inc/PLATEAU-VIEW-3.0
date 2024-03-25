@@ -10,31 +10,41 @@ type DatasetFolderListProps = {
   folderId: string;
   datasets?: DatasetFragmentFragment[];
   level?: number;
+  folderBy?: "name" | "group";
 };
 
 export const DatasetFolderList: FC<DatasetFolderListProps> = ({
   folderId,
   datasets,
   level = 0,
+  folderBy,
 }) => {
   const folderList = useMemo(() => {
     const folders: FolderItem[] = [];
-    Object.entries(groupBy(datasets, d => d.name.split("/")[level])).forEach(([key, value]) => {
+    Object.entries(
+      groupBy(datasets, d =>
+        folderBy === "name" ? d.name.split("/")[level] : d.groups?.[level + 1],
+      ),
+    ).forEach(([key, value]) => {
       if (key !== "undefined") {
         folders.push({
           label: key,
           subFolderId: `${folderId}:${key}`,
-          datasets: value.sort((a, b) => a.type.order - b.type.order),
+          datasets: value,
           folderDataset:
-            value.find(v => v.name.split("/")[level + 1] === undefined && v.items.length === 0) ??
-            undefined,
+            value.find(
+              v =>
+                folderBy === "name" &&
+                v.name.split("/")[level + 1] === undefined &&
+                v.items.length === 0,
+            ) ?? undefined,
           isLastLevel: false,
         });
       } else {
-        value.forEach((v, index) => {
+        value.forEach(v => {
           if (v.items.length === 0) return;
           folders.push({
-            label: `${index}`,
+            label: folderBy === "name" ? v.name.split("/").pop() ?? v.name : v.name,
             subFolderId: `${folderId}:${v.id}}`,
             datasets: [v],
             isLastLevel: true,
@@ -43,16 +53,16 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
       }
     });
     return folders;
-  }, [folderId, datasets, level]);
+  }, [folderId, datasets, level, folderBy]);
 
   return (
     <>
       {Object.values(folderList).map(folder => {
-        if (
-          folder.datasets.length === 1 &&
-          folder.datasets[0].name.split("/").length <= level + 1
-        ) {
-          const label = folder.datasets[0].name.split("/").pop();
+        if (folder.isLastLevel) {
+          // const label =
+          //   folderBy === "name"
+          //     ? folder.datasets[0].name.split("/").pop()
+          //     : folder.datasets[0].name;
           return (
             <DatasetListItem
               key={folder.datasets[0].id}
@@ -62,13 +72,18 @@ export const DatasetFolderList: FC<DatasetFolderListProps> = ({
                 folder.datasets[0].prefectureCode
               }
               dataset={folder.datasets[0]}
-              label={label}
+              label={folder.label}
               title={folder.datasets[0].name}
             />
           );
         } else {
           return (
-            <DatasetFolderItem key={folder.subFolderId} folderItem={folder} level={level + 1} />
+            <DatasetFolderItem
+              key={folder.subFolderId}
+              folderItem={folder}
+              level={level + 1}
+              folderBy={folderBy}
+            />
           );
         }
       })}

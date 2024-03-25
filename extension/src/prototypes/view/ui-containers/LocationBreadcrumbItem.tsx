@@ -1,4 +1,4 @@
-import { groupBy, unionBy } from "lodash-es";
+import { unionBy } from "lodash-es";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, useMemo, useState, type FC, type MouseEvent } from "react";
 import invariant from "tiny-invariant";
@@ -9,6 +9,7 @@ import { isNotNullish } from "../../type-helpers";
 import { AppBreadcrumbsItem, ContextBar, OverlayPopper } from "../../ui-components";
 import { isGenericDatasetType } from "../constants/generic";
 import { PlateauDatasetType } from "../constants/plateau";
+import { getDatasetGroups } from "../utils/datasetGroups";
 
 import { BuildingDatasetButtonSelect } from "./BuildingDatasetButtonSelect";
 import { DefaultDatasetButton } from "./DefaultDatasetButton";
@@ -31,23 +32,42 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
     if (!datasets) {
       return;
     }
-    const groups = Object.entries(
-      groupBy(
-        datasets.filter(d =>
-          !d.cityCode
-            ? d.prefectureCode === area.code
-            : !d.wardCode
-            ? d.cityCode === area.code
-            : d.wardCode === area.code,
-        ),
-        d => d.type.name,
-      ),
+
+    const filteredDatasets = datasets.filter(d =>
+      !d.cityCode
+        ? d.prefectureCode === area.code
+        : !d.wardCode
+        ? d.cityCode === area.code
+        : d.wardCode === area.code,
     );
 
-    return filteredDatasetTypeOrder
-      ?.map(orderedType => groups.find(([type]) => type === orderedType.name))
-      .filter(isNotNullish)
-      .map(([, datasets]) => datasets);
+    const [standardTypeGroups, genericGroups, dataGroups] = getDatasetGroups(filteredDatasets);
+    // const groups = Object.entries(
+    //   groupBy(
+    //     datasets.filter(d =>
+    //       !d.cityCode
+    //         ? d.prefectureCode === area.code
+    //         : !d.wardCode
+    //         ? d.cityCode === area.code
+    //         : d.wardCode === area.code,
+    //     ),
+    //     d => d.type.name,
+    //   ),
+    // );
+
+    return [
+      ...((standardTypeGroups &&
+        filteredDatasetTypeOrder
+          ?.map(orderedType => standardTypeGroups.find(({ type }) => type === orderedType.name))
+          .filter(isNotNullish)) ??
+        []),
+      ...(dataGroups ?? []),
+      ...((genericGroups &&
+        filteredDatasetTypeOrder
+          ?.map(orderedType => genericGroups.find(({ type }) => type === orderedType.name))
+          .filter(isNotNullish)) ??
+        []),
+    ];
   }, [query.data, area.code, filteredDatasetTypeOrder]);
 
   const [expanded, setExpanded] = useState(true);
@@ -98,7 +118,10 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       {hasDatasets && (
         <OverlayPopper {...popoverProps} inset={1.5} onClose={handleClose}>
           <ContextBar expanded={expanded} onCollapse={handleCollapse} onExpand={handleExpand}>
-            {datasetGroups.map(datasets => {
+            {datasetGroups.map(({ isGrouped, type, datasets }) => {
+              if (isGrouped) {
+                return <>{type}</>;
+              }
               if (datasets.length > 1) {
                 return (
                   <DefaultDatasetSelect
