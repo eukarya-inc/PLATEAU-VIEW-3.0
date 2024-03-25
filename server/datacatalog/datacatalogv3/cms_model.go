@@ -154,6 +154,7 @@ type PlateauFeatureItem struct {
 	Desc    string                    `json:"desc,omitempty" cms:"desc,textarea"`
 	Items   []PlateauFeatureItemDatum `json:"items,omitempty" cms:"items,group"`
 	Dic     string                    `json:"dic,omitempty" cms:"dic,textarea"`
+	Group   string                    `json:"group,omitempty" cms:"group,text"`
 	MaxLOD  string                    `json:"maxlod,omitempty" cms:"maxlod,-"`
 	// metadata
 	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
@@ -173,11 +174,12 @@ func (c PlateauFeatureItem) ReadDic() (d Dic, _ error) {
 }
 
 type PlateauFeatureItemDatum struct {
-	ID   string   `json:"id,omitempty" cms:"id"`
-	Data []string `json:"data,omitempty" cms:"data,-"`
-	Name string   `json:"name,omitempty" cms:"name,text"`
-	Desc string   `json:"desc,omitempty" cms:"desc,textarea"`
-	Key  string   `json:"key,omitempty" cms:"key,text"`
+	ID    string   `json:"id,omitempty" cms:"id"`
+	Data  []string `json:"data,omitempty" cms:"data,-"`
+	Name  string   `json:"name,omitempty" cms:"name,text"`
+	Desc  string   `json:"desc,omitempty" cms:"desc,textarea"`
+	Key   string   `json:"key,omitempty" cms:"key,text"`
+	Group string   `json:"group,omitempty" cms:"group,text"`
 	// Simple indicates that this item should not use subcode and subname
 	Simple bool `json:"simple,omitempty" cms:"-"`
 }
