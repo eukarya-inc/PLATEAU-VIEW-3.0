@@ -19,6 +19,7 @@ const documents = {
     "\nquery Datasets($input: DatasetsInput!) {\n  datasets(input: $input) {\n    ...DatasetFragment\n  }\n}\n": types.DatasetsDocument,
     "\nquery DatasetById($id: ID!) {\n  node(id: $id) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n": types.DatasetByIdDocument,
     "\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n": types.DatasetsByIdsDocument,
+    "\nquery DatasetsGroups($input: DatasetsInput!) {\n  datasets(input: $input) {\n    groups,\n    type{\n      order\n    }\n  }\n}\n": types.DatasetsGroupsDocument,
     "\nquery DatasetTypes($input: DatasetTypesInput) {\n  datasetTypes(input: $input) {\n    id\n    name\n    code\n    order\n  }\n}\n": types.DatasetTypesDocument,
 };
 
@@ -60,6 +61,10 @@ export function gql(source: "\nquery DatasetById($id: ID!) {\n  node(id: $id) {\
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"): (typeof documents)["\nquery DatasetsByIds($ids: [ID!]!) {\n  nodes(ids: $ids) {\n    ... on Dataset {\n      ...DatasetFragment\n    }\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery DatasetsGroups($input: DatasetsInput!) {\n  datasets(input: $input) {\n    groups,\n    type{\n      order\n    }\n  }\n}\n"): (typeof documents)["\nquery DatasetsGroups($input: DatasetsInput!) {\n  datasets(input: $input) {\n    groups,\n    type{\n      order\n    }\n  }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

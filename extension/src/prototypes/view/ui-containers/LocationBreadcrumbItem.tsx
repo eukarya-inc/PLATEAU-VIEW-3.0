@@ -13,6 +13,7 @@ import { PlateauDatasetType } from "../constants/plateau";
 import { getDatasetGroups } from "../utils/datasetGroups";
 
 import { BuildingDatasetButtonSelect } from "./BuildingDatasetButtonSelect";
+import { DatasetTreeSelect } from "./DatasetTreeSelect";
 import { DefaultDatasetButton } from "./DefaultDatasetButton";
 import { DefaultDatasetSelect } from "./DefaultDatasetSelect";
 
@@ -34,40 +35,29 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       return;
     }
 
-    const filteredDatasets = datasets.filter(d =>
-      !d.cityCode
-        ? d.prefectureCode === area.code
-        : !d.wardCode ||
-          (d.type.code === PlateauDatasetType.Building &&
-            CITY_CODES_FOR_BUILDING_MODEL.includes(d.cityCode))
-        ? d.cityCode === area.code
-        : d.wardCode === area.code,
-    );
-
-    const [standardTypeGroups, genericGroups, dataGroups] = getDatasetGroups(filteredDatasets);
-    // const groups = Object.entries(
-    //   groupBy(
-    //     datasets.filter(d =>
-    //       !d.cityCode
-    //         ? d.prefectureCode === area.code
-    //         : !d.wardCode
-    //         ? d.cityCode === area.code
-    //         : d.wardCode === area.code,
-    //     ),
-    //     d => d.type.name,
-    //   ),
-    // );
+    const { typicalTypeGroups, genericGroups, dataGroups } = getDatasetGroups({
+      datasets: datasets.filter(d =>
+        !d.cityCode
+          ? d.prefectureCode === area.code
+          : !d.wardCode ||
+            (d.type.code === PlateauDatasetType.Building &&
+              CITY_CODES_FOR_BUILDING_MODEL.includes(d.cityCode))
+          ? d.cityCode === area.code
+          : d.wardCode === area.code,
+      ),
+      areaCode: area.code,
+    });
 
     return [
-      ...((standardTypeGroups &&
+      ...((typicalTypeGroups &&
         filteredDatasetTypeOrder
-          ?.map(orderedType => standardTypeGroups.find(({ type }) => type === orderedType.name))
+          ?.map(orderedType => typicalTypeGroups.find(({ label }) => label === orderedType.name))
           .filter(isNotNullish)) ??
         []),
       ...(dataGroups ?? []),
       ...((genericGroups &&
         filteredDatasetTypeOrder
-          ?.map(orderedType => genericGroups.find(({ type }) => type === orderedType.name))
+          ?.map(orderedType => genericGroups.find(({ label }) => label === orderedType.name))
           .filter(isNotNullish)) ??
         []),
     ];
@@ -121,9 +111,16 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       {hasDatasets && (
         <OverlayPopper {...popoverProps} inset={1.5} onClose={handleClose}>
           <ContextBar expanded={expanded} onCollapse={handleCollapse} onExpand={handleExpand}>
-            {datasetGroups.map(({ isGrouped, type, datasets }) => {
-              if (isGrouped) {
-                return <>{type}</>;
+            {datasetGroups.map(({ useTree, label, datasets }) => {
+              if (useTree) {
+                return (
+                  <DatasetTreeSelect
+                    key={label}
+                    label={label}
+                    datasets={datasets}
+                    municipalityCode={area.code}
+                  />
+                );
               }
               if (datasets.length > 1) {
                 return (

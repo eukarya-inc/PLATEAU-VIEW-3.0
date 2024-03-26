@@ -24,6 +24,15 @@ const MunicipalityItem: FC<{
   });
   const isGenericDataset = isGenericDatasetType(datasetType);
 
+  const datasets = useMemo(
+    () =>
+      query.data?.area?.datasets?.map(d => ({
+        ...d,
+        folderPath: d.groups ? `${d.groups?.slice(1).join("/")}/${d.name}` : d.name,
+      })),
+    [query.data?.area?.datasets],
+  );
+
   if (isGenericDataset) {
     return (
       <DatasetTreeItem
@@ -31,17 +40,17 @@ const MunicipalityItem: FC<{
         label={joinPath([...parents, municipality.name])}
         title={municipality.name}
         loading={query.loading}
-        disabled={!query.data?.area?.datasets?.length}>
+        disabled={!datasets?.length}>
         <DatasetFolderList
           folderId={`${datasetType}:municipality:${municipality.code}`}
-          datasets={query.data?.area?.datasets}
+          datasets={datasets}
         />
       </DatasetTreeItem>
     );
   }
 
-  if (query.data?.area?.datasets?.length === 1) {
-    const dataset = query.data.area.datasets[0];
+  if (datasets?.length === 1) {
+    const dataset = datasets[0];
     const label =
       dataset.type.code === PlateauDatasetType.UseCase
         ? joinPath([...parents, dataset.name])
@@ -52,29 +61,25 @@ const MunicipalityItem: FC<{
         : `${parents.join(" ")} ${municipality.name} ${dataset.type.name}`;
     return (
       <DatasetListItem
-        dataset={query.data.area.datasets[0]}
+        dataset={datasets[0]}
         municipalityCode={municipality.code}
         label={label}
         title={titleString}
       />
     );
   }
+
   return (
     <DatasetTreeItem
       nodeId={`${datasetType}:municipality:${municipality.code}`}
       label={joinPath([...parents, municipality.name])}
       title={municipality.name}
       loading={query.loading}
-      disabled={!query.data?.area?.datasets?.length}>
-      {query.data?.area?.datasets?.map(dataset => (
-        <DatasetListItem
-          key={dataset.id}
-          municipalityCode={municipality.code}
-          dataset={dataset}
-          label={dataset.name}
-          title={dataset.name}
-        />
-      ))}
+      disabled={!datasets?.length}>
+      <DatasetFolderList
+        folderId={`${datasetType}:municipality:${municipality.code}`}
+        datasets={datasets}
+      />
     </DatasetTreeItem>
   );
 };
@@ -108,6 +113,7 @@ const PrefectureItem: FC<{
       />
     );
   }
+
   return (
     <DatasetTreeItem
       nodeId={`${datasetType}:prefecture:${prefecture.code}`}
@@ -173,10 +179,8 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType; name: string }> = (
 
 export const DatasetTypeList: FC = () => {
   const { data: datasetTypeOrder } = useDatasetTypes();
-  const filteredDatasetTypeOrder = useMemo(
-    () => unionBy(datasetTypeOrder, "name"),
-    [datasetTypeOrder],
-  );
+  const types = useMemo(() => unionBy(datasetTypeOrder, "name"), [datasetTypeOrder]);
+
   const [expanded, setExpanded] = useAtom(expandedAtom);
   const handleNodeToggle = useCallback(
     (_event: unknown, nodeIds: string[]) => {
@@ -193,11 +197,11 @@ export const DatasetTypeList: FC = () => {
       expanded={expanded}
       onNodeToggle={handleNodeToggle}
       maxheight={maxMainHeight - searchHeaderHeight}>
-      {filteredDatasetTypeOrder?.map(datasetType => (
+      {types?.map(type => (
         <DatasetTypeItem
-          key={datasetType.id}
-          name={datasetType.name}
-          datasetType={datasetType.code as PlateauDatasetType}
+          key={type.id}
+          name={type.name}
+          datasetType={type.code as PlateauDatasetType}
         />
       ))}
     </DatasetTreeView>

@@ -1,10 +1,9 @@
 import { useAtom, useAtomValue } from "jotai";
 import { atomWithReset } from "jotai/utils";
 import { useCallback, useMemo, type FC, useContext } from "react";
-import invariant from "tiny-invariant";
 
 import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
-import { AreasQuery, DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { AreasQuery } from "../../../shared/graphql/types/catalog";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
@@ -13,58 +12,10 @@ import { getDatasetGroups } from "../utils/datasetGroups";
 
 import { CensusDatasetListItem } from "./CensusDatasetListItem";
 import { DatasetFolderList } from "./DatasetFolderList";
+import { DatasetGroup } from "./DatasetGroup";
 import { DatasetListItem, joinPath } from "./DatasetListItem";
 
 const expandedAtom = atomWithReset<string[]>([]);
-
-export const DatasetGroup: FC<{
-  groupId: string;
-  datasets: DatasetFragmentFragment[];
-  folderBy?: "name" | "group";
-}> = ({ groupId, datasets, folderBy }) => {
-  invariant(datasets.length > 0);
-
-  if (folderBy) {
-    return (
-      <DatasetTreeItem
-        nodeId={groupId}
-        label={folderBy === "name" ? datasets[0].type.name : datasets[0].groups?.[0]}
-        disabled={!datasets.length}>
-        <DatasetFolderList folderId={groupId} datasets={datasets} folderBy={folderBy} />
-      </DatasetTreeItem>
-    );
-  }
-
-  if (datasets.length > 1) {
-    return (
-      <DatasetTreeItem nodeId={groupId} label={datasets[0].type.name} disabled={!datasets.length}>
-        {datasets.map(dataset => (
-          <DatasetListItem
-            key={dataset.id}
-            municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-            dataset={dataset}
-            label={dataset.name}
-            title={dataset.name}
-          />
-        ))}
-      </DatasetTreeItem>
-    );
-  } else {
-    const dataset = datasets[0];
-    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
-    const label = isUsecaseType ? dataset.name : dataset.type.name;
-    const title = label;
-
-    return (
-      <DatasetListItem
-        dataset={dataset}
-        municipalityCode={dataset.wardCode ?? dataset.cityCode ?? dataset.prefectureCode}
-        label={label}
-        title={title}
-      />
-    );
-  }
-};
 
 const GlobalItem: FC<{}> = () => {
   const query = useDatasets({
@@ -72,7 +23,7 @@ const GlobalItem: FC<{}> = () => {
   });
   return (
     <DatasetTreeItem nodeId="global" label={datasetTypeNames.global} loading={query.loading}>
-      <DatasetFolderList folderId="global" datasets={query.data?.datasets} folderBy={"name"} />
+      <DatasetFolderList folderId="global" datasets={query.data?.datasets} />
     </DatasetTreeItem>
   );
 };
@@ -80,11 +31,18 @@ const GlobalItem: FC<{}> = () => {
 const MunicipalityItem: FC<{
   municipality: AreasQuery["areas"][number];
   parents?: string[];
-}> = ({ municipality, parents = [] }) => {
+  prefCode?: number;
+}> = ({ municipality, parents = [], prefCode }) => {
   const query = useAreaDatasets(municipality.code);
-  const [standardTypeGroups, genericGroups, dataGroups] = useMemo(
-    () => getDatasetGroups(query.data?.area?.datasets),
-    [query.data?.area?.datasets],
+
+  const { typicalTypeGroups, dataGroups, genericGroups } = useMemo(
+    () =>
+      getDatasetGroups({
+        datasets: query.data?.area?.datasets,
+        prefCode: prefCode,
+        cityCode: municipality.code,
+      }),
+    [query.data?.area?.datasets, prefCode, municipality.code],
   );
 
   if (query.data?.area?.datasets?.length === 1) {
@@ -106,21 +64,21 @@ const MunicipalityItem: FC<{
       />
     );
   }
+
   return (
     <DatasetTreeItem
       nodeId={municipality.id}
       label={joinPath([...parents, municipality.name])}
       loading={query.loading}
-      disabled={!standardTypeGroups?.length && !dataGroups?.length && !genericGroups?.length}>
-      {standardTypeGroups?.map(({ groupId, datasets }) => {
-        invariant(query.data?.area?.code != null);
-        return <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />;
-      })}
-      {dataGroups?.map(({ groupId, datasets }) => (
-        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} folderBy="group" />
+      disabled={!typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length}>
+      {typicalTypeGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
-      {genericGroups?.map(({ groupId, datasets }) => (
-        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} folderBy="name" />
+      {dataGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {genericGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
     </DatasetTreeItem>
   );
@@ -136,36 +94,48 @@ const PrefectureItem: FC<{
 
   // Handle the datasets belongs to this perfecture but no municipality
   const prefectureDatasetQuery = useAreaDatasets(prefecture.code);
-  const [standardTypeGroups, genericGroups, dataGroups] = useMemo(
-    () => getDatasetGroups(prefectureDatasetQuery.data?.area?.datasets?.filter(d => !d.cityCode)),
-    [prefectureDatasetQuery.data?.area?.datasets],
+  const { typicalTypeGroups, dataGroups, genericGroups } = useMemo(
+    () =>
+      getDatasetGroups({
+        datasets: prefectureDatasetQuery.data?.area?.datasets?.filter(d => !d.cityCode),
+        prefCode: prefecture.code,
+      }),
+    [prefectureDatasetQuery.data?.area?.datasets, prefecture.code],
   );
 
-  if (areas.length === 1 && !standardTypeGroups && !dataGroups && !genericGroups) {
-    return <MunicipalityItem municipality={areas[0]} parents={[prefecture.name]} />;
+  if (areas.length === 1 && !typicalTypeGroups && !dataGroups && !genericGroups) {
+    return (
+      <MunicipalityItem
+        municipality={areas[0]}
+        parents={[prefecture.name]}
+        prefCode={prefecture.code}
+      />
+    );
   }
+
   return (
     <DatasetTreeItem
       nodeId={prefecture.code}
       label={prefecture.name}
       loading={query.loading}
       disabled={
-        !areas.length &&
-        !standardTypeGroups?.length &&
-        !dataGroups?.length &&
-        !genericGroups?.length
+        !areas.length && !typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length
       }>
       {areas.map(municipality => (
-        <MunicipalityItem key={municipality.code} municipality={municipality} />
+        <MunicipalityItem
+          key={municipality.code}
+          municipality={municipality}
+          prefCode={prefecture.code}
+        />
       ))}
-      {standardTypeGroups?.map(({ groupId, datasets }) => (
-        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} />
+      {typicalTypeGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
-      {dataGroups?.map(({ groupId, datasets }) => (
-        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} folderBy="group" />
+      {dataGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
-      {genericGroups?.map(({ groupId, datasets }) => (
-        <DatasetGroup key={groupId} groupId={groupId} datasets={datasets} folderBy="name" />
+      {genericGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
     </DatasetTreeItem>
   );

@@ -1,7 +1,12 @@
 import { useMemo } from "react";
 
 import { DatasetFragmentFragment, DatasetsInput } from "../../base/catalog/__gen__/graphql";
-import { DATASETS, DATASETS_BY_IDS, DATASET_BY_ID } from "../../base/catalog/queries/dataset";
+import {
+  DATASETS,
+  DATASETS_BY_IDS,
+  DATASETS_GROUPS,
+  DATASET_BY_ID,
+} from "../../base/catalog/queries/dataset";
 
 import { useQuery } from "./base";
 
@@ -57,4 +62,23 @@ export const useDatasetsByIds = (ids: string[], options?: Options) => {
       nodes: query.data?.nodes as DatasetFragmentFragment[],
     },
   };
+};
+
+export const useDatasetsGroups = (input: DatasetsInput, options?: Options) => {
+  const { data, ...rest } = useQuery(DATASETS_GROUPS, {
+    variables: {
+      input: {
+        ...input,
+        groupedOnly: true,
+      },
+    },
+    skip: options?.skip,
+  });
+
+  const nextDatasets = useMemo(
+    () => data?.datasets.slice().sort((a, b) => a.type.order - b.type.order),
+    [data],
+  );
+
+  return { data: data ? { ...data, datasets: nextDatasets } : undefined, ...rest };
 };

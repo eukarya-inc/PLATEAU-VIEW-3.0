@@ -28,6 +28,7 @@ import {
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
   VEGETATION_LAYER,
+  WATERWAY_LAYER,
 } from "../../view-layers";
 
 import { PlateauDatasetType } from "./plateau";
@@ -59,6 +60,7 @@ export const datasetTypeLayers = {
   [PlateauDatasetType.Sample]: USE_CASE_LAYER,
   [PlateauDatasetType.Constructure]: USE_CASE_LAYER,
   [PlateauDatasetType.Water]: USE_CASE_LAYER,
+  [PlateauDatasetType.WaterWay]: WATERWAY_LAYER,
   [PlateauDatasetType.Traffic]: USE_CASE_LAYER,
 } as const satisfies Record<PlateauDatasetType, LayerType | undefined>;
 
@@ -86,6 +88,7 @@ export const layerDatasetTypes = {
   [TSUNAMI_RISK_LAYER]: PlateauDatasetType.TsunamiRisk,
   [USE_CASE_LAYER]: PlateauDatasetType.UseCase,
   [VEGETATION_LAYER]: PlateauDatasetType.Vegetation,
+  [WATERWAY_LAYER]: PlateauDatasetType.WaterWay,
   [HEATMAP_LAYER]: undefined,
   [PEDESTRIAN_LAYER]: undefined,
   [SKETCH_LAYER]: undefined,

@@ -27,6 +27,7 @@ import {
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
+  WATERWAY_LAYER,
   VEGETATION_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
@@ -71,5 +72,6 @@ export interface LayerModelOverrides {
   [STATION_LAYER]: GeneralLayerModel; // StationLayerModel
   [URBAN_PLANNING_LAYER]: GeneralLayerModel; // UrbanPlanningLayerModel;
   [USE_CASE_LAYER]: GeneralLayerModel; // UseCaseLayerModel
+  [WATERWAY_LAYER]: GeneralLayerModel; // WaterWayLayerModel
   [VEGETATION_LAYER]: GeneralLayerModel; // VegetationLayerModel
 }

@@ -1,8 +1,8 @@
 import { IconButton } from "@mui/material";
 import { FC, useCallback, useState, type MouseEvent } from "react";
 
-import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { DatasetTreeItem, InfoIcon } from "../../ui-components";
+import { DatasetItem } from "../utils/datasetGroups";
 
 import { DatasetDialog } from "./DatasetDialog";
 import { DatasetFolderList } from "./DatasetFolderList";
@@ -10,18 +10,17 @@ import { DatasetFolderList } from "./DatasetFolderList";
 export type FolderItem = {
   label: string;
   subFolderId: string;
-  datasets: DatasetFragmentFragment[];
-  folderDataset?: DatasetFragmentFragment;
+  datasets: DatasetItem[];
+  folderDataset?: DatasetItem;
   isLastLevel?: boolean;
 };
 
 type DatasetFolderItemProps = {
   folderItem: FolderItem;
   level: number;
-  folderBy?: "name" | "group";
 };
 
-export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, level, folderBy }) => {
+export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, level }) => {
   const [infoOpen, setInfoOpen] = useState(false);
   const handleInfo = useCallback((event: MouseEvent) => {
     event.stopPropagation();
@@ -49,7 +48,6 @@ export const DatasetFolderItem: FC<DatasetFolderItemProps> = ({ folderItem, leve
           folderId={folderItem.subFolderId}
           datasets={folderItem.datasets}
           level={level}
-          folderBy={folderBy}
         />
       </DatasetTreeItem>
       {!!folderItem.folderDataset?.description && (
