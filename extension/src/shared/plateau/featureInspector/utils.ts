@@ -213,6 +213,8 @@ export const makePropertyForFeatureInspector = ({
 const UNION_MAP = [
   ["_code", "コード"],
   ["code", "コード"],
+  ["_unit", "単位"],
+  ["unit", "単位"],
   ["_uom", "単位"],
   ["uom", "単位"],
 ] as const;

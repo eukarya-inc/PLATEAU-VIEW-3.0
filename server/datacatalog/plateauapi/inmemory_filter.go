@@ -77,10 +77,13 @@ func filterDataset(d Dataset, input DatasetsInput, stages []string) bool {
 		return false
 	}
 
-	text := []string{
-		d.GetName(),
-		lo.FromPtr(d.GetDescription()),
-	}
+	text := append(
+		[]string{
+			d.GetName(),
+			lo.FromPtr(d.GetDescription()),
+		},
+		d.GetGroups()...,
+	)
 	var spec string
 	switch d2 := d.(type) {
 	case *PlateauDataset:

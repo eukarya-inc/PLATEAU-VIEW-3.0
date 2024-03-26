@@ -22,7 +22,8 @@ func PrepareRelated(ctx context.Context, cw *CMSWrapper, mc MergeContext) (res s
 	dir := mc.TmpDir
 
 	if cityItem.RelatedDataset == "" {
-		return "", fmt.Errorf("failed to get related dataset item for the city")
+		log.Infofc(ctx, "related dataset is not set to the cit item, but it's ok to continue")
+		return "", nil
 	}
 
 	item, err := cw.GetItem(ctx, cityItem.RelatedDataset, true)

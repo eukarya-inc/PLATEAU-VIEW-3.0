@@ -408,6 +408,10 @@ func wardCodeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.AreaCode {
 
 func datasetIDFrom(d datacatalogv2.DataCatalogItem) plateauapi.ID {
 	if d.Family == "plateau" || d.Family == "related" {
+		if d.ID != "" && d.Group != "" {
+			return newDatasetID(d.ID)
+		}
+
 		invalid := false
 		areaCode := d.WardCode
 		if areaCode == "" {
@@ -437,6 +441,10 @@ func newDatasetID(id string) plateauapi.ID {
 func datasetTypeIDFrom(d datacatalogv2.DataCatalogItem) plateauapi.ID {
 	code := datasetTypeCodeFrom(d)
 	if d.Family == "plateau" {
+		if d.Group != "" {
+			return plateauapi.NewID("sample", plateauapi.TypeDatasetType)
+		}
+
 		spec := d.Spec
 		if isEx(d) {
 			spec = "3.0"
@@ -448,6 +456,10 @@ func datasetTypeIDFrom(d datacatalogv2.DataCatalogItem) plateauapi.ID {
 
 func datasetTypeCodeFrom(d datacatalogv2.DataCatalogItem) string {
 	if d.Family == "plateau" {
+		if d.Group != "" {
+			return "sample"
+		}
+
 		if strings.HasPrefix(d.TypeEn, "urf_") {
 			return "urf"
 		}
@@ -563,9 +575,14 @@ func wardFrom(d datacatalogv2.DataCatalogItem) *plateauapi.Ward {
 	}
 }
 
-func plateauDatasetTypeFrom(d datacatalogv2.DataCatalogItem) plateauapi.PlateauDatasetType {
+func plateauDatasetTypeFrom(d datacatalogv2.DataCatalogItem) *plateauapi.PlateauDatasetType {
 	if d.Family != "plateau" {
-		return plateauapi.PlateauDatasetType{}
+		return nil
+	}
+
+	code := datasetTypeCodeFrom(d)
+	if code == "sample" {
+		return nil
 	}
 
 	name := d.Type
@@ -578,12 +595,11 @@ func plateauDatasetTypeFrom(d datacatalogv2.DataCatalogItem) plateauapi.PlateauD
 	}
 
 	year, _ := strconv.Atoi(d.Edition)
-	code := datasetTypeCodeFrom(d)
 	order := slices.Index(types, code) + 1
 	if order <= 0 {
 		order = len(types) + 1
 	}
-	return plateauapi.PlateauDatasetType{
+	return &plateauapi.PlateauDatasetType{
 		ID:            datasetTypeIDFrom(d),
 		Name:          name,
 		Code:          code,
@@ -609,6 +625,17 @@ func relatedDatasetTypeFrom(d datacatalogv2.DataCatalogItem) plateauapi.RelatedD
 }
 
 func genericDatasetTypeFrom(d datacatalogv2.DataCatalogItem) plateauapi.GenericDatasetType {
+	if d.Family == "plateau" {
+		if code := datasetTypeCodeFrom(d); code == "sample" {
+			return plateauapi.GenericDatasetType{
+				ID:       datasetTypeIDFrom(d),
+				Name:     "サンプルデータ",
+				Code:     code,
+				Category: plateauapi.DatasetTypeCategoryGeneric,
+			}
+		}
+	}
+
 	if d.Family != "generic" {
 		return plateauapi.GenericDatasetType{}
 	}
@@ -637,6 +664,13 @@ func genericDatasetTypeFrom(d datacatalogv2.DataCatalogItem) plateauapi.GenericD
 		Code:     "usecase",
 		Category: plateauapi.DatasetTypeCategoryGeneric,
 	}
+}
+
+var sampleDataType = plateauapi.GenericDatasetType{
+	ID:       plateauapi.NewID("sample", plateauapi.TypeDatasetType),
+	Name:     "サンプル",
+	Code:     "sample",
+	Category: plateauapi.DatasetTypeCategoryGeneric,
 }
 
 func groupsFrom(d datacatalogv2.DataCatalogItem) []string {
