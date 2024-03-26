@@ -146,7 +146,10 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
         {selectTreeItems.map((item, index) => {
           if (item.isFolder) {
             return (
-              <SelectGroupItem key={index} size="small" sx={{ paddingLeft: 3 + item.level * 1.5 }}>
+              <SelectGroupItem
+                key={index}
+                size="small"
+                sx={{ paddingLeft: 3.5 + item.level * 1.5 }}>
                 {item.label}
               </SelectGroupItem>
             );
@@ -158,9 +161,9 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
                 datasetId: item.dataset?.id ?? "",
                 datumId: item.dataset?.items[0].id ?? "",
               })}
-              indent={item.level}>
+              indent={item.level * 1.5}>
               <Typography variant="body2">
-                {item.dataset?.name}
+                {(item.dataset?.folderPath ?? item.dataset?.name)?.split("/").pop()}
                 {showDataFormats ? ` (${item.dataset?.items[0].format})` : null}
               </Typography>
             </SelectItem>
