@@ -64,21 +64,31 @@ func newCache(items []datacatalogv2.DataCatalogItem, m map[string]*fetcherPlatea
 			}
 		}
 
-		cache.DatasetTypes = make(plateauapi.DatasetTypes)
-
 		if ty := plateauDatasetTypeFrom(d); ty != nil {
+			if cache.DatasetTypes == nil {
+				cache.DatasetTypes = make(plateauapi.DatasetTypes)
+			}
+
 			if cache.DatasetTypes.DatasetType(ty.ID) == nil {
 				cache.DatasetTypes.Append(plateauapi.DatasetTypeCategoryPlateau, []plateauapi.DatasetType{ty})
 			}
 		}
 
 		if ty := relatedDatasetTypeFrom(d); ty.ID != "" {
+			if cache.DatasetTypes == nil {
+				cache.DatasetTypes = make(plateauapi.DatasetTypes)
+			}
+
 			if cache.DatasetTypes.DatasetType(ty.ID) == nil {
 				cache.DatasetTypes.Append(plateauapi.DatasetTypeCategoryRelated, []plateauapi.DatasetType{&ty})
 			}
 		}
 
 		if ty := genericDatasetTypeFrom(d); ty.ID != "" {
+			if cache.DatasetTypes == nil {
+				cache.DatasetTypes = make(plateauapi.DatasetTypes)
+			}
+
 			if cache.DatasetTypes.DatasetType(ty.ID) == nil {
 				cache.DatasetTypes.Append(plateauapi.DatasetTypeCategoryGeneric, []plateauapi.DatasetType{&ty})
 			}
@@ -92,6 +102,10 @@ func newCache(items []datacatalogv2.DataCatalogItem, m map[string]*fetcherPlatea
 			}
 
 			if d.TypeCode == "sample" {
+				if cache.DatasetTypes == nil {
+					cache.DatasetTypes = make(plateauapi.DatasetTypes)
+				}
+
 				d2 := plateauapi.PlateauDatasetToGenericDataset(
 					d,
 					plateauapi.NewID("sample", plateauapi.TypeDatasetType),
