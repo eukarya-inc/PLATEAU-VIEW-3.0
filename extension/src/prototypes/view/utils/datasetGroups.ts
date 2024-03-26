@@ -10,8 +10,6 @@ export type DatasetGroupItem = {
   groupId: string;
   datasets: DatasetItem[];
   useTree?: boolean;
-  // isGrouped: boolean;
-  // isGenericData: boolean;
 };
 
 export function getDatasetGroups({
@@ -39,8 +37,6 @@ export function getDatasetGroups({
         label: key,
         groupId: `${areaCode}:${prefCode}:${cityCode}:type:${key}`,
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
-        // isGrouped: false,
-        // isGenericData: false,
       }))
     : undefined;
 
@@ -54,8 +50,6 @@ export function getDatasetGroups({
           folderPath: `${v.groups?.slice(1).join("/")}/${v.name}`,
         })),
         useTree: true,
-        // isGrouped: true,
-        // isGenericData: false,
       }))
     : undefined;
 
@@ -68,8 +62,6 @@ export function getDatasetGroups({
         groupId: `${areaCode}:${prefCode}:${cityCode}:generic:${key}`,
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
         useTree: true,
-        // isGrouped: false,
-        // isGenericData: true,
       }))
     : undefined;
 

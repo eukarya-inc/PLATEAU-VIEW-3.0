@@ -27,14 +27,3 @@ query DatasetsByIds($ids: [ID!]!) {
   }
 }
 `);
-
-export const DATASETS_GROUPS = gql(`
-query DatasetsGroups($input: DatasetsInput!) {
-  datasets(input: $input) {
-    groups,
-    type{
-      order
-    }
-  }
-}
-`);
