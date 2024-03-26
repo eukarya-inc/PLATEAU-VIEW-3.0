@@ -39,9 +39,20 @@ func newCache(items []datacatalogv2.DataCatalogItem, m map[string]*fetcherPlatea
 		}
 
 		if d.City != "" {
-			areaCode := plateauapi.AreaCode(d.CityCode)
-			if _, found := areas[areaCode]; !found {
-				if c := cityFrom(d); c != nil {
+			if c := tokyo23kuCityFrom(d); c != nil {
+				areaCode := plateauapi.AreaCode(c.Code)
+				if _, found := areas[areaCode]; !found {
+					if cache.Areas == nil {
+						cache.Areas = make(plateauapi.Areas)
+					}
+					cache.Areas.Append(plateauapi.AreaTypeCity, []plateauapi.Area{c})
+					areas[areaCode] = struct{}{}
+				}
+			}
+
+			if c := cityFrom(d, false); c != nil {
+				areaCode := plateauapi.AreaCode(c.Code)
+				if _, found := areas[areaCode]; !found {
 					if cache.Areas == nil {
 						cache.Areas = make(plateauapi.Areas)
 					}
@@ -52,9 +63,9 @@ func newCache(items []datacatalogv2.DataCatalogItem, m map[string]*fetcherPlatea
 		}
 
 		if d.Ward != "" {
-			areaCode := plateauapi.AreaCode(d.WardCode)
-			if _, found := areas[areaCode]; !found {
-				if w := wardFrom(d); w != nil {
+			if w := wardFrom(d, false); w != nil {
+				areaCode := plateauapi.AreaCode(w.Code)
+				if _, found := areas[areaCode]; !found {
 					if cache.Areas == nil {
 						cache.Areas = make(plateauapi.Areas)
 					}
