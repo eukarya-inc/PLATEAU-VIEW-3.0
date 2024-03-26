@@ -387,7 +387,7 @@ func TestPlateauDatasetToGenericDataset(t *testing.T) {
 		TypeCode: "bldg",
 		Items: []*PlateauDatasetItem{
 			{
-				ID:       "11",
+				ID:       "di_1_2",
 				Format:   DatasetFormatCesium3dtiles,
 				Name:     "LOD1",
 				URL:      "hoge",
@@ -404,7 +404,7 @@ func TestPlateauDatasetToGenericDataset(t *testing.T) {
 		TypeCode: "sample",
 		Items: []*GenericDatasetItem{
 			{
-				ID:       "11",
+				ID:       "di_1_sample_2",
 				Format:   DatasetFormatCesium3dtiles,
 				Name:     "LOD1",
 				URL:      "hoge",

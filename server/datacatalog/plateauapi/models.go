@@ -301,6 +301,7 @@ func PlateauDatasetsToGenericDatasets(p []*PlateauDataset, typeID ID, typeCode, 
 }
 
 func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode string, idSuffix string) *GenericDataset {
+	rawID := strings.TrimPrefix(p.ID.String(), "d_")
 	newID := p.ID
 	if idSuffix != "" {
 		newID = ID(string(p.ID) + "_" + idSuffix)
@@ -308,8 +309,15 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 
 	items := make([]*GenericDatasetItem, 0, len(p.Items))
 	for _, item := range p.Items {
+		itemID := item.ID.String()
+		if idSuffix != "" {
+			if ids := strings.Split(itemID, rawID); len(ids) == 2 {
+				itemID = fmt.Sprintf("%s%s_%s%s", ids[0], rawID, idSuffix, ids[1])
+			}
+		}
+
 		items = append(items, &GenericDatasetItem{
-			ID:       item.ID,
+			ID:       ID(itemID),
 			Format:   item.Format,
 			Name:     item.Name,
 			URL:      item.URL,

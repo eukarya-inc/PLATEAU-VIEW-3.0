@@ -89,6 +89,9 @@ func TestNewCache(t *testing.T) {
 					Order:         1,
 				},
 			},
+			plateauapi.DatasetTypeCategoryGeneric: []plateauapi.DatasetType{
+				sampleDataType,
+			},
 		},
 		Datasets: plateauapi.Datasets{
 			plateauapi.DatasetTypeCategoryPlateau: []plateauapi.Dataset{
