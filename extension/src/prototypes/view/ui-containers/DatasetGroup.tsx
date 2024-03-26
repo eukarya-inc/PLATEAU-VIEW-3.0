@@ -10,10 +10,10 @@ import { DatasetListItem } from "./DatasetListItem";
 
 export const DatasetGroup: FC<{
   groupItem: DatasetGroupItem;
-}> = ({ groupItem: { datasets, groupId, label } }) => {
+}> = ({ groupItem: { datasets, groupId, label, useTree } }) => {
   invariant(datasets.length > 0);
 
-  if (datasets.length > 1) {
+  if (datasets.length > 1 || useTree) {
     return (
       <DatasetTreeItem nodeId={groupId} label={label} disabled={!datasets.length}>
         <DatasetFolderList folderId={groupId} datasets={datasets} />
