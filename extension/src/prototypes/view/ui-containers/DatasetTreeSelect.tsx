@@ -146,10 +146,7 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
         {selectTreeItems.map((item, index) => {
           if (item.isFolder) {
             return (
-              <SelectGroupItem
-                key={index}
-                size="small"
-                sx={{ paddingLeft: 3.5 + item.level * 1.5 }}>
+              <SelectGroupItem key={index} size="small" sx={{ paddingLeft: 3.5 + item.level * 3 }}>
                 {item.label}
               </SelectGroupItem>
             );
