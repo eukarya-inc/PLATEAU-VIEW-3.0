@@ -35,7 +35,7 @@ export function getDatasetGroups({
   const typicalTypeGroups = typicalTypeDatasets
     ? Object.entries(groupBy(typicalTypeDatasets, d => d.type.name)).map(([key, value]) => ({
         label: key,
-        groupId: `${areaCode}:${prefCode}:${cityCode}:type:${key}`,
+        groupId: generateGroupId("type", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
       }))
     : undefined;
@@ -44,10 +44,11 @@ export function getDatasetGroups({
   const dataGroups = dataGroupDatasets
     ? Object.entries(groupBy(dataGroupDatasets, d => d.groups?.[0])).map(([key, value]) => ({
         label: key,
-        groupId: `${areaCode}:${prefCode}:${cityCode}:group:${key}`,
+        groupId: generateGroupId("group", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({
           ...v,
-          folderPath: `${v.groups?.slice(1).join("/")}/${v.name}`,
+          folderPath:
+            v.groups && v.groups.length > 1 ? `${v.groups?.slice(1).join("/")}/${v.name}` : v.name,
         })),
         useTree: true,
       }))
@@ -59,11 +60,22 @@ export function getDatasetGroups({
   const genericGroups = genericDatasets
     ? Object.entries(groupBy(genericDatasets, d => d.type.name)).map(([key, value]) => ({
         label: key,
-        groupId: `${areaCode}:${prefCode}:${cityCode}:generic:${key}`,
+        groupId: generateGroupId("generic", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
         useTree: true,
       }))
     : undefined;
 
   return { typicalTypeGroups, dataGroups, genericGroups };
+}
+
+function generateGroupId(
+  type: string,
+  key: string,
+  prefCode?: number | string,
+  cityCode?: number | string,
+  areaCode?: number | string,
+) {
+  const areas = [areaCode, prefCode, cityCode].filter(a => !!a).join(":");
+  return areas ? `${areas}:${type}:${key}` : `${type}:${key}`;
 }
