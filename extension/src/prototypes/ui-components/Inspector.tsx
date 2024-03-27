@@ -15,12 +15,15 @@ interface StyledPaperProps extends PaperProps {
 }
 
 const StyledPaper = styled(Paper, {
-  shouldForwardProp: prop => prop !== "maxWidth" && prop !== "isMobile",
-})<StyledPaperProps>(({ theme, elevation = 4, isMobile }) => ({
+  shouldForwardProp: prop => prop !== "maxWidth",
+})<StyledPaperProps>(({ theme, elevation = 4 }) => ({
   position: "relative",
-  maxHeight: isMobile ? "50%" : "100%",
+  maxHeight: "100%",
   boxShadow: theme.shadows[elevation],
   pointerEvents: "auto",
+  [theme.breakpoints.down("mobile")]: {
+    maxHeight: "50%",
+  },
 }));
 
 const ResizableRoot = styled("div")({
@@ -64,7 +67,7 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
     const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
     return (
       <AutoHeight>
-        <StyledPaper ref={ref} {...props} isMobile={isMobile} {...props}>
+        <StyledPaper ref={ref} {...props}>
           {isMobile ? (
             <ScrollableRoundedBox defer sx={{ width: `calc(100vw - ${theme.spacing(2)})` }}>
               {children}
