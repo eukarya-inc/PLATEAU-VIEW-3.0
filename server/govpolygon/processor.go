@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	geojson "github.com/paulmach/go.geojson"
+	"github.com/paulmach/orb/geojson"
 	"github.com/samber/lo"
 )
 
@@ -92,7 +92,7 @@ func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojs
 		}
 
 		if wardHit || cityHit || prefHit {
-			result.AddFeature(f)
+			result.Append(f)
 		}
 	}
 

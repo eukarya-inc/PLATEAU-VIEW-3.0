@@ -8,11 +8,13 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/paulmach/orb/geojson"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
 )
@@ -27,7 +29,8 @@ type Handler struct {
 	processor         *Processor
 	httpClient        *http.Client
 	lock              sync.RWMutex
-	geojson           []byte
+	geojson           *geojson.FeatureCollection
+	geojsonj          []byte
 	updateIfNotExists bool
 	updatedAt         time.Time
 }
@@ -44,12 +47,13 @@ func New(gqlEndpoint string, updateIfNotExists bool) *Handler {
 func (h *Handler) Route(g *echo.Group) *Handler {
 	g.Use(middleware.CORS(), middleware.Gzip())
 	g.GET("/plateaugovs.geojson", h.GetGeoJSON)
+	g.GET("/plateaugovs/:z/:x/:y.mvt", h.GetMVT)
 	// g.GET("/update", h.Update, errorLogger)
 	return h
 }
 
 func (h *Handler) GetGeoJSON(c echo.Context) error {
-	if h.updateIfNotExists && h.geojson == nil {
+	if h.updateIfNotExists && h.geojsonj == nil {
 		if err := h.Update(c); err != nil {
 			log.Errorfc(c.Request().Context(), "govpolygon: fail to init: %v", err)
 		}
@@ -57,10 +61,43 @@ func (h *Handler) GetGeoJSON(c echo.Context) error {
 
 	h.lock.RLock()
 	defer h.lock.RUnlock()
+	if h.geojsonj == nil {
+		return c.JSON(http.StatusNotFound, "not found")
+	}
+	return c.JSONBlob(http.StatusOK, h.geojsonj)
+}
+
+func (h *Handler) GetMVT(c echo.Context) error {
+	if h.updateIfNotExists && h.geojsonj == nil {
+		if err := h.Update(c); err != nil {
+			log.Errorfc(c.Request().Context(), "govpolygon: fail to init: %v", err)
+		}
+	}
+
+	xp := c.Param("x")
+	yp := c.Param("y")
+	zp := c.Param("z")
+
+	x, _ := strconv.ParseInt(xp, 10, 32)
+	y, _ := strconv.ParseInt(yp, 10, 32)
+	z, _ := strconv.ParseInt(zp, 10, 32)
+
+	xu := uint32(x)
+	yu := uint32(y)
+	zu := uint32(z)
+
+	h.lock.RLock()
+	defer h.lock.RUnlock()
 	if h.geojson == nil {
 		return c.JSON(http.StatusNotFound, "not found")
 	}
-	return c.JSONBlob(http.StatusOK, h.geojson)
+
+	mvt, err := geoJSONToMVT(xu, yu, zu, h.geojson)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.Blob(http.StatusOK, "application/vnd.mapbox-vector-tile", mvt)
 }
 
 func (h *Handler) Update(c echo.Context) error {
@@ -70,11 +107,11 @@ func (h *Handler) Update(c echo.Context) error {
 
 	log.Infofc(c.Request().Context(), "govpolygon: updating")
 
-	initial := h.geojson == nil
+	initial := h.geojsonj == nil
 	if initial {
 		h.lock.Lock()
 		defer h.lock.Unlock()
-		if h.geojson != nil {
+		if h.geojsonj != nil {
 			return nil
 		}
 	}
@@ -103,7 +140,8 @@ func (h *Handler) Update(c echo.Context) error {
 		defer h.lock.Unlock()
 	}
 
-	h.geojson = geojsonj
+	h.geojson = g
+	h.geojsonj = geojsonj
 	h.updatedAt = util.Now()
 
 	return nil

@@ -16,6 +16,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/paulmach/go.geojson v1.5.0
+	github.com/paulmach/orb v0.10.0
 	github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855
 	github.com/reearth/reearth-cms-api/go v0.0.0-20240305064440-80539dcde579
 	github.com/reearth/reearthx v0.0.0-20240222072751-402668db71a9
@@ -63,6 +64,7 @@ require (
 	github.com/go-openapi/swag v0.22.10 // indirect
 	github.com/go-text/typesetting v0.1.0 // indirect
 	github.com/goccy/go-yaml v1.11.3 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -78,6 +80,7 @@ require (
 	github.com/maruel/panicparse/v2 v2.3.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.4.0 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
+	github.com/paulmach/protoscan v0.2.1 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/ravilushqa/otelgqlgen v0.15.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
@@ -91,6 +94,7 @@ require (
 	github.com/urfave/cli/v2 v2.27.1 // indirect
 	github.com/wcharczuk/go-chart/v2 v2.1.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20231213231151-1d8dd44e695e // indirect
+	go.mongodb.org/mongo-driver v1.13.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib v1.22.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.47.0 // indirect
