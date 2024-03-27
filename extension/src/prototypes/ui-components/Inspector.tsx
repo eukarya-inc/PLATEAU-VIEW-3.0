@@ -10,11 +10,15 @@ import { forwardRef } from "react";
 import { AutoHeight } from "./AutoHeight";
 import { Scrollable } from "./Scrollable";
 
+interface StyledPaperProps extends PaperProps {
+  isMobile?: boolean;
+}
+
 const StyledPaper = styled(Paper, {
-  shouldForwardProp: props => props !== "maxWidth",
-})(({ theme, elevation = 4 }) => ({
+  shouldForwardProp: prop => prop !== "maxWidth" && prop !== "isMobile",
+})<StyledPaperProps>(({ theme, elevation = 4, isMobile }) => ({
   position: "relative",
-  maxHeight: "100%",
+  maxHeight: isMobile ? "50%" : "100%",
   boxShadow: theme.shadows[elevation],
   pointerEvents: "auto",
 }));
@@ -60,7 +64,7 @@ export const Inspector = forwardRef<HTMLDivElement, InspectorProps>(
     const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
     return (
       <AutoHeight>
-        <StyledPaper ref={ref} {...props}>
+        <StyledPaper ref={ref} {...props} isMobile={isMobile} {...props}>
           {isMobile ? (
             <ScrollableRoundedBox defer sx={{ width: `calc(100vw - ${theme.spacing(2)})` }}>
               {children}
