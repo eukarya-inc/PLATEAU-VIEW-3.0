@@ -151,6 +151,7 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
               </SelectGroupItem>
             );
           }
+          if (!item.dataset?.items.length) return;
           return (
             <SelectItem
               key={index}
@@ -186,6 +187,7 @@ function processDatasets(datasets: DatasetItem[], level: number, result: SelectT
           value.length === 1 &&
           (value[0].folderPath ?? value[0].name).split("/").length <= level + 1
         ) {
+          if (value[0].items.length === 0) return;
           result.push({
             isFolder: false,
             level,
