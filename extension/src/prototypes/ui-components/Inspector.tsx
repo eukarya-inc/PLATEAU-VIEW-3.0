@@ -10,13 +10,9 @@ import { forwardRef } from "react";
 import { AutoHeight } from "./AutoHeight";
 import { Scrollable } from "./Scrollable";
 
-interface StyledPaperProps extends PaperProps {
-  isMobile?: boolean;
-}
-
 const StyledPaper = styled(Paper, {
-  shouldForwardProp: prop => prop !== "maxWidth",
-})<StyledPaperProps>(({ theme, elevation = 4 }) => ({
+  shouldForwardProp: props => props !== "maxWidth",
+})(({ theme, elevation = 4 }) => ({
   position: "relative",
   maxHeight: "100%",
   boxShadow: theme.shadows[elevation],
