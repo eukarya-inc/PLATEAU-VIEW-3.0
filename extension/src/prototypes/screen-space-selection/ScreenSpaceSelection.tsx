@@ -20,7 +20,7 @@ const defaultOptions = {
   allowedEvents: {
     point: true,
     rectangle: true,
-    imagery: true,
+    select: true,
   },
 };
 
@@ -63,6 +63,8 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({
       // const showGroundPrimitives = scene.groundPrimitives.show;
       // scene.groundPrimitives.show = false;
 
+      console.log("SELECT: ", event);
+
       switch (event.type) {
         case "point": {
           let shouldUseAddAction = true;
@@ -83,7 +85,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({
           }
           break;
         }
-        case "imagery": {
+        case "select": {
           objects = [event.object];
         }
       }
