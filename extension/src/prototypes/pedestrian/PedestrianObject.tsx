@@ -1,5 +1,5 @@
 import { useDraggable } from "@dnd-kit/core";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import {
   useEffect,
@@ -98,7 +98,6 @@ export const PedestrianObject: FC<PedestrianObjectProps> = ({
   levitated = true,
 }) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
 
   const balloonAppearance: PedestrianMarkerAppearances = useMemo(
     () => ({
@@ -110,10 +109,10 @@ export const PedestrianObject: FC<PedestrianObjectProps> = ({
         near: 10,
         fat: 1e4,
         eyeOffset: [0, 0, -10],
-        imageColor: isMobile ? "#000000" : selected ? theme.palette.primary.main : "#000000",
+        imageColor: selected ? theme.palette.primary.main : "#000000",
       },
     }),
-    [selected, theme, isMobile],
+    [selected, theme],
   );
   const iconAppearance: PedestrianMarkerAppearances = useMemo(
     () => ({

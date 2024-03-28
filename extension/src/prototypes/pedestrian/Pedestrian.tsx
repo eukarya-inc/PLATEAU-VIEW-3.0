@@ -1,6 +1,5 @@
 // import { DndContext, type DragEndEvent, type DragStartEvent } from "@dnd-kit/core";
 import { DndContext, DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { AnimatePresence } from "framer-motion";
 import { atom, useAtomValue } from "jotai";
 import { nanoid } from "nanoid";
@@ -47,8 +46,6 @@ export const Pedestrian: FC<PedestrianProps> = ({
   hideFrustum = false,
   onChange,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const defaultId = useConstant(() => nanoid());
   const objectId = composeIdentifier({
     type: "Pedestrian",
@@ -167,13 +164,11 @@ export const Pedestrian: FC<PedestrianProps> = ({
         selected={selected}
         levitated={levitated}
       />
-      {!isMobile && (
-        <AnimatePresence>
-          {selected && !levitated && !hideFrustum && headingPitch != null && zoom != null && (
-            <StreetViewFrustum location={location} headingPitch={headingPitch} zoom={zoom} />
-          )}
-        </AnimatePresence>
-      )}
+      <AnimatePresence>
+        {selected && !levitated && !hideFrustum && headingPitch != null && zoom != null && (
+          <StreetViewFrustum location={location} headingPitch={headingPitch} zoom={zoom} />
+        )}
+      </AnimatePresence>
     </DndContext>
   );
 };
