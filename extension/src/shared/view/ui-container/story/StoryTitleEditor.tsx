@@ -51,7 +51,7 @@ export const StoryTitleEditor: FC<StoryTitleEditorProps> = ({ open, layer, onClo
   return (
     <ViewDialog
       icon={<StoryIcon />}
-      title="Edit Story Title"
+      title="ストーリーのタイトルを編集"
       open={open}
       disableSubmit={disableSubmit}
       onClose={handleClose}
