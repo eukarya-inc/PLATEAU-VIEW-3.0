@@ -2,22 +2,26 @@ import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 import { Button, buttonClasses, styled } from "@mui/material";
 import { FC, useCallback, useMemo, useRef, useState } from "react";
 
-import { StoryCapture } from "../../layerContainers/story";
 import { useCamera } from "../../reearth/hooks";
 import { StoryCaptureEditor } from "../../view/ui-container/story/StoryCaptureEditor";
+import { StoryCapture } from "../../view-layers";
 import { ViewClickAwayListener } from "../common";
 import { ViewActionsMenu } from "../common/ViewActionsMenu";
 
 type CaptureListItemProps = {
   capture: StoryCapture;
+  index: number;
   onCaptureUpdate?: (capture: StoryCapture) => void;
   onCaptureRemove?: (id: string) => void;
+  onCaptureClick?: (index: number) => void;
 };
 
 export const CaptureListItem: FC<CaptureListItemProps> = ({
   capture,
+  index,
   onCaptureUpdate,
   onCaptureRemove,
+  onCaptureClick,
 }) => {
   const [editorOpen, setEditorOpen] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -89,11 +93,15 @@ export const CaptureListItem: FC<CaptureListItemProps> = ({
     setActionsOpen(false);
   }, []);
 
+  const handleTitleClick = useCallback(() => {
+    onCaptureClick?.(index);
+  }, [index, onCaptureClick]);
+
   return (
     <>
       <Wrapper>
         <ItemHeader>
-          <Title>{capture.title}</Title>
+          <Title onClick={handleTitleClick}>{capture.title}</Title>
           <ViewClickAwayListener onClickAway={handleClickAway}>
             <ActionsButton variant="contained" ref={anchorRef} onClick={handleActionsButtonClick}>
               <MoreVertOutlinedIcon fontSize="small" />
@@ -132,6 +140,8 @@ const ItemHeader = styled("div")(({ theme }) => ({
 
 const Title = styled("div")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
+  flex: 1,
+  cursor: "pointer",
 }));
 
 const ActionsButton = styled(Button)(({ theme }) => ({
@@ -143,5 +153,6 @@ const ActionsButton = styled(Button)(({ theme }) => ({
     color: theme.palette.text.primary,
     backgroundColor: theme.palette.background.paper,
     boxShadow: "none",
+    flexShrink: 0,
   },
 }));
