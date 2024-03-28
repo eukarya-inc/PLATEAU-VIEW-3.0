@@ -28,7 +28,7 @@ export const fetchYahoo: AreasFetcherBase = async (url, lon, lat) => {
   )?.["Code"];
 
   return {
-    municipalityCode: `${code}`,
+    municipalityCode: `${code}`.padStart(5, "0"),
     name: address,
   };
 };
