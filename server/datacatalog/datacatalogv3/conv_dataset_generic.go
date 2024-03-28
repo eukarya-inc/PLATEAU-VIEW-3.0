@@ -50,7 +50,7 @@ func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 	})
 
 	var groups []string
-	if i.Group == "" {
+	if i.Group != "" {
 		groups = strings.Split(i.Group, "/")
 	}
 
