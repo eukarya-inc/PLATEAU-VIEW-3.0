@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
-import { useAtomValue } from "jotai";
-import { FC, memo } from "react";
+import { Provider, useAtomValue } from "jotai";
+import { FC, memo, useRef } from "react";
 
 import { LayersRenderer } from "../prototypes/layers";
 import { AppFrame, LoadingScreen } from "../prototypes/ui-components";
@@ -19,8 +19,11 @@ import { readyAtom } from "../prototypes/view/states/app";
 import { AppHeader } from "../prototypes/view/ui-containers/AppHeader";
 import { FileDrop } from "../prototypes/view/ui-containers/FileDrop";
 import { Notifications } from "../prototypes/view/ui-containers/Notifications";
+import { resetAPIValues } from "../shared/constants";
+import { PLATEAU_INSTANCE_ID, setPlateauInstanceId } from "../shared/constants/instance";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { CameraPosition } from "../shared/reearth/types";
+import { resetStore, store } from "../shared/states/store";
 import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
@@ -62,7 +65,7 @@ export const Loading: FC = () => {
   return <AnimatePresence>{!ready && <LoadingScreen />}</AnimatePresence>;
 };
 
-export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
+const WidgetContent: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
   useSelectSketchFeature();
 
@@ -116,5 +119,31 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <FeedBack />
       </WidgetContext>
     </div>
+  );
+});
+
+export const Widget: FC<Props> = memo(({ widget, inEditor }) => {
+  const instanceChecked = useRef(false);
+
+  if (!instanceChecked.current) {
+    const paths = window.location.pathname.split("/");
+    const sceneIndex = paths.findIndex(v => v === "scene");
+    const instanceId = sceneIndex !== -1 ? paths[sceneIndex + 1] : "published";
+
+    if (instanceId !== PLATEAU_INSTANCE_ID) {
+      if (!PLATEAU_INSTANCE_ID) {
+        setPlateauInstanceId(instanceId);
+      } else {
+        resetAPIValues();
+        resetStore();
+      }
+    }
+    instanceChecked.current = true;
+  }
+
+  return (
+    <Provider store={store}>
+      <WidgetContent widget={widget} inEditor={inEditor} />
+    </Provider>
   );
 });
