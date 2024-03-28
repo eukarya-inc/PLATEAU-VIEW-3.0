@@ -18,7 +18,7 @@ export const StoryButton: FC = () => {
       createRootLayerForLayerAtom({
         id,
         type: STORY_LAYER,
-        title: "New Story",
+        title: "新しいストーリー",
         captures: [],
       }),
       { autoSelect: true },
