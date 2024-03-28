@@ -30,13 +30,13 @@ const JapanPlateauPolygon: FC = () => {
     if (camera?.height && camera.height >= CAMERA_ZOOM_LEVEL_HEIGHT) {
       setVisible(true);
     } else {
-      return setVisible(false);
+      setVisible(false);
     }
   }, [getCameraPosition]);
 
   useReEarthEvent("cameramove", updateVisibility);
 
-  if (!visible) return;
+  if (!visible) return null;
 
   return <PolygonLayer appearances={appererances} />;
 };
