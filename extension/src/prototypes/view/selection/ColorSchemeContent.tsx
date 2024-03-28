@@ -138,11 +138,7 @@ export const ColorSchemeContent: FC<ColorSchemeContentProps> = ({ values }) => {
       return <QuantitativeContent colorScheme={colorScheme} onClose={handleClose} />;
     case "qualitative":
       return (
-        <QualitativeContent
-          colorScheme={colorScheme}
-          continuous={"isPlateauTilesetLayer" in layer && layer.isPlateauTilesetLayer}
-          onClose={handleClose}
-        />
+        <QualitativeContent colorScheme={colorScheme} continuous={false} onClose={handleClose} />
       );
   }
   return null;
