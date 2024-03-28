@@ -1,4 +1,3 @@
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   Button,
   Divider,
@@ -12,7 +11,7 @@ import {
 } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { nanoid } from "nanoid";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useLayoutEffect, useMemo, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { useCamera } from "../../../shared/reearth/hooks";
@@ -27,6 +26,7 @@ import {
   CameraIcon,
   InspectorHeader,
   LayerIcon,
+  PencilIcon,
   TrashIcon,
 } from "../../ui-components";
 import { STORY_LAYER, layerTypeIcons } from "../../view-layers";
@@ -54,9 +54,11 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
 
   const [panel, setPanel] = useState<"list" | "player">("list");
   const [captures, setCaptures] = useAtom(layer.capturesAtom);
+  const [newCapture, setNewCapture] = useState<StoryCapture | undefined>(undefined);
+  const [catpureEditorType, setCaptureEditorType] = useState<"create" | "edit">("create");
   const [currentCaptureIndex, setCurrentCaptureIndex] = useState(0);
 
-  const handleChange = useCallback(
+  const handleCurrentCaptureChange = useCallback(
     (_: React.ChangeEvent<unknown>, value: number) => {
       const index = value - 1;
       setCurrentCaptureIndex(index);
@@ -69,25 +71,25 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
     setPanel("list");
   }, []);
 
-  useEffect(() => {
-    setPanel("list");
-  }, [layer]);
+  const [captureEditorOpen, setCaptureEditorOpen] = useState(false);
 
-  const [editorOpen, setEditorOpen] = useState(false);
-  const [newCapture, setNewCapture] = useState<StoryCapture | undefined>(undefined);
-
-  const handleOpenNewCapture = useCallback(() => {
+  const handleCreateCapture = useCallback(() => {
     const camera = getCameraPosition();
     if (!camera) return;
     setNewCapture({ id: nanoid(), camera });
-    setEditorOpen(true);
+    setCaptureEditorType("create");
+    setCaptureEditorOpen(true);
   }, [getCameraPosition]);
 
-  const handleCloseEditor = useCallback(() => {
-    setEditorOpen(false);
+  const handleCaptureEdit = useCallback(() => {
+    setCaptureEditorType("edit");
+    setCaptureEditorOpen(true);
+  }, []);
+  const handleCloseCaptureEditor = useCallback(() => {
+    setCaptureEditorOpen(false);
   }, []);
 
-  const handleCaptureSave = useCallback(
+  const handleCaptureUpdate = useCallback(
     (capture: StoryCapture) => {
       const index = captures.findIndex(c => c.id === capture.id);
       if (index !== -1) {
@@ -97,9 +99,9 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
       } else {
         setCaptures([...captures, capture]);
       }
-      handleCloseEditor();
+      handleCloseCaptureEditor();
     },
-    [captures, setCaptures, handleCloseEditor],
+    [captures, setCaptures, handleCloseCaptureEditor],
   );
 
   const handleCaptureRemove = useCallback(
@@ -108,6 +110,12 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
     },
     [captures, setCaptures],
   );
+
+  const handleCaptureReCapture = useCallback(() => {
+    const camera = getCameraPosition();
+    if (!camera) return;
+    handleCaptureUpdate?.({ ...captures[currentCaptureIndex], camera });
+  }, [captures, currentCaptureIndex, getCameraPosition, handleCaptureUpdate]);
 
   const handleCaptureClick = useCallback(
     (index: number) => {
@@ -135,6 +143,16 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
     setOpenTitleEditor(false);
   }, []);
 
+  const editingCapture = useMemo(
+    () => (catpureEditorType === "create" ? newCapture : captures[currentCaptureIndex]),
+    [catpureEditorType, newCapture, captures, currentCaptureIndex],
+  );
+
+  useLayoutEffect(() => {
+    setPanel("list");
+    setCurrentCaptureIndex(0);
+  }, [layer]);
+
   return (
     <>
       <List disablePadding>
@@ -155,6 +173,16 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
                     <AddressIcon />
                   </IconButton>
                 </Tooltip>
+                <Tooltip title="編集">
+                  <IconButton aria-label="編集" onClick={handleCaptureEdit}>
+                    <PencilIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="再キャプチャ">
+                  <IconButton aria-label="再キャプチャ" onClick={handleCaptureReCapture}>
+                    <CameraIcon />
+                  </IconButton>
+                </Tooltip>
                 <Tooltip title="削除">
                   <IconButton aria-label="削除" onClick={handleRemoveCurrentCapture}>
                     <TrashIcon />
@@ -171,12 +199,12 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
               <StoryTitleWrapper>
                 <StoryTitle>{layerTitle}</StoryTitle>
                 <StyledIconButton size="small" onClick={handleOpenTitleEditor}>
-                  <EditOutlinedIcon />
+                  <PencilIcon />
                 </StyledIconButton>
               </StoryTitleWrapper>
               <CaptureList
                 captures={captures}
-                onCaptureUpdate={handleCaptureSave}
+                onCaptureUpdate={handleCaptureUpdate}
                 onCaptureRemove={handleCaptureRemove}
                 onCaptureClick={handleCaptureClick}
               />
@@ -186,24 +214,16 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
                   variant="outlined"
                   fullWidth
                   startIcon={<CameraIcon />}
-                  onClick={handleOpenNewCapture}>
+                  onClick={handleCreateCapture}>
                   新しいキャプチャ
                 </Button>
               </ButtonWrapper>
-              {editorOpen && (
-                <StoryCaptureEditor
-                  open={editorOpen}
-                  capture={newCapture}
-                  onClose={handleCloseEditor}
-                  onSave={handleCaptureSave}
-                />
-              )}
             </>
           ) : (
             <>
               <Content>
-                <CaptureTitle>{captures[currentCaptureIndex].title}</CaptureTitle>
-                <ViewMarkdownViewer content={captures[currentCaptureIndex].content} />
+                <CaptureTitle>{captures[currentCaptureIndex]?.title}</CaptureTitle>
+                <ViewMarkdownViewer content={captures[currentCaptureIndex]?.content} />
               </Content>
               <PaginationWrapper>
                 <StyledPagination
@@ -214,14 +234,26 @@ export const StoryLayerContent: FC<StoryLayerContentProps> = ({ values }) => {
                   page={currentCaptureIndex + 1}
                   siblingCount={1}
                   boundaryCount={1}
-                  onChange={handleChange}
+                  onChange={handleCurrentCaptureChange}
                 />
               </PaginationWrapper>
             </>
           )}
         </SectionWrapper>
       </List>
-      <StoryTitleEditor open={openTitleEditor} layer={layer} onClose={handleCloseTitleEditor} />
+      <StoryTitleEditor
+        key={layer.id}
+        open={openTitleEditor}
+        layer={layer}
+        onClose={handleCloseTitleEditor}
+      />
+      <StoryCaptureEditor
+        key={editingCapture?.id}
+        open={captureEditorOpen}
+        capture={editingCapture}
+        onClose={handleCloseCaptureEditor}
+        onSave={handleCaptureUpdate}
+      />
     </>
   );
 };

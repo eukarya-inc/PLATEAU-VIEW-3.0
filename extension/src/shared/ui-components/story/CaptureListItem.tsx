@@ -11,6 +11,7 @@ import { ViewActionsMenu } from "../common/ViewActionsMenu";
 type CaptureListItemProps = {
   capture: StoryCapture;
   index: number;
+  hideActions?: boolean;
   onCaptureUpdate?: (capture: StoryCapture) => void;
   onCaptureRemove?: (id: string) => void;
   onCaptureClick?: (index: number) => void;
@@ -19,6 +20,7 @@ type CaptureListItemProps = {
 export const CaptureListItem: FC<CaptureListItemProps> = ({
   capture,
   index,
+  hideActions = true,
   onCaptureUpdate,
   onCaptureRemove,
   onCaptureClick,
@@ -102,11 +104,13 @@ export const CaptureListItem: FC<CaptureListItemProps> = ({
       <Wrapper>
         <ItemHeader>
           <Title onClick={handleTitleClick}>{capture.title}</Title>
-          <ViewClickAwayListener onClickAway={handleClickAway}>
-            <ActionsButton variant="contained" ref={anchorRef} onClick={handleActionsButtonClick}>
-              <MoreVertOutlinedIcon fontSize="small" />
-            </ActionsButton>
-          </ViewClickAwayListener>
+          {!hideActions && (
+            <ViewClickAwayListener onClickAway={handleClickAway}>
+              <ActionsButton variant="contained" ref={anchorRef} onClick={handleActionsButtonClick}>
+                <MoreVertOutlinedIcon fontSize="small" />
+              </ActionsButton>
+            </ViewClickAwayListener>
+          )}
         </ItemHeader>
       </Wrapper>
       <ViewActionsMenu open={actionsOpen} anchorEl={anchorRef.current} actions={actions} />
@@ -142,6 +146,7 @@ const Title = styled("div")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   flex: 1,
   cursor: "pointer",
+  padding: theme.spacing(0.5, 0),
 }));
 
 const ActionsButton = styled(Button)(({ theme }) => ({

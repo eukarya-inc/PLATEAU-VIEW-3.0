@@ -39,8 +39,9 @@ export const StoryTitleEditor: FC<StoryTitleEditorProps> = ({ open, layer, onClo
 
   const handleSave = useCallback(() => {
     setLayerTitle(storyName);
+    layer.title = storyName;
     onClose();
-  }, [storyName, setLayerTitle, onClose]);
+  }, [layer, storyName, setLayerTitle, onClose]);
 
   const preventToolKeyDown = useSetAtom(preventToolKeyDownAtom);
   useEffect(() => {
