@@ -1,4 +1,13 @@
-import { alpha, Button, IconButton, List, styled, Tooltip } from "@mui/material";
+import {
+  alpha,
+  Button,
+  IconButton,
+  List,
+  styled,
+  Tooltip,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Suspense, useCallback, useEffect, useRef, type FC } from "react";
 import invariant from "tiny-invariant";
@@ -266,6 +275,8 @@ export const Content: FC<{
 
 export const PedestrianLayerContent: FC<PedestrianLayerContentProps> = ({ values }) => {
   const layers = useAtomValue(rootLayersLayersAtom);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
   const findLayer = useFindLayer();
   // TODO: Support multiple layers
   const layer =
@@ -277,6 +288,9 @@ export const PedestrianLayerContent: FC<PedestrianLayerContentProps> = ({ values
       : values[0];
 
   if (layer == null) {
+    return null;
+  }
+  if (isMobile) {
     return null;
   }
   return <Content layer={layer} />;
