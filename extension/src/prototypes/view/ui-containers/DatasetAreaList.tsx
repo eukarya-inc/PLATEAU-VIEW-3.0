@@ -70,7 +70,12 @@ const MunicipalityItem: FC<{
       nodeId={municipality.id}
       label={joinPath([...parents, municipality.name])}
       loading={query.loading}
-      disabled={!typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length}>
+      disabled={
+        !query.loading &&
+        !typicalTypeGroups?.length &&
+        !dataGroups?.length &&
+        !genericGroups?.length
+      }>
       {typicalTypeGroups?.map(groupItem => (
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
@@ -119,7 +124,11 @@ const PrefectureItem: FC<{
       label={prefecture.name}
       loading={query.loading}
       disabled={
-        !areas.length && !typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length
+        !query.loading &&
+        !areas.length &&
+        !typicalTypeGroups?.length &&
+        !dataGroups?.length &&
+        !genericGroups?.length
       }>
       {areas.map(municipality => (
         <MunicipalityItem

@@ -40,7 +40,7 @@ const MunicipalityItem: FC<{
         label={joinPath([...parents, municipality.name])}
         title={municipality.name}
         loading={query.loading}
-        disabled={!datasets?.length}>
+        disabled={!query.loading && !datasets?.length}>
         <DatasetFolderList
           folderId={`${datasetType}:municipality:${municipality.code}`}
           datasets={datasets}
@@ -75,7 +75,7 @@ const MunicipalityItem: FC<{
       label={joinPath([...parents, municipality.name])}
       title={municipality.name}
       loading={query.loading}
-      disabled={!datasets?.length}>
+      disabled={!query.loading && !datasets?.length}>
       <DatasetFolderList
         folderId={`${datasetType}:municipality:${municipality.code}`}
         datasets={datasets}
@@ -120,7 +120,7 @@ const PrefectureItem: FC<{
       label={prefecture.name}
       title={prefecture.name}
       loading={query.loading}
-      disabled={!query.data?.areas.length}>
+      disabled={!query.loading && !query.data?.areas.length}>
       {query.data?.areas.map(municipality => (
         <MunicipalityItem
           key={municipality.code}
@@ -162,7 +162,7 @@ const DatasetTypeItem: FC<{ datasetType: PlateauDatasetType; name: string }> = (
       label={name}
       title={name}
       loading={query.loading}
-      disabled={!query.data?.areas.length}>
+      disabled={!query.loading && !query.data?.areas.length}>
       {query.data?.areas.map(
         prefecture =>
           prefecture.__typename === "Prefecture" && (
