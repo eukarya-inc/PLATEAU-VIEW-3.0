@@ -273,9 +273,15 @@ func mostDetailedAreaCodeFrom(d Dataset) *AreaCode {
 	return nil
 }
 
-func filterArea(area Area, input AreasInput) bool {
+func filterArea(area Area, input AreasInput, areasWithoutDataset map[ID]struct{}) bool {
 	if area == nil {
 		return false
+	}
+
+	if !lo.FromPtr(input.IncludeEmpty) && areasWithoutDataset != nil {
+		if _, ok := areasWithoutDataset[area.GetID()]; ok {
+			return false
+		}
 	}
 
 	if len(input.AreaTypes) > 0 {

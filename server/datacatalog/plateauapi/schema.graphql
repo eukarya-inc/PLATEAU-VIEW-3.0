@@ -1150,6 +1150,10 @@ input AreasInput {
   """
   includeParents: Boolean
   """
+  属しているDatasetが存在しない都市を含めます。通常のデータセットは存在しないが、 CityGMLDataset の city として使用されている都市が含まれます。
+  """
+  includeEmpty: Boolean
+  """
   parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。
   """
   deep: Boolean

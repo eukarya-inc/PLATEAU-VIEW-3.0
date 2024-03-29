@@ -138,6 +138,8 @@ type AreasInput struct {
 	SearchTokens []string `json:"searchTokens,omitempty"`
 	// datasetTypes が指定された場合に、検索結果にその地域の親も含めるかどうか。デフォルトは false です。
 	IncludeParents *bool `json:"includeParents,omitempty"`
+	// 属しているDatasetが存在しない都市を含めます。通常のデータセットは存在しないが、 CityGMLDataset の city として使用されている都市が含まれます。
+	IncludeEmpty *bool `json:"includeEmpty,omitempty"`
 	// parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。
 	Deep *bool `json:"deep,omitempty"`
 }

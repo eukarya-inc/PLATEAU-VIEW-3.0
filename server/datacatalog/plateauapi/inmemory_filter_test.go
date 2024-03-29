@@ -53,10 +53,11 @@ func TestFilterDataset(t *testing.T) {
 
 func TestFilterArea(t *testing.T) {
 	testCases := []struct {
-		name     string
-		area     Area
-		input    AreasInput
-		expected bool
+		name                string
+		area                Area
+		input               AreasInput
+		areasWithoutDataset map[ID]struct{}
+		expected            bool
 	}{
 		{
 			name: "Prefecture with search tokens",
@@ -143,12 +144,28 @@ func TestFilterArea(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "includeEmpty",
+			area: Ward{ID: "aaa"},
+			input: AreasInput{
+				IncludeEmpty: lo.ToPtr(true),
+			},
+			areasWithoutDataset: map[ID]struct{}{"aaa": {}},
+			expected:            true,
+		},
+		{
+			name:                "without includeEmpty",
+			area:                Ward{ID: "aaa"},
+			input:               AreasInput{},
+			areasWithoutDataset: map[ID]struct{}{"aaa": {}},
+			expected:            false,
+		},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			actual := filterArea(tc.area, tc.input)
+			actual := filterArea(tc.area, tc.input, tc.areasWithoutDataset)
 			assert.Equal(t, tc.expected, actual)
 		})
 	}
