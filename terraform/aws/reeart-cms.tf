@@ -9,11 +9,12 @@ module "reearth_cms" {
   prefix = var.prefix
   region = var.region
 
-  cms_domain              = local.cms_domain
-  cesium_ion_access_token = var.cesium_ion_access_token
-  logo_url                = var.logo_url
-  editor_url              = var.editor_url
-  cover_image_url         = var.cover_image_url
+  cms_domain                = local.cms_domain
+  cesium_ion_access_token   = var.cesium_ion_access_token
+  editor_url                = var.editor_url
+  mongodb_connection_string = var.mongodb_connection_string
+  reearth_cms_web_config    = var.reearth_cms_web_config
+
 
   cms_image_identifier        = module.reearth_cms_ecr.cms_image_identifier
   cognito_auth_domain         = module.cognito.auth_domain
@@ -27,7 +28,7 @@ module "reearth_cms" {
   plateauview_cms_plateauproject   = var.plateauview_cms_plateauproject
   plateauview_geo_image_identifier = var.plateauview_geo_image_identifier
   plateauview_ckan_baseurl         = var.plateauview_ckan_baseurl
-  reearth_domain                   = var.reearth_domain
+  reearth_domain                   = local.reearth_domain
   plateauview_ckan_org             = var.plateauview_ckan_org
   plateauview_cms_systemproject    = var.plateauview_cms_systemproject
   plateauview_fme_baseurl          = var.plateauview_fme_baseurl

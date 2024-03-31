@@ -9,17 +9,16 @@ module "reearth" {
   prefix = var.prefix
   region = var.region
 
-  reearth_domain              = local.reearth_domain
-  cesium_ion_access_token     = var.cesium_ion_access_token
-  logo_url                    = var.logo_url
-  editor_url                  = var.editor_url
-  cover_image_url             = var.cover_image_url
+  reearth_domain          = local.reearth_domain
+  cesium_ion_access_token = var.cesium_ion_access_token
+  reearth_web_config      = var.reearth_web_config
+
   plateauview_api_domain      = ""
   reearth_image_identifier    = module.reearth_ecr.image_identifier
   cognito_auth_domain         = module.cognito.auth_domain
   cognito_user_pool_id        = module.cognito.user_pool_client_id
-  cognito_user_pool_endpoint  = module.cognito.user_pool_endpoint
   cognito_user_pool_client_id = module.cognito.user_pool_id
+  mongodb_connection_string   = var.mongodb_connection_string
 }
 
 module "reearth_domain" {

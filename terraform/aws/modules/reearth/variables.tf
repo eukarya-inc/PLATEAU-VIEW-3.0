@@ -13,11 +13,6 @@ variable "cognito_user_pool_client_id" {
   description = "cognito user pool client id"
 }
 
-variable "cognito_user_pool_endpoint" {
-  type        = string
-  description = "cognito user pool endpoint"
-}
-
 variable "cognito_user_pool_id" {
   type        = string
   description = "cognito user pool id"
@@ -33,21 +28,6 @@ variable "cesium_ion_access_token" {
   description = "cesium ion access token"
 }
 
-variable "cover_image_url" {
-  type        = string
-  description = "cover image url"
-}
-
-variable "editor_url" {
-  type        = string
-  description = "editor url"
-}
-
-variable "logo_url" {
-  type        = string
-  description = "logo url"
-}
-
 variable "reearth_domain" {
   type        = string
   description = "cms domain"
@@ -61,4 +41,20 @@ variable "plateauview_api_domain" {
 variable "reearth_image_identifier" {
   type        = string
   description = "image identifier"
+}
+
+variable "reearth_web_config" {
+  type = object({
+    brand = object({
+      background = string
+      logoUrl    = string
+    })
+  })
+  description = "Re:Earthの設定"
+}
+
+variable "mongodb_connection_string" {
+  type        = string
+  description = "MongoDB Altasのデータベース接続文字列"
+  sensitive   = true
 }

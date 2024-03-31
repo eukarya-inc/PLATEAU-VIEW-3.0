@@ -33,24 +33,22 @@ variable "cesium_ion_access_token" {
   description = "cesium ion access token"
 }
 
-variable "cover_image_url" {
-  type        = string
-  description = "cover image url"
-}
-
 variable "editor_url" {
   type        = string
   description = "editor url"
 }
 
-variable "logo_url" {
-  type        = string
-  description = "logo url"
-}
-
 variable "cms_domain" {
   type        = string
   description = "cms domain"
+}
+
+variable "reearth_cms_web_config" {
+  type = object({
+    coverImageUrl = string
+    logoUrl       = string
+  })
+  description = "Re:Earth CMSの設定"
 }
 
 variable "cms_image_identifier" {
@@ -129,4 +127,10 @@ variable "plateauview_geo_image_identifier" {
 variable "reearth_domain" {
   type        = string
   description = "reearth domain"
+}
+
+variable "mongodb_connection_string" {
+  type        = string
+  description = "MongoDB Altasのデータベース接続文字列"
+  sensitive   = true
 }

@@ -15,9 +15,28 @@ variable "base_domain" {
   description = "ベースドメイン"
 }
 
-variable "logo_url" {
+variable "reearth_web_config" {
+  type = object({
+    brand = object({
+      background = string
+      logoUrl    = string
+    })
+  })
+  description = "Re:Earthの設定"
+}
+
+variable "reearth_cms_web_config" {
+  type = object({
+    coverImageUrl = string
+    logoUrl       = string
+  })
+  description = "Re:Earth CMSの設定"
+}
+
+variable "cover_image_url" {
   type        = string
-  description = "ロゴ画像のURL"
+  description = "カバー画像のURL"
+
 }
 
 variable "editor_url" {
@@ -25,14 +44,15 @@ variable "editor_url" {
   description = "エディタのURL"
 }
 
-variable "cover_image_url" {
-  type        = string
-  description = "カバー画像のURL"
-}
-
 variable "cesium_ion_access_token" {
   type        = string
   description = "cesium ion access token"
+}
+
+variable "mongodb_connection_string" {
+  type        = string
+  description = "MongoDB Altasのデータベース接続文字列"
+  sensitive   = true
 }
 
 #-----------------------
@@ -51,10 +71,6 @@ variable "plateauview_geo_image_identifier" {
 }
 
 variable "plateauview_ckan_baseurl" {
-  type = string
-}
-
-variable "reearth_domain" {
   type = string
 }
 

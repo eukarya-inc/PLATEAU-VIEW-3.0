@@ -37,7 +37,7 @@ resource "aws_apprunner_service" "reearth_server" {
         port = "8080"
 
         runtime_environment_secrets = {
-          for secret in toset(local.reearth_secret) : secret => aws_secretsmanager_secret.reearth_secret[secret].arn
+          for secret in toset(local.reearth_secret) : secret => aws_ssm_parameter.reearth_secret[secret].arn
         }
 
         runtime_environment_variables = {
@@ -53,6 +53,10 @@ resource "aws_apprunner_service" "reearth_server" {
           REEARTH_AUTHSRV_DISABLED   = true
           REEARTH_PUBLISHED_HOST     = "{}.${var.reearth_domain}"
           REEARTH_WEB_CONFIG = jsonencode({
+            brand = {
+              background = var.reearth_web_config.brand.background
+              logoUrl    = var.reearth_web_config.brand.logoUrl
+            }
             esiumIonAccessToken = var.cesium_ion_access_token
             unsafePluginUrls    = ["https://${var.plateauview_api_domain}/PlateauView3.js"]
             developerMode       = true
@@ -167,7 +171,9 @@ locals {
 }
 
 
-resource "aws_secretsmanager_secret" "reearth_secret" {
+resource "aws_ssm_parameter" "reearth_secret" {
   for_each = toset(local.reearth_secret)
   name     = "${var.prefix}/reearth-server/${each.value}"
+  type     = "SecureString"
+  value    = var.mongodb_connection_string
 }

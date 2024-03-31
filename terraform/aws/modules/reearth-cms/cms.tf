@@ -37,7 +37,7 @@ resource "aws_apprunner_service" "reearth_cms_server" {
         port = "8080"
 
         runtime_environment_secrets = {
-          for secret in toset(local.reearth_cms_secret) : secret => aws_secretsmanager_secret.reearth_cms_secret[secret].arn
+          "${local.reearth_cms_secret_cms_db}" = aws_ssm_parameter.reearth_cms_secret_reearth_cms_db.arn
         }
 
 
@@ -68,9 +68,9 @@ resource "aws_apprunner_service" "reearth_cms_server" {
               cognitoOauthResponseType    = "code",
               authProvider                = "cognito"
               cesiumIonAccessToken        = var.cesium_ion_access_token
-              coverImageUrl               = var.cover_image_url
               editorUrl                   = var.editor_url
-              logoUrl                     = var.logo_url
+              coverImageUrl               = var.reearth_cms_web_config.coverImageUrl
+              logoUrl                     = var.reearth_cms_web_config.logoUrl
           })
         }
       }
@@ -166,24 +166,11 @@ resource "aws_iam_role_policy" "reearth_cms_server_instance" {
 }
 
 locals {
-  plateauview_randoms = [
-    "REEARTH_PLATEUVIEW_CMS_WEBHOOK_SECRET",
-    "REEARTH_PLATEUVIEW_SECRET",
-    "REEARTH_PLATEUVIEW_SDK_TOKEN",
-    "REEARTH_PLATEUVIEW_SIDEBAR_TOKEN",
-  ]
-  reearth_cms_secret = [
-    "REEARTH_CMS_DB"
-  ]
+  reearth_cms_secret_cms_db = "REEARTH_CMS_DB"
 }
 
-resource "random_password" "plateauview_env" {
-  for_each = toset(local.plateauview_randoms)
-  length   = 32
-  special  = false
-}
-
-resource "aws_secretsmanager_secret" "reearth_cms_secret" {
-  for_each = toset(local.reearth_cms_secret)
-  name     = "${var.prefix}/reearth-cms/${each.value}"
+resource "aws_ssm_parameter" "reearth_cms_secret_reearth_cms_db" {
+  name  = "${var.prefix}/reearth-cms/${local.reearth_cms_secret_cms_db}"
+  type  = "SecureString"
+  value = var.mongodb_connection_string
 }

@@ -34,8 +34,14 @@ resource "aws_apprunner_service" "plateauview_api" {
       image_identifier      = var.plateauview_api_image_identifier
       image_repository_type = "ECR"
       image_configuration {
-        port                        = "8080"
-        runtime_environment_secrets = {}
+        port = "8080"
+        runtime_environment_secrets = merge({
+          for secret in toset(local.plateauview_secrets) : secret => aws_ssm_parameter.plateauview_env_secret_random[secret].arn
+          },
+          {
+            for secret in toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets)) : secret => aws_ssm_parameter.plateauview_env_secret_empty[secret].arn
+
+        })
         runtime_environment_variables = {
           REEARTH_PLATEAUVIEW_FME_BASEURL        = var.plateauview_fme_baseurl
           REEARTH_PLATEAUVIEW_CMS_BASEURL        = "https://${var.cms_domain}"
@@ -140,4 +146,42 @@ resource "aws_iam_role_policy" "plateauview_api_instance" {
       },
     ]
   })
+}
+
+
+locals {
+  plateauview_randoms = [
+    "REEARTH_PLATEUVIEW_CMS_WEBHOOK_SECRET",
+    "REEARTH_PLATEUVIEW_SECRET",
+    "REEARTH_PLATEUVIEW_SDK_TOKEN",
+    "REEARTH_PLATEUVIEW_SIDEBAR_TOKEN",
+  ]
+  plateauview_secrets = [
+    "REEARTH_PLATEUVIEW_CKAN_TOKEN",
+    "REEARTH_PLATEUVIEW_CMS_TOKEN",
+    "REEARTH_PLATEUVIEW_CMS_WEBHOOK_SECRET",
+    "REEARTH_PLATEUVIEW_FME_TOKEN",
+    "REEARTH_PLATEUVIEW_SECRET",
+    "REEARTH_PLATEUVIEW_SENDGRID_API_KEY",
+  ]
+}
+
+resource "random_password" "plateauview_env" {
+  for_each = toset(local.plateauview_randoms)
+  length   = 32
+  special  = false
+}
+
+resource "aws_ssm_parameter" "plateauview_env_secret_random" {
+  for_each = toset(local.plateauview_randoms)
+  name     = "/${var.prefix}/plateauview/${each.value}"
+  type     = "SecureString"
+  value    = random_password.plateauview_env["each.value"].result
+}
+
+resource "aws_ssm_parameter" "plateauview_env_secret_empty" {
+  for_each = toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets))
+  name     = "/${var.prefix}/plateauview/${each.value}"
+  type     = "SecureString"
+  value    = ""
 }
