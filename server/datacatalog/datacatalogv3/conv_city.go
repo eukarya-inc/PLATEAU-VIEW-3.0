@@ -24,7 +24,7 @@ func (city *CityItem) ToPrefecture() *plateauapi.Prefecture {
 }
 
 func (city *CityItem) ToCity() *plateauapi.City {
-	if city == nil || city.CityName == "" || len(city.CityCode) < 2 || !city.IsPublicOrBeta() {
+	if city == nil || city.CityName == "" || len(city.CityCode) < 2 {
 		return nil
 	}
 
@@ -34,6 +34,7 @@ func (city *CityItem) ToCity() *plateauapi.City {
 		Name:              city.CityName,
 		Code:              plateauapi.AreaCode(city.CityCode),
 		Type:              plateauapi.AreaTypeCity,
+		ParentID:          lo.ToPtr(plateauapi.NewID(prefCode, plateauapi.TypePrefecture)),
 		PrefectureID:      plateauapi.NewID(prefCode, plateauapi.TypePrefecture),
 		PrefectureCode:    plateauapi.AreaCode(prefCode),
 		PlanarCrsEpsgCode: lo.EmptyableToPtr(city.PlanarCrsEpsgCode()),

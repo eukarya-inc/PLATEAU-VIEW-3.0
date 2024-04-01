@@ -38,6 +38,7 @@ func TestRepos(t *testing.T) {
 					Type:           plateauapi.AreaTypeCity,
 					Code:           plateauapi.AreaCode(cityCode),
 					Name:           cityName,
+					ParentID:       lo.ToPtr(plateauapi.ID("p_" + prefCode)),
 					PrefectureID:   plateauapi.ID("p_" + prefCode),
 					PrefectureCode: plateauapi.AreaCode(prefCode),
 					CitygmlID:      lo.ToPtr(plateauapi.ID("cg_" + cityCode)),

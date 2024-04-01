@@ -36,6 +36,7 @@ func (i *PlateauFeatureItem) toWards(pref *plateauapi.Prefecture, city *plateaua
 			PrefectureCode: pref.Code,
 			CityID:         city.ID,
 			CityCode:       city.Code,
+			ParentID:       lo.ToPtr(city.ID),
 		}
 
 		res = append(res, ward)

@@ -61,6 +61,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	City struct {
+		Children          func(childComplexity int) int
 		Citygml           func(childComplexity int) int
 		CitygmlID         func(childComplexity int) int
 		Code              func(childComplexity int) int
@@ -214,6 +215,7 @@ type ComplexityRoot struct {
 	}
 
 	Prefecture struct {
+		Children func(childComplexity int) int
 		Cities   func(childComplexity int) int
 		Code     func(childComplexity int) int
 		Datasets func(childComplexity int, input *DatasetsInput) int
@@ -286,6 +288,7 @@ type ComplexityRoot struct {
 	}
 
 	Ward struct {
+		Children       func(childComplexity int) int
 		City           func(childComplexity int) int
 		CityCode       func(childComplexity int) int
 		CityID         func(childComplexity int) int
@@ -310,6 +313,7 @@ type CityResolver interface {
 	Parent(ctx context.Context, obj *City) (*Prefecture, error)
 
 	Citygml(ctx context.Context, obj *City) (*CityGMLDataset, error)
+	Children(ctx context.Context, obj *City) ([]Area, error)
 }
 type CityGMLDatasetResolver interface {
 	Prefecture(ctx context.Context, obj *CityGMLDataset) (*Prefecture, error)
@@ -356,6 +360,7 @@ type PrefectureResolver interface {
 	Datasets(ctx context.Context, obj *Prefecture, input *DatasetsInput) ([]Dataset, error)
 
 	Parent(ctx context.Context, obj *Prefecture) (Area, error)
+	Children(ctx context.Context, obj *Prefecture) ([]Area, error)
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id ID) (Node, error)
@@ -385,6 +390,7 @@ type WardResolver interface {
 	Datasets(ctx context.Context, obj *Ward, input *DatasetsInput) ([]Dataset, error)
 
 	Parent(ctx context.Context, obj *Ward) (*City, error)
+	Children(ctx context.Context, obj *Ward) ([]Area, error)
 }
 
 type executableSchema struct {
@@ -405,6 +411,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "City.children":
+		if e.complexity.City.Children == nil {
+			break
+		}
+
+		return e.complexity.City.Children(childComplexity), true
 
 	case "City.citygml":
 		if e.complexity.City.Citygml == nil {
@@ -1287,6 +1300,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PlateauSpecMinor.Year(childComplexity), true
 
+	case "Prefecture.children":
+		if e.complexity.Prefecture.Children == nil {
+			break
+		}
+
+		return e.complexity.Prefecture.Children(childComplexity), true
+
 	case "Prefecture.cities":
 		if e.complexity.Prefecture.Cities == nil {
 			break
@@ -1704,6 +1724,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.River.Name(childComplexity), true
+
+	case "Ward.children":
+		if e.complexity.Ward.Children == nil {
+			break
+		}
+
+		return e.complexity.Ward.Children(childComplexity), true
 
 	case "Ward.city":
 		if e.complexity.Ward.City == nil {
@@ -2477,6 +2504,8 @@ func (ec *executionContext) fieldContext_City_prefecture(ctx context.Context, fi
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -2549,6 +2578,8 @@ func (ec *executionContext) fieldContext_City_wards(ctx context.Context, field g
 				return ec.fieldContext_Ward_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Ward_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Ward_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Ward", field.Name)
 		},
@@ -2707,6 +2738,8 @@ func (ec *executionContext) fieldContext_City_parent(ctx context.Context, field 
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -2862,6 +2895,50 @@ func (ec *executionContext) fieldContext_City_citygml(ctx context.Context, field
 				return ec.fieldContext_CityGMLDataset_admin(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type CityGMLDataset", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _City_children(ctx context.Context, field graphql.CollectedField, obj *City) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_City_children(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.City().Children(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]Area)
+	fc.Result = res
+	return ec.marshalNArea2ᚕgithubᚗcomᚋeukaryaᚑincᚋreearthᚑplateauviewᚋserverᚋdatacatalogᚋplateauapiᚐAreaᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_City_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "City",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
 		},
 	}
 	return fc, nil
@@ -3318,6 +3395,8 @@ func (ec *executionContext) fieldContext_CityGMLDataset_prefecture(ctx context.C
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -3392,6 +3471,8 @@ func (ec *executionContext) fieldContext_CityGMLDataset_city(ctx context.Context
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -4231,6 +4312,8 @@ func (ec *executionContext) fieldContext_GenericDataset_prefecture(ctx context.C
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -4302,6 +4385,8 @@ func (ec *executionContext) fieldContext_GenericDataset_city(ctx context.Context
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -4371,6 +4456,8 @@ func (ec *executionContext) fieldContext_GenericDataset_ward(ctx context.Context
 				return ec.fieldContext_Ward_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Ward_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Ward_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Ward", field.Name)
 		},
@@ -6010,6 +6097,8 @@ func (ec *executionContext) fieldContext_PlateauDataset_prefecture(ctx context.C
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -6081,6 +6170,8 @@ func (ec *executionContext) fieldContext_PlateauDataset_city(ctx context.Context
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -6150,6 +6241,8 @@ func (ec *executionContext) fieldContext_PlateauDataset_ward(ctx context.Context
 				return ec.fieldContext_Ward_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Ward_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Ward_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Ward", field.Name)
 		},
@@ -8401,6 +8494,8 @@ func (ec *executionContext) fieldContext_Prefecture_cities(ctx context.Context, 
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -8533,6 +8628,50 @@ func (ec *executionContext) _Prefecture_parent(ctx context.Context, field graphq
 }
 
 func (ec *executionContext) fieldContext_Prefecture_parent(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Prefecture",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Prefecture_children(ctx context.Context, field graphql.CollectedField, obj *Prefecture) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Prefecture_children(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Prefecture().Children(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]Area)
+	fc.Result = res
+	return ec.marshalNArea2ᚕgithubᚗcomᚋeukaryaᚑincᚋreearthᚑplateauviewᚋserverᚋdatacatalogᚋplateauapiᚐAreaᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Prefecture_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Prefecture",
 		Field:      field,
@@ -9783,6 +9922,8 @@ func (ec *executionContext) fieldContext_RelatedDataset_prefecture(ctx context.C
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -9854,6 +9995,8 @@ func (ec *executionContext) fieldContext_RelatedDataset_city(ctx context.Context
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -9923,6 +10066,8 @@ func (ec *executionContext) fieldContext_RelatedDataset_ward(ctx context.Context
 				return ec.fieldContext_Ward_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Ward_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Ward_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Ward", field.Name)
 		},
@@ -11332,6 +11477,8 @@ func (ec *executionContext) fieldContext_Ward_prefecture(ctx context.Context, fi
 				return ec.fieldContext_Prefecture_parentId(ctx, field)
 			case "parent":
 				return ec.fieldContext_Prefecture_parent(ctx, field)
+			case "children":
+				return ec.fieldContext_Prefecture_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Prefecture", field.Name)
 		},
@@ -11403,6 +11550,8 @@ func (ec *executionContext) fieldContext_Ward_city(ctx context.Context, field gr
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
 		},
@@ -11573,8 +11722,54 @@ func (ec *executionContext) fieldContext_Ward_parent(ctx context.Context, field 
 				return ec.fieldContext_City_citygmlId(ctx, field)
 			case "citygml":
 				return ec.fieldContext_City_citygml(ctx, field)
+			case "children":
+				return ec.fieldContext_City_children(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type City", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Ward_children(ctx context.Context, field graphql.CollectedField, obj *Ward) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Ward_children(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Ward().Children(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]Area)
+	fc.Result = res
+	return ec.marshalNArea2ᚕgithubᚗcomᚋeukaryaᚑincᚋreearthᚑplateauviewᚋserverᚋdatacatalogᚋplateauapiᚐAreaᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Ward_children(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Ward",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
 		},
 	}
 	return fc, nil
@@ -14036,6 +14231,42 @@ func (ec *executionContext) _City(ctx context.Context, sel ast.SelectionSet, obj
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "children":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._City_children(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15548,6 +15779,42 @@ func (ec *executionContext) _Prefecture(ctx context.Context, sel ast.SelectionSe
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "children":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Prefecture_children(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -16417,6 +16684,42 @@ func (ec *executionContext) _Ward(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._Ward_parent(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "children":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Ward_children(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

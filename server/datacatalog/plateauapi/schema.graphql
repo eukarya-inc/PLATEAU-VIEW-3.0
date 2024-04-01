@@ -52,6 +52,10 @@ interface Area implements Node {
   地域の親となる地域。
   """
   parent: Area
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 enum AreaType {
@@ -102,6 +106,10 @@ type Prefecture implements Area & Node {
   地域の親となる地域。
   """
   parent: Area
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 """
@@ -161,6 +169,10 @@ type City implements Area & Node {
   CityGMLデータセット。
   """
   citygml: CityGMLDataset
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 """
@@ -216,6 +228,10 @@ type Ward implements Area & Node {
   地域の親となる地域。
   """
   parent: City!
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 # Spec

@@ -28,6 +28,8 @@ type Area interface {
 	GetParentID() *ID
 	// 地域の親となる地域。
 	GetParent() Area
+	// 地域に属する子地域。
+	GetChildren() []Area
 }
 
 // データセット。
@@ -173,6 +175,8 @@ type City struct {
 	CitygmlID *ID `json:"citygmlId,omitempty"`
 	// CityGMLデータセット。
 	Citygml *CityGMLDataset `json:"citygml,omitempty"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (City) IsArea()        {}
@@ -206,6 +210,18 @@ func (this City) GetParentID() *ID { return this.ParentID }
 
 // 地域の親となる地域。
 func (this City) GetParent() Area { return *this.Parent }
+
+// 地域に属する子地域。
+func (this City) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
 
 func (City) IsNode() {}
 
@@ -826,6 +842,8 @@ type Prefecture struct {
 	ParentID *ID `json:"parentId,omitempty"`
 	// 地域の親となる地域。
 	Parent Area `json:"parent,omitempty"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (Prefecture) IsArea()        {}
@@ -859,6 +877,18 @@ func (this Prefecture) GetParentID() *ID { return this.ParentID }
 
 // 地域の親となる地域。
 func (this Prefecture) GetParent() Area { return this.Parent }
+
+// 地域に属する子地域。
+func (this Prefecture) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
 
 func (Prefecture) IsNode() {}
 
@@ -1139,6 +1169,8 @@ type Ward struct {
 	ParentID *ID `json:"parentId,omitempty"`
 	// 地域の親となる地域。
 	Parent *City `json:"parent"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (Ward) IsArea()        {}
@@ -1172,6 +1204,18 @@ func (this Ward) GetParentID() *ID { return this.ParentID }
 
 // 地域の親となる地域。
 func (this Ward) GetParent() Area { return *this.Parent }
+
+// 地域に属する子地域。
+func (this Ward) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
 
 func (Ward) IsNode() {}
 
