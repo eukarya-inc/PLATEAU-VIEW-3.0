@@ -37,11 +37,13 @@ type MergeContext struct {
 }
 
 func CommandSingle(conf *Config) (err error) {
+	ctx := context.Background()
+	log.Infofc(ctx, "conf: %s", ppp.Sprint(conf))
+
 	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
 		return fmt.Errorf("no command to run")
 	}
 
-	ctx := context.Background()
 	cms, err := cms.New(conf.CMSURL, conf.CMSToken)
 	if err != nil {
 		return fmt.Errorf("failed to initialize CMS client: %w", err)
@@ -220,6 +222,9 @@ func CommandSingle(conf *Config) (err error) {
 			return fmt.Errorf("failed to download merged plateau: %w", err)
 		}
 	}
+
+	log.Infofc(ctx, "citygml path: %s", citygmlPath)
+	log.Infofc(ctx, "plateau path: %s", plateauPath)
 
 	if !conf.SkipIndex && citygmlPath != "" && plateauPath != "" {
 		if err := PrepareIndex(ctx, cw, &IndexSeed{
