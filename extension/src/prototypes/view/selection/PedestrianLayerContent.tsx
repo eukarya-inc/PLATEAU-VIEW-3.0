@@ -1,4 +1,13 @@
-import { alpha, Button, IconButton, List, styled, Tooltip } from "@mui/material";
+import {
+  alpha,
+  Button,
+  IconButton,
+  List,
+  styled,
+  Tooltip,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Suspense, useCallback, useEffect, useRef, type FC } from "react";
 import invariant from "tiny-invariant";
@@ -177,6 +186,9 @@ export const Content: FC<{
 }> = ({ layer }) => {
   const title = useAtomValue(layer.titleAtom);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
   const setLayerSelection = useSetAtom(layerSelectionAtom);
   const setScreenSpaceSelection = useSetAtom(screenSpaceSelectionAtom);
   const handleClose = useCallback(() => {
@@ -206,10 +218,12 @@ export const Content: FC<{
   const handleZoomChange = useCallback(() => {
     if (containerRef.current != null) {
       // Prevent street view from stretching too much in portrait.
-      const aspectRatio = Math.max(1, window.reearth?.camera?.position?.aspectRatio ?? 1);
+      const aspectRatio = isMobile
+        ? Math.max(2, window.reearth?.camera?.position?.aspectRatio ?? 1)
+        : Math.max(1, window.reearth?.camera?.position?.aspectRatio ?? 1);
       containerRef.current.style.aspectRatio = `${aspectRatio}`;
     }
-  }, []);
+  }, [isMobile]);
 
   // NOTE: We are using Suepense to wait loading StreetView,
   // but Suspense re-render the component automatically after StreetView is loaded.

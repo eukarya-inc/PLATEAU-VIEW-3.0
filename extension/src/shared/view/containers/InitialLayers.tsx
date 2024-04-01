@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, type FC, useMemo, useRef, useState } from "react";
 import format from "string-template";
@@ -121,18 +122,24 @@ export const InitialLayers: FC = () => {
   const settings = useAtomValue(settingsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(
-    () => [
-      {
-        type: PEDESTRIAN_LAYER,
-        location: {
-          longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
-          latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
+  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(() => {
+    if (isMobile) {
+      return [];
+    } else {
+      return [
+        {
+          type: PEDESTRIAN_LAYER,
+          location: {
+            longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
+            latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+          },
         },
-      },
-    ],
-    [],
-  );
+      ];
+    }
+  }, [isMobile]);
 
   const defaultBuildings = useMemo(
     () =>
