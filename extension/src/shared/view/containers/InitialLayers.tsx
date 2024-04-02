@@ -161,7 +161,7 @@ export const InitialLayers: FC = () => {
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : defaultBuildings.map(b => b.datasetId),
+        : [...new Set(defaultBuildings.map(b => b.datasetId))],
     [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
   );
 
@@ -272,6 +272,7 @@ export const InitialLayers: FC = () => {
                 settings: settingsRef.current.filter(s => s.datasetId === d.id),
                 templates: templatesRef.current,
                 shareId: sharedProjectId,
+                currentDataId: defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
               }),
               { autoSelect: false },
             );
