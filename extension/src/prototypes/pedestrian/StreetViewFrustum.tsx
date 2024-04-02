@@ -1,4 +1,3 @@
-import { useTheme } from "@mui/material";
 import { animate, useMotionValue, usePresence } from "framer-motion";
 import { useEffect, type FC, useMemo, useCallback, useState, useRef } from "react";
 
@@ -23,8 +22,6 @@ export const StreetViewFrustum: FC<StreetViewFrustumProps> = ({
   aspectRatio = 3 / 2,
   length = 200,
 }) => {
-  const theme = useTheme();
-
   const [ready, setReady] = useState(false);
   const handleLoad = useCallback(() => {
     setReady(true);
@@ -89,7 +86,7 @@ export const StreetViewFrustum: FC<StreetViewFrustumProps> = ({
   const frustumAppearance: PedestrianFrustumAppearances = useMemo(
     () => ({
       frustum: {
-        color: theme.palette.primary.main,
+        color: "#00E0E0",
         opacity,
         zoom,
         length,
@@ -99,7 +96,7 @@ export const StreetViewFrustum: FC<StreetViewFrustumProps> = ({
         rotate: [headingPitch.heading, headingPitch.pitch, 0],
       },
     }),
-    [theme, zoom, length, aspectRatio, headingPitch, opacity],
+    [zoom, length, aspectRatio, headingPitch, opacity],
   );
 
   return (
