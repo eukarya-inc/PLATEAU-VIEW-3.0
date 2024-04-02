@@ -1,5 +1,6 @@
 import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { cloneDeep } from "lodash-es";
 import { useEffect, type FC, useMemo, useRef, useState } from "react";
 import format from "string-template";
 
@@ -160,7 +161,7 @@ export const InitialLayers: FC = () => {
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : defaultBuildings.map(b => b.datasetId),
+        : [...new Set(defaultBuildings.map(b => b.datasetId))],
     [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
   );
 
@@ -261,6 +262,21 @@ export const InitialLayers: FC = () => {
             },
           ),
         );
+        cloneDeep(initialDatasets)
+          .reverse()
+          .forEach(d => {
+            addLayer(
+              createRootLayerForDatasetAtom({
+                dataset: d,
+                areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+                settings: settingsRef.current.filter(s => s.datasetId === d.id),
+                templates: templatesRef.current,
+                shareId: sharedProjectId,
+                currentDataId: defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
+              }),
+              { autoSelect: false },
+            );
+          });
       } else {
         // add layer with shared root layers' reverse order
         sharedRootLayers.reverse().forEach(sharedRootLayer => {
