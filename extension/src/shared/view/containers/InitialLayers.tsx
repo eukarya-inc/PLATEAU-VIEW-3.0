@@ -261,6 +261,18 @@ export const InitialLayers: FC = () => {
             },
           ),
         );
+        initialDatasets.reverse().forEach(d => {
+          addLayer(
+            createRootLayerForDatasetAtom({
+              dataset: d,
+              areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+              settings: settingsRef.current.filter(s => s.datasetId === d.id),
+              templates: templatesRef.current,
+              shareId: sharedProjectId,
+            }),
+            { autoSelect: false },
+          );
+        });
       } else {
         // add layer with shared root layers' reverse order
         sharedRootLayers.reverse().forEach(sharedRootLayer => {
