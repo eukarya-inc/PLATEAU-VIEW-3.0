@@ -157,6 +157,7 @@ resource "aws_iam_role_policy" "reearth_server_instance" {
         Effect = "Allow"
         Action = [
           "s3:*",
+          "ssm:GetParameters"
         ]
         Resource = "*"
       },
@@ -173,7 +174,13 @@ locals {
 
 resource "aws_ssm_parameter" "reearth_secret" {
   for_each = toset(local.reearth_secret)
-  name     = "${var.prefix}/reearth-server/${each.value}"
+  name     = "/${var.prefix}/reearth-server/${each.value}"
   type     = "SecureString"
   value    = var.mongodb_connection_string
+}
+
+resource "aws_apprunner_custom_domain_association" "reearth_server" {
+  service_arn          = aws_apprunner_service.reearth_server.arn
+  domain_name          = var.reearth_domain
+  enable_www_subdomain = false
 }

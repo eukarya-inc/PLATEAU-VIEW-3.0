@@ -1,6 +1,5 @@
 module "reearth_cms_ecr" {
   source = "./modules/reearth-cms/ecr"
-  prefix = var.prefix
 }
 
 module "reearth_cms" {
@@ -16,38 +15,34 @@ module "reearth_cms" {
   reearth_cms_web_config    = var.reearth_cms_web_config
 
 
-  cms_image_identifier        = module.reearth_cms_ecr.cms_image_identifier
+  cms_image_identifier        = "${module.reearth_cms_ecr.cms_image_identifier}:latest"
   cognito_auth_domain         = module.cognito.auth_domain
   cognito_user_pool_id        = module.cognito.user_pool_client_id
   cognito_user_pool_endpoint  = module.cognito.user_pool_endpoint
   cognito_user_pool_client_id = module.cognito.user_pool_id
 
-  cms_worker_image_identifier = module.reearth_cms_ecr.cms_worker_image_identifier
+  cms_worker_image_identifier    = "${module.reearth_cms_ecr.cms_worker_image_identifier}:latest"
+  plateauview_api_domain         = local.plateauview_api_domain
+  plateauview_cms_plateauproject = var.plateauview_cms_plateauproject
+  plateauview_ckan_baseurl       = var.plateauview_ckan_baseurl
+  reearth_domain                 = local.reearth_domain
+  plateauview_ckan_org           = var.plateauview_ckan_org
+  plateauview_cms_systemproject  = var.plateauview_cms_systemproject
+  plateauview_fme_baseurl        = var.plateauview_fme_baseurl
+  plateauview_api_image_identifier = "${module.reearth_cms_ecr.plateauview_api_image_identifier}:latest"
 
-  plateauview_sidebar_token        = var.plateauview_sidebar_token
-  plateauview_cms_plateauproject   = var.plateauview_cms_plateauproject
-  plateauview_geo_image_identifier = var.plateauview_geo_image_identifier
-  plateauview_ckan_baseurl         = var.plateauview_ckan_baseurl
-  reearth_domain                   = local.reearth_domain
-  plateauview_ckan_org             = var.plateauview_ckan_org
-  plateauview_cms_systemproject    = var.plateauview_cms_systemproject
-  plateauview_fme_baseurl          = var.plateauview_fme_baseurl
-  plateauview_cms_webhook_secret   = var.plateauview_cms_webhook_secret
-  plateauview_api_image_identifier = var.plateauview_api_image_identifier
-  plateauview_sdk_token            = var.plateauview_sdk_token
+  plateauview_geo_domain           = local.plateauview_geo_domain
+  plateauview_geo_image_identifier = "${module.reearth_cms_ecr.plateauview_geo_image_identifier}:latest"
+
 }
 
 module "reearth_cms_domain" {
   source = "./modules/reearth-cms/domain"
 
-  route53_zone_id = aws_route53_zone.reearth.zone_id
+  route53_zone_id = aws_route53_zone.public_zone.zone_id
 
-  cms_domain                 = local.cms_domain
-  cms_app_runner_service_arn = module.reearth_cms.cms_app_runner_service_arn
+  reearth_cms_server_domain = module.reearth_cms.reearth_cms_server_custom_domain_association
+  plateauview_api_domain    = module.reearth_cms.plateauview_api_custom_domain_association
+  plateauview_geo_domain    = module.reearth_cms.plateauview_geo_custom_domain_association
 
-  plateauview_api_domain         = local.plateauview_api_domain
-  plateauview_api_app_runner_arn = module.reearth_cms.plateauview_api_app_runner_arn
-
-  plateauview_geo_domain         = local.plateauview_geo_domain
-  plateauview_geo_app_runner_arn = module.reearth_cms.plateauview_geo_app_runner_arn
 }

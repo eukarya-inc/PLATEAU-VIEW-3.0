@@ -131,7 +131,8 @@ resource "aws_iam_role_policy" "reearth_cms_worker_instance" {
         Effect = "Allow"
         Action = [
           "s3:*",
-          "sns:*"
+          "sns:*",
+          "ssm:GetParameters"
         ]
         Resource = "*"
       },
@@ -147,7 +148,7 @@ locals {
 
 resource "aws_ssm_parameter" "reearth_cms_worker_secret" {
   for_each = toset(local.reearth_cms_worker_secret)
-  name     = "${var.prefix}/reearth-cms/${each.value}"
+  name     = "/${var.prefix}/reearth-cms/${each.value}"
   type     = "SecureString"
   value    = var.mongodb_connection_string
 }

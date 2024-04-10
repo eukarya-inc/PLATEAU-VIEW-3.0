@@ -157,7 +157,8 @@ resource "aws_iam_role_policy" "reearth_cms_server_instance" {
         Effect = "Allow"
         Action = [
           "s3:*",
-          "sns:*"
+          "sns:*",
+          "ssm:GetParameters"
         ]
         Resource = "*"
       },
@@ -170,7 +171,13 @@ locals {
 }
 
 resource "aws_ssm_parameter" "reearth_cms_secret_reearth_cms_db" {
-  name  = "${var.prefix}/reearth-cms/${local.reearth_cms_secret_cms_db}"
+  name  = "/${var.prefix}/reearth-cms/${local.reearth_cms_secret_cms_db}"
   type  = "SecureString"
   value = var.mongodb_connection_string
+}
+
+resource "aws_apprunner_custom_domain_association" "reearth_cms_server" {
+  service_arn          = aws_apprunner_service.reearth_cms_server.arn
+  domain_name          = var.cms_domain
+  enable_www_subdomain = false
 }

@@ -56,3 +56,9 @@ data "aws_iam_policy_document" "plateauview_geo_tile" {
     ]
   }
 }
+
+resource "aws_apprunner_custom_domain_association" "plateauview_geo" {
+  service_arn          = aws_apprunner_service.plateauview_geo.arn
+  domain_name          = var.plateauview_geo_domain
+  enable_www_subdomain = false
+}

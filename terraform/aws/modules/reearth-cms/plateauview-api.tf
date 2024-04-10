@@ -36,7 +36,7 @@ resource "aws_apprunner_service" "plateauview_api" {
       image_configuration {
         port = "8080"
         runtime_environment_secrets = merge({
-          for secret in toset(local.plateauview_secrets) : secret => aws_ssm_parameter.plateauview_env_secret_random[secret].arn
+          for secret in toset(local.plateauview_randoms) : secret => aws_ssm_parameter.plateauview_env_secret_random[secret].arn
           },
           {
             for secret in toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets)) : secret => aws_ssm_parameter.plateauview_env_secret_empty[secret].arn
@@ -51,9 +51,9 @@ resource "aws_apprunner_service" "plateauview_api" {
           REEARTH_PLATEAUVIEW_OPINION_TO         = var.plateauview_opinion_to
           REEARTH_PLATEAUVIEW_OPINION_FROM       = var.plateauview_opinion_from
           REEARTH_PLATEAUVIEW_CMS_PLATEAUPROJECT = var.plateauview_cms_plateauproject
-          REEARTH_PLATEUVIEW_SDK_TOKEN           = var.plateauview_sdk_token
-          REEARTH_PLATEUVIEW_SIDEBAR_TOKEN       = var.plateauview_sidebar_token
-          REEARTH_PLATEUVIEW_CMS_WEBHOOK_SECRET  = var.plateauview_cms_webhook_secret
+          # REEARTH_PLATEUVIEW_SDK_TOKEN           = var.plateauview_sdk_token
+          # REEARTH_PLATEUVIEW_SIDEBAR_TOKEN       = var.plateauview_sidebar_token
+          # REEARTH_PLATEUVIEW_CMS_WEBHOOK_SECRET  = var.plateauview_cms_webhook_secret
         }
       }
     }
@@ -140,7 +140,8 @@ resource "aws_iam_role_policy" "plateauview_api_instance" {
         Effect = "Allow"
         Action = [
           "s3:*",
-          "sns:*"
+          "sns:*",
+          "ssm:GetParameters"
         ]
         Resource = "*"
       },
@@ -176,12 +177,20 @@ resource "aws_ssm_parameter" "plateauview_env_secret_random" {
   for_each = toset(local.plateauview_randoms)
   name     = "/${var.prefix}/plateauview/${each.value}"
   type     = "SecureString"
-  value    = random_password.plateauview_env["each.value"].result
+  value    = random_password.plateauview_env[each.value].result
+    overwrite = true
 }
 
 resource "aws_ssm_parameter" "plateauview_env_secret_empty" {
   for_each = toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets))
   name     = "/${var.prefix}/plateauview/${each.value}"
   type     = "SecureString"
-  value    = ""
+  value    = "DUMMY"
+    overwrite = true
+}
+
+resource "aws_apprunner_custom_domain_association" "plateauview_api" {
+  service_arn          = aws_apprunner_service.plateauview_api.arn
+  domain_name          = var.plateauview_api_domain
+  enable_www_subdomain = false
 }

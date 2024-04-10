@@ -103,22 +103,6 @@ variable "plateauview_cms_plateauproject" {
   description = "cms plateau project"
 }
 
-variable "plateauview_sdk_token" {
-  type        = string
-  description = "sdk token"
-}
-
-variable "plateauview_sidebar_token" {
-  type        = string
-  description = "sidebar token"
-}
-
-variable "plateauview_cms_webhook_secret" {
-  type        = string
-  description = "webhook secret"
-
-}
-
 variable "plateauview_geo_image_identifier" {
   type        = string
   description = "image identifier"
@@ -133,4 +117,14 @@ variable "mongodb_connection_string" {
   type        = string
   description = "MongoDB Altasのデータベース接続文字列"
   sensitive   = true
+}
+
+variable "plateauview_geo_domain" {
+  type        = string
+  description = "plateauview geo domain"
+}
+
+variable "plateauview_api_domain" {
+  type        = string
+  description = "plateauview api domain"
 }

@@ -33,12 +33,6 @@ variable "reearth_cms_web_config" {
   description = "Re:Earth CMSの設定"
 }
 
-variable "cover_image_url" {
-  type        = string
-  description = "カバー画像のURL"
-
-}
-
 variable "editor_url" {
   type        = string
   description = "エディタのURL"
@@ -58,18 +52,9 @@ variable "mongodb_connection_string" {
 #-----------------------
 # cms
 #-----------------------
-variable "plateauview_sidebar_token" {
-  type = string
-}
-
 variable "plateauview_cms_plateauproject" {
   type = string
 }
-
-variable "plateauview_geo_image_identifier" {
-  type = string
-}
-
 variable "plateauview_ckan_baseurl" {
   type = string
 }
@@ -83,17 +68,5 @@ variable "plateauview_cms_systemproject" {
 }
 
 variable "plateauview_fme_baseurl" {
-  type = string
-}
-
-variable "plateauview_cms_webhook_secret" {
-  type = string
-}
-
-variable "plateauview_api_image_identifier" {
-  type = string
-}
-
-variable "plateauview_sdk_token" {
   type = string
 }
