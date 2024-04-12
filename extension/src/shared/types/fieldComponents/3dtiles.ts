@@ -1,3 +1,4 @@
+import { TilesetBuildingModelColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/3dtiles/EditorTilesetBuildingModelColorField";
 import { TilesetFloodColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/3dtiles/EditorTilesetFloodColorField";
 import { FillColorConditionFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorConditionField";
 import { FillGradientColorFieldPreset } from "../../../editor/containers/common/fieldComponentEditor/fields/common/EditorFillColorGradientField";
@@ -8,6 +9,7 @@ import { ConditionalColorSchemeValue, GradientColorSchemeValue } from "./colorSc
 export const TILESET_BUILDING_MODEL_COLOR = "TILESET_BUILDING_MODEL_COLOR";
 export type TilesetBuildingModelColorField = FieldBase<{
   type: typeof TILESET_BUILDING_MODEL_COLOR;
+  preset?: TilesetBuildingModelColorFieldPreset;
 }>;
 
 export const TILESET_FLOOD_MODEL_COLOR = "TILESET_FLOOD_MODEL_COLOR";

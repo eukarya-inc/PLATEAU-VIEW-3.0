@@ -39,6 +39,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
   textAlign: "left",
 }));
 
+const StyledTypography = styled(Typography)(() => ({
+  whiteSpace: "normal",
+}));
+
 const Legend: FC<{
   layers: readonly LayerModel[];
   colorSchemeAtom: ReturnType<typeof makeColorSchemeForComponent>;
@@ -56,7 +60,7 @@ const Legend: FC<{
   return (
     <StyledButton variant="text" onClick={handleClick}>
       <Stack spacing={1} width="100%" marginY={1}>
-        <Typography variant="body2">{colorScheme.name}</Typography>
+        <StyledTypography variant="body2">{colorScheme.name}</StyledTypography>
         {colorScheme.type === "quantitative" && (
           <QuantitativeColorLegend
             colorMap={colorScheme.colorMap}

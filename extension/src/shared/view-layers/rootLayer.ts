@@ -52,6 +52,7 @@ export type RootLayerForDatasetParams = {
   shareId: string | undefined;
   shouldInitialize: boolean;
   hidden?: boolean;
+  hasShareIdInParams?: boolean;
 };
 
 export type RootLayerForLayerAtomParams<T extends LayerType> = {
@@ -209,6 +210,7 @@ const createViewLayerWithComponentGroup = (
   shareId: string | undefined,
   shouldInitialize: boolean,
   hidden?: boolean,
+  hasShareIdInParams?: boolean,
 ): LayerModel => {
   invariant(type);
   return {
@@ -227,6 +229,7 @@ const createViewLayerWithComponentGroup = (
       componentGroup?.components ?? [],
       shareId,
       shouldInitialize,
+      hasShareIdInParams,
     ),
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
@@ -253,6 +256,7 @@ const createRootLayerForDataset = ({
   shareId,
   shouldInitialize,
   hidden,
+  hasShareIdInParams,
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
@@ -291,6 +295,7 @@ const createRootLayerForDataset = ({
         shareId,
         shouldInitialize,
         hidden,
+        hasShareIdInParams,
       ),
     ),
   };
@@ -326,6 +331,7 @@ export const createRootLayerForDatasetAtom = (
       currentGroupId: initialCurrentGroupId,
       shareId,
       shouldInitialize: true,
+      hasShareIdInParams: !!params.shareId,
       hidden: initialHidden,
     }),
   );
