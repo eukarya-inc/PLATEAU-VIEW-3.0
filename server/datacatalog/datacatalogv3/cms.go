@@ -10,12 +10,13 @@ import (
 )
 
 type CMS struct {
-	cms  cms.Interface
-	year int
+	cms     cms.Interface
+	year    int
+	plateau bool
 }
 
-func NewCMS(cms cms.Interface, year int) *CMS {
-	return &CMS{cms: cms, year: year}
+func NewCMS(cms cms.Interface, year int, plateau bool) *CMS {
+	return &CMS{cms: cms, year: year, plateau: plateau}
 }
 
 func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
@@ -75,7 +76,7 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 		all.City = res.A
 	}
 
-	if res := <-relatedItemsChan; res.B != nil {
+	if res := <-relatedItemsChan; c.plateau && res.B != nil {
 		return nil, fmt.Errorf("failed to get related items: %w", res.B)
 	} else {
 		all.Related = res.A
@@ -87,13 +88,13 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 		all.Generic = res.A
 	}
 
-	if res := <-sampleItemsChan; res.B != nil {
+	if res := <-sampleItemsChan; c.plateau && res.B != nil {
 		return nil, fmt.Errorf("failed to get sample items: %w", res.B)
 	} else {
 		all.Sample = res.A
 	}
 
-	if res := <-geospatialjpDataItemsChan; res.B != nil {
+	if res := <-geospatialjpDataItemsChan; c.plateau && res.B != nil {
 		return nil, fmt.Errorf("failed to get geospatialjp data items: %w", res.B)
 	} else {
 		all.GeospatialjpDataItems = res.A
@@ -101,7 +102,7 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 
 	all.Plateau = make(map[string][]*PlateauFeatureItem)
 	for _, featureItemsChan := range featureItemsChans {
-		if res := <-featureItemsChan; res.C != nil {
+		if res := <-featureItemsChan; c.plateau && res.C != nil {
 			return nil, fmt.Errorf("failed to get feature items (%s): %w", res.A, res.C)
 		} else {
 			for _, d := range res.B {
@@ -132,7 +133,7 @@ func (c *CMS) GetFeatureTypes(ctx context.Context, project string) (FeatureTypes
 }
 
 func (c *CMS) GetCityItems(ctx context.Context, project string, featureTypes []FeatureType) ([]*CityItem, error) {
-	items, err := getItemsAndConv[CityItem](
+	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+cityModel,
 		func(i cms.Item) *CityItem {
 			return CityItemFrom(&i, featureTypes)

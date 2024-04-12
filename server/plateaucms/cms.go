@@ -274,6 +274,10 @@ func (m Metadata) CMS() (*cms.CMS, error) {
 	return cms.New(m.CMSBaseURL, m.CMSAPIKey)
 }
 
+func (m Metadata) IsPlateau() bool {
+	return strings.HasPrefix(m.DataCatalogProjectAlias, plateauPrefix)
+}
+
 func (m Metadata) PlateauYear() int {
 	if !strings.HasPrefix(m.DataCatalogProjectAlias, plateauPrefix) {
 		return 0

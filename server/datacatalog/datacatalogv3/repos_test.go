@@ -21,7 +21,7 @@ func TestRepos(t *testing.T) {
 	cms := lo.Must(cms.New("https://example.com", "token"))
 
 	repos := NewRepos()
-	err := repos.Prepare(ctx, "prj", 2023, cms)
+	err := repos.Prepare(ctx, "prj", 2023, true, cms)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"plateau bldg2 bldg: invalid city: city2", "plateau bldg2: city not found: city2"}, repos.Warnings("prj"))
 

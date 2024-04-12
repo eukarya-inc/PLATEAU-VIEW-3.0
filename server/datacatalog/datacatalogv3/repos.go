@@ -42,12 +42,12 @@ func NewRepos() *Repos {
 	return r
 }
 
-func (r *Repos) Prepare(ctx context.Context, project string, year int, cms cms.Interface) error {
+func (r *Repos) Prepare(ctx context.Context, project string, year int, plateau bool, cms cms.Interface) error {
 	if _, ok := r.cms.Load(project); ok {
 		return nil
 	}
 
-	r.setCMS(project, year, cms)
+	r.setCMS(project, year, plateau, cms)
 	_, err := r.Update(ctx, project)
 	return err
 }
@@ -82,7 +82,7 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 	}, nil
 }
 
-func (r *Repos) setCMS(project string, year int, cms cms.Interface) {
-	c := NewCMS(cms, year)
+func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
+	c := NewCMS(cms, year, plateau)
 	r.cms.Store(project, c)
 }

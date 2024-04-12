@@ -204,7 +204,7 @@ func (h *reposHandler) prepareAndGetMergedRepo(ctx context.Context, project stri
 	}
 
 	if err := h.prepareAll(ctx, mds); err != nil {
-		log.Errorfc(ctx, "datacatalogv3: failed to prepare repos: %w", err)
+		log.Errorfc(ctx, "datacatalogv3: failed to prepare repos: %v", err)
 	}
 
 	repos := make([]plateauapi.Repo, 0, len(mds))
@@ -224,7 +224,7 @@ func (h *reposHandler) prepareAndGetMergedRepo(ctx context.Context, project stri
 
 	merged := plateauapi.NewMerger(repos...)
 	if err := merged.Init(ctx); err != nil {
-		log.Errorfc(ctx, "datacatalogv3: failed to initialize merged repo: %w", err)
+		log.Errorfc(ctx, "datacatalogv3: failed to initialize merged repo: %v", err)
 		return nil
 	}
 
@@ -293,7 +293,7 @@ func (h *reposHandler) prepareV3(ctx context.Context, md plateaucms.Metadata) er
 		return fmt.Errorf("datacatalogv3: failed to create cms for %s: %w", md.DataCatalogProjectAlias, err)
 	}
 
-	if err := h.reposv3.Prepare(ctx, md.DataCatalogProjectAlias, md.PlateauYear(), cms); err != nil {
+	if err := h.reposv3.Prepare(ctx, md.DataCatalogProjectAlias, md.PlateauYear(), md.IsPlateau(), cms); err != nil {
 		return fmt.Errorf("datacatalogv3: failed to prepare repo for %s: %w", md.DataCatalogProjectAlias, err)
 	}
 
