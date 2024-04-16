@@ -34,6 +34,8 @@ import {
   setInitialPededstrianCoordinates,
   PLATEAU_GEOJSON_URL,
   setPlateauGeojsonUrl,
+  setCityCode,
+  CITY_CODE,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
@@ -52,6 +54,7 @@ type Props = {
   geojsonURL?: string;
   // Custom settings
   cityName?: string;
+  cityCode?: string;
   customPrimaryColor?: string;
   customLogo?: string;
   customPedestrian?: CameraPosition;
@@ -70,6 +73,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   children,
   inEditor,
   cityName,
+  cityCode,
   customPrimaryColor,
   customLogo,
   customPedestrian,
@@ -132,6 +136,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setCityName(cityName);
     }
   }, [cityName]);
+
+  useEffect(() => {
+    if (cityCode && (!CITY_CODE || CITY_CODE !== cityCode)) {
+      setCityCode(cityCode);
+    }
+  }, [cityCode]);
 
   useEffect(() => {
     if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {

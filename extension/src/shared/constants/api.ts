@@ -32,6 +32,11 @@ export const setCityName = (name: string) => {
   CITY_NAME = name;
 };
 
+export let CITY_CODE: string | undefined;
+export const setCityCode = (code: string) => {
+  CITY_CODE = code;
+};
+
 export let PRIMARY_COLOR: string | undefined;
 export const setPrimaryColor = (color: string) => {
   PRIMARY_COLOR = color;
