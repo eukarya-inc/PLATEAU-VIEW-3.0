@@ -225,7 +225,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
                   onFiltersChange={handleFiltersChange}
                 />
               )}
-              {tab === "city" && CITY_NAME && <CityDatasetsList cityName={CITY_NAME} />}
+              {tab === "city" && <CityDatasetsList />}
               {tab === "area" && <DatasetAreaList />}
               {tab === "type" && <DatasetTypeList />}
             </StyledScrollable>

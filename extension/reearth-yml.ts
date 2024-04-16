@@ -109,6 +109,11 @@ const yml = {
                 title: "都市名",
               },
               {
+                id: "cityCode",
+                type: "string",
+                title: "行政コード",
+              },
+              {
                 id: "primaryColor",
                 type: "string",
                 ui: "color",
