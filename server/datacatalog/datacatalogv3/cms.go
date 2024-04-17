@@ -180,7 +180,11 @@ func (c *CMS) GetGenericItems(ctx context.Context, project string) ([]*GenericIt
 
 	for _, item := range items {
 		if item.Category == "" {
-			item.Category = "ユースケース"
+			if c.plateau {
+				item.Category = datasetTypeNameUsecase
+			} else {
+				item.Category = datasetTypeNameCity
+			}
 		}
 	}
 
