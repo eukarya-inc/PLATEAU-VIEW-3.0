@@ -63,7 +63,6 @@ export function parseCSV(
     });
   });
   if (meshType == null) {
-    console.log(data, codes, values, meshType);
     throw new Error(`Could not infer mesh type: ${data}`);
   }
   invariant(codes.length > 0);
