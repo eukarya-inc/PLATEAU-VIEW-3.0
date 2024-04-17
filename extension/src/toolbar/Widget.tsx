@@ -45,6 +45,7 @@ type DefaultProps = {
   projectName?: string;
   googleStreetViewAPIKey?: string;
   geojsonURL?: string;
+  hideFeedback?: boolean;
 };
 
 type OptionalProps = {
@@ -80,6 +81,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
         geojsonURL={widget.property.default.geojsonURL}
+        hideFeedback={widget.property.default.hideFeedback}
         cityName={widget.property.optional?.cityName}
         cityCode={widget.property.optional?.cityCode}
         customPrimaryColor={widget.property.optional?.primaryColor}
