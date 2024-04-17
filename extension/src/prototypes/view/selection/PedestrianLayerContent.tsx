@@ -12,8 +12,8 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Suspense, useCallback, useEffect, useRef, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { GOOGLE_STREET_VIEW_API_KEY } from "../../../shared/constants";
 import { lookAtXYZ } from "../../../shared/reearth/utils";
+import { useGoogleStreetViewApiKey } from "../../../shared/states/environmentVariables";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom, removeLayerAtom, useFindLayer, type LayerModel } from "../../layers";
@@ -89,8 +89,9 @@ export interface PedestrianLayerContentProps {
 
 export const StreetViewContent: FC<{
   layer: LayerModel<typeof PEDESTRIAN_LAYER>;
+  apiKey?: string;
   onZoomChange: (zoom: number) => void;
-}> = ({ layer, onZoomChange }) => {
+}> = ({ layer, apiKey, onZoomChange }) => {
   const { locationAtom, headingPitchAtom, zoomAtom, synchronizedAtom } = useSynchronizeStreetView({
     locationAtom: layer.locationAtom,
     headingPitchAtom: layer.headingPitchAtom,
@@ -149,15 +150,12 @@ export const StreetViewContent: FC<{
     };
   }, [setSynchronized]);
 
-  invariant(
-    GOOGLE_STREET_VIEW_API_KEY != null,
-    "Missing environment variable: GOOGLE_STREET_VIEW_API_KEY",
-  );
+  invariant(apiKey != null, "Missing environment variable: GOOGLE_STREET_VIEW_API_KEY");
   return (
     <>
       <StyledStreetView
         key={layer.id}
-        apiKey={GOOGLE_STREET_VIEW_API_KEY}
+        apiKey={apiKey}
         pano={pano ?? undefined}
         location={location}
         headingPitch={headingPitch ?? undefined}
@@ -185,6 +183,7 @@ export const Content: FC<{
   layer: LayerModel<typeof PEDESTRIAN_LAYER>;
 }> = ({ layer }) => {
   const title = useAtomValue(layer.titleAtom);
+  const [googleStreetViewAPIKey] = useGoogleStreetViewApiKey();
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
@@ -235,7 +234,7 @@ export const Content: FC<{
   }, [handleZoomChange]);
 
   invariant(
-    GOOGLE_STREET_VIEW_API_KEY != null,
+    googleStreetViewAPIKey != null,
     "Missing environment variable: GOOGLE_STREET_VIEW_API_KEY",
   );
   return (
@@ -271,7 +270,11 @@ export const Content: FC<{
       />
       <StreetViewContainer ref={containerRef}>
         <Suspense>
-          <StreetViewContent layer={layer} onZoomChange={handleZoomChange} />
+          <StreetViewContent
+            layer={layer}
+            apiKey={googleStreetViewAPIKey}
+            onZoomChange={handleZoomChange}
+          />
         </Suspense>
       </StreetViewContainer>
     </List>

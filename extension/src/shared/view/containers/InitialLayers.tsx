@@ -18,10 +18,10 @@ import {
   SKETCH_LAYER,
   STORY_LAYER,
 } from "../../../prototypes/view-layers";
-import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
 import { Data, SketchFeature } from "../../reearth/types";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
+import { useInitialPedestrianCoordinates } from "../../states/environmentVariables";
 import { settingsAtom } from "../../states/setting";
 import {
   SHARED_PROJECT_ID_KEY,
@@ -98,6 +98,8 @@ type InitialLayerParams = (
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
 
+  const [initialPedestrianCoordinates] = useInitialPedestrianCoordinates();
+
   // TODO: Get share ID
   const shareId = getShareId();
   const getSharedRootLayers = useSetAtom(getSharedRootLayersAtom);
@@ -134,13 +136,13 @@ export const InitialLayers: FC = () => {
         {
           type: PEDESTRIAN_LAYER,
           location: {
-            longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
-            latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+            longitude: initialPedestrianCoordinates?.lng ?? 139.769,
+            latitude: initialPedestrianCoordinates?.lat ?? 35.68,
           },
         },
       ];
     }
-  }, [isMobile]);
+  }, [isMobile, initialPedestrianCoordinates]);
 
   const defaultBuildings = useMemo(
     () =>

@@ -10,7 +10,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
-import { HIDE_FEEDBACK, LOGO, SITE_URL } from "../../../shared/constants";
+import { useHideFeedback, useLogo, useSiteUrl } from "../../../shared/states/environmentVariables";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import {
@@ -32,6 +32,8 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
       popupId: id,
     });
 
+    const [customLogo] = useLogo();
+    const [customSiteUrl] = useSiteUrl();
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
     const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
     const [, setShowMyDataModal] = useAtom(showMyDataModalAtom);
@@ -68,11 +70,13 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
 
     const platform = useAtomValue(platformAtom);
 
+    const [hideFeedback] = useHideFeedback();
+
     return (
       <>
         <IconButton ref={ref} aria-label="メインメニュー" {...bindTrigger(popupState)} {...props}>
-          {LOGO ? (
-            <img src={LOGO} alt="customIcon" height={24} />
+          {customLogo ? (
+            <img src={customLogo} alt="customIcon" height={24} />
           ) : (
             <PlateauSymbol sx={{ fontSize: 24 }} />
           )}
@@ -89,12 +93,12 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           }}>
           <MenuItem
             component="a"
-            href={SITE_URL}
+            href={customSiteUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClick}>
-            {LOGO ? (
-              <img src={LOGO} alt="customIcon" height={32} />
+            {customLogo ? (
+              <img src={customLogo} alt="customIcon" height={32} />
             ) : (
               <PlateauLogotype sx={{ height: 32, marginX: 2, marginY: 1 }} />
             )}
@@ -114,7 +118,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           <SelectItem data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
-          {HIDE_FEEDBACK === true ? null : (
+          {hideFeedback === true ? null : (
             <SelectItem data-name="feedback" onClick={handleClick}>
               フィードバック
             </SelectItem>
