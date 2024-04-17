@@ -36,6 +36,8 @@ import {
   setPlateauGeojsonUrl,
   setCityCode,
   CITY_CODE,
+  HIDE_FEEDBACK,
+  setHideFeedback,
 } from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
@@ -52,6 +54,7 @@ type Props = {
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
   geojsonURL?: string;
+  hideFeedback?: boolean;
   // Custom settings
   cityName?: string;
   cityCode?: string;
@@ -70,6 +73,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   catalogUrl,
   catalogURLForAdmin,
   googleStreetViewAPIKey,
+  hideFeedback,
   children,
   inEditor,
   cityName,
@@ -115,6 +119,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       createGeoClient(geoUrl);
     }
   }, [geoUrl]);
+
+  useEffect(() => {
+    if (HIDE_FEEDBACK === undefined && hideFeedback !== undefined) {
+      setHideFeedback(hideFeedback);
+    }
+  }, [hideFeedback]);
 
   useEffect(() => {
     const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;

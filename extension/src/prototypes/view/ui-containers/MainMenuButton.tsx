@@ -10,7 +10,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
-import { LOGO, SITE_URL } from "../../../shared/constants";
+import { HIDE_FEEDBACK, LOGO, SITE_URL } from "../../../shared/constants";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import {
@@ -114,9 +114,11 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
           <SelectItem data-name="help" onClick={handleClick}>
             ヘルプ
           </SelectItem>
-          <SelectItem data-name="feedback" onClick={handleClick}>
-            フィードバック
-          </SelectItem>
+          {HIDE_FEEDBACK === true ? null : (
+            <SelectItem data-name="feedback" onClick={handleClick}>
+              フィードバック
+            </SelectItem>
+          )}
           <Divider />
           <SelectItem data-name="hide-ui" onClick={handleClick}>
             UIを{hideAppOverlay ? "表示" : "隠す"}

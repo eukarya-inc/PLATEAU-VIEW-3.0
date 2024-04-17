@@ -26,6 +26,11 @@ export const setGoogleStreetViewAPIKey = (key: string) => {
   GOOGLE_STREET_VIEW_API_KEY = key;
 };
 
+export let HIDE_FEEDBACK: boolean | undefined;
+export const setHideFeedback = (hide: boolean) => {
+  HIDE_FEEDBACK = hide;
+};
+
 // custom settings
 export let CITY_NAME: string | undefined;
 export const setCityName = (name: string) => {
