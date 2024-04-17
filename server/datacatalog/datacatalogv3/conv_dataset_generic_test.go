@@ -35,7 +35,7 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 				ID: "id3",
 			},
 		},
-		Category: "ユースケース",
+		Category: datasetTypeNameUsecase,
 	}
 
 	expected := []plateauapi.Dataset{
@@ -92,6 +92,11 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			ID:   plateauapi.NewID("usecase", plateauapi.TypeDatasetType),
 			Code: "usecase",
 			Name: "ユースケース",
+		},
+		&plateauapi.GenericDatasetType{
+			ID:   plateauapi.NewID("city", plateauapi.TypeDatasetType),
+			Code: "city",
+			Name: "自治体データ",
 		},
 	}
 

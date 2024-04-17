@@ -193,6 +193,9 @@ var relatedFeatureTypes = []FeatureType{
 	},
 }
 
+const datasetTypeNameUsecase = "ユースケース"
+const datasetTypeNameCity = "自治体データ"
+
 var genericFeatureTypes = []FeatureType{
 	{
 		Code: "global",
@@ -205,6 +208,10 @@ var genericFeatureTypes = []FeatureType{
 	{
 		Code: "sample",
 		Name: "サンプルデータ",
+	},
+	{
+		Code: "city",
+		Name: "自治体データ",
 	},
 }
 
