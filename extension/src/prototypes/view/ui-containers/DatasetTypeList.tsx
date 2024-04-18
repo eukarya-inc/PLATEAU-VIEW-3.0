@@ -33,7 +33,7 @@ const MunicipalityItem: FC<{
     [query.data?.area?.datasets],
   );
 
-  if (isGenericDataset) {
+  if (isGenericDataset || datasetType === PlateauDatasetType.City) {
     return (
       <DatasetTreeItem
         nodeId={`${datasetType}:municipality:${municipality.code}`}

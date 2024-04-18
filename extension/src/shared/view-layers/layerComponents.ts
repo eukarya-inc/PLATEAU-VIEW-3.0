@@ -10,6 +10,7 @@ import {
   BRIDGE_LAYER,
   BUILDING_LAYER,
   CITY_FURNITURE_LAYER,
+  CITY_LAYER,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
   GLOBAL_LAYER,
@@ -78,6 +79,7 @@ export const layerComponents: LayerComponents = {
   [STATION_LAYER]: GeneralDatasetLayer,
   [URBAN_PLANNING_LAYER]: GeneralDatasetLayer,
   [USE_CASE_LAYER]: GeneralDatasetLayer,
+  [CITY_LAYER]: GeneralDatasetLayer,
   [WATERWAY_LAYER]: GeneralDatasetLayer,
   [VEGETATION_LAYER]: GeneralDatasetLayer,
 };
