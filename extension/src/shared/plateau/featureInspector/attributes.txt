@@ -39667,8 +39667,8 @@ tran:TrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_uro:urgency,{"de
 tran:TrafficArea_uro:FacilityAttribute_uro:ParkHealthAssessment_uro:urgency,{"description":"緊急度"}
 tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_uro:urgency,{"description":"緊急度"}
 tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:ParkHealthAssessment_uro:urgency,{"description":"緊急度"}
-tran:TrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
-tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:TrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理類型"}
+tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理類型"}
 tran:TrafficArea_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:TrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:TrafficArea_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
@@ -39809,8 +39809,8 @@ tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:parkHealthAssessment_uro:urg
 tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:ParkHealthAssessment_uro:urgency,{"description":"緊急度"}
 tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:parkHealthAssessment_uro:urgency,{"description":"緊急度"}
 tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:ParkHealthAssessment_uro:urgency,{"description":"緊急度"}
-tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理者の名称累計"}
-tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理者の名称累計"}
+tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:managementType,{"description":"管理類型"}
+tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:managementType,{"description":"管理類型"}
 tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:AuxiliaryTrafficArea_uro:ParkFacilityLongevityPlanAttribute_uro:expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:AuxiliaryTrafficArea_uro:FacilityAttribute_uro:longevityMeasures,{"description":"長寿命化対策"}
@@ -40122,7 +40122,7 @@ frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_parkHealthAssessmen
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_ParkHealthAssessment_uro_condition,{"description":"健全度"}
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_parkHealthAssessment_urgency,{"description":"緊急度"}
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_ParkHealthAssessment_urgency,{"description":"緊急度"}
-frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理者の名称累計"}
+frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理類型"}
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_longevityMeasures,{"description":"長寿命化対策"}
 frn:CityFurniture_uro_ParkFacilityLongevityPlanAttribute_uro_LongevityMeasures,{"description":"長寿命化対策"}
@@ -40215,8 +40215,8 @@ tran:TrafficArea_uro_FacilityAttribute_uro_parkHealthAssessment_uro_urgency,{"de
 tran:TrafficArea_uro_FacilityAttribute_uro_ParkHealthAssessment_uro_urgency,{"description":"緊急度"}
 tran:TrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_parkHealthAssessment_uro_urgency,{"description":"緊急度"}
 tran:TrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_ParkHealthAssessment_uro_urgency,{"description":"緊急度"}
-tran:TrafficArea_uro_FacilityAttribute_uro_managementType,{"description":"管理者の名称累計"}
-tran:TrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理者の名称累計"}
+tran:TrafficArea_uro_FacilityAttribute_uro_managementType,{"description":"管理類型"}
+tran:TrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理類型"}
 tran:TrafficArea_uro_FacilityAttribute_uro_expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:TrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:TrafficArea_uro_FacilityAttribute_uro_longevityMeasures,{"description":"長寿命化対策"}
@@ -40329,8 +40329,8 @@ tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_parkHealthAssessment_uro_urg
 tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_ParkHealthAssessment_uro_urgency,{"description":"緊急度"}
 tran:AuxiliaryTrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_parkHealthAssessment_uro_urgency,{"description":"緊急度"}
 tran:AuxiliaryTrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_ParkHealthAssessment_uro_urgency,{"description":"緊急度"}
-tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_managementType,{"description":"管理者の名称累計"}
-tran:AuxiliaryTrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理者の名称累計"}
+tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_managementType,{"description":"管理類型"}
+tran:AuxiliaryTrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_managementType,{"description":"管理類型"}
 tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:AuxiliaryTrafficArea_uro_ParkFacilityLongevityPlanAttribute_uro_expectedRenewalYearWithMeasures,{"description":"対策を踏まえた更新見込み年度","dataType":"gYear"}
 tran:AuxiliaryTrafficArea_uro_FacilityAttribute_uro_longevityMeasures,{"description":"長寿命化対策"}
