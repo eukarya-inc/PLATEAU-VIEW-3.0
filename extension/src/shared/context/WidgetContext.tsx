@@ -11,36 +11,23 @@ import {
   createTemplateClient,
   templateClient,
 } from "../api/clients";
-import {
-  GEO_API_URL,
-  GOOGLE_STREET_VIEW_API_KEY,
-  GSI_TILE_URL,
-  LOGO,
-  PLATEAU_API_URL,
-  PROJECT_ID,
-  PRIMARY_COLOR,
-  setGISTileURL,
-  setGeoApiUrl,
-  setGoogleStreetViewAPIKey,
-  setLogo,
-  setPlateauApiUrl,
-  setProjectId,
-  setPrimaryColor,
-  SITE_URL,
-  setSiteURL,
-  CITY_NAME,
-  setCityName,
-  INITIAL_PEDESTRIAN_COORDINATES,
-  setInitialPededstrianCoordinates,
-  PLATEAU_GEOJSON_URL,
-  setPlateauGeojsonUrl,
-  setCityCode,
-  CITY_CODE,
-  HIDE_FEEDBACK,
-  setHideFeedback,
-} from "../constants";
 import { geoClient, createGeoClient, catalogClient, createCatalogClient } from "../graphql/clients";
 import { CameraPosition } from "../reearth/types";
+import {
+  useCityCode,
+  useCityName,
+  useGeoApiUrl,
+  useGoogleStreetViewApiKey,
+  useGsiTileUrl,
+  useHideFeedback,
+  useInitialPedestrianCoordinates,
+  useLogo,
+  usePlateauApiUrl,
+  usePlateauGeojsonUrl,
+  usePrimaryColor,
+  useProjectId,
+  useSiteUrl,
+} from "../states/environmentVariables";
 
 type Props = {
   inEditor?: boolean;
@@ -84,47 +71,111 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   customSiteUrl,
   geojsonURL,
 }) => {
+  const [hideFeedbackState, setHideFeedbackState] = useHideFeedback();
   useEffect(() => {
-    if (!PLATEAU_API_URL && plateauUrl) {
+    if (hideFeedback !== undefined && hideFeedback !== hideFeedbackState) {
+      setHideFeedbackState(hideFeedback);
+    }
+  }, [hideFeedback, hideFeedbackState, setHideFeedbackState]);
+
+  const [plateauApiUrlState, setPlateauApiUrl] = usePlateauApiUrl();
+  useEffect(() => {
+    if (!plateauApiUrlState && plateauUrl) {
       setPlateauApiUrl(plateauUrl);
     }
-  }, [plateauUrl]);
+  }, [plateauUrl, plateauApiUrlState, setPlateauApiUrl]);
 
+  const [projectIdState, setProjectIdState] = useProjectId();
   useEffect(() => {
-    if (!PROJECT_ID && projectId) {
-      setProjectId(projectId);
+    if (!projectIdState && projectId) {
+      setProjectIdState(projectId);
     }
-  }, [projectId]);
+  }, [projectId, projectIdState, setProjectIdState]);
 
+  const [geoApiUrlState, setGeoApiUrlState] = useGeoApiUrl();
   useEffect(() => {
-    if (!GEO_API_URL && geoUrl) {
-      setGeoApiUrl(geoUrl);
+    if (!geoApiUrlState && geoUrl) {
+      setGeoApiUrlState(geoUrl);
     }
-  }, [geoUrl]);
+  }, [geoUrl, geoApiUrlState, setGeoApiUrlState]);
 
+  const [gsiTileURLState, setGSITileURLState] = useGsiTileUrl();
   useEffect(() => {
-    if (!GSI_TILE_URL && gsiTileURL) {
-      setGISTileURL(gsiTileURL);
+    if (!gsiTileURLState && gsiTileURL) {
+      setGSITileURLState(gsiTileURL);
     }
-  }, [gsiTileURL]);
+  }, [gsiTileURL, gsiTileURLState, setGSITileURLState]);
 
+  const [googleStreetViewAPIKeyState, setGoogleStreetViewAPIKeyState] = useGoogleStreetViewApiKey();
   useEffect(() => {
-    if (!GOOGLE_STREET_VIEW_API_KEY && googleStreetViewAPIKey) {
-      setGoogleStreetViewAPIKey(googleStreetViewAPIKey);
+    if (!googleStreetViewAPIKeyState && googleStreetViewAPIKey) {
+      setGoogleStreetViewAPIKeyState(googleStreetViewAPIKey);
     }
-  }, [googleStreetViewAPIKey]);
+  }, [googleStreetViewAPIKey, googleStreetViewAPIKeyState, setGoogleStreetViewAPIKeyState]);
 
+  // optional (custom) state
+  const [cityNameState, setCityNameState] = useCityName();
+  useEffect(() => {
+    if (cityName && (!cityNameState || cityNameState !== cityName)) {
+      setCityNameState(cityName);
+    }
+  }, [cityName, cityNameState, setCityNameState]);
+
+  const [cityCodeState, setCityCodeState] = useCityCode();
+  useEffect(() => {
+    if (cityCode && (!cityCodeState || cityCodeState !== cityCode)) {
+      setCityCodeState(cityCode);
+    }
+  }, [cityCode, cityCodeState, setCityCodeState]);
+
+  const [customPrimaryColorState, setPrimaryColorState] = usePrimaryColor();
+  useEffect(() => {
+    if (
+      customPrimaryColor &&
+      (!customPrimaryColorState || customPrimaryColorState !== customPrimaryColor)
+    ) {
+      setPrimaryColorState(customPrimaryColor);
+    }
+  }, [customPrimaryColor, customPrimaryColorState, setPrimaryColorState]);
+
+  const [customLogoState, setLogoState] = useLogo();
+  useEffect(() => {
+    if (customLogo && (!customLogoState || customLogoState !== customLogo)) {
+      setLogoState(customLogo);
+    }
+  }, [customLogo, customLogoState, setLogoState]);
+
+  const [customSiteUrlState, setSiteURLState] = useSiteUrl();
+  useEffect(() => {
+    if (customSiteUrl && (!customSiteUrlState || customSiteUrlState !== customSiteUrl)) {
+      setSiteURLState(customSiteUrl);
+    }
+  }, [customSiteUrl, customSiteUrlState, setSiteURLState]);
+
+  const [customPedestrianState, setInitialPededstrianCoordinatesState] =
+    useInitialPedestrianCoordinates();
+  useEffect(() => {
+    if (
+      customPedestrian &&
+      (!customPedestrianState || customPedestrianState !== customPedestrian)
+    ) {
+      setInitialPededstrianCoordinatesState(customPedestrian);
+    }
+  }, [customPedestrian, customPedestrianState, setInitialPededstrianCoordinatesState]);
+
+  const [geojsonURLState, setPlateauGeojsonUrlState] = usePlateauGeojsonUrl();
+  useEffect(() => {
+    if (geojsonURL && (!geojsonURLState || geojsonURLState !== geojsonURL)) {
+      setPlateauGeojsonUrlState(geojsonURL);
+    }
+  }, [geojsonURL, geojsonURLState, setPlateauGeojsonUrlState]);
+
+  // create clients
   useEffect(() => {
     if (!geoClient && geoUrl) {
       createGeoClient(geoUrl);
     }
   }, [geoUrl]);
-
-  useEffect(() => {
-    if (HIDE_FEEDBACK === undefined && hideFeedback !== undefined) {
-      setHideFeedback(hideFeedback);
-    }
-  }, [hideFeedback]);
 
   useEffect(() => {
     const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;
@@ -141,70 +192,28 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [projectId, plateauUrl, plateauToken]);
 
-  useEffect(() => {
-    if (cityName && (!CITY_NAME || CITY_NAME !== cityName)) {
-      setCityName(cityName);
-    }
-  }, [cityName]);
-
-  useEffect(() => {
-    if (cityCode && (!CITY_CODE || CITY_CODE !== cityCode)) {
-      setCityCode(cityCode);
-    }
-  }, [cityCode]);
-
-  useEffect(() => {
-    if (customSiteUrl && (!SITE_URL || SITE_URL !== customSiteUrl)) {
-      setSiteURL(customSiteUrl);
-    }
-  }, [customSiteUrl]);
-
-  useEffect(() => {
-    if (customLogo && (!LOGO || LOGO !== customLogo)) {
-      setLogo(customLogo);
-    }
-  }, [customLogo]);
-
-  useEffect(() => {
-    if (
-      customPedestrian &&
-      (!INITIAL_PEDESTRIAN_COORDINATES || INITIAL_PEDESTRIAN_COORDINATES !== customPedestrian)
-    ) {
-      setInitialPededstrianCoordinates(customPedestrian);
-    }
-  }, [customPedestrian]);
-
-  useEffect(() => {
-    if (!PLATEAU_GEOJSON_URL && geojsonURL) {
-      setPlateauGeojsonUrl(geojsonURL);
-    }
-  }, [geojsonURL]);
-
-  useEffect(() => {
-    if (customPrimaryColor && (!PRIMARY_COLOR || PRIMARY_COLOR !== customPrimaryColor)) {
-      setPrimaryColor(customPrimaryColor);
-    }
-  }, [customPrimaryColor]);
-
   const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
 
   useEffect(() => {
-    if (!customTheme && PRIMARY_COLOR) {
+    if (
+      (!customTheme || customTheme.palette?.primary.main !== customPrimaryColorState) &&
+      customPrimaryColorState
+    ) {
       setCustomTheme(
         createTheme(
           merge<unknown, unknown, ThemeOptions>({}, lightThemeOptions, {
             palette: {
               primary: {
-                main: PRIMARY_COLOR,
+                main: customPrimaryColorState,
               },
             },
           }),
         ),
       );
     }
-  }, [customTheme]);
+  }, [customTheme, customPrimaryColorState]);
 
-  if (!PLATEAU_API_URL || !geoClient || !catalogClient || !GEO_API_URL || !GSI_TILE_URL) {
+  if (!plateauApiUrlState || !geoClient || !catalogClient || !geoApiUrlState || !gsiTileURLState) {
     return null;
   }
 

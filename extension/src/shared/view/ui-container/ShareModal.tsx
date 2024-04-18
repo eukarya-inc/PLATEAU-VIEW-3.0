@@ -1,8 +1,8 @@
 import { useSetAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 
-import { PLATEAU_API_URL, PROJECT_ID } from "../../constants";
 import { SHARED_STORE } from "../../sharedAtoms";
+import { usePlateauApiUrl, useProjectId } from "../../states/environmentVariables";
 import { shareAtom } from "../../states/share";
 import Modal from "../../ui-components/ShareModal";
 
@@ -17,6 +17,8 @@ const getHrefWithoutQuery = () => {
 };
 
 const ShareModal: FC<Props> = ({ showShareModal, setShowShareModal }) => {
+  const [plateauApiUrl] = usePlateauApiUrl();
+  const [projectId] = useProjectId();
   const shareState = useSetAtom(shareAtom);
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -27,7 +29,7 @@ const ShareModal: FC<Props> = ({ showShareModal, setShowShareModal }) => {
       setIsError(false);
       await shareState();
       setShareId(
-        await fetch(`${PLATEAU_API_URL}/share/${PROJECT_ID}`, {
+        await fetch(`${plateauApiUrl}/share/${projectId}`, {
           headers: {
             "Content-Type": "application/json",
           },
@@ -46,7 +48,7 @@ const ShareModal: FC<Props> = ({ showShareModal, setShowShareModal }) => {
     } else {
       setLoading(false);
     }
-  }, [showShareModal, shareState]);
+  }, [showShareModal, plateauApiUrl, projectId, shareState]);
 
   const onClose = useCallback(() => {
     setShowShareModal(false);

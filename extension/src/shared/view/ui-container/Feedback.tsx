@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
-import { PLATEAU_API_URL } from "../../constants";
+import { usePlateauApiUrl } from "../../states/environmentVariables";
 import FeedBackModal from "../../ui-components/FeedBackForm";
 import FeedbackNotificationModal from "../../ui-components/FeedbackNotificationModal";
 
@@ -19,6 +19,7 @@ const dataURItoBlob = (dataURI: string) => {
 
 const FeedBack = () => {
   const [loading, setLoading] = useState(false);
+  const [plateauApiUrl] = usePlateauApiUrl();
   const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
   const [notification, setNotification] = useState(false);
 
@@ -39,7 +40,7 @@ const FeedBack = () => {
       formData.append("file", file);
     }
 
-    await fetch(`${PLATEAU_API_URL}/opinion`, {
+    await fetch(`${plateauApiUrl}/opinion`, {
       method: "POST",
       body: formData,
     });

@@ -2,14 +2,15 @@ import { groupBy } from "lodash-es";
 import { FC, useMemo } from "react";
 import invariant from "tiny-invariant";
 
-import { CITY_CODE } from "../../../shared/constants";
 import { useDatasets } from "../../../shared/graphql";
+import { useCityCode } from "../../../shared/states/environmentVariables";
 import { DatasetTreeView } from "../../ui-components";
 
 import { DatasetGroup } from "./DatasetGroup";
 
 export const CityDatasetsList: FC = () => {
-  const query = useDatasets({ areaCodes: [CITY_CODE] });
+  const [cityCode] = useCityCode();
+  const query = useDatasets({ areaCodes: [cityCode] });
 
   const groups = useMemo(
     () =>

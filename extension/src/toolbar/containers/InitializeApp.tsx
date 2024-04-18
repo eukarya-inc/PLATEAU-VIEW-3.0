@@ -4,6 +4,7 @@ import { FC, useEffect, useLayoutEffect } from "react";
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
 import { fetchShare } from "../../shared/sharedAtoms";
+import { usePlateauApiUrl, useProjectId } from "../../shared/states/environmentVariables";
 import { sharedInitialClockAtom } from "../../shared/states/scene";
 import { updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
@@ -11,6 +12,9 @@ import { isAppReadyAtom } from "../../shared/view/state/app";
 import { useInteractionMode } from "../hooks/useInteractionMode";
 
 export const InitializeApp: FC = () => {
+  const [plateauApiUrl] = usePlateauApiUrl();
+  const [projectId] = useProjectId();
+
   const settingClient = useSettingClient();
   const templateClient = useTemplateClient();
 
@@ -21,7 +25,7 @@ export const InitializeApp: FC = () => {
   const setIsAppReady = useSetAtom(isAppReadyAtom);
   useEffect(() => {
     const fetch = async () => {
-      fetchShare();
+      fetchShare(plateauApiUrl, projectId);
       const [settings, templates] = await Promise.all([
         settingClient.findAll(),
         templateClient.findAll(),
@@ -31,7 +35,15 @@ export const InitializeApp: FC = () => {
       setIsAppReady(true);
     };
     fetch();
-  }, [setIsAppReady, settingClient, templateClient, updateAllSetting, updateAllTemplate]);
+  }, [
+    setIsAppReady,
+    projectId,
+    plateauApiUrl,
+    settingClient,
+    templateClient,
+    updateAllSetting,
+    updateAllTemplate,
+  ]);
 
   const initialClock = useAtomValue(sharedInitialClockAtom);
 

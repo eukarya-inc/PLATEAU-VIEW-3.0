@@ -57,7 +57,6 @@ const JSONField: React.FC<BasicFieldProps<"TILESET_BUILDING_MODEL_COLOR">> = ({
       if (!code) return;
       try {
         const json = JSON.parse(code) as TilesetBuildingModelColorFieldPreset | undefined;
-        console.log("EDITOR", json);
         onUpdate({
           ...component,
           preset: {

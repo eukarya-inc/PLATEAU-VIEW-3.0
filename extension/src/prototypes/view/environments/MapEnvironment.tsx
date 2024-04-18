@@ -2,8 +2,8 @@
 import { useAtomValue } from "jotai";
 import { useMemo, type FC } from "react";
 
-import { GSI_TILE_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
+import { useGsiTileUrl } from "../../../shared/states/environmentVariables";
 import { type ColorMode } from "../../shared-states";
 import { enableTerrainLightingAtom } from "../states/app";
 
@@ -31,6 +31,7 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({
   hideUnderground,
   ...props
 }) => {
+  const [gsiTileUrl] = useGsiTileUrl();
   // invariant(
   //   process.env.NEXT_PUBLIC_TILES_BASE_URL != null,
   //   "Missing environment variable: NEXT_PUBLIC_TILES_BASE_URL",
@@ -48,17 +49,17 @@ export const MapEnvironment: FC<MapEnvironmentProps> = ({
         ? {
             id: "gsi_mvt_tile_light",
             tile_type: "url",
-            tile_url: `${GSI_TILE_URL}/light-map/{z}/{x}/{y}.png`,
+            tile_url: `${gsiTileUrl}/light-map/{z}/{x}/{y}.png`,
             tile_zoomLevelForURL: [0, 22],
           }
         : {
             id: "gsi_mvt_tile_dark",
             tile_type: "url",
-            tile_url: `${GSI_TILE_URL}/dark-map/{z}/{x}/{y}.png`,
+            tile_url: `${gsiTileUrl}/dark-map/{z}/{x}/{y}.png`,
             tile_zoomLevelForURL: [undefined, 22],
           },
     ],
-    [colorMode],
+    [colorMode, gsiTileUrl],
   );
 
   return (

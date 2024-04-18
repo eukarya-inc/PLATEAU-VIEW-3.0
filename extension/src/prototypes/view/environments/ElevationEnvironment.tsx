@@ -2,8 +2,8 @@ import { useAtomValue } from "jotai";
 import { useMemo, type FC } from "react";
 
 // import { TerrainElevationImageryLayer, VertexTerrainElevationMaterial } from "../../datasets";
-import { GEO_API_URL } from "../../../shared/constants";
 import { Scene, SceneProps } from "../../../shared/reearth/scene";
+import { useGeoApiUrl } from "../../../shared/states/environmentVariables";
 import {
   shareableLogarithmicTerrainElevationAtom,
   shareableTerrainElevationHeightRangeAtom,
@@ -27,6 +27,7 @@ const sphericalHarmonicCoefficients: [x: number, y: number, z: number][] = [
 ];
 
 export const ElevationEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) => {
+  const [geoApiUrl] = useGeoApiUrl();
   const terrainElevationHeightRange = useAtomValue(shareableTerrainElevationHeightRangeAtom);
   const logarithmicTerrainElevation = useAtomValue(shareableLogarithmicTerrainElevationAtom);
 
@@ -42,12 +43,12 @@ export const ElevationEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
       {
         id: "elevation-heatmap",
         tile_type: "url",
-        tile_url: `${GEO_API_URL}/terrain/{z}/{x}/{y}.png`,
+        tile_url: `${geoApiUrl}/terrain/{z}/{x}/{y}.png`,
         heatmap: true,
         tile_maxLevel: 15,
       },
     ],
-    [],
+    [geoApiUrl],
   );
 
   return (
