@@ -123,7 +123,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
 
   const [cityCodeState, setCityCodeState] = useCityCode();
   useEffect(() => {
-    if (cityCode !== undefined && (!cityCodeState || cityCodeState !== cityCode)) {
+    if (cityCode && (!cityCodeState || cityCodeState !== cityCode)) {
       setCityCodeState(cityCode);
     }
   }, [cityCode, cityCodeState, setCityCodeState]);
