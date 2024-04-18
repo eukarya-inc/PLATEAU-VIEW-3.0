@@ -16,7 +16,9 @@ export const LayerLayerDescriptionField: FC<LayerLayerDescriptionFieldProps> = (
   return component.preset?.description ? (
     <ParameterList>
       <CommonContentWrapper>
-        <Markdown skipHtml components={{ a: LinkRenderer }}>{component.preset?.description}</Markdown>
+        <Markdown skipHtml components={{ a: LinkRenderer }}>
+          {component.preset?.description}
+        </Markdown>
       </CommonContentWrapper>
     </ParameterList>
   ) : null;

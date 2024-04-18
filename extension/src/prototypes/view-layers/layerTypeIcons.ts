@@ -35,6 +35,7 @@ import {
   BRIDGE_LAYER,
   BUILDING_LAYER,
   CITY_FURNITURE_LAYER,
+  CITY_LAYER,
   EMERGENCY_ROUTE_LAYER,
   GENERIC_CITY_OBJECT_LAYER,
   GLOBAL_LAYER,
@@ -91,6 +92,7 @@ export const layerTypeIcons: Record<LayerType, ComponentType<SvgIconProps>> = {
   [TSUNAMI_RISK_LAYER]: TsunamiRiskIcon,
   [URBAN_PLANNING_LAYER]: UrbanPlanningIcon,
   [USE_CASE_LAYER]: UseCaseIcon,
+  [CITY_LAYER]: UseCaseIcon,
   [VEGETATION_LAYER]: VegetationIcon,
   [WATERWAY_LAYER]: UseCaseIcon,
 };

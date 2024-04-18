@@ -28,6 +28,7 @@ import {
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
+  CITY_LAYER,
   VEGETATION_LAYER,
   WATERWAY_LAYER,
 } from "./layerTypes";
@@ -65,4 +66,5 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [VEGETATION_LAYER]: "植生",
   [WATERWAY_LAYER]: "航路",
   [USE_CASE_LAYER]: undefined,
+  [CITY_LAYER]: undefined,
 };

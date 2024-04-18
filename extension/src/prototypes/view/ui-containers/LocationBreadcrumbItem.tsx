@@ -35,7 +35,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       return;
     }
 
-    const { typicalTypeGroups, genericGroups, dataGroups } = getDatasetGroups({
+    const { typicalTypeGroups, genericGroups, dataGroups, cityDatasetGroups } = getDatasetGroups({
       datasets: datasets.filter(d =>
         !d.cityCode
           ? d.prefectureCode === area.code
@@ -60,6 +60,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
           ?.map(orderedType => genericGroups.find(({ label }) => label === orderedType.name))
           .filter(isNotNullish)) ??
         []),
+      ...(cityDatasetGroups ?? []),
     ];
   }, [query.data, area.code, filteredDatasetTypeOrder]);
 

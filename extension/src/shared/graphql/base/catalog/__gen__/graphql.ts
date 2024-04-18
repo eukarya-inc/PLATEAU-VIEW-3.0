@@ -28,6 +28,8 @@ export type Scalars = {
  * 政令指定都市の場合のみ、市の下に区が存在します。
  */
 export type Area = {
+  /** 地域に属する子地域。 */
+  children: Array<Area>;
   /**
    * 地域コード。行政コードや市区町村コードとも呼ばれます。
    * 都道府県の場合は二桁の数字から成る文字列です。
@@ -84,6 +86,8 @@ export type AreasInput = {
   datasetTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   /** parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。 */
   deep?: InputMaybe<Scalars['Boolean']['input']>;
+  /** 属しているDatasetが存在しない都市を含めます。通常のデータセットは存在しないが、 CityGMLDataset の city として使用されている都市が含まれます。 */
+  includeEmpty?: InputMaybe<Scalars['Boolean']['input']>;
   /** datasetTypes が指定された場合に、検索結果にその地域の親も含めるかどうか。デフォルトは false です。 */
   includeParents?: InputMaybe<Scalars['Boolean']['input']>;
   /** 検索したい地域が属する親となる地域のコード。例えば東京都に属する都市を検索したい場合は "13" を指定します。 */
@@ -95,6 +99,8 @@ export type AreasInput = {
 /** 市区町村 */
 export type City = Area & Node & {
   __typename?: 'City';
+  /** 地域に属する子地域。 */
+  children: Array<Area>;
   /** CityGMLデータセット。 */
   citygml?: Maybe<CityGmlDataset>;
   /** CityGMLデータセットのID。 */
@@ -581,6 +587,8 @@ export type PlateauSpecMinorDatasetsArgs = {
 /** 都道府県 */
 export type Prefecture = Area & Node & {
   __typename?: 'Prefecture';
+  /** 地域に属する子地域。 */
+  children: Array<Area>;
   /** 都道府県に属する市区町村 */
   cities: Array<City>;
   /** 都道府県コード。2桁の数字から成る文字列です。 */
@@ -791,6 +799,8 @@ export enum Texture {
 /** 区（政令指定都市のみ） */
 export type Ward = Area & Node & {
   __typename?: 'Ward';
+  /** 地域に属する子地域。 */
+  children: Array<Area>;
   /** 区が属する市。 */
   city?: Maybe<City>;
   /** 区が属する市のコード。先頭に都道府県コードを含む5桁の数字から成る文字列です。 */
