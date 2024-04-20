@@ -56,7 +56,7 @@ jobs:
       contents: read
       id-token: write
       packages: read
-    if: github.event.repository.full_name == 'eukarya-inc/reearth-plateauview'
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
     steps:
       - uses: google-github-actions/auth@v2
         with:
