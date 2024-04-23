@@ -90,7 +90,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 
 		adminContext(c, true, admin, admin && isAlpha(c))
 		ctx := c.Request().Context()
-		maxlod, err := fetchCityGMLFiles(ctx, merged, cid)
+		maxlod, err := FetchCityGMLFiles(ctx, merged, cid)
 		if err != nil {
 			return err
 		}
@@ -100,6 +100,23 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, maxlod)
+	}
+}
+
+func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		merged, err := h.prepareMergedRepo(c, false)
+		if err != nil {
+			return err
+		}
+
+		ctx := c.Request().Context()
+		res, err := FetchSimplePlateauDatasets(ctx, merged)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, res)
 	}
 }
 
