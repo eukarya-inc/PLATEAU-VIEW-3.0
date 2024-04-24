@@ -191,6 +191,7 @@ export type Cesium3DTilesAppearance = {
   imageBasedLightIntensity?: number;
   selectedFeatureColor?: string;
   disableIndexingFeature?: boolean;
+  cacheBytes?: number;
   onLoadFeature?: (feature: Partial<Feature> | undefined) => void;
 };
 

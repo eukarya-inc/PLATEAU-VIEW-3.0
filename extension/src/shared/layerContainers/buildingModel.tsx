@@ -269,6 +269,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       experimental_clipping: { ...clippingBox, ...drawClipping },
       showWireframe: wireframeView?.value?.wireframe,
       disableIndexingFeature: isMobile,
+      cacheBytes: Infinity,
       ...(applyEmptySHC ? { sphericalHarmonicCoefficients: [] } : {}),
     }),
     [

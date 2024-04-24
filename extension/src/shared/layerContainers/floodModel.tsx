@@ -176,6 +176,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
       },
       shadows: "disabled",
       selectedFeatureColor: theme.palette.primary.main,
+      cacheBytes: Infinity,
       ...(applyEmptySHC ? { sphericalHarmonicCoefficients: [] } : {}),
     }),
     [
