@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 
-import { usePlateauApiUrl } from "../../states/environmentVariables";
+import { usePlateauGeojsonUrl } from "../../states/environmentVariables";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 
@@ -12,7 +12,7 @@ export type PolygonProps = {
 };
 
 export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
-  const [plateauGeojsonUrl] = usePlateauApiUrl();
+  const [plateauGeojsonUrl] = usePlateauGeojsonUrl();
   const mergedAppearances: PolygonAppearances | undefined = useMemo(
     () => ({
       ...appearances,
