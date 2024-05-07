@@ -50,7 +50,7 @@ const JapanPlateauPolygon: FC = () => {
     [visible],
   );
 
-  if (!initializedRef.current) return;
+  if (!initializedRef.current) return null;
 
   return <PolygonLayer appearances={appearances} />;
 };
