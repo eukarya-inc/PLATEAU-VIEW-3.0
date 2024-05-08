@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useCamera, useReEarthEvent } from "../../reearth/hooks";
 import { PolygonAppearances, PolygonLayer } from "../../reearth/layers";
@@ -7,22 +7,18 @@ const CAMERA_ZOOM_LEVEL_HEIGHT = 300000;
 const JapanPlateauPolygon: FC = () => {
   const { getCameraPosition } = useCamera();
   const [visible, setVisible] = useState(false);
+  const [show, setShow] = useState(false);
+  const revisibleRef = useRef(true);
 
-  const timerRef = useRef<Promise<void>>();
   const updateVisibility = useCallback(async () => {
+    if (!revisibleRef.current) return;
+
     const camera = getCameraPosition();
     if (camera?.height && camera.height >= CAMERA_ZOOM_LEVEL_HEIGHT) {
-      await timerRef.current;
       setVisible(true);
+      setShow(true);
     } else {
-      if (timerRef.current) return;
-      setVisible(false);
-      timerRef.current = new Promise(r =>
-        window.setTimeout(() => {
-          timerRef.current = undefined;
-          r();
-        }, 500),
-      );
+      setShow(false);
     }
   }, [getCameraPosition]);
 
@@ -36,18 +32,37 @@ const JapanPlateauPolygon: FC = () => {
         strokeWidth: 1,
         hideIndicator: true,
         clampToGround: true,
+        show,
       },
-      polygon: {
-        classificationType: "terrain",
-        fill: true,
-        fillColor: "rgba(0, 190, 190, 0.2)",
-        heightReference: "clamp",
-        hideIndicator: true,
-        selectedFeatureColor: "rgba(0, 190, 190, 0.4)",
-      },
+      // polygon: {
+      //   classificationType: "terrain",
+      //   fill: true,
+      //   fillColor: "rgba(0, 190, 190, 0.2)",
+      //   heightReference: "clamp",
+      //   hideIndicator: true,
+      //   selectedFeatureColor: "rgba(0, 190, 190, 0.4)",
+      //   show,
+      // },
     }),
-    [],
+    [show],
   );
+
+  const timerRef = useRef<number>();
+  useEffect(() => {
+    if (show || !revisibleRef.current) return;
+    timerRef.current = window.setTimeout(() => {
+      setVisible(false);
+      timerRef.current = undefined;
+      revisibleRef.current = false;
+      // Need to wait until the polygon is removed completely from Cesium.
+      window.setTimeout(() => {
+        revisibleRef.current = true;
+      }, 3000);
+    }, 3000);
+    return () => {
+      window.clearTimeout(timerRef.current);
+    };
+  }, [show]);
 
   if (!visible) return null;
 

@@ -9,9 +9,10 @@ export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon" | 
 export type PolygonProps = {
   onLoad?: (layerId: string) => void;
   appearances?: PolygonAppearances;
+  visible?: boolean;
 };
 
-export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
+export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances, visible }) => {
   const [plateauGeojsonUrl] = usePlateauGeojsonUrl();
   const mergedAppearances: PolygonAppearances | undefined = useMemo(
     () => ({
@@ -27,6 +28,9 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
     () => ({
       type: "geojson",
       url: plateauGeojsonUrl,
+      geojson: {
+        useAsResource: true,
+      },
     }),
     [plateauGeojsonUrl],
   );
@@ -35,6 +39,7 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
     data,
     appearances: mergedAppearances,
     onLoad,
+    visible,
   });
 
   return null;
