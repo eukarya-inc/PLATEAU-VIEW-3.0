@@ -58,7 +58,7 @@ const JapanPlateauPolygon: FC = () => {
       window.setTimeout(() => {
         revisibleRef.current = true;
       }, 3000);
-    }, 3000);
+    }, 10000);
     return () => {
       window.clearTimeout(timerRef.current);
     };
