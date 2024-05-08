@@ -11,6 +11,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
+	"github.com/eukarya-inc/reearth-plateauview/server/tiles"
 	"github.com/joho/godotenv"
 	"github.com/k0kubun/pp/v3"
 	"github.com/kelseyhightower/envconfig"
@@ -189,6 +190,12 @@ func (c *Config) DataCatalog() datacatalog.Config {
 		DisableCache:         c.DataCatalog_DisableCache,
 		CacheTTL:             c.DataCatalog_CacheTTL,
 		ErrorOnInit:          c.DataCatalog_PanicOnInit,
+	}
+}
+
+func (c *Config) Tiles() tiles.Config {
+	return tiles.Config{
+		CMS: c.plateauCMS(),
 	}
 }
 

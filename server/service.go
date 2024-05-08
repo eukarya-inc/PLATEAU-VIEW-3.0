@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
@@ -11,6 +12,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
+	"github.com/eukarya-inc/reearth-plateauview/server/tiles"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/util"
@@ -31,6 +33,7 @@ var services = [](func(*Config) (*Service, error)){
 	Sidebar,
 	DataCatalog,
 	GovPolygon,
+	Tiles,
 	Embed,
 }
 
@@ -157,6 +160,22 @@ func GovPolygon(conf *Config) (*Service, error) {
 				conf.LocalURL("/datacatalog/graphql"),
 				true,
 			).Route(g.Group("/govpolygon"))
+			return nil
+		},
+	}, nil
+}
+
+func Tiles(conf *Config) (*Service, error) {
+	return &Service{
+		Name: "tiles",
+		Echo: func(g *echo.Group) error {
+			h, err := tiles.New(conf.Tiles())
+			if err != nil {
+				return err
+			}
+
+			h.Route(g.Group(""))
+			h.Init(context.Background())
 			return nil
 		},
 	}, nil
