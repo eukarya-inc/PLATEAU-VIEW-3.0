@@ -38,7 +38,7 @@ type MergeContext struct {
 
 func CommandSingle(conf *Config) (err error) {
 	ctx := context.Background()
-	log.Infofc(ctx, "conf: %s", ppp.Sprint(conf))
+	log.Infofc(ctx, "preparegeospatialjp conf: %s", ppp.Sprint(conf))
 
 	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
 		return fmt.Errorf("no command to run")
@@ -83,12 +83,15 @@ func CommandSingle(conf *Config) (err error) {
 
 	if gdataItem != nil {
 		if !gdataItem.ShouldMergeCityGML() {
+			log.Infofc(ctx, "skip citygml because status is running")
 			conf.SkipCityGML = true
 		}
 		if !gdataItem.ShouldMergePlateau() {
+			log.Infofc(ctx, "skip plateau because status is running")
 			conf.SkipPlateau = true
 		}
 		if !gdataItem.ShouldMergeMaxLOD() {
+			log.Infofc(ctx, "skip maxlod because status is running")
 			conf.SkipMaxLOD = true
 		}
 	}
@@ -127,6 +130,7 @@ func CommandSingle(conf *Config) (err error) {
 
 	tmpDirName := fmt.Sprintf("%s-%d", time.Now().Format("20060102-150405"), rand.Intn(1000))
 	tmpDir := filepath.Join(tmpDirBase, tmpDirName)
+	_ = os.MkdirAll(tmpDir, 0755)
 	log.Infofc(ctx, "tmp dir: %s", tmpDir)
 
 	if conf.Clean {
