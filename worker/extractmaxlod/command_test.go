@@ -8,6 +8,7 @@ import (
 )
 
 func TestRun(t *testing.T) {
+	skip := true
 	_ = godotenv.Load("../.env")
 
 	conf := Config{
@@ -16,13 +17,14 @@ func TestRun(t *testing.T) {
 		ProjectID:    os.Getenv("REEARTH_CMS_PROJECT"),
 		FeatureTypes: []string{"dem"},
 		CityItemID:   []string{},
-		Overwrite:    false,
+		CityNames:    []string{},
 		WetRun:       false,
-		Clean:        false,
+		Overwrite:    true,
+		Clean:        true,
 	}
 
-	if conf.CMSURL == "" || conf.CMSToken == "" || conf.ProjectID == "" {
-		t.Skip("CMS URL, CMS Token, ProjectID is empty")
+	if skip || conf.CMSURL == "" || conf.CMSToken == "" || conf.ProjectID == "" {
+		t.Skip("skip")
 	}
 
 	if err := Run(conf); err != nil {

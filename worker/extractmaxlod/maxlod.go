@@ -54,8 +54,10 @@ func extractMaxLOD(zr *zip.Reader, ft, maxlod string) (res []MaxLOD) {
 
 func maxlodCSV(maxlod []MaxLOD) string {
 	var b strings.Builder
+	le := len(maxlod)
 	b.WriteString("code,type,max_lod,file\n")
-	for _, m := range maxlod {
+	for i, m := range maxlod {
+		isLast := i == le-1
 		b.WriteString(m.Code)
 		b.WriteString(",")
 		b.WriteString(m.Type)
@@ -63,7 +65,9 @@ func maxlodCSV(maxlod []MaxLOD) string {
 		b.WriteString(m.MaxLod)
 		b.WriteString(",")
 		b.WriteString(m.File)
-		b.WriteString("\n")
+		if !isLast {
+			b.WriteString("\n")
+		}
 	}
 	return b.String()
 }

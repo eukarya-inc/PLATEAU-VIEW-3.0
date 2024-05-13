@@ -3,6 +3,7 @@ package extractmaxlod
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
@@ -68,6 +69,14 @@ func fetchCities(ctx context.Context, c cms.Interface, conf Config) ([]*City, er
 	res := make([]*City, 0, len(items.Items))
 	for _, i := range items.Items {
 		if c := toCity(&i); c != nil {
+
+			if len(conf.CityNames) > 0 {
+				found := slices.Contains(conf.CityNames, c.Name)
+				if !found {
+					continue
+				}
+			}
+
 			res = append(res, c)
 		}
 	}

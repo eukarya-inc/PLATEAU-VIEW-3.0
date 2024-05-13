@@ -57,8 +57,8 @@ func extractMaxLOD(conf *Config) {
 
 	flag := flag.NewFlagSet("extract-maxlod", flag.ExitOnError)
 	flag.StringVar(&config.ProjectID, "project", "", "CMS project ID")
-	flag.StringVar(&itemID, "item", "", "CMS item ID")
-	flag.StringVar(&featureTypes, "feature types", "", "Feature types")
+	flag.StringVar(&itemID, "city", "", "CMS item ID")
+	flag.StringVar(&featureTypes, "ftypes", "", "feature types")
 	flag.BoolVar(&config.WetRun, "wetrun", false, "wet run")
 	flag.BoolVar(&config.Clean, "clean", false, "clean")
 	flag.BoolVar(&config.Overwrite, "overwrite", false, "overwrite")

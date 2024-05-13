@@ -51,7 +51,7 @@ func Run(conf Config) error {
 		log.Infofc(ctx, "processing city: %s (%d/%d)", city.Name, i+1, len(cities))
 		if err := processCity(ctx, conf, cms, city, tmpDir); err != nil {
 			log.Errorfc(ctx, "failed to process city: %s", city.Name)
-			failed = append(failed, city.Name)
+			failed = append(failed, fmt.Sprintf("%s %s (%s)", city.Name, city.Code, city.ID))
 		}
 	}
 
@@ -69,7 +69,8 @@ func Run(conf Config) error {
 }
 
 func processCity(ctx context.Context, conf Config, cms *cms.CMS, city *City, tmpDir string) error {
-	if city.References == nil {
+	if city.References == nil || len(city.References) == 0 {
+		log.Infofc(ctx, "city is skipped: references is nil")
 		return nil
 	}
 

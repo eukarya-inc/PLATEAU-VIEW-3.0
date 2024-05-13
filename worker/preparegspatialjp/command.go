@@ -15,32 +15,36 @@ import (
 const tmpDirBase = "plateau-api-worker-tmp"
 
 type Config struct {
-	CMSURL      string
-	CMSToken    string
-	ProjectID   string
-	CityItemID  string
-	SkipCityGML bool
-	SkipPlateau bool
-	SkipMaxLOD  bool
-	SkipIndex   bool
-	SkipRelated bool
-	WetRun      bool
-	Clean       bool
+	CMSURL              string
+	CMSToken            string
+	ProjectID           string
+	CityItemID          string
+	SkipCityGML         bool
+	SkipPlateau         bool
+	SkipMaxLOD          bool
+	SkipIndex           bool
+	SkipRelated         bool
+	ValidateMaxLOD      bool
+	WetRun              bool
+	Clean               bool
+	SkipImcompleteItems bool
+	IgnoreStatus        bool
 }
 
 type MergeContext struct {
-	TmpDir          string
-	CityItem        *CityItem
-	AllFeatureItems map[string]FeatureItem
-	UC              int
-	WetRun          bool
+	TmpDir             string
+	CityItem           *CityItem
+	AllFeatureItems    map[string]FeatureItem
+	GspatialjpDataItem *GspatialjpDataItem
+	UC                 int
+	WetRun             bool
 }
 
 func CommandSingle(conf *Config) (err error) {
 	ctx := context.Background()
 	log.Infofc(ctx, "preparegeospatialjp conf: %s", ppp.Sprint(conf))
 
-	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
+	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
 	}
 
@@ -62,6 +66,10 @@ func CommandSingle(conf *Config) (err error) {
 	log.Infofc(ctx, "city item: %s", ppp.Sprint(cityItem))
 
 	if cityItem == nil || cityItem.CityCode == "" || cityItem.CityName == "" || cityItem.CityNameEn == "" || cityItem.GeospatialjpData == "" {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because city item is incomplete")
+			return nil
+		}
 		return fmt.Errorf("invalid city item: %s", conf.CityItemID)
 	}
 
@@ -81,7 +89,7 @@ func CommandSingle(conf *Config) (err error) {
 	gdataItem := GspatialjpDataItemFrom(gdataItemRaw)
 	log.Infofc(ctx, "geospatialjp data item: %s", ppp.Sprint(gdataItem))
 
-	if gdataItem != nil {
+	if gdataItem != nil && !conf.IgnoreStatus {
 		if !gdataItem.ShouldMergeCityGML() {
 			log.Infofc(ctx, "skip citygml because status is running")
 			conf.SkipCityGML = true
@@ -96,7 +104,7 @@ func CommandSingle(conf *Config) (err error) {
 		}
 	}
 
-	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
+	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
 	}
 
@@ -113,17 +121,32 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	if cityItem.YearInt() == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because year is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。整備年度が不正です: %s", cityItem.Year)
 		return fmt.Errorf("invalid year: %s", cityItem.Year)
 	}
 
 	if cityItem.SpecVersionMajorInt() == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because spec version is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。仕様書バージョンが不正です: %s", cityItem.Spec)
 		return fmt.Errorf("invalid spec version: %s", cityItem.Spec)
 	}
 
 	uc := GetUpdateCount(cityItem.CodeLists)
 	if uc == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because update count is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。codeListsのzipファイルの命名規則が不正のため版数を読み取れませんでした。もう一度ファイル名の命名規則を確認してください。_1_op_のような文字が必須です。: %s", cityItem.CodeLists)
 		return fmt.Errorf("invalid update count: %s", cityItem.CodeLists)
 	}
@@ -155,18 +178,23 @@ func CommandSingle(conf *Config) (err error) {
 	log.Infofc(ctx, "dic: %s", ppp.Sprint(dic))
 
 	mc := MergeContext{
-		TmpDir:          tmpDir,
-		CityItem:        cityItem,
-		AllFeatureItems: allFeatureItems,
-		UC:              uc,
-		WetRun:          conf.WetRun,
+		TmpDir:             tmpDir,
+		CityItem:           cityItem,
+		AllFeatureItems:    allFeatureItems,
+		GspatialjpDataItem: gdataItem,
+		UC:                 uc,
+		WetRun:             conf.WetRun,
 	}
 
 	cw.NotifyRunning(ctx)
 
-	// prepare
+	// maxlod
 	if !conf.SkipMaxLOD {
 		if err := PrepareMaxLOD(ctx, cw, mc); err != nil {
+			return err
+		}
+	} else if conf.ValidateMaxLOD {
+		if err := ValidateMaxLOD(ctx, cw, mc); err != nil {
 			return err
 		}
 	}

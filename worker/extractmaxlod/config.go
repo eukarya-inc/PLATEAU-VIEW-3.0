@@ -11,6 +11,7 @@ type Config struct {
 	CMSToken     string
 	ProjectID    string
 	CityItemID   []string
+	CityNames    []string
 	FeatureTypes []string
 	Overwrite    bool
 	WetRun       bool
