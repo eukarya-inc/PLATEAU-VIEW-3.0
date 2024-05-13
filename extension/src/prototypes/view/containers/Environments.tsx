@@ -14,6 +14,7 @@ import {
   shareableColorMode,
 } from "../../../shared/states/scene";
 import { type ColorMode } from "../../shared-states";
+import { ColoredMapEnvironment } from "../environments/ColoredMapEnvironment";
 import { ElevationEnvironment } from "../environments/ElevationEnvironment";
 import { GooglePhotorealisticEnvironment } from "../environments/GooglePhotorealisticEnvironment";
 import { MapEnvironment } from "../environments/MapEnvironment";
@@ -125,6 +126,19 @@ export const Environments: FC = () => {
     case "satellite":
       return (
         <SatelliteEnvironment
+          debugSphericalHarmonics={debugSphericalHarmonics}
+          ambientOcclusion={ambientOcclusionProps}
+          shadows={shadowProps}
+          antialias={antialias}
+          initialCamera={initialCamera.value}
+          hideUnderground={undergroundSettings.hideUnderground}
+          enterUnderground={undergroundSettings.enterUnderground}
+          tileLabels={tileLabels}
+        />
+      );
+    case "colored-map":
+      return (
+        <ColoredMapEnvironment
           debugSphericalHarmonics={debugSphericalHarmonics}
           ambientOcclusion={ambientOcclusionProps}
           shadows={shadowProps}
