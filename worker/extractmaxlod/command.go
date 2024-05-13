@@ -179,5 +179,9 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 		return err
 	}
 
+	if conf.WetRun {
+		_ = c.CommentToItem(ctx, ref, "最大LOD抽出が完了しました。")
+	}
+
 	return nil
 }

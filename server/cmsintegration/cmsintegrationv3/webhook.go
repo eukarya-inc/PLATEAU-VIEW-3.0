@@ -45,6 +45,9 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			err = handleRelatedDataset(ctx, s, w)
 		} else if modelName == sampleModel || slices.Contains(featureTypes, modelName) {
 			err = sendRequestToFME(ctx, s, &conf, w)
+			if err == nil {
+				err = handleMaxLOD(ctx, s, w)
+			}
 		}
 
 		if err != nil {

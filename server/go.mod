@@ -3,11 +3,14 @@ module github.com/eukarya-inc/reearth-plateauview/server
 go 1.21
 
 require (
+	cloud.google.com/go/batch v1.7.0
+	dario.cat/mergo v1.0.0
 	github.com/99designs/gqlgen v0.17.43
 	github.com/JamesLMilner/quadtree-go v0.0.0-20191212211504-d12870ffe403
 	github.com/dustin/go-humanize v1.0.1
 	github.com/eukarya-inc/jpareacode v1.0.1-0.20240314080116-ae89cfd85c6a
 	github.com/go-playground/validator/v10 v10.16.0
+	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hasura/go-graphql-client v0.12.1
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/joho/godotenv v1.5.1
@@ -33,6 +36,7 @@ require (
 	golang.org/x/sync v0.6.0
 	gonum.org/v1/gonum v0.14.0
 	google.golang.org/api v0.161.0
+	google.golang.org/protobuf v1.32.0
 )
 
 require (
@@ -111,7 +115,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/grpc v1.61.0 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	nhooyr.io/websocket v1.8.10 // indirect

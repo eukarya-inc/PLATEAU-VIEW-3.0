@@ -30,6 +30,10 @@ type Config struct {
 	GeospatialjpCloudBuildProject     string
 	GeospatialjpCloudBuildRegion      string
 	GeospatialjpCloudBuildDiskSizeGb  int64
+	// cloud build
+	TaskImage  string
+	GCPProject string
+	GCPRegion  string
 
 	// compat
 	// geospatial.jp v2

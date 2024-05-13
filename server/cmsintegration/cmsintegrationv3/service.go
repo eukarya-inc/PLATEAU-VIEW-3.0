@@ -11,6 +11,7 @@ import (
 	"net/url"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/gcptaskrunner"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -24,9 +25,10 @@ func resultURL(conf *Config) string {
 }
 
 type Services struct {
-	FME  fmeInterface
-	CMS  cms.Interface
-	HTTP *http.Client
+	FME        fmeInterface
+	CMS        cms.Interface
+	HTTP       *http.Client
+	TaskRunner gcptaskrunner.TaskRunner
 }
 
 func NewServices(c Config) (s *Services, _ error) {
@@ -52,6 +54,29 @@ func NewServices(c Config) (s *Services, _ error) {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 	s.CMS = cms
+
+	if c.GCPProject != "" {
+		image := c.TaskImage
+		if image == "" {
+			image = defaultTaskImage
+		}
+
+		s.TaskRunner = gcptaskrunner.NewGCPTaskRunner(gcptaskrunner.Config{
+			Service: gcptaskrunner.ServiceCloudBuild,
+			Project: c.GCPProject,
+			Region:  c.GCPRegion,
+			Task: gcptaskrunner.Task{
+				Image: image,
+			},
+			Env: map[string]string{
+				"REEARTH_CMS_URL":   c.CMSBaseURL,
+				"REEARTH_CMS_TOKEN": c.CMSToken,
+				"NO_COLOR":          "true",
+			},
+			Timeout:  "86400s", // 1 day
+			QueueTtl: "86400s", // 1 day
+		})
+	}
 
 	return
 }
