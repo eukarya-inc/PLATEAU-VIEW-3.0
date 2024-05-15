@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 
 export const useTimeline = () => {
   const getTimeline = useCallback(() => {
@@ -71,17 +71,19 @@ export const useTimeline = () => {
     window.reearth?.clock?.setSpeed?.(speed);
   }, []);
 
+  const handleTimelineSetRangeType = useCallback(
+    (rangeType: "unbounded" | "clamped" | "bounced") => {
+      window.reearth?.clock?.setRangeType?.(rangeType);
+    },
+    [],
+  );
+
   const handleTimelineOnTickEventAdd = useCallback((callback: (date: Date) => void) => {
     window.reearth?.on?.("tick", callback);
   }, []);
 
   const handleTimelineOnTickEventRemove = useCallback((callback: (date: Date) => void) => {
     window.reearth?.off?.("tick", callback);
-  }, []);
-
-  useEffect(() => {
-    // set default range type to clamped
-    window.reearth?.clock?.setRangeType?.("clamped");
   }, []);
 
   return {
@@ -91,6 +93,7 @@ export const useTimeline = () => {
     handleTimelinePause,
     handleTimelineJump,
     handleTimelineSetSpeed,
+    handleTimelineSetRangeType,
     handleTimelineOnTickEventAdd,
     handleTimelineOnTickEventRemove,
   };

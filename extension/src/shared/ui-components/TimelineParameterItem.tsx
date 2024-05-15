@@ -1,6 +1,8 @@
 // Note: this component does not follow the pattern of the other parameterItem components.
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import RepeatIcon from "@mui/icons-material/Repeat";
+import RepeatOneIcon from "@mui/icons-material/RepeatOne";
 import { styled, IconButton, Select, Typography, SelectChangeEvent } from "@mui/material";
 import { PrimitiveAtom, useAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -23,6 +25,7 @@ type TimelineParameterItemProps = {
   onPause?: () => void;
   onJump?: (props: { start: Date; stop: Date; current: Date }) => void;
   onSetSpeed?: (speed: number) => void;
+  onSetRangeType?: (rangeType: "unbounded" | "clamped" | "bounced") => void;
   onTickEventAdd?: (callback: (date: Date) => void) => void;
   onTickEventRemove?: (callback: (date: Date) => void) => void;
 };
@@ -50,8 +53,8 @@ const ButtonsWrapper = styled("div")(() => ({
 }));
 
 const ButtonWrapper = styled("div")(() => ({
-  width: 48,
-  height: 48,
+  width: 36,
+  height: 36,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -126,16 +129,22 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   onPause,
   onJump,
   onSetSpeed,
+  onSetRangeType,
   onTickEventAdd,
   onTickEventRemove,
 }) => {
   const startDate = useMemo(() => new Date(start ?? ""), [start]);
   const endDate = useMemo(() => new Date(end ?? ""), [end]);
   const [currentDate, setCurrentDate] = useState(new Date(current ?? ""));
+  const [rangeType, setRangeType] = useState<"bounced" | "clamped">("bounced");
 
   useEffect(() => {
     setCurrentDate(new Date(current ?? ""));
   }, [current]);
+
+  useEffect(() => {
+    onSetRangeType?.(rangeType);
+  }, [rangeType, onSetRangeType]);
 
   const [activeTimelineComponentId, setActiveTimelineComponentId] = useAtom(activeIdAtom);
 
@@ -162,6 +171,10 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
     },
     [playState, speedAmount, onSetSpeed],
   );
+
+  const handleSwitchRangeType = useCallback(() => {
+    setRangeType(rangeType === "clamped" ? "bounced" : "clamped");
+  }, [rangeType]);
 
   const handlePlay = useCallback(() => {
     setActiveTimelineComponentId(id);
@@ -283,6 +296,15 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
           <ButtonWrapper>
             <StyledButton size="small" onClick={handlePlay} active={playState === "play" ? 1 : 0}>
               <PlayArrowIcon fontSize="medium" />
+            </StyledButton>
+          </ButtonWrapper>
+          <ButtonWrapper>
+            <StyledButton size="small" onClick={handleSwitchRangeType}>
+              {rangeType === "clamped" ? (
+                <RepeatOneIcon fontSize="medium" />
+              ) : (
+                <RepeatIcon fontSize="medium" />
+              )}
             </StyledButton>
           </ButtonWrapper>
         </ButtonsWrapper>

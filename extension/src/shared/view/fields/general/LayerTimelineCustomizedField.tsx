@@ -23,6 +23,7 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
     handleTimelinePause,
     handleTimelineJump,
     handleTimelineSetSpeed,
+    handleTimelineSetRangeType,
     handleTimelineOnTickEventAdd,
     handleTimelineOnTickEventRemove,
   } = useTimeline();
@@ -54,6 +55,7 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
           onPause={handleTimelinePause}
           onJump={handleTimelineJump}
           onSetSpeed={handleTimelineSetSpeed}
+          onSetRangeType={handleTimelineSetRangeType}
           onTickEventAdd={handleTimelineOnTickEventAdd}
           onTickEventRemove={handleTimelineOnTickEventRemove}
         />
