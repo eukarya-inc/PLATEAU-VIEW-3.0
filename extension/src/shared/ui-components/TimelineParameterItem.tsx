@@ -19,6 +19,8 @@ type TimelineParameterItemProps = {
   timezone?: string;
   defaultUnit?: number;
   defaultAmount?: number;
+  timeDisplayType?: "current" | "past";
+  timeDisplayFormat?: string;
   activeIdAtom: PrimitiveAtom<string>;
   onPlay?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
   onPlayReverse?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
@@ -123,6 +125,8 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   timezone = "+9",
   defaultUnit = 60,
   defaultAmount = 1,
+  timeDisplayType = "current",
+  timeDisplayFormat,
   activeIdAtom,
   onPlay,
   onPlayReverse,
@@ -337,7 +341,11 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
         timezone={timezone}
         onChange={handleJumpTime}
       />
-      <CurrentTime>{formatDateWithTimezone(currentDate, timezone)}</CurrentTime>
+      <CurrentTime>
+        {timeDisplayType === "current"
+          ? formatDateWithTimezone(currentDate, timezone)
+          : formatPastTime(currentDate, startDate, timeDisplayFormat)}
+      </CurrentTime>
     </Timeline>
   );
 };
@@ -363,3 +371,17 @@ const formatDateWithTimezone = (date: Date, timezone: string) => {
 const SpeedTick = styled("span")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
 }));
+
+const formatPastTime = (current: Date, start: Date, format?: string) => {
+  const diff = current.getTime() - start.getTime();
+  const diffSec = Math.floor(diff / 1000);
+  const sec = diffSec % 60;
+  const min = Math.floor(diffSec / 60) % 60;
+  const hour = Math.floor(diffSec / 3600);
+  const HH = hour < 10 ? "0" + hour : `${hour}`;
+  const mm = min < 10 ? "0" + min : `${min}`;
+  const ss = sec < 10 ? "0" + sec : `${sec}`;
+  return format
+    ? format.replace("HH", HH).replace("mm", mm).replace("ss", ss)
+    : `${HH}:${mm}:${ss}`;
+};

@@ -23,6 +23,8 @@ export type EditorTimelineCustomizedFieldPreset = {
   timezone?: string;
   defaultUnit?: number;
   defaultAmount?: number;
+  timeDisplayType?: "current" | "past";
+  timeDisplayFormat?: string;
 };
 
 const speedUnitOptions = [
@@ -56,6 +58,17 @@ const speedAmountOptions = [
   {
     value: 30,
     label: "30",
+  },
+];
+
+const timeDisplayTypeOptions = [
+  {
+    value: "current",
+    label: "Current Time",
+  },
+  {
+    value: "past",
+    label: "Past Time",
   },
 ];
 
@@ -140,6 +153,33 @@ export const EditorTimelineCustomizedField: React.FC<
     [component, onUpdate],
   );
 
+  const handleTimeDisplayTypeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.value !== "current" && e.target.value !== "past") return;
+      onUpdate({
+        ...component,
+        preset: {
+          ...component.preset,
+          timeDisplayType: e.target.value,
+        },
+      });
+    },
+    [component, onUpdate],
+  );
+
+  const handleTimeDisplayFormatChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onUpdate({
+        ...component,
+        preset: {
+          ...component.preset,
+          timeDisplayFormat: e.target.value,
+        },
+      });
+    },
+    [component, onUpdate],
+  );
+
   return (
     <PropertyWrapper>
       <PropertyBox>
@@ -185,6 +225,22 @@ export const EditorTimelineCustomizedField: React.FC<
             onChange={handleDefaultUnitChange}
           />
         </PropertyInlineWrapper>
+        <PropertyInlineWrapper label="Time Display Type">
+          <PropertySelectField
+            options={timeDisplayTypeOptions}
+            value={component.preset?.timeDisplayType ?? "current"}
+            onChange={handleTimeDisplayTypeChange}
+          />
+        </PropertyInlineWrapper>
+        {component.preset?.timeDisplayType === "past" && (
+          <PropertyInlineWrapper label="Past Time Format">
+            <PropertyInputField
+              placeholder="Text HH:mm:ss"
+              value={component.preset?.timeDisplayFormat ?? ""}
+              onChange={handleTimeDisplayFormatChange}
+            />
+          </PropertyInlineWrapper>
+        )}
       </PropertyBox>
     </PropertyWrapper>
   );
