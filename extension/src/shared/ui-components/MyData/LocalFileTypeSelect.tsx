@@ -13,6 +13,7 @@ type Props = {
 export type FileType =
   | "auto"
   | "geojson"
+  | "plateau-sketch-geojson"
   | "kml"
   | "csv"
   | "czml"
@@ -30,6 +31,10 @@ const FileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
     {
       value: "geojson",
       label: "GeoJSON",
+    },
+    {
+      value: "plateau-sketch-geojson",
+      label: "GeoJSON (sketch layer)",
     },
     {
       value: "kml",
