@@ -1,6 +1,7 @@
 package preparegspatialjp
 
 import (
+	"context"
 	"strings"
 
 	"github.com/reearth/reearthx/log"
@@ -8,18 +9,42 @@ import (
 
 type MultipleConfig struct {
 	CityItemID []string
+	CityNames  []string
+	Offset     int
 	Config
 }
 
 func CommandMultiple(conf *MultipleConfig) error {
+	if len(conf.CityItemID) == 0 {
+		ctx := context.Background()
+		ids, err := FetchAllCities(ctx, conf)
+		if err != nil {
+			return err
+		}
+
+		if conf.Offset > 0 {
+			ids = ids[conf.Offset:]
+		}
+
+		conf.CityItemID = ids
+	}
+
 	le := len(conf.CityItemID)
+	failed := []string{}
+
 	for i, cityItemID := range conf.CityItemID {
 		log.Infof("START: cityItem=%s (%d/%d)", cityItemID, i+1, le)
 
 		conf.Config.CityItemID = cityItemID
 		if err := CommandSingle(&conf.Config); err != nil {
-			return err
+			failed = append(failed, cityItemID)
+			log.Errorf("FAILED: %s (%d/%d): %v", cityItemID, i+1, le, err)
+			continue
 		}
+	}
+
+	if len(failed) > 0 {
+		log.Errorf("FAILED: %v", failed)
 	}
 
 	return nil

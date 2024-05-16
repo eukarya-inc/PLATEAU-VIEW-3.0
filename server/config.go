@@ -61,6 +61,7 @@ type Config struct {
 	Opinion_ToName                     string   `pp:",omitempty"`
 	Sidebar_Token                      string   `pp:",omitempty"`
 	Share_Disable                      bool     `pp:",omitempty"`
+	CMSINT_TaskImage                   string   `pp:",omitempty"`
 	Geospatialjp_Publication_Disable   bool     `pp:",omitempty"`
 	Geospatialjp_CatalocCheck_Disable  bool     `pp:",omitempty"`
 	Geospatialjp_BuildType             string   `pp:",omitempty"`
@@ -141,6 +142,9 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		GeospatialjpCloudBuildProject:     cloudBuildProject,
 		GeospatialjpCloudBuildRegion:      cloudBuildRegion,
 		GeospatialjpCloudBuildDiskSizeGb:  c.Geospatialjp_CloudBuildDiskSizeGb,
+		TaskImage:                         c.CMSINT_TaskImage,
+		GCPProject:                        cloudBuildProject,
+		GCPRegion:                         cloudBuildRegion,
 	}
 }
 
