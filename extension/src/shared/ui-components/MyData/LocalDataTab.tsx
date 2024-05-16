@@ -13,7 +13,7 @@ import { Label } from "./Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { getAdditionalData } from "./utils";
+import { getAdditionalData, getFormatTip } from "./utils";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -71,6 +71,7 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
         type: "item",
         id: id,
         dataID: id,
+        formatTip: getFormatTip(format),
         description:
           "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
         name: fileName,
@@ -135,6 +136,11 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
               onClick={() => setSelectedLocalItem(undefined)}
             />
           </Box>
+          {selectedLocalItem.formatTip && (
+            <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+              {selectedLocalItem.formatTip}
+            </Typography>
+          )}
           <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
             {selectedLocalItem.description}
           </Typography>

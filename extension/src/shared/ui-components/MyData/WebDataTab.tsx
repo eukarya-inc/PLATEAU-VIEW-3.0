@@ -10,7 +10,7 @@ import { getExtension } from "../../utils/file";
 import { Label } from "./Label";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { getAdditionalData } from "./utils";
+import { getAdditionalData, getFormatTip } from "./utils";
 import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
 
 type Props = {
@@ -68,6 +68,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
       type: "item",
       id: id,
       dataID: id,
+      formatTip: getFormatTip(format),
       description: `著作権や制約に関する情報などの詳細については、このデータの提供者にお問い合わせください。${
         format === "csv"
           ? "パフォーマンス上の問題が発生するため、6000レコード以上を含むCSVファイルをアップロードしないでください。"
@@ -131,6 +132,11 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                   onChange={handleLayersAddOnDataset}
                 />{" "}
               </FormControl>
+            )}
+            {selectedWebItem.formatTip && (
+              <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+                {selectedWebItem.formatTip}
+              </Typography>
             )}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
               {selectedWebItem?.description}

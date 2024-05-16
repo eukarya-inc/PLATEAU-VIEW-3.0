@@ -26,3 +26,9 @@ export const getAdditionalData = (content: string | undefined | null, format: st
   }
   return undefined;
 };
+
+export const getFormatTip = (format: string) => {
+  return format === "kml" || format === "kmz" || format === "KML" || format === "KMZ"
+    ? "KML形式のファイルに日本語が含まれている場合、表示できない場合があります。"
+    : undefined;
+};
