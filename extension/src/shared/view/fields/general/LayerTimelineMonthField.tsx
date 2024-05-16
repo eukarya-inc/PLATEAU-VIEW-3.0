@@ -36,6 +36,7 @@ export const LayerTimelineMonthField: FC<LayerTimelineMonthFieldProps> = ({ atom
     handleTimelinePause,
     handleTimelineJump,
     handleTimelineSetSpeed,
+    handleTimelineSetRangeType,
     handleTimelineOnTickEventAdd,
     handleTimelineOnTickEventRemove,
   } = useTimeline();
@@ -56,6 +57,7 @@ export const LayerTimelineMonthField: FC<LayerTimelineMonthFieldProps> = ({ atom
             onPause={handleTimelinePause}
             onJump={handleTimelineJump}
             onSetSpeed={handleTimelineSetSpeed}
+            onSetRangeType={handleTimelineSetRangeType}
             onTickEventAdd={handleTimelineOnTickEventAdd}
             onTickEventRemove={handleTimelineOnTickEventRemove}
           />
