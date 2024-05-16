@@ -21,14 +21,14 @@ module "reearth_cms" {
   cognito_user_pool_endpoint  = module.cognito.user_pool_endpoint
   cognito_user_pool_client_id = module.cognito.user_pool_id
 
-  cms_worker_image_identifier    = "${module.reearth_cms_ecr.cms_worker_image_identifier}:latest"
-  plateauview_api_domain         = local.plateauview_api_domain
-  plateauview_cms_plateauproject = var.plateauview_cms_plateauproject
-  plateauview_ckan_baseurl       = var.plateauview_ckan_baseurl
-  reearth_domain                 = local.reearth_domain
-  plateauview_ckan_org           = var.plateauview_ckan_org
-  plateauview_cms_systemproject  = var.plateauview_cms_systemproject
-  plateauview_fme_baseurl        = var.plateauview_fme_baseurl
+  cms_worker_image_identifier      = "${module.reearth_cms_ecr.cms_worker_image_identifier}:latest"
+  plateauview_api_domain           = local.plateauview_api_domain
+  plateauview_cms_plateauproject   = var.plateauview_cms_plateauproject
+  plateauview_ckan_baseurl         = var.plateauview_ckan_baseurl
+  reearth_domain                   = local.reearth_domain
+  plateauview_ckan_org             = var.plateauview_ckan_org
+  plateauview_cms_systemproject    = var.plateauview_cms_systemproject
+  plateauview_fme_baseurl          = var.plateauview_fme_baseurl
   plateauview_api_image_identifier = "${module.reearth_cms_ecr.plateauview_api_image_identifier}:latest"
 
   plateauview_geo_domain           = local.plateauview_geo_domain

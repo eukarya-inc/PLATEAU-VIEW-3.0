@@ -130,8 +130,10 @@ resource "aws_iam_role_policy" "reearth_cms_worker_instance" {
       {
         Effect = "Allow"
         Action = [
-          "s3:*",
-          "sns:*",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "sns:Publish",
           "ssm:GetParameters"
         ]
         Resource = "*"

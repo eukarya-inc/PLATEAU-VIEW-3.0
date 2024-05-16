@@ -48,7 +48,9 @@ data "aws_iam_policy_document" "plateauview_geo_tile" {
     }
 
     actions = [
-      "s3:Get*",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
     ]
 
     resources = [

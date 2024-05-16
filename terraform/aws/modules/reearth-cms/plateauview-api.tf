@@ -139,8 +139,9 @@ resource "aws_iam_role_policy" "plateauview_api_instance" {
       {
         Effect = "Allow"
         Action = [
-          "s3:*",
-          "sns:*",
+          "s3:GetObject",
+          "s3:PutObject",
+          "sns:Publish",
           "ssm:GetParameters"
         ]
         Resource = "*"
@@ -174,19 +175,19 @@ resource "random_password" "plateauview_env" {
 }
 
 resource "aws_ssm_parameter" "plateauview_env_secret_random" {
-  for_each = toset(local.plateauview_randoms)
-  name     = "/${var.prefix}/plateauview/${each.value}"
-  type     = "SecureString"
-  value    = random_password.plateauview_env[each.value].result
-    overwrite = true
+  for_each  = toset(local.plateauview_randoms)
+  name      = "/${var.prefix}/plateauview/${each.value}"
+  type      = "SecureString"
+  value     = random_password.plateauview_env[each.value].result
+  overwrite = true
 }
 
 resource "aws_ssm_parameter" "plateauview_env_secret_empty" {
-  for_each = toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets))
-  name     = "/${var.prefix}/plateauview/${each.value}"
-  type     = "SecureString"
-  value    = "DUMMY"
-    overwrite = true
+  for_each  = toset(setsubtract(local.plateauview_randoms, local.plateauview_secrets))
+  name      = "/${var.prefix}/plateauview/${each.value}"
+  type      = "SecureString"
+  value     = "DUMMY"
+  overwrite = true
 }
 
 resource "aws_apprunner_custom_domain_association" "plateauview_api" {
