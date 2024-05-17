@@ -32,10 +32,15 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
       - name: Download artifact
         uses: dawidd6/action-download-artifact@v2
         with:
-          github_token: ${{ secrets.GPT }}
+          github_token: ${{ steps.app-token.outputs.token }}
           workflow: deploy-cms-dev.yml
           branch: ${{ !github.event.inputs.web_run_id && 'main' || '' }}
           name: reearth-cms-web
