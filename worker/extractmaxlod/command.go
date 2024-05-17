@@ -117,6 +117,7 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 		if _, err := c.UpdateItem(ctx, ref, nil, []*cms.Field{
 			{
 				Key:   "maxlod_status",
+				Type:  "tag",
 				Value: "エラー",
 			},
 		}); err != nil {
@@ -180,15 +181,6 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 				return fmt.Errorf("failed to update feature: %w", err)
 			}
 
-			if _, err := c.UpdateItem(ctx, ref, nil, []*cms.Field{
-				{
-					Key:   "maxlod_status",
-					Value: "成功",
-				},
-			}); err != nil {
-				log.Errorfc(ctx, "failed to update feature status: %v", err)
-			}
-
 			log.Infofc(ctx, "updated feature: %s", ref)
 		} else {
 			log.Infofc(ctx, "upload was skipped")
@@ -205,6 +197,16 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 	}
 
 	if conf.WetRun {
+		if _, err := c.UpdateItem(ctx, ref, nil, []*cms.Field{
+			{
+				Key:   "maxlod_status",
+				Type:  "tag",
+				Value: "成功",
+			},
+		}); err != nil {
+			log.Errorfc(ctx, "failed to update feature status: %v", err)
+		}
+
 		_ = c.CommentToItem(ctx, ref, "最大LOD抽出が完了しました。")
 	}
 

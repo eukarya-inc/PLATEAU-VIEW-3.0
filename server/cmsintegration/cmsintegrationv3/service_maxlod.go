@@ -79,16 +79,17 @@ func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error
 		return fmt.Errorf("maxlod: failed to run task: %w", err)
 	}
 
-	if _, err := s.CMS.UpdateItem(ctx, w.ItemData.Item.ID, []*cms.Field{
+	if _, err := s.CMS.UpdateItem(ctx, mainItem.ID, nil, []*cms.Field{
 		{
 			ID:    "maxlod_status",
+			Type:  "tag",
 			Value: "実行中",
 		},
-	}, nil); err != nil {
+	}); err != nil {
 		log.Errorfc(ctx, "cmsintegrationv3: maxlod: failed to update item: %v", err)
 	}
 
-	_ = s.CMS.CommentToItem(ctx, w.ItemData.Item.ID, "CityGMLが変更されたため最大LOD抽出を開始しました。")
+	_ = s.CMS.CommentToItem(ctx, mainItem.ID, "CityGMLが変更されたため最大LOD抽出を開始しました。")
 
 	log.Debugfc(ctx, "cmsintegrationv3: maxlod: done")
 	return nil
