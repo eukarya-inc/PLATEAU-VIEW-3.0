@@ -4,7 +4,7 @@ import CopyAllOutlinedIcon from "@mui/icons-material/CopyAllOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Box, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { getExtension } from "../../utils/file";
@@ -21,70 +21,54 @@ type Props = {
 
 const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
-  const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
 
-  const setDataFormat = useCallback((type: FileType, filename: string) => {
-    const extension = getExtension(filename);
-    if (type === "auto") {
-      switch (extension) {
-        // 3dtiles
-        case "json":
-          return "json";
-        // georss
-        case "rss":
-          return "rss";
-        // georss
-        case "xml":
-          return "xml";
-        // shapefile
-        case "zip":
-          return "zip";
-        default:
-          return extension;
+  const [processedDataItem, setProcessedDataItem] = useState<
+    | {
+        fileName: string;
+        contentString: string | null;
+        url: string | undefined;
       }
-    }
-    return type;
+    | undefined
+  >(undefined);
+
+  const proccessedData = useCallback(async (acceptedFiles: any) => {
+    const fileName = acceptedFiles[0].name;
+
+    const reader = new FileReader();
+    const content = await new Promise<string | ArrayBuffer | null>(resolve => {
+      reader.onload = () => resolve(reader.result);
+      reader.readAsText(acceptedFiles[0]);
+    });
+
+    const url = content
+      ? "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString())
+      : undefined;
+
+    const contentString =
+      content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
+
+    setProcessedDataItem({ fileName, contentString, url });
   }, []);
 
-  const proccessedData = useCallback(
-    async (acceptedFiles: any) => {
-      const fileName = acceptedFiles[0].name;
-
-      const reader = new FileReader();
-      const content = await new Promise<string | ArrayBuffer | null>(resolve => {
-        reader.onload = () => resolve(reader.result);
-        reader.readAsText(acceptedFiles[0]);
-      });
-
-      const url = (() => {
-        if (!content) {
-          return;
-        }
-        return "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString());
-      })();
-      const contentString =
-        content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
-
-      const format = setDataFormat(fileType, fileName);
-      const id = "id" + Math.random().toString(16).slice(2);
-      const item: UserDataItem = {
-        type: "item",
-        id: id,
-        dataID: id,
-        formatTip: getFormatTip(format),
-        description:
-          "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
-        name: fileName,
-        visible: true,
-        url: url,
-        format,
-        additionalData: getAdditionalData(contentString, format),
-      };
-      if (setSelectedLocalItem) setSelectedLocalItem(item);
-      return false;
-    },
-    [fileType, setDataFormat, setSelectedLocalItem],
-  );
+  const selectedLocalItem: UserDataItem | undefined = useMemo(() => {
+    if (!processedDataItem) return undefined;
+    const format = getFormat(fileType, processedDataItem.fileName);
+    const id = "id" + Math.random().toString(16).slice(2);
+    const item: UserDataItem = {
+      type: "item",
+      id: id,
+      dataID: id,
+      formatTip: getFormatTip(format),
+      description:
+        "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
+      name: processedDataItem.fileName,
+      visible: true,
+      url: processedDataItem.url,
+      format,
+      additionalData: getAdditionalData(processedDataItem.contentString, format),
+    };
+    return item;
+  }, [processedDataItem, fileType]);
 
   const onDrop = useCallback(
     (acceptedFiles: any) => {
@@ -105,8 +89,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    selectedLocalItem && onSubmit(selectedLocalItem);
-    setSelectedLocalItem(undefined);
+    if (selectedLocalItem) {
+      onSubmit(selectedLocalItem);
+    }
+    setProcessedDataItem(undefined);
   }, [onSubmit, selectedLocalItem]);
 
   return (
@@ -128,12 +114,18 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
 
       {selectedLocalItem && (
         <>
-          <Box sx={{ display: "flex", gap: "10px", border: "1px solid #0000001f", padding: "8px" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "10px",
+              border: "1px solid #0000001f",
+              padding: "8px",
+            }}>
             <DescriptionOutlinedIcon />
             <Typography>{selectedLocalItem.name}</Typography>
             <CancelIcon
               sx={{ cursor: "pointer" }}
-              onClick={() => setSelectedLocalItem(undefined)}
+              onClick={() => setProcessedDataItem(undefined)}
             />
           </Box>
           {selectedLocalItem.formatTip && (
@@ -161,6 +153,7 @@ const DropzoneAreaWrapper = styled("section")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   marginBottom: theme.spacing(1.8),
+  cursor: "pointer",
 }));
 
 const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
@@ -176,3 +169,7 @@ const StyledCopyIcon = styled(CopyAllOutlinedIcon)(({ theme }) => ({
 }));
 
 export default LocalDataTab;
+
+function getFormat(type: FileType, filename: string) {
+  return type === "auto" ? getExtension(filename) : type;
+}
