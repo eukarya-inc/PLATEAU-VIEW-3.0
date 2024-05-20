@@ -108,7 +108,25 @@ func processCity(ctx context.Context, conf Config, cms *cms.CMS, city *City, tmp
 	return nil
 }
 
-func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, tmpDir string) error {
+func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, tmpDir string) (err error) {
+	defer func() {
+		if err == nil || !conf.WetRun {
+			return
+		}
+
+		if _, err := c.UpdateItem(ctx, ref, nil, []*cms.Field{
+			{
+				Key:   "maxlod_status",
+				Type:  "tag",
+				Value: "エラー",
+			},
+		}); err != nil {
+			log.Errorfc(ctx, "failed to update feature status: %v", err)
+		}
+
+		_ = c.CommentToItem(ctx, ref, fmt.Sprintf("最大LOD抽出でエラーが発生しました。%s", err))
+	}()
+
 	maxlod := FixedMaxLOD[ft]
 	if maxlod == "" {
 		log.Infofc(ctx, "%s is skipped: maxlod is not fixed", ft)
@@ -154,13 +172,12 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 
 			// update feature
 			log.Infofc(ctx, "uploaded asset: %s", assetID)
-			maxlodField := &cms.Field{
-				// ID:    id,
-				Type:  "asset",
-				Key:   "maxlod",
-				Value: assetID,
-			}
-			if _, err := c.UpdateItem(ctx, ref, []*cms.Field{maxlodField}, nil); err != nil {
+			if _, err := c.UpdateItem(ctx, ref, []*cms.Field{
+				{
+					Key:   "maxlod",
+					Value: assetID,
+				},
+			}, nil); err != nil {
 				return fmt.Errorf("failed to update feature: %w", err)
 			}
 
@@ -180,6 +197,16 @@ func processFeatureType(ctx context.Context, conf Config, c *cms.CMS, ft, ref, t
 	}
 
 	if conf.WetRun {
+		if _, err := c.UpdateItem(ctx, ref, nil, []*cms.Field{
+			{
+				Key:   "maxlod_status",
+				Type:  "tag",
+				Value: "成功",
+			},
+		}); err != nil {
+			log.Errorfc(ctx, "failed to update feature status: %v", err)
+		}
+
 		_ = c.CommentToItem(ctx, ref, "最大LOD抽出が完了しました。")
 	}
 
