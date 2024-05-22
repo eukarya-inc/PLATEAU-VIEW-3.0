@@ -31,23 +31,19 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
     | undefined
   >(undefined);
 
-  const proccessedData = useCallback(async (acceptedFiles: any) => {
+  const processedData = useCallback(async (acceptedFiles: any) => {
     const fileName = acceptedFiles[0].name;
-
     const reader = new FileReader();
-    const content = await new Promise<string | ArrayBuffer | null>(resolve => {
+    const content = await new Promise<string | ArrayBuffer | null>((resolve) => {
       reader.onload = () => resolve(reader.result);
-      reader.readAsText(acceptedFiles[0]);
+      reader.readAsDataURL(acceptedFiles[0]);
     });
-
-    const url = content
-      ? "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString())
-      : undefined;
-
-    const contentString =
-      content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
-
-    setProcessedDataItem({ fileName, contentString, url });
+    const url = content as string;
+    setProcessedDataItem({
+      fileName,
+      contentString: url,
+      url,
+    });
   }, []);
 
   const selectedLocalItem: UserDataItem | undefined = useMemo(() => {
@@ -73,10 +69,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        proccessedData(acceptedFiles);
+        processedData(acceptedFiles);
       }
     },
-    [proccessedData],
+    [processedData],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
