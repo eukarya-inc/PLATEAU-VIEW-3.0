@@ -168,5 +168,6 @@ const StyledCopyIcon = styled(CopyAllOutlinedIcon)(({ theme }) => ({
 export default LocalDataTab;
 
 function getFormat(type: FileType, filename: string) {
-  return type === "auto" ? getExtension(filename) : type;
+  const extension = getExtension(filename);
+  return type === "auto" ? (extension === "zip" ? "shapefile" : extension) : type;
 }

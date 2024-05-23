@@ -136,6 +136,15 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
       onLoad={handleLoad}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
+      appearances={DEFAULT_MYDATA_APPEARANCES}
     />
   );
+};
+
+const DEFAULT_MYDATA_APPEARANCES = {
+  marker: {
+    style: "point" as const,
+    pointColor: "red",
+    pointSize: 12,
+  },
 };

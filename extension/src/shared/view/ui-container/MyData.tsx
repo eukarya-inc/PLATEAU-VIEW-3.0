@@ -46,7 +46,6 @@ const MyData = () => {
         console.error("failed to parse sketch layer data: ", error);
       }
     } else {
-      console.log(selectedItem);
       addLayer(
         createRootLayerForLayerAtom({
           title: selectedItem.name ?? "",

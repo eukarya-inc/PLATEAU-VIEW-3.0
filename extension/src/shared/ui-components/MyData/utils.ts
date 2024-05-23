@@ -1,5 +1,4 @@
 export const getAdditionalData = (content: string | undefined | null, format: string) => {
-  console.log(content, format);
   if (!content) return undefined;
   if (format === "csv") {
     const header = content.split(/\r\n|\n/)[0];
