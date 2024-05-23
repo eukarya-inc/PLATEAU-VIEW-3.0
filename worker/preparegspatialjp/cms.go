@@ -1,11 +1,16 @@
 package preparegspatialjp
 
 import (
+	"context"
+	"fmt"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
 
 var featureTypes = []string{
@@ -125,6 +130,7 @@ type GspatialjpDataItem struct {
 	CityGMLURL string `json:"citygmlUrl,omitempty" cms:"-"`
 	PlateauURL string `json:"plateauUrl,omitempty" cms:"-"`
 	RelatedURL string `json:"relatedUrl,omitempty" cms:"-"`
+	MaxLODURL  string `json:"maxlodUrl,omitempty" cms:"-"`
 }
 
 const idle = "未実行"
@@ -160,6 +166,7 @@ func GspatialjpDataItemFrom(item *cms.Item) (i *GspatialjpDataItem) {
 	citygml := item.FieldByKey("citygml").GetValue().Asset()
 	plateau := item.FieldByKey("plateau").GetValue().Asset()
 	related := item.FieldByKey("related").GetValue().Asset()
+	maxlod := item.FieldByKey("maxlod").GetValue().Asset()
 
 	if citygml != nil {
 		i.CityGML = citygml.ID
@@ -174,6 +181,11 @@ func GspatialjpDataItemFrom(item *cms.Item) (i *GspatialjpDataItem) {
 	if related != nil {
 		i.Related = related.ID
 		i.RelatedURL = related.URL
+	}
+
+	if maxlod != nil {
+		i.MaxLOD = maxlod.ID
+		i.MaxLODURL = maxlod.URL
 	}
 
 	return
@@ -243,4 +255,34 @@ func GetUpdateCount(u string) int {
 		}
 	}
 	return 0
+}
+
+func FetchAllCities(ctx context.Context, conf *MultipleConfig) ([]string, error) {
+	const model = "plateau-city"
+
+	c, err := cms.New(conf.CMSURL, conf.CMSToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize CMS client: %w", err)
+	}
+
+	// fetch all cities
+	log.Infofc(ctx, "fetching all cities")
+	items, err := c.GetItemsByKeyInParallel(ctx, conf.ProjectID, model, false, 0)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch cities: %w", err)
+	}
+
+	res := make([]string, 0, len(items.Items))
+	for _, i := range items.Items {
+		if len(conf.CityNames) > 0 {
+			name := lo.FromPtr(i.FieldByKey("city_name").GetValue().String())
+			if name == "" || !slices.Contains(conf.CityNames, name) {
+				continue
+			}
+		}
+
+		res = append(res, i.ID)
+	}
+
+	return res, nil
 }

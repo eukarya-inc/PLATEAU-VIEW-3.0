@@ -2,7 +2,7 @@ import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import { ChangeEvent, Fragment, useCallback, useState } from "react";
+import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
 
 import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
@@ -51,6 +51,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleClick = useCallback(async () => {
+    if (!dataUrl) return;
     const filename = dataUrl.substring(dataUrl.lastIndexOf("/") + 1);
     const id = "id" + Math.random().toString(16).slice(2);
     const format = setDataFormat(fileType, filename);
@@ -102,6 +103,10 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     onSubmit(terminalDataset);
     setSelectedWebItem(undefined);
   }, [layers, onSubmit, selectedWebItem]);
+
+  useEffect(() => {
+    handleClick();
+  }, [fileType, handleClick]);
 
   return (
     <Fragment>
