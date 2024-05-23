@@ -1,4 +1,5 @@
 export const getAdditionalData = (content: string | undefined | null, format: string) => {
+  console.log(content, format);
   if (!content) return undefined;
   if (format === "csv") {
     const header = content.split(/\r\n|\n/)[0];
@@ -31,4 +32,9 @@ export const getFormatTip = (format: string) => {
   return format === "kml" || format === "kmz" || format === "KML" || format === "KMZ"
     ? "KML形式のファイルに日本語が含まれている場合、表示できない場合があります。"
     : undefined;
+};
+
+export const decodeDataURL = (dataUrl: string) => {
+  if (!dataUrl.startsWith("data:")) return dataUrl;
+  return atob(dataUrl.split(",")[1]);
 };

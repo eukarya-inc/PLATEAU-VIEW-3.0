@@ -13,7 +13,7 @@ import { Label } from "./Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { getAdditionalData, getFormatTip } from "./utils";
+import { decodeDataURL, getAdditionalData, getFormatTip } from "./utils";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -39,9 +39,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
       reader.readAsDataURL(acceptedFiles[0]);
     });
     const url = content as string;
+    const contentString = decodeDataURL(String(content));
     setProcessedDataItem({
       fileName,
-      contentString: url,
+      contentString,
       url,
     });
   }, []);

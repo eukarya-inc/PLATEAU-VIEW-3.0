@@ -8,6 +8,7 @@ import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
 import { MY_DATA_LAYER, SKETCH_LAYER } from "../../../prototypes/view-layers";
 import MyDataModal from "../../ui-components/MyData";
 import { UserDataItem } from "../../ui-components/MyData/types";
+import { decodeDataURL } from "../../ui-components/MyData/utils";
 import { createRootLayerForLayerAtom } from "../../view-layers";
 
 const MyData = () => {
@@ -21,7 +22,7 @@ const MyData = () => {
   const handleDataSetSubmit = (selectedItem: UserDataItem) => {
     if (selectedItem?.format === "plateau-sketch-geojson") {
       try {
-        const data = atob(selectedItem?.url?.split("data:application/json;base64,")[1] ?? "");
+        const data = decodeDataURL(selectedItem?.url ?? "");
         const featureCollection = JSON.parse(data) as FeatureCollection;
         const features = featureCollection.features.filter(
           (feature): feature is Feature<Polygon | MultiPolygon> =>
@@ -45,6 +46,7 @@ const MyData = () => {
         console.error("failed to parse sketch layer data: ", error);
       }
     } else {
+      console.log(selectedItem);
       addLayer(
         createRootLayerForLayerAtom({
           title: selectedItem.name ?? "",
