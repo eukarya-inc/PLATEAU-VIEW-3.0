@@ -31,10 +31,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
     | undefined
   >(undefined);
 
-  const processedData = useCallback(async (acceptedFiles: any) => {
+  const processData = useCallback(async (acceptedFiles: any) => {
     const fileName = acceptedFiles[0].name;
     const reader = new FileReader();
-    const content = await new Promise<string | ArrayBuffer | null>((resolve) => {
+    const content = await new Promise<string | ArrayBuffer | null>(resolve => {
       reader.onload = () => resolve(reader.result);
       reader.readAsDataURL(acceptedFiles[0]);
     });
@@ -69,10 +69,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        processedData(acceptedFiles);
+        processData(acceptedFiles);
       }
     },
-    [processedData],
+    [processData],
   );
 
   const { getRootProps, getInputProps } = useDropzone({

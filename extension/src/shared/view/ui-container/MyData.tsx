@@ -21,9 +21,7 @@ const MyData = () => {
   const handleDataSetSubmit = (selectedItem: UserDataItem) => {
     if (selectedItem?.format === "plateau-sketch-geojson") {
       try {
-        const data = decodeURIComponent(
-          selectedItem?.url?.split("data:text/plain;charset=UTF-8,")[1] ?? "",
-        );
+        const data = atob(selectedItem?.url?.split("data:application/json;base64,")[1] ?? "");
         const featureCollection = JSON.parse(data) as FeatureCollection;
         const features = featureCollection.features.filter(
           (feature): feature is Feature<Polygon | MultiPolygon> =>
