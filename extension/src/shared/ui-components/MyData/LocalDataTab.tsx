@@ -13,7 +13,7 @@ import { Label } from "./Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { getAdditionalData, getFormatTip } from "./utils";
+import { decodeDataURL, getAdditionalData, getFormatTip } from "./utils";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -31,23 +31,20 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
     | undefined
   >(undefined);
 
-  const proccessedData = useCallback(async (acceptedFiles: any) => {
+  const processData = useCallback(async (acceptedFiles: any) => {
     const fileName = acceptedFiles[0].name;
-
     const reader = new FileReader();
     const content = await new Promise<string | ArrayBuffer | null>(resolve => {
       reader.onload = () => resolve(reader.result);
-      reader.readAsText(acceptedFiles[0]);
+      reader.readAsDataURL(acceptedFiles[0]);
     });
-
-    const url = content
-      ? "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString())
-      : undefined;
-
-    const contentString =
-      content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
-
-    setProcessedDataItem({ fileName, contentString, url });
+    const url = content as string;
+    const contentString = decodeDataURL(String(content));
+    setProcessedDataItem({
+      fileName,
+      contentString,
+      url,
+    });
   }, []);
 
   const selectedLocalItem: UserDataItem | undefined = useMemo(() => {
@@ -73,10 +70,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        proccessedData(acceptedFiles);
+        processData(acceptedFiles);
       }
     },
-    [proccessedData],
+    [processData],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -171,5 +168,6 @@ const StyledCopyIcon = styled(CopyAllOutlinedIcon)(({ theme }) => ({
 export default LocalDataTab;
 
 function getFormat(type: FileType, filename: string) {
-  return type === "auto" ? getExtension(filename) : type;
+  const extension = getExtension(filename);
+  return type === "auto" ? (extension === "zip" ? "shapefile" : extension) : type;
 }

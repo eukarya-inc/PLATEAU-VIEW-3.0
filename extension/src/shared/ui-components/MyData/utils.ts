@@ -32,3 +32,8 @@ export const getFormatTip = (format: string) => {
     ? "KML形式のファイルに日本語が含まれている場合、表示できない場合があります。"
     : undefined;
 };
+
+export const decodeDataURL = (dataUrl: string) => {
+  if (!dataUrl.startsWith("data:")) return dataUrl;
+  return atob(dataUrl.split(",")[1]);
+};

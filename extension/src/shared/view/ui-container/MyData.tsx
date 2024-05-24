@@ -8,6 +8,7 @@ import { showMyDataModalAtom } from "../../../prototypes/view/states/app";
 import { MY_DATA_LAYER, SKETCH_LAYER } from "../../../prototypes/view-layers";
 import MyDataModal from "../../ui-components/MyData";
 import { UserDataItem } from "../../ui-components/MyData/types";
+import { decodeDataURL } from "../../ui-components/MyData/utils";
 import { createRootLayerForLayerAtom } from "../../view-layers";
 
 const MyData = () => {
@@ -21,9 +22,7 @@ const MyData = () => {
   const handleDataSetSubmit = (selectedItem: UserDataItem) => {
     if (selectedItem?.format === "plateau-sketch-geojson") {
       try {
-        const data = decodeURIComponent(
-          selectedItem?.url?.split("data:text/plain;charset=UTF-8,")[1] ?? "",
-        );
+        const data = decodeDataURL(selectedItem?.url ?? "");
         const featureCollection = JSON.parse(data) as FeatureCollection;
         const features = featureCollection.features.filter(
           (feature): feature is Feature<Polygon | MultiPolygon> =>
