@@ -111,7 +111,7 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
       <MVTLayer
         {...props}
         onLoad={handleLoad}
-        // appearances={generalAppearances}
+        appearances={DEFAULT_MYDATA_APPEARANCES}
         visible={!hidden}
       />
     );
@@ -143,8 +143,26 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
 
 const DEFAULT_MYDATA_APPEARANCES = {
   marker: {
-    style: "point" as const,
-    pointColor: "red",
+    pointColor: {
+      expression: "color('#00B3DB')",
+    },
     pointSize: 12,
+    style: "point" as const,
+  },
+  polygon: {
+    clampToGround: true,
+    classificationType: "terrain" as const,
+    fill: true,
+    fillColor: {
+      expression: "color('#00B3DB',0.6)",
+    },
+  },
+  polyline: {
+    clampToGround: true,
+    classificationType: "terrain" as const,
+    strokeColor: {
+      expression: "color('#00B3DB')",
+    },
+    strokeWidth: 2,
   },
 };
