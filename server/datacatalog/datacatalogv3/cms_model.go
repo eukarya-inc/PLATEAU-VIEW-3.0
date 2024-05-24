@@ -64,6 +64,7 @@ type CityItem struct {
 	RelatedPublic       bool            `json:"related_public,omitempty" cms:"related_public,bool,metadata"`
 	Public              map[string]bool `json:"public,omitempty" cms:"-"`
 	GeospatialjpPublish bool            `json:"geospatialjp_publish,omitempty" cms:"geospatialjp_publish,bool,metadata"`
+	Sample              bool            `json:"sample,omitempty" cms:"sample,bool,metadata"`
 }
 
 func CityItemFrom(item *cms.Item, featureTypes []FeatureType) (i *CityItem) {

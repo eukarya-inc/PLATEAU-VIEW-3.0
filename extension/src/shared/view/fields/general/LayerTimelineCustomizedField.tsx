@@ -23,6 +23,7 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
     handleTimelinePause,
     handleTimelineJump,
     handleTimelineSetSpeed,
+    handleTimelineSetRangeType,
     handleTimelineOnTickEventAdd,
     handleTimelineOnTickEventRemove,
   } = useTimeline();
@@ -36,6 +37,8 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
   const timezone = useMemo(() => component.preset?.timezone ?? "+9", [component.preset]);
   const defaultUnit = useMemo(() => component.preset?.defaultUnit, [component.preset]);
   const defaultAmount = useMemo(() => component.preset?.defaultAmount, [component.preset]);
+  const timeDisplayType = useMemo(() => component.preset?.timeDisplayType, [component.preset]);
+  const timeDisplayFormat = useMemo(() => component.preset?.timeDisplayFormat, [component.preset]);
 
   return start && current && end && timezone !== undefined ? (
     <ParameterList>
@@ -48,12 +51,15 @@ export const LayerTimelineCustomizedField: FC<LayerTimelineCustomizedFieldProps>
           timezone={timezone}
           defaultUnit={defaultUnit}
           defaultAmount={defaultAmount}
+          timeDisplayType={timeDisplayType}
+          timeDisplayFormat={timeDisplayFormat}
           activeIdAtom={activeTimelineComponentIdAtom}
           onPlay={handleTimelinePlay}
           onPlayReverse={handleTimelinePlayReverse}
           onPause={handleTimelinePause}
           onJump={handleTimelineJump}
           onSetSpeed={handleTimelineSetSpeed}
+          onSetRangeType={handleTimelineSetRangeType}
           onTickEventAdd={handleTimelineOnTickEventAdd}
           onTickEventRemove={handleTimelineOnTickEventRemove}
         />

@@ -14,23 +14,24 @@ type SimpleDatasetsResponse struct {
 }
 
 type SimpleDatasetsResponseDataset struct {
-	ID               string  `json:"id"`
-	Name             string  `json:"name"`
-	Pref             string  `json:"pref"`
-	PrefCode         string  `json:"pref_code"`
-	City             *string `json:"city"`
-	CityCode         *string `json:"city_code"`
-	Ward             *string `json:"ward"`
-	WardCode         *string `json:"ward_code"`
-	Type             string  `json:"type"`
-	TypeCode         string  `json:"type_en"`
-	URL              string  `json:"url"`
-	Year             int     `json:"year"`
-	RegistrationYear int     `json:"registration_year"`
-	Spec             string  `json:"spec"`
-	Format           string  `json:"format"`
-	LOD              *string `json:"lod"`
-	Texture          *bool   `json:"texture"`
+	ID               string   `json:"id"`
+	Name             string   `json:"name"`
+	Pref             string   `json:"pref"`
+	PrefCode         string   `json:"pref_code"`
+	City             *string  `json:"city"`
+	CityCode         *string  `json:"city_code"`
+	Ward             *string  `json:"ward"`
+	WardCode         *string  `json:"ward_code"`
+	Type             string   `json:"type"`
+	TypeCode         string   `json:"type_en"`
+	URL              string   `json:"url"`
+	Layers           []string `json:"layers"`
+	Year             int      `json:"year"`
+	RegistrationYear int      `json:"registration_year"`
+	Spec             string   `json:"spec"`
+	Format           string   `json:"format"`
+	LOD              *string  `json:"lod"`
+	Texture          *bool    `json:"texture"`
 }
 
 func FetchSimplePlateauDatasets(ctx context.Context, r plateauapi.Repo) (*SimpleDatasetsResponse, error) {
@@ -141,6 +142,7 @@ func FetchSimplePlateauDatasets(ctx context.Context, r plateauapi.Repo) (*Simple
 			c := common
 			c.ID = strings.TrimPrefix(string(di.GetID()), "di_")
 			c.URL = di.GetURL()
+			c.Layers = di.GetLayers()
 			c.Format = f
 			c.Texture = simpleTexture(di.Texture)
 			if di.Lod != nil {

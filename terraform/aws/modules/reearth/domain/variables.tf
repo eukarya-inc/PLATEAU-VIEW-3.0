@@ -1,10 +1,5 @@
-variable "app_runner_service_arn" {
-  type        = string
-  description = "app runner service arn"
-}
-
-variable "reearth_domain" {
-  type        = string
+variable "reearth_server_domain" {
+  type        = any
   description = "reearth domain"
 }
 

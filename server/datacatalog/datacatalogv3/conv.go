@@ -76,8 +76,16 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	// sample
 	sample := res.DatasetTypes.FindByCode("sample", plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
 	if sample != nil {
+		targets := all.Sample
+		for _, c := range all.City {
+			if !c.Sample || c.CityCode == "" {
+				continue
+			}
+			targets = append(targets, all.FindPlateauFeatureItemsByCityID(c.CityCode))
+		}
+
 		datasets, w := convertPlateauRaw(
-			all.Sample,
+			targets,
 			"",
 			res.PlateauSpecs,
 			plateauDatasetTypes,
@@ -157,6 +165,16 @@ func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateau
 		}
 
 		layerNames := ic.layerNamesForType[pdt.Code]
+		cityItem := ic.CityItem(ds.City)
+		if cityItem == nil {
+			warning = append(warning, fmt.Sprintf("plateau %s %s: invalid city: %s", ds.ID, pdt.Code, ds.City))
+			continue
+		}
+
+		if cityItem.Sample {
+			continue
+		}
+
 		area := ic.AreaContext(ds.City)
 		if area == nil {
 			warning = append(warning, fmt.Sprintf("plateau %s %s: invalid city: %s", ds.ID, pdt.Code, ds.City))

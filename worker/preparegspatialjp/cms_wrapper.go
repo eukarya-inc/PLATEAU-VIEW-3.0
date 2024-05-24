@@ -155,6 +155,24 @@ func (c *CMSWrapper) Upload(ctx context.Context, name string, body io.Reader) (s
 	return a.ID, nil
 }
 
+func (c *CMSWrapper) UploadNormally(ctx context.Context, name string, body io.Reader) (string, error) {
+	if c == nil || !c.WetRun {
+		log.Debugfc(ctx, "cms: upload (skipped): name=%s", name)
+		return "", nil
+	}
+
+	log.Debugfc(ctx, "cms: uploading %s", name)
+
+	upload, err := c.CMS.UploadAssetDirectly(ctx, c.ProjectID, name, body)
+	if err != nil {
+		return "", fmt.Errorf("failed to create upload: %w", err)
+	}
+
+	log.Debugfc(ctx, "cms: uploaded %s to %s", name, upload)
+
+	return upload, nil
+}
+
 func (c *CMSWrapper) Comment(ctx context.Context, comment string) {
 	if c == nil || !c.WetRun {
 		log.Debugfc(ctx, "cms: comment (skipped): comment=%s", comment)
