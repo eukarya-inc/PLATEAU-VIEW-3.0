@@ -10,6 +10,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SelectItem } from "../../prototypes/ui-components/SelectItem";
 
 import TimelineBar from "./TimelineBar";
+import TimelineBarForPastTime from "./TimelineBarForPastTime";
 
 type TimelineParameterItemProps = {
   id: string;
@@ -334,13 +335,23 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
           <SpeedTick>/秒</SpeedTick>
         </SelectWrapper>
       </Controls>
-      <TimelineBar
-        startDate={startDate}
-        endDate={endDate}
-        currentDate={currentDate}
-        timezone={timezone}
-        onChange={handleJumpTime}
-      />
+      {timeDisplayType === "current" ? (
+        <TimelineBar
+          startDate={startDate}
+          endDate={endDate}
+          currentDate={currentDate}
+          timezone={timezone}
+          onChange={handleJumpTime}
+        />
+      ) : (
+        <TimelineBarForPastTime
+          startDate={startDate}
+          endDate={endDate}
+          currentDate={currentDate}
+          timezone={timezone}
+          onChange={handleJumpTime}
+        />
+      )}
       <CurrentTime>
         {timeDisplayType === "current"
           ? formatDateWithTimezone(currentDate, timezone)
