@@ -7,12 +7,15 @@ import { InteractionMode } from "./interactionMode";
 import { Layers } from "./layer";
 import { Scene } from "./scene";
 import { Sketch } from "./sketch";
+import { Viewer } from "./viewer";
 import { Viewport } from "./viewport";
 
 // https://github.com/reearth/reearth/blob/main/web/src/beta/lib/core/Crust/Plugins/plugin_types.ts
 export type ReEarth = {
+  readonly apiVersion?: number;
   readonly camera?: Camera;
   readonly scene?: Scene;
+  readonly viewer?: Viewer;
   readonly clock?: Clock;
   readonly interactionMode?: InteractionMode;
   readonly layers?: Layers;
