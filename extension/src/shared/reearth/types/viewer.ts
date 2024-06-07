@@ -10,22 +10,25 @@ export type Camera = {
   aspectRatio?: number;
 };
 
+export type Viewer = {
+  property?: ViewerProperty;
+  overrideProperty?: (property: ViewerProperty) => void;
+};
+
 export type SceneMode = "3d" | "2d" | "columbus";
-export type IndicatorTypes = "default" | "crosshair" | "custom";
 
 export type ViewerProperty = {
   globe?: GlobeProperty;
   terrain?: TerrainProperty;
-  shadow?: ShadowProperty;
   scene?: SceneProperty;
   tiles?: TileProperty[];
   tileLabels?: TileLabelProperty[];
   sky?: SkyProperty;
   camera?: CameraProperty;
-  ambientOcclusion?: AmbientOcclusionProperty;
-  indicator?: IndicatorProperty;
-  assets?: AssetsProperty;
+  render?: RenderPeropty;
+  assets?: AssetsProperty; // anything related to specific assets and its access tokens
   debug?: DebugProperty;
+  indicator?: IndicatorProperty; // consider remove this if not needed in the future
 };
 
 export type GlobeProperty = {
@@ -33,7 +36,6 @@ export type GlobeProperty = {
   enableLighting?: boolean;
   atmosphere?: GlobeAtmosphereProperty;
   depthTestAgainstTerrain?: boolean;
-  imageBasedLighting?: ImageBasedLighting;
 };
 
 export type GlobeAtmosphereProperty = {
@@ -42,13 +44,6 @@ export type GlobeAtmosphereProperty = {
   brightnessShift?: number;
   hueShift?: number;
   saturationShift?: number;
-};
-
-export type ImageBasedLighting = {
-  enabled?: boolean;
-  intensity?: number;
-  specularEnvironmentMaps?: string;
-  sphericalHarmonicCoefficients?: [number, number, number][];
 };
 
 export type TerrainProperty = {
@@ -67,6 +62,24 @@ export type HeightMapProperty = {
   logarithmic?: boolean;
 };
 
+export type SceneProperty = {
+  backgroundColor?: string;
+  mode?: SceneMode;
+  verticalExaggeration?: number;
+  verticalExaggerationRelativeHeight?: number;
+  vr?: boolean;
+  light?: LightProperty;
+  shadow?: ShadowProperty;
+  imageBasedLighting?: ImageBasedLighting;
+};
+
+export type LightProperty = {
+  type?: "sunLight" | "directionalLight";
+  direction?: [x: number, y: number, z: number];
+  color?: string;
+  intensity?: number;
+};
+
 export type ShadowProperty = {
   enabled?: boolean;
   darkness?: number;
@@ -80,21 +93,11 @@ export type ShadowMapProperty = {
   maximumDistance?: number;
 };
 
-export type SceneProperty = {
-  backgroundColor?: string;
-  mode?: SceneMode;
-  verticalExaggeration?: number;
-  verticalExaggerationRelativeHeight?: number;
-  vr?: boolean;
-  light?: LightProperty;
-  antialias?: "low" | "medium" | "high" | "extreme";
-};
-
-export type LightProperty = {
-  type?: "sunLight" | "directionalLight";
-  direction?: [x: number, y: number, z: number];
-  color?: string;
+export type ImageBasedLighting = {
+  enabled?: boolean;
   intensity?: number;
+  specularEnvironmentMaps?: string;
+  sphericalHarmonicCoefficients?: [number, number, number][];
 };
 
 export type TileProperty = {
@@ -159,6 +162,11 @@ export type CameraLimiterProperty = {
   showHelper?: boolean;
 };
 
+export type RenderPeropty = {
+  antialias?: "low" | "medium" | "high" | "extreme";
+  ambientOcclusion?: AmbientOcclusionProperty;
+};
+
 export type AmbientOcclusionProperty = {
   enabled?: boolean;
   quality?: "low" | "medium" | "high" | "extreme";
@@ -167,30 +175,27 @@ export type AmbientOcclusionProperty = {
 };
 
 export type IndicatorProperty = {
-  type: IndicatorTypes;
+  type?: "default" | "crosshair" | "custom";
   image?: string;
   imageScale?: number;
 };
 
 export type AssetsProperty = {
-  cesium?: {
-    tiles?: {
-      ionAccessToken?: string;
-    };
-    terrian?: {
-      ionAccessToken?: string;
-      ionAsset?: string;
-      ionUrl?: string;
-    };
+  cesium?: AssetsCesiumProperty;
+};
+
+export type AssetsCesiumProperty = {
+  general?: {
+    ionAccessToken?: string;
+  };
+  terrian?: {
+    ionAccessToken?: string;
+    ionAsset?: string;
+    ionUrl?: string;
   };
 };
 
 export type DebugProperty = {
   showGlobeWireframe?: boolean;
   showFramesPerSecond?: boolean;
-};
-
-export type Viewer = {
-  readonly property?: ViewerProperty;
-  readonly overrideProperty?: (property: ViewerProperty) => void;
 };

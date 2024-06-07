@@ -118,7 +118,23 @@ export const Scene: FC<SceneProps> = ({
             color: lightColor,
             intensity: debugSphericalHarmonics ? 0.5 : lightIntensity,
           },
-          antialias,
+          shadow: {
+            darkness: globeImageBasedLightingFactor,
+            enabled: shadows?.enabled,
+            shadowMap: {
+              darkness: shadowDarkness,
+              size: shadows?.size,
+              softShadows: shadows?.softShadows,
+              maximumDistance: 10000,
+            },
+          },
+          imageBasedLighting: {
+            enabled: enableGlobeLighting,
+            intensity: imageBasedLightingIntensity,
+            sphericalHarmonicCoefficients: debugSphericalHarmonics
+              ? debugSphericalHarmonicCoefficients
+              : sphericalHarmonicCoefficients,
+          },
         },
         sky: {
           skyBox: {
@@ -143,13 +159,6 @@ export const Scene: FC<SceneProps> = ({
         globe: {
           baseColor: globeBaseColor,
           enableLighting: enableGlobeLighting,
-          imageBasedLighting: {
-            enabled: enableGlobeLighting,
-            intensity: imageBasedLightingIntensity,
-            sphericalHarmonicCoefficients: debugSphericalHarmonics
-              ? debugSphericalHarmonicCoefficients
-              : sphericalHarmonicCoefficients,
-          },
           atmosphere: {
             enabled: showGroundAtmosphere,
             brightnessShift: groundAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
@@ -157,17 +166,6 @@ export const Scene: FC<SceneProps> = ({
           },
           depthTestAgainstTerrain: hideUnderground,
         },
-        shadow: {
-          darkness: globeImageBasedLightingFactor,
-          enabled: shadows?.enabled,
-          shadowMap: {
-            darkness: shadowDarkness,
-            size: shadows?.size,
-            softShadows: shadows?.softShadows,
-            maximumDistance: 10000,
-          },
-        },
-        ambientOcclusion,
         tiles: tiles?.map(t => ({
           id: t.id,
           type: t.tile_type,
@@ -193,6 +191,10 @@ export const Scene: FC<SceneProps> = ({
                 },
               }
             : {}),
+        },
+        render: {
+          antialias,
+          ambientOcclusion,
         },
         assets: {
           cesium: {
