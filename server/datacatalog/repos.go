@@ -116,7 +116,7 @@ func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, res)
+		return c.JSONPretty(http.StatusOK, res, "  ")
 	}
 }
 
