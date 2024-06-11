@@ -171,6 +171,7 @@ export const Scene: FC<SceneProps> = ({
           type: t.tile_type,
           url: t.tile_url,
           opacity: t.tile_opacity,
+          heatmap: t.heatmap,
           zoomLevel:
             t.tile_minLevel !== undefined && t.tile_maxLevel !== undefined
               ? [(t.tile_minLevel, t.tile_maxLevel)]

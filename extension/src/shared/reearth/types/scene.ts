@@ -28,6 +28,7 @@ export type Tile = {
   tile_maxLevel?: number;
   tile_minLevel?: number;
   tile_opacity?: number;
+  heatmap?: boolean;
 };
 
 export type TileLabels = {
