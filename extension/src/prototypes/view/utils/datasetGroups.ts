@@ -62,12 +62,30 @@ export function getDatasetGroups({
     d => !(d.groups && d.groups.length > 0) && d.type.code === "city",
   );
   const cityDatasetGroups = cityDatasets
-    ? Object.entries(groupBy(cityDatasets, d => d.name.split("/")[0])).map(([key, value]) => ({
-        label: key,
-        groupId: generateGroupId("city", key, prefCode, cityCode, areaCode),
-        datasets: value.map(v => ({ ...v, folderPath: v.name.split("/").slice(1).join("/") })),
-        useTree: true,
-      }))
+    ? [
+        ...Object.entries(
+          groupBy(
+            cityDatasets.filter(d => d.name.includes("/")),
+            d => d.name.split("/")[0],
+          ),
+        ).map(([key, value]) => ({
+          label: key,
+          groupId: generateGroupId("city", key, prefCode, cityCode, areaCode),
+          datasets: value.map(v => ({ ...v, folderPath: v.name.split("/").slice(1).join("/") })),
+          useTree: true,
+        })),
+        ...Object.entries(
+          groupBy(
+            cityDatasets.filter(d => !d.name.includes("/")),
+            d => d.name,
+          ),
+        ).map(([key, value]) => ({
+          label: key,
+          groupId: generateGroupId("city", key, prefCode, cityCode, areaCode),
+          datasets: value.map(v => ({ ...v, folderPath: "" })),
+          useTree: false,
+        })),
+      ]
     : undefined;
 
   const genericDatasets = datasets?.filter(
