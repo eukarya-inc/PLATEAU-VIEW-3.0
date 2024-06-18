@@ -339,7 +339,7 @@ test("Dataset group with city dataset", () => {
         datasets: [{ folderPath: "", ...d_city_no_slash }],
         groupId: "city:CityDataset_No_Slash（千代田区）",
         label: "CityDataset_No_Slash（千代田区）",
-        useTree: true,
+        useTree: false,
       },
       {
         datasets: [
