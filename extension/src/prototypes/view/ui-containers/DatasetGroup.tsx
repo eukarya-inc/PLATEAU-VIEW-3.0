@@ -21,7 +21,9 @@ export const DatasetGroup: FC<{
     );
   } else {
     const dataset = datasets[0];
-    const isUsecaseType = dataset.type.code === PlateauDatasetType.UseCase;
+    const isUsecaseType =
+      dataset.type.code === PlateauDatasetType.UseCase ||
+      dataset.type.code === PlateauDatasetType.City;
     const label = isUsecaseType ? dataset.name : dataset.type.name;
     const title = label;
 

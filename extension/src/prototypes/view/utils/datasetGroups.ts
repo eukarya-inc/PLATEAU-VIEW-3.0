@@ -66,7 +66,7 @@ export function getDatasetGroups({
         label: key,
         groupId: generateGroupId("city", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({ ...v, folderPath: v.name.split("/").slice(1).join("/") })),
-        useTree: true,
+        useTree: !(value.length === 1 && !value[0].name.includes("/")),
       }))
     : undefined;
 
