@@ -1,20 +1,16 @@
 package govpolygon
 
 import (
-	"context"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestQuadtree(t *testing.T) {
-	p := NewProcessor(filepath.Join(dirpath, "japan_city.geojson"))
-	ctx := context.Background()
-	f, _, err := p.ComputeGeoJSON(nil)
+	p := NewProcessor()
+	q, _, err := p.ComputeGeoJSON(nil)
 	assert.NoError(t, err)
 
-	q := NewQuadtree(f.Features)
 	res, ok := q.Find(139.760296, 35.686067)
 	assert.True(t, ok)
 	assert.Equal(t, "13101", res)
@@ -25,10 +21,8 @@ func TestQuadtree(t *testing.T) {
 }
 
 func BenchmarkQuadtree(b *testing.B) {
-	p := NewProcessor(filepath.Join(dirpath, "japan_city.geojson"))
-	ctx := context.Background()
-	f, _, _ := p.ComputeGeoJSON(nil)
-	q := NewQuadtree(f.Features)
+	p := NewProcessor()
+	q, _, _ := p.ComputeGeoJSON(nil)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
