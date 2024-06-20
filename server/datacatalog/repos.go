@@ -7,13 +7,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/JamesLMilner/quadtree-go"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogv2adapter"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv3"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/geocoding"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/jisx0410"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/spatialid"
+	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -23,10 +29,13 @@ type reposHandler struct {
 	pcms               *plateaucms.CMS
 	gqlComplexityLimit int
 	cacheUpdateKey     string
+	geocodingAppID     string
+
+	qt *govpolygon.Quadtree
 }
 
 const pidParamName = "pid"
-const citygmlIDParamName = "citygmlid"
+const conditionsParamName = "conditions"
 const gqlComplexityLimit = 1000
 const cmsSchemaVersion = "v3"
 const cmsSchemaVersionV2 = "v2"
@@ -44,12 +53,16 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 		conf.GraphqlMaxComplexity = gqlComplexityLimit
 	}
 
+	qt, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
+
 	return &reposHandler{
 		reposv3:            reposv3,
 		reposv2:            reposv2,
 		pcms:               pcms,
 		gqlComplexityLimit: conf.GraphqlMaxComplexity,
 		cacheUpdateKey:     conf.CacheUpdateKey,
+		geocodingAppID:     conf.GeocodingAppID,
+		qt:                 qt,
 	}, nil
 }
 
@@ -78,28 +91,97 @@ func (h *reposHandler) Handler(admin bool) echo.HandlerFunc {
 
 func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		cid := c.Param(citygmlIDParamName)
-		if cid == "" {
-			return echo.NewHTTPError(http.StatusNotFound, "not found")
+		var bounds []quadtree.Bounds
+		var cityIDs []string
+		conditions := c.Param(conditionsParamName)
+		switch conditionType, cond := parseConditions(conditions); conditionType {
+		case "m":
+			for _, m := range strings.Split(cond, ",") {
+				b, err := jisx0410.Bounds(m)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid mesh: %w", err))
+				}
+				bounds = append(bounds, b)
+				cityIDs = append(cityIDs, h.qt.FindRect(b)...)
+			}
+		case "s":
+			b, err := spatialid.Bounds(cond)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
+			}
+			bounds = append(bounds, b)
+			cityIDs = h.qt.FindRect(b)
+		case "r":
+			b, err := parseBounds(cond)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid rectangle: %w", err))
+			}
+			bounds = append(bounds, b)
+			cityIDs = h.qt.FindRect(b)
+		case "g":
+			ctx := context.TODO()
+			b, err := geocoding.NewClient(h.geocodingAppID).Bounds(ctx, cond)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
+			}
+			bounds = append(bounds, b)
+			cityIDs = h.qt.FindRect(b)
+		case "":
+			if cond == "" {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no conditions"))
+			}
+			cityIDs = strings.Split(cond, ",")
+		default:
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid condition type: %s", conditionType))
 		}
 
 		merged, err := h.prepareMergedRepo(c, admin)
 		if err != nil {
 			return err
 		}
-
 		adminContext(c, true, admin, admin && isAlpha(c))
 		ctx := c.Request().Context()
-		maxlod, err := FetchCityGMLFiles(ctx, merged, cid)
-		if err != nil {
-			return err
+
+		var response struct {
+			Cities []*CityGMLFilesResponse `json:"cities"`
+			Next   string                  `json:"next"`
+		}
+		for _, cid := range lo.Uniq(cityIDs) {
+			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
+			if err != nil {
+				return err
+			}
+			if cityGMLFiles == nil {
+				return echo.NewHTTPError(http.StatusNotFound, "not found")
+			}
+			if len(bounds) > 0 {
+				for ft, cityGmlFiles := range cityGMLFiles.Files {
+					filtered := cityGmlFiles[:0]
+					for _, f := range cityGmlFiles {
+						b, _ := jisx0410.Bounds(f.MeshCode)
+						for _, m := range bounds {
+							if intersects(b, m) {
+								filtered = append(filtered, f)
+								break
+							}
+						}
+					}
+					cityGMLFiles.Files[ft] = filtered
+				}
+			}
+			response.Cities = append(response.Cities, cityGMLFiles)
 		}
 
-		if maxlod == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "not found")
-		}
+		return c.JSON(http.StatusOK, response)
+	}
+}
 
-		return c.JSON(http.StatusOK, maxlod)
+func parseConditions(conditions string) (string, string) {
+	t, body, found := strings.Cut(conditions, ":")
+	if found {
+		return t, body
+	} else {
+		return "", conditions
 	}
 }
 

@@ -11,7 +11,7 @@ import (
 func TestQuadtree(t *testing.T) {
 	p := NewProcessor(filepath.Join(dirpath, "japan_city.geojson"))
 	ctx := context.Background()
-	f, _, err := p.ComputeGeoJSON(ctx, nil)
+	f, _, err := p.ComputeGeoJSON(nil)
 	assert.NoError(t, err)
 
 	q := NewQuadtree(f.Features)
@@ -27,7 +27,7 @@ func TestQuadtree(t *testing.T) {
 func BenchmarkQuadtree(b *testing.B) {
 	p := NewProcessor(filepath.Join(dirpath, "japan_city.geojson"))
 	ctx := context.Background()
-	f, _, _ := p.ComputeGeoJSON(ctx, nil)
+	f, _, _ := p.ComputeGeoJSON(nil)
 	q := NewQuadtree(f.Features)
 
 	b.ResetTimer()

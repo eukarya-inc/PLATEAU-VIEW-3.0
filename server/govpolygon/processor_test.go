@@ -27,7 +27,7 @@ func TestProcessor(t *testing.T) {
 		n := n
 		t.Run(fmt.Sprintf("%v", n), func(t *testing.T) {
 			ctx := context.Background()
-			geojson, notfound, err := p.ComputeGeoJSON(ctx, n)
+			geojson, notfound, err := p.ComputeGeoJSON(n)
 			assert.NoError(t, err)
 			assert.Empty(t, notfound)
 			assert.NotEmpty(t, geojson.Features)
