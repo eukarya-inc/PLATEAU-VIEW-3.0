@@ -21,6 +21,9 @@ export const useGoogleStreetViewApiKey = () => useAtom(googleStreetViewApiKey);
 const hideFeedback = atom(false);
 export const useHideFeedback = () => useAtom(hideFeedback);
 
+const isCityProject = atom(false);
+export const useIsCityProject = () => useAtom(isCityProject);
+
 // custom settings
 
 const cityName = atom<string | undefined>(undefined);

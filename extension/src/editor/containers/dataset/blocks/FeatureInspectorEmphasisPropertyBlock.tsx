@@ -1,5 +1,4 @@
 import { Divider } from "@mui/material";
-import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { DraftSetting, EditorDataset, UpdateSetting } from "..";
@@ -39,8 +38,7 @@ export const FeatureInspectorEmphasisPropertyBlock: React.FC<
     setTemplateId(e.target.value);
   }, []);
 
-  const { templatesAtom } = useTemplateAPI();
-  const templates = useAtomValue(templatesAtom);
+  const { templates } = useTemplateAPI();
 
   const emphasisPropertyTemplates = useMemo(
     () =>

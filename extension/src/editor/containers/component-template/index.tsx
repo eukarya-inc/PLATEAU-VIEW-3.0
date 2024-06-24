@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect, RefObject } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
@@ -30,8 +29,7 @@ export const EditorFieldComponentsTemplateSection: React.FC<
   const [templateId, setTemplateId] = useState<string>();
   const [isSaving, setIsSaving] = useState(false);
 
-  const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
-  const templates = useAtomValue(templatesAtom);
+  const { templates, saveTemplate, removeTemplate } = useTemplateAPI();
 
   const componentTemplates = useMemo(
     () =>
