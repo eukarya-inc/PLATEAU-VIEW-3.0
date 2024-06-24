@@ -158,16 +158,21 @@ export const InitialLayers: FC = () => {
     [settings],
   );
 
+  const isSharedDataset = useMemo(
+    () => shareId && isSharedDataLoaded,
+    [shareId, isSharedDataLoaded],
+  );
+
   const datasetIds = useMemo(
     () =>
-      shareId && isSharedDataLoaded
+      isSharedDataset
         ? sharedRootLayers
             ?.filter(
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
         : [...new Set(defaultBuildings.map(b => b.datasetId))],
-    [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
+    [sharedRootLayers, isSharedDataset, defaultBuildings],
   );
 
   const query = useDatasetsByIds(datasetIds, {
@@ -176,8 +181,10 @@ export const InitialLayers: FC = () => {
 
   const initialDatasets = useMemo(
     // We should filter it before making a request, but the number of initial datasets is just a few, so it's not a problem.
-    () => query.data?.nodes?.filter(d => !isCityProject || d.type.code === "city") ?? [],
-    [query, isCityProject],
+    () =>
+      query.data?.nodes?.filter(d => isSharedDataset || !isCityProject || d.type.code === "city") ??
+      [],
+    [query, isCityProject, isSharedDataset],
   );
 
   const initialLayers: InitialLayerParams = useMemo(() => {
