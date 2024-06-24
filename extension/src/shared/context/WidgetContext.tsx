@@ -21,6 +21,7 @@ import {
   useGsiTileUrl,
   useHideFeedback,
   useInitialPedestrianCoordinates,
+  useIsCityProject,
   useLogo,
   usePlateauApiUrl,
   usePlateauGeojsonUrl,
@@ -43,6 +44,8 @@ type Props = {
   geojsonURL?: string;
   hideFeedback?: boolean;
   // Custom settings
+  projectIdForCity?: string;
+  plateauTokenForCity?: string;
   cityName?: string;
   cityCode?: string;
   customPrimaryColor?: string;
@@ -63,6 +66,8 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   hideFeedback,
   children,
   inEditor,
+  projectIdForCity,
+  plateauTokenForCity,
   cityName,
   cityCode,
   customPrimaryColor,
@@ -180,17 +185,31 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   useEffect(() => {
     const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;
     if (url) {
-      createCatalogClient(url, inEditor ? plateauToken : undefined);
+      createCatalogClient(url, inEditor ? plateauTokenForCity || plateauToken : undefined);
     }
-  }, [catalogUrl, catalogURLForAdmin, plateauToken, inEditor]);
+  }, [catalogUrl, catalogURLForAdmin, plateauToken, inEditor, plateauTokenForCity]);
+
+  const [_, setIsCityProject] = useIsCityProject();
 
   useEffect(() => {
     if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
       const sidebar = `${plateauUrl}/sidebar`;
-      createSettingClient(projectId, sidebar, plateauToken);
-      createTemplateClient(projectId, sidebar, plateauToken);
+      const cityOptions =
+        projectIdForCity && plateauTokenForCity
+          ? { projectId: projectIdForCity, token: plateauTokenForCity }
+          : undefined;
+      createSettingClient(projectId, sidebar, plateauToken, cityOptions);
+      createTemplateClient(projectId, sidebar, plateauToken, cityOptions);
+      setIsCityProject(!!cityOptions);
     }
-  }, [projectId, plateauUrl, plateauToken]);
+  }, [
+    projectId,
+    plateauUrl,
+    plateauToken,
+    projectIdForCity,
+    plateauTokenForCity,
+    setIsCityProject,
+  ]);
 
   const [customTheme, setCustomTheme] = useState<Theme | undefined>(undefined);
 
