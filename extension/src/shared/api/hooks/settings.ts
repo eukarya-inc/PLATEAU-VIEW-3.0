@@ -6,7 +6,6 @@ import { Setting } from "../types";
 
 import { useSettingClient } from "./useSettingClient";
 
-// TODO: Imple saving setting state to API
 export default () => {
   const client = useSettingClient();
   const [isSaving, setIsSaving] = useState(false);

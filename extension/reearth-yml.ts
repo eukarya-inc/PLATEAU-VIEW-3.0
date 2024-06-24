@@ -104,6 +104,17 @@ const yml = {
             title: "任意設定",
             fields: [
               {
+                id: "projectNameForCity",
+                type: "string",
+                title: "自治体用プロジェクト名",
+              },
+              {
+                id: "plateauAccessTokenForCity",
+                type: "string",
+                title: "自治体用バックエンドアクセストークン",
+                private: true,
+              },
+              {
                 id: "cityName",
                 type: "string",
                 title: "都市名",

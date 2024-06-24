@@ -1,4 +1,5 @@
-import { type FC, useCallback } from "react";
+import { debounce } from "lodash-es";
+import { type FC, useCallback, useMemo } from "react";
 
 import { useReEarthEvent } from "../../shared/reearth/hooks";
 import { LngLatHeight } from "../../shared/reearth/types";
@@ -29,11 +30,12 @@ export const PedestrianTool: FC<PedestrianToolProps> = ({ onCreate }) => {
 
   useReEarthEvent(
     "click",
-    useCallback(
-      ({ lng, lat, height }) => {
-        if (!lng || !lat) return;
-        onCreate?.({ lng, lat, height: height ?? 0 });
-      },
+    useMemo(
+      () =>
+        debounce(({ lng, lat, height }) => {
+          if (!lng || !lat) return;
+          onCreate?.({ lng, lat, height: height ?? 0 });
+        }, 10),
       [onCreate],
     ),
   );

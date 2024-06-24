@@ -36,8 +36,7 @@ export const SatelliteEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
       },
       {
         id: "tokyo_2",
-        tile_url:
-          "https://gic-plateau.s3.ap-northeast-1.amazonaws.com/2020/ortho/tiles/{z}/{x}/{y}.png",
+        tile_url: "https://api.plateauview.mlit.go.jp/tiles/plateau-ortho-2023/{z}/{x}/{y}.png",
         tile_type: "url",
       },
     ],
@@ -47,7 +46,7 @@ export const SatelliteEnvironment: FC<SceneProps> = ({ tileLabels, ...props }) =
   return (
     <Scene
       enableGlobeLighting={enableTerrainLighting}
-      lightIntensity={1}
+      lightIntensity={2}
       shadowDarkness={0.5}
       sphericalHarmonicCoefficients={sphericalHarmonicCoefficients}
       tiles={tiles}

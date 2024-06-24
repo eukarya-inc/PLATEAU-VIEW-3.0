@@ -17,7 +17,6 @@ import coloredMapImage from "../../../prototypes/view/assets/colored_map.webp";
 import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
 import elevationImage from "../../../prototypes/view/assets/elevation.webp";
 import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
-import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
 import {
   shareableEnvironmentTypeAtom,
   shareableShowMapLabelAtom,
@@ -100,7 +99,7 @@ const environmentItems = {
     label: "色付き地図",
   },
   satellite: {
-    image: satelliteImage,
+    image: "https://api.plateauview.mlit.go.jp/tiles/plateau-ortho-2023/16/58212/25808.png",
     label: "衛星写真",
   },
   elevation: {

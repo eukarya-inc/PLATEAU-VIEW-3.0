@@ -49,6 +49,8 @@ type DefaultProps = {
 };
 
 type OptionalProps = {
+  projectNameForCity?: string;
+  plateauAccessTokenForCity?: string;
   cityName?: string;
   cityCode?: string;
   primaryColor?: string;
@@ -82,6 +84,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
         geojsonURL={widget.property.default.geojsonURL}
         hideFeedback={widget.property.default.hideFeedback}
+        projectIdForCity={widget.property.optional?.projectNameForCity}
+        plateauTokenForCity={widget.property.optional?.plateauAccessTokenForCity}
         cityName={widget.property.optional?.cityName}
         cityCode={widget.property.optional?.cityCode}
         customPrimaryColor={widget.property.optional?.primaryColor}
