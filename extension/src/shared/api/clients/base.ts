@@ -4,19 +4,19 @@ import { fetchWithDelete, fetchWithGet, fetchWithPatch, fetchWithPost } from "..
 
 export type PlateauAPIType = "data" | "templates";
 
-export type CityOptions = { projectId: string; token: string };
+export type CityOptions = { projectId: string; token: string | undefined };
 
 export class PlateauAPIClient<V> {
   projectId: string;
   url: string;
-  token: string;
+  token: string | undefined;
   type: PlateauAPIType;
   cityOptions?: CityOptions;
 
   constructor(
     projectId: string,
     url: string,
-    token: string,
+    token: string | undefined,
     type: PlateauAPIType,
     cityOptions?: CityOptions,
   ) {
