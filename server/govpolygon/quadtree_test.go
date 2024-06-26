@@ -8,8 +8,9 @@ import (
 
 func TestQuadtree(t *testing.T) {
 	p := NewProcessor()
-	q, _, err := p.ComputeGeoJSON(nil)
+	g, _, err := p.ComputeGeoJSON(nil)
 	assert.NoError(t, err)
+	q := NewQuadtree(g, 0)
 
 	res, ok := q.Find(139.760296, 35.686067)
 	assert.True(t, ok)
@@ -22,7 +23,8 @@ func TestQuadtree(t *testing.T) {
 
 func BenchmarkQuadtree(b *testing.B) {
 	p := NewProcessor()
-	q, _, _ := p.ComputeGeoJSON(nil)
+	g, _, _ := p.ComputeGeoJSON(nil)
+	q := NewQuadtree(g, 0)
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

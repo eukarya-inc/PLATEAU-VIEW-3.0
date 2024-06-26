@@ -20,8 +20,6 @@ import (
 	"github.com/samber/lo"
 )
 
-const dirpath = "govpolygondata"
-
 var cahceDuration = 6 * time.Hour
 
 type Handler struct {
@@ -107,7 +105,7 @@ func (h *Handler) Update(c echo.Context) error {
 		return fmt.Errorf("failed to marshal geojson: %w", err)
 	}
 
-	h.qt = g
+	h.qt = NewQuadtree(g, 0)
 
 	if !initial {
 		h.lock.Lock()

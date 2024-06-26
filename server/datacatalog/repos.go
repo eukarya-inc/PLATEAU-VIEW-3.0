@@ -53,7 +53,8 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 		conf.GraphqlMaxComplexity = gqlComplexityLimit
 	}
 
-	qt, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
+	g, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
+	qt := govpolygon.NewQuadtree(g, 1.0/60.0)
 
 	return &reposHandler{
 		reposv3:            reposv3,

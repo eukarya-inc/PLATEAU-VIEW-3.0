@@ -19,7 +19,7 @@ func NewProcessor() *Processor {
 	return &Processor{}
 }
 
-func (p *Processor) ComputeGeoJSON(names []string) (*Quadtree, []string, error) {
+func (p *Processor) ComputeGeoJSON(names []string) ([]*geojson.Feature, []string, error) {
 	features, err := loadFeaturesFromGeoJSON()
 	if err != nil {
 		return nil, nil, err
@@ -30,7 +30,7 @@ func (p *Processor) ComputeGeoJSON(names []string) (*Quadtree, []string, error) 
 	}
 
 	res, notfound := computeGeojsonFeatures(features, names)
-	return NewQuadtree(res.Features, 1.0/60.0), notfound, nil
+	return res.Features, notfound, nil
 }
 
 func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
