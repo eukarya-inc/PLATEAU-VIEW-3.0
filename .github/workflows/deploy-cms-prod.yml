@@ -9,10 +9,10 @@ on:
 env:
   GCS_DEST: gs://cms-plateau-prod
   CMS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms:latest
-  CMS_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms:latest
+  CMS_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-cms:latest
   CMS_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms:latest
   WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-worker:latest
-  WORKER_IMAGE_NAME_GCP: asia.gcr.io/reearth-plateau/reearth-cms-worker:latest
+  WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-cms-worker:latest
   WORKER_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms-worker:latest
 concurrency:
   group: ${{ github.workflow }}
@@ -70,7 +70,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
       - name: Configure docker
-        run: gcloud auth configure-docker --quiet
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:

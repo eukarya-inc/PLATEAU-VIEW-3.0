@@ -192,12 +192,11 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   const [_, setIsCityProject] = useIsCityProject();
 
   useEffect(() => {
-    if (!settingClient && !templateClient && plateauUrl && projectId && plateauToken) {
+    if (!settingClient && !templateClient && plateauUrl && projectId) {
       const sidebar = `${plateauUrl}/sidebar`;
-      const cityOptions =
-        projectIdForCity && plateauTokenForCity
-          ? { projectId: projectIdForCity, token: plateauTokenForCity }
-          : undefined;
+      const cityOptions = projectIdForCity
+        ? { projectId: projectIdForCity, token: plateauTokenForCity }
+        : undefined;
       createSettingClient(projectId, sidebar, plateauToken, cityOptions);
       createTemplateClient(projectId, sidebar, plateauToken, cityOptions);
       setIsCityProject(!!cityOptions);

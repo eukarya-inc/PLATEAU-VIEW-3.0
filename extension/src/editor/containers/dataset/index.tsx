@@ -369,7 +369,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   ) : (
     <Placeholder>
       <Typography variant="body1" color="text.secondary">
-        Please select a layer.
+        {isCityProject && !!query.data?.node
+          ? "Editing a PLATEAU layer is disabled in this project."
+          : "Please select a layer."}
       </Typography>
     </Placeholder>
   );
