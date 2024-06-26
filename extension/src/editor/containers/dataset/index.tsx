@@ -12,6 +12,7 @@ import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
+import { useIsCityProject } from "../../../shared/states/environmentVariables";
 import { updateSettingAtom } from "../../../shared/states/setting";
 import { generateID } from "../../../shared/utils/id";
 import {
@@ -66,6 +67,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
 
   const { settingsAtom, saveSetting } = useSettingsAPI();
   const settings = useAtomValue(settingsAtom);
+  const [isCityProject] = useIsCityProject();
 
   const highlightedLayer = useAtomValue(highlightedLayersAtom)?.[0];
   const selectedLayer = useAtomValue(layerSelectionAtom)?.[0];
@@ -73,8 +75,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const query = useDatasetById(layer?.id ?? "");
 
   const dataset = useMemo(() => {
-    return query.data?.node;
-  }, [query]);
+    return !isCityProject || query.data?.node?.type?.code === "city" ? query.data?.node : undefined;
+  }, [query, isCityProject]);
 
   const tree = useMemo(() => {
     if (!dataset) return [];
@@ -254,6 +256,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
+    if (!dataset) return;
+
     if (draftSetting) {
       cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
     }
@@ -264,9 +268,11 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         updateSetting(cachedSetting as Setting);
       }
     });
-  }, [cache, dataId, dataset?.id, dataset?.items, draftSetting, updateSetting]);
+  }, [cache, dataId, dataset, draftSetting, updateSetting]);
 
   const handleSave = useCallback(() => {
+    if (!dataset) return;
+
     // Save all settings belongs to current dataset
     setIsSaving(true);
     const savingTasks: Promise<void>[] = [];
@@ -296,7 +302,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       .finally(() => {
         setIsSaving(false);
       });
-  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
+  }, [dataId, dataset, cache, draftSetting, editorNoticeRef, saveSetting]);
 
   return layer && dataset ? (
     <EditorSection
@@ -363,7 +369,9 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   ) : (
     <Placeholder>
       <Typography variant="body1" color="text.secondary">
-        Please select a layer.
+        {isCityProject && !!query.data?.node
+          ? "Editing a PLATEAU layer is disabled in this project."
+          : "Please select a layer."}
       </Typography>
     </Placeholder>
   );
