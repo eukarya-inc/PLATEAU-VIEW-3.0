@@ -1,6 +1,6 @@
-# PLATEAU VIEW 3.0 Terraform for GCP
+# PLATEAU VIEW 3.0 Terraform for Google Cloud
 
-PLATEAU VIEW 3.0（CMS・Editor・VIEW）をGCP（Google Cloud Platform）で構築するためのTerraform用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
+PLATEAU VIEW 3.0（CMS・Editor・VIEW）をGoogle Cloudで構築するためのTerraform用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
 
 ## 1. 改訂履歴
 
@@ -31,7 +31,7 @@ cp terraform.tfvars.example terraform.tfvars
 
 ### 3.2 `gcloud`CLIのセットアップ
 
-`gcloud`CLIを使用して、GCPプロジェクトにログインします。
+`gcloud`CLIを使用して、Google Cloudプロジェクトにログインします。
 
 ```console
 gcloud auth login --update-adc
@@ -44,10 +44,10 @@ gcloud auth login --update-adc
 gcloud config set project <プロジェクトID>
 ```
 
-### 3.3 GCPプロジェクトおよびGCSバケットの作成
+### 3.3 Google CloudのプロジェクトおよびGCSバケットの作成
 
-GCPコンソールからGCPプロジェクトを作成します。
-その後に、Terraformのバックエンドに使用するために、GCSバケットを作成します。
+Google Cloud コンソールからプロジェクトを作成します。
+その後に、Terraformのバックエンドに使用するために、GCS（Google Cloud Storage）バケットを作成します。
 
 作成したバケットのストレージクラスおよびロケーションを`google_storage_bucket.tf`に設定します。
 
@@ -104,9 +104,9 @@ $ terraform import google_storage_bucket.terraform <バケット名>
 
 ### 3.6 Terraform変数の設定
 
-これまで構築してきたGCP、MongoDBおよびAuth0などの情報を`terraform.tfvars`に設定します。
+これまで構築してきたGoogle Cloud、MongoDBおよびAuth0などの情報を`terraform.tfvars`に設定します。
 
-### 3.7 GCP APIの有効化
+### 3.7 Google Cloud APIの有効化
 
 ホスティングを行う前に、以下のAPIを有効化してください。
 
@@ -125,7 +125,7 @@ $ terraform apply --target google_project_service.project
 terraform apply --target google_dns_managed_zone.zone
 ```
 
-GCPコンソール上で、作成されたリソースを確認することができます。
+Google Cloud コンソール上で、作成されたリソースを確認することができます。
 マネージドゾーン名を取得し、以下のコマンドを実行して`NS`レコードを取得します。
 
 ```console
