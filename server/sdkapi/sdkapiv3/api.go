@@ -56,7 +56,9 @@ func (c *APIClient) QueryDatasets(ctx context.Context) (DatasetsQuery, error) {
 
 func (c *APIClient) QueryDatasetFiles(ctx context.Context, id string) (DatasetFilesResponse, error) {
 	q := struct {
-		Files DatasetFilesResponse `json:"files"`
+		Cities []struct {
+			Files DatasetFilesResponse `json:"files"`
+		} `json:"cities"`
 	}{}
 
 	u := fmt.Sprintf("%s/%s", c.filesURL, id)
@@ -87,5 +89,5 @@ func (c *APIClient) QueryDatasetFiles(ctx context.Context, id string) (DatasetFi
 		return nil, fmt.Errorf("error decoding response: %w", err)
 	}
 
-	return q.Files, nil
+	return q.Cities[0].Files, nil
 }

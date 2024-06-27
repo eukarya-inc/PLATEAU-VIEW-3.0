@@ -1,7 +1,6 @@
 package govpolygon
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -11,9 +10,7 @@ import (
 )
 
 func TestProcessor(t *testing.T) {
-	p := &Processor{
-		path: "govpolygondata/japan_city.geojson",
-	}
+	p := &Processor{}
 	names := [][]string{
 		{"北海道"},
 		{"北海道/札幌市"},
@@ -26,11 +23,10 @@ func TestProcessor(t *testing.T) {
 	for i, n := range names {
 		n := n
 		t.Run(fmt.Sprintf("%v", n), func(t *testing.T) {
-			ctx := context.Background()
-			geojson, notfound, err := p.ComputeGeoJSON(ctx, n)
+			geojson, notfound, err := p.ComputeGeoJSON(n)
 			assert.NoError(t, err)
 			assert.Empty(t, notfound)
-			assert.NotEmpty(t, geojson.Features)
+			assert.NotEmpty(t, geojson)
 
 			if write {
 				j, _ := json.MarshalIndent(geojson, "", "  ")

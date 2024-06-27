@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -20,8 +19,6 @@ import (
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
-
-const dirpath = "govpolygondata"
 
 var cahceDuration = 6 * time.Hour
 
@@ -40,7 +37,7 @@ type Handler struct {
 func New(gqlEndpoint string, updateIfNotExists bool) *Handler {
 	return &Handler{
 		gqlEndpoint:       gqlEndpoint,
-		processor:         NewProcessor(filepath.Join(dirpath, "japan_city.geojson")),
+		processor:         NewProcessor(),
 		httpClient:        http.DefaultClient,
 		updateIfNotExists: updateIfNotExists,
 	}
@@ -95,7 +92,7 @@ func (h *Handler) Update(c echo.Context) error {
 		return err
 	}
 
-	g, notfound, err := h.processor.ComputeGeoJSON(ctx, q)
+	g, notfound, err := h.processor.ComputeGeoJSON(q)
 	if err != nil {
 		return err
 	}
@@ -108,7 +105,7 @@ func (h *Handler) Update(c echo.Context) error {
 		return fmt.Errorf("failed to marshal geojson: %w", err)
 	}
 
-	h.qt = NewQuadtree(g.Features)
+	h.qt = NewQuadtree(g, 0)
 
 	if !initial {
 		h.lock.Lock()
