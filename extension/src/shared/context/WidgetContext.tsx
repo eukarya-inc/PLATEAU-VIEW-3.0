@@ -22,7 +22,8 @@ import {
   useHideFeedback,
   useInitialPedestrianCoordinates,
   useIsCityProject,
-  useLogo,
+  useMainLogo,
+  useMenuLogo,
   usePlateauApiUrl,
   usePlateauGeojsonUrl,
   usePrimaryColor,
@@ -49,7 +50,8 @@ type Props = {
   cityName?: string;
   cityCode?: string;
   customPrimaryColor?: string;
-  customLogo?: string;
+  customMainLogo?: string;
+  customMenuLogo?: string;
   customPedestrian?: CameraPosition;
   customSiteUrl?: string;
 };
@@ -71,7 +73,8 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   cityName,
   cityCode,
   customPrimaryColor,
-  customLogo,
+  customMainLogo,
+  customMenuLogo,
   customPedestrian,
   customSiteUrl,
   geojsonURL,
@@ -143,12 +146,19 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
     }
   }, [customPrimaryColor, customPrimaryColorState, setPrimaryColorState]);
 
-  const [customLogoState, setLogoState] = useLogo();
+  const [customMainLogoState, setMainLogoState] = useMainLogo();
   useEffect(() => {
-    if (customLogo && (!customLogoState || customLogoState !== customLogo)) {
-      setLogoState(customLogo);
+    if (customMainLogoState && (!customMainLogoState || customMainLogoState !== customMainLogo)) {
+      setMainLogoState(customMainLogo);
     }
-  }, [customLogo, customLogoState, setLogoState]);
+  }, [customMainLogo, customMainLogoState, setMainLogoState]);
+
+  const [customMenuLogoState, setMenuLogoState] = useMenuLogo();
+  useEffect(() => {
+    if (customMenuLogoState && (!customMenuLogoState || customMenuLogoState !== customMenuLogo)) {
+      setMenuLogoState(customMenuLogo);
+    }
+  }, [customMenuLogo, customMenuLogoState, setMenuLogoState]);
 
   const [customSiteUrlState, setSiteURLState] = useSiteUrl();
   useEffect(() => {
