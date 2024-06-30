@@ -35,8 +35,11 @@ export const useCityCode = () => useAtom(cityCode);
 const primaryColor = atom<string | undefined>(undefined);
 export const usePrimaryColor = () => useAtom(primaryColor);
 
-const logo = atom<string | undefined>(undefined);
-export const useLogo = () => useAtom(logo);
+const mainLogo = atom<string | undefined>(undefined);
+export const useMainLogo = () => useAtom(mainLogo);
+
+const menuLogo = atom<string | undefined>(undefined);
+export const useMenuLogo = () => useAtom(menuLogo);
 
 const siteUrl = atom<string | undefined>(undefined);
 export const useSiteUrl = () => useAtom(siteUrl);

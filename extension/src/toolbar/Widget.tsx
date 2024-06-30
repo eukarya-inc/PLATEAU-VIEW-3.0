@@ -54,7 +54,8 @@ type OptionalProps = {
   cityName?: string;
   cityCode?: string;
   primaryColor?: string;
-  logo?: string;
+  mainLogo?: string;
+  menuLogo?: string;
   pedestrian?: CameraPosition;
   siteUrl?: string;
 };
@@ -89,7 +90,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         cityName={widget.property.optional?.cityName}
         cityCode={widget.property.optional?.cityCode}
         customPrimaryColor={widget.property.optional?.primaryColor}
-        customLogo={widget.property.optional?.logo}
+        customMainLogo={widget.property.optional?.mainLogo}
+        customMenuLogo={widget.property.optional?.menuLogo}
         customPedestrian={widget.property.optional?.pedestrian}
         customSiteUrl={widget.property.optional?.siteUrl}>
         <InitializeApp />
