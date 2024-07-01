@@ -131,13 +131,13 @@ const yml = {
                 title: "プライマリカラー",
               },
               {
-                id: "main-logo",
+                id: "mainLogo",
                 type: "url",
                 ui: "image",
                 title: "メインロゴ",
               },
               {
-                id: "menu-logo",
+                id: "menuLogo",
                 type: "url",
                 ui: "image",
                 title: "メニューロゴ",
