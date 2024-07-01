@@ -17,6 +17,7 @@ type Config struct {
 	PlaygroundEndpoint   string
 	GraphqlMaxComplexity int
 	ErrorOnInit          bool
+	GeocodingAppID       string
 	// v2
 	DisableCache bool
 	CacheTTL     int

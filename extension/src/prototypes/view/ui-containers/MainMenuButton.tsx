@@ -10,7 +10,12 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindMenu, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { forwardRef, useCallback, useId, useRef, type MouseEvent } from "react";
 
-import { useHideFeedback, useLogo, useSiteUrl } from "../../../shared/states/environmentVariables";
+import {
+  useHideFeedback,
+  useMainLogo,
+  useMenuLogo,
+  useSiteUrl,
+} from "../../../shared/states/environmentVariables";
 import { platformAtom } from "../../shared-states";
 import { PlateauLogotype, PlateauSymbol, SelectItem, Shortcut } from "../../ui-components";
 import {
@@ -32,7 +37,8 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
       popupId: id,
     });
 
-    const [customLogo] = useLogo();
+    const [customMainLogo] = useMainLogo();
+    const [customMenuLogo] = useMenuLogo();
     const [customSiteUrl] = useSiteUrl();
     const [hideAppOverlay, setHideAppOverlay] = useAtom(hideAppOverlayAtom);
     const [, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
@@ -75,8 +81,8 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
     return (
       <>
         <IconButton ref={ref} aria-label="メインメニュー" {...bindTrigger(popupState)} {...props}>
-          {customLogo ? (
-            <img src={customLogo} alt="customIcon" height={24} />
+          {customMainLogo ? (
+            <img src={customMainLogo} alt="customMainIcon" height={24} />
           ) : (
             <PlateauSymbol sx={{ fontSize: 24 }} />
           )}
@@ -97,8 +103,8 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClick}>
-            {customLogo ? (
-              <img src={customLogo} alt="customIcon" height={32} />
+            {customMenuLogo ? (
+              <img src={customMenuLogo} alt="customMenuIcon" height={32} />
             ) : (
               <PlateauLogotype sx={{ height: 32, marginX: 2, marginY: 1 }} />
             )}

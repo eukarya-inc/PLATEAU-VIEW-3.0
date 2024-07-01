@@ -10,7 +10,7 @@ type Quadtree struct {
 	ft map[quadtree.Bounds]*geojson.Feature
 }
 
-func NewQuadtree(f []*geojson.Feature) *Quadtree {
+func NewQuadtree(f []*geojson.Feature, margin float64) *Quadtree {
 	ft := map[quadtree.Bounds]*geojson.Feature{}
 	qt := &quadtree.Quadtree{
 		MaxObjects: 10,
@@ -24,7 +24,10 @@ func NewQuadtree(f []*geojson.Feature) *Quadtree {
 		if !ok {
 			continue
 		}
-
+		b.X -= margin
+		b.Y -= margin
+		b.Width += margin
+		b.Height += margin
 		qt.Insert(b)
 		ft[b] = f
 	}
@@ -55,6 +58,18 @@ func (q *Quadtree) Find(lng, lat float64) (string, bool) {
 	}
 
 	return "", false
+}
+
+func (q *Quadtree) FindRect(b quadtree.Bounds) []string {
+	res := q.qt.RetrieveIntersections(b)
+	var codes []string
+	for _, b := range res {
+		code, _ := q.ft[b].Properties["code"].(string)
+		if code != "" {
+			codes = append(codes, code)
+		}
+	}
+	return codes
 }
 
 func bounds(g *geojson.Geometry) (b quadtree.Bounds, _ bool) {
