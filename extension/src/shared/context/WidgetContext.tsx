@@ -148,14 +148,14 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
 
   const [customMainLogoState, setMainLogoState] = useMainLogo();
   useEffect(() => {
-    if (customMainLogoState && (!customMainLogoState || customMainLogoState !== customMainLogo)) {
+    if (customMainLogo && (!customMainLogoState || customMainLogoState !== customMainLogo)) {
       setMainLogoState(customMainLogo);
     }
   }, [customMainLogo, customMainLogoState, setMainLogoState]);
 
   const [customMenuLogoState, setMenuLogoState] = useMenuLogo();
   useEffect(() => {
-    if (customMenuLogoState && (!customMenuLogoState || customMenuLogoState !== customMenuLogo)) {
+    if (customMenuLogo && (!customMenuLogoState || customMenuLogoState !== customMenuLogo)) {
       setMenuLogoState(customMenuLogo);
     }
   }, [customMenuLogo, customMenuLogoState, setMenuLogoState]);
