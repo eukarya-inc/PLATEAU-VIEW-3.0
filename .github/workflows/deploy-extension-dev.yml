@@ -6,6 +6,7 @@ on:
 
 env:
   GCS_DEST: gs://plateau-dev-reearth-app-bucket
+  GCS_DEST_2: gs://plateau-dev-reearth-static-bucket
   PLATEAU_ORIGIN: https://app.reearth.plateau.dev.reearth.io/extension
 
 jobs:
@@ -46,6 +47,8 @@ jobs:
         run: yarn build
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^estat/.*$" -dr dist ${{ env.GCS_DEST }}/extension
+      - name: Deploy2
+        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^estat/.*$" -dr dist ${{ env.GCS_DEST_2 }}/extension
       - name: Pack extension
         run: tar -zcvf plateauview-extension.tar.gz dist
       - name: Save as artifact
