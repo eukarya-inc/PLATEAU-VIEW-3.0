@@ -22,6 +22,7 @@ import { useDatasetsByIds } from "../../graphql";
 import { Data, SketchFeature } from "../../reearth/types";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
 import {
+  useEstatUrl,
   useInitialPedestrianCoordinates,
   useIsCityProject,
 } from "../../states/environmentVariables";
@@ -187,13 +188,15 @@ export const InitialLayers: FC = () => {
     [query, isCityProject, isSharedDataset],
   );
 
+  const [estatUrl] = useEstatUrl();
+
   const initialLayers: InitialLayerParams = useMemo(() => {
     if (!sharedRootLayers?.length) return defaultLayerParams;
     return sharedRootLayers
       .map(l => {
         switch (l.type) {
           case "heatmap": {
-            const dataset = censusDatasets.find(d => d.id === l.datasetId);
+            const dataset = censusDatasets(estatUrl).find(d => d.id === l.datasetId);
             const data = dataset?.data.find(d => d.id === l.dataId);
             if (!dataset || !data) return;
             return {
@@ -248,7 +251,7 @@ export const InitialLayers: FC = () => {
         }
       })
       .filter(isNotNullish);
-  }, [sharedRootLayers, defaultLayerParams]);
+  }, [sharedRootLayers, defaultLayerParams, estatUrl]);
 
   const setReady = useSetAtom(readyAtom);
 

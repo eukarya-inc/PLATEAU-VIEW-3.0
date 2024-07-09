@@ -16,6 +16,7 @@ import { CameraPosition } from "../reearth/types";
 import {
   useCityCode,
   useCityName,
+  useEstatUrl,
   useGeoApiUrl,
   useGoogleStreetViewApiKey,
   useGsiTileUrl,
@@ -43,6 +44,7 @@ type Props = {
   catalogURLForAdmin?: string;
   googleStreetViewAPIKey?: string;
   geojsonURL?: string;
+  estatUrl?: string;
   hideFeedback?: boolean;
   // Custom settings
   projectIdForCity?: string;
@@ -65,6 +67,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   catalogUrl,
   catalogURLForAdmin,
   googleStreetViewAPIKey,
+  estatUrl,
   hideFeedback,
   children,
   inEditor,
@@ -120,6 +123,13 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setGoogleStreetViewAPIKeyState(googleStreetViewAPIKey);
     }
   }, [googleStreetViewAPIKey, googleStreetViewAPIKeyState, setGoogleStreetViewAPIKeyState]);
+
+  const [estatUrlState, setEstatUrlState] = useEstatUrl();
+  useEffect(() => {
+    if (!estatUrlState && estatUrl) {
+      setEstatUrlState(estatUrl);
+    }
+  }, [estatUrl, estatUrlState, setEstatUrlState]);
 
   // optional (custom) state
   const [cityNameState, setCityNameState] = useCityName();

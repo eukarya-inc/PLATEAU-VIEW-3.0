@@ -18,6 +18,9 @@ export const useGsiTileUrl = () => useAtom(gsiTileUrl);
 const googleStreetViewApiKey = atom<string | undefined>(undefined);
 export const useGoogleStreetViewApiKey = () => useAtom(googleStreetViewApiKey);
 
+const estatUrl = atom<string | undefined>(undefined);
+export const useEstatUrl = () => useAtom(estatUrl);
+
 const hideFeedback = atom(false);
 export const useHideFeedback = () => useAtom(hideFeedback);
 

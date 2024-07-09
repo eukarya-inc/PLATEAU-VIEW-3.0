@@ -11,11 +11,11 @@ export interface CensusDataset {
   data: readonly CensusDatasetDatum[];
 }
 
-export const censusDatasets: CensusDataset[] = [
+export const censusDatasets = (endpoint: string | undefined) => [
   {
     id: "population",
     name: "国勢調査 人口及び世帯",
-    urlTemplate: "/estat/T001102/tblT001102Q{code}.txt", // CSV
+    urlTemplate: `${endpoint ?? "/estat"}/T001102/tblT001102Q{code}.txt`, // CSV
     data: [
       { id: "population-4", column: 4, name: "人口（総数）" },
       { id: "population-5", column: 5, name: "人口（総数） 男" },
@@ -72,7 +72,7 @@ export const censusDatasets: CensusDataset[] = [
   {
     id: "population-move",
     name: "国勢調査 人口移動、就業状態等及び従業地・通学地",
-    urlTemplate: "/estat/T001109/tblT001109Q{code}.txt", // CSV
+    urlTemplate: `${endpoint ?? "/estat"}/T001109/tblT001109Q{code}.txt`, // CSV
     data: [
       { id: "population-move-4", column: 4, name: "雇用者（役員を含む）総数" },
       { id: "population-move-5", column: 5, name: "雇用者（役員を含む）男" },
