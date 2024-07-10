@@ -4,7 +4,7 @@ on:
 env:
   GCS_DEST: gs://plateau-prod-reearth-app-bucket
   GCS_DEST_2: gs://plateau-prod-reearth-static-bucket
-  PLATEAU_ORIGIN: https://app.reearth.plateau.reearth.io/extension
+  PLATEAU_ORIGIN: https://static.reearth.plateau.reearth.io/extension
 
 jobs:
   deploy_extension:
