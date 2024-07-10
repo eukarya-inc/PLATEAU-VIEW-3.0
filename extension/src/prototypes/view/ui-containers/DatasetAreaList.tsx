@@ -4,7 +4,6 @@ import { useCallback, useMemo, type FC, useContext } from "react";
 
 import { useAreaDatasets, useAreas, useDatasets } from "../../../shared/graphql";
 import { AreasQuery } from "../../../shared/graphql/types/catalog";
-import { useEstatUrl } from "../../../shared/states/environmentVariables";
 import { AppOverlayLayoutContext, DatasetTreeItem, DatasetTreeView } from "../../ui-components";
 import { censusDatasets } from "../constants/censusDatasets";
 import { datasetTypeNames } from "../constants/datasetTypeNames";
@@ -166,11 +165,9 @@ const PrefectureItem: FC<{
 };
 
 const RegionalMeshItem: FC = () => {
-  const [estatUrl] = useEstatUrl();
-  const datasets = useMemo(() => censusDatasets(estatUrl), [estatUrl]);
   return (
     <DatasetTreeItem nodeId="RegionalMesh" label="地域メッシュ">
-      {datasets.map(dataset => (
+      {censusDatasets.map(dataset => (
         <DatasetTreeItem
           key={dataset.name}
           nodeId={`RegionalMesh:${dataset.name}`}

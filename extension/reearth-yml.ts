@@ -83,11 +83,6 @@ const yml = {
                 title: "Re:Earthプロジェクトの公開URL",
               },
               {
-                id: "estatURL",
-                type: "string",
-                title: "EstatファイルのURL",
-              },
-              {
                 id: "arURL",
                 type: "string",
                 title: "AR App URL",
