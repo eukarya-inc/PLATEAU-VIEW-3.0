@@ -337,11 +337,14 @@ func (h *Handler) fetchTemplatesHandler() func(c echo.Context) error {
 		}
 
 		res, err := cmsh.GetItemsByKeyInParallel(ctx, md.ProjectAlias, templateModelKey, false, limit)
-		if err != nil || res == nil {
+		if err != nil {
 			if errors.Is(err, cms.ErrNotFound) || res == nil {
 				return c.JSON(http.StatusNotFound, "not found")
 			}
 			return err
+		}
+		if res == nil {
+			return c.JSON(http.StatusOK, itemsToJSONs(nil))
 		}
 
 		return c.JSON(http.StatusOK, itemsToJSONs(res.Items))
