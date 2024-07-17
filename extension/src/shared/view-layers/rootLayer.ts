@@ -163,7 +163,7 @@ const findComponentTemplate = (
 
   // Default template
   const templateWithName = dataName
-    ? templates.find(t => [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]))
+    ? templates.find(t => [dataName, dataSubName].includes(t.name?.split("/").slice(-1)[0]))
     : undefined;
 
   const template =
@@ -186,7 +186,8 @@ const findEmphasisProperties = (
   const templateWithName = dataName
     ? templates.find(
         t =>
-          t.type === "emphasis" && [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]),
+          t.type === "emphasis" &&
+          [dataName, dataSubName].includes(t.name?.split("/").slice(-1)[0]),
       )
     : undefined;
 

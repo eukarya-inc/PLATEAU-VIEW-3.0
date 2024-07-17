@@ -22,7 +22,7 @@ export default () => {
   useEffect(() => {
     if (isCityProject) {
       client.findAllForCity().then(data => {
-        setTemplates(data);
+        setTemplates(data ?? []);
       });
     } else {
       setTemplates(templatesFromAtom);

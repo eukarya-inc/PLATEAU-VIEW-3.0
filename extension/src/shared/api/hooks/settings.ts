@@ -16,7 +16,7 @@ export default () => {
       setIsSaving(true);
 
       const settings = await client.findAll();
-      const existSetting = settings.find(
+      const existSetting = settings?.find(
         s => s.datasetId === setting.datasetId && s.dataId === setting.dataId,
       );
 

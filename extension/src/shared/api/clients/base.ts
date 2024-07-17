@@ -45,27 +45,45 @@ export class PlateauAPIClient<V> {
   }
 
   handleError(obj: any) {
-    if (!obj) return [];
-    if (typeof obj === "object" && "error" in obj) return [];
+    if (!obj) return;
+    if (typeof obj !== "object") return;
+    if ("error" in obj) {
+      console.error(obj.error);
+      return;
+    }
     return obj;
   }
 
   // Combine the data only in findAll.
-  async findAll(): Promise<V[]> {
+  async findAll(): Promise<V[] | undefined> {
     return this.handleError(
       await Promise.all<(Promise<V[]> | undefined)[]>([
         fetchWithGet(this.baseUrl()),
         this.cityOptions ? fetchWithGet(this.baseUrlForCity()) : undefined,
-      ]).then(r => r.filter((v): v is V[] => !!v).flat()),
+      ])
+        .then(r => r.filter((v): v is V[] => !!v).flat())
+        .catch(e => {
+          console.error(e);
+          return [];
+        }),
     );
   }
 
-  async findAllForCity(): Promise<V[]> {
-    return this.handleError(await fetchWithGet(this.baseUrlForCity()));
+  async findAllForCity(): Promise<V[] | undefined> {
+    return this.handleError(
+      await fetchWithGet(this.baseUrlForCity()).catch(e => {
+        console.error(e);
+        return [];
+      }),
+    );
   }
 
-  async findById(id: string): Promise<V> {
-    return this.handleError(await fetchWithGet(this.urlWithId(id)));
+  async findById(id: string): Promise<V | undefined> {
+    return this.handleError(
+      await fetchWithGet(this.urlWithId(id)).catch(e => {
+        console.error(e);
+      }),
+    );
   }
 
   async save(data: V) {
