@@ -204,6 +204,8 @@ func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 }
 
 func (h *reposHandler) UpdateCacheHandler(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	if h.cacheUpdateKey != "" {
 		b := struct {
 			Key string `json:"key"`
@@ -216,8 +218,9 @@ func (h *reposHandler) UpdateCacheHandler(c echo.Context) error {
 		}
 	}
 
-	if err := h.UpdateCache(c.Request().Context()); err != nil {
-		return err
+	if err := h.UpdateCache(ctx); err != nil {
+		log.Errorfc(ctx, "datacatalog: failed to update cache: %v", err)
+		return c.JSON(http.StatusInternalServerError, "failed to update cache")
 	}
 
 	return c.JSON(http.StatusOK, "ok")
