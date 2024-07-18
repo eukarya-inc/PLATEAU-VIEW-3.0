@@ -51,10 +51,10 @@ export type TerrainProperty = {
   type?: "cesium" | "arcgis" | "cesiumion";
   url?: string;
   normal?: boolean;
-  heightMap?: HeightMapProperty;
+  elevationHeatMap?: ElevationHeatMapProperty;
 };
 
-export type HeightMapProperty = {
+export type ElevationHeatMapProperty = {
   type?: "custom";
   colorLUT?: LUT;
   minHeight?: number;

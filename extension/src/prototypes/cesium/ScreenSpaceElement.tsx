@@ -3,7 +3,7 @@ import { motion, useMotionValue } from "framer-motion";
 import { forwardRef, useRef, type ComponentPropsWithRef, useEffect, useMemo } from "react";
 import { mergeRefs } from "react-merge-refs";
 
-import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
 
 const Root = styled(motion.div)({
   position: "absolute",
@@ -43,9 +43,9 @@ export const ScreenSpaceElement = forwardRef<HTMLDivElement, ScreenSpaceElementP
       }
       const windowPosition = { x: 0, y: 0 };
       try {
-        [windowPosition.x, windowPosition.y] = window.reearth?.scene?.toWindowPosition(
-          position,
-        ) ?? [0, 0];
+        [windowPosition.x, windowPosition.y] = (isReEarthAPIv2(window.reearth)
+          ? window.reearth?.viewer?.tools?.getScreenCoordinateFromPosition(position)
+          : window.reearth?.scene?.toWindowPosition(position)) ?? [0, 0];
       } catch (error) {
         motionDisplayRef.current.set("none");
         return;
@@ -56,7 +56,9 @@ export const ScreenSpaceElement = forwardRef<HTMLDivElement, ScreenSpaceElementP
         windowPosition.y < 0 ||
         windowPosition.x > window.innerWidth ||
         windowPosition.y > window.innerHeight ||
-        !window.reearth?.scene?.isPositionVisible?.(position)
+        (isReEarthAPIv2(window.reearth)
+          ? !window.reearth?.viewer?.tools?.isPositionVisibleOnGlobe?.(position)
+          : !window.reearth?.scene?.isPositionVisible?.(position))
       ) {
         motionDisplayRef.current.set("none");
         return;

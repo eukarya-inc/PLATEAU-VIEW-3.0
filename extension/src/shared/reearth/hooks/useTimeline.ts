@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 
+import { isReEarthAPIv2 } from "../types";
+
 export const useTimeline = () => {
   const getTimeline = useCallback(() => {
-    return window.reearth?.clock;
+    return isReEarthAPIv2(window.reearth) ? window.reearth?.timeline : window.reearth?.clock;
   }, []);
 
   const handleTimelinePlay = useCallback(
@@ -17,13 +19,23 @@ export const useTimeline = () => {
       current: Date;
       speed: number;
     }) => {
-      window.reearth?.clock?.setTime?.({
-        start,
-        stop,
-        current,
-      });
-      window.reearth?.clock?.setSpeed?.(speed);
-      window.reearth?.clock?.play?.();
+      if (isReEarthAPIv2(window.reearth)) {
+        window.reearth?.timeline?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+        window.reearth?.timeline?.setSpeed?.(speed);
+        window.reearth?.timeline?.play?.();
+      } else {
+        window.reearth?.clock?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+        window.reearth?.clock?.setSpeed?.(speed);
+        window.reearth?.clock?.play?.();
+      }
     },
     [],
   );
@@ -40,50 +52,79 @@ export const useTimeline = () => {
       current: Date;
       speed: number;
     }) => {
-      window.reearth?.clock?.setTime?.({
-        start,
-        stop,
-        current,
-      });
-      window.reearth?.clock?.setSpeed?.(-speed);
-      window.reearth?.clock?.play?.();
+      if (isReEarthAPIv2(window.reearth)) {
+        window.reearth?.timeline?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+        window.reearth?.timeline?.setSpeed?.(-speed);
+        window.reearth?.timeline?.play?.();
+      } else {
+        window.reearth?.clock?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+        window.reearth?.clock?.setSpeed?.(-speed);
+        window.reearth?.clock?.play?.();
+      }
     },
     [],
   );
 
   const handleTimelinePause = useCallback(() => {
-    window.reearth?.clock?.pause?.();
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.pause?.()
+      : window.reearth?.clock?.pause?.();
   }, []);
 
   const handleTimelineJump = useCallback(
     ({ start, stop, current }: { start: Date; stop: Date; current: Date }) => {
-      window.reearth?.clock?.pause?.();
-      window.reearth?.clock?.setTime?.({
-        start,
-        stop,
-        current,
-      });
+      if (isReEarthAPIv2(window.reearth)) {
+        window.reearth?.timeline?.pause?.();
+        window.reearth?.timeline?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+      } else {
+        window.reearth?.clock?.pause?.();
+        window.reearth?.clock?.setTime?.({
+          start,
+          stop,
+          current,
+        });
+      }
     },
     [],
   );
 
   const handleTimelineSetSpeed = useCallback((speed: number) => {
-    window.reearth?.clock?.setSpeed?.(speed);
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.setSpeed?.(speed)
+      : window.reearth?.clock?.setSpeed?.(speed);
   }, []);
 
   const handleTimelineSetRangeType = useCallback(
     (rangeType: "unbounded" | "clamped" | "bounced") => {
-      window.reearth?.clock?.setRangeType?.(rangeType);
+      isReEarthAPIv2(window.reearth)
+        ? window.reearth?.timeline?.setRangeType?.(rangeType)
+        : window.reearth?.clock?.setRangeType?.(rangeType);
     },
     [],
   );
 
   const handleTimelineOnTickEventAdd = useCallback((callback: (date: Date) => void) => {
-    window.reearth?.on?.("tick", callback);
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.on?.("tick", callback)
+      : window.reearth?.on?.("tick", callback);
   }, []);
 
   const handleTimelineOnTickEventRemove = useCallback((callback: (date: Date) => void) => {
-    window.reearth?.off?.("tick", callback);
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.off?.("tick", callback)
+      : window.reearth?.off?.("tick", callback);
   }, []);
 
   return {

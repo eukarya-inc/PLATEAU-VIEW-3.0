@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { useMemo } from "react";
 
 import { interactionModeAtom } from "../../../shared/states/interactionMode";
-import { BoxAppearance, LngLatHeight } from "../../reearth/types";
+import { BoxAppearance, isReEarthAPIv2, LngLatHeight } from "../../reearth/types";
 import { EXPERIMENTAL_clipping } from "../../reearth/types/value";
 import { TilesetClippingField } from "../../types/fieldComponents/3dtiles";
 
@@ -40,11 +40,18 @@ export const useClippingBox = (
   const location: LngLatHeight | undefined = useMemo(() => {
     if (!enable) return;
 
-    const viewport = window.reearth?.viewport;
-    const centerOnScreen = window.reearth?.scene?.getLocationFromScreen(
-      (viewport?.width ?? 0) / 2,
-      (viewport?.height ?? 0) / 2,
-    );
+    const viewport = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.viewport
+      : window.reearth?.viewport;
+    const centerOnScreen = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.getLocationFromScreenCoordinate(
+          (viewport?.width ?? 0) / 2,
+          (viewport?.height ?? 0) / 2,
+        )
+      : window.reearth?.scene?.getLocationFromScreen(
+          (viewport?.width ?? 0) / 2,
+          (viewport?.height ?? 0) / 2,
+        );
     if (!centerOnScreen) return;
 
     return {

@@ -14,6 +14,7 @@ import {
   SharedSketchLayer,
   SketchLayerModel,
 } from "../../prototypes/view-layers";
+import { isReEarthAPIv2 } from "../reearth/types";
 import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { generateID } from "../utils";
 import {
@@ -31,7 +32,11 @@ export const SHARED_PROJECT_ID = generateID();
 export const SHARED_PROJECT_ID_KEY = "sharedProjectId";
 
 export const shareAtom = atom(undefined, async (_get, set) => {
-  await set(sharedInitialClockAtom, async () => window.reearth?.clock?.currentTime?.getTime());
+  await set(sharedInitialClockAtom, async () =>
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.currentTime?.getTime()
+      : window.reearth?.clock?.currentTime?.getTime(),
+  );
   await set(sharedInitialCameraAtom, async () => window.reearth?.camera?.position);
   await set(shareRootLayerAtom);
   await setSharedStoreValue(

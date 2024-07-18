@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
 
-import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
+import { isReEarthAPIv2, ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";
@@ -65,17 +65,31 @@ export const ScreenSpaceCamera = ({
   );
 
   useEffect(() => {
-    if (useKeyboard) {
-      window?.reearth?.camera?.overrideScreenSpaceController(optionsWhenUseKeyboard);
-    } else if (tiltByRightButton) {
-      window?.reearth?.camera?.overrideScreenSpaceController(optionsWhenTiltByRightButton);
+    if (isReEarthAPIv2(window?.reearth)) {
+      if (useKeyboard) {
+        window?.reearth?.camera?.overrideScreenSpaceCameraController(optionsWhenUseKeyboard);
+      } else if (tiltByRightButton) {
+        window?.reearth?.camera?.overrideScreenSpaceCameraController(optionsWhenTiltByRightButton);
+      } else {
+        window?.reearth?.camera?.overrideScreenSpaceCameraController();
+      }
     } else {
-      window?.reearth?.camera?.overrideScreenSpaceController();
+      if (useKeyboard) {
+        window?.reearth?.camera?.overrideScreenSpaceController(optionsWhenUseKeyboard);
+      } else if (tiltByRightButton) {
+        window?.reearth?.camera?.overrideScreenSpaceController(optionsWhenTiltByRightButton);
+      } else {
+        window?.reearth?.camera?.overrideScreenSpaceController();
+      }
     }
   }, [useKeyboard, tiltByRightButton, optionsWhenUseKeyboard, optionsWhenTiltByRightButton]);
 
   useEffect(() => {
-    window?.reearth?.camera?.forceHorizontalRoll(true);
+    if (isReEarthAPIv2(window?.reearth)) {
+      window?.reearth?.camera?.enableForceHorizontalRoll(true);
+    } else {
+      window?.reearth?.camera?.forceHorizontalRoll(true);
+    }
   }, []);
 
   return useKeyboard ? <KeyboardHandlers isMoving={useKeyboard} /> : null;

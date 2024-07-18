@@ -2,7 +2,14 @@
 
 import { FC, useEffect } from "react";
 
-import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
+import {
+  AmbientOcclusion,
+  Antialias,
+  CameraPosition,
+  isReEarthAPIv2,
+  Tile,
+  TileLabels,
+} from "../types";
 import { Camera } from "../types/viewer";
 
 // nx = red
@@ -106,7 +113,7 @@ export const Scene: FC<SceneProps> = ({
   initialCamera,
 }) => {
   useEffect(() => {
-    if (window.reearth?.apiVersion === 1.1) {
+    if (isReEarthAPIv2(window?.reearth)) {
       window.reearth?.viewer?.overrideProperty?.({
         camera: {
           camera: initialCamera as Camera,
@@ -184,7 +191,7 @@ export const Scene: FC<SceneProps> = ({
           normal: true,
           ...(terrainHeatmap
             ? {
-                heightMap: {
+                elevationHeatMap: {
                   type: "custom",
                   maxHeight: terrainHeatmapMaxHeight,
                   minHeight: terrainHeatmapMinHeight,

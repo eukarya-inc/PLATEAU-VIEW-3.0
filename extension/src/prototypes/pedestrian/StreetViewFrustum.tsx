@@ -2,6 +2,7 @@ import { animate, useMotionValue, usePresence } from "framer-motion";
 import { useEffect, type FC, useMemo, useCallback, useState, useRef } from "react";
 
 import { PedestrianFrustumAppearances, PedestrianFrustumLayer } from "../../shared/reearth/layers";
+import { isReEarthAPIv2 } from "../../shared/reearth/types";
 
 import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
 import { type HeadingPitch, type Location } from "./types";
@@ -79,9 +80,13 @@ export const StreetViewFrustum: FC<StreetViewFrustumProps> = ({
   }, [motionPosition]);
 
   const coordinates = useMemo(() => {
-    return (window.reearth?.scene?.toLngLatHeight(...animatedPosition, {
-      useGlobeEllipsoid: true,
-    }) ?? [0, 0, 0]) as [lng: number, lat: number, height: number];
+    return ((isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.cartesianToCartographic(...animatedPosition, {
+          useGlobeEllipsoid: true,
+        })
+      : window.reearth?.scene?.toLngLatHeight(...animatedPosition, {
+          useGlobeEllipsoid: true,
+        })) ?? [0, 0, 0]) as [lng: number, lat: number, height: number];
   }, [animatedPosition]);
   const frustumAppearance: PedestrianFrustumAppearances = useMemo(
     () => ({

@@ -12,6 +12,7 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Suspense, useCallback, useEffect, useRef, type FC } from "react";
 import invariant from "tiny-invariant";
 
+import { isReEarthAPIv2 } from "../../../shared/reearth/types";
 import { lookAtXYZ } from "../../../shared/reearth/utils";
 import { useGoogleStreetViewApiKey } from "../../../shared/states/environmentVariables";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
@@ -216,10 +217,13 @@ export const Content: FC<{
   const containerRef = useRef<HTMLDivElement>(null);
   const handleZoomChange = useCallback(() => {
     if (containerRef.current != null) {
+      const cameraAspectRatio = isReEarthAPIv2(window.reearth)
+        ? window.reearth?.camera?.aspectRatio
+        : window.reearth?.camera?.position?.aspectRatio;
       // Prevent street view from stretching too much in portrait.
       const aspectRatio = isMobile
-        ? Math.max(2, window.reearth?.camera?.position?.aspectRatio ?? 1)
-        : Math.max(1, window.reearth?.camera?.position?.aspectRatio ?? 1);
+        ? Math.max(2, cameraAspectRatio ?? 1)
+        : Math.max(1, cameraAspectRatio ?? 1);
       containerRef.current.style.aspectRatio = `${aspectRatio}`;
     }
   }, [isMobile]);

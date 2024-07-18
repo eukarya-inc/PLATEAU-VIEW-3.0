@@ -10,7 +10,7 @@ import { useCallback, useEffect, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { useCameraAreas } from "../../shared/graphql";
-import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { type LayerProps } from "../layers";
 import { Pedestrian, type HeadingPitch, type Location } from "../pedestrian";
@@ -147,13 +147,22 @@ export const PedestrianLayer: FC<LayerProps<typeof PEDESTRIAN_LAYER>> = ({
   const setBoundingSphere = useSetAtom(boundingSphereAtom);
   useEffect(() => {
     const groundHeight =
-      window.reearth?.scene?.computeGlobeHeight?.(location.longitude, location.latitude) ?? 0;
-    const [x, y, z] = window.reearth?.scene?.toXYZ(
-      location.longitude,
-      location.latitude,
-      groundHeight + (location.height ?? 0),
-      { useGlobeEllipsoid: true },
-    ) ?? [0, 0, 0];
+      (isReEarthAPIv2(window.reearth)
+        ? window.reearth?.viewer?.tools?.getGlobeHeight?.(location.longitude, location.latitude)
+        : window.reearth?.scene?.computeGlobeHeight?.(location.longitude, location.latitude)) ?? 0;
+    const [x, y, z] = (isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.cartographicToCartesian(
+          location.longitude,
+          location.latitude,
+          groundHeight + (location.height ?? 0),
+          { useGlobeEllipsoid: true },
+        )
+      : window.reearth?.scene?.toXYZ(
+          location.longitude,
+          location.latitude,
+          groundHeight + (location.height ?? 0),
+          { useGlobeEllipsoid: true },
+        )) ?? [0, 0, 0];
     const boundingSphere: XYZ = {
       x,
       y,

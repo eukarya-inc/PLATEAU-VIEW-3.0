@@ -3,7 +3,7 @@ import { atom, type PrimitiveAtom, type SetStateAction } from "jotai";
 import { debounce } from "lodash-es";
 import { useMemo, useRef } from "react";
 
-import { CameraPosition } from "../../shared/reearth/types";
+import { CameraPosition, isReEarthAPIv2 } from "../../shared/reearth/types";
 import { flyToCamera, setView } from "../../shared/reearth/utils";
 
 import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
@@ -25,7 +25,9 @@ export interface StreetViewState {
 }
 
 const setCameraXYZ = (x: number, y: number, z: number) => {
-  const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight(x, y, z) ?? [0, 0, 0];
+  const [lng, lat, height] = (isReEarthAPIv2(window.reearth)
+    ? window.reearth?.viewer?.tools?.cartesianToCartographic(x, y, z)
+    : window.reearth?.scene?.toLngLatHeight(x, y, z)) ?? [0, 0, 0];
   setView({
     lng,
     lat,
@@ -149,12 +151,18 @@ export function useSynchronizeStreetView(params: StreetViewStateParams): StreetV
             return;
           }
           const position = computeCartographicToCartesian(location);
-          const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight(
-            position.x,
-            position.y,
-            position.z,
-            { useGlobeEllipsoid: true },
-          ) ?? [0, 0, 0];
+          const [lng, lat, height] = (isReEarthAPIv2(window.reearth)
+            ? window.reearth?.viewer?.tools?.cartesianToCartographic(
+                position.x,
+                position.y,
+                position.z,
+                {
+                  useGlobeEllipsoid: true,
+                },
+              )
+            : window.reearth?.scene?.toLngLatHeight(position.x, position.y, position.z, {
+                useGlobeEllipsoid: true,
+              })) ?? [0, 0, 0];
           void flyToCamera({
             lng,
             lat,

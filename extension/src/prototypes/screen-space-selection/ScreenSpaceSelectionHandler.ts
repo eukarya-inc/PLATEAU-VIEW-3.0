@@ -2,6 +2,7 @@
 
 import { Event } from "../../shared/helpers";
 import {
+  isReEarthAPIv2,
   LayerSelectWithRectEnd,
   LayerSelectWithRectMove,
   MouseEvent,
@@ -67,22 +68,48 @@ export class ScreenSpaceSelectionHandler {
   #selectedEventFound = false;
 
   constructor() {
-    window.reearth?.on?.("select", this.handleSelect);
+    if (isReEarthAPIv2(window.reearth)) {
+      window.reearth?.layers?.on?.("select", this.handleSelect);
+      window.reearth?.viewer?.on?.("click", this.handleClickOnMobile);
+      window.reearth?.viewer?.interactionMode?.selectionMode?.on?.(
+        "marqueeMove",
+        this.handleMouseMove,
+      );
+      window.reearth?.viewer?.interactionMode?.selectionMode?.on?.(
+        "marqueeEnd",
+        this.handleMouseUp,
+      );
+    } else {
+      window.reearth?.on?.("select", this.handleSelect);
 
-    // This is for mobile.
-    // Because if you use mousedown and mouseup to handle the click behavior,
-    // it will conflict with pinch motion.
-    window.reearth?.on?.("click", this.handleClickOnMobile);
+      // This is for mobile.
+      // Because if you use mousedown and mouseup to handle the click behavior,
+      // it will conflict with pinch motion.
+      window.reearth?.on?.("click", this.handleClickOnMobile);
 
-    window.reearth?.on?.("layerSelectWithRectMove", this.handleMouseMove);
-    window.reearth?.on?.("layerSelectWithRectEnd", this.handleMouseUp);
+      window.reearth?.on?.("layerSelectWithRectMove", this.handleMouseMove);
+      window.reearth?.on?.("layerSelectWithRectEnd", this.handleMouseUp);
+    }
   }
 
   destroy(): void {
-    window.reearth?.off?.("select", this.handleSelect);
-    window.reearth?.off?.("click", this.handleClickOnMobile);
-    window.reearth?.off?.("layerSelectWithRectMove", this.handleMouseMove);
-    window.reearth?.off?.("layerSelectWithRectEnd", this.handleMouseUp);
+    if (isReEarthAPIv2(window.reearth)) {
+      window.reearth?.layers?.off?.("select", this.handleSelect);
+      window.reearth?.viewer?.off?.("click", this.handleClickOnMobile);
+      window.reearth?.viewer?.interactionMode?.selectionMode?.off?.(
+        "marqueeMove",
+        this.handleMouseMove,
+      );
+      window.reearth?.viewer?.interactionMode?.selectionMode?.off?.(
+        "marqueeEnd",
+        this.handleMouseUp,
+      );
+    } else {
+      window.reearth?.off?.("select", this.handleSelect);
+      window.reearth?.off?.("click", this.handleClickOnMobile);
+      window.reearth?.off?.("layerSelectWithRectMove", this.handleMouseMove);
+      window.reearth?.off?.("layerSelectWithRectEnd", this.handleMouseUp);
+    }
   }
 
   get disabled(): boolean {
@@ -125,7 +152,9 @@ export class ScreenSpaceSelectionHandler {
     pointEvent.action = actionForModifier(keyName);
     pointEvent.x = position[0];
     pointEvent.y = position[1];
-    pointEvent.feature = window.reearth?.scene?.pickManyFromViewport(position, 1, 1)?.[0];
+    pointEvent.feature = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.layers?.getFeaturesInScreenRect([position[0], position[1], 1, 1])?.[0]
+      : window.reearth?.scene?.pickManyFromViewport(position, 1, 1)?.[0];
     this.change.dispatch(pointEvent);
   };
 

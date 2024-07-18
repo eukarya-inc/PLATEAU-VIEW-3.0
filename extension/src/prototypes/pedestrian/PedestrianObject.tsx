@@ -15,7 +15,7 @@ import {
 
 import { useReEarthEvent } from "../../shared/reearth/hooks";
 import { PedestrianMarkerAppearances, PedestrianMarkerLayer } from "../../shared/reearth/layers";
-import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
 import { ScreenSpaceElement } from "../cesium";
 
 import balloonImage from "./assets/balloon.png";
@@ -51,10 +51,15 @@ const Sensor: FC<SensorProps> = ({ id, position, offset, setOffset }) => {
 
   useEffect(() => {
     if (transform != null) {
-      const [x, y, z] = window.reearth?.scene?.convertScreenToPositionOffset(
-        [position.x, position.y, position.z],
-        [transform.x, transform.y],
-      ) ?? [0, 0, 0];
+      const [x, y, z] = (isReEarthAPIv2(window.reearth)
+        ? window.reearth?.viewer?.tools?.transformByOffsetOnScreen(
+            [position.x, position.y, position.z],
+            [transform.x, transform.y],
+          )
+        : window.reearth?.scene?.convertScreenToPositionOffset(
+            [position.x, position.y, position.z],
+            [transform.x, transform.y],
+          )) ?? [0, 0, 0];
       setOffset({
         x,
         y,
@@ -175,9 +180,13 @@ export const PedestrianObject: FC<PedestrianObjectProps> = ({
       position[1] + offsetY,
       position[2] + offsetZ,
     ] as const;
-    const [lng, lat] = window.reearth?.scene?.toLngLatHeight(...nextPosition, {
-      useGlobeEllipsoid: true,
-    }) ?? [0, 0, 0];
+    const [lng, lat] = (isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.cartesianToCartographic(...nextPosition, {
+          useGlobeEllipsoid: true,
+        })
+      : window.reearth?.scene?.toLngLatHeight(...nextPosition, {
+          useGlobeEllipsoid: true,
+        })) ?? [0, 0, 0];
     return [lng, lat, location.height ?? 0] as [lng: number, lat: number, height: number];
   }, [animatedPosition, offset, location]);
 

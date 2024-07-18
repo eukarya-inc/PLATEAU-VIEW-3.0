@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { CameraOptions, CameraPosition, LngLatHeight } from "../types";
+import { CameraOptions, CameraPosition, isReEarthAPIv2, LngLatHeight } from "../types";
 
 export interface CameraZoom {
   zoomIn: () => void;
@@ -48,10 +48,15 @@ export function useCamera(): {
           }
         | undefined,
     ) => {
-      return window.reearth?.camera?.getFovInfo({
-        withTerrain: options?.withTerrain ?? true,
-        calcViewSize: options?.calcViewSize ?? false,
-      });
+      return isReEarthAPIv2(window.reearth)
+        ? window.reearth?.camera?.getGlobeIntersection({
+            withTerrain: options?.withTerrain ?? true,
+            calcViewSize: options?.calcViewSize ?? false,
+          })
+        : window.reearth?.camera?.getFovInfo({
+            withTerrain: options?.withTerrain ?? true,
+            calcViewSize: options?.calcViewSize ?? false,
+          });
     },
     [],
   );
