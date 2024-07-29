@@ -30,8 +30,8 @@ export const InitializeApp: FC = () => {
         settingClient.findAll(),
         templateClient.findAll(),
       ]);
-      updateAllSetting(settings);
-      updateAllTemplate(Array.isArray(templates) ? templates : []);
+      updateAllSetting(settings ?? []);
+      updateAllTemplate(templates ?? []);
       setIsAppReady(true);
     };
     fetch();

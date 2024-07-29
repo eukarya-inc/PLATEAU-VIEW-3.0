@@ -164,7 +164,7 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	defer httpmock.Deactivate()
 	mockCMS(t)
 
-	expected := `[{"hoge":"foo"},{"hoge":"bar"}]` + "\n"
+	empty := false
 	lastModified := time.Date(2022, time.April, 1, 0, 0, 0, 0, time.Local)
 	httpmock.RegisterResponder(
 		"GET",
@@ -174,20 +174,42 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 	httpmock.RegisterResponder(
 		"GET",
 		lo.Must(url.JoinPath(testCMSHost, "api", "projects", testCMSProject, "models", dataModelKey, "items")),
+		func(*http.Request) (*http.Response, error) {
+			if empty {
+				return httpmock.NewJsonResponse(http.StatusOK, cms.Items{
+					Items:      []cms.Item{},
+					Page:       1,
+					PerPage:    0,
+					TotalCount: 0,
+				})
+			}
+
+			return httpmock.NewJsonResponse(http.StatusOK, &cms.Items{
+				Items: []cms.Item{
+					{
+						ID:     "a",
+						Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
+					},
+					{
+						ID:     "b",
+						Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"bar"}`}},
+					},
+				},
+				Page:       1,
+				PerPage:    50,
+				TotalCount: 1,
+			})
+		},
+	)
+
+	httpmock.RegisterResponder(
+		"GET",
+		lo.Must(url.JoinPath(testCMSHost, "api", "projects", "emptyprj", "models", dataModelKey, "items")),
 		httpmock.NewJsonResponderOrPanic(http.StatusOK, &cms.Items{
-			Items: []cms.Item{
-				{
-					ID:     "a",
-					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"foo"}`}},
-				},
-				{
-					ID:     "b",
-					Fields: []*cms.Field{{Key: dataField, Value: `{"hoge":"bar"}`}},
-				},
-			},
+			Items:      []cms.Item{},
 			Page:       1,
-			PerPage:    50,
-			TotalCount: 1,
+			PerPage:    0,
+			TotalCount: 0,
 		}),
 	)
 
@@ -197,18 +219,32 @@ func TestHandler_getAllDataHandler(t *testing.T) {
 		AuthMethods: authMethods,
 	})(h.getAllDataHandler())
 
-	req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "data"), nil)
-	req.Header.Set("Content-Type", "application/json")
-	rec := httptest.NewRecorder()
+	initContext := func() (*http.Request, *httptest.ResponseRecorder, echo.Context) {
+		req := httptest.NewRequest(http.MethodGet, path.Join("/", testCMSProject, "data"), nil)
+		req.Header.Set("Content-Type", "application/json")
+		rec := httptest.NewRecorder()
+		ctx := echo.New().NewContext(req, rec)
+		ctx.SetParamNames("pid")
+		ctx.SetParamValues(testCMSProject)
+		return req, rec, ctx
+	}
 
-	ctx := echo.New().NewContext(req, rec)
-	ctx.SetParamNames("pid")
-	ctx.SetParamValues(testCMSProject)
-
+	// normal
+	expected := `[{"hoge":"foo"},{"hoge":"bar"}]`
+	_, rec, ctx := initContext()
 	res := handler(ctx)
 	assert.NoError(t, res)
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
-	assert.Equal(t, expected, rec.Body.String())
+	assert.Equal(t, expected, strings.TrimSpace(rec.Body.String()))
+	assert.Equal(t, lastModified.Format(time.RFC1123), rec.Header().Get("Last-Modified"))
+
+	// empty
+	empty = true
+	_, rec, ctx = initContext()
+	res = handler(ctx)
+	assert.NoError(t, res)
+	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
+	assert.Equal(t, `[]`, strings.TrimSpace(rec.Body.String()))
 	assert.Equal(t, lastModified.Format(time.RFC1123), rec.Header().Get("Last-Modified"))
 }
 
