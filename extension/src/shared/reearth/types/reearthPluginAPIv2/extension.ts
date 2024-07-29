@@ -30,7 +30,6 @@ export declare type Widget = {
     vertically: boolean;
   };
   readonly layout?: any;
-  readonly moveTo?: (options: any) => void;
 };
 
 export declare type PluginExtensionInstance = {
