@@ -2,8 +2,9 @@ import { useAtom } from "jotai";
 import { useMemo } from "react";
 
 import { interactionModeAtom } from "../../../shared/states/interactionMode";
-import { BoxAppearance, isReEarthAPIv2, LngLatHeight } from "../../reearth/types";
+import { BoxAppearance, LngLatHeight } from "../../reearth/types";
 import { EXPERIMENTAL_clipping } from "../../reearth/types/value";
+import { isReEarthAPIv2 } from "../../reearth/utils/reearth";
 import { TilesetClippingField } from "../../types/fieldComponents/3dtiles";
 
 const BOX_DIMENSION = {

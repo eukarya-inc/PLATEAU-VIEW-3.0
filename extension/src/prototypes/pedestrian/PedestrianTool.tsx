@@ -2,7 +2,8 @@ import { debounce } from "lodash-es";
 import { type FC, useCallback, useMemo } from "react";
 
 import { useReEarthEvent } from "../../shared/reearth/hooks";
-import { isReEarthAPIv2, LngLatHeight } from "../../shared/reearth/types";
+import { LngLatHeight } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import { LevitationCircle } from "./LevitationCircle";
 import { useMotionPosition } from "./useMotionPosition";

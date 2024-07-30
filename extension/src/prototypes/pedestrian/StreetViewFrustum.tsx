@@ -2,7 +2,7 @@ import { animate, useMotionValue, usePresence } from "framer-motion";
 import { useEffect, type FC, useMemo, useCallback, useState, useRef } from "react";
 
 import { PedestrianFrustumAppearances, PedestrianFrustumLayer } from "../../shared/reearth/layers";
-import { isReEarthAPIv2 } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
 import { type HeadingPitch, type Location } from "./types";

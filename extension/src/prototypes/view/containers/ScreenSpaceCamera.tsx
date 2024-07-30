@@ -1,7 +1,8 @@
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo } from "react";
 
-import { isReEarthAPIv2, ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
+import { ScreenSpaceCameraControllerOptions } from "../../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { enableKeyboardCameraControlAtom } from "../states/app";
 
 import { KeyboardHandlers } from "./KeyboardHandlers";

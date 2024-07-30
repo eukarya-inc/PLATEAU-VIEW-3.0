@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 
-import { isReEarthAPIv2, ReearthEventType, ReEarthV1 } from "../types";
+import { ReearthEventType, ReEarthV1 } from "../types";
 import {
   CameraEventType,
   ReEarthV2,
   SketchEventType,
   ViewerEventType,
 } from "../types/reearthPluginAPIv2";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 const mouseEvents = {
   click: "click",

@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { isReEarthAPIv2 } from "../types";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 export const useTimeline = () => {
   const getTimeline = useCallback(() => {

@@ -6,7 +6,8 @@ import { nanoid } from "nanoid";
 import { useMemo, type FC, useState, useCallback, useEffect, useRef } from "react";
 
 import { PEDESTRIAN_MARKER_ID_PROPERTY } from "../../shared/reearth/layers";
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { composeIdentifier, matchIdentifier } from "../cesium-helpers";
 import { layerSelectionAtom } from "../layers";
 import { useConstant } from "../react-helpers";

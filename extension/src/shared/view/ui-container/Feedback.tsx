@@ -2,7 +2,7 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
-import { isReEarthAPIv2 } from "../../reearth/types";
+import { isReEarthAPIv2 } from "../../reearth/utils/reearth";
 import { usePlateauApiUrl } from "../../states/environmentVariables";
 import FeedBackModal from "../../ui-components/FeedBackForm";
 import FeedbackNotificationModal from "../../ui-components/FeedbackNotificationModal";

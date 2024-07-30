@@ -1,4 +1,6 @@
-import { CameraPosition, isReEarthAPIv2, XYZ } from "../types";
+import { CameraPosition, XYZ } from "../types";
+
+import { isReEarthAPIv2 } from "./reearth";
 
 export const flyToLayerId = (layerId: string) =>
   window.reearth?.camera?.flyTo(layerId, { duration: 0.5 });

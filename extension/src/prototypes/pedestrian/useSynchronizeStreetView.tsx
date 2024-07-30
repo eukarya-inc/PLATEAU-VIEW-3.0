@@ -3,8 +3,9 @@ import { atom, type PrimitiveAtom, type SetStateAction } from "jotai";
 import { debounce } from "lodash-es";
 import { useMemo, useRef } from "react";
 
-import { CameraPosition, isReEarthAPIv2 } from "../../shared/reearth/types";
+import { CameraPosition } from "../../shared/reearth/types";
 import { flyToCamera, setView } from "../../shared/reearth/utils";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import { computeCartographicToCartesian } from "./computeCartographicToCartesian";
 import { getFieldOfView } from "./getFieldOfView";

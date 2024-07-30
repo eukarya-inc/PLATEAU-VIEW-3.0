@@ -1,4 +1,4 @@
-import { isReEarthAPIv2 } from "../types";
+import { isReEarthAPIv2 } from "./reearth";
 
 export const inEditor = () =>
   isReEarthAPIv2(window.reearth)

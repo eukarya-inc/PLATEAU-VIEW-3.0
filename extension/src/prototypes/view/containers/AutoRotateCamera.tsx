@@ -2,7 +2,7 @@
 import { useAtomValue } from "jotai";
 import { type FC, useEffect, useCallback, useRef } from "react";
 
-import { isReEarthAPIv2 } from "../../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { autoRotateCameraAtom } from "../states/app";
 
 export interface AutoRotateCameraProps {

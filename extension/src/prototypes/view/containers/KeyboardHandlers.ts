@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
-import { isReEarthAPIv2 } from "../../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { useConstant, useWindowEvent } from "../../react-helpers";
 
 const directions = ["forward", "backward", "right", "left", "up", "down"] as const;

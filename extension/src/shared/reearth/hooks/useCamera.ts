@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
-import { CameraOptions, CameraPosition, isReEarthAPIv2, LngLatHeight } from "../types";
+import { CameraOptions, CameraPosition, LngLatHeight } from "../types";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 export interface CameraZoom {
   zoomIn: () => void;

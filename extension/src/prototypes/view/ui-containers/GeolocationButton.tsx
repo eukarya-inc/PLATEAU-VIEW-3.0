@@ -3,7 +3,7 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState, type FC } from "react";
 
 import { useCamera } from "../../../shared/reearth/hooks";
-import { isReEarthAPIv2 } from "../../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { AppIconButton, LocationIcon } from "../../ui-components";
 
 export const GeolocationButton: FC = () => {

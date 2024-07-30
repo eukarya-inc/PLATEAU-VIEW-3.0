@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 
 import { useCameraAreasLazy } from "../../../shared/graphql/hooks/geo";
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
-import { isReEarthAPIv2 } from "../../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import type { Address } from "../../../shared/states/address";
 
 export type ReverseGeocoderResult = Address<true>;

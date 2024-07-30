@@ -14,7 +14,7 @@ import {
   SharedSketchLayer,
   SketchLayerModel,
 } from "../../prototypes/view-layers";
-import { isReEarthAPIv2 } from "../reearth/types";
+import { isReEarthAPIv2 } from "../reearth/utils/reearth";
 import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { generateID } from "../utils";
 import {

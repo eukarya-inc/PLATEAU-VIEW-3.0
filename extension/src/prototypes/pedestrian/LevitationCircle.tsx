@@ -6,7 +6,8 @@ import {
   PedestrianEllipseAppearances,
   PedestrianEllipseLayer,
 } from "../../shared/reearth/layers/pedestrian/ellipse";
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { hexToRGBArray } from "../../shared/utils";
 
 import { type MotionPosition } from "./useMotionPosition";

@@ -6,8 +6,9 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
-import { isReEarthAPIv2, LayerVisibilityEvent, ReEarthV1 } from "../../shared/reearth/types";
+import { LayerVisibilityEvent, ReEarthV1 } from "../../shared/reearth/types";
 import { ReEarthV2 } from "../../shared/reearth/types/reearthPluginAPIv2";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {

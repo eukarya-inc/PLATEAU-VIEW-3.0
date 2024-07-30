@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
-import { isReEarthAPIv2, ReearthSketchType } from "../types";
+import { ReearthSketchType } from "../types";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 export const useSketch = () => {
   const handleSetType = useCallback((type: ReearthSketchType | undefined) => {

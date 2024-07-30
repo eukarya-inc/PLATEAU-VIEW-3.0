@@ -1,4 +1,5 @@
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import { type Location } from "./types";
 

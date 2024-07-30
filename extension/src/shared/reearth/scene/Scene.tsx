@@ -2,15 +2,9 @@
 
 import { FC, useEffect } from "react";
 
-import {
-  AmbientOcclusion,
-  Antialias,
-  CameraPosition,
-  isReEarthAPIv2,
-  Tile,
-  TileLabels,
-} from "../types";
+import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
 import { Camera } from "../types/viewer";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 // nx = red
 // ny = green

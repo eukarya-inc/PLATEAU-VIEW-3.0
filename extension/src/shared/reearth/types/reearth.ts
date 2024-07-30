@@ -43,9 +43,3 @@ declare global {
 }
 
 export type ReEarth = ReEarthV1 | ReEarthV2;
-
-export function isReEarthAPIv2(
-  reearth?: Partial<ReEarthV1> | Partial<ReEarthV2>,
-): reearth is Partial<ReEarthV2> {
-  return !!(reearth?.apiVersion && reearth?.apiVersion >= "2.0.0");
-}

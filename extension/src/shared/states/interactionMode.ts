@@ -1,6 +1,7 @@
 import { atom } from "jotai";
 
-import { InteractionModeType, isReEarthAPIv2 } from "../reearth/types";
+import { InteractionModeType } from "../reearth/types";
+import { isReEarthAPIv2 } from "../reearth/utils/reearth";
 import { sharedAtom } from "../sharedAtoms";
 
 export const interactionModeAtom = sharedAtom<InteractionModeType>("interactionMode", "move");

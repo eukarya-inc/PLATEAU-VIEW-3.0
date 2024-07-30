@@ -10,7 +10,8 @@ import { useCallback, useEffect, type FC } from "react";
 import invariant from "tiny-invariant";
 
 import { useCameraAreas } from "../../shared/graphql";
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { type LayerProps } from "../layers";
 import { Pedestrian, type HeadingPitch, type Location } from "../pedestrian";

@@ -15,7 +15,8 @@ import {
 
 import { useReEarthEvent } from "../../shared/reearth/hooks";
 import { PedestrianMarkerAppearances, PedestrianMarkerLayer } from "../../shared/reearth/layers";
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { ScreenSpaceElement } from "../cesium";
 
 import balloonImage from "./assets/balloon.png";

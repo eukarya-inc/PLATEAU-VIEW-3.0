@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Events, isReEarthAPIv2, LayerAppearanceTypes, LayerLoadEvent, ReEarthV1 } from "../types";
+import { Events, LayerAppearanceTypes, LayerLoadEvent, ReEarthV1 } from "../types";
 import { Data } from "../types/layer";
 import { ReEarthV2 } from "../types/reearthPluginAPIv2";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 export type LayerHookOptions = {
   data: Data;

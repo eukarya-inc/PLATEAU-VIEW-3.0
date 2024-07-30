@@ -2,13 +2,13 @@
 
 import { Event } from "../../shared/helpers";
 import {
-  isReEarthAPIv2,
   LayerSelectWithRectEnd,
   LayerSelectWithRectMove,
   MouseEvent,
   PickedFeature,
 } from "../../shared/reearth/types";
 import { DataType } from "../../shared/reearth/types/layer";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import {
   type ScreenSpaceSelectionEvent,

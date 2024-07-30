@@ -12,8 +12,8 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Suspense, useCallback, useEffect, useRef, type FC } from "react";
 import invariant from "tiny-invariant";
 
-import { isReEarthAPIv2 } from "../../../shared/reearth/types";
 import { lookAtXYZ } from "../../../shared/reearth/utils";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { useGoogleStreetViewApiKey } from "../../../shared/states/environmentVariables";
 import { rootLayersLayersAtom } from "../../../shared/states/rootLayer";
 import { parseIdentifier } from "../../cesium-helpers";

@@ -3,7 +3,8 @@ import { motion, useMotionValue } from "framer-motion";
 import { forwardRef, useRef, type ComponentPropsWithRef, useEffect, useMemo } from "react";
 import { mergeRefs } from "react-merge-refs";
 
-import { isReEarthAPIv2, XYZ } from "../../shared/reearth/types";
+import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 const Root = styled(motion.div)({
   position: "absolute",
