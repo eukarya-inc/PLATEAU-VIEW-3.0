@@ -188,7 +188,7 @@ export type AssetsCesiumProperty = {
   general?: {
     ionAccessToken?: string;
   };
-  terrian?: {
+  terrain?: {
     ionAccessToken?: string;
     ionAsset?: string;
     ionUrl?: string;
