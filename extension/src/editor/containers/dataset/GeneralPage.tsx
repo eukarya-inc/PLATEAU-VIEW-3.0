@@ -1,4 +1,5 @@
 import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
+import { useCityOrPlateauDataset } from "../../hooks/useIsCityOrPlateauDataset";
 
 import { CameraBlock } from "./blocks/CameraBlock";
 import { DataBlock } from "./blocks/DataBlock";
@@ -21,28 +22,33 @@ export const GeneralPage: React.FC<GeneralPageProps> = ({
   dataId,
   updateSetting,
 }) => {
+  const isCityOrPlateauDataset = useCityOrPlateauDataset(dataset);
   return (
     <>
-      <DataBlock
-        key={`${setting.datasetId}-${setting.dataId}-data`}
-        dataset={dataset}
-        dataId={dataId}
-      />
-      <CameraBlock
-        key={`${setting.datasetId}-${setting.dataId}-camera`}
-        setting={setting}
-        updateSetting={updateSetting}
-      />
-      <DataFetchingBlock
-        key={`${setting.datasetId}-${setting.dataId}-data-fetching`}
-        setting={setting}
-        updateSetting={updateSetting}
-      />
-      <EventBlock
-        key={`${setting.datasetId}-${setting.dataId}-event`}
-        setting={setting}
-        updateSetting={updateSetting}
-      />
+      {isCityOrPlateauDataset && (
+        <>
+          <DataBlock
+            key={`${setting.datasetId}-${setting.dataId}-data`}
+            dataset={dataset}
+            dataId={dataId}
+          />
+          <CameraBlock
+            key={`${setting.datasetId}-${setting.dataId}-camera`}
+            setting={setting}
+            updateSetting={updateSetting}
+          />
+          <DataFetchingBlock
+            key={`${setting.datasetId}-${setting.dataId}-data-fetching`}
+            setting={setting}
+            updateSetting={updateSetting}
+          />
+          <EventBlock
+            key={`${setting.datasetId}-${setting.dataId}-event`}
+            setting={setting}
+            updateSetting={updateSetting}
+          />
+        </>
+      )}
       {setting.dataId !== DEFAULT_SETTING_DATA_ID && (
         <InitialLayerBlock
           key={`${setting.datasetId}-${setting.dataId}-initial-layer`}

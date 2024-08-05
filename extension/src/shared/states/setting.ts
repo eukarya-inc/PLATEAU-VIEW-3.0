@@ -12,6 +12,8 @@ import {
 export const settingsAtom = atom<Setting[]>([]);
 export const settingsAtomsAtom = splitAtom(settingsAtom);
 
+export const settingForCityIdsAtom = atom<Setting["id"][]>([]);
+
 export const addSettingAtom = atom(undefined, (_get, set, setting: Setting) => {
   set(updateRootLayerBySetting, setting);
   set(settingsAtomsAtom, {
