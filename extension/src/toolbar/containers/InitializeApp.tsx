@@ -4,9 +4,13 @@ import { FC, useEffect, useLayoutEffect } from "react";
 import { useSettingClient, useTemplateClient } from "../../shared/api/hooks";
 import { useTimeline } from "../../shared/reearth/hooks/useTimeline";
 import { fetchShare } from "../../shared/sharedAtoms";
-import { usePlateauApiUrl, useProjectId } from "../../shared/states/environmentVariables";
+import {
+  useIsCityProject,
+  usePlateauApiUrl,
+  useProjectId,
+} from "../../shared/states/environmentVariables";
 import { sharedInitialClockAtom } from "../../shared/states/scene";
-import { updateAllSettingAtom } from "../../shared/states/setting";
+import { settingForCityIdsAtom, updateAllSettingAtom } from "../../shared/states/setting";
 import { updateAllTemplateAtom } from "../../shared/states/template";
 import { isAppReadyAtom } from "../../shared/view/state/app";
 import { useInteractionMode } from "../hooks/useInteractionMode";
@@ -14,6 +18,8 @@ import { useInteractionMode } from "../hooks/useInteractionMode";
 export const InitializeApp: FC = () => {
   const [plateauApiUrl] = usePlateauApiUrl();
   const [projectId] = useProjectId();
+  const [isCityProject] = useIsCityProject();
+  const setSettingForCityIds = useSetAtom(settingForCityIdsAtom);
 
   const settingClient = useSettingClient();
   const templateClient = useTemplateClient();
@@ -26,12 +32,14 @@ export const InitializeApp: FC = () => {
   useEffect(() => {
     const fetch = async () => {
       fetchShare(plateauApiUrl, projectId);
-      const [settings, templates] = await Promise.all([
+      const [settings, templates, settingsForCity] = await Promise.all([
         settingClient.findAll(),
         templateClient.findAll(),
+        isCityProject ? settingClient.findAllForCity() : undefined,
       ]);
       updateAllSetting(settings ?? []);
       updateAllTemplate(templates ?? []);
+      setSettingForCityIds(settingsForCity?.map(s => s.id) ?? []);
       setIsAppReady(true);
     };
     fetch();
@@ -43,6 +51,8 @@ export const InitializeApp: FC = () => {
     templateClient,
     updateAllSetting,
     updateAllTemplate,
+    isCityProject,
+    setSettingForCityIds,
   ]);
 
   const initialClock = useAtomValue(sharedInitialClockAtom);

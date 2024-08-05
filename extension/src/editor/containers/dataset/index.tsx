@@ -12,9 +12,9 @@ import { DEFAULT_SETTING_DATA_ID } from "../../../shared/api/constants";
 import { Setting } from "../../../shared/api/types";
 import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
-import { useIsCityProject } from "../../../shared/states/environmentVariables";
 import { updateSettingAtom } from "../../../shared/states/setting";
 import { generateID } from "../../../shared/utils/id";
+import { useCityOrPlateauDataset } from "../../hooks/useIsCityOrPlateauDataset";
 import {
   EditorButton,
   EditorSection,
@@ -65,9 +65,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const [dataId, setDataId] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
 
-  const { settingsAtom, saveSetting } = useSettingsAPI();
-  const settings = useAtomValue(settingsAtom);
-  const [isCityProject] = useIsCityProject();
+  const { settings, saveSetting } = useSettingsAPI();
 
   const highlightedLayer = useAtomValue(highlightedLayersAtom)?.[0];
   const selectedLayer = useAtomValue(layerSelectionAtom)?.[0];
@@ -75,8 +73,10 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const query = useDatasetById(layer?.id ?? "");
 
   const dataset = useMemo(() => {
-    return !isCityProject || query.data?.node?.type?.code === "city" ? query.data?.node : undefined;
-  }, [query, isCityProject]);
+    return query.data?.node;
+  }, [query]);
+
+  const isCityOrPlateauDataset = useCityOrPlateauDataset(dataset);
 
   const tree = useMemo(() => {
     if (!dataset) return [];
@@ -88,6 +88,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           dataId: "status",
           type: "status",
         },
+        show: isCityOrPlateauDataset,
       },
       {
         id: `${dataset.id}-default`,
@@ -96,6 +97,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           dataId: DEFAULT_SETTING_DATA_ID,
           type: "folder",
         },
+        show: isCityOrPlateauDataset,
         children: [
           {
             name: "General",
@@ -156,6 +158,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
               dataId: item.id,
               type: "fieldComponents",
             },
+            show: isCityOrPlateauDataset,
           },
           {
             name: "Feature Inspector",
@@ -165,11 +168,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
               dataId: item.id,
               type: "featureInspector",
             },
+            show: isCityOrPlateauDataset,
           },
         ],
       })),
     ] as EditorTreeItemType[];
-  }, [dataset, settings]);
+  }, [dataset, settings, isCityOrPlateauDataset]);
 
   const treeRef = useRef(tree);
   treeRef.current = tree;
@@ -369,9 +373,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   ) : (
     <Placeholder>
       <Typography variant="body1" color="text.secondary">
-        {isCityProject && !!query.data?.node
-          ? "Editing a PLATEAU layer is disabled in this project."
-          : "Please select a layer."}
+        Please select a layer.
       </Typography>
     </Placeholder>
   );
