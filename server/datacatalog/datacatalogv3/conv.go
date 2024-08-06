@@ -7,6 +7,8 @@ import (
 	"github.com/samber/lo"
 )
 
+const sampleCode = "sample"
+
 func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []string) {
 	res = &plateauapi.InMemoryRepoContext{
 		Name:     all.Name,
@@ -74,14 +76,14 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	}
 
 	// sample
-	sample := res.DatasetTypes.FindByCode("sample", plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
+	sample := res.DatasetTypes.FindByCode(sampleCode, plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
 	if sample != nil {
 		targets := all.Sample
 		for _, c := range all.City {
 			if !c.Sample || c.CityCode == "" {
 				continue
 			}
-			targets = append(targets, all.FindPlateauFeatureItemsByCityID(c.CityCode))
+			targets = append(targets, all.FindPlateauFeatureItemsByCityID(c.ID)...)
 		}
 
 		datasets, w := convertPlateauRaw(
@@ -145,6 +147,10 @@ func convertPlateau(items []*PlateauFeatureItem, code string, specs []plateauapi
 
 func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateauapi.PlateauSpec, dts map[string]plateauapi.DatasetType, fts map[string]*FeatureType, ic *internalContext) (res []*plateauapi.PlateauDataset, warning []string) {
 	for _, ds := range items {
+		if ds == nil {
+			continue
+		}
+
 		code := code
 		if ds.FeatureType != "" {
 			code = ds.FeatureType

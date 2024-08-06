@@ -25,15 +25,15 @@ func (d *AllData) FindPlateauFeatureItemByCityID(ft, cityID string) *PlateauFeat
 	return nil
 }
 
-func (d *AllData) FindPlateauFeatureItemsByCityID(cityID string) *PlateauFeatureItem {
+func (d *AllData) FindPlateauFeatureItemsByCityID(cityID string) (res []*PlateauFeatureItem) {
 	for _, ft := range d.FeatureTypes.Plateau {
 		for _, f := range d.Plateau[ft.Code] {
 			if f != nil && f.City == cityID {
-				return f
+				res = append(res, f)
 			}
 		}
 	}
-	return nil
+	return
 }
 
 func (all *AllData) FeatureTypesOf(cityID string) (res []string) {
