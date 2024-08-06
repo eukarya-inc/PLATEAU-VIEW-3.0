@@ -88,7 +88,6 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           dataId: "status",
           type: "status",
         },
-        show: isCityOrPlateauDataset,
       },
       {
         id: `${dataset.id}-default`,
