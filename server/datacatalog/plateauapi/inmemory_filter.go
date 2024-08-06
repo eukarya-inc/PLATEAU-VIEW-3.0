@@ -50,9 +50,13 @@ func filterDataset(d Dataset, input DatasetsInput, stages []string) bool {
 		return false
 	}
 
+	areaCode := areaCodeFrom(d).RefString() // for breakpoint debugging
+
 	if s := stageFrom(d.GetAdmin()); s != "" && (len(stages) == 0 || !slices.Contains(stages, s)) {
 		return false
 	}
+
+	_ = areaCode
 
 	if len(input.AreaCodes) > 0 {
 		var areaCodes []AreaCode

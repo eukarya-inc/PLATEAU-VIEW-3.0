@@ -30,7 +30,7 @@ func TestExtractDataFromCMS(t *testing.T) {
 	c, err := cms.New(cmsurl, cmstoken)
 	assert.NoError(t, err)
 
-	c2 := NewCMS(c, 2023, true)
+	c2 := NewCMS(c, 2023, true, "", false)
 	all, err := c2.GetAll(ctx, prj)
 	assert.NoError(t, err)
 

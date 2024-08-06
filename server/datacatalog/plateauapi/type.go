@@ -63,6 +63,13 @@ func (a AreaCode) String() string {
 	return string(a)
 }
 
+func (a *AreaCode) RefString() string {
+	if a == nil {
+		return ""
+	}
+	return string(*a)
+}
+
 func (a AreaCode) Int() int {
 	i, _ := strconv.Atoi(string(a))
 	return i

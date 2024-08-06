@@ -2,21 +2,36 @@ package datacatalogv3
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
 
+const cacheDir = "cache"
+const cachePrefix = "cache-datacatalogv3-"
+
 type CMS struct {
-	cms     cms.Interface
-	year    int
-	plateau bool
+	cms      cms.Interface
+	year     int
+	plateau  bool
+	cache    bool
+	cacheDir string
 }
 
-func NewCMS(cms cms.Interface, year int, plateau bool) *CMS {
-	return &CMS{cms: cms, year: year, plateau: plateau}
+func NewCMS(cms cms.Interface, year int, plateau bool, project string, cache bool) *CMS {
+	return &CMS{
+		cms:      cms,
+		year:     year,
+		plateau:  plateau,
+		cache:    cache,
+		cacheDir: filepath.Join(cacheDir, cachePrefix+project),
+	}
 }
 
 func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
@@ -151,26 +166,83 @@ func (c *CMS) GetCityItems(ctx context.Context, project string, featureTypes []F
 }
 
 func (c *CMS) GetPlateauItems(ctx context.Context, project, feature string) ([]*PlateauFeatureItem, error) {
+	cacheKey := fmt.Sprintf("plateau_%s_%s", project, feature)
+	if c.cache {
+		if items, err := loadCache[[]*PlateauFeatureItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+feature,
 		func(i cms.Item) *PlateauFeatureItem {
 			return PlateauFeatureItemFrom(&i, feature)
 		},
 	)
+
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
+
 	return items, err
 }
 
 func (c *CMS) GetRelatedItems(ctx context.Context, project string, featureTypes []FeatureType) ([]*RelatedItem, error) {
+	cacheKey := fmt.Sprintf(
+		"related_%s_%s",
+		project,
+		strings.Join(lo.Map(
+			featureTypes,
+			func(b FeatureType, _ int) string {
+				return b.Code
+			},
+		), "-"),
+	)
+
+	if c.cache {
+		if items, err := loadCache[[]*RelatedItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+relatedModel,
 		func(i cms.Item) *RelatedItem {
 			return RelatedItemFrom(&i, featureTypes)
 		},
 	)
+
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
+
 	return items, err
 }
 
 func (c *CMS) GetGenericItems(ctx context.Context, project string) ([]*GenericItem, error) {
+	cacheKey := fmt.Sprintf("generic_%s", project)
+	if c.cache {
+		if items, err := loadCache[[]*GenericItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+genericModel,
 		func(i cms.Item) *GenericItem {
@@ -188,10 +260,27 @@ func (c *CMS) GetGenericItems(ctx context.Context, project string) ([]*GenericIt
 		}
 	}
 
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
+
 	return items, err
 }
 
 func (c *CMS) GetSampleItems(ctx context.Context, project string) ([]*PlateauFeatureItem, error) {
+	cacheKey := fmt.Sprintf("sample_%s", project)
+	if c.cache {
+		if items, err := loadCache[[]*PlateauFeatureItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
 	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+sampleModel,
 		func(i cms.Item) *PlateauFeatureItem {
@@ -199,16 +288,39 @@ func (c *CMS) GetSampleItems(ctx context.Context, project string) ([]*PlateauFea
 		},
 	)
 
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
+
 	return items, err
 }
 
 func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string) ([]*GeospatialjpDataItem, error) {
-	items, err := getItemsAndConv[GeospatialjpDataItem](
+	cacheKey := fmt.Sprintf("geospatialjp_%s", project)
+	if c.cache {
+		if items, err := loadCache[[]*GeospatialjpDataItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
+	items, err := getItemsAndConv(
 		c.cms, ctx, project, modelPrefix+geospatialjpDataModel,
 		func(i cms.Item) *GeospatialjpDataItem {
 			return GeospatialjpDataItemFrom(&i)
 		},
 	)
+
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
 
 	return items, err
 }
@@ -255,4 +367,42 @@ func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, mod
 	}
 
 	return res, nil
+}
+
+func loadCache[T any](cachePath, key string) (t T, _ error) {
+	_ = os.MkdirAll(cachePath, 0755)
+
+	f, err := os.Open(filepath.Join(cachePath, key+".json"))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return
+		}
+		return t, fmt.Errorf("failed to open cache file: %w", err)
+	}
+
+	defer f.Close()
+
+	var v T
+	if err = json.NewDecoder(f).Decode(&v); err != nil {
+		return
+	}
+
+	return v, nil
+}
+
+func saveCache(cachePath, key string, content any) error {
+	_ = os.MkdirAll(cachePath, 0755)
+
+	f, err := os.Create(filepath.Join(cachePath, key+".json"))
+	if err != nil {
+		return fmt.Errorf("failed to create cache file: %w", err)
+	}
+
+	defer f.Close()
+
+	if err = json.NewEncoder(f).Encode(content); err != nil {
+		return fmt.Errorf("failed to encode cache content: %w", err)
+	}
+
+	return nil
 }

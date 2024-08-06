@@ -18,6 +18,7 @@ type Config struct {
 	GraphqlMaxComplexity int
 	ErrorOnInit          bool
 	GeocodingAppID       string
+	DiskCache            bool // for debugging
 	// v2
 	DisableCache bool
 	CacheTTL     int

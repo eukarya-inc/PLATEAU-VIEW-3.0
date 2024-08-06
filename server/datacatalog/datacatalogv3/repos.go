@@ -30,7 +30,8 @@ func AdminContext(ctx context.Context, bypassAdminRemoval, includeBeta, includeA
 }
 
 type Repos struct {
-	cms *util.SyncMap[string, *CMS]
+	cms   *util.SyncMap[string, *CMS]
+	cache bool
 	*plateauapi.Repos
 }
 
@@ -40,6 +41,10 @@ func NewRepos() *Repos {
 	}
 	r.Repos = plateauapi.NewRepos(r.update)
 	return r
+}
+
+func (r *Repos) EnableCache(cache bool) {
+	r.cache = cache
 }
 
 func (r *Repos) Prepare(ctx context.Context, project string, year int, plateau bool, cms cms.Interface) error {
@@ -83,6 +88,6 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 }
 
 func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
-	c := NewCMS(cms, year, plateau)
+	c := NewCMS(cms, year, plateau, project, r.cache)
 	r.cms.Store(project, c)
 }
