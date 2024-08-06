@@ -301,6 +301,7 @@ func PlateauDatasetsToGenericDatasets(p []*PlateauDataset, typeID ID, typeCode, 
 }
 
 func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode string, idSuffix string) *GenericDataset {
+	cityCode := p.CityCode.RefString()
 	rawID := strings.TrimPrefix(p.ID.String(), "d_")
 	newID := p.ID
 	if idSuffix != "" {
@@ -326,6 +327,7 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 		})
 	}
 
+	_ = cityCode
 	return &GenericDataset{
 		ID:                newID,
 		Name:              p.Name,

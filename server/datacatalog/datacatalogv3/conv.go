@@ -88,6 +88,7 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 
 		datasets, w := convertPlateauRaw(
 			targets,
+			false,
 			"",
 			res.PlateauSpecs,
 			plateauDatasetTypes,
@@ -140,12 +141,29 @@ func getWards(items []*PlateauFeatureItem, ic *internalContext) (res []*plateaua
 	return
 }
 
-func convertPlateau(items []*PlateauFeatureItem, code string, specs []plateauapi.PlateauSpec, dts map[string]plateauapi.DatasetType, fts map[string]*FeatureType, ic *internalContext) ([]plateauapi.Dataset, []string) {
-	res, w := convertPlateauRaw(items, code, specs, dts, fts, ic)
+func convertPlateau(
+	items []*PlateauFeatureItem,
+	code string,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) ([]plateauapi.Dataset, []string) {
+	res, w := convertPlateauRaw(
+		items, true, code, specs, dts, fts, ic,
+	)
 	return plateauapi.ToDatasets(res), w
 }
 
-func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateauapi.PlateauSpec, dts map[string]plateauapi.DatasetType, fts map[string]*FeatureType, ic *internalContext) (res []*plateauapi.PlateauDataset, warning []string) {
+func convertPlateauRaw(
+	items []*PlateauFeatureItem,
+	ignoreSample bool,
+	code string,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) (res []*plateauapi.PlateauDataset, warning []string) {
 	for _, ds := range items {
 		if ds == nil {
 			continue
@@ -177,7 +195,7 @@ func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateau
 			continue
 		}
 
-		if cityItem.Sample {
+		if ignoreSample && cityItem.Sample {
 			continue
 		}
 
