@@ -3,10 +3,10 @@ import { useSnackbar } from "notistack";
 import { useCallback, useEffect, useState, type FC } from "react";
 
 import { useCamera } from "../../../shared/reearth/hooks";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { AppIconButton, LocationIcon } from "../../ui-components";
 
 export const GeolocationButton: FC = () => {
-  const scene = window.reearth?.scene;
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const [enabled, setEnabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -17,26 +17,37 @@ export const GeolocationButton: FC = () => {
   }, []);
 
   const handleClick = useCallback(() => {
-    if (scene == null) {
-      return;
+    if (isReEarthAPIv2(window.reearth)) {
+      if (window.reearth?.viewer == null) {
+        return;
+      }
+    } else {
+      if (window.reearth?.scene == null) {
+        return;
+      }
     }
+
     setLoading(true);
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
         setLoading(false);
-        const target = window.reearth?.scene?.toXYZ(coords.longitude, coords.latitude, 0, {
+        const toXYZ = isReEarthAPIv2(window.reearth)
+          ? window.reearth?.viewer?.tools?.cartographicToCartesian
+          : window.reearth?.scene?.toXYZ;
+        const toLngLatHeight = isReEarthAPIv2(window.reearth)
+          ? window.reearth?.viewer?.tools?.cartesianToCartographic
+          : window.reearth?.scene?.toLngLatHeight;
+
+        const target = toXYZ?.(coords.longitude, coords.latitude, 0, {
           useGlobeEllipsoid: true,
         });
         const fovInfo = getCameraFovInfo();
         const camera = getCameraPosition();
 
-        const cameraPosition = window.reearth?.scene?.toXYZ(
-          camera?.lng ?? 0,
-          camera?.lat ?? 0,
-          camera?.height ?? 0,
-          { useGlobeEllipsoid: true },
-        );
-        const intersectionPosition = window.reearth?.scene?.toXYZ(
+        const cameraPosition = toXYZ?.(camera?.lng ?? 0, camera?.lat ?? 0, camera?.height ?? 0, {
+          useGlobeEllipsoid: true,
+        });
+        const intersectionPosition = toXYZ?.(
           fovInfo?.center?.lng ?? 0,
           fovInfo?.center?.lat ?? 0,
           fovInfo?.center?.height ?? 0,
@@ -53,7 +64,7 @@ export const GeolocationButton: FC = () => {
         const position = [target[0] + offset[0], target[1] + offset[1], target[2] + offset[2]];
 
         const [x, y, z] = position;
-        const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight?.(x, y, z, {
+        const [lng, lat, height] = toLngLatHeight?.(x, y, z, {
           useGlobeEllipsoid: true,
         }) ?? [0, 0, 0];
         flyTo({ lng, lat, height });
@@ -80,12 +91,16 @@ export const GeolocationButton: FC = () => {
         });
       },
     );
-  }, [scene, getCameraFovInfo, getCameraPosition, flyTo, enqueueSnackbar, closeSnackbar]);
+  }, [getCameraFovInfo, getCameraPosition, flyTo, enqueueSnackbar, closeSnackbar]);
+
+  const noSceneAPI = isReEarthAPIv2(window.reearth)
+    ? window.reearth?.viewer == null
+    : window.reearth?.scene == null;
 
   return (
     <AppIconButton
       title="現在地"
-      disabled={!enabled || scene == null || loading}
+      disabled={!enabled || noSceneAPI || loading}
       onClick={handleClick}>
       {loading ? <CircularProgress size={21} /> : <LocationIcon />}
     </AppIconButton>

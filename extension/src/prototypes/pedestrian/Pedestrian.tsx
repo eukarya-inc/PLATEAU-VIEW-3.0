@@ -7,6 +7,7 @@ import { useMemo, type FC, useState, useCallback, useEffect, useRef } from "reac
 
 import { PEDESTRIAN_MARKER_ID_PROPERTY } from "../../shared/reearth/layers";
 import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { composeIdentifier, matchIdentifier } from "../cesium-helpers";
 import { layerSelectionAtom } from "../layers";
 import { useConstant } from "../react-helpers";
@@ -105,20 +106,31 @@ export const Pedestrian: FC<PedestrianProps> = ({
     (event: DragEndEvent) => {
       const referenceLocation = location;
       const offset = event.active.data.current as XYZ;
-      const position = window.reearth?.scene?.toXYZ(
-        referenceLocation.longitude,
-        referenceLocation.latitude,
-        referenceLocation.height ?? 0,
-        { useGlobeEllipsoid: true },
-      ) ?? [0, 0, 0];
+      const position = (isReEarthAPIv2(window.reearth)
+        ? window.reearth?.viewer?.tools?.cartographicToCartesian(
+            referenceLocation.longitude,
+            referenceLocation.latitude,
+            referenceLocation.height ?? 0,
+            { useGlobeEllipsoid: true },
+          )
+        : window.reearth?.scene?.toXYZ(
+            referenceLocation.longitude,
+            referenceLocation.latitude,
+            referenceLocation.height ?? 0,
+            { useGlobeEllipsoid: true },
+          )) ?? [0, 0, 0];
       const nextPosition = [
         position[0] + offset.x,
         position[1] + offset.y,
         position[2] + offset.z,
       ] as const;
-      const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight(...nextPosition, {
-        useGlobeEllipsoid: true,
-      }) ?? [0, 0, 0];
+      const [lng, lat, height] = (isReEarthAPIv2(window.reearth)
+        ? window.reearth?.viewer?.tools?.cartesianToCartographic(...nextPosition, {
+            useGlobeEllipsoid: true,
+          })
+        : window.reearth?.scene?.toLngLatHeight(...nextPosition, {
+            useGlobeEllipsoid: true,
+          })) ?? [0, 0, 0];
       setDragKey(Math.random());
       setLevitated(false);
       onChange?.({

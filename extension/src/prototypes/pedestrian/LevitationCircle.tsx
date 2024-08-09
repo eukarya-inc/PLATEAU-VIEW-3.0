@@ -7,6 +7,7 @@ import {
   PedestrianEllipseLayer,
 } from "../../shared/reearth/layers/pedestrian/ellipse";
 import { XYZ } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { hexToRGBArray } from "../../shared/utils";
 
 import { type MotionPosition } from "./useMotionPosition";
@@ -65,12 +66,19 @@ export const LevitationCircle: FC<LevitationCircleProps> = ({
       // Entity requires non-zero magnitude position.
       return undefined;
     }
-    const result = window.reearth?.scene?.toLngLatHeight?.(
-      posX + (offset?.x || 0),
-      posY + (offset?.y || 0),
-      posZ + (offset?.z || 0),
-      { useGlobeEllipsoid: true },
-    ) ?? [0, 0, 0];
+    const result = (isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.cartesianToCartographic?.(
+          posX + (offset?.x || 0),
+          posY + (offset?.y || 0),
+          posZ + (offset?.z || 0),
+          { useGlobeEllipsoid: true },
+        )
+      : window.reearth?.scene?.toLngLatHeight?.(
+          posX + (offset?.x || 0),
+          posY + (offset?.y || 0),
+          posZ + (offset?.z || 0),
+          { useGlobeEllipsoid: true },
+        )) ?? [0, 0, 0];
     return result;
   }, [trigger, motionPosition, offset]); // eslint-disable-line react-hooks/exhaustive-deps
 

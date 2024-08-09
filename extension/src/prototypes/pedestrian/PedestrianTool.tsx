@@ -3,6 +3,7 @@ import { type FC, useCallback, useMemo } from "react";
 
 import { useReEarthEvent } from "../../shared/reearth/hooks";
 import { LngLatHeight } from "../../shared/reearth/types";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 
 import { LevitationCircle } from "./LevitationCircle";
 import { useMotionPosition } from "./useMotionPosition";
@@ -19,9 +20,13 @@ export const PedestrianTool: FC<PedestrianToolProps> = ({ onCreate }) => {
     useCallback(
       ({ lng, lat, height }) => {
         if (!lng || !lat) return;
-        const [x, y, z] = window.reearth?.scene?.toXYZ(lng, lat, height ?? 0, {
-          useGlobeEllipsoid: true,
-        }) ?? [0, 0, 0];
+        const [x, y, z] = (isReEarthAPIv2(window.reearth)
+          ? window.reearth?.viewer?.tools?.cartographicToCartesian(lng, lat, height ?? 0, {
+              useGlobeEllipsoid: true,
+            })
+          : window.reearth?.scene?.toXYZ(lng, lat, height ?? 0, {
+              useGlobeEllipsoid: true,
+            })) ?? [0, 0, 0];
         motionPosition.setPosition({ x, y, z });
       },
       [motionPosition],
