@@ -50,9 +50,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11112")),
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/id",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -81,9 +81,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11113")),
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/id",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -110,9 +110,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			CityCode:          lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:            plateauapi.NewID("border", plateauapi.TypeDatasetType),
 			TypeCode:          "border",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/id",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -139,9 +139,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11112")),
 			TypeID:            plateauapi.NewID("emergency_route", plateauapi.TypeDatasetType),
 			TypeCode:          "emergency_route",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/id",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{

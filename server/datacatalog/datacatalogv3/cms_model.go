@@ -56,6 +56,7 @@ type CityItem struct {
 	Year           string                    `json:"year,omitempty" cms:"year,select"`
 	PRCS           cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
 	OpenDataURL    string                    `json:"open_data_url,omitempty" cms:"open_data_url,text"`
+	SubCityCode    string                    `json:"city_code_sub,omitempty" cms:"city_code_sub,text"`
 	// meatadata
 	PlateauDataStatus   *cms.Tag        `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	RelatedDataStatus   *cms.Tag        `json:"related_data_status,omitempty" cms:"related_data_status,select,metadata"`

@@ -98,9 +98,9 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/cityid",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -148,9 +148,9 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/cityid",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -431,8 +431,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -474,8 +474,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -508,8 +508,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -626,8 +626,8 @@ func TestPlateauDataset_ToDatasets_Veg(t *testing.T) {
 			TypeCode:           "veg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Groups:             []string{"group1", "group2"},
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -740,8 +740,8 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 			TypeID:             plateauapi.NewID("gen", plateauapi.TypeDatasetType),
 			TypeCode:           "gen",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Groups: []string{"group"},
 			Items: []*plateauapi.PlateauDatasetItem{

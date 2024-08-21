@@ -138,31 +138,46 @@ func layerNamesFrom(layer string) []string {
 	})
 }
 
-func newAdmin(id string, stage stage, cmsurl string, extra any) any {
-	a := map[string]any{}
+type Admin struct {
+	CityID string
+	CMSURL string
+	Stage  stage
+	// common
+	SubAreaCode    string
+	CityGMLAssetID string
+	CityGMLURLs    []string
+	MaxLODURLs     []string
+}
 
-	if cmsurl != "" && id != "" {
-		a["cmsUrl"] = cmsurl + id
-	}
-
-	if stage != stageGA {
-		if stage == "" {
-			stage = stageAlpha
+func adminFrom(admin Admin) any {
+	stage := ""
+	if admin.Stage != stageGA {
+		if admin.Stage == "" {
+			stage = string(stageAlpha)
+		} else {
+			stage = string(admin.Stage)
 		}
-		a["stage"] = string(stage)
 	}
 
-	if extra, ok := extra.(map[string]any); ok && extra != nil {
-		for k, v := range extra {
-			a[k] = v
-		}
+	cmsurl := ""
+	if admin.CMSURL != "" && admin.CityID != "" {
+		cmsurl = admin.CMSURL + admin.CityID
 	}
 
-	if len(a) == 0 {
+	res := &plateauapi.Admin{
+		CMSURL:         cmsurl,
+		Stage:          stage,
+		SubAreaCode:    admin.SubAreaCode,
+		CityGMLAssetID: admin.CityGMLAssetID,
+		CityGMLURLs:    admin.CityGMLURLs,
+		MaxLODURLs:     admin.MaxLODURLs,
+	}
+
+	if res.IsEmpty() {
 		return nil
 	}
 
-	return a
+	return res
 }
 
 func assetURLFromFormat(u string, f plateauapi.DatasetFormat) string {

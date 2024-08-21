@@ -213,36 +213,13 @@ func FindSpecMinorByName(specs []PlateauSpec, name string) *PlateauSpecMinor {
 	return nil
 }
 
-func stageFrom(admin any) string {
-	if admin == nil {
-		return ""
-	}
-
-	m, ok := admin.(map[string]any)
-	if !ok || m == nil {
-		return ""
-	}
-
-	stage, ok := m["stage"]
-	if !ok {
-		return ""
-	}
-
-	s, ok := stage.(string)
-	if !ok {
-		return ""
-	}
-
-	return s
-}
-
 func stageFromCityGMLDataset(ds *CityGMLDataset) string {
 	admin := ds.Admin
 	if admin == nil {
 		return ""
 	}
 
-	return stageFrom(admin)
+	return AdminFrom(admin).Stage
 }
 
 func (d PlateauDatasetType) GetYear() int {
@@ -347,4 +324,41 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 		TypeCode:          typeCode,
 		Items:             items,
 	}
+}
+
+type Admin struct {
+	Stage          string   `json:"stage,omitempty"`
+	CMSURL         string   `json:"cmsUrl,omitempty"`
+	SubAreaCode    string   `json:"subAreaCode,omitempty"`
+	CityGMLAssetID string   `json:"-"`
+	CityGMLURLs    []string `json:"-"`
+	MaxLODURLs     []string `json:"-"`
+}
+
+func (a Admin) IsEmpty() bool {
+	return a.Stage == "" &&
+		a.CMSURL == "" &&
+		a.SubAreaCode == "" &&
+		a.CityGMLAssetID == "" &&
+		len(a.CityGMLURLs) == 0 &&
+		len(a.MaxLODURLs) == 0
+}
+
+func AdminFrom(a any) (admin Admin) {
+	if a == nil {
+		return
+	}
+
+	if a, ok := a.(*Admin); ok {
+		if a != nil {
+			return *a
+		}
+		return
+	}
+
+	if admin, ok := a.(Admin); ok {
+		return admin
+	}
+
+	return
 }

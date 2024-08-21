@@ -70,12 +70,12 @@ func TestToCityGMLs(t *testing.T) {
 			CityCode:           "13100",
 			PlateauSpecMinorID: "ps_3.3",
 			FeatureTypes:       []string{"bldg", "ubld"},
-			Admin: map[string]any{
-				"citygmlUrl": []string{
+			Admin: &plateauapi.Admin{
+				CityGMLURLs: []string{
 					"https://example.com/city1.gml",
 					"https://example.com/city2.gml",
 				},
-				"maxlod": []string{
+				MaxLODURLs: []string{
 					"https://example.com/maxlod1.csv",
 					"https://example.com/maxlod2.csv",
 				},
