@@ -32,7 +32,7 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		seeds, w := assetUrlsToRelatedDatasetSeeds(d.Asset, d.Converted, area.City, area.Wards, area.CityItem.YearInt())
 		warning = append(warning, w...)
 		admin := adminFrom(Admin{
-			CityID: area.CityItem.ID,
+			ItemID: i.ID,
 			Stage:  relatedStage(i, area.CityItem),
 			CMSURL: cmsurl,
 		})

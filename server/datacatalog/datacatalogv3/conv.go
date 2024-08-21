@@ -19,14 +19,13 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	res.DatasetTypes = all.FeatureTypes.ToDatasetTypes(res.PlateauSpecs)
 
 	ic := newInternalContext()
+	ic.plateauCMSURL = all.CMSInfo.PlateauItemBaseURL()
+	ic.relatedCMSURL = all.CMSInfo.RelatedItemBaseURL()
+	ic.genericCMSURL = all.CMSInfo.GenericItemBaseURL()
 	ic.regYear = all.Year
 
 	// layer names
 	ic.layerNamesForType = all.FeatureTypes.LayerNames()
-
-	ic.SetURL("plateau", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.PlateauModelID)
-	ic.SetURL("related", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.RelatedModelID)
-	ic.SetURL("generic", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.GenericModelID)
 
 	// pref and city
 	for _, cityItem := range all.City {
@@ -169,16 +168,16 @@ func convertPlateauRaw(
 			continue
 		}
 
-		code := code
+		ftcode := code
 		if ds.FeatureType != "" {
-			code = ds.FeatureType
+			ftcode = ds.FeatureType
 		}
 
-		dt := dts[code]
-		ft := fts[code]
+		dt := dts[ftcode]
+		ft := fts[ftcode]
 
 		if dt == nil || ft == nil {
-			warning = append(warning, fmt.Sprintf("plateau %s: invalid feature type: %s", ds.ID, code))
+			warning = append(warning, fmt.Sprintf("plateau %s: invalid feature type: %s", ds.ID, ftcode))
 			continue
 		}
 
@@ -212,8 +211,16 @@ func convertPlateauRaw(
 			continue
 		}
 
+		cmsurl := ""
+		if ic.plateauCMSURL != nil {
+			cmsurl = ic.plateauCMSURL[ftcode]
+		}
+
 		opts := ToPlateauDatasetsOptions{
-			CMSURL:      ic.plateauCMSURL,
+			ID:          ds.ID,
+			CreatedAt:   ds.CreatedAt,
+			UpdatedAt:   ds.UpdatedAt,
+			CMSURL:      cmsurl,
 			Area:        area,
 			Spec:        spec,
 			DatasetType: pdt,
@@ -221,7 +228,7 @@ func convertPlateauRaw(
 			FeatureType: ft,
 			Year:        ic.regYear,
 		}
-		ds, w := ds.toDatasetsRaw(opts)
+		ds, w := ds.toDatasets(opts)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)

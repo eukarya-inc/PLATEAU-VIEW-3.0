@@ -68,8 +68,12 @@ func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		TypeID:            dt.GetID(),
 		TypeCode:          dt.GetCode(),
 		Groups:            groups,
-		Admin:             adminFrom(Admin{CityID: i.ID, Stage: i.Stage(), CMSURL: cmsurl}),
-		Items:             items,
+		Admin: adminFrom(Admin{
+			ItemID: i.ID,
+			Stage:  i.Stage(),
+			CMSURL: cmsurl,
+		}),
+		Items: items,
 	}
 
 	return []plateauapi.Dataset{&res}, warning

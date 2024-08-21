@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/samber/lo"
@@ -139,9 +140,11 @@ func layerNamesFrom(layer string) []string {
 }
 
 type Admin struct {
-	CityID string
-	CMSURL string
-	Stage  stage
+	ItemID    string
+	CMSURL    string
+	Stage     stage
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	// common
 	SubAreaCode    string
 	CityGMLAssetID string
@@ -160,8 +163,8 @@ func adminFrom(admin Admin) any {
 	}
 
 	cmsurl := ""
-	if admin.CMSURL != "" && admin.CityID != "" {
-		cmsurl = admin.CMSURL + admin.CityID
+	if admin.CMSURL != "" && admin.ItemID != "" {
+		cmsurl = admin.CMSURL + admin.ItemID
 	}
 
 	res := &plateauapi.Admin{
@@ -171,6 +174,14 @@ func adminFrom(admin Admin) any {
 		CityGMLAssetID: admin.CityGMLAssetID,
 		CityGMLURLs:    admin.CityGMLURLs,
 		MaxLODURLs:     admin.MaxLODURLs,
+	}
+
+	if !admin.CreatedAt.IsZero() {
+		res.CreatedAt = &admin.CreatedAt
+	}
+
+	if !admin.UpdatedAt.IsZero() {
+		res.UpdatedAt = &admin.UpdatedAt
 	}
 
 	if res.IsEmpty() {

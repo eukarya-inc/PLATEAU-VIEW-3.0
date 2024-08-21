@@ -21,7 +21,7 @@ require (
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/paulmach/go.geojson v1.5.0
 	github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855
-	github.com/reearth/reearth-cms-api/go v0.0.0-20240305064440-80539dcde579
+	github.com/reearth/reearth-cms-api/go v0.0.0-20240821095141-7d8fed5a3a3b
 	github.com/reearth/reearthx v0.0.0-20240222072751-402668db71a9
 	github.com/samber/lo v1.39.0
 	github.com/sendgrid/sendgrid-go v3.14.0+incompatible

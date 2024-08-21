@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogutil"
 	"github.com/samber/lo"
@@ -327,17 +328,21 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 }
 
 type Admin struct {
-	Stage          string   `json:"stage,omitempty"`
-	CMSURL         string   `json:"cmsUrl,omitempty"`
-	SubAreaCode    string   `json:"subAreaCode,omitempty"`
-	CityGMLAssetID string   `json:"-"`
-	CityGMLURLs    []string `json:"-"`
-	MaxLODURLs     []string `json:"-"`
+	Stage          string     `json:"stage,omitempty"`
+	CMSURL         string     `json:"cmsUrl,omitempty"`
+	CreatedAt      *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
+	SubAreaCode    string     `json:"subAreaCode,omitempty"`
+	CityGMLAssetID string     `json:"cityGmlAssetId,omitempty"`
+	CityGMLURLs    []string   `json:"cityGmlUrls,omitempty"`
+	MaxLODURLs     []string   `json:"maxLodUrls,omitempty"`
 }
 
 func (a Admin) IsEmpty() bool {
 	return a.Stage == "" &&
 		a.CMSURL == "" &&
+		a.CreatedAt == nil &&
+		a.UpdatedAt == nil &&
 		a.SubAreaCode == "" &&
 		a.CityGMLAssetID == "" &&
 		len(a.CityGMLURLs) == 0 &&

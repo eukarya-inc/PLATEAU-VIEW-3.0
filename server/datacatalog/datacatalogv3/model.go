@@ -83,7 +83,34 @@ type CMSInfo struct {
 	CMSURL         string
 	WorkspaceID    string
 	ProjectID      string
-	PlateauModelID string
+	PlateauModelID map[string]string
 	RelatedModelID string
 	GenericModelID string
+}
+
+func (c CMSInfo) PlateauItemBaseURL() map[string]string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.PlateauModelID == nil {
+		return nil
+	}
+
+	res := make(map[string]string)
+	for k, v := range c.PlateauModelID {
+		res[k] = c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + v + "/details/"
+	}
+
+	return res
+}
+
+func (c CMSInfo) RelatedItemBaseURL() string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.RelatedModelID == "" {
+		return ""
+	}
+	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.RelatedModelID + "/details/"
+}
+
+func (c CMSInfo) GenericItemBaseURL() string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.GenericModelID == "" {
+		return ""
+	}
+	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.GenericModelID + "/details/"
 }

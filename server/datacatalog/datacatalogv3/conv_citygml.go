@@ -39,7 +39,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			FeatureTypes:       all.FeatureTypesOf(city.ID),
 			PlateauSpecMinorID: plateauapi.PlateauSpecIDFrom(city.Spec),
 			Admin: adminFrom(Admin{
-				CityID:      city.ID,
+				ItemID:      city.ID,
 				Stage:       city.SDKStage(),
 				CMSURL:      cmsurl,
 				MaxLODURLs:  []string{data.MaxLOD},
