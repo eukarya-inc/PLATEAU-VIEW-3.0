@@ -27,11 +27,6 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 		}
 
 		prefCode := plateauapi.AreaCode(city.CityCode).PrefectureCode()
-		adminExtra := map[string]any{
-			"maxlod":     []string{data.MaxLOD},
-			"citygmlUrl": []string{data.CityGML},
-		}
-
 		d := &plateauapi.CityGMLDataset{
 			ID:                 plateauapi.CityGMLDatasetIDFrom(plateauapi.AreaCode(city.CityCode)),
 			URL:                data.CityGML,
@@ -43,7 +38,13 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			CityCode:           plateauapi.AreaCode(city.CityCode),
 			FeatureTypes:       all.FeatureTypesOf(city.ID),
 			PlateauSpecMinorID: plateauapi.PlateauSpecIDFrom(city.Spec),
-			Admin:              newAdmin(city.ID, city.SDKStage(), cmsurl, adminExtra),
+			Admin: adminFrom(Admin{
+				ItemID:      city.ID,
+				Stage:       city.SDKStage(),
+				CMSURL:      cmsurl,
+				MaxLODURLs:  []string{data.MaxLOD},
+				CityGMLURLs: []string{data.CityGML},
+			}),
 		}
 
 		cityMap[city.ID] = city
@@ -98,14 +99,10 @@ func addCityGML(citygmlURL, maxlodURL, featureType string, citygml *plateauapi.C
 		return
 	}
 
-	baseCitygmlURL := citygml.Admin.(map[string]any)["citygmlUrl"].([]string)
-	baseMaxlod := citygml.Admin.(map[string]any)["maxlod"].([]string)
-
-	baseCitygmlURL = append(baseCitygmlURL, citygmlURL)
-	baseMaxlod = append(baseMaxlod, maxlodURL)
-
-	citygml.Admin.(map[string]any)["citygmlUrl"] = baseCitygmlURL
-	citygml.Admin.(map[string]any)["maxlod"] = baseMaxlod
+	admin := plateauapi.AdminFrom(citygml.Admin)
+	admin.CityGMLURLs = append(admin.CityGMLURLs, citygmlURL)
+	admin.MaxLODURLs = append(admin.MaxLODURLs, maxlodURL)
+	citygml.Admin = &admin
 
 	if featureType != "" && !slices.Contains(citygml.FeatureTypes, featureType) {
 		citygml.FeatureTypes = append(citygml.FeatureTypes, featureType)

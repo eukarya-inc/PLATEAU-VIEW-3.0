@@ -64,23 +64,10 @@ func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		return nil, nil
 	}
 
-	admin, ok := citygml.Admin.(map[string]any)
-	if !ok || admin == nil {
-		return nil, nil
-	}
-
-	maxlodURLs, ok := admin["maxlod"].([]string)
-	if !ok {
-		return nil, nil
-	}
-
-	citygmlURLs, ok := admin["citygmlUrl"].([]string)
-	if !ok {
-		return nil, nil
-	}
+	admin := plateauapi.AdminFrom(citygml.Admin)
 
 	var gurls []*url.URL
-	citygmlAssetID, _ := admin["citygmlAssetId"].(string)
+	citygmlAssetID := admin.CityGMLAssetID
 	if citygmlAssetID != "" {
 		mds := plateaucms.GetAllCMSMetadataFromContext(ctx)
 		md := mds.FindByYear(citygml.RegistrationYear)
@@ -107,7 +94,7 @@ func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		gurls = gmlURLs(asset.File.Paths(), assetBase)
 	}
 
-	data, err := fetchCSVs(ctx, maxlodURLs, citygmlURLs)
+	data, err := fetchCSVs(ctx, admin.MaxLODURLs, admin.CityGMLURLs)
 	if err != nil {
 		return nil, err
 	}

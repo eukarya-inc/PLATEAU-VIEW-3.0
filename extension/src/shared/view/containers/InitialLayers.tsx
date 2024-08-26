@@ -25,7 +25,7 @@ import {
   useInitialPedestrianCoordinates,
   useIsCityProject,
 } from "../../states/environmentVariables";
-import { settingsAtom } from "../../states/setting";
+import { settingForCityIdsAtom, settingsAtom } from "../../states/setting";
 import {
   SHARED_PROJECT_ID_KEY,
   SharedRootLayer,
@@ -109,7 +109,6 @@ export const InitialLayers: FC = () => {
   const [isSharedDataLoaded, setIsSharedDataLoaded] = useState(false);
   const isAppReady = useAtomValue(isAppReadyAtom);
   const [isLayerInitialized, setIsLayerInitialized] = useAtom(isLayerInitializedAtom);
-  const [isCityProject] = useIsCityProject();
 
   useEffect(() => {
     const run = async () => {
@@ -126,6 +125,7 @@ export const InitialLayers: FC = () => {
   }, [getSharedRootLayers, shareId, isAppReady]);
 
   const settings = useAtomValue(settingsAtom);
+  const settingForCityIds = useAtomValue(settingForCityIdsAtom);
   const templates = useAtomValue(templatesAtom);
 
   const theme = useTheme();
@@ -147,15 +147,17 @@ export const InitialLayers: FC = () => {
     }
   }, [isMobile, initialPedestrianCoordinates]);
 
+  const [isCityProject] = useIsCityProject();
+
   const defaultBuildings = useMemo(
     () =>
-      settings
+      (isCityProject ? settings.filter(s => settingForCityIds.includes(s.id)) : settings)
         .filter(s => !!s.general?.initialLayer?.isInitialLayer)
         .map(s => ({
           datasetId: s.datasetId,
           dataId: s.dataId,
         })),
-    [settings],
+    [settings, isCityProject, settingForCityIds],
   );
 
   const isSharedDataset = useMemo(
@@ -179,13 +181,7 @@ export const InitialLayers: FC = () => {
     skip: !!shareId && !isSharedDataLoaded && !sharedRootLayers?.length,
   });
 
-  const initialDatasets = useMemo(
-    // We should filter it before making a request, but the number of initial datasets is just a few, so it's not a problem.
-    () =>
-      query.data?.nodes?.filter(d => isSharedDataset || !isCityProject || d.type.code === "city") ??
-      [],
-    [query, isCityProject, isSharedDataset],
-  );
+  const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
 
   const initialLayers: InitialLayerParams = useMemo(() => {
     if (!sharedRootLayers?.length) return defaultLayerParams;

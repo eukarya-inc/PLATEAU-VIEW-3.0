@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogutil"
 	"github.com/samber/lo"
@@ -213,36 +214,13 @@ func FindSpecMinorByName(specs []PlateauSpec, name string) *PlateauSpecMinor {
 	return nil
 }
 
-func stageFrom(admin any) string {
-	if admin == nil {
-		return ""
-	}
-
-	m, ok := admin.(map[string]any)
-	if !ok || m == nil {
-		return ""
-	}
-
-	stage, ok := m["stage"]
-	if !ok {
-		return ""
-	}
-
-	s, ok := stage.(string)
-	if !ok {
-		return ""
-	}
-
-	return s
-}
-
 func stageFromCityGMLDataset(ds *CityGMLDataset) string {
 	admin := ds.Admin
 	if admin == nil {
 		return ""
 	}
 
-	return stageFrom(admin)
+	return AdminFrom(admin).Stage
 }
 
 func (d PlateauDatasetType) GetYear() int {
@@ -301,6 +279,7 @@ func PlateauDatasetsToGenericDatasets(p []*PlateauDataset, typeID ID, typeCode, 
 }
 
 func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode string, idSuffix string) *GenericDataset {
+	cityCode := p.CityCode.RefString()
 	rawID := strings.TrimPrefix(p.ID.String(), "d_")
 	newID := p.ID
 	if idSuffix != "" {
@@ -326,6 +305,7 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 		})
 	}
 
+	_ = cityCode
 	return &GenericDataset{
 		ID:                newID,
 		Name:              p.Name,
@@ -345,4 +325,45 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 		TypeCode:          typeCode,
 		Items:             items,
 	}
+}
+
+type Admin struct {
+	Stage          string     `json:"stage,omitempty"`
+	CMSURL         string     `json:"cmsUrl,omitempty"`
+	CreatedAt      *time.Time `json:"createdAt,omitempty"`
+	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
+	SubAreaCode    string     `json:"subAreaCode,omitempty"`
+	CityGMLAssetID string     `json:"cityGmlAssetId,omitempty"`
+	CityGMLURLs    []string   `json:"cityGmlUrls,omitempty"`
+	MaxLODURLs     []string   `json:"maxLodUrls,omitempty"`
+}
+
+func (a Admin) IsEmpty() bool {
+	return a.Stage == "" &&
+		a.CMSURL == "" &&
+		a.CreatedAt == nil &&
+		a.UpdatedAt == nil &&
+		a.SubAreaCode == "" &&
+		a.CityGMLAssetID == "" &&
+		len(a.CityGMLURLs) == 0 &&
+		len(a.MaxLODURLs) == 0
+}
+
+func AdminFrom(a any) (admin Admin) {
+	if a == nil {
+		return
+	}
+
+	if a, ok := a.(*Admin); ok {
+		if a != nil {
+			return *a
+		}
+		return
+	}
+
+	if admin, ok := a.(Admin); ok {
+		return admin
+	}
+
+	return
 }

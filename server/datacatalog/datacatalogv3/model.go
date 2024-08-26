@@ -25,15 +25,15 @@ func (d *AllData) FindPlateauFeatureItemByCityID(ft, cityID string) *PlateauFeat
 	return nil
 }
 
-func (d *AllData) FindPlateauFeatureItemsByCityID(cityID string) *PlateauFeatureItem {
+func (d *AllData) FindPlateauFeatureItemsByCityID(cityID string) (res []*PlateauFeatureItem) {
 	for _, ft := range d.FeatureTypes.Plateau {
 		for _, f := range d.Plateau[ft.Code] {
 			if f != nil && f.City == cityID {
-				return f
+				res = append(res, f)
 			}
 		}
 	}
-	return nil
+	return
 }
 
 func (all *AllData) FeatureTypesOf(cityID string) (res []string) {
@@ -83,7 +83,34 @@ type CMSInfo struct {
 	CMSURL         string
 	WorkspaceID    string
 	ProjectID      string
-	PlateauModelID string
+	PlateauModelID map[string]string
 	RelatedModelID string
 	GenericModelID string
+}
+
+func (c CMSInfo) PlateauItemBaseURL() map[string]string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.PlateauModelID == nil {
+		return nil
+	}
+
+	res := make(map[string]string)
+	for k, v := range c.PlateauModelID {
+		res[k] = c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + v + "/details/"
+	}
+
+	return res
+}
+
+func (c CMSInfo) RelatedItemBaseURL() string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.RelatedModelID == "" {
+		return ""
+	}
+	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.RelatedModelID + "/details/"
+}
+
+func (c CMSInfo) GenericItemBaseURL() string {
+	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.GenericModelID == "" {
+		return ""
+	}
+	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.GenericModelID + "/details/"
 }

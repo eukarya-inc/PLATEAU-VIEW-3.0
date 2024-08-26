@@ -16,7 +16,7 @@ type internalContext struct {
 	cities            map[string]*plateauapi.City
 	wards             map[string][]*plateauapi.Ward
 	layerNamesForType map[string]LayerNames
-	plateauCMSURL     string
+	plateauCMSURL     map[string]string
 	relatedCMSURL     string
 	genericCMSURL     string
 }
@@ -73,23 +73,6 @@ func (c *internalContext) AddWards(wards []*plateauapi.Ward) {
 	for _, w := range wards {
 		cityCode := w.CityCode.String()
 		c.wards[cityCode] = append(c.wards[cityCode], w)
-	}
-}
-
-func (c *internalContext) SetURL(t, cmsurl, ws, prj, modelID string) {
-	if cmsurl == "" || ws == "" || prj == "" || modelID == "" {
-		return
-	}
-
-	url := fmt.Sprintf("%s/workspace/%s/project/%s/content/%s/details/", cmsurl, ws, prj, modelID)
-
-	switch t {
-	case "plateau":
-		c.plateauCMSURL = url
-	case "related":
-		c.relatedCMSURL = url
-	case "generic":
-		c.genericCMSURL = url
 	}
 }
 

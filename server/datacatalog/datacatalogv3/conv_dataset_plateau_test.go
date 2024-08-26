@@ -81,8 +81,8 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 		},
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 			Name:               "建築物モデル（hoge区）",
 			Description:        lo.ToPtr("desc"),
@@ -98,9 +98,9 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/cityid",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -132,7 +132,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 				},
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11113_bldg", plateauapi.TypeDataset),
 			Name:               "建築物モデル（foo区）",
 			Description:        lo.ToPtr("desc"),
@@ -148,9 +148,9 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/cityid",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -214,6 +214,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 	layerNames := LayerNames{}
 
 	opts := ToPlateauDatasetsOptions{
+		ID:          "cityid",
 		CMSURL:      "https://example.com/",
 		Area:        area,
 		Spec:        spec,
@@ -256,8 +257,8 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_tnm_AAA", plateauapi.TypeDataset),
 			Name:               "津波浸水想定区域モデル AAA!（bar市）",
 			Subname:            lo.ToPtr("AAA!"),
@@ -291,7 +292,7 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 				},
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_tnm_BBB", plateauapi.TypeDataset),
 			Name:               "津波浸水想定区域モデル BBB!（bar市）",
 			Subname:            lo.ToPtr("BBB!"),
@@ -355,7 +356,6 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 	layerNames := LayerNames{}
 
 	opts := ToPlateauDatasetsOptions{
-		CMSURL:      "https://example.com/cityid",
 		Area:        area,
 		Spec:        spec,
 		DatasetType: dts,
@@ -415,8 +415,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_natl_yabegawa_haegawa", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 矢部川水系八重川（国管理区間）（bar市）",
 			Subname:            lo.ToPtr("矢部川水系八重川（国管理区間）"),
@@ -431,8 +431,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -459,7 +459,7 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 				Admin: plateauapi.RiverAdminNational,
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_natl_yodogawa_ujigawa", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 淀川水系宇治川（国管理区間）（bar市）",
 			Subname:            lo.ToPtr("淀川水系宇治川（国管理区間）"),
@@ -474,8 +474,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -493,7 +493,7 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 				Admin: plateauapi.RiverAdminNational,
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_pref_yodogawa_ujigawa-p1-0001", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 淀川水系宇治川（都道府県管理区間）（bar市）",
 			Subname:            lo.ToPtr("淀川水系宇治川（都道府県管理区間）"),
@@ -508,8 +508,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -611,8 +611,8 @@ func TestPlateauDataset_ToDatasets_Veg(t *testing.T) {
 		Group: "group1/group2",
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_veg", plateauapi.TypeDataset),
 			Name:               "植生モデル（bar市）",
 			Description:        lo.ToPtr("desc"),
@@ -626,8 +626,8 @@ func TestPlateauDataset_ToDatasets_Veg(t *testing.T) {
 			TypeCode:           "veg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Groups:             []string{"group1", "group2"},
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -723,8 +723,8 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_gen_99", plateauapi.TypeDataset),
 			Name:               "汎用都市オブジェクトモデル GEN（bar市）",
 			Subname:            lo.ToPtr("GEN"),
@@ -740,8 +740,8 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 			TypeID:             plateauapi.NewID("gen", plateauapi.TypeDatasetType),
 			TypeCode:           "gen",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Groups: []string{"group"},
 			Items: []*plateauapi.PlateauDatasetItem{

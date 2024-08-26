@@ -63,8 +63,8 @@ func TestRepos(t *testing.T) {
 
 		var adminData any
 		if admin && stage != nil {
-			adminData = map[string]any{
-				"stage": *stage,
+			adminData = &plateauapi.Admin{
+				Stage: *stage,
 			}
 		}
 

@@ -52,9 +52,9 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			CityCode:          lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:            plateauapi.NewID("usecase", plateauapi.TypeDatasetType),
 			TypeCode:          "usecase",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL: "https://example.com/id",
+				Stage:  string(stageAlpha),
 			},
 			Items: []*plateauapi.GenericDatasetItem{
 				{

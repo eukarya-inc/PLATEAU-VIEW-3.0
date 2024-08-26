@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"slices"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogcommon"
@@ -56,6 +57,7 @@ type CityItem struct {
 	Year           string                    `json:"year,omitempty" cms:"year,select"`
 	PRCS           cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
 	OpenDataURL    string                    `json:"open_data_url,omitempty" cms:"open_data_url,text"`
+	SubCityCode    string                    `json:"city_code_sub,omitempty" cms:"city_code_sub,text"`
 	// meatadata
 	PlateauDataStatus   *cms.Tag        `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	RelatedDataStatus   *cms.Tag        `json:"related_data_status,omitempty" cms:"related_data_status,select,metadata"`
@@ -160,6 +162,9 @@ type PlateauFeatureItem struct {
 	// metadata
 	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func (c *PlateauFeatureItem) IsBeta() bool {
@@ -246,6 +251,8 @@ func PlateauFeatureItemFrom(item *cms.Item, code string) (i *PlateauFeatureItem)
 	i = &PlateauFeatureItem{}
 	item.Unmarshal(i)
 
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
 	i.CityGML = valueToAssetURL(item.FieldByKey("citygml").GetValue())
 	i.Data = valueToAssetURLs(item.FieldByKey("data").GetValue())
 	i.MaxLOD = valueToAssetURL(item.FieldByKey("maxlod").GetValue())

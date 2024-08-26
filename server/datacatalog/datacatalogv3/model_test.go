@@ -43,7 +43,6 @@ func TestAllData_FindPlateauFeatureItemByCityID(t *testing.T) {
 }
 
 func TestAllData_FindPlateauFeatureItemsByCityID(t *testing.T) {
-	// Create a sample AllData instance
 	data := &AllData{
 		FeatureTypes: FeatureTypes{
 			Plateau: []FeatureType{
@@ -54,9 +53,10 @@ func TestAllData_FindPlateauFeatureItemsByCityID(t *testing.T) {
 		Plateau: map[string][]*PlateauFeatureItem{
 			"code1": {
 				{City: "city1"},
-				{City: "city2"},
+				{City: "city2", ID: "id1"},
 			},
 			"code2": {
+				{City: "city2", ID: "id2"},
 				{City: "city3"},
 				{City: "city4"},
 			},
@@ -65,13 +65,16 @@ func TestAllData_FindPlateauFeatureItemsByCityID(t *testing.T) {
 
 	// Test case 1: City ID exists in the Plateau feature items
 	cityID := "city2"
-	expected := &PlateauFeatureItem{City: "city2"}
-	result := data.FindPlateauFeatureItemsByCityID(cityID)
-	assert.Equal(t, expected, result)
+	expected := []*PlateauFeatureItem{
+		{City: "city2", ID: "id1"},
+		{City: "city2", ID: "id2"},
+	}
+	results := data.FindPlateauFeatureItemsByCityID(cityID)
+	assert.Equal(t, expected, results)
 
 	// Test case 2: City ID does not exist in the Plateau feature items
 	cityID = "city5"
 	expected = nil
-	result = data.FindPlateauFeatureItemsByCityID(cityID)
-	assert.Equal(t, expected, result)
+	results = data.FindPlateauFeatureItemsByCityID(cityID)
+	assert.Equal(t, expected, results)
 }

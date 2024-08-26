@@ -3,6 +3,7 @@ package datacatalogv3
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/samber/lo"
@@ -46,7 +47,10 @@ func (i *PlateauFeatureItem) toWards(pref *plateauapi.Prefecture, city *plateaua
 }
 
 type ToPlateauDatasetsOptions struct {
+	ID          string
 	CMSURL      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Area        *areaContext
 	Spec        *plateauapi.PlateauSpecMinor
 	DatasetType *plateauapi.PlateauDatasetType
@@ -55,12 +59,7 @@ type ToPlateauDatasetsOptions struct {
 	Year        int
 }
 
-func (i *PlateauFeatureItem) toDatasets(opts ToPlateauDatasetsOptions) ([]plateauapi.Dataset, []string) {
-	res, w := i.toDatasetsRaw(opts)
-	return plateauapi.ToDatasets(res), w
-}
-
-func (i *PlateauFeatureItem) toDatasetsRaw(opts ToPlateauDatasetsOptions) (res []*plateauapi.PlateauDataset, warning []string) {
+func (i *PlateauFeatureItem) toDatasets(opts ToPlateauDatasetsOptions) (res []*plateauapi.PlateauDataset, warning []string) {
 	if !opts.Area.IsValid() {
 		warning = append(warning, fmt.Sprintf("plateau %s: invalid area", i.ID))
 		return
