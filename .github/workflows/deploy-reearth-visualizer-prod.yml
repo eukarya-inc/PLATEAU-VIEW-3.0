@@ -7,7 +7,7 @@ on:
         description: Deploy the specific version of web to specify the run ID. If specified, deployment of the server will be skipped. (Optional)
         required: false
 env:
-  GCS_DEST: gs://plateau-prod-reearth-visualizer-app-bucket
+  GCS_DEST: gs://plateau-prod-reearth-visualizer-static-bucket
   IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-visualizer-api:latest
   IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-visualizer-api:latest
   IMAGE_NAME_HUB: eukarya/plateauview2-reearth-visualizer-api:latest

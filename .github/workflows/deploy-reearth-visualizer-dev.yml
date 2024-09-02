@@ -4,7 +4,7 @@ name: ⭐️ Deploy reearth visualizer dev
 on:
   workflow_dispatch:
 env:
-  GCS_DEST: gs://plateau-dev-reearth-visualizer-app-bucket
+  GCS_DEST: gs://plateau-dev-reearth-visualizer-static-bucket
   # TODO: allow to specify version of reearth
   IMAGE_NAME: reearth/reearth-visualizer-api:nightly
   IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-visualizer-api:latest
