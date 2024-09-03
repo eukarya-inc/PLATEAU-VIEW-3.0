@@ -7,6 +7,7 @@ type ViewClickAwayListenerProps = {
 export const PLATEAUVIEW_TOOLBAR_DOM_ID = "__plateauview_toolbar__";
 export const PLATEAUVIEW_SEARCH_DOM_ID = "__plateauview_search__";
 export const PLATEAUVIEW_INSPECTOR_DOM_ID = "__plateauview_inspector__";
+export const PLATEAUVIEW_NOTIFICATION_DOM_ID = "__plateauview_notification__";
 
 export const ViewClickAwayListener: React.FC<ViewClickAwayListenerProps> = ({
   children,
@@ -43,6 +44,12 @@ export const ViewClickAwayListener: React.FC<ViewClickAwayListenerProps> = ({
   useEffect(() => {
     return document
       .getElementById(PLATEAUVIEW_INSPECTOR_DOM_ID)
+      ?.addEventListener("click", handleClickAway);
+  }, [handleClickAway]);
+
+  useEffect(() => {
+    return document
+      .getElementById(PLATEAUVIEW_NOTIFICATION_DOM_ID)
       ?.addEventListener("click", handleClickAway);
   }, [handleClickAway]);
 
