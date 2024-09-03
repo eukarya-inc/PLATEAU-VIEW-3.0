@@ -6,7 +6,9 @@ import {
   HeatmapAppearances,
   HeatmapLayer as ReEarthHeatmapLayer,
 } from "../../shared/reearth/layers";
-import { LayerVisibilityEvent } from "../../shared/reearth/types";
+import { LayerVisibilityEvent, ReEarthV1 } from "../../shared/reearth/types";
+import { ReEarthV2 } from "../../shared/reearth/types/reearthPluginAPIv2";
+import { isReEarthAPIv2 } from "../../shared/reearth/utils/reearth";
 import { makeComponentAtomWrapper } from "../../shared/view-layers/component";
 import { colorMapFlare, ColorMap, createColorMapFromType } from "../color-maps";
 import {
@@ -205,12 +207,20 @@ const Subdivision: FC<
       };
 
       if (layerIdCurrent) {
-        const eventKey = "layerVisibility";
-        window.reearth?.on?.(eventKey, handleLayerVisibility);
-        return () => {
-          isCancelled = true;
-          window.reearth?.off?.(eventKey, handleLayerVisibility);
-        };
+        if (isReEarthAPIv2(window.reearth)) {
+          window.reearth?.layers?.on("visible", handleLayerVisibility);
+          return () => {
+            isCancelled = true;
+            (window.reearth as ReEarthV2)?.layers?.off("visible", handleLayerVisibility);
+          };
+        } else {
+          const eventKey = "layerVisibility";
+          window.reearth?.on?.(eventKey, handleLayerVisibility);
+          return () => {
+            isCancelled = true;
+            (window.reearth as ReEarthV1)?.off?.(eventKey, handleLayerVisibility);
+          };
+        }
       }
     }, [layerIdCurrent, url, parserOptions]);
 

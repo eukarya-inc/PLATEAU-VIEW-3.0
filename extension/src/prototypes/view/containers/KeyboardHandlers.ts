@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { useConstant, useWindowEvent } from "../../react-helpers";
 
 const directions = ["forward", "backward", "right", "left", "up", "down"] as const;
@@ -62,7 +63,9 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     state.time = currentTime;
 
     const camera = window.reearth?.camera;
-    const globeHeight = window.reearth?.scene?.getGlobeHeight();
+    const globeHeight = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.tools?.getGlobeHeightByCamera()
+      : window.reearth?.scene?.getGlobeHeight();
     if (!camera || !globeHeight) return;
     if (flags.sprint === true) {
       state.speed = Math.min(maximumSpeed * 2, state.speed + acceleration);
@@ -82,12 +85,21 @@ export const KeyboardHandlers = ({ isMoving }: KeyboardHandlersProps) => {
     }
     if (!amount) return;
 
-    if (directionsRef.current["forward"]) camera.moveForward(amount);
-    if (directionsRef.current["backward"]) camera.moveBackward(amount);
-    if (directionsRef.current["left"]) camera.moveLeft(amount);
-    if (directionsRef.current["right"]) camera.moveRight(amount);
-    if (directionsRef.current["up"]) camera.moveUp(amount);
-    if (directionsRef.current["down"]) camera.moveDown(amount);
+    if (isReEarthAPIv2(window.reearth)) {
+      if (directionsRef.current["forward"]) window.reearth?.camera?.move("forward", amount);
+      if (directionsRef.current["backward"]) window.reearth?.camera?.move("backward", amount);
+      if (directionsRef.current["left"]) window.reearth?.camera?.move("left", amount);
+      if (directionsRef.current["right"]) window.reearth?.camera?.move("right", amount);
+      if (directionsRef.current["up"]) window.reearth?.camera?.move("up", amount);
+      if (directionsRef.current["down"]) window.reearth?.camera?.move("down", amount);
+    } else {
+      if (directionsRef.current["forward"]) window.reearth?.camera?.moveForward(amount);
+      if (directionsRef.current["backward"]) window.reearth?.camera?.moveBackward(amount);
+      if (directionsRef.current["left"]) window.reearth?.camera?.moveLeft(amount);
+      if (directionsRef.current["right"]) window.reearth?.camera?.moveRight(amount);
+      if (directionsRef.current["up"]) window.reearth?.camera?.moveUp(amount);
+      if (directionsRef.current["down"]) window.reearth?.camera?.moveDown(amount);
+    }
   }, [state]);
 
   const animationFrameRef = useRef<number>(0);

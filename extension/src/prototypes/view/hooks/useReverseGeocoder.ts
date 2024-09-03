@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 
 import { useCameraAreasLazy } from "../../../shared/graphql/hooks/geo";
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import type { Address } from "../../../shared/states/address";
 
 export type ReverseGeocoderResult = Address<true>;
@@ -37,7 +38,9 @@ export function useReverseGeocoder(): ReverseGeocoderResult | undefined {
   }, [croods, getAreas]);
 
   const updateFovInfo = useCallback(() => {
-    const fovInfo = window.reearth?.camera?.getFovInfo({ withTerrain: true, calcViewSize: true });
+    const fovInfo = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.camera?.getGlobeIntersection({ withTerrain: true, calcViewSize: true })
+      : window.reearth?.camera?.getFovInfo({ withTerrain: true, calcViewSize: true });
     setCroods({
       longitude: fovInfo?.center?.lng,
       latitude: fovInfo?.center?.lat,

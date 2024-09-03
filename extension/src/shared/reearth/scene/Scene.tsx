@@ -3,6 +3,8 @@
 import { FC, useEffect } from "react";
 
 import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
+import { Camera } from "../types/viewer";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 // nx = red
 // ny = green
@@ -105,81 +107,184 @@ export const Scene: FC<SceneProps> = ({
   initialCamera,
 }) => {
   useEffect(() => {
-    window.reearth?.scene?.overrideProperty({
-      default: {
-        camera: initialCamera,
-        bgcolor: backgroundColor,
-        skybox: showSkyBox,
-        allowEnterGround: enterUnderground,
-      },
-      atmosphere: {
-        // Globe
-        enable_lighting: enableGlobeLighting,
-        globeImageBasedLighting: enableGlobeLighting,
-        globeShadowDarkness: globeImageBasedLightingFactor,
-        globeBaseColor,
+    if (isReEarthAPIv2(window?.reearth)) {
+      window.reearth?.viewer?.overrideProperty?.({
+        camera: {
+          camera: initialCamera as Camera,
+          allowEnterGround: enterUnderground,
+        },
+        scene: {
+          backgroundColor,
+          light: {
+            color: lightColor,
+            intensity: debugSphericalHarmonics ? 0.5 : lightIntensity,
+          },
+          shadow: {
+            darkness: globeImageBasedLightingFactor,
+            enabled: shadows?.enabled,
+            shadowMap: {
+              darkness: shadowDarkness,
+              size: shadows?.size,
+              softShadows: shadows?.softShadows,
+              maximumDistance: 10000,
+            },
+          },
+          imageBasedLighting: {
+            enabled: enableGlobeLighting,
+            intensity: imageBasedLightingIntensity,
+            sphericalHarmonicCoefficients: debugSphericalHarmonics
+              ? debugSphericalHarmonicCoefficients
+              : sphericalHarmonicCoefficients,
+          },
+        },
+        sky: {
+          skyBox: {
+            show: showSkyBox,
+          },
+          fog: {
+            enabled: enableFog,
+            density: fogDensity,
+          },
+          sun: {
+            show: showSkyBox && showSun,
+          },
+          moon: {
+            show: showSkyBox && showMoon,
+          },
+          skyAtmosphere: {
+            show: showSkyAtmosphere,
+            saturationShift: skyAtmosphereSaturationShift ?? atmosphereSaturationShift,
+            brightnessShift: skyAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
+          },
+        },
+        globe: {
+          baseColor: globeBaseColor,
+          enableLighting: enableGlobeLighting,
+          atmosphere: {
+            enabled: showGroundAtmosphere,
+            brightnessShift: groundAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
+            saturationShift: groundAtmosphereSaturationShift ?? atmosphereSaturationShift,
+          },
+          depthTestAgainstTerrain: hideUnderground,
+        },
+        tiles: tiles?.map(t => ({
+          id: t.id,
+          type: t.tile_type,
+          url: t.tile_url,
+          opacity: t.tile_opacity,
+          heatmap: t.heatmap,
+          zoomLevel:
+            t.tile_minLevel !== undefined && t.tile_maxLevel !== undefined
+              ? [(t.tile_minLevel, t.tile_maxLevel)]
+              : undefined,
+        })),
+        tileLabels,
+        terrain: {
+          enabled: true,
+          type: "cesiumion",
+          normal: true,
+          ...(terrainHeatmap
+            ? {
+                elevationHeatMap: {
+                  type: "custom",
+                  maxHeight: terrainHeatmapMaxHeight,
+                  minHeight: terrainHeatmapMinHeight,
+                  logarithmic: terrainHeatmapLogarithmic,
+                },
+              }
+            : {}),
+        },
+        render: {
+          antialias,
+          ambientOcclusion,
+        },
+        assets: {
+          cesium: {
+            terrain: {
+              ionAccessToken:
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiODVhMmQ5OS1hOWZjLTQ3YmYtODlmNi1lNWUwY2MwOGUxYTMiLCJpZCI6MTQ5ODk3LCJpYXQiOjE2ODc5MzQ3NDN9.OG0mc3i7ZxGwHQjlMv3TRjiOvKWpzxglxmJRaUIykTY",
+              ionAsset: "2488101",
+            },
+          },
+        },
+      });
+    } else {
+      window.reearth?.scene?.overrideProperty({
+        default: {
+          camera: initialCamera,
+          bgcolor: backgroundColor,
+          skybox: showSkyBox,
+          allowEnterGround: enterUnderground,
+        },
+        atmosphere: {
+          // Globe
+          enable_lighting: enableGlobeLighting,
+          globeImageBasedLighting: enableGlobeLighting,
+          globeShadowDarkness: globeImageBasedLightingFactor,
+          globeBaseColor,
 
-        // Shadow
-        shadowDarkness,
-        shadows: shadows?.enabled,
-        shadowResolution: shadows?.size,
-        softShadow: shadows?.softShadows,
-        shadowMaximumDistance: 10000,
+          // Shadow
+          shadowDarkness,
+          shadows: shadows?.enabled,
+          shadowResolution: shadows?.size,
+          softShadow: shadows?.softShadows,
+          shadowMaximumDistance: 10000,
 
-        // Camera
-        fog: enableFog,
-        fog_density: fogDensity,
+          // Camera
+          fog: enableFog,
+          fog_density: fogDensity,
 
-        // Sun
-        enable_sun: showSkyBox && showSun,
+          // Sun
+          enable_sun: showSkyBox && showSun,
 
-        // Moon
-        enableMoon: showSkyBox && showMoon,
+          // Moon
+          enableMoon: showSkyBox && showMoon,
 
-        // Sky
-        sky_atmosphere: showSkyAtmosphere,
-        skyboxSurturationShift: skyAtmosphereSaturationShift ?? atmosphereSaturationShift,
-        skyboxBrightnessShift: skyAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
+          // Sky
+          sky_atmosphere: showSkyAtmosphere,
+          skyboxSurturationShift: skyAtmosphereSaturationShift ?? atmosphereSaturationShift,
+          skyboxBrightnessShift: skyAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
 
-        // Ground
-        ground_atmosphere: showGroundAtmosphere,
-        surturation_shift: groundAtmosphereSaturationShift ?? atmosphereSaturationShift,
-        brightness_shift: groundAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
-      },
-      ambientOcclusion,
-      light: {
-        lightColor,
-        lightIntensity: debugSphericalHarmonics ? 0.5 : lightIntensity,
+          // Ground
+          ground_atmosphere: showGroundAtmosphere,
+          surturation_shift: groundAtmosphereSaturationShift ?? atmosphereSaturationShift,
+          brightness_shift: groundAtmosphereBrightnessShift ?? atmosphereBrightnessShift,
+        },
+        ambientOcclusion,
+        light: {
+          lightColor,
+          lightIntensity: debugSphericalHarmonics ? 0.5 : lightIntensity,
 
-        // Spherical harmonic
-        sphericalHarmonicCoefficients: debugSphericalHarmonics
-          ? debugSphericalHarmonicCoefficients
-          : sphericalHarmonicCoefficients,
-        imageBasedLightIntensity: imageBasedLightingIntensity,
-      },
-      tiles,
-      tileLabels,
-      terrain: {
-        terrain: true,
-        terrainType: "cesiumion",
-        depthTestAgainstTerrain: hideUnderground,
-        terrainCesiumIonAccessToken:
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiODVhMmQ5OS1hOWZjLTQ3YmYtODlmNi1lNWUwY2MwOGUxYTMiLCJpZCI6MTQ5ODk3LCJpYXQiOjE2ODc5MzQ3NDN9.OG0mc3i7ZxGwHQjlMv3TRjiOvKWpzxglxmJRaUIykTY",
-        terrainCesiumIonAsset: "2488101",
-        terrainNormal: true,
-        ...(terrainHeatmap
-          ? {
-              heatmapType: "custom",
-              heatmapMaxHeight: terrainHeatmapMaxHeight,
-              heatmapMinHeight: terrainHeatmapMinHeight,
-              heatmapLogarithmic: terrainHeatmapLogarithmic,
-            }
-          : {}),
-      },
-      render: {
-        antialias,
-      },
-    });
+          // Spherical harmonic
+          sphericalHarmonicCoefficients: debugSphericalHarmonics
+            ? debugSphericalHarmonicCoefficients
+            : sphericalHarmonicCoefficients,
+          imageBasedLightIntensity: imageBasedLightingIntensity,
+        },
+        tiles,
+        tileLabels,
+        terrain: {
+          terrain: true,
+          terrainType: "cesiumion",
+          depthTestAgainstTerrain: hideUnderground,
+          terrainCesiumIonAccessToken:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJiODVhMmQ5OS1hOWZjLTQ3YmYtODlmNi1lNWUwY2MwOGUxYTMiLCJpZCI6MTQ5ODk3LCJpYXQiOjE2ODc5MzQ3NDN9.OG0mc3i7ZxGwHQjlMv3TRjiOvKWpzxglxmJRaUIykTY",
+          terrainCesiumIonAsset: "2488101",
+          terrainNormal: true,
+          ...(terrainHeatmap
+            ? {
+                heatmapType: "custom",
+                heatmapMaxHeight: terrainHeatmapMaxHeight,
+                heatmapMinHeight: terrainHeatmapMinHeight,
+                heatmapLogarithmic: terrainHeatmapLogarithmic,
+              }
+            : {}),
+        },
+        render: {
+          antialias,
+        },
+      });
+    }
   }, [
     antialias,
     ambientOcclusion,

@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
+import { isReEarthAPIv2 } from "../../reearth/utils/reearth";
 import { usePlateauApiUrl } from "../../states/environmentVariables";
 import FeedBackModal from "../../ui-components/FeedBackForm";
 import FeedbackNotificationModal from "../../ui-components/FeedbackNotificationModal";
@@ -34,7 +35,9 @@ const FeedBack = () => {
     formData.append("name", params.name);
     formData.append("email", params.email);
     formData.append("content", params.comment);
-    const screenshot = window.reearth?.scene?.captureScreen(undefined, 0.01);
+    const screenshot = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.viewport?.capture(undefined, 0.01)
+      : window.reearth?.scene?.captureScreen(undefined, 0.01);
     if (params.attachMapReview && screenshot) {
       const file = dataURItoBlob(screenshot);
       formData.append("file", file);

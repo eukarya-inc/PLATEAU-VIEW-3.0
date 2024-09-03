@@ -12,6 +12,27 @@ export type MouseEvent = {
   delta?: number;
 };
 
+export type LatLngHeight = {
+  lat: number;
+  lng: number;
+  height: number;
+};
+
+export type LayerEditEvent = {
+  layerId: string | undefined;
+  scale?: {
+    width: number;
+    length: number;
+    height: number;
+    location: LatLngHeight;
+  };
+  rotate?: {
+    heading: number;
+    pitch: number;
+    roll: number;
+  };
+};
+
 export type LayerVisibilityEvent = {
   layerId: string | undefined;
 };

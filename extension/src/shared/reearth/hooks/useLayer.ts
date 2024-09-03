@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 
-import { Events, LayerAppearanceTypes, LayerLoadEvent } from "../types";
+import { Events, LayerAppearanceTypes, LayerLoadEvent, ReEarthV1 } from "../types";
 import { Data } from "../types/layer";
+import { ReEarthV2 } from "../types/reearthPluginAPIv2";
+import { isReEarthAPIv2 } from "../utils/reearth";
 
 export type LayerHookOptions = {
   data: Data;
@@ -63,8 +65,13 @@ export const useLayer = ({
         onLoad?.(layerId);
         setLoaded(true);
       };
-      window.reearth?.on?.("layerload", load);
-      return () => window.reearth?.off?.("layerload", load);
+      if (isReEarthAPIv2(window.reearth)) {
+        window.reearth?.layers?.on?.("load", load);
+        return () => (window.reearth as ReEarthV2)?.layers?.off?.("load", load);
+      } else {
+        window.reearth?.on?.("layerload", load);
+        return () => (window.reearth as ReEarthV1)?.off?.("layerload", load);
+      }
     } else {
       setTimeout(() => {
         if (layerId) {

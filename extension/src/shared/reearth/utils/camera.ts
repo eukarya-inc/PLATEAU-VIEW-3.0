@@ -1,5 +1,7 @@
 import { CameraPosition, XYZ } from "../types";
 
+import { isReEarthAPIv2 } from "./reearth";
+
 export const flyToLayerId = (layerId: string) =>
   window.reearth?.camera?.flyTo(layerId, { duration: 0.5 });
 
@@ -8,19 +10,37 @@ export const flyToCamera = (camera: CameraPosition, duration = 0.5) =>
 
 export const flyToBBox = (bbox: [number, number, number, number], duration = 0.5) => {
   const camera = window.reearth?.camera?.position;
-  window.reearth?.camera?.flyToBBox(bbox, {
-    duration,
-    heading: camera?.heading,
-    pitch: camera?.pitch,
-  });
+  isReEarthAPIv2(window.reearth)
+    ? window.reearth?.camera?.flyToBoundingBox(
+        {
+          west: bbox[0],
+          south: bbox[1],
+          east: bbox[2],
+          north: bbox[3],
+        },
+        {
+          duration,
+          heading: camera?.heading,
+          pitch: camera?.pitch,
+        },
+      )
+    : window.reearth?.camera?.flyToBBox(bbox, {
+        duration,
+        heading: camera?.heading,
+        pitch: camera?.pitch,
+      });
 };
 
 export const setView = (camera: CameraPosition) => window.reearth?.camera?.setView(camera);
 
 export const lookAtXYZ = ({ x, y, z, radius }: XYZ) => {
-  const [lng, lat, height] = window.reearth?.scene?.toLngLatHeight(x, y, z, {
-    useGlobeEllipsoid: true,
-  }) ?? [0, 0, 0];
+  const [lng, lat, height] = (isReEarthAPIv2(window.reearth)
+    ? window.reearth?.viewer?.tools?.cartesianToCartographic(x, y, z, {
+        useGlobeEllipsoid: true,
+      })
+    : window.reearth?.scene?.toLngLatHeight(x, y, z, {
+        useGlobeEllipsoid: true,
+      })) ?? [0, 0, 0];
   window.reearth?.camera?.lookAt(
     {
       lng,
@@ -36,7 +56,11 @@ export const lookAtTileFeature = (properties: Record<string, any> | undefined) =
   if (!properties) return;
   const [x, y] = [properties["_x"], properties["_y"]];
   if (x === undefined || y === undefined) return;
-  window.reearth?.scene?.sampleTerrainHeight?.(x, y).then((terrainHeight: number | undefined) => {
+
+  (isReEarthAPIv2(window.reearth)
+    ? window.reearth?.viewer?.tools?.getTerrainHeightAsync?.(x, y)
+    : window.reearth?.scene?.sampleTerrainHeight?.(x, y)
+  )?.then((terrainHeight: number | undefined) => {
     window.reearth?.camera?.lookAt?.(
       {
         lng: x,
