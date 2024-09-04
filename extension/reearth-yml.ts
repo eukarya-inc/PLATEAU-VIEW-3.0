@@ -223,8 +223,8 @@ const yml = {
         },
         defaultLocation: {
           zone: "outer",
-          section: "center",
-          area: "top",
+          section: "right",
+          area: "bottom",
         },
         extended: true,
       },
@@ -232,128 +232,27 @@ const yml = {
         groups: [
           {
             id: "default",
-            title: "PLATEAUデータセット",
+            title: "お知らせ",
             fields: [
               {
-                id: "plateauURL",
-                type: "string",
-                title: "バックエンドURL",
-              },
-              {
-                id: "projectName",
-                type: "string",
-                title: "プロジェクト名",
-              },
-              {
-                id: "plateauAccessToken",
-                type: "string",
-                title: "バックエンドアクセストークン",
-                private: true,
-              },
-              {
-                id: "catalogURL",
-                type: "string",
-                title: "データカタログURL",
-              },
-              {
-                id: "catalogURLForAdmin",
-                type: "string",
-                title: "Admin用データカタログURL",
-              },
-              {
-                id: "geoURL",
-                type: "string",
-                title: "GeoサーバーバックエンドURL",
-              },
-              {
-                id: "gsiTileURL",
-                type: "string",
-                title: "地理院地図タイルURL",
-              },
-              {
-                id: "googleStreetViewAPIKey",
-                type: "string",
-                title: "Google Street View API Key",
-              },
-              {
-                id: "geojsonURL",
-                type: "string",
-                title: "GeoJson URL",
-              },
-              {
-                id: "reearthURL",
-                type: "string",
-                title: "Re:Earthプロジェクトの公開URL",
-              },
-              {
-                id: "arURL",
-                type: "string",
-                title: "AR App URL",
-              },
-              {
-                id: "enableGeoPub",
+                id: "isEnable",
                 type: "bool",
-                title: "G空間情報センターに公開",
+                title: "有効",
               },
               {
-                id: "hideFeedback",
-                type: "bool",
-                title: "フィードバックを非表示",
-              },
-            ],
-          },
-          {
-            id: "optional",
-            title: "任意設定",
-            fields: [
-              {
-                id: "projectNameForCity",
+                id: "content",
                 type: "string",
-                title: "自治体用プロジェクト名",
+                title: "お知らせ内容",
               },
               {
-                id: "plateauAccessTokenForCity",
+                id: "startTime",
                 type: "string",
-                title: "自治体用バックエンドアクセストークン",
-                private: true,
+                title: "開始時刻",
               },
               {
-                id: "cityName",
+                id: "finishTime",
                 type: "string",
-                title: "都市名",
-              },
-              {
-                id: "cityCode",
-                type: "string",
-                title: "行政コード",
-              },
-              {
-                id: "primaryColor",
-                type: "string",
-                ui: "color",
-                title: "プライマリカラー",
-              },
-              {
-                id: "mainLogo",
-                type: "url",
-                ui: "image",
-                title: "メインロゴ",
-              },
-              {
-                id: "menuLogo",
-                type: "url",
-                ui: "image",
-                title: "メニューロゴ",
-              },
-              {
-                id: "siteUrl",
-                type: "string",
-                title: "サイトURL",
-              },
-              {
-                id: "pedestrian",
-                type: "camera",
-                title: "歩行者視点",
+                title: "終了時刻",
               },
             ],
           },
