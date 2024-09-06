@@ -49,3 +49,7 @@ export const useInitialPedestrianCoordinates = () => useAtom(initialPedestrianCo
 
 const plateauGeojsonUrl = atom<string | undefined>(undefined);
 export const usePlateauGeojsonUrl = () => useAtom(plateauGeojsonUrl);
+
+// notification setting
+export const contentAtom = atom<string | undefined>(undefined);
+export const useContent = () => useAtom(contentAtom);
