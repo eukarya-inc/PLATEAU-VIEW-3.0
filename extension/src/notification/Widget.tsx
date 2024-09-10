@@ -46,6 +46,7 @@ const showAtom = atom<boolean>(false);
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const ready = useAtomValue(readyAtom);
   const [visible, setVisible] = useState(true);
+  const [doNotShowAgain, setDoNotShowAgain] = useState<boolean>(false);
 
   const isEnable = useAtomValue(isEnableAtom);
   const content = useAtomValue(contentAtom);
@@ -55,6 +56,13 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const setShow = useSetAtom(showAtom);
 
   useEffect(() => {
+    // Check if the "do not show again" flag is set in localStorage
+    const storedDoNotShowAgain = localStorage.getItem("doNotShowAgain");
+    if (storedDoNotShowAgain === "true") {
+      setVisible(false); // Hide the component if the flag is set
+      return;
+    }
+
     // Get the current time and convert it to UTC
     const nowUTC = new Date().getTime();
 
@@ -84,6 +92,14 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
 
   const handleClose = () => {
     setVisible(false);
+    if (doNotShowAgain) {
+      // Save the "do not show again" flag to localStorage
+      localStorage.setItem("doNotShowAgain", "true");
+    }
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDoNotShowAgain(event.target.checked);
   };
 
   if (!visible) return null; // 非表示の場合、何もレンダリングしない
@@ -127,7 +143,13 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
                 width: "100%",
               }}>
               <FormControlLabel
-                control={<Checkbox name="doNotShowAgain" />}
+                control={
+                  <Checkbox 
+                    name="doNotShowAgain"
+                    checked={doNotShowAgain}
+                    onChange={handleCheckboxChange}
+                  />
+                }
                 label="閉じて今後は表示しない"
               />
             </CardActions>
