@@ -243,16 +243,24 @@ const yml = {
                 id: "content",
                 type: "string",
                 title: "お知らせ内容",
+                ui: "multiline",
+                description:
+                  "This field support MD format, please type in your notification content here",
               },
               {
                 id: "startTime",
                 type: "string",
                 title: "開始時刻",
+                ui: "datetime",
+                description: "Notification Widget will display after this time if the Enable is ON",
               },
               {
                 id: "finishTime",
                 type: "string",
                 title: "終了時刻",
+                ui: "datetime",
+                description:
+                  "Notification Widget will display before this time if the Enable is ON",
               },
             ],
           },
