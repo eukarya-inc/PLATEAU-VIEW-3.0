@@ -10,12 +10,17 @@ import {
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
-import { useAtomValue } from "jotai";
-import { FC, memo, useState } from "react";
+import { atom, useAtomValue, useSetAtom } from "jotai";
+import { FC, memo, useState, useEffect } from "react";
 
 import { readyAtom } from "../prototypes/view/states/app";
 import { WidgetContext } from "../shared/context/WidgetContext";
-import { contentAtom } from "../shared/states/environmentVariables";
+import {
+  isEnableAtom,
+  contentAtom,
+  startTimeAtom,
+  finishTimeAtom,
+} from "../shared/states/environmentVariables";
 import { ViewMarkdownViewer } from "../shared/ui-components/common";
 import { PLATEAUVIEW_NOTIFICATION_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 
@@ -36,11 +41,39 @@ type NotificationWidgetProps<NotificationProps> = {
 };
 
 type Props = NotificationWidgetProps<NotificationProps>;
+const showAtom = atom<boolean>(false);
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const ready = useAtomValue(readyAtom);
   const [visible, setVisible] = useState(true);
+  const isEnable = useAtomValue(isEnableAtom);
   const content = useAtomValue(contentAtom);
+  const startTime = useAtomValue(startTimeAtom);
+  const finishTime = useAtomValue(finishTimeAtom);
+  const show = useAtomValue(showAtom);
+  const setShow = useSetAtom(showAtom);
+  useEffect(() => {
+    if (!startTime || !finishTime) {
+      setShow(false);
+      return;
+    }
+
+    // check time every second
+    const intervalId = setInterval(() => {
+      // convert time to UTC
+      const nowUTC = new Date().getTime();
+      const startTimeUTC = new Date(startTime).getTime();
+      const finishTimeUTC = new Date(finishTime).getTime();
+
+      // check isEnable and time
+      if (isEnable && nowUTC >= startTimeUTC && nowUTC <= finishTimeUTC) {
+        setShow(true);
+      } else {
+        setShow(false);
+      }
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [isEnable, startTime, finishTime, setShow]);
 
   const handleClose = () => {
     setVisible(false);
@@ -55,7 +88,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
         content={widget.property.default.content}
         startTime={widget.property.default.startTime}
         finishTime={widget.property.default.finishTime}>
-        {ready && (
+        {ready && show && (
           <Card
             sx={{
               width: "349px",

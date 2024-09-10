@@ -51,5 +51,14 @@ const plateauGeojsonUrl = atom<string | undefined>(undefined);
 export const usePlateauGeojsonUrl = () => useAtom(plateauGeojsonUrl);
 
 // notification setting
+export const isEnableAtom = atom(false);
+export const useIsEnable = () => useAtom(isEnableAtom);
+
 export const contentAtom = atom<string | undefined>(undefined);
 export const useContent = () => useAtom(contentAtom);
+
+export const startTimeAtom = atom<string | undefined>(undefined);
+export const useStartTime = () => useAtom(startTimeAtom);
+
+export const finishTimeAtom = atom<string | undefined>(undefined);
+export const useFinishTime = () => useAtom(finishTimeAtom);

@@ -30,6 +30,9 @@ import {
   useProjectId,
   useSiteUrl,
   useContent,
+  useIsEnable,
+  useStartTime,
+  useFinishTime,
 } from "../states/environmentVariables";
 
 type Props = {
@@ -252,12 +255,33 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   }, [customTheme, customPrimaryColorState]);
 
   // notification state
+  const [isEnableState, setIsEnableState] = useIsEnable();
+  useEffect(() => {
+    if (isEnable !== undefined && isEnable !== isEnableState) {
+      setIsEnableState(isEnable);
+    }
+  }, [isEnable, isEnableState, setIsEnableState]);
+
   const [contentState, setContentState] = useContent();
   useEffect(() => {
     if (content && (!contentState || contentState !== content)) {
       setContentState(content);
     }
   }, [content, contentState, setContentState]);
+
+  const [startTimeState, setStartTimeState] = useStartTime();
+  useEffect(() => {
+    if (startTime && (!startTimeState || startTimeState !== startTime)) {
+      setStartTimeState(startTime);
+    }
+  }, [startTime, startTimeState, setStartTimeState]);
+
+  const [finishTimeState, setFinishTimeState] = useFinishTime();
+  useEffect(() => {
+    if (finishTime && (!finishTimeState || finishTimeState !== finishTime)) {
+      setFinishTimeState(finishTime);
+    }
+  }, [finishTime, finishTimeState, setFinishTimeState]);
 
   if (!plateauApiUrlState || !geoClient || !catalogClient || !geoApiUrlState || !gsiTileURLState) {
     return null;
