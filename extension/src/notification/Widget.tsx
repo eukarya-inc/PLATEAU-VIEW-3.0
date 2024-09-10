@@ -46,33 +46,40 @@ const showAtom = atom<boolean>(false);
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const ready = useAtomValue(readyAtom);
   const [visible, setVisible] = useState(true);
+
   const isEnable = useAtomValue(isEnableAtom);
   const content = useAtomValue(contentAtom);
   const startTime = useAtomValue(startTimeAtom);
   const finishTime = useAtomValue(finishTimeAtom);
   const show = useAtomValue(showAtom);
   const setShow = useSetAtom(showAtom);
+
   useEffect(() => {
-    if (!startTime || !finishTime) {
-      setShow(false);
-      return;
-    }
+    // Get the current time and convert it to UTC
+    const nowUTC = new Date().getTime();
 
-    // check time every second
-    const intervalId = setInterval(() => {
-      // convert time to UTC
-      const nowUTC = new Date().getTime();
-      const startTimeUTC = new Date(startTime).getTime();
-      const finishTimeUTC = new Date(finishTime).getTime();
+    // Convert `startTime` and `finishTime` to UTC
+    const startTimeUTC = startTime ? new Date(startTime).getTime() : null;
+    const finishTimeUTC = finishTime ? new Date(finishTime).getTime() : null;
 
-      // check isEnable and time
-      if (isEnable && nowUTC >= startTimeUTC && nowUTC <= finishTimeUTC) {
+    // Check display conditions
+    if (isEnable) {
+      if (!startTimeUTC && !finishTimeUTC) {
+        // If neither is set, always show
         setShow(true);
-      } else {
-        setShow(false);
+      } else if (startTimeUTC && !finishTimeUTC) {
+        // If only `startTime` is set, show if current time is after `startTime`
+        setShow(nowUTC >= startTimeUTC);
+      } else if (!startTimeUTC && finishTimeUTC) {
+        // If only `finishTime` is set, show if current time is before `finishTime`
+        setShow(nowUTC <= finishTimeUTC);
+      } else if (startTimeUTC && finishTimeUTC) {
+        // If both are set, show if current time is between `startTime` and `finishTime`
+        setShow(nowUTC >= startTimeUTC && nowUTC <= finishTimeUTC);
       }
-    }, 1000);
-    return () => clearInterval(intervalId);
+    } else {
+      setShow(false); // Always hide if `isEnable` is false
+    }
   }, [isEnable, startTime, finishTime, setShow]);
 
   const handleClose = () => {
