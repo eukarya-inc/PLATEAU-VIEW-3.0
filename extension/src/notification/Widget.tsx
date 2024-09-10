@@ -16,6 +16,7 @@ import { FC, memo, useState } from "react";
 import { readyAtom } from "../prototypes/view/states/app";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { contentAtom } from "../shared/states/environmentVariables";
+import { ViewMarkdownViewer } from "../shared/ui-components/common";
 import { PLATEAUVIEW_NOTIFICATION_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 
 type NotificationProps = {
@@ -75,7 +76,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
             />
             <CardContent>
               <Typography variant="body1" gutterBottom>
-                {content}
+                <ViewMarkdownViewer content={content} />
               </Typography>
             </CardContent>
             <CardActions
