@@ -56,10 +56,11 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const setShow = useSetAtom(showAtom);
 
   useEffect(() => {
-    // Check if the "do not show again" flag is set in localStorage
     const storedDoNotShowAgain = localStorage.getItem("doNotShowAgain");
-    if (storedDoNotShowAgain === "true") {
-      setVisible(false); // Hide the component if the flag is set
+    const storedPreviousContent = localStorage.getItem("previousContent");
+
+    if (storedDoNotShowAgain === "true" && storedPreviousContent === content) {
+      setVisible(false);
       return;
     }
 
@@ -88,13 +89,14 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
     } else {
       setShow(false); // Always hide if `isEnable` is false
     }
-  }, [isEnable, startTime, finishTime, setShow]);
+  }, [isEnable, startTime, finishTime, content, setShow]);
 
   const handleClose = () => {
     setVisible(false);
     if (doNotShowAgain) {
       // Save the "do not show again" flag to localStorage
       localStorage.setItem("doNotShowAgain", "true");
+      localStorage.setItem("previousContent", content || "");
     }
   };
 
