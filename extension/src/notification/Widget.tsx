@@ -43,6 +43,16 @@ type NotificationWidgetProps<NotificationProps> = {
 type Props = NotificationWidgetProps<NotificationProps>;
 const showAtom = atom<boolean>(false);
 
+// Function to generate a hash from content
+async function generateContentId(content: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(content);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return hashHex;
+}
+
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const ready = useAtomValue(readyAtom);
   const [visible, setVisible] = useState(true);
@@ -55,15 +65,27 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const show = useAtomValue(showAtom);
   const setShow = useSetAtom(showAtom);
 
+  const [contentId, setContentId] = useState<string | null>(null);
+
   useEffect(() => {
-    const storedDoNotShowAgain = localStorage.getItem("doNotShowAgain");
-    const storedPreviousContent = localStorage.getItem("previousContent");
+    const updateContentId = async () => {
+      if (content) {
+        const newContentId = await generateContentId(content);
+        setContentId(newContentId);
 
-    if (storedDoNotShowAgain === "true" && storedPreviousContent === content) {
-      setVisible(false);
-      return;
-    }
+        const storedDoNotShowAgain = localStorage.getItem("doNotShowAgain");
+        const storedContentID = localStorage.getItem("contentId");
 
+        if (storedDoNotShowAgain === "true" && storedContentID === newContentId) {
+          setVisible(false);
+          return;
+        }
+      }
+    };
+    updateContentId();
+  }, [content]);
+
+  useEffect(() => {
     // Get the current time and convert it to UTC
     const nowUTC = new Date().getTime();
 
@@ -89,14 +111,14 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
     } else {
       setShow(false); // Always hide if `isEnable` is false
     }
-  }, [isEnable, startTime, finishTime, content, setShow]);
+  }, [isEnable, startTime, finishTime, contentId, setShow]);
 
   const handleClose = () => {
     setVisible(false);
     if (doNotShowAgain) {
       // Save the "do not show again" flag to localStorage
       localStorage.setItem("doNotShowAgain", "true");
-      localStorage.setItem("previousContent", content || "");
+      localStorage.setItem("contentId", contentId || "");
     }
   };
 
