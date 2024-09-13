@@ -37,7 +37,8 @@ type NotificationWidgetProps<NotificationProps> = {
 type Props = NotificationWidgetProps<NotificationProps>;
 
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
-  const { ready, visible, show, content, handleClose, handleCheckboxChange, doNotShowAgain } = useNotificationLogic();
+  const { ready, visible, show, content, handleClose, handleCheckboxChange, doNotShowAgain } =
+    useNotificationLogic();
 
   if (!visible) return null;
 
@@ -52,9 +53,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
           <Card
             sx={{
               width: "349px",
-              backgroundColor: "#f9f9f9", // 背景色を変更
-              border: "1px solid #ccc", // ボーダーを追加
-              borderRadius: "8px", // 角を丸くする
+              borderRadius: "6px",
             }}>
             <CardHeader
               avatar={<InfoOutlinedIcon />}
@@ -64,8 +63,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
                 </IconButton>
               }
               title="お知らせ"
-              titleTypographyProps={{ variant: "h6" }}
-              sx={{ borderBottom: "1px solid #ddd" }}
+              titleTypographyProps={{ variant: "h6", fontWeight: 400 }}
+              sx={{ borderBottom: "1px solid #EAEAEA" }}
             />
             <CardContent>
               <Typography variant="body1" gutterBottom>
@@ -75,9 +74,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
             <CardActions
               sx={{
                 backgroundColor: "#EDEDED",
-                borderRadius: "4px",
-                padding: "4px",
-                width: "100%",
+                padding: "0 0 0 10px",
+                height: "40px",
               }}>
               <FormControlLabel
                 control={
@@ -85,8 +83,15 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
                     name="doNotShowAgain"
                     checked={doNotShowAgain}
                     onChange={handleCheckboxChange}
+                    size={"medium"}
                   />
                 }
+                componentsProps={{
+                  typography: { variant: "body2" },
+                }}
+                sx={{
+                  padding: 0,
+                }}
                 label="閉じて今後は表示しない"
               />
             </CardActions>
