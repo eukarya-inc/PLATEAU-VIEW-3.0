@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  Typography,
   IconButton,
   Checkbox,
   FormControlLabel,
@@ -67,9 +66,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
               sx={{ borderBottom: "1px solid #EAEAEA" }}
             />
             <CardContent>
-              <Typography variant="body1" gutterBottom>
-                <ViewMarkdownViewer content={content} />
-              </Typography>
+              <ViewMarkdownViewer content={content} />
             </CardContent>
             <CardActions
               sx={{
