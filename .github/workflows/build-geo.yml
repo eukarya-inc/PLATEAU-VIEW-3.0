@@ -30,7 +30,7 @@ jobs:
       - name: Save docker image
         run: docker save ${{ env.IMAGE_NAME }} | gzip > plateauview-geo.tar.gz
       - name: Save image to artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: plateauview-geo
           path: plateauview-geo.tar.gz
