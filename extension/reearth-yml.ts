@@ -222,7 +222,7 @@ const yml = {
           horizontally: true,
         },
         defaultLocation: {
-          zone: "outer",
+          zone: "inner",
           section: "right",
           area: "bottom",
         },

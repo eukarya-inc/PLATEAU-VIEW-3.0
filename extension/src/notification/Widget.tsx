@@ -8,6 +8,8 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { FC, memo } from "react";
 
@@ -38,6 +40,9 @@ type Props = NotificationWidgetProps<NotificationProps>;
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const { ready, visible, show, content, handleClose, handleCheckboxChange, doNotShowAgain } =
     useNotificationLogic();
+    // Need to import useTheme and useMediaQuery from "@mui/material"
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('mobile'));
 
   if (!visible) return null;
 
@@ -51,7 +56,10 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
         {ready && show && (
           <Card
             sx={{
-              width: "349px",
+              position: "absolute",
+              right: 0,
+              bottom: 0,
+              width: isMobile ? "calc(100vw - 16px)" : "349px",
               borderRadius: "6px",
             }}>
             <CardHeader
