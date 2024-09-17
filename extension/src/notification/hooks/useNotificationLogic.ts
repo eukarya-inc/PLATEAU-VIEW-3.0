@@ -38,8 +38,8 @@ export const useNotificationLogic = () => {
         const newContentId = await generateContentId(content);
         setContentId(newContentId);
 
-        const storedDoNotShowAgain = localStorage.getItem("doNotShowAgain");
-        const storedContentID = localStorage.getItem("contentId");
+        const storedDoNotShowAgain = localStorage.getItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_DO_NOT_SHOW_AGAIN");
+        const storedContentID = localStorage.getItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_CONTENT_ID");
 
         if (storedDoNotShowAgain === "true" && storedContentID === newContentId) {
           setVisible(false);
@@ -82,8 +82,8 @@ export const useNotificationLogic = () => {
     setVisible(false);
     if (doNotShowAgain) {
       // Save the "do not show again" flag and contentID to localStorage
-      localStorage.setItem("doNotShowAgain", "true");
-      localStorage.setItem("contentId", contentId || "");
+      localStorage.setItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_DO_NOT_SHOW_AGAIN", "true");
+      localStorage.setItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_CONTENT_ID", contentId || "");
     }
   };
 
