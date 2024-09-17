@@ -35,6 +35,8 @@ export type TileLabels = {
   id: string;
   labelType: "japan_gsi_optimal_bvmap"; // | "other_map"
   style: Record<string, any>; // Function isn't allowed
+  near?: number;
+  far?: number;
 };
 
 export type AmbientOcclusion = {
