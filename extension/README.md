@@ -19,6 +19,7 @@ Then, set the `localhost` to env file in `reearth` repository.
 - search ... Main logic for search widget
 - inspector ... Main logic for inspector widget
 - streetView ... Main logic for street view widget
+- notification ... Main logic for notification widget
 - prototypes ... Modules which are ported from [takram-design-engineering/plateau-view](https://github.com/takram-design-engineering/plateau-view).
 - shared/ ... Shared logic between widgets
     - constants/ ... Constant variables definition

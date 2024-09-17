@@ -213,6 +213,60 @@ const yml = {
         },
       },
     },
+    {
+      id: "notification-widget",
+      type: "widget",
+      name: "Notification",
+      widgetLayout: {
+        extendable: {
+          horizontally: true,
+        },
+        defaultLocation: {
+          zone: "inner",
+          section: "right",
+          area: "bottom",
+        },
+        extended: true,
+      },
+      schema: {
+        groups: [
+          {
+            id: "default",
+            title: "お知らせ",
+            fields: [
+              {
+                id: "isEnable",
+                type: "bool",
+                title: "有効",
+              },
+              {
+                id: "content",
+                type: "string",
+                title: "お知らせ内容",
+                ui: "multiline",
+                description:
+                  "This field support MD format, please type in your notification content here",
+              },
+              {
+                id: "startTime",
+                type: "string",
+                title: "開始時刻",
+                ui: "datetime",
+                description: "Notification Widget will display after this time if the Enable is ON",
+              },
+              {
+                id: "finishTime",
+                type: "string",
+                title: "終了時刻",
+                ui: "datetime",
+                description:
+                  "Notification Widget will display before this time if the Enable is ON",
+              },
+            ],
+          },
+        ],
+      },
+    },
   ],
 };
 
