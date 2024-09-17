@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { FC, memo } from "react";
 
+import { MOBILE_WIDTH } from "../prototypes/view/constants/ui";
 import { WidgetContext } from "../shared/context/WidgetContext";
 import { ViewMarkdownViewer } from "../shared/ui-components/common";
 import { PLATEAUVIEW_NOTIFICATION_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
@@ -40,9 +41,9 @@ type Props = NotificationWidgetProps<NotificationProps>;
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget }) {
   const { ready, visible, show, content, handleClose, handleCheckboxChange, doNotShowAgain } =
     useNotificationLogic();
-    // Need to import useTheme and useMediaQuery from "@mui/material"
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('mobile'));
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down(MOBILE_WIDTH));
 
   if (!visible) return null;
 
