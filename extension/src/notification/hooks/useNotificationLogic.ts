@@ -9,6 +9,9 @@ import {
   finishTimeAtom,
 } from "../../shared/states/environmentVariables";
 
+const STORAGE_KEY_DO_NOT_SHOW_AGAIN = "PLATEAUVIEW3_STORAGE_NOTIFICATION_DO_NOT_SHOW_AGAIN";
+const STORAGE_KEY_CONTENT_ID = "PLATEAUVIEW3_STORAGE_NOTIFICATION_CONTENT_ID";
+
 // Function to generate a hash from content
 async function generateContentId(content: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -38,8 +41,8 @@ export const useNotificationLogic = () => {
         const newContentId = await generateContentId(content);
         setContentId(newContentId);
 
-        const storedDoNotShowAgain = localStorage.getItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_DO_NOT_SHOW_AGAIN");
-        const storedContentID = localStorage.getItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_CONTENT_ID");
+        const storedDoNotShowAgain = localStorage.getItem(STORAGE_KEY_DO_NOT_SHOW_AGAIN);
+        const storedContentID = localStorage.getItem(STORAGE_KEY_CONTENT_ID);
 
         if (storedDoNotShowAgain === "true" && storedContentID === newContentId) {
           setVisible(false);
@@ -82,8 +85,8 @@ export const useNotificationLogic = () => {
     setVisible(false);
     if (doNotShowAgain) {
       // Save the "do not show again" flag and contentID to localStorage
-      localStorage.setItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_DO_NOT_SHOW_AGAIN", "true");
-      localStorage.setItem("PLATEAUVIEW3_STORAGE_NOTIFICATION_CONTENT_ID", contentId || "");
+      localStorage.setItem(STORAGE_KEY_DO_NOT_SHOW_AGAIN, "true");
+      localStorage.setItem(STORAGE_KEY_CONTENT_ID, contentId || "");
     }
   };
 
