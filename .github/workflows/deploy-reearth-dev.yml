@@ -55,7 +55,7 @@ jobs:
           rm reearth-web.tar.gz
           tar -zcvf reearth-web.tar.gz reearth-web
       - name: Save as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: reearth-web
           path: reearth-web.tar.gz
