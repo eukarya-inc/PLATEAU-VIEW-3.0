@@ -1,6 +1,8 @@
 import { atom, useAtomValue } from "jotai";
-import { type FC, useMemo } from "react";
+import { type FC, useMemo, useState } from "react";
 
+import { useCamera } from "../../../shared/reearth/hooks/useCamera.ts";
+import { useReEarthEvent } from "../../../shared/reearth/hooks/useReEarthEvent.ts";
 import { ShadowProps } from "../../../shared/reearth/scene";
 import { AmbientOcclusion } from "../../../shared/reearth/types";
 import type { AnnotationType } from "../../../shared/reearth/types/getAnnotationType";
@@ -79,6 +81,25 @@ const STYLE_OVERRIDES: Record<ColorMode, any> = {
   },
 };
 
+const useTileLabel = () => {
+  const [far, setFar] = useState(Infinity);
+  const { getCameraPosition } = useCamera();
+
+  const observeCameraMove = () => {
+    const camera = getCameraPosition();
+    const far = Math.abs(camera?.pitch ?? 0);
+    if (far < 0.3) {
+      setFar(3000);
+    } else {
+      setFar(Infinity);
+    }
+  };
+
+  useReEarthEvent("cameramove", observeCameraMove);
+
+  return far;
+};
+
 export const Environments: FC = () => {
   const environmentType = useAtomValue(shareableEnvironmentTypeAtom);
   const colorMode = useAtomValue(shareableColorMode);
@@ -90,6 +111,7 @@ export const Environments: FC = () => {
   const antialias = graphicsQuality === "ultra" ? "extreme" : graphicsQuality;
   const initialCamera = useAtomValue(sharedInitialCameraAtom);
   const undergroundSettings = useAtomValue(shareableUndergroundAtom);
+  const tileLabelFar = useTileLabel();
 
   const tileLabels: TileLabels[] = useMemo(() => {
     const styles = Object.entries(showMapLabel).reduce((acc, [key, isVisible]) => {
@@ -104,9 +126,11 @@ export const Environments: FC = () => {
         id: `label`,
         labelType: "japan_gsi_optimal_bvmap",
         style: styles,
+        near: 0,
+        far: tileLabelFar,
       },
     ] as TileLabels[];
-  }, [showMapLabel, colorMode]);
+  }, [showMapLabel, colorMode, tileLabelFar]);
 
   switch (environmentType) {
     case "map":
