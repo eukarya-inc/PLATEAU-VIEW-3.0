@@ -171,10 +171,16 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 							}
 						}
 					}
-					cityGMLFiles.Files[ft] = filtered
+					if len(filtered) == 0 {
+						delete(cityGMLFiles.Files, ft)
+					} else {
+						cityGMLFiles.Files[ft] = filtered
+					}
 				}
 			}
-			response.Cities = append(response.Cities, cityGMLFiles)
+			if len(cityGMLFiles.Files) > 0 {
+				response.Cities = append(response.Cities, cityGMLFiles)
+			}
 		}
 		if len(response.Cities) == 0 {
 			return echo.NewHTTPError(http.StatusNotFound, "not found")
