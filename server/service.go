@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
@@ -35,6 +36,7 @@ var services = [](func(*Config) (*Service, error)){
 	GovPolygon,
 	Tiles,
 	Embed,
+	CityGML,
 }
 
 func Services(conf *Config) (srv []*Service, _ error) {
@@ -188,6 +190,15 @@ func Embed(conf *Config) (*Service, error) {
 			_ = putil.DeliverFile(g, "PlateauView3.js", "text/javascript")
 			_ = putil.DeliverFile(g, "reearth.yml", "application/yaml")
 			return nil
+		},
+	}, nil
+}
+
+func CityGML(conf *Config) (*Service, error) {
+	return &Service{
+		Name: "citygml",
+		Echo: func(g *echo.Group) error {
+			return citygml.Echo(conf.CityGML(), g.Group("/citygml"))
 		},
 	}, nil
 }

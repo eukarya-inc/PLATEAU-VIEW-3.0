@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
@@ -82,6 +83,11 @@ type Config struct {
 	DataCatalog_GeocodingAppID         string   `pp:",omitempty"`
 	DataCatalog_DiskCache              bool     `pp:",omitempty"`
 	GCParcent                          int      `pp:",omitempty"`
+	CityGML_Domain                     string   `pp:",omitempty"`
+	CityGML_Bucket                     string   `pp:",omitempty"`
+	CityGML_CityGMLPackerImage         string   `pp:",omitempty"`
+	CityGML_WorkerRegion               string   `pp:",omitempty"`
+	CityGML_WorkerProject              string   `pp:",omitempty"`
 }
 
 func NewConfig() (*Config, error) {
@@ -215,5 +221,15 @@ func (c *Config) plateauCMS() plateaucms.Config {
 		// compat
 		CMSMainProject: c.CMS_SystemProject,
 		AdminToken:     c.Sidebar_Token,
+	}
+}
+
+func (c *Config) CityGML() citygml.Config {
+	return citygml.Config{
+		Domain:             c.CityGML_Domain,
+		Bucket:             c.CityGML_Bucket,
+		CityGMLPackerImage: c.CityGML_CityGMLPackerImage,
+		WorkerRegion:       c.CityGML_WorkerRegion,
+		WorkerProject:      c.CityGML_WorkerProject,
 	}
 }
