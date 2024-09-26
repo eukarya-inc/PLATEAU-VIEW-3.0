@@ -144,7 +144,7 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 			p.conf.CityGMLPackerImage,
 		},
 		Steps: []*cloudbuild.BuildStep{
-			{Args: append([]string{"-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
+			{Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
 		},
 	}
 	var err error

@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/worker/citygmlpacker"
 	"github.com/eukarya-inc/reearth-plateauview/worker/extractmaxlod"
 	"github.com/eukarya-inc/reearth-plateauview/worker/preparegspatialjp"
 	"github.com/samber/lo"
@@ -18,6 +19,8 @@ func main() {
 		prepareGspatialjp(config)
 	case "extract-maxlod":
 		extractMaxLOD(config)
+	case "citygml-packer":
+		cityGMLPacker(config)
 	}
 }
 
@@ -76,6 +79,20 @@ func extractMaxLOD(conf *Config) {
 	}
 
 	if err := extractmaxlod.Run(config); err != nil {
+		panic(err)
+	}
+}
+
+func cityGMLPacker(conf *Config) {
+	var config citygmlpacker.Config
+	flag := flag.NewFlagSet("citygml-packer", flag.ExitOnError)
+	flag.StringVar(&config.Dest, "dest", "", "destination url (gs://...)")
+	flag.StringVar(&config.Domain, "domain", "", "allowed domain")
+	if err := flag.Parse(os.Args[2:]); err != nil {
+		panic(err)
+	}
+	config.URLs = flag.Args()
+	if err := citygmlpacker.Run(config); err != nil {
 		panic(err)
 	}
 }

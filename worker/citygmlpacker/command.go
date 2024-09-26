@@ -1,10 +1,9 @@
-package main
+package citygmlpacker
 
 import (
 	"archive/zip"
 	"context"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,25 +19,11 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
-func main() {
-	dest := flag.String("dest", "", "destination url (gs://...)")
-	domain := flag.String("domain", "", "allowed domain")
-	flag.Parse()
-	req := citygml.PackAsyncRequest{
-		Dest:   *dest,
-		Domain: *domain,
-		URLs:   flag.Args(),
-	}
-	if err := run(req); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func run(req citygml.PackAsyncRequest) (err error) {
+func Run(conf Config) (err error) {
 	ctx := context.Background()
-	destURL, err := url.Parse(req.Dest)
+	destURL, err := url.Parse(conf.Dest)
 	if err != nil {
-		return fmt.Errorf("invalid destination bucket(%s): %w", req.Dest, err)
+		return fmt.Errorf("invalid destination bucket(%s): %w", conf.Dest, err)
 	}
 	gcs, err := storage.NewClient(ctx)
 	if err != nil {
@@ -78,7 +63,7 @@ func run(req citygml.PackAsyncRequest) (err error) {
 	w := obj.NewWriter(ctx)
 	w.ObjectAttrs.Metadata = citygml.Status(citygml.PackStatusSucceeded)
 	defer w.Close()
-	if err := pack(ctx, w, req.Domain, req.URLs); err != nil {
+	if err := pack(ctx, w, conf.Domain, conf.URLs); err != nil {
 		return fmt.Errorf("pack: %w", err)
 	}
 	if err := w.Close(); err != nil {
