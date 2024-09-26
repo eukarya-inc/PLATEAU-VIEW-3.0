@@ -64,7 +64,7 @@ func run(req citygml.PackAsyncRequest) (err error) {
 		log.Printf("SKIPPED: already exists (status=%s)", status)
 		return nil
 	}
-	attrs, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
+	_, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
 		Update(ctx, storage.ObjectAttrsToUpdate{Metadata: citygml.Status(citygml.PackStatusProcessing)})
 	if err != nil {
 		var gErr *googleapi.Error
