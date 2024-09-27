@@ -157,7 +157,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 				return err
 			}
 			if cityGMLFiles == nil {
-				return echo.NewHTTPError(http.StatusNotFound, "not found")
+				continue
 			}
 			if len(bounds) > 0 {
 				for ft, cityGmlFiles := range cityGMLFiles.Files {
@@ -171,12 +171,20 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 							}
 						}
 					}
-					cityGMLFiles.Files[ft] = filtered
+					if len(filtered) == 0 {
+						delete(cityGMLFiles.Files, ft)
+					} else {
+						cityGMLFiles.Files[ft] = filtered
+					}
 				}
 			}
-			response.Cities = append(response.Cities, cityGMLFiles)
+			if len(cityGMLFiles.Files) > 0 {
+				response.Cities = append(response.Cities, cityGMLFiles)
+			}
 		}
-
+		if len(response.Cities) == 0 {
+			return echo.NewHTTPError(http.StatusNotFound, "not found")
+		}
 		return c.JSON(http.StatusOK, response)
 	}
 }
