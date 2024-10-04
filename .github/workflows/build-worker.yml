@@ -17,7 +17,7 @@ jobs:
       - name: Build and load docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./worker
+          file: worker/Dockerfile
           platforms: linux/amd64
           load: true
           tags: ${{ env.IMAGE_NAME }}

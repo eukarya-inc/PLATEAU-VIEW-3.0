@@ -6,12 +6,9 @@ RUN apk add --update --no-cache git ca-certificates build-base fuse
 RUN CGO_ENABLED=0 go install github.com/googlecloudplatform/gcsfuse@v1.4.1
 
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-
 COPY . /app/
 
-RUN CGO_ENABLED=0 go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath
+RUN CGO_ENABLED=0 go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath -o plateauview-worker ./worker
 
 FROM scratch
 
