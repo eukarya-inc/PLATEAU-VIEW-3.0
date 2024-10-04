@@ -82,7 +82,10 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
         geoUrl={widget.property.default.geoURL}
         gsiTileURL={widget.property.default.gsiTileURL}
-        googleStreetViewAPIKey={widget.property.default.googleStreetViewAPIKey}
+        googleStreetViewAPIKey={
+          widget.property.default.googleStreetViewAPIKey ||
+          import.meta.env.PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN
+        }
         geojsonURL={widget.property.default.geojsonURL}
         hideFeedback={widget.property.default.hideFeedback}
         projectIdForCity={widget.property.optional?.projectNameForCity}
