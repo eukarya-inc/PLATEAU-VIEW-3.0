@@ -1,4 +1,4 @@
-name: build-server
+name: build-worker
 on:
   workflow_call:
 jobs:

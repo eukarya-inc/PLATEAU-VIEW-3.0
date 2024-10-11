@@ -225,11 +225,23 @@ func (c *Config) plateauCMS() plateaucms.Config {
 }
 
 func (c *Config) CityGML() citygml.Config {
+	workRegion := c.CityGML_WorkerRegion
+	if workRegion == "" {
+		workRegion = c.GOOGLE_CLOUD_REGION
+	}
+	workProject := c.CityGML_WorkerProject
+	if workProject == "" {
+		workProject = c.GOOGLE_CLOUD_PROJECT
+	}
+	citygmlPackerImage := c.CityGML_CityGMLPackerImage
+	if citygmlPackerImage == "" {
+		citygmlPackerImage = "ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest"
+	}
 	return citygml.Config{
 		Domain:             c.CityGML_Domain,
 		Bucket:             c.CityGML_Bucket,
-		CityGMLPackerImage: c.CityGML_CityGMLPackerImage,
-		WorkerRegion:       c.CityGML_WorkerRegion,
-		WorkerProject:      c.CityGML_WorkerProject,
+		CityGMLPackerImage: citygmlPackerImage,
+		WorkerRegion:       workRegion,
+		WorkerProject:      workProject,
 	}
 }
