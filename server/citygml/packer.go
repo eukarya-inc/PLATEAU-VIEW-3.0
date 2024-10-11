@@ -145,11 +145,8 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 	build := &cloudbuild.Build{
 		Timeout:  "86400s", // 1 day
 		QueueTtl: "86400s", // 1 day
-		Images: []string{
-			p.conf.CityGMLPackerImage,
-		},
 		Steps: []*cloudbuild.BuildStep{
-			{Name: "citygml-pack", Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
+			{Name: p.conf.CityGMLPackerImage, Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
 		},
 	}
 	var err error
