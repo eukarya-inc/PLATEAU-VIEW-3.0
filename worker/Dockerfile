@@ -14,7 +14,7 @@ FROM scratch
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /go/bin/gcsfuse /usr/bin/
-COPY --from=build /app/worker /app/plateauview-worker
+COPY --from=build /app/plateauview-worker /app/plateauview-worker
 
 WORKDIR /app
 
