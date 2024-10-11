@@ -85,6 +85,11 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 			"error":  err.Error(),
 		})
 	}
+	if len(req.URLs) == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]any{
+			"reason": "no urls provided",
+		})
+	}
 	for _, citygmlURL := range req.URLs {
 		u, err := url.Parse(citygmlURL)
 		if err != nil {
@@ -144,7 +149,7 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 			p.conf.CityGMLPackerImage,
 		},
 		Steps: []*cloudbuild.BuildStep{
-			{Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
+			{Name: "citygml-pack", Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
 		},
 	}
 	var err error
