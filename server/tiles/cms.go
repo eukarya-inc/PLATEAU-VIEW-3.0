@@ -51,7 +51,7 @@ func initTiles(ctx context.Context, pcms *plateaucms.CMS) (map[string]map[string
 
 func getTiles(ctx context.Context, c cms.Interface, prj string) (map[string]map[string]string, error) {
 	items, err := c.GetItemsByKeyInParallel(ctx, prj, modelKey, true, 0)
-	if err != nil {
+	if err != nil || items == nil {
 		return nil, nil
 	}
 
