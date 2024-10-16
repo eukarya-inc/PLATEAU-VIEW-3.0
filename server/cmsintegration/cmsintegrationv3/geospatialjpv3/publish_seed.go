@@ -105,6 +105,9 @@ func getSeed(ctx context.Context, c cms.Interface, cityItem *CityItem, org strin
 	seed.PlateauDescription = replaceSize(indexItem.DescPlateau, seed.PlateauSize)
 	seed.RelatedDescription = replaceSize(indexItem.DescRelated, seed.RelatedSize)
 	seed.Area = indexItem.Region
+	if seed.Area == "" && cityItem != nil && cityItem.Prefecture != "" && cityItem.CityName != "" {
+		seed.Area = fmt.Sprintf("%s_%s", cityItem.Prefecture, cityItem.CityName)
+	}
 	seed.Author = indexItem.Author
 	seed.AuthorEmail = indexItem.AuthorEmail
 	seed.Maintainer = indexItem.Maintainer
