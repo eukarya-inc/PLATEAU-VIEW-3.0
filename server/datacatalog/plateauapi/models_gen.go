@@ -690,9 +690,9 @@ type PlateauDatasetItem struct {
 	LodEx *int `json:"lodEx,omitempty"`
 	// データセットのアイテムのテクスチャの種類。
 	Texture *Texture `json:"texture,omitempty"`
-	// 浸水規模。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在します。
+	// 浸水規模。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
 	FloodingScale *FloodingScale `json:"floodingScale,omitempty"`
-	// 浸水規模の枝番。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在することがあります。
+	// 浸水規模の枝番。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
 	FloodingScaleSuffix *string `json:"floodingScaleSuffix,omitempty"`
 }
 
@@ -748,7 +748,7 @@ type PlateauDatasetType struct {
 	PlateauSpec *PlateauSpec `json:"plateauSpec,omitempty"`
 	// データセットの種類が属するPLATEAU都市モデルの仕様の公開年度（西暦）。
 	Year int `json:"year"`
-	// 洪水・高潮・津波・内水浸水想定区域モデルを表す種類かどうか。河川などの情報が利用可能です。
+	// 災害リスク（浸水）モデルかどうか。河川などの情報が利用可能です。
 	Flood bool `json:"flood"`
 	// データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
 	Datasets []*PlateauDataset `json:"datasets"`

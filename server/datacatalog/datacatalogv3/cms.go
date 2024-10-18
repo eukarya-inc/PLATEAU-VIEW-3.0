@@ -10,6 +10,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
 )
 
@@ -19,6 +20,7 @@ const cachePrefix = "cache-datacatalogv3-"
 type CMS struct {
 	cms      cms.Interface
 	pcms     plateaucms.SpecStore
+	project  string
 	year     int
 	plateau  bool
 	cache    bool
@@ -29,6 +31,7 @@ func NewCMS(cms cms.Interface, pcms plateaucms.SpecStore, year int, plateau bool
 	return &CMS{
 		cms:      cms,
 		pcms:     pcms,
+		project:  project,
 		year:     year,
 		plateau:  plateau,
 		cache:    cache,
@@ -36,9 +39,9 @@ func NewCMS(cms cms.Interface, pcms plateaucms.SpecStore, year int, plateau bool
 	}
 }
 
-func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
+func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
 	all := AllData{
-		Name: project,
+		Name: c.project,
 		Year: c.year,
 	}
 
@@ -49,7 +52,7 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 		return nil, fmt.Errorf("failed to get plateau specs: %w", err)
 	}
 
-	featureTypes, err := c.GetFeatureTypes(ctx, project)
+	featureTypes, err := c.GetFeatureTypes(ctx, c.project)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get feature types: %w", err)
 	}
@@ -58,30 +61,30 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 	all.FeatureTypes = featureTypes
 
 	cityItemsChan := lo.Async2(func() ([]*CityItem, error) {
-		return c.GetCityItems(ctx, project, featureTypes.Plateau)
+		return c.GetCityItems(ctx, c.project, featureTypes.Plateau)
 	})
 
 	relatedItemsChan := lo.Async2(func() ([]*RelatedItem, error) {
-		return c.GetRelatedItems(ctx, project, featureTypes.Related)
+		return c.GetRelatedItems(ctx, c.project, featureTypes.Related)
 	})
 
 	genericItemsChan := lo.Async2(func() ([]*GenericItem, error) {
-		return c.GetGenericItems(ctx, project)
+		return c.GetGenericItems(ctx, c.project)
 	})
 
 	sampleItemsChan := lo.Async2(func() ([]*PlateauFeatureItem, error) {
-		return c.GetSampleItems(ctx, project)
+		return c.GetSampleItems(ctx, c.project)
 	})
 
 	geospatialjpDataItemsChan := lo.Async2(func() ([]*GeospatialjpDataItem, error) {
-		return c.GetGeospatialjpDataItems(ctx, project)
+		return c.GetGeospatialjpDataItems(ctx, c.project)
 	})
 
 	featureItemsChans := make([]<-chan lo.Tuple3[string, []*PlateauFeatureItem, error], 0, len(all.FeatureTypes.Plateau))
 	for _, featureType := range all.FeatureTypes.Plateau {
 		featureType := featureType
 		featureItemsChan := lo.Async3(func() (string, []*PlateauFeatureItem, error) {
-			res, err := c.GetPlateauItems(ctx, project, featureType.Code)
+			res, err := c.GetPlateauItems(ctx, c.project, featureType.Code)
 			return featureType.Code, res, err
 		})
 		featureItemsChans = append(featureItemsChans, featureItemsChan)
@@ -350,7 +353,7 @@ func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string) ([]*
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {
 	items, err := cms.GetItemsByKeyInParallel(ctx, project, model, true, 100)
 	if err != nil {
-		return nil, err
+		log.Warnfc(ctx, "datacatalogv3: failed to get items (%s/%s): %v", project, model, err)
 	}
 	if items == nil {
 		return nil, nil

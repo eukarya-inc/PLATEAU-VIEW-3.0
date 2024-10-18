@@ -86,6 +86,13 @@ var plateauFeatureTypes = []FeatureType{
 		HideTexture: true,
 	},
 	{
+		Code:        "rfld",
+		Name:        "ため池ハザードマップモデル",
+		GroupName:   "災害リスク（浸水）モデル",
+		Flood:       true,
+		HideTexture: true,
+	},
+	{
 		Code:         "lsld",
 		Name:         "土砂災害警戒区域モデル",
 		GroupName:    "災害リスク（土砂災害）モデル",

@@ -37,8 +37,8 @@ func TestExtractDataFromCMS(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	c2 := NewCMS(c, pcms, 2023, true, "", false)
-	all, err := c2.GetAll(ctx, prj)
+	c2 := NewCMS(c, pcms, 2023, true, prj, false)
+	all, err := c2.GetAll(ctx)
 	assert.NoError(t, err)
 
 	t.Log("get all data done")

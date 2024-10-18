@@ -84,7 +84,7 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 
 	t := time.Now()
 
-	data, err := cms.GetAll(ctx, project)
+	data, err := cms.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
