@@ -1,14 +1,22 @@
-FROM golang:1.22-alpine AS build
+ARG GO_VERSION=1.22
 ARG TAG=release
 ARG VERSION
+FROM golang:${GO_VERSION}-alpine AS build
 
 RUN apk add --update --no-cache git ca-certificates build-base fuse
-RUN CGO_ENABLED=0 go install github.com/googlecloudplatform/gcsfuse@v1.4.1
+# RUN CGO_ENABLED=0 go install github.com/googlecloudplatform/gcsfuse@v1.4.1
 
 WORKDIR /app
+
+RUN --mount=type=bind,source=worker/go.mod,target=go.mod \
+    --mount=type=bind,source=worker/go.sum,target=go.sum \
+    --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
 COPY . /app/
 
-RUN CGO_ENABLED=0 go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath -o plateauview-worker ./worker
+RUN --mount=type=cache,target=/go/pkg/mod \
+    CGO_ENABLED=0 go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath -o plateauview-worker ./worker
 
 FROM scratch
 
