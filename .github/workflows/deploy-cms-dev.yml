@@ -6,14 +6,62 @@ env:
   CMS_IMAGE_NAME: reearth/reearth-cms:rc
   CMS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms:latest
   CMS_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-cms:latest
-  WORKER_IMAGE_NAME: reearth/reearth-cms-worker:rc
-  WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-worker:latest
-  WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-cms-worker:latest
+
+  CMS_WEB_IMAGE_NAME: reearth/reearth-cms-web:rc
+  CMS_WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-web:latest
+  CMS_WEB_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-cms-web:latest
+
+  CMS_WORKER_IMAGE_NAME: reearth/reearth-cms-worker:rc
+  CMS_WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-worker:latest
+  CMS_WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-cms-worker:latest
 concurrency:
   group: ${{ github.workflow }}
 jobs:
-
   deploy_web:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure docker
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull docker images
+        run: docker pull $CMS_WEB_IMAGE_NAME
+      - name: Tag docker images
+        run: |
+          docker tag $CMS_WEB_IMAGE_NAME $CMS_WEB_IMAGE_NAME_GHCR
+          docker tag $CMS_WEB_IMAGE_NAME $CMS_WEB_IMAGE_NAME_GCP
+      - name: Push docker images
+        run: |
+          docker push $CMS_WEB_IMAGE_NAME_GHCR
+          docker push $CMS_WEB_IMAGE_NAME_GCP
+      - name: Deploy
+        run: |
+          gcloud run deploy reearth-cms-web \
+            --image $CMS_WEB_IMAGE_NAME_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
+        env:
+          GCP_REGION: ${{ vars.GCP_REGION }}
+
+  # TODO: Remove after migrating to Cloud Run.
+  deploy_web_gcs:
     runs-on: ubuntu-latest
     if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
     environment: dev
@@ -90,19 +138,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Pull docker images
-        run: docker pull $CMS_IMAGE_NAME && docker pull $WORKER_IMAGE_NAME
+        run: docker pull $CMS_IMAGE_NAME && docker pull $CMS_WORKER_IMAGE_NAME
       - name: Tag docker images
         run: |
           docker tag $CMS_IMAGE_NAME $CMS_IMAGE_NAME_GHCR && \
           docker tag $CMS_IMAGE_NAME $CMS_IMAGE_NAME_GCP && \
-          docker tag $WORKER_IMAGE_NAME $WORKER_IMAGE_NAME_GHCR && \
-          docker tag $WORKER_IMAGE_NAME $WORKER_IMAGE_NAME_GCP
+          docker tag $CMS_WORKER_IMAGE_NAME $CMS_WORKER_IMAGE_NAME_GHCR && \
+          docker tag $CMS_WORKER_IMAGE_NAME $CMS_WORKER_IMAGE_NAME_GCP
       - name: Push docker images
         run: |
           docker push $CMS_IMAGE_NAME_GHCR && \
           docker push $CMS_IMAGE_NAME_GCP && \
-          docker push $WORKER_IMAGE_NAME_GHCR && \
-          docker push $WORKER_IMAGE_NAME_GCP
+          docker push $CMS_WORKER_IMAGE_NAME_GHCR && \
+          docker push $CMS_WORKER_IMAGE_NAME_GCP
       - name: Deploy
         run: |
           gcloud run deploy reearth-cms-api \
@@ -111,7 +159,7 @@ jobs:
             --platform managed \
             --quiet
           gcloud run deploy reearth-cms-worker \
-            --image $WORKER_IMAGE_NAME_GCP \
+            --image $CMS_WORKER_IMAGE_NAME_GCP \
             --region $GCP_REGION \
             --platform managed \
             --quiet
