@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
@@ -18,15 +18,17 @@ const cachePrefix = "cache-datacatalogv3-"
 
 type CMS struct {
 	cms      cms.Interface
+	pcms     plateaucms.SpecStore
 	year     int
 	plateau  bool
 	cache    bool
 	cacheDir string
 }
 
-func NewCMS(cms cms.Interface, year int, plateau bool, project string, cache bool) *CMS {
+func NewCMS(cms cms.Interface, pcms plateaucms.SpecStore, year int, plateau bool, project string, cache bool) *CMS {
 	return &CMS{
 		cms:      cms,
+		pcms:     pcms,
 		year:     year,
 		plateau:  plateau,
 		cache:    cache,
@@ -42,7 +44,7 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 
 	// TODO: get CMSInfo
 
-	specs, err := c.GetPlateauSpecs(ctx, project)
+	specs, err := getPlateauSpecs(ctx, c.pcms, c.year)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get plateau specs: %w", err)
 	}
@@ -131,11 +133,6 @@ func (c *CMS) GetAll(ctx context.Context, project string) (*AllData, error) {
 	}
 
 	return &all, nil
-}
-
-func (c *CMS) GetPlateauSpecs(ctx context.Context, project string) ([]plateauapi.PlateauSpecSimple, error) {
-	// TODO: load specs from CMS
-	return plateauSpecs, nil
 }
 
 func (c *CMS) GetFeatureTypes(ctx context.Context, project string) (FeatureTypes, error) {

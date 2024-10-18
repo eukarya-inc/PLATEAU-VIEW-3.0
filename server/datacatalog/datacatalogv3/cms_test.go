@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/joho/godotenv"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/stretchr/testify/assert"
@@ -30,7 +31,13 @@ func TestExtractDataFromCMS(t *testing.T) {
 	c, err := cms.New(cmsurl, cmstoken)
 	assert.NoError(t, err)
 
-	c2 := NewCMS(c, 2023, true, "", false)
+	pcms, err := plateaucms.New(plateaucms.Config{
+		CMSBaseURL:   cmsurl,
+		CMSMainToken: cmstoken,
+	})
+	assert.NoError(t, err)
+
+	c2 := NewCMS(c, pcms, 2023, true, "", false)
 	all, err := c2.GetAll(ctx, prj)
 	assert.NoError(t, err)
 

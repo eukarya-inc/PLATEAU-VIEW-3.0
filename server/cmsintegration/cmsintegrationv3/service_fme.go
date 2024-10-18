@@ -110,8 +110,15 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return fmt.Errorf("failed to get codelist asset: %w", err)
 	}
 
+	// get FME URL
+	fme := s.GetFME(s.GetFMEURL(ctx, cityItem.SpecMajorVersionInt()))
+	if fme == nil {
+		_ = failToConvert(ctx, s, mainItem.ID, ty, "FMEのURLが設定されていません。")
+		return fmt.Errorf("fme url is not set")
+	}
+
 	// request to fme
-	err = s.FME.Request(ctx, fmeRequest{
+	err = fme.Request(ctx, fmeRequest{
 		ID: fmeID{
 			ItemID:      mainItem.ID,
 			ProjectID:   w.ProjectID(),

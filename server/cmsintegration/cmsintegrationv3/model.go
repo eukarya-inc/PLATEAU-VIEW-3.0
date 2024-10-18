@@ -1,6 +1,9 @@
 package cmsintegrationv3
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/oklog/ulid/v2"
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -89,22 +92,22 @@ const (
 )
 
 type CityItem struct {
-	ID                   string                    `json:"id,omitempty" cms:"id"`
-	Prefecture           string                    `json:"prefecture,omitempty" cms:"prefecture,select"`
-	CityName             string                    `json:"city_name,omitempty" cms:"city_name,text"`
-	CityNameEn           string                    `json:"city_name_en,omitempty" cms:"city_name_en,text"`
-	CityCode             string                    `json:"city_code,omitempty" cms:"city_code,text"`
-	SpecificationVersion string                    `json:"spec,omitempty" cms:"spec,select"`
-	OpenDataUrl          string                    `json:"open_data_url,omitempty" cms:"open_data_url,url"`
-	PRCS                 cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
-	CodeLists            string                    `json:"codelists,omitempty" cms:"codelists,asset"`
-	Schemas              string                    `json:"schemas,omitempty" cms:"schemas,asset"`
-	Metadata             string                    `json:"metadata,omitempty" cms:"metadata,asset"`
-	Specification        string                    `json:"specification,omitempty" cms:"specification,asset"`
-	References           map[string]string         `json:"references,omitempty" cms:"-"`
-	RelatedDataset       string                    `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
-	GeospatialjpIndex    string                    `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
-	GeospatialjpData     string                    `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
+	ID                string                    `json:"id,omitempty" cms:"id"`
+	Prefecture        string                    `json:"prefecture,omitempty" cms:"prefecture,select"`
+	CityName          string                    `json:"city_name,omitempty" cms:"city_name,text"`
+	CityNameEn        string                    `json:"city_name_en,omitempty" cms:"city_name_en,text"`
+	CityCode          string                    `json:"city_code,omitempty" cms:"city_code,text"`
+	Spec              string                    `json:"spec,omitempty" cms:"spec,select"`
+	OpenDataUrl       string                    `json:"open_data_url,omitempty" cms:"open_data_url,url"`
+	PRCS              cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
+	CodeLists         string                    `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas           string                    `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata          string                    `json:"metadata,omitempty" cms:"metadata,asset"`
+	Specification     string                    `json:"specification,omitempty" cms:"specification,asset"`
+	References        map[string]string         `json:"references,omitempty" cms:"-"`
+	RelatedDataset    string                    `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
+	GeospatialjpIndex string                    `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
+	GeospatialjpData  string                    `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
 	// meatadata
 	PlateauDataStatus string          `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	CityPublic        bool            `json:"city_public,omitempty" cms:"city_public,bool,metadata"`
@@ -131,6 +134,24 @@ func CityItemFrom(item *cms.Item) (i *CityItem) {
 	i.References = references
 	i.Public = public
 	return
+}
+
+func (i *CityItem) SpecMajorVersionInt() int {
+	s := strings.TrimPrefix(i.Spec, "v")
+	s = strings.TrimPrefix(s, "第")
+	s = strings.TrimSuffix(s, "版")
+
+	m, _, ok := strings.Cut(s, ".")
+	if !ok {
+		m = s
+	}
+
+	v, err := strconv.Atoi(m)
+	if err != nil {
+		return 0
+	}
+
+	return v
 }
 
 func (i *CityItem) CMSItem() *cms.Item {

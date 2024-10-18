@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
@@ -30,14 +31,16 @@ func AdminContext(ctx context.Context, bypassAdminRemoval, includeBeta, includeA
 }
 
 type Repos struct {
+	pcms  plateaucms.SpecStore
 	cms   *util.SyncMap[string, *CMS]
 	cache bool
 	*plateauapi.Repos
 }
 
-func NewRepos() *Repos {
+func NewRepos(pcms plateaucms.SpecStore) *Repos {
 	r := &Repos{
-		cms: util.NewSyncMap[string, *CMS](),
+		pcms: pcms,
+		cms:  util.NewSyncMap[string, *CMS](),
 	}
 	r.Repos = plateauapi.NewRepos(r.update)
 	return r
@@ -88,6 +91,6 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 }
 
 func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
-	c := NewCMS(cms, year, plateau, project, r.cache)
+	c := NewCMS(cms, r.pcms, year, plateau, project, r.cache)
 	r.cms.Store(project, c)
 }

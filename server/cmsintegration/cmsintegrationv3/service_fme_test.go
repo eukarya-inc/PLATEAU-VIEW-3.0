@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -19,10 +20,24 @@ import (
 func TestSendRequestToFME(t *testing.T) {
 	ctx := context.Background()
 	c := &cmsMock{}
+	pc := &plateauCMSMock{
+		plateauSpecs: func(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
+			return []plateaucms.PlateauSpec{
+				{
+					ID:              "1",
+					MajorVersion:    3,
+					Year:            2023,
+					MaxMinorVersion: 5,
+					FMEURL:          "https://example.com/v3",
+				},
+			}, nil
+		},
+	}
 	f := &fmeMock{}
 	s := &Services{
-		CMS: c,
-		FME: f,
+		CMS:     c,
+		PCMS:    pc,
+		mockFME: f,
 	}
 	conf := &Config{
 		Secret: "secret",
@@ -1003,4 +1018,13 @@ func TestIsQCAndConvSkipped(t *testing.T) {
 	}, "")
 	assert.True(t, skipQC)
 	assert.True(t, skipConv)
+}
+
+type plateauCMSMock struct {
+	plateaucms.SpecStore
+	plateauSpecs func(ctx context.Context) ([]plateaucms.PlateauSpec, error)
+}
+
+func (p *plateauCMSMock) PlateauSpecs(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
+	return p.plateauSpecs(ctx)
 }
