@@ -1,8 +1,7 @@
-ARG GO_VERSION=1.22
 ARG TAG=release,draco
 ARG VERSION
 
-FROM golang:${GO_VERSION}-bullseye AS build
+FROM golang:1.22-bullseye AS build
 
 WORKDIR /app
 

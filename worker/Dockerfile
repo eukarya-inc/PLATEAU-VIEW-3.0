@@ -1,7 +1,7 @@
-ARG GO_VERSION=1.22
 ARG TAG=release
 ARG VERSION
-FROM golang:${GO_VERSION}-alpine AS build
+
+FROM golang:1.22-alpine AS build
 
 RUN apk add --update --no-cache git ca-certificates build-base fuse
 # RUN CGO_ENABLED=0 go install github.com/googlecloudplatform/gcsfuse@v1.4.1
@@ -21,7 +21,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 FROM scratch
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /go/bin/gcsfuse /usr/bin/
+# COPY --from=build /go/bin/gcsfuse /usr/bin/
 COPY --from=build /app/plateauview-worker /app/plateauview-worker
 
 WORKDIR /app
