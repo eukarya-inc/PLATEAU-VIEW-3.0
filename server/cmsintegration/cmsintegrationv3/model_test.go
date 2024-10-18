@@ -245,3 +245,12 @@ func TestRelatedItemFrom(t *testing.T) {
 	item2 := relatedItem.CMSItem()
 	assert.Equal(t, expected2, item2)
 }
+
+func TestCityItem_SpecMajorVersionInt(t *testing.T) {
+	assert.Equal(t, 4, (&CityItem{Spec: "第4版"}).SpecMajorVersionInt())
+	assert.Equal(t, 4, (&CityItem{Spec: "4版"}).SpecMajorVersionInt())
+	assert.Equal(t, 4, (&CityItem{Spec: "v4"}).SpecMajorVersionInt())
+	assert.Equal(t, 4, (&CityItem{Spec: "第4.2版"}).SpecMajorVersionInt())
+	assert.Equal(t, 4, (&CityItem{Spec: "4.2版"}).SpecMajorVersionInt())
+	assert.Equal(t, 4, (&CityItem{Spec: "v4.2"}).SpecMajorVersionInt())
+}

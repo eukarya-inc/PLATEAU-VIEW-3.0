@@ -137,9 +137,13 @@ func CityItemFrom(item *cms.Item) (i *CityItem) {
 }
 
 func (i *CityItem) SpecMajorVersionInt() int {
-	m, _, ok := strings.Cut(i.Spec, ".")
+	s := strings.TrimPrefix(i.Spec, "v")
+	s = strings.TrimPrefix(s, "第")
+	s = strings.TrimSuffix(s, "版")
+
+	m, _, ok := strings.Cut(s, ".")
 	if !ok {
-		return 0
+		m = s
 	}
 
 	v, err := strconv.Atoi(m)
