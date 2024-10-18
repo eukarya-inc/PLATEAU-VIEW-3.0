@@ -3,9 +3,11 @@ package datacatalogv3
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"testing"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
@@ -17,6 +19,10 @@ func TestRepos(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	mockCMS(t)
+	ctx = plateaucms.SetPlateauCMSToContext(ctx, lo.Must(plateaucms.New(plateaucms.Config{
+		CMSBaseURL:      "https://example.com",
+		CMSTokenProject: "sys",
+	})))
 
 	cms := lo.Must(cms.New("https://example.com", "token"))
 
@@ -123,6 +129,7 @@ func TestRepos(t *testing.T) {
 
 func mockCMS(t *testing.T) {
 	t.Helper()
+
 	httpmock.RegisterResponder(
 		"GET", "https://example.com/api/projects/prj/models/plateau-city/items",
 		httpmock.NewJsonResponderOrPanic(200, cities),
@@ -153,6 +160,36 @@ func mockCMS(t *testing.T) {
 			httpmock.NewJsonResponderOrPanic(200, res),
 		)
 	}
+
+	httpmock.RegisterResponder(
+		"GET",
+		"https://example.com/api/projects/sys/models/plateau-spec/items",
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, cms.Items{
+			PerPage:    1,
+			Page:       1,
+			TotalCount: 1,
+			Items: []cms.Item{
+				{
+					ID: "1",
+					Fields: []*cms.Field{
+						{Key: "major_version", Value: 4},
+						{Key: "year", Value: 2024},
+						{Key: "max_minor_version", Value: 1},
+						{Key: "fme_url", Value: "https://example.com/v4"},
+					},
+				},
+				{
+					ID: "2",
+					Fields: []*cms.Field{
+						{Key: "major_version", Value: 3},
+						{Key: "year", Value: 2023},
+						{Key: "max_minor_version", Value: 5},
+						{Key: "fme_url", Value: "https://example.com/v3"},
+					},
+				},
+			},
+		}),
+	)
 }
 
 func j(j string) any {

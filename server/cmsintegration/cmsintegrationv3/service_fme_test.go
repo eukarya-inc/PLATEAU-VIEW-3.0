@@ -21,8 +21,8 @@ func TestSendRequestToFME(t *testing.T) {
 	c := &cmsMock{}
 	f := &fmeMock{}
 	s := &Services{
-		CMS: c,
-		FME: f,
+		CMS:     c,
+		mockFME: f,
 	}
 	conf := &Config{
 		Secret: "secret",

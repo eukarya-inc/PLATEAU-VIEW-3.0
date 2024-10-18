@@ -25,10 +25,12 @@ func resultURL(conf *Config) string {
 }
 
 type Services struct {
-	FME        fmeInterface
-	CMS        cms.Interface
-	HTTP       *http.Client
-	TaskRunner gcptaskrunner.TaskRunner
+	CMS          cms.Interface
+	HTTP         *http.Client
+	TaskRunner   gcptaskrunner.TaskRunner
+	FMEURL       string
+	FMEResultURL string
+	mockFME      fmeInterface
 }
 
 func NewServices(c Config) (s *Services, _ error) {
@@ -45,8 +47,10 @@ func NewServices(c Config) (s *Services, _ error) {
 			return nil, fmt.Errorf("failed to init fme: %w", err)
 		}
 
-		fme := newFME(fmeURL, resultURL)
-		s.FME = fme
+		s.FMEURL = fmeURL
+		s.FMEResultURL = resultURL
+	} else {
+		s.mockFME = &fmeMock{}
 	}
 
 	cms, err := cms.New(c.CMSBaseURL, c.CMSToken)
@@ -79,6 +83,13 @@ func NewServices(c Config) (s *Services, _ error) {
 	}
 
 	return
+}
+
+func (s *Services) GetFME(url string) fmeInterface {
+	if s.mockFME != nil {
+		return s.mockFME
+	}
+	return newFME(url, s.FMEResultURL)
 }
 
 func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status ConvertionStatus) error {
