@@ -18,6 +18,8 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+const plateauSpecMinMajorVersionObjectListsNeeded = 4
+
 var ppp *pp.PrettyPrinter
 
 func init() {
@@ -98,9 +100,16 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	}
 
 	cityItem := CityItemFrom(cityItemRaw)
+
+	// validate city item
 	if cityItem.CodeLists == "" {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "コードリストが都市アイテムに登録されていないため品質検査・変換を開始できません。")
 		return fmt.Errorf("city item has no codelist")
+	}
+
+	if !skipQC && cityItem.ObjectLists == "" && cityItem.SpecMajorVersionInt() >= plateauSpecMinMajorVersionObjectListsNeeded {
+		_ = failToConvert(ctx, s, mainItem.ID, ty, "オブジェクトリストが都市アイテムに登録されていないため品質検査を開始できません。")
+		return fmt.Errorf("city item has no objectlists")
 	}
 
 	// get codelist asset
@@ -108,6 +117,18 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	if err != nil {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "コードリストが見つかりません。")
 		return fmt.Errorf("failed to get codelist asset: %w", err)
+	}
+
+	// get objectLists asset
+	var objectListsAssetURL string
+	if cityItem.ObjectLists != "" {
+		objectListsAsset, err := s.CMS.Asset(ctx, cityItem.ObjectLists)
+		if err != nil {
+			_ = failToConvert(ctx, s, mainItem.ID, ty, "オブジェクトリストが見つかりません。")
+			return fmt.Errorf("failed to get objectlists asset: %w", err)
+		}
+
+		objectListsAssetURL = objectListsAsset.URL
 	}
 
 	// get FME URL
@@ -125,11 +146,12 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 			FeatureType: featureType,
 			Type:        string(ty),
 		}.String(conf.Secret),
-		Target:    cityGMLAsset.URL,
-		PRCS:      cityItem.PRCS.EPSGCode(),
-		Codelists: codelistAsset.URL,
-		ResultURL: resultURL(conf),
-		Type:      ty,
+		Target:      cityGMLAsset.URL,
+		PRCS:        cityItem.PRCS.EPSGCode(),
+		Codelists:   codelistAsset.URL,
+		ObjectLists: objectListsAssetURL,
+		ResultURL:   resultURL(conf),
+		Type:        ty,
 	})
 	if err != nil {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "FMEへのリクエストに失敗しました。%v", err)

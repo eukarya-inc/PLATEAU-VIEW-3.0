@@ -105,6 +105,8 @@ type fmeRequest struct {
 	Codelists string `json:"codelists,omitempty"`
 	// 結果を返す先のURL
 	ResultURL string `json:"resultUrl,omitempty"`
+	// オブジェクトリスト
+	ObjectLists string `json:"objectLists,omitempty"`
 }
 
 func signFMEID(payload, secret string) string {

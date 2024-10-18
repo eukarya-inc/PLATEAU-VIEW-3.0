@@ -104,6 +104,7 @@ type CityItem struct {
 	Schemas           string                    `json:"schemas,omitempty" cms:"schemas,asset"`
 	Metadata          string                    `json:"metadata,omitempty" cms:"metadata,asset"`
 	Specification     string                    `json:"specification,omitempty" cms:"specification,asset"`
+	ObjectLists       string                    `json:"objectLists,omitempty" cms:"objectLists,asset"`
 	References        map[string]string         `json:"references,omitempty" cms:"-"`
 	RelatedDataset    string                    `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
 	GeospatialjpIndex string                    `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`

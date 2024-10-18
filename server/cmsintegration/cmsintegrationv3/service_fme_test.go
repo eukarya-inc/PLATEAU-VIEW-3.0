@@ -67,6 +67,10 @@ func TestSendRequestToFME(t *testing.T) {
 				Key:   "citygml",
 				Value: "citygmlID",
 			},
+			{
+				Key:   "spec",
+				Value: "第3.5版",
+			},
 		},
 	}
 	w := &cmswebhook.Payload{
