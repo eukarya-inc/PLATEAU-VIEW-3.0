@@ -10,13 +10,13 @@ import (
 )
 
 type InMemoryRepoContext struct {
-	Name         string
-	Areas        Areas
-	DatasetTypes DatasetTypes
-	Datasets     Datasets
-	PlateauSpecs []PlateauSpec
-	Years        []int
-	CityGML      map[ID]*CityGMLDataset
+	Name         string                 `json:"name"`
+	Areas        Areas                  `json:"areas"`
+	DatasetTypes DatasetTypes           `json:"datasetTypes"`
+	Datasets     Datasets               `json:"datasets"`
+	PlateauSpecs []PlateauSpec          `json:"plateauSpecs"`
+	Years        []int                  `json:"years"`
+	CityGML      map[ID]*CityGMLDataset `json:"cityGML"`
 }
 
 // InMemoryRepo is a repository that stores all data in memory.

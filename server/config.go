@@ -82,6 +82,7 @@ type Config struct {
 	DataCatalog_PanicOnInit            bool     `pp:",omitempty"`
 	DataCatalog_GeocodingAppID         string   `pp:",omitempty"`
 	DataCatalog_DiskCache              bool     `pp:",omitempty"`
+	DataCatalog_Debug                  bool     `pp:",omitempty"`
 	GCParcent                          int      `pp:",omitempty"`
 	CityGML_Domain                     string   `pp:",omitempty"`
 	CityGML_Bucket                     string   `pp:",omitempty"`
@@ -201,6 +202,7 @@ func (c *Config) DataCatalog() datacatalog.Config {
 		GraphqlMaxComplexity: c.DataCatalog_GQL_MaxComplexity,
 		DisableCache:         c.DataCatalog_DisableCache,
 		DiskCache:            c.DataCatalog_DiskCache,
+		Debug:                c.DataCatalog_Debug,
 		CacheTTL:             c.DataCatalog_CacheTTL,
 		ErrorOnInit:          c.DataCatalog_PanicOnInit,
 		GeocodingAppID:       c.DataCatalog_GeocodingAppID,

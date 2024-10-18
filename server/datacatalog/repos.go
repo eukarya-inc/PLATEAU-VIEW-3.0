@@ -57,6 +57,10 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 		reposv3.EnableCache(true)
 	}
 
+	if conf.Debug {
+		reposv3.EnableDebug(true)
+	}
+
 	g, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
 	qt := govpolygon.NewQuadtree(g, 1.0/60.0)
 

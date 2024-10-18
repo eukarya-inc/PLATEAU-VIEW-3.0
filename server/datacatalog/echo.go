@@ -19,6 +19,7 @@ type Config struct {
 	ErrorOnInit          bool
 	GeocodingAppID       string
 	DiskCache            bool // for debugging
+	Debug                bool // for debugging
 	// v2
 	DisableCache bool
 	CacheTTL     int

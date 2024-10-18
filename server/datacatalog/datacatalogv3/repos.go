@@ -2,7 +2,9 @@ package datacatalogv3
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"os"
 	"sort"
 	"time"
 
@@ -34,6 +36,7 @@ type Repos struct {
 	pcms  plateaucms.SpecStore
 	cms   *util.SyncMap[string, *CMS]
 	cache bool
+	debug bool
 	*plateauapi.Repos
 }
 
@@ -48,6 +51,10 @@ func NewRepos(pcms plateaucms.SpecStore) *Repos {
 
 func (r *Repos) EnableCache(cache bool) {
 	r.cache = cache
+}
+
+func (r *Repos) EnableDebug(debug bool) {
+	r.debug = debug
 }
 
 func (r *Repos) Prepare(ctx context.Context, project string, year int, plateau bool, cms cms.Interface) error {
@@ -66,23 +73,33 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 		return nil, fmt.Errorf("cms is not initialized for %s", project)
 	}
 
-	updated := r.UpdatedAt(project)
-	var updatedStr string
-	if !updated.IsZero() {
-		updatedStr = updated.Format(time.RFC3339)
+	{
+		updated := r.UpdatedAt(project)
+		updatedStr := ""
+		if !updated.IsZero() {
+			updatedStr = fmt.Sprintf(": last_update=%s", updated.Format(time.RFC3339))
+		}
+		log.Debugfc(ctx, "datacatalogv3: updating repo %s%s", project, updatedStr)
 	}
-	log.Debugfc(ctx, "datacatalogv3: updating repo %s: last_update=%s", project, updatedStr)
+
+	t := time.Now()
 
 	data, err := cms.GetAll(ctx, project)
 	if err != nil {
 		return nil, err
 	}
 
+	log.Debugfc(ctx, "datacatalogv3: updating repo %s (fetch completed in %.2fs)", project, time.Since(t).Seconds())
+
 	c, warning := data.Into()
 	sort.Strings(warning)
 	repo := plateauapi.NewInMemoryRepo(c)
 
-	log.Debugfc(ctx, "datacatalogv3: updated repo %s", project)
+	log.Debugfc(ctx, "datacatalogv3: updated repo %s: %.2fs", project, time.Since(t).Seconds())
+
+	if r.debug {
+		dumpRepo(ctx, repo, c, project)
+	}
 
 	return &plateauapi.ReposUpdateResult{
 		Repo:     repo,
@@ -93,4 +110,24 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
 	c := NewCMS(cms, r.pcms, year, plateau, project, r.cache)
 	r.cms.Store(project, c)
+}
+
+func dumpRepo(ctx context.Context, _ *plateauapi.InMemoryRepo, c *plateauapi.InMemoryRepoContext, project string) {
+	f, err := os.Create(fmt.Sprintf("repo_%s.json", project))
+	if err != nil {
+		log.Errorfc(ctx, "datacatalogv3: failed to create repo_%s.json: %v", project, err)
+		return
+	}
+
+	defer func() {
+		_ = f.Close()
+	}()
+
+	d := json.NewEncoder(f)
+	d.SetIndent("", "  ")
+	if err := d.Encode(c); err != nil {
+		log.Errorfc(ctx, "datacatalogv3: failed to write repo_%s.json: %v", project, err)
+	}
+
+	log.Debugfc(ctx, "datacatalogv3: wrote repo_%s.json", project)
 }
