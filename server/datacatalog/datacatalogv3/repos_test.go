@@ -19,14 +19,15 @@ func TestRepos(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	mockCMS(t)
-	ctx = plateaucms.SetPlateauCMSToContext(ctx, lo.Must(plateaucms.New(plateaucms.Config{
-		CMSBaseURL:      "https://example.com",
-		CMSTokenProject: "sys",
-	})))
 
 	cms := lo.Must(cms.New("https://example.com", "token"))
+	pcms := lo.Must(plateaucms.New(plateaucms.Config{
+		CMSBaseURL:      "https://example.com",
+		CMSMainToken:    "token",
+		CMSTokenProject: "sys",
+	}))
 
-	repos := NewRepos()
+	repos := NewRepos(pcms)
 	err := repos.Prepare(ctx, "prj", 2023, true, cms)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"plateau bldg2 bldg: invalid city: city2", "plateau bldg2: city not found: city2"}, repos.Warnings("prj"))

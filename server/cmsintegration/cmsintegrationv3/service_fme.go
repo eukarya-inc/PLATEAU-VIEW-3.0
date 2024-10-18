@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/k0kubun/pp/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -112,7 +111,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	}
 
 	// get FME URL
-	fme := s.GetFME(getFMEURL(ctx, cityItem.SpecMajorVersionInt()))
+	fme := s.GetFME(s.GetFMEURL(ctx, cityItem.SpecMajorVersionInt()))
 	if fme == nil {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "FMEのURLが設定されていません。")
 		return fmt.Errorf("fme url is not set")
@@ -423,29 +422,4 @@ func isQCAndConvSkipped(item *FeatureItem, featureType string) (skipQC bool, ski
 	skipQC = skipQC || item.SkipQC
 	skipConv = skipConv || item.SkipConvert
 	return
-}
-
-func getFMEURL(ctx context.Context, majorVersion int) string {
-	c := plateaucms.GetPlateauCMSFromContext(ctx)
-	if c == nil {
-		return ""
-	}
-
-	specs, err := c.PlateauSpecs(ctx)
-	if err != nil {
-		log.Errorfc(ctx, "cmsintegrationv3: failed to get plateau specs: %v", err)
-		return ""
-	}
-
-	for _, spec := range specs {
-		if spec.FMEURL == "" {
-			continue
-		}
-
-		if spec.MajorVersion == majorVersion {
-			return spec.FMEURL
-		}
-	}
-
-	return ""
 }

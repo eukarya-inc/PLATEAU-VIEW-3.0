@@ -2,19 +2,13 @@ package datacatalogv3
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 )
 
-func getPlateauSpecs(ctx context.Context, maxYear int) ([]plateauapi.PlateauSpecSimple, error) {
-	cms := plateaucms.GetPlateauCMSFromContext(ctx)
-	if cms == nil {
-		return nil, fmt.Errorf("failed to get cms from context")
-	}
-
-	res, err := cms.PlateauSpecs(ctx)
+func getPlateauSpecs(ctx context.Context, pcms plateaucms.SpecStore, maxYear int) ([]plateauapi.PlateauSpecSimple, error) {
+	res, err := pcms.PlateauSpecs(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -12,6 +12,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/gcptaskrunner"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -28,7 +29,7 @@ type Services struct {
 	CMS          cms.Interface
 	HTTP         *http.Client
 	TaskRunner   gcptaskrunner.TaskRunner
-	FMEURL       string
+	PCMS         plateaucms.SpecStore
 	FMEResultURL string
 	mockFME      fmeInterface
 }
@@ -37,17 +38,11 @@ func NewServices(c Config) (s *Services, _ error) {
 	s = &Services{}
 
 	if !c.FMEMock {
-		fmeURL := c.FMEURLV3
-		if fmeURL == "" {
-			return nil, errors.New("FME URL is not set")
-		}
-
 		resultURL, err := url.JoinPath(c.Host, "/notify_fme")
 		if err != nil {
 			return nil, fmt.Errorf("failed to init fme: %w", err)
 		}
 
-		s.FMEURL = fmeURL
 		s.FMEResultURL = resultURL
 	} else {
 		s.mockFME = &fmeMock{}
@@ -58,6 +53,16 @@ func NewServices(c Config) (s *Services, _ error) {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 	s.CMS = cms
+
+	pcms, err := plateaucms.New(plateaucms.Config{
+		CMSBaseURL:      c.CMSBaseURL,
+		CMSMainToken:    c.CMSToken,
+		CMSTokenProject: c.CMSSystemProject,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to init plateau cms: %w", err)
+	}
+	s.PCMS = pcms
 
 	if c.GCPProject != "" {
 		image := c.TaskImage
@@ -224,4 +229,24 @@ func (s *Services) GETAsBytes(ctx context.Context, url string) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func (s *Services) GetFMEURL(ctx context.Context, majorVersion int) string {
+	specs, err := s.PCMS.PlateauSpecs(ctx)
+	if err != nil {
+		log.Errorfc(ctx, "cmsintegrationv3: failed to get plateau specs: %v", err)
+		return ""
+	}
+
+	for _, spec := range specs {
+		if spec.FMEURL == "" {
+			continue
+		}
+
+		if spec.MajorVersion == majorVersion {
+			return spec.FMEURL
+		}
+	}
+
+	return ""
 }

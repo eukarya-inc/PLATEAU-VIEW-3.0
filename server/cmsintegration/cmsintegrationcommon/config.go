@@ -7,9 +7,10 @@ type Config struct {
 	Debug    bool
 	APIToken string
 	// CMS
-	CMSBaseURL     string
-	CMSToken       string
-	CMSIntegration string
+	CMSBaseURL       string
+	CMSToken         string
+	CMSIntegration   string
+	CMSSystemProject string
 	// geospatial.jp
 	CkanBaseURL                    string
 	CkanOrg                        string
@@ -20,8 +21,6 @@ type Config struct {
 	DisableDataConv bool
 	// FME common
 	FMEMock bool
-	// FME v3
-	FMEURLV3 string
 	// geospatial.jp v3
 	GeospatialjpBuildType             string
 	GeospatialjpCloudRunJobsJobName   string

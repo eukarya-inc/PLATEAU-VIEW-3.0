@@ -46,7 +46,7 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 		return nil, fmt.Errorf("failed to initialize plateau cms: %w", err)
 	}
 
-	reposv3 := datacatalogv3.NewRepos()
+	reposv3 := datacatalogv3.NewRepos(pcms)
 	reposv2 := datacatalogv2adapter.NewRepos()
 
 	if conf.GraphqlMaxComplexity <= 0 {

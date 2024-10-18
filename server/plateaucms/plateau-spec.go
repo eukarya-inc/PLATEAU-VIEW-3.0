@@ -9,6 +9,12 @@ import (
 	"github.com/reearth/reearthx/rerror"
 )
 
+type SpecStore interface {
+	PlateauSpecs(ctx context.Context) ([]PlateauSpec, error)
+}
+
+var _ SpecStore = &CMS{}
+
 type PlateauSpec struct {
 	ID              string `json:"id" cms:"id,text"`
 	MajorVersion    int    `json:"major_version" cms:"major_version,integer"`
