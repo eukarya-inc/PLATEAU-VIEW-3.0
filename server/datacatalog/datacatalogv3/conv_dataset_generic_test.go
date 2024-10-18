@@ -53,8 +53,9 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("usecase", plateauapi.TypeDatasetType),
 			TypeCode:          "usecase",
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/id",
-				Stage:  string(stageAlpha),
+				CMSURL:    "https://example.com/id",
+				CMSItemID: "id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.GenericDatasetItem{
 				{

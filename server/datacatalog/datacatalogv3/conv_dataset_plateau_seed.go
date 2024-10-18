@@ -293,6 +293,7 @@ type plateauDatasetItemSeed struct {
 	URL                 string
 	Format              plateauapi.DatasetFormat
 	LOD                 *int
+	LODEx               *int
 	NoTexture           *bool
 	Layers              []string
 	FloodingScale       *plateauapi.FloodingScale
@@ -308,7 +309,11 @@ func (i plateauDatasetItemSeed) GetID(parentID string) string {
 	ids := []string{parentID, i.ID}
 
 	if i.LOD != nil {
-		ids = append(ids, fmt.Sprintf("lod%d", *i.LOD))
+		lodex := ""
+		if i.LODEx != nil && *i.LODEx > 0 {
+			lodex = fmt.Sprintf("%d", *i.LODEx)
+		}
+		ids = append(ids, fmt.Sprintf("lod%d%s", *i.LOD, lodex))
 	}
 
 	if !i.HideTexture && i.NoTexture != nil && *i.NoTexture {
@@ -325,7 +330,11 @@ func (i plateauDatasetItemSeed) GetName() string {
 	var lod, tex string
 
 	if i.LOD != nil {
-		lod = fmt.Sprintf("LOD%d", *i.LOD)
+		lodex := ""
+		if i.LODEx != nil && *i.LODEx > 0 {
+			lodex = fmt.Sprintf(".%d", *i.LODEx)
+		}
+		lod = fmt.Sprintf("LOD%d%s", *i.LOD, lodex)
 	}
 
 	if !i.HideTexture && i.NoTexture != nil && *i.NoTexture {
@@ -401,6 +410,7 @@ func plateauDatasetItemSeedFromNormal(url string, ex *AssetNameExNormal, layerNa
 		URL:         assetURLFromFormat(url, format),
 		Format:      format,
 		LOD:         &ex.LOD,
+		LODEx:       &ex.LODEx,
 		NoTexture:   &ex.NoTexture,
 		Layers:      layerNames.LayerName(nil, ex.LOD, format),
 		HideTexture: hideTexture,

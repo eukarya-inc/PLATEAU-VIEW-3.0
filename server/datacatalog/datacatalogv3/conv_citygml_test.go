@@ -71,6 +71,7 @@ func TestToCityGMLs(t *testing.T) {
 			PlateauSpecMinorID: "ps_3.3",
 			FeatureTypes:       []string{"bldg", "ubld"},
 			Admin: &plateauapi.Admin{
+				CMSItemID: "city1",
 				CityGMLURLs: []string{
 					"https://example.com/city1.gml",
 					"https://example.com/city2.gml",

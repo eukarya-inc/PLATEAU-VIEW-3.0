@@ -84,6 +84,7 @@ type AssetNameExNormal struct {
 	WardCode  string
 	WardName  string
 	LOD       int
+	LODEx     int
 	NoTexture bool
 }
 
@@ -149,7 +150,7 @@ func (ex AssetNameExFld) suffix(sep string) string {
 	return suffix
 }
 
-var reAssetName = regexp.MustCompile(`^(\d+)_([a-z0-9-]+)_([a-z0-9-]+)_(\d{4})_(.+?)_(\d+)(?:_op$?)?(?:_(.+))?$`)
+var reAssetName = regexp.MustCompile(`^(\d+)_([a-z0-9-]+)_([a-z0-9-]+)_(\d{4})_(.+?)_(\d+)(?:_op)?(?:_(.+))?$`)
 
 func ParseAssetName(name string) *AssetName {
 	m := reAssetName.FindStringSubmatch(name)
@@ -192,7 +193,7 @@ func ParseAssetNameEx(name string) (ex AssetNameEx) {
 	return
 }
 
-var reAasetNameExNormal = regexp.MustCompile(`^([a-z]+)_(mvt|3dtiles)(?:_(\d+)_([a-z0-9-]+))?(_lod\d+)?(_no_texture)?$`)
+var reAasetNameExNormal = regexp.MustCompile(`^([a-z]+)_(mvt|3dtiles)(?:_(\d+)_([a-z0-9-]+))?(_lod\d\d?)?(_no_texture)?$`)
 var reAasetNameExNormalDM = regexp.MustCompile(`^([a-z]+)_dm_geometric_attributes$`)
 
 func ParseAssetNameExNormal(name string) *AssetNameExNormal {
@@ -211,8 +212,14 @@ func ParseAssetNameExNormal(name string) *AssetNameExNormal {
 	}
 
 	lod := 0
+	lodex := 0
 	if m[5] != "" {
-		lod, _ = strconv.Atoi(strings.TrimPrefix(m[5], "_lod"))
+		lods := strings.TrimPrefix(m[5], "_lod")
+		if len(lods) == 2 {
+			lodex, _ = strconv.Atoi(lods[1:])
+			lods = lods[:1]
+		}
+		lod, _ = strconv.Atoi(lods)
 	}
 
 	return &AssetNameExNormal{
@@ -221,6 +228,7 @@ func ParseAssetNameExNormal(name string) *AssetNameExNormal {
 		WardCode:  m[3],
 		WardName:  m[4],
 		LOD:       lod,
+		LODEx:     lodex,
 		NoTexture: m[6] != "",
 	}
 }

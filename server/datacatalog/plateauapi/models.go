@@ -330,6 +330,7 @@ func PlateauDatasetToGenericDataset(p *PlateauDataset, typeID ID, typeCode strin
 type Admin struct {
 	Stage          string     `json:"stage,omitempty"`
 	CMSURL         string     `json:"cmsUrl,omitempty"`
+	CMSItemID      string     `json:"cmsItemId,omitempty"`
 	CreatedAt      *time.Time `json:"createdAt,omitempty"`
 	UpdatedAt      *time.Time `json:"updatedAt,omitempty"`
 	SubAreaCode    string     `json:"subAreaCode,omitempty"`
@@ -341,6 +342,7 @@ type Admin struct {
 func (a Admin) IsEmpty() bool {
 	return a.Stage == "" &&
 		a.CMSURL == "" &&
+		a.CMSItemID == "" &&
 		a.CreatedAt == nil &&
 		a.UpdatedAt == nil &&
 		a.SubAreaCode == "" &&

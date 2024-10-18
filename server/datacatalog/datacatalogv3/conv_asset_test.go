@@ -359,6 +359,27 @@ func TestParseAssetName(t *testing.T) {
 			},
 		},
 		{
+			name: "mlit",
+			args: "13999_tokyo_mlit_2023_citygml_1_op_bldg_3dtiles_lod12",
+			want: &AssetName{
+				CityCode:    "13999",
+				CityName:    "tokyo",
+				Provider:    "mlit",
+				Year:        2023,
+				Format:      "citygml",
+				UpdateCount: 1,
+				Ex: AssetNameEx{
+					Normal: &AssetNameExNormal{
+						Type:   "bldg",
+						Format: "3dtiles",
+						LOD:    1,
+						LODEx:  2,
+					},
+					Ex: "bldg_3dtiles_lod12",
+				},
+			},
+		},
+		{
 			name: "invalid ex",
 			args: "26100_kyoto-shi_city_2023_citygml_1_op_exex",
 			want: &AssetName{

@@ -654,6 +654,10 @@ type PlateauDatasetItem implements DatasetItem & Node {
   """
   lod: Int
   """
+  データセットのアイテムのLOD（詳細度・Level of Detail）のうち、小数点以下の値が存在する場合に定義されます。例えばLOD3.1の場合は1、3.0の場合は0となります。LODがnullの場合はnullとなります。
+  """
+  lodEx: Int
+  """
   データセットのアイテムのテクスチャの種類。
   """
   texture: Texture

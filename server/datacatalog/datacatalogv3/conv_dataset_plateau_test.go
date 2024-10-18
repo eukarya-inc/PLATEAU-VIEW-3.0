@@ -77,7 +77,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1.zip",
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1_no_texture.zip",
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod2.zip",
-			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod1.zip",
+			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod11.zip",
 		},
 	}
 
@@ -99,8 +99,9 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/cityid",
-				Stage:  string(stageAlpha),
+				CMSItemID: "cityid",
+				CMSURL:    "https://example.com/cityid",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -110,6 +111,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    lo.ToPtr(0),
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 				{
@@ -119,6 +121,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1_no_texture/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    lo.ToPtr(0),
 					Texture:  lo.ToPtr(plateauapi.TextureNone),
 				},
 				{
@@ -128,6 +131,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod2/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(2),
+					LodEx:    lo.ToPtr(0),
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 			},
@@ -149,17 +153,19 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/cityid",
-				Stage:  string(stageAlpha),
+				CMSItemID: "cityid",
+				CMSURL:    "https://example.com/cityid",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
-					ID:       plateauapi.NewID("11113_bldg_lod1", plateauapi.TypeDatasetItem),
+					ID:       plateauapi.NewID("11113_bldg_lod11", plateauapi.TypeDatasetItem),
 					Format:   plateauapi.DatasetFormatCesium3dtiles,
-					Name:     "LOD1",
-					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod1/tileset.json",
+					Name:     "LOD1.1",
+					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod11/tileset.json",
 					ParentID: plateauapi.NewID("11113_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    lo.ToPtr(1),
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 			},

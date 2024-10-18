@@ -32,7 +32,7 @@ func TestRepos(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"plateau bldg2 bldg: invalid city: city2", "plateau bldg2: city not found: city2"}, repos.Warnings("prj"))
 
-	assertRes := func(t *testing.T, ctx context.Context, r plateauapi.Repo, cityName, cityCode string, admin bool, stage *string, isPref, found, noCity bool) {
+	assertRes := func(t *testing.T, ctx context.Context, r plateauapi.Repo, cityName, cityCode, itemID string, admin bool, stage *string, isPref, found, noCity bool) {
 		t.Helper()
 
 		prefCode := cityCode[:2]
@@ -69,10 +69,14 @@ func TestRepos(t *testing.T) {
 		assert.NoError(t, err)
 
 		var adminData any
-		if admin && stage != nil {
-			adminData = &plateauapi.Admin{
-				Stage: *stage,
+		if admin {
+			a := &plateauapi.Admin{
+				CMSItemID: itemID,
 			}
+			if stage != nil {
+				a.Stage = *stage
+			}
+			adminData = a
 		}
 
 		var cityID *plateauapi.ID
@@ -104,6 +108,7 @@ func TestRepos(t *testing.T) {
 							Name:     "LOD1",
 							ParentID: plateauapi.ID("d_" + cityCode + "_bldg"),
 							Lod:      lo.ToPtr(1),
+							LodEx:    lo.ToPtr(0),
 							Texture:  lo.ToPtr(plateauapi.TextureTexture),
 						},
 					},
@@ -116,14 +121,14 @@ func TestRepos(t *testing.T) {
 	}
 
 	repo := repos.Repo("prj")
-	assertRes(t, ctx, repo, "PREF", "00", false, nil, true, false, false)
-	assertRes(t, ctx, repo, "foo", "00001", false, nil, false, true, false)
-	assertRes(t, ctx, repo, "bar", "00002", false, nil, false, false, true)
+	assertRes(t, ctx, repo, "PREF", "00", "bldg1", false, nil, true, false, false)
+	assertRes(t, ctx, repo, "foo", "00001", "bldg1", false, nil, false, true, false)
+	assertRes(t, ctx, repo, "bar", "00002", "bldg1", false, nil, false, false, true)
 
 	ctx2 := AdminContext(ctx, true, true, false)
-	assertRes(t, ctx2, repo, "PREF", "00", true, lo.ToPtr(string(stageBeta)), true, true, false)
-	assertRes(t, ctx2, repo, "foo", "00001", true, nil, false, true, false)
-	assertRes(t, ctx2, repo, "bar", "00002", true, nil, false, false, true)
+	assertRes(t, ctx2, repo, "PREF", "00", "bldg0", true, lo.ToPtr(string(stageBeta)), true, true, false)
+	assertRes(t, ctx2, repo, "foo", "00001", "bldg1", true, nil, false, true, false)
+	assertRes(t, ctx2, repo, "bar", "00002", "bldg1", true, nil, false, false, true)
 
 	assert.NoError(t, repos.UpdateAll(ctx))
 }

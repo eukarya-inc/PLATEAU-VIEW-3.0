@@ -168,6 +168,7 @@ func adminFrom(admin Admin) any {
 	}
 
 	res := &plateauapi.Admin{
+		CMSItemID:      admin.ItemID,
 		CMSURL:         cmsurl,
 		Stage:          stage,
 		SubAreaCode:    admin.SubAreaCode,

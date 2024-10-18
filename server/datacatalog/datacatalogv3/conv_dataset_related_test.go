@@ -51,8 +51,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/id",
-				Stage:  string(stageAlpha),
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -82,8 +83,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/id",
-				Stage:  string(stageAlpha),
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -111,8 +113,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("border", plateauapi.TypeDatasetType),
 			TypeCode:          "border",
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/id",
-				Stage:  string(stageAlpha),
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -140,8 +143,9 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("emergency_route", plateauapi.TypeDatasetType),
 			TypeCode:          "emergency_route",
 			Admin: &plateauapi.Admin{
-				CMSURL: "https://example.com/id",
-				Stage:  string(stageAlpha),
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{

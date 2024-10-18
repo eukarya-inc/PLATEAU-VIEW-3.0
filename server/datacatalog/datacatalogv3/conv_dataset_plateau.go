@@ -154,6 +154,7 @@ func seedToDatasetItem(i plateauDatasetItemSeed, parentID string) *plateauapi.Pl
 		Layers:              i.Layers,
 		Format:              i.Format,
 		Lod:                 i.LOD,
+		LodEx:               i.LODEx,
 		Texture:             textureFrom(i.NoTexture),
 		ParentID:            plateauapi.NewID(parentID, plateauapi.TypeDataset),
 		FloodingScale:       i.FloodingScale,

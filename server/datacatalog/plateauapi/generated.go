@@ -175,6 +175,7 @@ type ComplexityRoot struct {
 		ID                  func(childComplexity int) int
 		Layers              func(childComplexity int) int
 		Lod                 func(childComplexity int) int
+		LodEx               func(childComplexity int) int
 		Name                func(childComplexity int) int
 		Parent              func(childComplexity int) int
 		ParentID            func(childComplexity int) int
@@ -1093,6 +1094,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PlateauDatasetItem.Lod(childComplexity), true
+
+	case "PlateauDatasetItem.lodEx":
+		if e.complexity.PlateauDatasetItem.LodEx == nil {
+			break
+		}
+
+		return e.complexity.PlateauDatasetItem.LodEx(childComplexity), true
 
 	case "PlateauDatasetItem.name":
 		if e.complexity.PlateauDatasetItem.Name == nil {
@@ -6371,6 +6379,8 @@ func (ec *executionContext) fieldContext_PlateauDataset_items(ctx context.Contex
 				return ec.fieldContext_PlateauDatasetItem_parent(ctx, field)
 			case "lod":
 				return ec.fieldContext_PlateauDatasetItem_lod(ctx, field)
+			case "lodEx":
+				return ec.fieldContext_PlateauDatasetItem_lodEx(ctx, field)
 			case "texture":
 				return ec.fieldContext_PlateauDatasetItem_texture(ctx, field)
 			case "floodingScale":
@@ -6965,6 +6975,47 @@ func (ec *executionContext) _PlateauDatasetItem_lod(ctx context.Context, field g
 }
 
 func (ec *executionContext) fieldContext_PlateauDatasetItem_lod(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PlateauDatasetItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PlateauDatasetItem_lodEx(ctx context.Context, field graphql.CollectedField, obj *PlateauDatasetItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PlateauDatasetItem_lodEx(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LodEx, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PlateauDatasetItem_lodEx(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlateauDatasetItem",
 		Field:      field,
@@ -15243,6 +15294,8 @@ func (ec *executionContext) _PlateauDatasetItem(ctx context.Context, sel ast.Sel
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "lod":
 			out.Values[i] = ec._PlateauDatasetItem_lod(ctx, field, obj)
+		case "lodEx":
+			out.Values[i] = ec._PlateauDatasetItem_lodEx(ctx, field, obj)
 		case "texture":
 			out.Values[i] = ec._PlateauDatasetItem_texture(ctx, field, obj)
 		case "floodingScale":

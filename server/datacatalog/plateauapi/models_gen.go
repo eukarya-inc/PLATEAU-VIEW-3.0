@@ -686,6 +686,8 @@ type PlateauDatasetItem struct {
 	Parent *PlateauDataset `json:"parent,omitempty"`
 	// データセットのアイテムのLOD（詳細度・Level of Detail）。1、2、3、4などの整数値です。
 	Lod *int `json:"lod,omitempty"`
+	// データセットのアイテムのLOD（詳細度・Level of Detail）のうち、小数点以下の値が存在する場合に定義されます。例えばLOD3.1の場合は1、3.0の場合は0となります。LODがnullの場合はnullとなります。
+	LodEx *int `json:"lodEx,omitempty"`
 	// データセットのアイテムのテクスチャの種類。
 	Texture *Texture `json:"texture,omitempty"`
 	// 浸水規模。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在します。
