@@ -8,9 +8,15 @@ on:
         required: false
 env:
   GCS_DEST: gs://cms-plateau-prod
+  
   CMS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms:latest
   CMS_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-cms:latest
   CMS_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms:latest
+
+  CMS_WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-web:latest
+  CMS_WEB_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-cms-web:latest
+  CMS_WEB_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms-web:latest
+
   WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-cms-worker:latest
   WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-cms-worker:latest
   WORKER_IMAGE_NAME_HUB: eukarya/plateauview2-reearth-cms-worker:latest
@@ -18,6 +24,46 @@ concurrency:
   group: ${{ github.workflow }}
 jobs:
   deploy_web:
+    runs-on: ubuntu-latest
+    environment: prod
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure docker
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull docker image
+        run: docker pull $CMS_WEB_IMAGE_NAME_GHCR
+      - name: Push docker image
+        run: |
+          docker tag $CMS_WEB_IMAGE_NAME_GHCR $CMS_WEB_IMAGE_NAME_GCP \
+          && docker push $CMS_WEB_IMAGE_NAME_GCP
+      - name: Deploy
+        run: |
+          gcloud run deploy reearth-cms-web \
+            --image $CMS_WEB_IMAGE_NAME_GCP \
+            --region $GCP_REGION \
+            --platform managed \
+            --quiet
+        env:
+          GCP_REGION: ${{ vars.GCP_REGION }}
+
+  # TODO: Remove after migrating to Cloud Run.
+  deploy_web_gcs:
     runs-on: ubuntu-latest
     if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
     environment: prod
@@ -111,7 +157,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Pull docker image
-        run: docker pull $CMS_IMAGE_NAME_GHCR && docker pull $WORKER_IMAGE_NAME_GHCR
+        run: docker pull $CMS_IMAGE_NAME_GHCR && docker pull $CMS_WEB_IMAGE_NAME_GHCR && docker pull $WORKER_IMAGE_NAME_GHCR
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
@@ -119,5 +165,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Push cms image
         run: docker tag $CMS_IMAGE_NAME_GHCR $CMS_IMAGE_NAME_HUB && docker push $CMS_IMAGE_NAME_HUB
+      - name: Push cms web image
+        run: docker tag $CMS_WEB_IMAGE_NAME_GHCR $CMS_WEB_IMAGE_NAME_HUB && docker push $CMS_WEB_IMAGE_NAME_HUB
       - name: Push worker image
         run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_HUB && docker push $WORKER_IMAGE_NAME_HUB
