@@ -97,7 +97,7 @@ func (c CMSInfo) ItemBaseURL(modelKey string) string {
 type ModelIDMap map[string]string
 
 func (m ModelIDMap) ItemBaseURL(cmsURL, workspaceID, projectID, modelKey string) string {
-	if cmsURL == "" || workspaceID == "" || projectID == "" || m == nil {
+	if cmsURL == "" || workspaceID == "" || projectID == "" || m == nil || modelKey == "" {
 		return ""
 	}
 

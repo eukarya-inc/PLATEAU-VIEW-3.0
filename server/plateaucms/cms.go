@@ -135,7 +135,11 @@ func (h *CMS) AuthMiddleware(conf AuthMiddlewareConfig) echo.MiddlewareFunc {
 			ctx := req.Context()
 
 			prj := c.Param(key)
-			token := strings.TrimPrefix(req.Header.Get("Authorization"), "Bearer ")
+			token := ""
+			if t := req.Header.Get("Authorization"); t != "" && strings.HasPrefix(t, "Bearer ") {
+				token = strings.TrimPrefix(t, "Bearer ")
+			}
+
 			ctx, err := h.InitContext(ctx, conf, prj, token, req.Method)
 			if err != nil {
 				if errors.Is(err, echo.ErrUnauthorized) {

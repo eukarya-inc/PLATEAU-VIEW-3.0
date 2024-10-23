@@ -220,7 +220,7 @@ func j(j string) any {
 }
 
 var models = j(`{
-	"totalCount": 0,
+	"totalCount": 1,
 	"page": 1,
 	"perPage": 100,
 	"models": [
