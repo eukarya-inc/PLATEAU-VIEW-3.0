@@ -318,6 +318,9 @@ type GenericItem struct {
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty" cms:"-"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" cms:"-"`
 }
 
 func (c *GenericItem) Stage() stage {
@@ -344,6 +347,9 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 	i = &GenericItem{}
 	item.Unmarshal(i)
 
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
+
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURL(item.FieldByKeyAndGroup("data", d.ID).GetValue())
 	}
@@ -351,11 +357,15 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 }
 
 type RelatedItem struct {
-	ID     string                      `json:"id,omitempty" cms:"id"`
-	City   string                      `json:"city,omitempty" cms:"city,reference"`
-	Items  map[string]RelatedItemDatum `json:"items,omitempty" cms:"-"`
-	Merged string                      `json:"merged,omitempty" cms:"merged,asset"`
-	Status *cms.Tag                    `json:"status,omitempty" cms:"status,select,metadata"`
+	ID    string                      `json:"id,omitempty" cms:"id"`
+	City  string                      `json:"city,omitempty" cms:"city,reference"`
+	Items map[string]RelatedItemDatum `json:"items,omitempty" cms:"-"`
+	// meadata
+	Merged string   `json:"merged,omitempty" cms:"merged,asset"`
+	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty" cms:"-"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" cms:"-"`
 }
 
 type RelatedItemDatum struct {
@@ -368,6 +378,9 @@ type RelatedItemDatum struct {
 func RelatedItemFrom(item *cms.Item, featureTypes []FeatureType) (i *RelatedItem) {
 	i = &RelatedItem{}
 	item.Unmarshal(i)
+
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
 
 	if i.Items == nil {
 		i.Items = map[string]RelatedItemDatum{}

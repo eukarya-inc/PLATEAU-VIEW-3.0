@@ -69,9 +69,11 @@ func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		TypeCode:          dt.GetCode(),
 		Groups:            groups,
 		Admin: adminFrom(Admin{
-			ItemID: i.ID,
-			Stage:  i.Stage(),
-			CMSURL: cmsinfo.ItemBaseURL(genericModel),
+			ItemID:    i.ID,
+			Stage:     i.Stage(),
+			CMSURL:    cmsinfo.ItemBaseURL(genericModel),
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
 		}),
 		Items: items,
 	}

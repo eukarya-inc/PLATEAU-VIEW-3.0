@@ -175,6 +175,8 @@ func adminFrom(admin Admin) any {
 		CityGMLAssetID: admin.CityGMLAssetID,
 		CityGMLURLs:    admin.CityGMLURLs,
 		MaxLODURLs:     admin.MaxLODURLs,
+		CreatedAt:      lo.EmptyableToPtr(admin.CreatedAt),
+		UpdatedAt:      lo.EmptyableToPtr(admin.UpdatedAt),
 	}
 
 	if !admin.CreatedAt.IsZero() {

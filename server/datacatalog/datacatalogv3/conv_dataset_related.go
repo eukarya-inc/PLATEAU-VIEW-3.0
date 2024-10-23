@@ -32,9 +32,11 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		seeds, w := assetUrlsToRelatedDatasetSeeds(d.Asset, d.Converted, area.City, area.Wards, area.CityItem.YearInt())
 		warning = append(warning, w...)
 		admin := adminFrom(Admin{
-			ItemID: i.ID,
-			Stage:  relatedStage(i, area.CityItem),
-			CMSURL: cmsinfo.ItemBaseURL(relatedModel),
+			ItemID:    i.ID,
+			Stage:     relatedStage(i, area.CityItem),
+			CMSURL:    cmsinfo.ItemBaseURL(relatedModel),
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
 		})
 
 		for _, seed := range seeds {
