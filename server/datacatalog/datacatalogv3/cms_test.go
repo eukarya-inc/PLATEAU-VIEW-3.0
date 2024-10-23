@@ -37,7 +37,14 @@ func TestExtractDataFromCMS(t *testing.T) {
 	})
 	assert.NoError(t, err)
 
-	c2 := NewCMS(c, pcms, 2023, true, prj, false)
+	c2 := NewCMS(CMSOpts{
+		CMS:     c,
+		PCMS:    pcms,
+		Year:    2023,
+		Plateau: true,
+		Project: prj,
+		Cache:   false,
+	})
 	all, err := c2.GetAll(ctx)
 	assert.NoError(t, err)
 

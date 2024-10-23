@@ -108,7 +108,14 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 }
 
 func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
-	c := NewCMS(cms, r.pcms, year, plateau, project, r.cache)
+	c := NewCMS(CMSOpts{
+		CMS:     cms,
+		PCMS:    r.pcms,
+		Year:    year,
+		Plateau: plateau,
+		Project: project,
+		Cache:   r.cache,
+	})
 	r.cms.Store(project, c)
 }
 

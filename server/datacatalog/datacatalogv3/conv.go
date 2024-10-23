@@ -19,9 +19,7 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	res.DatasetTypes = all.FeatureTypes.ToDatasetTypes(res.PlateauSpecs)
 
 	ic := newInternalContext()
-	ic.plateauCMSURL = all.CMSInfo.PlateauItemBaseURL()
-	ic.relatedCMSURL = all.CMSInfo.RelatedItemBaseURL()
-	ic.genericCMSURL = all.CMSInfo.GenericItemBaseURL()
+	ic.cmsinfo = all.CMSInfo
 	ic.regYear = all.Year
 
 	// layer names
@@ -211,22 +209,17 @@ func convertPlateauRaw(
 			continue
 		}
 
-		cmsurl := ""
-		if ic.plateauCMSURL != nil {
-			cmsurl = ic.plateauCMSURL[ftcode]
-		}
-
 		opts := ToPlateauDatasetsOptions{
 			ID:          ds.ID,
 			CreatedAt:   ds.CreatedAt,
 			UpdatedAt:   ds.UpdatedAt,
-			CMSURL:      cmsurl,
 			Area:        area,
 			Spec:        spec,
 			DatasetType: pdt,
 			LayerNames:  layerNames,
 			FeatureType: ft,
 			Year:        ic.regYear,
+			CMSInfo:     ic.cmsinfo,
 		}
 		ds, w := ds.toDatasets(opts)
 		warning = append(warning, w...)
@@ -246,7 +239,7 @@ func convertRelated(items []*RelatedItem, datasetTypes []plateauapi.DatasetType,
 			continue
 		}
 
-		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.relatedCMSURL)
+		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.cmsinfo)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)
@@ -264,7 +257,7 @@ func convertGeneric(items []*GenericItem, datasetTypes []plateauapi.DatasetType,
 			continue
 		}
 
-		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.genericCMSURL)
+		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.cmsinfo)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)

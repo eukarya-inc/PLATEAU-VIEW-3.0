@@ -1,6 +1,10 @@
 package datacatalogv3
 
-import "github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+import (
+	"fmt"
+
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+)
 
 type AllData struct {
 	Name                  string
@@ -80,37 +84,27 @@ func (ft FeatureTypes) FindPlateauByCode(code string) *FeatureType {
 }
 
 type CMSInfo struct {
-	CMSURL         string
-	WorkspaceID    string
-	ProjectID      string
-	PlateauModelID map[string]string
-	RelatedModelID string
-	GenericModelID string
+	CMSURL      string
+	WorkspaceID string
+	ProjectID   string
+	ModelIDMap  ModelIDMap
 }
 
-func (c CMSInfo) PlateauItemBaseURL() map[string]string {
-	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.PlateauModelID == nil {
-		return nil
-	}
-
-	res := make(map[string]string)
-	for k, v := range c.PlateauModelID {
-		res[k] = c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + v + "/details/"
-	}
-
-	return res
+func (c CMSInfo) ItemBaseURL(modelKey string) string {
+	return c.ModelIDMap.ItemBaseURL(c.CMSURL, c.WorkspaceID, c.ProjectID, modelKey)
 }
 
-func (c CMSInfo) RelatedItemBaseURL() string {
-	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.RelatedModelID == "" {
+type ModelIDMap map[string]string
+
+func (m ModelIDMap) ItemBaseURL(cmsURL, workspaceID, projectID, modelKey string) string {
+	if cmsURL == "" || workspaceID == "" || projectID == "" || m == nil {
 		return ""
 	}
-	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.RelatedModelID + "/details/"
-}
 
-func (c CMSInfo) GenericItemBaseURL() string {
-	if c.CMSURL == "" || c.WorkspaceID == "" || c.ProjectID == "" || c.GenericModelID == "" {
+	v, ok := m[modelKey]
+	if !ok {
 		return ""
 	}
-	return c.CMSURL + "/workspace/" + c.WorkspaceID + "/project/" + c.ProjectID + "/content/" + c.GenericModelID + "/details/"
+
+	return fmt.Sprintf("%s/workspace/%s/project/%s/content/%s/details/", cmsURL, workspaceID, projectID, v)
 }

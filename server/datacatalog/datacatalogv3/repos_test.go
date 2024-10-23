@@ -16,9 +16,19 @@ import (
 
 func TestRepos(t *testing.T) {
 	ctx := context.Background()
+
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	mockCMS(t)
+
+	ctx = plateaucms.SetAllCMSMetadataFromContext(ctx, plateaucms.MetadataList{
+		{
+			ProjectAlias: "prj",
+			CMSURL:       "https://example.com",
+			WorkspaceID:  "ws",
+			ProjectID:    "prj",
+		},
+	})
 
 	cms := lo.Must(cms.New("https://example.com", "token"))
 	pcms := lo.Must(plateaucms.New(plateaucms.Config{
@@ -72,6 +82,7 @@ func TestRepos(t *testing.T) {
 		if admin {
 			a := &plateauapi.Admin{
 				CMSItemID: itemID,
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/xxx/details/" + itemID,
 			}
 			if stage != nil {
 				a.Stage = *stage
@@ -136,6 +147,10 @@ func TestRepos(t *testing.T) {
 func mockCMS(t *testing.T) {
 	t.Helper()
 
+	httpmock.RegisterResponder(
+		"GET", "https://example.com/api/projects/prj/models",
+		httpmock.NewJsonResponderOrPanic(200, models),
+	)
 	httpmock.RegisterResponder(
 		"GET", "https://example.com/api/projects/prj/models/plateau-city/items",
 		httpmock.NewJsonResponderOrPanic(200, cities),
@@ -203,6 +218,18 @@ func j(j string) any {
 	lo.Must0(json.Unmarshal([]byte(j), &v))
 	return v
 }
+
+var models = j(`{
+	"totalCount": 0,
+	"page": 1,
+	"perPage": 100,
+	"models": [
+		{
+			"id": "xxx",
+			"key": "plateau-bldg"
+		}
+	]
+}`)
 
 var cities = j(`{
 	"totalCount": 1,

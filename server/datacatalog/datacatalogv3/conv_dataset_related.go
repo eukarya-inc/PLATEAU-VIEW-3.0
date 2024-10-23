@@ -10,7 +10,7 @@ import (
 
 var convIgnored = []string{"border"}
 
-func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsurl string) (res []plateauapi.Dataset, warning []string) {
+func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsinfo CMSInfo) (res []plateauapi.Dataset, warning []string) {
 	if !area.IsValid() {
 		warning = append(warning, fmt.Sprintf("related %s: invalid area", i.ID))
 		return
@@ -34,7 +34,7 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		admin := adminFrom(Admin{
 			ItemID: i.ID,
 			Stage:  relatedStage(i, area.CityItem),
-			CMSURL: cmsurl,
+			CMSURL: cmsinfo.ItemBaseURL(relatedModel),
 		})
 
 		for _, seed := range seeds {

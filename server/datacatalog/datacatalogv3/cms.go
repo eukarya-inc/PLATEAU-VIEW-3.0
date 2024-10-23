@@ -27,25 +27,37 @@ type CMS struct {
 	cacheDir string
 }
 
-func NewCMS(cms cms.Interface, pcms plateaucms.SpecStore, year int, plateau bool, project string, cache bool) *CMS {
+type CMSOpts struct {
+	CMS     cms.Interface
+	PCMS    plateaucms.SpecStore
+	Year    int
+	Plateau bool
+	Project string
+	Cache   bool
+}
+
+func NewCMS(opts CMSOpts) *CMS {
 	return &CMS{
-		cms:      cms,
-		pcms:     pcms,
-		project:  project,
-		year:     year,
-		plateau:  plateau,
-		cache:    cache,
-		cacheDir: filepath.Join(cacheDir, cachePrefix+project),
+		cms:      opts.CMS,
+		pcms:     opts.PCMS,
+		project:  opts.Project,
+		year:     opts.Year,
+		plateau:  opts.Plateau,
+		cache:    opts.Cache,
+		cacheDir: filepath.Join(cacheDir, cachePrefix+opts.Project),
 	}
 }
 
 func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
-	all := AllData{
-		Name: c.project,
-		Year: c.year,
+	cmsinfo, err := c.GetCMSInfo(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get CMS info: %w", err)
 	}
-
-	// TODO: get CMSInfo
+	all := AllData{
+		Name:    c.project,
+		Year:    c.year,
+		CMSInfo: cmsinfo,
+	}
 
 	specs, err := getPlateauSpecs(ctx, c.pcms, c.year)
 	if err != nil {
@@ -325,30 +337,45 @@ func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string) ([]*
 	return items, err
 }
 
-// func (c *CMS) GetGeospatialjpDataItemsWithMaxLODContent(ctx context.Context, project string) ([]*GeospatialjpDataItem, error) {
-// 	items, err := c.GetGeospatialjpDataItems(ctx, project)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (c *CMS) GetCMSInfo(ctx context.Context) (CMSInfo, error) {
+	metadata := plateaucms.GetAllCMSMetadataFromContext(ctx)
+	if len(metadata) == 0 {
+		return CMSInfo{}, fmt.Errorf("metadata not found")
+	}
 
-// 	urls := lo.Map(items, func(i *GeospatialjpDataItem, _ int) string {
-// 		return i.MaxLOD
-// 	})
+	md, ok := metadata.FindMetadata(c.project, true, false)
+	if !ok {
+		return CMSInfo{}, fmt.Errorf("metadata not found")
+	}
 
-// 	maxlods, err := fetchMaxLODContents(ctx, urls)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	modelIDs, err := c.GetModelIDs(ctx)
+	if err != nil {
+		return CMSInfo{}, fmt.Errorf("failed to get model IDs: %w", err)
+	}
 
-// 	for i, m := range maxlods {
-// 		if m == nil {
-// 			continue
-// 		}
-// 		items[i].MaxLODContent = m
-// 	}
+	return CMSInfo{
+		CMSURL:      md.CMSURL,
+		WorkspaceID: md.WorkspaceID,
+		ProjectID:   md.ProjectID,
+		ModelIDMap:  modelIDs,
+	}, nil
+}
 
-// 	return items, nil
-// }
+func (c *CMS) GetModelIDs(ctx context.Context) (ModelIDMap, error) {
+	models, err := c.cms.GetModels(ctx, c.project)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get models: %w", err)
+	}
+
+	res := make(ModelIDMap, len(models.Models))
+	for _, model := range models.Models {
+		if strings.HasPrefix(model.Key, modelPrefix) {
+			res[strings.TrimPrefix(model.Key, modelPrefix)] = model.ID
+		}
+	}
+
+	return res, nil
+}
 
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {
 	items, err := cms.GetItemsByKeyInParallel(ctx, project, model, true, 100)
