@@ -125,11 +125,6 @@ func (h *CMS) LastModified(c echo.Context, prj string, models ...string) (bool, 
 
 func (h *CMS) AuthMiddleware(conf AuthMiddlewareConfig) echo.MiddlewareFunc {
 	key := conf.Key
-	authMethods := conf.AuthMethods
-	findDataCatalog := conf.FindDataCatalog
-	defaultProject := conf.DefaultProject
-	useDefault := conf.UseDefault
-
 	if key == "" {
 		key = ProjectNameParam
 	}
@@ -138,47 +133,67 @@ func (h *CMS) AuthMiddleware(conf AuthMiddlewareConfig) echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
 			ctx := req.Context()
+
 			prj := c.Param(key)
-			if prj == "" {
-				prj = defaultProject
+			token := ""
+			if t := req.Header.Get("Authorization"); t != "" && strings.HasPrefix(t, "Bearer ") {
+				token = strings.TrimPrefix(t, "Bearer ")
 			}
 
-			md, all, err := h.Metadata(ctx, prj, findDataCatalog, useDefault)
-			if len(all) > 0 {
-				ctx = context.WithValue(ctx, cmsAllMetadataContextKey{}, all)
-			}
-
+			ctx, err := h.InitContext(ctx, conf, prj, token, req.Method)
 			if err != nil {
-				if errors.Is(err, rerror.ErrNotFound) {
-					ctx = context.WithValue(ctx, cmsMetadataContextKey{}, md)
-					c.SetRequest(req.WithContext(ctx))
-					return next(c)
+				if errors.Is(err, echo.ErrUnauthorized) {
+					return c.JSON(http.StatusUnauthorized, "unauthorized")
 				}
 				return err
 			}
 
-			cmsh, err := cms.New(h.cmsbase, md.CMSAPIKey)
-			if err != nil {
-				return rerror.ErrInternalBy(fmt.Errorf("plateaucms: failed to create cms for %s: %w", prj, err))
-			}
-
-			// auth
-			header := req.Header.Get("Authorization")
-			token := strings.TrimPrefix(header, "Bearer ")
-			if md.SidebarAccessToken == "" || token != md.SidebarAccessToken {
-				if len(authMethods) > 0 && slices.Contains(authMethods, req.Method) {
-					return c.JSON(http.StatusUnauthorized, "unauthorized")
-				}
-			} else {
-				md.Auth = true
-			}
-
-			// attach
-			ctx = context.WithValue(ctx, plateauCMSContextKey{}, h)
-			ctx = context.WithValue(ctx, cmsMetadataContextKey{}, md)
-			ctx = context.WithValue(ctx, cmsContextKey{}, cmsh)
 			c.SetRequest(req.WithContext(ctx))
 			return next(c)
 		}
 	}
+}
+
+func (h *CMS) InitContext(ctx context.Context, conf AuthMiddlewareConfig, prj, token, method string) (context.Context, error) {
+	authMethods := conf.AuthMethods
+	findDataCatalog := conf.FindDataCatalog
+	defaultProject := conf.DefaultProject
+	useDefault := conf.UseDefault
+
+	if prj == "" {
+		prj = defaultProject
+	}
+
+	md, all, err := h.Metadata(ctx, prj, findDataCatalog, useDefault)
+	if len(all) > 0 {
+		ctx = SetAllCMSMetadataFromContext(ctx, all)
+	}
+
+	if err != nil {
+		if errors.Is(err, rerror.ErrNotFound) {
+			ctx = context.WithValue(ctx, cmsMetadataContextKey{}, md)
+			return ctx, nil
+		}
+		return nil, err
+	}
+
+	cmsh, err := cms.New(h.cmsbase, md.CMSAPIKey)
+	if err != nil {
+		return nil, rerror.ErrInternalBy(fmt.Errorf("plateaucms: failed to create cms for %s: %w", prj, err))
+	}
+
+	// auth
+	if md.SidebarAccessToken == "" || token != md.SidebarAccessToken {
+		if len(authMethods) > 0 && slices.Contains(authMethods, method) {
+			return nil, echo.ErrUnauthorized
+		}
+	} else {
+		md.Auth = true
+	}
+
+	// attach
+	ctx = context.WithValue(ctx, plateauCMSContextKey{}, h)
+	ctx = context.WithValue(ctx, cmsMetadataContextKey{}, md)
+	ctx = context.WithValue(ctx, cmsContextKey{}, cmsh)
+	return ctx, nil
 }

@@ -7,7 +7,6 @@ import (
 )
 
 func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGMLDataset, []string) {
-	cmsurl := all.CMSInfo.CMSURL
 	res := map[plateauapi.ID]*plateauapi.CityGMLDataset{}
 	resCity := map[string]*plateauapi.CityGMLDataset{}
 	dataMap := make(map[string]*GeospatialjpDataItem)
@@ -41,7 +40,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			Admin: adminFrom(Admin{
 				ItemID:      city.ID,
 				Stage:       city.SDKStage(),
-				CMSURL:      cmsurl,
+				CMSURL:      all.CMSInfo.ItemBaseURL(cityModel),
 				MaxLODURLs:  []string{data.MaxLOD},
 				CityGMLURLs: []string{data.CityGML},
 			}),

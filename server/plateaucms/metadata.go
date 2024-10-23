@@ -21,6 +21,9 @@ type Metadata struct {
 	CMSAPIKey                string `json:"cms_apikey" cms:"cms_apikey,text"`
 	SidebarAccessToken       string `json:"sidebar_access_token" cms:"sidebar_access_token,text"`
 	SubPorjectAlias          string `json:"subproject_alias" cms:"subproject_alias,text"`
+	CMSURL                   string `json:"cms_url" cms:"cms_url,text"`
+	WorkspaceID              string `json:"workspace_id" cms:"workspace_id,text"`
+	ProjectID                string `json:"project_id" cms:"project_id,text"`
 	MergePlateau             bool   `json:"merge_plateau" cms:"merge_plateau,boolean"`
 	// whether the request is authenticated with sidebar access token
 	Auth       bool   `json:"-" cms:"-"`

@@ -1,3 +1,4 @@
 indexer/testdata
 /cache
 /govpolygondata
+/repo_*.json

@@ -48,7 +48,6 @@ func (i *PlateauFeatureItem) toWards(pref *plateauapi.Prefecture, city *plateaua
 
 type ToPlateauDatasetsOptions struct {
 	ID          string
-	CMSURL      string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	Area        *areaContext
@@ -57,6 +56,7 @@ type ToPlateauDatasetsOptions struct {
 	LayerNames  LayerNames
 	FeatureType *FeatureType
 	Year        int
+	CMSInfo     CMSInfo
 }
 
 func (i *PlateauFeatureItem) toDatasets(opts ToPlateauDatasetsOptions) (res []*plateauapi.PlateauDataset, warning []string) {

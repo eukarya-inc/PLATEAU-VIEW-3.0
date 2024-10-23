@@ -288,6 +288,8 @@ func (h *reposHandler) Init(ctx context.Context) error {
 		return fmt.Errorf("datacatalogv3: failed to get all metadata: %w", err)
 	}
 
+	ctx = plateaucms.SetAllCMSMetadataFromContext(ctx, metadata)
+
 	plateauMetadata := metadata.PlateauProjects()
 	if err := h.prepareAll(ctx, plateauMetadata); err != nil {
 		return err
@@ -323,7 +325,7 @@ func (h *reposHandler) prepareAndGetMergedRepo(ctx context.Context, project stri
 	}
 
 	if err := h.prepareAll(ctx, mds); err != nil {
-		log.Errorfc(ctx, "datacatalogv3: failed to prepare repos: %v", err)
+		log.Errorfc(ctx, "failed to prepare repos: %v", err)
 	}
 
 	repos := make([]plateauapi.Repo, 0, len(mds))
@@ -370,7 +372,7 @@ func (h *reposHandler) prepareAll(ctx context.Context, metadata plateaucms.Metad
 
 		errg.Go(func() error {
 			if err := h.prepare(ctx, md); err != nil {
-				return fmt.Errorf("datacatalogv3: failed to prepare repo for %s: %w", md.DataCatalogProjectAlias, err)
+				return fmt.Errorf("failed to prepare repo for %s: %w", md.DataCatalogProjectAlias, err)
 			}
 			return nil
 		})
@@ -396,7 +398,7 @@ func (h *reposHandler) prepareV2(ctx context.Context, md plateaucms.Metadata) er
 	}
 
 	if err := h.reposv2.Prepare(ctx, f); err != nil {
-		return fmt.Errorf("datacatalogv2: failed to prepare repo for %s: %w", md.DataCatalogProjectAlias, err)
+		return fmt.Errorf("failed to prepare v2 repo for %s: %w", md.DataCatalogProjectAlias, err)
 	}
 
 	return nil
@@ -413,7 +415,7 @@ func (h *reposHandler) prepareV3(ctx context.Context, md plateaucms.Metadata) er
 	}
 
 	if err := h.reposv3.Prepare(ctx, md.DataCatalogProjectAlias, md.PlateauYear(), md.IsPlateau(), cms); err != nil {
-		return fmt.Errorf("datacatalogv3: failed to prepare repo for %s: %w", md.DataCatalogProjectAlias, err)
+		return fmt.Errorf("failed to prepare v3 repo for %s: %w", md.DataCatalogProjectAlias, err)
 	}
 
 	return nil

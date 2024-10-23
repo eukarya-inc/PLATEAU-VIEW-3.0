@@ -34,3 +34,7 @@ func GetAllCMSMetadataFromContext(ctx context.Context) MetadataList {
 	md, _ := ctx.Value(cmsAllMetadataContextKey{}).(MetadataList)
 	return md
 }
+
+func SetAllCMSMetadataFromContext(ctx context.Context, m MetadataList) context.Context {
+	return context.WithValue(ctx, cmsAllMetadataContextKey{}, m)
+}

@@ -16,9 +16,7 @@ type internalContext struct {
 	cities            map[string]*plateauapi.City
 	wards             map[string][]*plateauapi.Ward
 	layerNamesForType map[string]LayerNames
-	plateauCMSURL     map[string]string
-	relatedCMSURL     string
-	genericCMSURL     string
+	cmsinfo           CMSInfo
 }
 
 func newInternalContext() *internalContext {

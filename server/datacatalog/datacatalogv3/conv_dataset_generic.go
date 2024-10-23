@@ -8,7 +8,7 @@ import (
 	"github.com/samber/lo"
 )
 
-func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsurl string) (_ []plateauapi.Dataset, warning []string) {
+func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsinfo CMSInfo) (_ []plateauapi.Dataset, warning []string) {
 	if area == nil {
 		area = &areaContext{}
 	}
@@ -71,7 +71,7 @@ func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		Admin: adminFrom(Admin{
 			ItemID: i.ID,
 			Stage:  i.Stage(),
-			CMSURL: cmsurl,
+			CMSURL: cmsinfo.ItemBaseURL(genericModel),
 		}),
 		Items: items,
 	}

@@ -89,7 +89,7 @@ func plateauDatasetSeedsFrom(i *PlateauFeatureItem, opts ToPlateauDatasetsOption
 		res[i].Admin = adminFrom(Admin{
 			ItemID:      opts.ID,
 			Stage:       opts.Area.CityItem.PlateauStage(opts.DatasetType.Code),
-			CMSURL:      opts.CMSURL,
+			CMSURL:      opts.CMSInfo.ItemBaseURL(opts.DatasetType.Code),
 			CreatedAt:   opts.CreatedAt,
 			UpdatedAt:   opts.UpdatedAt,
 			SubAreaCode: opts.Area.CityItem.SubCityCode,

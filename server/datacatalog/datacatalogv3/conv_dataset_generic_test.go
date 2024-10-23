@@ -53,7 +53,7 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			TypeID:            plateauapi.NewID("usecase", plateauapi.TypeDatasetType),
 			TypeCode:          "usecase",
 			Admin: &plateauapi.Admin{
-				CMSURL:    "https://example.com/id",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/gen/details/id",
 				CMSItemID: "id",
 				Stage:     string(stageAlpha),
 			},
@@ -101,7 +101,12 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 		},
 	}
 
-	res, warning := item.toDatasets(area, dts, 2023, "https://example.com/")
+	res, warning := item.toDatasets(area, dts, 2023, CMSInfo{
+		CMSURL:      "https://example.com",
+		WorkspaceID: "ws",
+		ProjectID:   "prj",
+		ModelIDMap:  ModelIDMap{"generic": "gen"},
+	})
 	assert.Equal(t, []string{"generic id[2]: invalid url: "}, warning)
 	assert.Equal(t, expected, res)
 }

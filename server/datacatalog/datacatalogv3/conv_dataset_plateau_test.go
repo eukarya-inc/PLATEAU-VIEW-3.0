@@ -100,7 +100,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Admin: &plateauapi.Admin{
 				CMSItemID: "cityid",
-				CMSURL:    "https://example.com/cityid",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/BLDG/details/cityid",
 				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
@@ -154,7 +154,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Admin: &plateauapi.Admin{
 				CMSItemID: "cityid",
-				CMSURL:    "https://example.com/cityid",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/BLDG/details/cityid",
 				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
@@ -221,13 +221,20 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 
 	opts := ToPlateauDatasetsOptions{
 		ID:          "cityid",
-		CMSURL:      "https://example.com/",
 		Area:        area,
 		Spec:        spec,
 		DatasetType: dts,
 		LayerNames:  layerNames,
 		FeatureType: &FeatureType{},
 		Year:        2024,
+		CMSInfo: CMSInfo{
+			CMSURL:      "https://example.com",
+			WorkspaceID: "ws",
+			ProjectID:   "prj",
+			ModelIDMap: ModelIDMap{
+				"bldg": "BLDG",
+			},
+		},
 	}
 	res, warning := item.toDatasets(opts)
 	assert.Nil(t, warning)
