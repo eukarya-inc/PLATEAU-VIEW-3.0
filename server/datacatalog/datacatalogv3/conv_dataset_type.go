@@ -9,11 +9,13 @@ import (
 
 func (ft FeatureTypes) ToDatasetTypes(specs []plateauapi.PlateauSpec) plateauapi.DatasetTypes {
 	res := make(plateauapi.DatasetTypes)
-	res[plateauapi.DatasetTypeCategoryPlateau] = lo.Map(ft.Plateau, func(f FeatureType, _ int) plateauapi.DatasetType {
-		spec, _ := lo.Find(specs, func(s plateauapi.PlateauSpec) bool {
-			return s.MajorVersion == f.SpecMajor
+	res[plateauapi.DatasetTypeCategoryPlateau] = lo.FlatMap(ft.Plateau, func(f FeatureType, _ int) []plateauapi.DatasetType {
+		return lo.FilterMap(specs, func(s plateauapi.PlateauSpec, _ int) (plateauapi.DatasetType, bool) {
+			if s.MajorVersion < f.MinSpecMajor {
+				return nil, false
+			}
+			return f.ToPlateauDatasetType(s), true
 		})
-		return f.ToPlateauDatasetType(spec)
 	})
 	res[plateauapi.DatasetTypeCategoryRelated] = lo.Map(ft.Related, func(f FeatureType, _ int) plateauapi.DatasetType {
 		return f.ToRelatedDatasetType()

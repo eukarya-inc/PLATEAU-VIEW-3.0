@@ -111,6 +111,7 @@ func TestRepos(t *testing.T) {
 					TypeID:             plateauapi.NewID("bldg_3", plateauapi.TypeDatasetType),
 					TypeCode:           "bldg",
 					PlateauSpecMinorID: plateauapi.ID("ps_3.2"),
+					Ar:                 true,
 					Items: []*plateauapi.PlateauDatasetItem{
 						{
 							ID:       plateauapi.ID("di_" + cityCode + "_bldg_lod1"),

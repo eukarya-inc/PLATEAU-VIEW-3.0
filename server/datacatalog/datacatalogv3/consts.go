@@ -86,11 +86,13 @@ var plateauFeatureTypes = []FeatureType{
 		HideTexture: true,
 	},
 	{
-		Code:        "rfld",
-		Name:        "ため池ハザードマップモデル",
-		GroupName:   "災害リスク（浸水）モデル",
-		Flood:       true,
-		HideTexture: true,
+		Code:         "rfld",
+		Name:         "ため池ハザードマップモデル",
+		GroupName:    "災害リスク（浸水）モデル",
+		Flood:        true,
+		HideTexture:  true,
+		MinSpecMajor: 4,
+		MinYear:      2024,
 	},
 	{
 		Code:         "lsld",
@@ -212,7 +214,9 @@ func init() {
 	le := 1
 	for i, t := range plateauFeatureTypes {
 		t.Order = i + le
-		t.SpecMajor = 3
+		if t.MinSpecMajor == 0 {
+			t.MinSpecMajor = 3
+		}
 		plateauFeatureTypes[i] = t
 	}
 

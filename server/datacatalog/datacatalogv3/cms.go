@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
@@ -64,12 +65,12 @@ func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
 		CMSInfo: *cmsinfo,
 	}
 
-	specs, err := getPlateauSpecs(ctx, c.pcms, c.year)
+	specs, err := c.GetPlateauSpecs(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get plateau specs: %w", err)
 	}
 
-	featureTypes, err := c.GetFeatureTypes(ctx, c.project)
+	featureTypes, err := c.GetFeatureTypes(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get feature types: %w", err)
 	}
@@ -100,6 +101,11 @@ func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
 	featureItemsChans := make([]<-chan lo.Tuple3[string, []*PlateauFeatureItem, error], 0, len(all.FeatureTypes.Plateau))
 	for _, featureType := range all.FeatureTypes.Plateau {
 		featureType := featureType
+
+		if featureType.MinYear > 0 && c.year < featureType.MinYear {
+			continue
+		}
+
 		featureItemsChan := lo.Async3(func() (string, []*PlateauFeatureItem, error) {
 			res, err := c.GetPlateauItems(ctx, c.project, featureType.Code)
 			return featureType.Code, res, err
@@ -153,15 +159,6 @@ func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
 	}
 
 	return &all, nil
-}
-
-func (c *CMS) GetFeatureTypes(ctx context.Context, project string) (FeatureTypes, error) {
-	// TODO: load feature types from CMS
-	return FeatureTypes{
-		Plateau: plateauFeatureTypes,
-		Related: relatedFeatureTypes,
-		Generic: genericFeatureTypes,
-	}, nil
 }
 
 func (c *CMS) GetCityItems(ctx context.Context, project string, featureTypes []FeatureType) ([]*CityItem, error) {
@@ -380,6 +377,19 @@ func (c *CMS) GetModelIDs(ctx context.Context) (ModelIDMap, error) {
 	}
 
 	return res, nil
+}
+
+func (c *CMS) GetPlateauSpecs(ctx context.Context) ([]plateauapi.PlateauSpecSimple, error) {
+	return getPlateauSpecs(ctx, c.pcms, c.year)
+}
+
+func (c *CMS) GetFeatureTypes(ctx context.Context) (FeatureTypes, error) {
+	// TODO: load feature types from CMS
+	return FeatureTypes{
+		Plateau: plateauFeatureTypes,
+		Related: relatedFeatureTypes,
+		Generic: genericFeatureTypes,
+	}, nil
 }
 
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {
