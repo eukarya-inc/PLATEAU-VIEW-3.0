@@ -378,6 +378,10 @@ interface Dataset implements Node {
   """
   items: [DatasetItem!]!
   """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
+  """
   管理者用
   """
   admin: Any
@@ -601,6 +605,10 @@ type PlateauDataset implements Dataset & Node {
   データセットのアイテム。
   """
   items: [PlateauDatasetItem!]!
+  """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
   """
   管理者用
   """
@@ -855,6 +863,10 @@ type RelatedDataset implements Dataset & Node {
   """
   items: [RelatedDatasetItem!]!
   """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
+  """
   管理者用
   """
   admin: Any
@@ -1012,6 +1024,10 @@ type GenericDataset implements Dataset & Node {
   データセットのアイテム。
   """
   items: [GenericDatasetItem!]!
+  """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
   """
   管理者用
   """
@@ -1239,6 +1255,11 @@ input DatasetsInput {
   特殊なグループを持つデータセットのみを検索対象にするかどうか。デフォルトはfalseです。
   """
   groupedOnly: Boolean
+  """
+  PLATEAU ARで閲覧可能なデータセットを含めるかどうか。
+  trueの場合はARで閲覧可能なデータセットのみ、falseの場合はARで閲覧不可能なデータセットのみを返します。
+  """
+  ar: Boolean
 }
 
 """

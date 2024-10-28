@@ -141,6 +141,7 @@ func seedToDataset(seed plateauDatasetSeed) (res *plateauapi.PlateauDataset, war
 		Admin:              seed.Admin,
 		Groups:             seed.Groups,
 		Items:              items,
+		Ar:                 true,
 	}
 
 	return

@@ -65,6 +65,10 @@ func filterDataset(d Dataset, input DatasetsInput, stages []string) bool {
 		return false
 	}
 
+	if input.Ar != nil && d.GetAr() != *input.Ar {
+		return false
+	}
+
 	areaCode := areaCodeFrom(d).RefString() // for breakpoint debugging
 
 	admin := AdminFrom(d.GetAdmin())

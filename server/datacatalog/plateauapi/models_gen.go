@@ -75,6 +75,8 @@ type Dataset interface {
 	GetType() DatasetType
 	// データセットのアイテム。
 	GetItems() []DatasetItem
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	GetAr() bool
 	// 管理者用
 	GetAdmin() interface{}
 }
@@ -295,6 +297,9 @@ type DatasetsInput struct {
 	Shallow *bool `json:"shallow,omitempty"`
 	// 特殊なグループを持つデータセットのみを検索対象にするかどうか。デフォルトはfalseです。
 	GroupedOnly *bool `json:"groupedOnly,omitempty"`
+	// PLATEAU ARで閲覧可能なデータセットを含めるかどうか。
+	// trueの場合はARで閲覧可能なデータセットのみ、falseの場合はARで閲覧不可能なデータセットのみを返します。
+	Ar *bool `json:"ar,omitempty"`
 }
 
 // ユースケースデータなどを含む、その他のデータセット。
@@ -338,6 +343,8 @@ type GenericDataset struct {
 	Type *GenericDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*GenericDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 }
@@ -419,6 +426,9 @@ func (this GenericDataset) GetItems() []DatasetItem {
 	}
 	return interfaceSlice
 }
+
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this GenericDataset) GetAr() bool { return this.Ar }
 
 // 管理者用
 func (this GenericDataset) GetAdmin() interface{} { return this.Admin }
@@ -573,6 +583,8 @@ type PlateauDataset struct {
 	Type *PlateauDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*PlateauDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 	// データセットが準拠するPLATEAU都市モデルの仕様のマイナーバージョンへのID。
@@ -660,6 +672,9 @@ func (this PlateauDataset) GetItems() []DatasetItem {
 	}
 	return interfaceSlice
 }
+
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this PlateauDataset) GetAr() bool { return this.Ar }
 
 // 管理者用
 func (this PlateauDataset) GetAdmin() interface{} { return this.Admin }
@@ -942,6 +957,8 @@ type RelatedDataset struct {
 	Type *RelatedDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*RelatedDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 }
@@ -1023,6 +1040,9 @@ func (this RelatedDataset) GetItems() []DatasetItem {
 	}
 	return interfaceSlice
 }
+
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this RelatedDataset) GetAr() bool { return this.Ar }
 
 // 管理者用
 func (this RelatedDataset) GetAdmin() interface{} { return this.Admin }

@@ -64,6 +64,7 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 				TypeID:            dt.GetID(),
 				TypeCode:          ftcode,
 				Admin:             admin,
+				Ar:                false,
 				Items: []*plateauapi.RelatedDatasetItem{
 					{
 						ID:             plateauapi.NewID(sid, plateauapi.TypeDatasetItem),

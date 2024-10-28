@@ -68,6 +68,7 @@ func (i *GenericItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 		TypeID:            dt.GetID(),
 		TypeCode:          dt.GetCode(),
 		Groups:            groups,
+		Ar:                i.AR,
 		Admin: adminFrom(Admin{
 			ItemID:    i.ID,
 			Stage:     i.Stage(),

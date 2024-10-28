@@ -25,6 +25,39 @@ func TestFilterDataset(t *testing.T) {
 		}, DatasetsInput{}, nil))
 	})
 
+	t.Run("ar", func(t *testing.T) {
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: nil,
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: true,
+		}, DatasetsInput{
+			Ar: nil,
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: true,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
+		assert.False(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(false),
+		}, nil))
+		assert.False(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
+	})
+
 	t.Run("beta stage", func(t *testing.T) {
 		assert.True(t, filterDataset(RelatedDataset{
 			TypeCode: "emergency_route",

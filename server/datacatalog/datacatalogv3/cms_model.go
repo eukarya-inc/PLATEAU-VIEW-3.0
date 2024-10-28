@@ -318,6 +318,7 @@ type GenericItem struct {
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
+	AR     bool     `json:"ar,omitempty" cms:"ar,bool,metadata"`
 	// common
 	CreatedAt time.Time `json:"created_at,omitempty" cms:"-"`
 	UpdatedAt time.Time `json:"updated_at,omitempty" cms:"-"`

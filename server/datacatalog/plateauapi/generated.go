@@ -97,6 +97,7 @@ type ComplexityRoot struct {
 
 	GenericDataset struct {
 		Admin             func(childComplexity int) int
+		Ar                func(childComplexity int) int
 		City              func(childComplexity int) int
 		CityCode          func(childComplexity int) int
 		CityID            func(childComplexity int) int
@@ -140,6 +141,7 @@ type ComplexityRoot struct {
 
 	PlateauDataset struct {
 		Admin              func(childComplexity int) int
+		Ar                 func(childComplexity int) int
 		City               func(childComplexity int) int
 		CityCode           func(childComplexity int) int
 		CityID             func(childComplexity int) int
@@ -240,6 +242,7 @@ type ComplexityRoot struct {
 
 	RelatedDataset struct {
 		Admin             func(childComplexity int) int
+		Ar                func(childComplexity int) int
 		City              func(childComplexity int) int
 		CityCode          func(childComplexity int) int
 		CityID            func(childComplexity int) int
@@ -628,6 +631,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GenericDataset.Admin(childComplexity), true
 
+	case "GenericDataset.ar":
+		if e.complexity.GenericDataset.Ar == nil {
+			break
+		}
+
+		return e.complexity.GenericDataset.Ar(childComplexity), true
+
 	case "GenericDataset.city":
 		if e.complexity.GenericDataset.City == nil {
 			break
@@ -870,6 +880,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.PlateauDataset.Admin(childComplexity), true
+
+	case "PlateauDataset.ar":
+		if e.complexity.PlateauDataset.Ar == nil {
+			break
+		}
+
+		return e.complexity.PlateauDataset.Ar(childComplexity), true
 
 	case "PlateauDataset.city":
 		if e.complexity.PlateauDataset.City == nil {
@@ -1468,6 +1485,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RelatedDataset.Admin(childComplexity), true
+
+	case "RelatedDataset.ar":
+		if e.complexity.RelatedDataset.Ar == nil {
+			break
+		}
+
+		return e.complexity.RelatedDataset.Ar(childComplexity), true
 
 	case "RelatedDataset.city":
 		if e.complexity.RelatedDataset.City == nil {
@@ -4591,6 +4615,50 @@ func (ec *executionContext) fieldContext_GenericDataset_items(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _GenericDataset_ar(ctx context.Context, field graphql.CollectedField, obj *GenericDataset) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GenericDataset_ar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GenericDataset_ar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GenericDataset",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _GenericDataset_admin(ctx context.Context, field graphql.CollectedField, obj *GenericDataset) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GenericDataset_admin(ctx, field)
 	if err != nil {
@@ -4969,6 +5037,8 @@ func (ec *executionContext) fieldContext_GenericDatasetItem_parent(ctx context.C
 				return ec.fieldContext_GenericDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_GenericDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_GenericDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_GenericDataset_admin(ctx, field)
 			}
@@ -5277,6 +5347,8 @@ func (ec *executionContext) fieldContext_GenericDatasetType_datasets(ctx context
 				return ec.fieldContext_GenericDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_GenericDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_GenericDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_GenericDataset_admin(ctx, field)
 			}
@@ -6394,6 +6466,50 @@ func (ec *executionContext) fieldContext_PlateauDataset_items(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _PlateauDataset_ar(ctx context.Context, field graphql.CollectedField, obj *PlateauDataset) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PlateauDataset_ar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PlateauDataset_ar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PlateauDataset",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PlateauDataset_admin(ctx context.Context, field graphql.CollectedField, obj *PlateauDataset) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_PlateauDataset_admin(ctx, field)
 	if err != nil {
@@ -6931,6 +7047,8 @@ func (ec *executionContext) fieldContext_PlateauDatasetItem_parent(ctx context.C
 				return ec.fieldContext_PlateauDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_PlateauDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_PlateauDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_PlateauDataset_admin(ctx, field)
 			case "plateauSpecMinorId":
@@ -7641,6 +7759,8 @@ func (ec *executionContext) fieldContext_PlateauDatasetType_datasets(ctx context
 				return ec.fieldContext_PlateauDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_PlateauDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_PlateauDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_PlateauDataset_admin(ctx, field)
 			case "plateauSpecMinorId":
@@ -10248,6 +10368,50 @@ func (ec *executionContext) fieldContext_RelatedDataset_items(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _RelatedDataset_ar(ctx context.Context, field graphql.CollectedField, obj *RelatedDataset) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_RelatedDataset_ar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Ar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_RelatedDataset_ar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "RelatedDataset",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _RelatedDataset_admin(ctx context.Context, field graphql.CollectedField, obj *RelatedDataset) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_RelatedDataset_admin(ctx, field)
 	if err != nil {
@@ -10708,6 +10872,8 @@ func (ec *executionContext) fieldContext_RelatedDatasetItem_parent(ctx context.C
 				return ec.fieldContext_RelatedDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_RelatedDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_RelatedDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_RelatedDataset_admin(ctx, field)
 			}
@@ -11016,6 +11182,8 @@ func (ec *executionContext) fieldContext_RelatedDatasetType_datasets(ctx context
 				return ec.fieldContext_RelatedDataset_type(ctx, field)
 			case "items":
 				return ec.fieldContext_RelatedDataset_items(ctx, field)
+			case "ar":
+				return ec.fieldContext_RelatedDataset_ar(ctx, field)
 			case "admin":
 				return ec.fieldContext_RelatedDataset_admin(ctx, field)
 			}
@@ -13723,7 +13891,7 @@ func (ec *executionContext) unmarshalInputDatasetsInput(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"areaCodes", "plateauSpec", "year", "registrationYear", "excludeTypes", "includeTypes", "searchTokens", "shallow", "groupedOnly"}
+	fieldsInOrder := [...]string{"areaCodes", "plateauSpec", "year", "registrationYear", "excludeTypes", "includeTypes", "searchTokens", "shallow", "groupedOnly", "ar"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -13793,6 +13961,13 @@ func (ec *executionContext) unmarshalInputDatasetsInput(ctx context.Context, obj
 				return it, err
 			}
 			it.GroupedOnly = data
+		case "ar":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ar"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ar = data
 		}
 	}
 
@@ -14734,6 +14909,11 @@ func (ec *executionContext) _GenericDataset(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "ar":
+			out.Values[i] = ec._GenericDataset_ar(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "admin":
 			out.Values[i] = ec._GenericDataset_admin(ctx, field, obj)
 		default:
@@ -15150,6 +15330,11 @@ func (ec *executionContext) _PlateauDataset(ctx context.Context, sel ast.Selecti
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "items":
 			out.Values[i] = ec._PlateauDataset_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "ar":
+			out.Values[i] = ec._PlateauDataset_ar(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
@@ -16307,6 +16492,11 @@ func (ec *executionContext) _RelatedDataset(ctx context.Context, sel ast.Selecti
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "items":
 			out.Values[i] = ec._RelatedDataset_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "ar":
+			out.Values[i] = ec._RelatedDataset_ar(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
