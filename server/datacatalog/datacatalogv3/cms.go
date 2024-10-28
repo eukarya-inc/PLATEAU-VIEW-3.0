@@ -53,10 +53,15 @@ func (c *CMS) GetAll(ctx context.Context) (*AllData, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get CMS info: %w", err)
 	}
+	if cmsinfo == nil {
+		log.Debugfc(ctx, "datacatalogv3: metadata not found: %s", c.project)
+		return nil, nil
+	}
+
 	all := AllData{
 		Name:    c.project,
 		Year:    c.year,
-		CMSInfo: cmsinfo,
+		CMSInfo: *cmsinfo,
 	}
 
 	specs, err := getPlateauSpecs(ctx, c.pcms, c.year)
@@ -337,23 +342,23 @@ func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string) ([]*
 	return items, err
 }
 
-func (c *CMS) GetCMSInfo(ctx context.Context) (CMSInfo, error) {
+func (c *CMS) GetCMSInfo(ctx context.Context) (*CMSInfo, error) {
 	metadata := plateaucms.GetAllCMSMetadataFromContext(ctx)
 	if len(metadata) == 0 {
-		return CMSInfo{}, fmt.Errorf("metadata not found")
+		return nil, nil
 	}
 
 	md, ok := metadata.FindMetadata(c.project, true, false)
 	if !ok {
-		return CMSInfo{}, fmt.Errorf("metadata not found")
+		return nil, fmt.Errorf("metadata not found")
 	}
 
 	modelIDs, err := c.GetModelIDs(ctx)
 	if err != nil {
-		return CMSInfo{}, fmt.Errorf("failed to get model IDs: %w", err)
+		return nil, fmt.Errorf("failed to get model IDs: %w", err)
 	}
 
-	return CMSInfo{
+	return &CMSInfo{
 		CMSURL:      md.CMSURL,
 		WorkspaceID: md.WorkspaceID,
 		ProjectID:   md.ProjectID,
