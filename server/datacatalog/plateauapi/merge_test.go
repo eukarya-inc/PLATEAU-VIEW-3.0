@@ -304,3 +304,19 @@ func (r r) Nodes(ctx context.Context, ids []ID) ([]Node, error) {
 	})
 	return res, nil
 }
+
+func TestSetOrderToNodes(t *testing.T) {
+	nodes := []Node{
+		&PlateauDatasetType{ID: "1", Year: 2020},
+		&RelatedDatasetType{ID: "2"},
+		nil,
+		&PlateauDatasetType{ID: "3", Year: 2021, Order: 50},
+	}
+	setOrderToNodes(nodes, []ID{"3", "1", "4", "2"})
+	assert.Equal(t, []Node{
+		&PlateauDatasetType{ID: "1", Year: 2020, Order: 2},
+		&RelatedDatasetType{ID: "2", Order: 4},
+		nil,
+		&PlateauDatasetType{ID: "3", Year: 2021, Order: 1},
+	}, nodes)
+}

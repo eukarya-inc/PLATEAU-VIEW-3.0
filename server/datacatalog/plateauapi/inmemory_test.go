@@ -546,6 +546,11 @@ func TestInMemoryRepo_Node(t *testing.T) {
 			id:       NewID("2.3", TypePlateauSpec),
 			expected: spec.MinorVersions[0],
 		},
+		{
+			name:     "invalid id",
+			id:       ID("aaa"),
+			expected: nil,
+		},
 	}
 
 	for _, tt := range tests {

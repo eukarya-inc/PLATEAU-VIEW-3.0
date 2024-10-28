@@ -160,6 +160,10 @@ func setOrderToNodes[T Node](nodes []T, mergedDatasetTypes []ID) {
 	}
 
 	for i, r := range nodes {
+		if !isOrderSettable(r) {
+			continue
+		}
+
 		if order := slices.Index(mergedDatasetTypes, r.GetID()); order >= 0 {
 			setOrder(r, order+1)
 			nodes[i] = r
@@ -280,6 +284,7 @@ func uniqueByID[T Node](nodes []T) []T {
 	if len(nodes) <= 1 {
 		return nodes
 	}
+
 	ids := make(map[ID]struct{})
 	res := make([]T, 0, len(nodes))
 	for _, n := range nodes {
@@ -291,6 +296,7 @@ func uniqueByID[T Node](nodes []T) []T {
 		}
 		res = append(res, n)
 	}
+
 	return res
 }
 
@@ -360,4 +366,16 @@ func setOrder(n any, order int) {
 	case *GenericDatasetType:
 		v.Order = order
 	}
+}
+
+func isOrderSettable(n any) bool {
+	switch v := n.(type) {
+	case *PlateauDatasetType:
+		return v != nil
+	case *RelatedDatasetType:
+		return v != nil
+	case *GenericDatasetType:
+		return v != nil
+	}
+	return false
 }
