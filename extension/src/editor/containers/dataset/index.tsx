@@ -31,10 +31,7 @@ import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
 import { StatusPage } from "./StatusPage";
 
-// TODO: use plateview dataset type
-export type EditorDataset = DatasetFragmentFragment & {
-  published?: boolean;
-};
+export type EditorDataset = DatasetFragmentFragment;
 
 export type EditorDatasetSectionProps = {
   cache?: EditorCache;
