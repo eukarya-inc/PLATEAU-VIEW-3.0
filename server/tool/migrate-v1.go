@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-func migrateV1(conf *Config, args []string) error {
+func migrateV1(_ *Config, args []string) error {
 	var listFilePath, output, baseURL, prefix string
 	var offset int
 	var wetrun bool

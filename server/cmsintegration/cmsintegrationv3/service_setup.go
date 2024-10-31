@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/eukarya-inc/jpareacode"
+	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"golang.org/x/exp/slices"
 )
@@ -56,6 +58,8 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 	if len(modelIDs) == 0 || modelIDs[cityModel] == "" || modelIDs[relatedModel] == "" {
 		return fmt.Errorf("no models found")
 	}
+
+	log.Infofc(ctx, "cmsintegrationv3: models\n%s", pp.Sprint(modelIDs))
 
 	cityModel := modelIDs[cityModel]
 	relatedModel := modelIDs[relatedModel]
@@ -130,9 +134,10 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 		}
 
 		// geospatialjp-index
-		newGeospatialjpIndexItem, err := s.CMS.CreateItem(ctx, geospatialjpIndexModel, (&GeospatialjpIndexItem{
+		gindexItemFields := (&GeospatialjpIndexItem{
 			City: newCityItem.ID,
-		}).CMSItem().Fields, nil)
+		}).CMSItem().Fields
+		newGeospatialjpIndexItem, err := s.CMS.CreateItem(ctx, geospatialjpIndexModel, gindexItemFields, nil)
 		if err != nil {
 			return fmt.Errorf("failed to create geospatialjp-index item (%d/%d): %w", i, len(setupItems), err)
 		}
@@ -175,6 +180,8 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			return fmt.Errorf("failed to update city item (%d/%d): %w", i, len(setupItems), err)
 		}
 	}
+
+	log.Infofc(ctx, "cmsintegrationv3: setup city items done")
 
 	return nil
 }
@@ -238,6 +245,13 @@ func parseSetupCSV(r io.Reader) ([]SetupCSVItem, []string, error) {
 		}
 		if err != nil {
 			return nil, nil, err
+		}
+
+		// check utf8
+		for i, v := range row {
+			if !utf8.ValidString(v) {
+				return nil, nil, fmt.Errorf("invalid utf8 at line %d, column %d", i, i)
+			}
 		}
 
 		if row[nameIndex] == "" {
