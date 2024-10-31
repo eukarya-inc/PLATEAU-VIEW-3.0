@@ -47,6 +47,10 @@ jobs:
           SOURCE=${SOURCE/\/static\/favicon*.ico/$PLATEAU_FAVICON}
           SOURCE=${SOURCE/\<title\>*\<\/title\>/<title>$APP_NAME</title>}
           echo $SOURCE > $APP_PATH
+
+          SOURCE=$(cat $PUBLISH_PATH)
+          SOURCE=${SOURCE/\/static\/favicon*.ico/$PLATEAU_FAVICON}
+          SOURCE=${SOURCE/\<title\>*\<\/title\>/<title>$APP_NAME</title>}
           echo $SOURCE > $PUBLISH_PATH
       - name: Deploy
         run: gsutil -m -h "Cache-Control:no-store" rsync -x "^cloud/.*$|^reearth_config\\.json$|^extension/.*$" -dr reearth-web/ ${{ env.GCS_DEST }}
