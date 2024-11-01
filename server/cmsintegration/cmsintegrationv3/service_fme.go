@@ -48,23 +48,23 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	if featureType == sampleModel && item.FeatureType != "" {
 		if ft := getLastBracketContent(item.FeatureType); ft != "" {
 			featureType = ft
-			log.Debugfc(ctx, "cmsintegrationv3: sample item: feature type is %s", ft)
+			log.Debugfc(ctx, "cmsintegrationv3 fme: sample item: feature type is %s", ft)
 		}
 	}
 
 	if !slices.Contains(featureTypes, featureType) {
-		log.Debugfc(ctx, "cmsintegrationv3: not feature item: %s", featureType)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: not feature item: %s", featureType)
 		return nil
 	}
 
 	skipQC, skipConv := isQCAndConvSkipped(item, featureType)
 	if skipQC && skipConv {
-		log.Debugfc(ctx, "cmsintegrationv3: skip qc and convert")
+		log.Debugfc(ctx, "cmsintegrationv3 fme: skip qc and convert")
 		return nil
 	}
 
 	if item.CityGML == "" || item.City == "" {
-		log.Debugfc(ctx, "cmsintegrationv3: no city or no citygml")
+		log.Debugfc(ctx, "cmsintegrationv3 fme: no city or no citygml")
 		return nil
 	}
 
@@ -75,9 +75,9 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		ty = fmeTypeQC
 	}
 
-	log.Debugfc(ctx, "cmsintegrationv3: sendRequestToFME: itemID=%s featureType=%s", mainItem.ID, featureType)
-	log.Debugfc(ctx, "cmsintegrationv3: sendRequestToFME: raw item: %s", ppp.Sprint(mainItem))
-	log.Debugfc(ctx, "cmsintegrationv3: sendRequestToFME: item: %s", ppp.Sprint(item))
+	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: itemID=%s featureType=%s", mainItem.ID, featureType)
+	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: raw item: %s", ppp.Sprint(mainItem))
+	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: item: %s", ppp.Sprint(item))
 
 	// update convertion status
 	err = s.UpdateFeatureItemStatus(ctx, mainItem.ID, ty, ConvertionStatusRunning)
@@ -186,7 +186,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 
 	// notify
 	if f.Type == "notify" {
-		log.Debugfc(ctx, "cmsintegrationv3: notify: %s", logmsg)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: notify: %s", logmsg)
 
 		if err := s.CMS.CommentToItem(ctx, id.ItemID, logmsg); err != nil {
 			return fmt.Errorf("failed to comment: %w", err)
@@ -196,7 +196,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		if f.Results != nil {
 			if qcResult, ok := f.Results["_qc_result"]; ok {
 				if qcResultStr, ok := qcResult.(string); ok {
-					log.Debugfc(ctx, "cmsintegrationv3: upload qc result: %s", qcResultStr)
+					log.Debugfc(ctx, "cmsintegrationv3 fme: upload qc result: %s", qcResultStr)
 					var err error
 					qcResultAsset, err := s.UploadAsset(ctx, id.ProjectID, qcResultStr)
 					if err != nil {
@@ -212,8 +212,8 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 					if err != nil {
 						j1, _ := json.Marshal(item.Fields)
 						j2, _ := json.Marshal(item.MetadataFields)
-						log.Debugfc(ctx, "cmsintegrationv3: item update for %s: %s, %s", id.ItemID, j1, j2)
-						log.Errorfc(ctx, "cmsintegrationv3: failed to update item: %v", err)
+						log.Debugfc(ctx, "cmsintegrationv3 fme: item update for %s: %s, %s", id.ItemID, j1, j2)
+						log.Errorfc(ctx, "cmsintegrationv3 fme: failed to update item: %v", err)
 						return fmt.Errorf("failed to update item: %w", err)
 					}
 				}
@@ -267,7 +267,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	var dic string
 	if assets.Dic != "" {
 		var err error
-		log.Debugfc(ctx, "cmsintegrationv3: read and upload dic: %s", assets.Dic)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: read and upload dic: %s", assets.Dic)
 		dic, err = readDic(ctx, assets.Dic)
 		if err != nil {
 			log.Errorfc(ctx, "cmsintegrationv3: failed to read dic: %v", err)
@@ -278,7 +278,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// upload maxlod
 	var maxlodAssetID string
 	if assets.MaxLOD != "" {
-		log.Debugfc(ctx, "cmsintegrationv3: upload maxlod: %s", assets.MaxLOD)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: upload maxlod: %s", assets.MaxLOD)
 		var err error
 		maxlodAssetID, err = s.UploadAsset(ctx, id.ProjectID, assets.MaxLOD)
 		if err != nil {
@@ -289,7 +289,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// upload qc result
 	var qcResult string
 	if assets.QCResult != "" {
-		log.Debugfc(ctx, "cmsintegrationv3: upload qc result: %s", assets.QCResult)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: upload qc result: %s", assets.QCResult)
 		var err error
 		qcResult, err = s.UploadAsset(ctx, id.ProjectID, assets.QCResult)
 		if err != nil {
@@ -347,14 +347,14 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		QCResult:         qcResult,
 	}).CMSItem()
 
-	log.Debugfc(ctx, "cmsintegrationv3: update item: %s", ppp.Sprint(newitem))
+	log.Debugfc(ctx, "cmsintegrationv3 fme: update item: %s", ppp.Sprint(newitem))
 
 	_, err = s.CMS.UpdateItem(ctx, id.ItemID, newitem.Fields, newitem.MetadataFields)
 	if err != nil {
 		j1, _ := json.Marshal(newitem.Fields)
 		j2, _ := json.Marshal(newitem.MetadataFields)
-		log.Debugfc(ctx, "cmsintegrationv3: item update for %s: %s, %s", id.ItemID, j1, j2)
-		log.Errorfc(ctx, "cmsintegrationv3: failed to update item: %v", err)
+		log.Debugfc(ctx, "cmsintegrationv3 fme: item update for %s: %s, %s", id.ItemID, j1, j2)
+		log.Errorfc(ctx, "cmsintegrationv3 fme: failed to update item: %v", err)
 		return fmt.Errorf("failed to update item: %w", err)
 	}
 
@@ -364,7 +364,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: receiveResultFromFME: success")
+	log.Infofc(ctx, "cmsintegrationv3 fme: receiveResultFromFME: success")
 	return nil
 }
 

@@ -107,8 +107,6 @@ func (h *Handler) streamTile(c echo.Context, base, z, x, y string) error {
 		return fmt.Errorf("failed to join url: %w", err)
 	}
 
-	log.Debugfc(c.Request().Context(), "tiles: get tile: %s", url)
-
 	resp, err := h.http.Get(url)
 	if err != nil {
 		return fmt.Errorf("failed to get tile: %w", err)

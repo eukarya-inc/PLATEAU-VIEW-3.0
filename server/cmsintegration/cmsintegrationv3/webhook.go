@@ -18,6 +18,8 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
 
+		log.Debugfc(ctx, "cmsintegrationv3 webhook: incoming: %+v", w)
+
 		if !w.Operator.IsUser() && w.Operator.IsIntegrationBy(conf.CMSIntegration) {
 			log.Debugfc(ctx, "cmsintegrationv3 webhook: invalid event operator: %+v", w.Operator)
 			return nil
