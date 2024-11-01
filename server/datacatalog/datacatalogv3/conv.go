@@ -10,6 +10,11 @@ import (
 const sampleCode = "sample"
 
 func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []string) {
+	if all == nil {
+		warning = append(warning, "data is nil")
+		return
+	}
+
 	res = &plateauapi.InMemoryRepoContext{
 		Name:     all.Name,
 		Areas:    plateauapi.Areas{},

@@ -93,7 +93,11 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 
 	c, warning := data.Into()
 	sort.Strings(warning)
-	repo := plateauapi.NewInMemoryRepo(c)
+
+	var repo *plateauapi.InMemoryRepo
+	if c != nil {
+		repo = plateauapi.NewInMemoryRepo(c)
+	}
 
 	log.Debugfc(ctx, "datacatalogv3: updated repo %s: %.2fs", project, time.Since(t).Seconds())
 
