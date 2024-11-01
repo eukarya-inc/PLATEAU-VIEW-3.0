@@ -234,6 +234,13 @@ func (h *reposHandler) UpdateCacheHandler(c echo.Context) error {
 		}
 	}
 
+	metadata, err := h.pcms.AllMetadata(ctx, true)
+	if err != nil {
+		return fmt.Errorf("datacatalogv3: failed to get all metadata: %w", err)
+	}
+
+	ctx = plateaucms.SetAllCMSMetadataFromContext(ctx, metadata)
+
 	if err := h.UpdateCache(ctx); err != nil {
 		log.Errorfc(ctx, "datacatalog: failed to update cache: %v", err)
 		return c.JSON(http.StatusInternalServerError, "failed to update cache")
