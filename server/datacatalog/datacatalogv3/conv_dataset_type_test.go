@@ -31,6 +31,13 @@ func TestFeatureTypes_ToDatasetTypes(t *testing.T) {
 						MinSpecMajor: 2,
 					},
 				},
+				Generic: []FeatureType{
+					{
+						Code:  "code3",
+						Name:  "name3",
+						Order: 2,
+					},
+				},
 			},
 			specs: []plateauapi.PlateauSpec{
 				{
@@ -78,7 +85,15 @@ func TestFeatureTypes_ToDatasetTypes(t *testing.T) {
 					},
 				},
 				plateauapi.DatasetTypeCategoryRelated: []plateauapi.DatasetType{},
-				plateauapi.DatasetTypeCategoryGeneric: []plateauapi.DatasetType{},
+				plateauapi.DatasetTypeCategoryGeneric: []plateauapi.DatasetType{
+					&plateauapi.GenericDatasetType{
+						Category: plateauapi.DatasetTypeCategoryGeneric,
+						ID:       "dt_code3",
+						Name:     "name3",
+						Code:     "code3",
+						Order:    2,
+					},
+				},
 			},
 		},
 	}
