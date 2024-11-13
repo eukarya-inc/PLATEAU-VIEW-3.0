@@ -17,7 +17,7 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 		idZip := c.Param("id.zip")
 		const suffix = ".zip"
 		if !strings.HasSuffix(idZip, suffix) {
-			return c.NoContent(http.StatusBadRequest)
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "not found"})
 		}
 		return p.handleGetZip(c, strings.TrimSuffix(idZip, suffix))
 	})

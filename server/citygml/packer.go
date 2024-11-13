@@ -15,6 +15,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/labstack/echo/v4"
+	"github.com/reearth/reearthx/log"
 	"google.golang.org/api/cloudbuild/v1"
 	"google.golang.org/api/googleapi"
 )
@@ -32,6 +33,8 @@ const (
 	PackStatusProcessing = "processing"
 	PackStatusSucceeded  = "succeeded"
 	PackStatusFailed     = "failed"
+
+	timeooutSignedURL = 10 * time.Minute
 )
 
 type packer struct {
@@ -57,24 +60,28 @@ func (p *packer) handleGetZip(c echo.Context, hash string) error {
 	obj := p.bucket.Object(hash + ".zip")
 	attrs, err := obj.Attrs(ctx)
 	if errors.Is(err, storage.ErrObjectNotExist) {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(http.StatusNotFound, map[string]any{"error": "not found"})
 	}
-	if status := GetStatus(attrs.Metadata); status != PackStatusSucceeded {
+
+	if status := getStatus(attrs.Metadata); status != PackStatusSucceeded {
 		return c.JSON(http.StatusBadRequest, map[string]any{
+			"error":  "invalid status",
 			"status": status,
-			"reason": "invalid status",
 		})
 	}
+
 	signedURL, err := p.bucket.SignedURL(obj.ObjectName(), &storage.SignedURLOptions{
 		Method:  http.MethodGet,
-		Expires: time.Now().Add(5 * time.Minute),
+		Expires: time.Now().Add(timeooutSignedURL),
 	})
+
 	if err != nil {
+		log.Errorfc(ctx, "citygml: packer: failed to issue signed url: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"error":  err.Error(),
-			"reason": "failed to issue signed url",
+			"error": "failed to issue url",
 		})
 	}
+
 	return c.Redirect(http.StatusFound, signedURL)
 }
 
@@ -82,10 +89,10 @@ func (p *packer) handleGetStatus(c echo.Context, hash string) error {
 	ctx := c.Request().Context()
 	attrs, err := p.bucket.Object(hash + ".zip").Attrs(ctx)
 	if errors.Is(err, storage.ErrObjectNotExist) {
-		return c.NoContent(http.StatusNotFound)
+		return c.JSON(http.StatusNotFound, map[string]any{"error": "not found"})
 	}
 	return c.JSON(http.StatusOK, map[string]any{
-		"status": GetStatus(attrs.Metadata),
+		"status": getStatus(attrs.Metadata),
 	})
 }
 
@@ -96,27 +103,27 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 	}
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]any{
-			"reason": "invalid request body",
-			"error":  err.Error(),
+			"error":  "invalid request body",
+			"reason": err.Error(),
 		})
 	}
 	if len(req.URLs) == 0 {
 		return c.JSON(http.StatusBadRequest, map[string]any{
-			"reason": "no urls provided",
+			"error": "no urls provided",
 		})
 	}
 	for _, citygmlURL := range req.URLs {
 		u, err := url.Parse(citygmlURL)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-				"url":    citygmlURL,
-				"reason": "invalid url",
+				"url":   citygmlURL,
+				"error": "invalid url",
 			})
 		}
 		if p.conf.Domain != "" && u.Host != p.conf.Domain {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-				"url":    citygmlURL,
-				"reason": "invalid domain",
+				"url":   citygmlURL,
+				"error": "invalid domain",
 			})
 		}
 	}
@@ -135,9 +142,9 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 	if err := w.Close(); err != nil {
 		var gErr *googleapi.Error
 		if !(errors.As(err, &gErr) && gErr.Code == http.StatusPreconditionFailed) {
+			log.Errorfc(ctx, "citygml: packer: failed to write metadata: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]any{
-				"reason": "failed to write metadata",
-				"error":  err.Error(),
+				"error": "failed to write metadata",
 			})
 		}
 		return c.JSON(http.StatusOK, resp)
@@ -148,9 +155,9 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 		URLs:   req.URLs,
 	}
 	if err := p.packAsync(ctx, packReq); err != nil {
+		log.Errorfc(ctx, "citygml: packer: failed to write metadata: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]any{
-			"reason": "failed to enqueue pack job",
-			"error":  err.Error(),
+			"error": "failed to enqueue pack job",
 		})
 	}
 	return c.JSON(http.StatusOK, resp)
@@ -161,7 +168,10 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 		Timeout:  "86400s", // 1 day
 		QueueTtl: "86400s", // 1 day
 		Steps: []*cloudbuild.BuildStep{
-			{Name: p.conf.CityGMLPackerImage, Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...)},
+			{
+				Name: p.conf.CityGMLPackerImage,
+				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...),
+			},
 		},
 	}
 	var err error
@@ -184,7 +194,7 @@ func Status(s string) map[string]string {
 	}
 }
 
-func GetStatus(metadata map[string]string) string {
+func getStatus(metadata map[string]string) string {
 	return metadata["status"]
 }
 

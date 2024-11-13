@@ -25,32 +25,38 @@ func Run(conf Config) (err error) {
 	if err != nil {
 		return fmt.Errorf("invalid destination bucket(%s): %w", conf.Dest, err)
 	}
+
 	gcs, err := storage.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("storage.NewClient: %v", err)
 	}
+
 	obj := gcs.Bucket(destURL.Host).Object(path.Join(strings.TrimPrefix(destURL.Path, "/")))
+
 	defer func() {
 		if err == nil {
 			return
 		}
 		_, uErr := obj.Update(ctx, storage.ObjectAttrsToUpdate{
-			Metadata: citygml.Status(citygml.PackStatusFailed),
+			Metadata: citygml.Status(PackStatusFailed),
 		})
 		if uErr != nil {
-			log.Printf("failed to update status: (to=%s): %v", citygml.PackStatusFailed, uErr)
+			log.Printf("failed to update status: (to=%s): %v", PackStatusFailed, uErr)
 		}
 	}()
+
 	attrs, err := obj.Attrs(ctx)
 	if err != nil {
 		return fmt.Errorf("get metadata: %v", err)
 	}
-	if status := citygml.GetStatus(attrs.Metadata); status != citygml.PackStatusAccepted {
+
+	if status := getStatus(attrs.Metadata); status != PackStatusAccepted {
 		log.Printf("SKIPPED: already exists (status=%s)", status)
 		return nil
 	}
+
 	_, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
-		Update(ctx, storage.ObjectAttrsToUpdate{Metadata: citygml.Status(citygml.PackStatusProcessing)})
+		Update(ctx, storage.ObjectAttrsToUpdate{Metadata: status(PackStatusProcessing)})
 	if err != nil {
 		var gErr *googleapi.Error
 		if !(errors.As(err, &gErr) && gErr.Code == http.StatusPreconditionFailed) {
@@ -61,7 +67,7 @@ func Run(conf Config) (err error) {
 	}
 
 	w := obj.NewWriter(ctx)
-	w.ObjectAttrs.Metadata = citygml.Status(citygml.PackStatusSucceeded)
+	w.ObjectAttrs.Metadata = citygml.Status(PackStatusSucceeded)
 	defer w.Close()
 	if err := pack(ctx, w, conf.Domain, conf.URLs); err != nil {
 		return fmt.Errorf("pack: %w", err)
@@ -88,9 +94,11 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 			if err != nil {
 				return fmt.Errorf("invalid gml URL: %w", err)
 			}
+
 			if host != "" && u.Host != host {
 				return fmt.Errorf("invalid host: %s", u.Host)
 			}
+
 			nq, err = writeZip(ctx, zw, &httpClient, u, nq)
 			if err != nil {
 				return fmt.Errorf("writeZip: %w", err)
@@ -113,10 +121,12 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
+
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 	if err != nil {
 		return nil, fmt.Errorf("invalid url: %w", err)
 	}
+
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request gml: %w", err)
@@ -126,6 +136,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 	sax := gosax.NewReader(io.TeeReader(resp.Body, ze))
 	sax.EmitSelfClosingTag = true
 	inAppImageURI := false
+
 	for {
 		e, err := sax.Event()
 		if err != nil {
@@ -140,11 +151,14 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 			if err != nil {
 				return nil, fmt.Errorf("start element error: %w", err)
 			}
+
 			inAppImageURI = t.Name.Space == "app" && t.Name.Local == "imageURI"
+
 			for _, a := range t.Attr {
 				if a.Name.Space == "" && a.Name.Local == "codeSpace" {
 					depsMap[a.Value] = struct{}{}
 				}
+
 				if a.Name.Space == "xsi" && a.Name.Local == "schemaLocation" {
 					s := a.Value
 					for s != "" {
@@ -168,6 +182,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 		default:
 		}
 	}
+
 	deps := make([]string, 0, len(depsMap))
 	for dep := range depsMap {
 		deps = append(deps, dep)
@@ -183,19 +198,23 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 		if err != nil {
 			return nil, fmt.Errorf("create: %w", err)
 		}
+
 		req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("invalid url: %w", err)
 		}
+
 		resp, err := httpClient.Do(req)
 		if err != nil {
 			return nil, fmt.Errorf("request: %w", err)
 		}
+
 		_, err = io.Copy(w, resp.Body)
 		_ = resp.Body.Close()
 		if err != nil {
 			return nil, fmt.Errorf("copy response: %w", err)
 		}
 	}
+
 	return q, nil
 }
