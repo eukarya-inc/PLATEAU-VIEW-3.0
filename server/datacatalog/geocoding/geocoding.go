@@ -8,6 +8,7 @@ package geocoding
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -21,6 +22,8 @@ import (
 const (
 	endpoint = "https://map.yahooapis.jp/geocode/V1/geoCoder"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type Client struct {
 	c     *http.Client
@@ -87,7 +90,7 @@ func (c *Client) Bounds(ctx context.Context, address string) (quadtree.Bounds, e
 			Height: lat2 - lat1,
 		}, nil
 	}
-	return quadtree.Bounds{}, fmt.Errorf("not found")
+	return quadtree.Bounds{}, ErrNotFound
 }
 
 func parsePoint(s string) (float64, float64, error) {

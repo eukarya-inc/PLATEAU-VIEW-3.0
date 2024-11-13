@@ -2,6 +2,7 @@ package datacatalog
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -130,6 +131,9 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		case "g":
 			ctx := context.TODO()
 			b, err := geocoding.NewClient(h.geocodingAppID).Bounds(ctx, cond)
+			if errors.Is(err, geocoding.ErrNotFound) {
+				return echo.NewHTTPError(http.StatusNotFound, "not found")
+			}
 			if err != nil {
 				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
 			}
