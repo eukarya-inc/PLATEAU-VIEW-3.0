@@ -27,14 +27,24 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) =
         : { value: "published", label: "公開済" },
     [dataset?.admin?.status],
   );
+
+  const localCreatedAt = useMemo(
+    () => UTCTimeToLocalTime(dataset?.admin?.createdAt),
+    [dataset?.admin?.createdAt],
+  );
+  const localUpdatedAt = useMemo(
+    () => UTCTimeToLocalTime(dataset?.admin?.updatedAt),
+    [dataset?.admin?.updatedAt],
+  );
+
   return (
     <EditorBlock title="Status" expandable {...props}>
       <BlockContentWrapper>
         <EditorCommonField label="Status" inline>
           <PublishStatus status={status.value}>{status.label}</PublishStatus>
         </EditorCommonField>
-        <EditorTextField label="Created At" value={dataset?.admin?.createdAt ?? ""} disabled />
-        <EditorTextField label="Updated At" value={dataset?.admin?.updatedAt ?? ""} disabled />
+        <EditorTextField label="Created At" value={localCreatedAt} disabled />
+        <EditorTextField label="Updated At" value={localUpdatedAt} disabled />
         <EditorTextField
           label="CMS URL"
           value={dataset?.admin?.cmsUrl ?? ""}
@@ -60,3 +70,16 @@ const PublishStatus = styled("div")<{ status: "alpha" | "beta" | "published" }>(
     borderRadius: theme.shape.borderRadius,
   }),
 );
+
+function UTCTimeToLocalTime(utcTime: string): string {
+  if (!utcTime) return "";
+  return new Date(utcTime).toLocaleString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
