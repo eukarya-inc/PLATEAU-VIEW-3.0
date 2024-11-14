@@ -15,6 +15,7 @@ import (
 	"github.com/eukarya-inc/jpareacode/jpareacodepref"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	geojson "github.com/paulmach/go.geojson"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
@@ -100,12 +101,17 @@ func (h *Handler) Update(c echo.Context) error {
 		log.Debugfc(context.Background(), "govpolygon: not found polygon: %v", notfound)
 	}
 
-	geojsonj, err := json.Marshal(g)
+	h.qt = NewQuadtree(g, 0)
+
+	fc := geojson.NewFeatureCollection()
+	for _, f := range g {
+		fc.AddFeature(f)
+	}
+
+	geojsonj, err := json.Marshal(fc)
 	if err != nil {
 		return fmt.Errorf("failed to marshal geojson: %w", err)
 	}
-
-	h.qt = NewQuadtree(g, 0)
 
 	if !initial {
 		h.lock.Lock()

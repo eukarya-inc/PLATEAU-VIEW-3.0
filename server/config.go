@@ -226,7 +226,7 @@ func (c *Config) plateauCMS() plateaucms.Config {
 	}
 }
 
-func (c *Config) CityGML() citygml.Config {
+func (c *Config) CityGML() citygml.PackerConfig {
 	workRegion := c.CityGML_WorkerRegion
 	if workRegion == "" {
 		workRegion = c.GOOGLE_CLOUD_REGION
@@ -239,7 +239,7 @@ func (c *Config) CityGML() citygml.Config {
 	if citygmlPackerImage == "" {
 		citygmlPackerImage = "ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest"
 	}
-	return citygml.Config{
+	return citygml.PackerConfig{
 		Domain:             c.CityGML_Domain,
 		Bucket:             c.CityGML_Bucket,
 		CityGMLPackerImage: citygmlPackerImage,

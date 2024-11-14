@@ -41,7 +41,7 @@ func (f *FeatureType) ToPlateauDatasetType(spec plateauapi.PlateauSpec) *plateau
 
 func (f *FeatureType) ToRelatedDatasetType() *plateauapi.RelatedDatasetType {
 	return &plateauapi.RelatedDatasetType{
-		Category: plateauapi.DatasetTypeCategoryPlateau,
+		Category: plateauapi.DatasetTypeCategoryRelated,
 		ID:       plateauapi.NewID(f.Code, plateauapi.TypeDatasetType),
 		Name:     f.Name,
 		Code:     f.Code,
@@ -51,7 +51,7 @@ func (f *FeatureType) ToRelatedDatasetType() *plateauapi.RelatedDatasetType {
 
 func (f *FeatureType) ToGenericDatasetType() *plateauapi.GenericDatasetType {
 	return &plateauapi.GenericDatasetType{
-		Category: plateauapi.DatasetTypeCategoryPlateau,
+		Category: plateauapi.DatasetTypeCategoryGeneric,
 		ID:       plateauapi.NewID(f.Code, plateauapi.TypeDatasetType),
 		Name:     f.Name,
 		Code:     f.Code,

@@ -2,6 +2,7 @@ package datacatalog
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -114,12 +115,14 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 				cityIDs = append(cityIDs, h.qt.FindRect(b)...)
 			}
 		case "s":
-			b, err := spatialid.Bounds(cond)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
+			for _, s := range strings.Split(cond, ",") {
+				b, err := spatialid.Bounds(s)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
+				}
+				bounds = append(bounds, b)
+				cityIDs = h.qt.FindRect(b)
 			}
-			bounds = append(bounds, b)
-			cityIDs = h.qt.FindRect(b)
 		case "r":
 			b, err := parseBounds(cond)
 			if err != nil {
@@ -130,6 +133,9 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		case "g":
 			ctx := context.TODO()
 			b, err := geocoding.NewClient(h.geocodingAppID).Bounds(ctx, cond)
+			if errors.Is(err, geocoding.ErrNotFound) {
+				return echo.NewHTTPError(http.StatusNotFound, "not found")
+			}
 			if err != nil {
 				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
 			}
