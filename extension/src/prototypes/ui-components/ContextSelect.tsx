@@ -60,11 +60,6 @@ const StyledAddIcon = styled(AddIcon)({
   fontSize: 16,
 });
 
-const StyledStack = styled(Stack)({
-  minHeight: 18,
-  minWidth: 98,
-});
-
 export interface ContextSelectProps extends SelectProps<string[]> {
   label: ReactNode;
   autoClose?: boolean;
@@ -88,17 +83,17 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
     const renderValue = useCallback(
       (value: string[]) =>
         value.length === 0 ? (
-          <StyledStack direction="row" spacing={0.75} alignItems="center">
+          <Stack direction="row" spacing={0.75} alignItems="center">
             <StyledAddIcon color="action" />
             <Typography variant="body2">{label}</Typography>
-          </StyledStack>
+          </Stack>
         ) : (
-          <StyledStack direction="row" spacing={0.75} alignItems="center">
+          <Stack direction="row" spacing={0.75} alignItems="center">
             <Badge>{value.length}</Badge>
             <Typography variant="body2" color="primary">
               {label}
             </Typography>
-          </StyledStack>
+          </Stack>
         ),
       [label],
     );
