@@ -20,12 +20,12 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) =
     label: string;
   } = useMemo(
     () =>
-      dataset?.admin?.status === "alpha"
+      dataset?.admin?.stage === "alpha"
         ? { value: "alpha", label: "登録中" }
-        : dataset?.admin?.status === "beta"
+        : dataset?.admin?.stage === "beta"
         ? { value: "beta", label: "レビュー待ち" }
         : { value: "published", label: "公開済" },
-    [dataset?.admin?.status],
+    [dataset?.admin?.stage],
   );
 
   const localCreatedAt = useMemo(
