@@ -265,6 +265,7 @@ type RelatedItem struct {
 	Items  map[string]RelatedItemDatum `json:"items,omitempty" cms:"-"`
 	Merged string                      `json:"merged,omitempty" cms:"merged,asset"`
 	// metadata
+	Status        *cms.Tag            `json:"status,omitempty" cms:"status,tag,metadata"`
 	ConvertStatus map[string]*cms.Tag `json:"conv_status,omitempty" cms:"-"`
 	MergeStatus   *cms.Tag            `json:"merge_status,omitempty" cms:"merge_status,tag,metadata"`
 	Merge         bool                `json:"merge,omitempty" cms:"merge,bool,metadata"`

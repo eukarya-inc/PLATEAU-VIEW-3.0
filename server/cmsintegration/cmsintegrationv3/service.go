@@ -27,6 +27,7 @@ func resultURL(conf *Config) string {
 
 type Services struct {
 	CMS          cms.Interface
+	PlateauCMS   *PlateauCMS
 	HTTP         *http.Client
 	TaskRunner   gcptaskrunner.TaskRunner
 	PCMS         plateaucms.SpecStore
@@ -53,6 +54,7 @@ func NewServices(c Config) (s *Services, _ error) {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 	s.CMS = cms
+	s.PlateauCMS = NewPlateauCMS(cms, "")
 
 	pcms, err := plateaucms.New(plateaucms.Config{
 		CMSBaseURL:      c.CMSBaseURL,

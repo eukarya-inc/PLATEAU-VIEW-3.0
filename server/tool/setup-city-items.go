@@ -49,7 +49,7 @@ func setupCityItems(conf *Config, args []string) error {
 		return errors.New("CMS base URL, CMS token, project, and file are required")
 	}
 
-	pp.Sprintf("args: %v", inp)
+	pp.Printf("args: %v\n", inp)
 
 	f, err := os.Open(file)
 	if err != nil {

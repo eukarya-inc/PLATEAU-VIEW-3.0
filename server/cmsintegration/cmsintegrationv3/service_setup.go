@@ -49,6 +49,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 	if err != nil {
 		return fmt.Errorf("failed to get models: %w", err)
 	}
+
 	for _, m := range models.Models {
 		if !strings.HasPrefix(m.Key, modelPrefix) {
 			continue
