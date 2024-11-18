@@ -17,6 +17,7 @@ type TemplateHeaderProps = {
   templateNames: string[];
   onTemplateRename?: (templateName: string) => void;
   onTemplateRemove?: (templateId: string) => void;
+  onTemplateDuplicate?: (templateName: string) => void;
 };
 
 export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
@@ -25,6 +26,7 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
   templateNames,
   onTemplateRename,
   onTemplateRemove,
+  onTemplateDuplicate,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -85,6 +87,38 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
     setRenameTemplateOpen(false);
   }, [newTemplateName, onTemplateRename]);
 
+  const [duplicateTemplateOpen, setDuplicateTemplateOpen] = useState(false);
+  const handleOpenDuplicateTemplate = useCallback(() => {
+    setDuplicateTemplateOpen(true);
+    setMenuOpen(false);
+  }, []);
+  const handleCloseDuplicateTemplate = useCallback(() => {
+    setDuplicateTemplateOpen(false);
+    setDuplicatedTemplateName(generateDuplicateTemplateName(templateName));
+  }, [templateName]);
+
+  const [duplicatedTemplateName, setDuplicatedTemplateName] = useState(
+    generateDuplicateTemplateName(templateName),
+  );
+  const handleDuplicatedTemplateNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setDuplicatedTemplateName(e.target.value);
+    },
+    [],
+  );
+  const duplicatedTemplateNameValid = useMemo(() => {
+    return (
+      templateNames.includes(duplicatedTemplateName) ||
+      duplicatedTemplateName === "" ||
+      duplicatedTemplateName.endsWith("/") ||
+      duplicatedTemplateName.split("/").some(p => p === "")
+    );
+  }, [duplicatedTemplateName, templateNames]);
+  const handleTemplateDuplicate = useCallback(() => {
+    onTemplateDuplicate?.(duplicatedTemplateName);
+    setDuplicateTemplateOpen(false);
+  }, [duplicatedTemplateName, onTemplateDuplicate]);
+
   return (
     <EditorClickAwayListener onClickAway={handleClickAway}>
       <Wrapper>
@@ -101,6 +135,9 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
           <EditorPopperList>
             <EditorPopperListItemButton onClick={handleOpenRenameTemplate}>
               Rename
+            </EditorPopperListItemButton>
+            <EditorPopperListItemButton onClick={handleOpenDuplicateTemplate}>
+              Duplicate
             </EditorPopperListItemButton>
             <EditorPopperListItemButton onClick={handleOpenRemoveTemplate}>
               Delete
@@ -138,6 +175,22 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
             onChange={handleNewTemplateNameChange}
           />
         </EditorDialog>
+        <EditorDialog
+          title="Duplicate Template"
+          open={duplicateTemplateOpen}
+          fullWidth
+          primaryButtonText="Duplicate"
+          onClose={handleCloseDuplicateTemplate}
+          onSubmit={handleTemplateDuplicate}
+          submitDisabled={duplicatedTemplateNameValid}>
+          <EditorTextField
+            autoFocus
+            label="Full path:"
+            fullWidth
+            value={duplicatedTemplateName}
+            onChange={handleDuplicatedTemplateNameChange}
+          />
+        </EditorDialog>
       </Wrapper>
     </EditorClickAwayListener>
   );
@@ -167,3 +220,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
     borderRadius: "0",
   },
 }));
+
+function generateDuplicateTemplateName(ori: string) {
+  return `${ori} (copy-${new Date().getTime()})`;
+}
