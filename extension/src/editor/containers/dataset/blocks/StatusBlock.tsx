@@ -1,4 +1,6 @@
 import { styled } from "@mui/material";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { useMemo } from "react";
 
 import { EditorDataset } from "..";
@@ -9,6 +11,8 @@ import {
   EditorCommonField,
   EditorTextField,
 } from "../../ui-components";
+
+dayjs.extend(utc);
 
 type StatusBlockProps = EditorBlockProps & {
   dataset?: EditorDataset;
@@ -29,11 +33,11 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({ dataset, ...props }) =
   );
 
   const localCreatedAt = useMemo(
-    () => UTCTimeToLocalTime(dataset?.admin?.createdAt),
+    () => toLocalTime(dataset?.admin?.createdAt),
     [dataset?.admin?.createdAt],
   );
   const localUpdatedAt = useMemo(
-    () => UTCTimeToLocalTime(dataset?.admin?.updatedAt),
+    () => toLocalTime(dataset?.admin?.updatedAt),
     [dataset?.admin?.updatedAt],
   );
 
@@ -71,15 +75,7 @@ const PublishStatus = styled("div")<{ status: "alpha" | "beta" | "published" }>(
   }),
 );
 
-function UTCTimeToLocalTime(utcTime: string): string {
-  if (!utcTime) return "";
-  return new Date(utcTime).toLocaleString("en-US", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  });
+function toLocalTime(time: string): string {
+  if (!time) return "";
+  return dayjs(time).local().format("YYYY-MM-DD HH:mm");
 }
