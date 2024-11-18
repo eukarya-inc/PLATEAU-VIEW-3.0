@@ -1,6 +1,4 @@
 import { styled } from "@mui/material";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import { useMemo } from "react";
 
 import { EditorDataset } from "..";
@@ -11,8 +9,7 @@ import {
   EditorCommonField,
   EditorTextField,
 } from "../../ui-components";
-
-dayjs.extend(utc);
+import dayjs from "../../utils-dayjs";
 
 type StatusBlockProps = EditorBlockProps & {
   dataset?: EditorDataset;
