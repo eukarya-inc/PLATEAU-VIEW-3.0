@@ -65,12 +65,7 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
   }, []);
 
   const newTemplateNameInvalid = useMemo(() => {
-    return (
-      templateNames.includes(newTemplateName) ||
-      newTemplateName === "" ||
-      newTemplateName.endsWith("/") ||
-      newTemplateName.split("/").some(p => p === "")
-    );
+    return isTemplateNameInvalid(newTemplateName, templateNames);
   }, [newTemplateName, templateNames]);
 
   const handleClickAway = useCallback(() => {
@@ -106,14 +101,10 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
     },
     [],
   );
-  const duplicatedTemplateNameValid = useMemo(() => {
-    return (
-      templateNames.includes(duplicatedTemplateName) ||
-      duplicatedTemplateName === "" ||
-      duplicatedTemplateName.endsWith("/") ||
-      duplicatedTemplateName.split("/").some(p => p === "")
-    );
+  const duplicatedTemplateNameInvalid = useMemo(() => {
+    return isTemplateNameInvalid(duplicatedTemplateName, templateNames);
   }, [duplicatedTemplateName, templateNames]);
+
   const handleTemplateDuplicate = useCallback(() => {
     onTemplateDuplicate?.(duplicatedTemplateName);
     setDuplicateTemplateOpen(false);
@@ -182,7 +173,7 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
           primaryButtonText="Duplicate"
           onClose={handleCloseDuplicateTemplate}
           onSubmit={handleTemplateDuplicate}
-          submitDisabled={duplicatedTemplateNameValid}>
+          submitDisabled={duplicatedTemplateNameInvalid}>
           <EditorTextField
             autoFocus
             label="Full path:"
@@ -223,4 +214,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 function generateDuplicateTemplateName(ori: string) {
   return `${ori} (copy-${new Date().getTime()})`;
+}
+
+function isTemplateNameInvalid(name: string, existNames: string[]) {
+  return (
+    existNames.includes(name) ||
+    name === "" ||
+    name.endsWith("/") ||
+    name.split("/").some(p => p === "")
+  );
 }
