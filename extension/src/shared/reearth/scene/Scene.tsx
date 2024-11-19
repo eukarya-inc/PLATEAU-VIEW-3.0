@@ -3,7 +3,6 @@
 import { FC, useEffect } from "react";
 
 import { AmbientOcclusion, Antialias, CameraPosition, Tile, TileLabels } from "../types";
-import { Camera } from "../types/viewer";
 import { isReEarthAPIv2 } from "../utils/reearth";
 
 // nx = red
@@ -110,7 +109,6 @@ export const Scene: FC<SceneProps> = ({
     if (isReEarthAPIv2(window?.reearth)) {
       window.reearth?.viewer?.overrideProperty?.({
         camera: {
-          camera: initialCamera as Camera,
           allowEnterGround: enterUnderground,
         },
         scene: {
@@ -208,6 +206,9 @@ export const Scene: FC<SceneProps> = ({
           },
         },
       });
+      if (initialCamera) {
+        window.reearth?.camera?.flyTo(initialCamera, { duration: 0 });
+      }
     } else {
       window.reearth?.scene?.overrideProperty({
         default: {
