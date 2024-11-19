@@ -149,7 +149,6 @@ export type SkyAtmosphereProperty = {
 };
 
 export type CameraProperty = {
-  camera?: Camera;
   allowEnterGround?: boolean;
   limiter?: CameraLimiterProperty;
 };
