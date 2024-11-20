@@ -9,6 +9,7 @@ import {
   EditorPopperListItemButton,
   EditorTextField,
 } from "../../ui-components";
+import dayjs from "../../utils-dayjs";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 type TemplateHeaderProps = {
@@ -213,7 +214,7 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 function generateDuplicateTemplateName(ori: string) {
-  return `${ori} (copy-${new Date().getTime()})`;
+  return `${ori} (copy-${dayjs(new Date()).local().format("YYYY-MM-DD HH:mm:ss")})`;
 }
 
 function isTemplateNameInvalid(name: string, existNames: string[]) {
