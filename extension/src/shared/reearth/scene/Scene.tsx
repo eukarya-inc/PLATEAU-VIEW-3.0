@@ -206,9 +206,6 @@ export const Scene: FC<SceneProps> = ({
           },
         },
       });
-      if (initialCamera) {
-        window.reearth?.camera?.flyTo(initialCamera, { duration: 0 });
-      }
     } else {
       window.reearth?.scene?.overrideProperty({
         default: {
@@ -323,6 +320,12 @@ export const Scene: FC<SceneProps> = ({
     enterUnderground,
     hideUnderground,
   ]);
+
+  useEffect(() => {
+    if (initialCamera) {
+      window.reearth?.camera?.flyTo(initialCamera, { duration: 0 });
+    }
+  }, [initialCamera]);
 
   return null;
 };
