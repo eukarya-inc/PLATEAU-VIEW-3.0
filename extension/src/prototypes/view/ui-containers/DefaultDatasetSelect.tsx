@@ -48,11 +48,10 @@ export interface DefaultDatasetSelectProps {
   datasets: DatasetFragmentFragment[];
   municipalityCode: string;
   disabled?: boolean;
-  allowContinuousAdd?: boolean;
 }
 
 export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
-  ({ datasets, municipalityCode, disabled, allowContinuousAdd }) => {
+  ({ datasets, municipalityCode, disabled }) => {
     invariant(datasets.length > 0);
     const rootLayers = useAtomValue(rootLayersAtom);
     const settings = useAtomValue(settingsAtom);
@@ -152,8 +151,7 @@ export const DefaultDatasetSelect: FC<DefaultDatasetSelectProps> = memo(
         label={datasets[0].type.name ?? datasetTypeNames.usecase}
         value={value}
         onChange={handleChange}
-        disabled={disabled}
-        autoClose={!allowContinuousAdd}>
+        disabled={disabled}>
         {datasets.flatMap((dataset, index) => {
           if (
             dataset.items.length > 1 ||
