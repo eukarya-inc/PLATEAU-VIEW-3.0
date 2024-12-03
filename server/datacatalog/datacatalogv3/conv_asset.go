@@ -168,14 +168,14 @@ func ParseAssetNameEx(name string) (ex AssetNameEx) {
 	return
 }
 
-var reAasetNameExNormal = regexp.MustCompile(`^([a-z]+)(?:_([A-Za-z0-9-_]+))?_(mvt|3dtiles|dm_geometric_attributes)(?:_(\d+)_([a-z0-9-]+))?(_lod\d\d?)?(_no_texture)?$`)
+var reAssetNameExNormal = regexp.MustCompile(`^([a-z]+)(?:_([A-Za-z0-9-_]+))?_(mvt|3dtiles|dm_geometric_attributes)(?:_(\d+)_([a-z0-9-]+))?(_lod\d\d?)?(_no_texture)?$`)
 
 func ParseAssetNameExNormal(name string) *AssetNameExNormal {
 	if name == "" {
 		return nil
 	}
 
-	m := reAasetNameExNormal.FindStringSubmatch(name)
+	m := reAssetNameExNormal.FindStringSubmatch(name)
 	if len(m) == 0 {
 		return nil
 	}
