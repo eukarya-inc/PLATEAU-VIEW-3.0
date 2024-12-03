@@ -125,12 +125,14 @@ var plateauFeatureTypes = []FeatureType{
 		MVTLayerName: []string{"CityFurniture"},
 	},
 	{
-		Code: "unf",
-		Name: "地下埋設物モデル",
+		Code:         "unf",
+		Name:         "地下埋設物モデル",
+		MVTLayerName: []string{"UtilityNetwork"},
 	},
 	{
-		Code: "ubld",
-		Name: "地下街モデル",
+		Code:         "ubld",
+		Name:         "地下街モデル",
+		MVTLayerName: []string{"UndergroundBuilding"},
 	},
 	{
 		Code: "veg",
