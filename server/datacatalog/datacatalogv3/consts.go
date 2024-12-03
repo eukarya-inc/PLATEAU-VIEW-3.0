@@ -56,6 +56,7 @@ var plateauFeatureTypes = []FeatureType{
 		Code:         "luse",
 		Name:         "土地利用モデル",
 		MVTLayerName: []string{"luse"},
+		HideLOD:      true,
 	},
 	{
 		Code:        "fld",
@@ -99,10 +100,12 @@ var plateauFeatureTypes = []FeatureType{
 		Name:         "土砂災害警戒区域モデル",
 		GroupName:    "災害リスク（土砂災害）モデル",
 		MVTLayerName: []string{"lsld"},
+		HideLOD:      true,
 	},
 	{
-		Code: "urf",
-		Name: "都市計画決定情報モデル",
+		Code:    "urf",
+		Name:    "都市計画決定情報モデル",
+		HideLOD: true,
 	},
 	{
 		Code:         "brid",
@@ -149,11 +152,13 @@ var plateauFeatureTypes = []FeatureType{
 		Code:         "area",
 		Name:         "区域モデル",
 		MVTLayerName: []string{"Zone"},
+		HideLOD:      true,
 	},
 	{
 		Code:               "gen",
 		Name:               "汎用都市オブジェクトモデル",
 		MVTLayerNamePrefix: "gen",
+		HideLOD:            true,
 	},
 }
 
