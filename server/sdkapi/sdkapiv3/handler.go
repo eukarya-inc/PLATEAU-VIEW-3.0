@@ -63,7 +63,6 @@ func Handler(conf Config, g *echo.Group) (bool, error) {
 		return c.JSON(http.StatusOK, res)
 	})
 
-	log.Infof("sdkapiv3: initialized")
 	return true, nil
 }
 
