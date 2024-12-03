@@ -164,5 +164,9 @@ func (l LayerNames) LayerName(def []string, lod int, format plateauapi.DatasetFo
 		})
 	}
 
+	if len(def) == 0 || def[0] == "" {
+		return nil
+	}
+
 	return def
 }

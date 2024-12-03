@@ -214,32 +214,6 @@ func ParseAssetNameExNormal(name string) *AssetNameExNormal {
 	}
 }
 
-// var reAssetNameExUrf = regexp.MustCompile(`^([a-z]+)_([A-Za-z0-9-_]+)_(mvt|3dtiles)(_lod\d+)?(_no_texture)?$`)
-
-// func ParseAssetNameExUrf(name string) *AssetNameExUrf {
-// 	if name == "" {
-// 		return nil
-// 	}
-
-// 	m := reAssetNameExUrf.FindStringSubmatch(name)
-// 	if len(m) == 0 {
-// 		return nil
-// 	}
-
-// 	lod := 0
-// 	if m[4] != "" {
-// 		lod, _ = strconv.Atoi(m[4][4:])
-// 	}
-
-// 	return &AssetNameExUrf{
-// 		Type:      m[1],
-// 		Name:      m[2],
-// 		Format:    m[3],
-// 		LOD:       lod,
-// 		NoTexture: m[5] != "",
-// 	}
-// }
-
 var reAssetNameExFld = regexp.MustCompile(`^fld_(natl|pref)_([A-Za-z0-9-_]+)_3dtiles_(l\d+)(?:-(.+?))?(_no_texture)?$`)
 
 func ParseAssetNameExFld(name string) *AssetNameExFld {

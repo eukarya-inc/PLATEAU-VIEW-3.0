@@ -302,6 +302,7 @@ type plateauDatasetItemSeed struct {
 	FloodingScaleSuffix *string
 	HideTexture         bool
 	HideLOD             bool
+	DefaultName         string
 }
 
 func (i plateauDatasetItemSeed) GetID(parentID string) string {
@@ -332,7 +333,7 @@ func (i plateauDatasetItemSeed) GetName() string {
 	name := i.Name
 	var lod, tex string
 
-	if i.LOD != nil && !i.HideLOD {
+	if i.LOD != nil { // HideLOD should be ignored here
 		lodex := ""
 		if i.LODEx != nil && *i.LODEx > 0 {
 			lodex = fmt.Sprintf(".%d", *i.LODEx)
@@ -352,7 +353,10 @@ func (i plateauDatasetItemSeed) GetName() string {
 
 	if name != "" && lod != "" {
 		name += " "
+	} else if name == "" && lod == "" {
+		name = i.DefaultName
 	}
+
 	return name + lod + tex
 }
 
@@ -375,7 +379,7 @@ func plateauDatasetItemSeedFrom(seed plateauDatasetSeed) (items []plateauDataset
 
 		switch {
 		case assetName.Ex.Normal != nil:
-			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture, seed.HideLOD, seed.Dic)
+			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture, seed.HideLOD, seed.Dic, seed.DatasetType.Name)
 		case assetName.Ex.Fld != nil:
 			item, w = plateauDatasetItemSeedFromFld(url, assetName.Ex.Fld, seed.Dic, cityCode, seed.HideTexture)
 		default:
@@ -402,6 +406,7 @@ func plateauDatasetItemSeedFromNormal(
 	hideTexture bool,
 	hideLOD bool,
 	dic Dic,
+	defaultName string,
 ) (res *plateauDatasetItemSeed, w []string) {
 	if !ex.NoTexture && hideTexture {
 		return
@@ -441,6 +446,12 @@ func plateauDatasetItemSeedFromNormal(
 		notexture = &ex.NoTexture
 	}
 
+	// layer names
+	layers := layerNames.LayerName([]string{key}, ex.LOD, format)
+	if format == plateauapi.DatasetFormatMvt && (len(layers) == 0 || layers[0] == "") {
+		w = append(w, fmt.Sprintf("plateau %s %s: no layer for MVT", cityCode, ex.Type))
+	}
+
 	return &plateauDatasetItemSeed{
 		ID:          key,
 		Name:        name,
@@ -449,9 +460,10 @@ func plateauDatasetItemSeedFromNormal(
 		LOD:         lod,
 		LODEx:       lodex,
 		NoTexture:   notexture,
-		Layers:      layerNames.LayerName([]string{key}, ex.LOD, format),
+		Layers:      layers,
 		HideTexture: hideTexture,
 		HideLOD:     hideLOD,
+		DefaultName: defaultName,
 	}, w
 }
 

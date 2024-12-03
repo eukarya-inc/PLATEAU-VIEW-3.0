@@ -770,7 +770,7 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 				{
 					ID:       plateauapi.NewID("11111_gen_99", plateauapi.TypeDatasetItem),
 					Format:   plateauapi.DatasetFormatMvt,
-					Name:     "GEN",
+					Name:     "GEN LOD0",
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_gen_99_mvt_lod0/{z}/{x}/{y}.mvt",
 					Lod:      lo.ToPtr(0),
 					Layers:   []string{"gen_99"},
