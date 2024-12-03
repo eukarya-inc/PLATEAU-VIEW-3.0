@@ -44,6 +44,7 @@ type FeatureType struct {
 	MVTLayerNamesForLOD map[int][]string `json:"layer_names_for_lod,omitempty" cms:"-"`
 	MVTLayerNamePrefix  string           `json:"layer_name_prefix,omitempty" cms:"layer_name_prefix,text"`
 	HideTexture         bool             `json:"hide_texture,omitempty" cms:"hide_texture,bool"`
+	HideLOD             bool             `json:"hide_lod,omitempty" cms:"hide_lod,bool"`
 }
 
 type CityItem struct {

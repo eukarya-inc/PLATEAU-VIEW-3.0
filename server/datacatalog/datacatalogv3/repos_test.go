@@ -120,7 +120,7 @@ func TestRepos(t *testing.T) {
 							Name:     "LOD1",
 							ParentID: plateauapi.ID("d_" + cityCode + "_bldg"),
 							Lod:      lo.ToPtr(1),
-							LodEx:    lo.ToPtr(0),
+							LodEx:    nil,
 							Texture:  lo.ToPtr(plateauapi.TextureTexture),
 						},
 					},

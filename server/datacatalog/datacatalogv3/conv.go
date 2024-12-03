@@ -289,7 +289,8 @@ func setGroupsToDatasets(datasets []*plateauapi.PlateauDataset, groups []string)
 			continue
 		}
 
-		ds.Groups = append(groups)
+		ds.Groups = make([]string, len(groups))
+		copy(ds.Groups, groups)
 	}
 }
 

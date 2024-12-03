@@ -154,6 +154,7 @@ var plateauFeatureTypes = []FeatureType{
 		Code:               "gen",
 		Name:               "汎用都市オブジェクトモデル",
 		MVTLayerNamePrefix: "gen",
+		// HideLOD:            true,
 	},
 }
 
