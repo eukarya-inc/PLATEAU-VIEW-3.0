@@ -1,0 +1,51 @@
+[
+  {
+    "name": "gml:description",
+    "type": "gml:StringOrRefType",
+    "minOccurs": "0",
+    "maxOccurs": "1",
+    "flag": ""
+  },
+  {
+    "name": "gml:name",
+    "type": "gml:CodeType",
+    "minOccurs": "0",
+    "maxOccurs": "1",
+    "flag": ""
+  },
+  {
+    "name": "core:creationDate",
+    "type": "xs:date",
+    "minOccurs": "0",
+    "maxOccurs": "1",
+    "flag": ""
+  },
+  {
+    "name": "core:terminationDate",
+    "type": "xs:date",
+    "minOccurs": "0",
+    "maxOccurs": "1",
+    "flag": ""
+  },
+  {
+    "name": "core:externalReference",
+    "type": "ExternalReferenceType",
+    "minOccurs": "0",
+    "maxOccurs": "unbounded",
+    "flag": ""
+  },
+  {
+    "name": "core:generalizesTo",
+    "type": "GeneralizationRelationType",
+    "minOccurs": "0",
+    "maxOccurs": "unbounded",
+    "flag": ""
+  },
+  {
+    "name": "core:relativeToTerrain",
+    "type": "RelativeToTerrainType",
+    "minOccurs": "0",
+    "maxOccurs": "1",
+    "flag": ""
+  }
+]
