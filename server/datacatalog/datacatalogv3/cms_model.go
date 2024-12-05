@@ -37,14 +37,15 @@ type FeatureType struct {
 	Order     int    `json:"order,omitempty" cms:"order,integer"`
 	GroupName string `json:"group_name,omitempty" cms:"group_name,text"`
 	// for plateau
-	MinSpecMajor        int              `json:"spec_major,omitempty" cms:"spec_major,integer"`
-	MinYear             int              `json:"min_year,omitempty" cms:"min_year,integer"`
-	Flood               bool             `json:"flood,omitempty" cms:"flood,bool"`
-	MVTLayerName        []string         `json:"layer_name,omitempty" cms:"layer_name,text"`
-	MVTLayerNamesForLOD map[int][]string `json:"layer_names_for_lod,omitempty" cms:"-"`
-	MVTLayerNamePrefix  string           `json:"layer_name_prefix,omitempty" cms:"layer_name_prefix,text"`
-	HideTexture         bool             `json:"hide_texture,omitempty" cms:"hide_texture,bool"`
-	HideLOD             bool             `json:"hide_lod,omitempty" cms:"hide_lod,bool"`
+	MinSpecMajor          int              `json:"spec_major,omitempty" cms:"spec_major,integer"`
+	MinYear               int              `json:"min_year,omitempty" cms:"min_year,integer"`
+	Flood                 bool             `json:"flood,omitempty" cms:"flood,bool"`
+	MVTLayerName          []string         `json:"layer_name,omitempty" cms:"layer_name,text"`
+	MVTLayerNamesForLOD   map[int][]string `json:"layer_names_for_lod,omitempty" cms:"-"`
+	MVTLayerNamePrefix    string           `json:"layer_name_prefix,omitempty" cms:"layer_name_prefix,text"`
+	UseCategoryAsMVTLayer bool             `json:"use_category_as_mvt_layer" cms:"use_category_as_mvt_layer,bool"`
+	HideTexture           bool             `json:"hide_texture,omitempty" cms:"hide_texture,bool"`
+	HideLOD               bool             `json:"hide_lod,omitempty" cms:"hide_lod,bool"`
 }
 
 type CityItem struct {
