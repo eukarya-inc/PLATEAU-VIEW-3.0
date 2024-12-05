@@ -83,7 +83,7 @@ export function getDatasetGroups({
         groupId: generateGroupId("generic", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
         useTree: true,
-        allowContinuousAdd: true,
+        allowContinuousAdd: false,
       }))
     : undefined;
 
