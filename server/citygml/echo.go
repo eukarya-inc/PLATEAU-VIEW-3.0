@@ -2,9 +2,11 @@ package citygml
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/reearth/reearthx/log"
 )
 
 func Echo(conf PackerConfig, g *echo.Group) error {
@@ -31,5 +33,33 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 	// URLを複数指定したら必要ファイルのみが含まれた zip ファイルを非同期で作成するエンドポイント
 	// id を返す
 	g.POST("/pack", p.handlePackRequest)
+
+	g.GET("/attributes", func(c echo.Context) error {
+		citygmlURL := c.Param("url")
+		u, err := url.Parse(citygmlURL)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"url":    citygmlURL,
+				"reason": "invalid url",
+			})
+		}
+		if p.conf.Domain != "" && u.Host != p.conf.Domain {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"url":    citygmlURL,
+				"reason": "invalid domain",
+			})
+		}
+		ids := strings.Split(c.Param("id"), ",")
+		resp, err := Attributes(http.DefaultClient, citygmlURL, ids)
+		if err != nil {
+			log.Errorfc(c.Request().Context(), "citygml: failed to extract attributes: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"url":   citygmlURL,
+				"error": "internal",
+			})
+		}
+		return c.JSON(http.StatusOK, resp)
+	})
+
 	return nil
 }
