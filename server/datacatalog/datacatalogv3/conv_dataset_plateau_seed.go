@@ -22,20 +22,21 @@ type plateauDatasetSeed struct {
 	WardCode   *plateauapi.AreaCode
 	Groups     []string
 	// common
-	DatasetType       *plateauapi.PlateauDatasetType
-	Dic               Dic
-	Area              *areaContext
-	Pref              *plateauapi.Prefecture
-	City              *plateauapi.City
-	Spec              *plateauapi.PlateauSpecMinor
-	River             *plateauapi.River
-	Admin             any
-	LayerNames        LayerNames
-	Year              int
-	OpenDataURL       string
-	HideTexture       bool
-	HideLOD           bool
-	RegisterationYear int
+	DatasetType           *plateauapi.PlateauDatasetType
+	Dic                   Dic
+	Area                  *areaContext
+	Pref                  *plateauapi.Prefecture
+	City                  *plateauapi.City
+	Spec                  *plateauapi.PlateauSpecMinor
+	River                 *plateauapi.River
+	Admin                 any
+	LayerNames            LayerNames
+	Year                  int
+	OpenDataURL           string
+	HideTexture           bool
+	HideLOD               bool
+	RegisterationYear     int
+	UseCategoryAsMVTLayer bool
 }
 
 func (seed plateauDatasetSeed) GetID() string {
@@ -101,6 +102,7 @@ func plateauDatasetSeedsFrom(i *PlateauFeatureItem, opts ToPlateauDatasetsOption
 		res[i].HideTexture = opts.FeatureType.HideTexture
 		res[i].HideLOD = opts.FeatureType.HideLOD
 		res[i].RegisterationYear = opts.Year
+		res[i].UseCategoryAsMVTLayer = opts.FeatureType.UseCategoryAsMVTLayer
 		if res[i].TargetArea == nil {
 			res[i].TargetArea = opts.Area.City
 			if res[i].TargetArea == nil {
@@ -379,7 +381,7 @@ func plateauDatasetItemSeedFrom(seed plateauDatasetSeed) (items []plateauDataset
 
 		switch {
 		case assetName.Ex.Normal != nil:
-			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture, seed.HideLOD, seed.Dic, seed.DatasetType.Name)
+			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture, seed.HideLOD, seed.Dic, seed.DatasetType.Name, seed.UseCategoryAsMVTLayer)
 		case assetName.Ex.Fld != nil:
 			item, w = plateauDatasetItemSeedFromFld(url, assetName.Ex.Fld, seed.Dic, cityCode, seed.HideTexture)
 		default:
@@ -407,6 +409,7 @@ func plateauDatasetItemSeedFromNormal(
 	hideLOD bool,
 	dic Dic,
 	defaultName string,
+	useCategoryAsMVTLayer bool,
 ) (res *plateauDatasetItemSeed, w []string) {
 	if !ex.NoTexture && hideTexture {
 		return
@@ -447,7 +450,11 @@ func plateauDatasetItemSeedFromNormal(
 	}
 
 	// layer names
-	layers := layerNames.LayerName([]string{key}, ex.LOD, format)
+	layerName := key
+	if useCategoryAsMVTLayer && ex.Name != "" {
+		layerName = ex.Name
+	}
+	layers := layerNames.LayerName([]string{layerName}, ex.LOD, format)
 	if format == plateauapi.DatasetFormatMvt && (len(layers) == 0 || layers[0] == "") {
 		w = append(w, fmt.Sprintf("plateau %s %s: no layer for MVT", cityCode, ex.Type))
 	}
