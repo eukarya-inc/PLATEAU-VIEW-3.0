@@ -35,7 +35,7 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 	g.POST("/pack", p.handlePackRequest)
 
 	g.GET("/attributes", func(c echo.Context) error {
-		citygmlURL := c.Param("url")
+		citygmlURL := c.QueryParam("url")
 		u, err := url.Parse(citygmlURL)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
@@ -49,7 +49,7 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 				"reason": "invalid domain",
 			})
 		}
-		ids := strings.Split(c.Param("id"), ",")
+		ids := strings.Split(c.QueryParam("id"), ",")
 		resp, err := Attributes(http.DefaultClient, citygmlURL, ids)
 		if err != nil {
 			log.Errorfc(c.Request().Context(), "citygml: failed to extract attributes: %v", err)
