@@ -326,7 +326,7 @@ func (u anyAttrUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartEle
 		return nil, err
 	}
 	t := string(c)
-	if strings.IndexAny(t, "eE") >= 0 {
+	if strings.ContainsAny(t, "eE") {
 		if _, err := strconv.ParseFloat(t, 64); err == nil {
 			return t, nil
 		}
@@ -561,35 +561,6 @@ func (ae *attributeExtractor) gmlID(attr []xml.Attr) string {
 		}
 	}
 	return ""
-}
-
-func (ae *attributeExtractor) getLOD(e xml.StartElement) (int, error) {
-	if ae.ns[e.Name.Space] == "http://www.opengis.net/citygml/relief/2.0" && e.Name.Local == "lod" {
-		data, err := ae.Text()
-		if err != nil {
-			return 0, fmt.Errorf("dem:lod children: %w", err)
-		}
-		lod, err := strconv.Atoi(string(data))
-		if err != nil {
-			return 0, fmt.Errorf("invalid lod(%s): %w", string(data), err)
-		}
-		if lod < 0 || 4 < lod {
-			return 0, fmt.Errorf("invalid lod: %d", lod)
-		}
-		return lod, nil
-	}
-	if !strings.HasPrefix(e.Name.Local, "lod") {
-		return -1, nil
-	}
-	s := e.Name.Local
-	if len(s) == 3 {
-		return -1, nil
-	}
-	lod := int(s[4]) - '0'
-	if lod < 0 || 4 < lod {
-		return -1, nil
-	}
-	return lod, nil
 }
 
 func tagName(name xml.Name) string {
