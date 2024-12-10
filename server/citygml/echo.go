@@ -50,6 +50,11 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 			})
 		}
 		ids := strings.Split(c.QueryParam("id"), ",")
+		if len(ids) == 0 || (len(ids) == 1 && ids[0] == "") {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"reason": "id parameter is required",
+			})
+		}
 		resp, err := Attributes(http.DefaultClient, citygmlURL, ids)
 		if err != nil {
 			log.Errorfc(c.Request().Context(), "citygml: failed to extract attributes: %v", err)
