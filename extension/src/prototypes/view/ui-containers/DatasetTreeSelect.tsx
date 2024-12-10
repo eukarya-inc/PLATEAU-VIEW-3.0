@@ -31,8 +31,10 @@ function createParamsArray(get: Getter, layers: readonly RootLayerConfigForDatas
     .filter(isNotNullish);
 }
 
-function serializeParams({ datasetId, datumId }: Params): string {
-  return JSON.stringify([datasetId, datumId]);
+function serializeParams({ datasetId }: Params): string {
+  // TODO: Support datumId to select dataset's items.
+  // return JSON.stringify([datasetId, datumId]);
+  return JSON.stringify([datasetId]);
 }
 
 function parseParams(value: string): Params {
