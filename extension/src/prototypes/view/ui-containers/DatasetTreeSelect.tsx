@@ -45,11 +45,10 @@ export interface DatasetTreeSelectProps {
   datasets: DatasetItem[];
   municipalityCode: string;
   disabled?: boolean;
-  allowContinuousAdd?: boolean;
 }
 
 export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
-  ({ datasets, municipalityCode, disabled, label, allowContinuousAdd }) => {
+  ({ datasets, municipalityCode, disabled, label }) => {
     invariant(datasets.length > 0);
     const rootLayers = useAtomValue(rootLayersAtom);
     const settings = useAtomValue(settingsAtom);
@@ -143,12 +142,7 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
     }, [datasets]);
 
     return (
-      <ContextSelect
-        label={label}
-        value={value}
-        onChange={handleChange}
-        disabled={disabled}
-        autoClose={!allowContinuousAdd}>
+      <ContextSelect label={label} value={value} onChange={handleChange} disabled={disabled}>
         {selectTreeItems.map((item, index) => {
           if (item.isFolder) {
             return (

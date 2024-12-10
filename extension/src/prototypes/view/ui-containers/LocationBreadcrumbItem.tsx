@@ -10,7 +10,7 @@ import { isNotNullish } from "../../type-helpers";
 import { AppBreadcrumbsItem, ContextBar, OverlayPopper } from "../../ui-components";
 import { isGenericDatasetType } from "../constants/generic";
 import { PlateauDatasetType } from "../constants/plateau";
-import { DatasetGroupItem, getDatasetGroups } from "../utils/datasetGroups";
+import { getDatasetGroups } from "../utils/datasetGroups";
 
 import { BuildingDatasetButtonSelect } from "./BuildingDatasetButtonSelect";
 import { DatasetTreeSelect } from "./DatasetTreeSelect";
@@ -29,7 +29,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
   );
   const query = useAreaDatasets(area.code);
 
-  const datasetGroups: DatasetGroupItem[] | undefined = useMemo(() => {
+  const datasetGroups = useMemo(() => {
     const datasets = query.data?.area?.datasets;
     if (!datasets) {
       return;
@@ -112,7 +112,7 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
       {hasDatasets && (
         <OverlayPopper {...popoverProps} inset={1.5} onClose={handleClose}>
           <ContextBar expanded={expanded} onCollapse={handleCollapse} onExpand={handleExpand}>
-            {datasetGroups.map(({ useTree, label, datasets, allowContinuousAdd }) => {
+            {datasetGroups.map(({ useTree, label, datasets }) => {
               if (useTree) {
                 return (
                   <DatasetTreeSelect
@@ -120,7 +120,6 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
                     label={label}
                     datasets={datasets}
                     municipalityCode={area.code}
-                    allowContinuousAdd={allowContinuousAdd}
                   />
                 );
               }
@@ -130,7 +129,6 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
                     key={datasets[0].id}
                     datasets={datasets}
                     municipalityCode={area.code}
-                    allowContinuousAdd={allowContinuousAdd}
                   />
                 );
               }
@@ -153,7 +151,6 @@ export const LocationBreadcrumbItem: FC<LocationBreadcrumbItemProps> = ({ area }
                   key={dataset.id}
                   datasets={[dataset]}
                   municipalityCode={area.code}
-                  allowContinuousAdd={allowContinuousAdd}
                 />
               );
             })}
