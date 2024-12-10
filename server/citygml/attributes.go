@@ -48,9 +48,11 @@ var schemaDefsJSON []byte
 //go:embed common_defs.json
 var commonDefsJSON []byte
 
-func commonProperties() []schemaProperty {
+func initCommonProperties() []schemaProperty {
 	var cp []schemaProperty
-	_ = json.Unmarshal(commonDefsJSON, &cp)
+	if err := json.Unmarshal(commonDefsJSON, &cp); err != nil {
+		panic(err)
+	}
 	return cp
 }
 
@@ -390,7 +392,9 @@ var schemaDefs map[string][]schemaProperty
 
 func initSchema() {
 	var def schemaDefinition
-	_ = json.Unmarshal(schemaDefsJSON, &def)
+	if err := json.Unmarshal(schemaDefsJSON, &def); err != nil {
+		panic(err)
+	}
 
 	for _, dm := range []string{"uro:DmGeometricAttribute", "uro:DmAnnotation"} {
 		ps, ok := def.ComplexTypes[dm]
@@ -409,7 +413,7 @@ func initSchema() {
 	for t, ps := range def.ComplexTypes {
 		types[t] = ps
 	}
-	commonProps := commonProperties()
+	commonProps := initCommonProperties()
 
 	schemaDefs = map[string][]schemaProperty{}
 	for t, ps := range def.Features {
@@ -433,10 +437,10 @@ func Attributes(c *http.Client, url string, gmlID []string) ([]map[string]any, e
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
 	}
-	return attribute(resp.Body, "", gmlID)
+	return attribute(resp.Body, gmlID)
 }
 
-func attribute(r io.Reader, meshcode string, gmlID []string) ([]map[string]any, error) {
+func attribute(r io.Reader, gmlID []string) ([]map[string]any, error) {
 	ae := attributeExtractor{
 		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
 	}

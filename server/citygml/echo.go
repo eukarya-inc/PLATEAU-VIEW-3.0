@@ -4,10 +4,15 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 )
+
+var httpClient = &http.Client{
+	Timeout: 30 * time.Second,
+}
 
 func Echo(conf PackerConfig, g *echo.Group) error {
 	p := newPacker(conf)
@@ -55,7 +60,7 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 				"reason": "id parameter is required",
 			})
 		}
-		resp, err := Attributes(http.DefaultClient, citygmlURL, ids)
+		resp, err := Attributes(httpClient, citygmlURL, ids)
 		if err != nil {
 			log.Errorfc(c.Request().Context(), "citygml: failed to extract attributes: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]any{
