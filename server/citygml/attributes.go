@@ -6,7 +6,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/http"
 	"slices"
 	"strconv"
 	"strings"
@@ -428,19 +427,7 @@ func init() {
 	initSchema()
 }
 
-func Attributes(c *http.Client, url string, gmlID []string) ([]map[string]any, error) {
-	resp, err := c.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("fetch: %w", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status: %d", resp.StatusCode)
-	}
-	return attribute(resp.Body, gmlID)
-}
-
-func attribute(r io.Reader, gmlID []string) ([]map[string]any, error) {
+func Attributes(r io.Reader, gmlID []string) ([]map[string]any, error) {
 	ae := attributeExtractor{
 		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
 	}
@@ -465,7 +452,7 @@ func attribute(r io.Reader, gmlID []string) ([]map[string]any, error) {
 			id := ae.gmlID(el.Attr)
 			if slices.Contains(gmlID, id) {
 				val := map[string]any{
-					"gml:id":       gmlID,
+					"gml:id":       id,
 					"feature_type": tagName(el.Name),
 				}
 				h := toTagHandler(tagName(el.Name), schemaDefs)

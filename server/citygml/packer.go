@@ -20,14 +20,6 @@ import (
 	"google.golang.org/api/googleapi"
 )
 
-type PackerConfig struct {
-	Domain             string `json:"domain"`
-	Bucket             string `json:"bucket"`
-	CityGMLPackerImage string `json:"cityGMLPackerImage"`
-	WorkerRegion       string `json:"workerRegion"`
-	WorkerProject      string `json:"workerProject"`
-}
-
 const (
 	PackStatusAccepted   = "accepted"
 	PackStatusProcessing = "processing"
@@ -38,12 +30,12 @@ const (
 )
 
 type packer struct {
-	conf   PackerConfig
+	conf   Config
 	bucket *storage.BucketHandle
 	build  *cloudbuild.Service
 }
 
-func newPacker(conf PackerConfig) *packer {
+func newPacker(conf Config) *packer {
 	ctx := context.Background()
 	gcs, _ := storage.NewClient(ctx)
 	bucket := gcs.Bucket(conf.Bucket)
