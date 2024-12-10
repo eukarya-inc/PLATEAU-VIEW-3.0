@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { TOKYO_SAMPLE_DATA_CITY_CODE } from "../../../constants";
 import { AREAS, AREA_DATASETS } from "../../base/catalog/queries/area";
 import { AreasInput, DatasetsInput } from "../../types/catalog";
 
@@ -10,12 +11,26 @@ type Options = {
 };
 
 export const useAreas = (input?: AreasInput, options?: Options) => {
-  return useQuery(AREAS, {
+  const data = useQuery(AREAS, {
     variables: {
       input: input ?? {},
     },
     skip: options?.skip,
   });
+  const next = useMemo(
+    () => ({
+      ...data,
+      data: data.data
+        ? {
+            ...data.data,
+            areas: data.data.areas.filter(a => a.code !== TOKYO_SAMPLE_DATA_CITY_CODE),
+          }
+        : undefined,
+    }),
+    [data],
+  );
+
+  return next;
 };
 
 export const useAreaDatasets = (code: string, input?: DatasetsInput, options?: Options) => {
@@ -28,7 +43,12 @@ export const useAreaDatasets = (code: string, input?: DatasetsInput, options?: O
   });
 
   const nextDatasets = useMemo(
-    () => data?.area?.datasets.slice().sort((a, b) => a.type.order - b.type.order),
+    () =>
+      data?.area?.datasets
+        .map(d =>
+          d.cityCode === TOKYO_SAMPLE_DATA_CITY_CODE ? { ...d, cityCode: null, city: null } : d,
+        )
+        .sort((a, b) => a.type.order - b.type.order),
     [data],
   );
 

@@ -9,6 +9,7 @@ import {
   EditorPopperListItemButton,
   EditorTextField,
 } from "../../ui-components";
+import dayjs from "../../utils-dayjs";
 import { EditorClickAwayListener } from "../EditorClickAwayListener";
 
 type TemplateHeaderProps = {
@@ -17,6 +18,7 @@ type TemplateHeaderProps = {
   templateNames: string[];
   onTemplateRename?: (templateName: string) => void;
   onTemplateRemove?: (templateId: string) => void;
+  onTemplateDuplicate?: (templateName: string) => void;
 };
 
 export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
@@ -25,6 +27,7 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
   templateNames,
   onTemplateRename,
   onTemplateRemove,
+  onTemplateDuplicate,
 }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -63,12 +66,7 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
   }, []);
 
   const newTemplateNameInvalid = useMemo(() => {
-    return (
-      templateNames.includes(newTemplateName) ||
-      newTemplateName === "" ||
-      newTemplateName.endsWith("/") ||
-      newTemplateName.split("/").some(p => p === "")
-    );
+    return isTemplateNameInvalid(newTemplateName, templateNames);
   }, [newTemplateName, templateNames]);
 
   const handleClickAway = useCallback(() => {
@@ -84,6 +82,34 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
     onTemplateRename?.(newTemplateName);
     setRenameTemplateOpen(false);
   }, [newTemplateName, onTemplateRename]);
+
+  const [duplicateTemplateOpen, setDuplicateTemplateOpen] = useState(false);
+  const handleOpenDuplicateTemplate = useCallback(() => {
+    setDuplicateTemplateOpen(true);
+    setMenuOpen(false);
+  }, []);
+  const handleCloseDuplicateTemplate = useCallback(() => {
+    setDuplicateTemplateOpen(false);
+    setDuplicatedTemplateName(generateDuplicateTemplateName(templateName));
+  }, [templateName]);
+
+  const [duplicatedTemplateName, setDuplicatedTemplateName] = useState(
+    generateDuplicateTemplateName(templateName),
+  );
+  const handleDuplicatedTemplateNameChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setDuplicatedTemplateName(e.target.value);
+    },
+    [],
+  );
+  const duplicatedTemplateNameInvalid = useMemo(() => {
+    return isTemplateNameInvalid(duplicatedTemplateName, templateNames);
+  }, [duplicatedTemplateName, templateNames]);
+
+  const handleTemplateDuplicate = useCallback(() => {
+    onTemplateDuplicate?.(duplicatedTemplateName);
+    setDuplicateTemplateOpen(false);
+  }, [duplicatedTemplateName, onTemplateDuplicate]);
 
   return (
     <EditorClickAwayListener onClickAway={handleClickAway}>
@@ -101,6 +127,9 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
           <EditorPopperList>
             <EditorPopperListItemButton onClick={handleOpenRenameTemplate}>
               Rename
+            </EditorPopperListItemButton>
+            <EditorPopperListItemButton onClick={handleOpenDuplicateTemplate}>
+              Duplicate
             </EditorPopperListItemButton>
             <EditorPopperListItemButton onClick={handleOpenRemoveTemplate}>
               Delete
@@ -138,6 +167,22 @@ export const TemplateHeader: React.FC<TemplateHeaderProps> = ({
             onChange={handleNewTemplateNameChange}
           />
         </EditorDialog>
+        <EditorDialog
+          title="Duplicate Template"
+          open={duplicateTemplateOpen}
+          fullWidth
+          primaryButtonText="Duplicate"
+          onClose={handleCloseDuplicateTemplate}
+          onSubmit={handleTemplateDuplicate}
+          submitDisabled={duplicatedTemplateNameInvalid}>
+          <EditorTextField
+            autoFocus
+            label="Full path:"
+            fullWidth
+            value={duplicatedTemplateName}
+            onChange={handleDuplicatedTemplateNameChange}
+          />
+        </EditorDialog>
       </Wrapper>
     </EditorClickAwayListener>
   );
@@ -167,3 +212,16 @@ const StyledButton = styled(Button)(({ theme }) => ({
     borderRadius: "0",
   },
 }));
+
+function generateDuplicateTemplateName(ori: string) {
+  return `${ori} (copy-${dayjs(new Date()).local().format("YYYY-MM-DD HH:mm:ss")})`;
+}
+
+function isTemplateNameInvalid(name: string, existNames: string[]) {
+  return (
+    existNames.includes(name) ||
+    name === "" ||
+    name.endsWith("/") ||
+    name.split("/").some(p => p === "")
+  );
+}
