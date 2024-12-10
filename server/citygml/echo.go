@@ -10,11 +10,19 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+type Config struct {
+	Domain             string `json:"domain"`
+	Bucket             string `json:"bucket"`
+	CityGMLPackerImage string `json:"cityGMLPackerImage"`
+	WorkerRegion       string `json:"workerRegion"`
+	WorkerProject      string `json:"workerProject"`
+}
+
 var httpClient = &http.Client{
 	Timeout: 30 * time.Second,
 }
 
-func Echo(conf PackerConfig, g *echo.Group) error {
+func Echo(conf Config, g *echo.Group) error {
 	p := newPacker(conf)
 
 	// すでに存在したらダウンロードできるエンドポイント
@@ -39,37 +47,72 @@ func Echo(conf PackerConfig, g *echo.Group) error {
 	// id を返す
 	g.POST("/pack", p.handlePackRequest)
 
-	g.GET("/attributes", func(c echo.Context) error {
+	g.GET("/attributes", attributeHandler(p.conf.Domain))
+
+	return nil
+}
+
+func attributeHandler(domain string) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
 		citygmlURL := c.QueryParam("url")
 		u, err := url.Parse(citygmlURL)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-				"url":    citygmlURL,
-				"reason": "invalid url",
+				"url":   citygmlURL,
+				"error": "invalid url",
 			})
 		}
-		if p.conf.Domain != "" && u.Host != p.conf.Domain {
+
+		if domain != "" && u.Host != domain {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-				"url":    citygmlURL,
-				"reason": "invalid domain",
+				"url":   citygmlURL,
+				"error": "invalid domain",
 			})
 		}
+
 		ids := strings.Split(c.QueryParam("id"), ",")
 		if len(ids) == 0 || (len(ids) == 1 && ids[0] == "") {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-				"reason": "id parameter is required",
+				"error": "id parameter is required",
 			})
 		}
-		resp, err := Attributes(httpClient, citygmlURL, ids)
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, citygmlURL, nil)
 		if err != nil {
-			log.Errorfc(c.Request().Context(), "citygml: failed to extract attributes: %v", err)
+			log.Errorfc(ctx, "citygml: failed to create request: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]any{
 				"url":   citygmlURL,
 				"error": "internal",
 			})
 		}
-		return c.JSON(http.StatusOK, resp)
-	})
 
-	return nil
+		resp, err := httpClient.Do(req)
+		if err != nil {
+			log.Errorfc(c.Request().Context(), "citygml: failed to fetch: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"url":   citygmlURL,
+				"error": "cannot fetch",
+			})
+		}
+
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"url":   citygmlURL,
+				"error": "cannot fetch",
+			})
+		}
+
+		attrs, err := Attributes(resp.Body, ids)
+		if err != nil {
+			log.Errorfc(ctx, "citygml: failed to extract attributes: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"url":   citygmlURL,
+				"error": "internal",
+			})
+		}
+
+		return c.JSON(http.StatusOK, attrs)
+	}
 }

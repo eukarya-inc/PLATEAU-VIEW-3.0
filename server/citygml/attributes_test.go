@@ -1,10 +1,12 @@
 package citygml
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -13,68 +15,63 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAttributes(t *testing.T) {
-	const testdata = "52382287_bldg_6697_psc_op.gml"
-	ids := []string{"bldg_53e2a9a9-d512-408f-8250-eae30b7523d6"}
-	expected := []map[string]any{
-		{
-			"bldg:measuredHeight":     14.3,
-			"bldg:measuredHeight_uom": "m",
-			"feature_type":            "bldg:Building",
-			"gen:genericAttribute": []any{
-				map[string]any{
-					"name":  "風致地区",
-					"type":  "string",
-					"value": "第1種風致地区（大崩）",
-				},
+const testdata = "52382287_bldg_6697_psc_op.gml"
+
+var ids = []string{"bldg_53e2a9a9-d512-408f-8250-eae30b7523d6"}
+var expected = []map[string]any{
+	{
+		"bldg:measuredHeight":     14.3,
+		"bldg:measuredHeight_uom": "m",
+		"feature_type":            "bldg:Building",
+		"gen:genericAttribute": []any{
+			map[string]any{
+				"name":  "風致地区",
+				"type":  "string",
+				"value": "第1種風致地区（大崩）",
 			},
-			"gml:id":                           []string{"bldg_53e2a9a9-d512-408f-8250-eae30b7523d6"},
-			"uro:buildingDataQualityAttribute": []any{map[string]any{}},
 		},
-	}
+		"gml:id":                           "bldg_53e2a9a9-d512-408f-8250-eae30b7523d6",
+		"uro:buildingDataQualityAttribute": []any{map[string]any{}},
+	},
+}
 
-	citygml, err := os.ReadFile("testdata/" + testdata)
+func TestAttributes(t *testing.T) {
+	citygml, err := os.Open("testdata/" + testdata)
 	require.NoError(t, err)
+	defer citygml.Close()
 
-	const citygmlURL = "http://example.com/test.gml"
-	httpmock.RegisterResponder("GET", citygmlURL, httpmock.NewBytesResponder(http.StatusOK, citygml))
-
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
-
-	attrs, err := Attributes(http.DefaultClient, citygmlURL, ids)
-
+	attrs, err := Attributes(citygml, ids)
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(attrs))
-	assert.Equal(t, []string{ids[0]}, attrs[0]["gml:id"])
+	assert.Equal(t, ids[0], attrs[0]["gml:id"])
 	assert.Equal(t, expected, attrs)
 }
 
-func TestAttributesAPI(t *testing.T) {
-	const citygmlURL = ""
-	const id = ""
+func TestAttributesHandler(t *testing.T) {
+	citygmlURL := "http://example.com/citygml.gml"
+	citygml, err := os.ReadFile("testdata/" + testdata)
+	require.NoError(t, err)
 
-	if citygmlURL == "" || id == "" {
-		t.Skip("skipping test; citygmlURL or ids not set")
-	}
-
-	e := echo.New()
-	require.NoError(t, Echo(PackerConfig{}, e.Group("")))
+	httpmock.RegisterResponder(http.MethodGet, citygmlURL, httpmock.NewBytesResponder(http.StatusOK, citygml))
+	httpmock.Activate()
+	defer httpmock.Deactivate()
 
 	u := &url.URL{Path: "/attributes"}
 	q := url.Values{}
 	q.Set("url", citygmlURL)
-	q.Set("id", id)
+	q.Set("id", strings.Join(ids, ","))
 	u.RawQuery = q.Encode()
 
-	t.Logf("GET %s", u.String())
 	req := httptest.NewRequest(http.MethodGet, u.String(), nil)
 	rec := httptest.NewRecorder()
-	e.ServeHTTP(rec, req)
+	e := echo.New()
+	c := e.NewContext(req, rec)
+	assert.NoError(t, attributeHandler("")(c))
 
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Equal(t, "application/json; charset=UTF-8", rec.Header().Get(echo.HeaderContentType))
-	body := rec.Body.String()
-	assert.NotEmpty(t, body)
-	t.Logf("%s", body)
+
+	var j []map[string]any
+	assert.NoError(t, json.Unmarshal(rec.Body.Bytes(), &j))
+	assert.Equal(t, expected, j)
 }
