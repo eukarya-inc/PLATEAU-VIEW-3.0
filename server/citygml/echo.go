@@ -48,6 +48,7 @@ func Echo(conf Config, g *echo.Group) error {
 	g.POST("/pack", p.handlePackRequest)
 
 	g.GET("/attributes", attributeHandler(p.conf.Domain))
+	g.GET("/spatialid_attributes", spatialIDAttributesHandler())
 
 	return nil
 }
@@ -114,5 +115,49 @@ func attributeHandler(domain string) echo.HandlerFunc {
 		}
 
 		return c.JSON(http.StatusOK, attrs)
+	}
+}
+
+func spatialIDAttributesHandler() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// ctx := c.Request().Context()
+		sids := strings.Split(c.QueryParam("sid"), ",")
+		types := strings.Split(c.QueryParam("type"), ",")
+		if len(sids) == 0 || (len(sids) == 1 && sids[0] == "") {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error": "sid parameter is required",
+			})
+		}
+		if len(types) == 0 || (len(types) == 1 && types[0] == "") {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error": "type parameter is required",
+			})
+		}
+
+		// dummy
+		return c.JSON(http.StatusOK, []map[string]any{
+			{
+				"gml:id":       "dummy1",
+				"feature_type": "dummy",
+				"gen:genericAttribute": []map[string]any{
+					{
+						"name":  "dummy",
+						"type":  "string",
+						"value": "DUMMY",
+					},
+				},
+			},
+			{
+				"gml:id":       "dummy2",
+				"feature_type": "dummy",
+				"gen:genericAttribute": []map[string]any{
+					{
+						"name":  "dummy",
+						"type":  "string",
+						"value": "DUMMY",
+					},
+				},
+			},
+		})
 	}
 }
