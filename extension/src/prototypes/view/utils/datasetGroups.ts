@@ -10,7 +10,6 @@ export type DatasetGroupItem = {
   groupId: string;
   datasets: DatasetItem[];
   useTree?: boolean;
-  allowContinuousAdd?: boolean;
 };
 
 export function getDatasetGroups({
@@ -74,8 +73,8 @@ export function getDatasetGroups({
   const genericDatasets = datasets?.filter(
     d =>
       !(d.groups && d.groups.length > 0) &&
-      d.type.code !== "city" &&
-      isGenericDatasetType(d.type.code),
+      isGenericDatasetType(d.type.code) &&
+      d.type.code !== "city",
   );
   const genericGroups = genericDatasets
     ? Object.entries(groupBy(genericDatasets, d => d.type.name)).map(([key, value]) => ({
@@ -83,7 +82,6 @@ export function getDatasetGroups({
         groupId: generateGroupId("generic", key, prefCode, cityCode, areaCode),
         datasets: value.map(v => ({ ...v, folderPath: v.name })),
         useTree: true,
-        allowContinuousAdd: true,
       }))
     : undefined;
 
