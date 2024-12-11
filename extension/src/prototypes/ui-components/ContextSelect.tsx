@@ -74,7 +74,7 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
         onChange?.(event, value);
         setOpen(false);
       },
-      [autoClose, onChange]
+      [onChange]
     );
 
     const renderValue = useCallback(
