@@ -6,6 +6,9 @@ on:
 
 env:
   GCS_DEST: gs://plateau-dev-reearth-static-bucket
+  # used by build
+  PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN: ${{ secrets.PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN }}
+  # used by build
   PLATEAU_ORIGIN: https://static.reearth.plateau.dev.reearth.io/extension
 
 jobs:
