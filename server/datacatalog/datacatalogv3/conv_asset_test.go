@@ -205,10 +205,11 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "tnm",
 						Name:   "40_1",
 						Format: "3dtiles",
+						NoLOD:  true,
 					},
 					Ex: "tnm_40_1_3dtiles",
 				},
@@ -225,10 +226,11 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "tnm",
 						Name:   "AAA",
 						Format: "3dtiles",
+						NoLOD:  true,
 					},
 					Ex: "tnm_AAA_3dtiles",
 				},
@@ -245,11 +247,12 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:      "tnm",
 						Name:      "40_1",
 						Format:    "3dtiles",
 						NoTexture: true,
+						NoLOD:     true,
 					},
 					Ex: "tnm_40_1_3dtiles_no_texture",
 				},
@@ -266,7 +269,7 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "urf",
 						Name:   "AreaClassification",
 						Format: "mvt",
@@ -287,10 +290,11 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "urf",
 						Name:   "AreaClassification",
 						Format: "mvt",
+						NoLOD:  true,
 					},
 					Ex: "urf_AreaClassification_mvt",
 				},
@@ -327,7 +331,7 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "veg",
 						Format: "3dtiles",
 						LOD:    3,
@@ -348,13 +352,58 @@ func TestParseAssetName(t *testing.T) {
 				Format:      "citygml",
 				UpdateCount: 1,
 				Ex: AssetNameEx{
-					Urf: &AssetNameExUrf{
+					Normal: &AssetNameExNormal{
 						Type:   "gen",
 						Name:   "00",
 						Format: "mvt",
 						LOD:    0,
 					},
 					Ex: "gen_00_mvt_lod0",
+				},
+			},
+		},
+		{
+			name: "area",
+			args: "13999_tokyo_mlit_2023_citygml_1_op_area_0202_Zone_mvt_lod1",
+			want: &AssetName{
+				CityCode:    "13999",
+				CityName:    "tokyo",
+				Provider:    "mlit",
+				Year:        2023,
+				Format:      "citygml",
+				UpdateCount: 1,
+				Ex: AssetNameEx{
+					Normal: &AssetNameExNormal{
+						Type:   "area",
+						Name:   "0202_Zone",
+						Format: "mvt",
+						LOD:    1,
+						NoLOD:  false,
+					},
+					Ex: "area_0202_Zone_mvt_lod1",
+				},
+			},
+		},
+		{
+			name: "unf",
+			args: "13999_tokyo_mlit_2023_citygml_1_op_unf_Manhole_mvt_lod32",
+			want: &AssetName{
+				CityCode:    "13999",
+				CityName:    "tokyo",
+				Provider:    "mlit",
+				Year:        2023,
+				Format:      "citygml",
+				UpdateCount: 1,
+				Ex: AssetNameEx{
+					Normal: &AssetNameExNormal{
+						Type:   "unf",
+						Name:   "Manhole",
+						Format: "mvt",
+						LOD:    3,
+						LODEx:  2,
+						NoLOD:  false,
+					},
+					Ex: "unf_Manhole_mvt_lod32",
 				},
 			},
 		},

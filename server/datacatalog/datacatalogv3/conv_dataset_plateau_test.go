@@ -112,7 +112,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
-					LodEx:    lo.ToPtr(0),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 				{
@@ -122,7 +122,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1_no_texture/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
-					LodEx:    lo.ToPtr(0),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureNone),
 				},
 				{
@@ -132,7 +132,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod2/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(2),
-					LodEx:    lo.ToPtr(0),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 			},
@@ -768,11 +768,11 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 			Groups: []string{"group"},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
-					ID:     plateauapi.NewID("11111_gen_99", plateauapi.TypeDatasetItem),
-					Format: plateauapi.DatasetFormatMvt,
-					Name:   "GEN",
-					URL:    "https://example.com/11111_bar-shi_city_2023_citygml_1_op_gen_99_mvt_lod0/{z}/{x}/{y}.mvt",
-					// Lod:      lo.ToPtr(0),
+					ID:       plateauapi.NewID("11111_gen_99", plateauapi.TypeDatasetItem),
+					Format:   plateauapi.DatasetFormatMvt,
+					Name:     "GEN LOD0",
+					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_gen_99_mvt_lod0/{z}/{x}/{y}.mvt",
+					Lod:      lo.ToPtr(0),
 					Layers:   []string{"gen_99"},
 					ParentID: plateauapi.NewID("11111_gen_99", plateauapi.TypeDataset),
 				},
@@ -823,8 +823,10 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 		Spec:        spec,
 		DatasetType: dts,
 		LayerNames:  layerNames,
-		FeatureType: &FeatureType{},
-		Year:        2023,
+		FeatureType: &FeatureType{
+			HideLOD: true,
+		},
+		Year: 2023,
 	}
 	res, warning := item.toDatasets(opts)
 	assert.Nil(t, warning)
