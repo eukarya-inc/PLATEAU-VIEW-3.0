@@ -10,15 +10,7 @@ import {
   type SelectChangeEvent,
   type SelectProps,
 } from "@mui/material";
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { mergeRefs } from "react-merge-refs";
 import invariant from "tiny-invariant";
 
@@ -62,22 +54,19 @@ const StyledAddIcon = styled(AddIcon)({
 
 export interface ContextSelectProps extends SelectProps<string[]> {
   label: ReactNode;
-  autoClose?: boolean;
 }
 
 export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
-  ({ label, autoClose = true, children, onChange, ...props }, forwardedRef) => {
+  ({ label, children, onChange, ...props }, forwardedRef) => {
     const [open, setOpen] = useState(false);
 
     const handleChange = useCallback(
       (event: SelectChangeEvent<string[]>, value: ReactNode) => {
         invariant(Array.isArray(event.target.value));
         onChange?.(event, value);
-        if (autoClose) {
-          setOpen(false);
-        }
+        setOpen(false);
       },
-      [autoClose, onChange],
+      [onChange],
     );
 
     const renderValue = useCallback(
@@ -88,7 +77,7 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
             <Typography variant="body2">{label}</Typography>
           </Stack>
         ) : (
-          <Stack direction="row" spacing={0.75} alignItems="center">
+          <Stack direction="row" spacing={0.75}>
             <Badge>{value.length}</Badge>
             <Typography variant="body2" color="primary">
               {label}
@@ -121,23 +110,6 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
       };
     }, []);
 
-    const menuProps = useMemo(
-      () => ({
-        ...props.MenuProps,
-        sx: {
-          ...props.MenuProps?.sx,
-          [`& .${menuClasses.paper}`]: {
-            maxWidth: 700,
-          },
-        },
-        MenuListProps: {
-          ...props.MenuProps?.MenuListProps,
-          ref: menuRef,
-        },
-      }),
-      [props.MenuProps],
-    );
-
     return (
       <StyledSelect
         ref={mergeRefs([ref, forwardedRef])}
@@ -149,7 +121,19 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
         renderValue={renderValue}
         {...props}
         onChange={handleChange}
-        MenuProps={menuProps}>
+        MenuProps={{
+          ...props.MenuProps,
+          sx: {
+            ...props.MenuProps?.sx,
+            [`& .${menuClasses.paper}`]: {
+              maxWidth: 700,
+            },
+          },
+          MenuListProps: {
+            ...props.MenuProps?.MenuListProps,
+            ref: menuRef,
+          },
+        }}>
         {children}
       </StyledSelect>
     );

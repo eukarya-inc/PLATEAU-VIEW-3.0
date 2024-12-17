@@ -80,18 +80,9 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	// sample
 	sample := res.DatasetTypes.FindByCode(sampleCode, plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
 	if sample != nil {
-		targets := all.Sample
-		for _, c := range all.City {
-			if !c.Sample || c.CityCode == "" {
-				continue
-			}
-			targets = append(targets, all.FindPlateauFeatureItemsByCityID(c.ID)...)
-		}
-
-		datasets, w := convertPlateauRaw(
-			targets,
-			false,
-			"",
+		sample, w := convertSample(
+			sample,
+			all,
 			res.PlateauSpecs,
 			plateauDatasetTypes,
 			plateauFeatureTypes,
@@ -100,7 +91,7 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 		warning = append(warning, w...)
 		res.Datasets.Append(
 			plateauapi.DatasetTypeCategoryGeneric,
-			plateauapi.ToDatasets(plateauapi.PlateauDatasetsToGenericDatasets(datasets, sample.ID, sample.Code, "sample")),
+			plateauapi.ToDatasets(sample),
 		)
 	}
 
@@ -140,6 +131,62 @@ func getWards(items []*PlateauFeatureItem, ic *internalContext) (res []*plateaua
 		res = append(res, wards...)
 	}
 
+	return
+}
+
+func convertSample(
+	sample plateauapi.DatasetType,
+	all *AllData,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) (res []*plateauapi.GenericDataset, warning []string) {
+	sampleID := sample.GetID()
+	sampleCode := sample.GetCode()
+	sampleName := sample.GetName()
+	const idSuffix = "_sample"
+
+	raw := make([]*plateauapi.PlateauDataset, 0, len(all.Sample)+len(all.City))
+
+	// common sample datasets
+	{
+		targets := all.Sample
+		datasets, w := convertPlateauRaw(
+			targets,
+			false,
+			"",
+			specs,
+			dts,
+			fts,
+			ic,
+		)
+		warning = append(warning, w...)
+		raw = append(raw, datasets...)
+	}
+
+	// city sample datasets
+	for _, c := range all.City {
+		if !c.Sample || c.CityCode == "" {
+			continue
+		}
+
+		targets := all.FindPlateauFeatureItemsByCityID(c.ID)
+		datasets, w := convertPlateauRaw(
+			targets,
+			false,
+			"",
+			specs,
+			dts,
+			fts,
+			ic,
+		)
+		setGroupsToDatasets(datasets, []string{sampleName, c.CityName})
+		warning = append(warning, w...)
+		raw = append(raw, datasets...)
+	}
+
+	res = append(res, plateauapi.PlateauDatasetsToGenericDatasets(raw, sampleID, sampleCode, idSuffix)...)
 	return
 }
 
@@ -234,6 +281,17 @@ func convertPlateauRaw(
 	}
 
 	return
+}
+
+func setGroupsToDatasets(datasets []*plateauapi.PlateauDataset, groups []string) {
+	for _, ds := range datasets {
+		if ds == nil {
+			continue
+		}
+
+		ds.Groups = make([]string, len(groups))
+		copy(ds.Groups, groups)
+	}
 }
 
 func convertRelated(items []*RelatedItem, datasetTypes []plateauapi.DatasetType, ic *internalContext) (res []plateauapi.Dataset, warning []string) {

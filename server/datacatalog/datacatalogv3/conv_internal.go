@@ -141,11 +141,16 @@ type LayerNames struct {
 	Name        []string
 	NamesForLOD map[int][]string
 	Prefix      string
+	PreferDef   bool
 }
 
 func (l LayerNames) LayerName(def []string, lod int, format plateauapi.DatasetFormat) []string {
 	if !plateauapi.IsLayerSupported(format) {
 		return nil
+	}
+
+	if l.PreferDef && len(def) > 0 && def[0] != "" {
+		return def
 	}
 
 	if l.Name != nil {
@@ -162,6 +167,10 @@ func (l LayerNames) LayerName(def []string, lod int, format plateauapi.DatasetFo
 		return lo.Map(def, func(s string, _ int) string {
 			return fmt.Sprintf("%s_%s", l.Prefix, s)
 		})
+	}
+
+	if len(def) == 0 || def[0] == "" {
+		return nil
 	}
 
 	return def

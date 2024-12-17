@@ -71,6 +71,7 @@ func (ft FeatureTypes) LayerNames() map[string]LayerNames {
 			Name:        ft.MVTLayerName,
 			NamesForLOD: namesForLOD,
 			Prefix:      ft.MVTLayerNamePrefix,
+			PreferDef:   ft.UseCategoryAsMVTLayer,
 		}
 	}
 	return res

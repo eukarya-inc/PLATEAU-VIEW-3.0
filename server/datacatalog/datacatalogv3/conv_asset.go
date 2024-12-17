@@ -29,7 +29,6 @@ func (n AssetName) String() string {
 
 type AssetNameEx struct {
 	Normal *AssetNameExNormal
-	Urf    *AssetNameExUrf
 	Fld    *AssetNameExFld
 	Ex     string
 }
@@ -39,15 +38,13 @@ func (ex AssetNameEx) String() string {
 }
 
 func (ex AssetNameEx) IsValid() bool {
-	return ex.Normal != nil || ex.Urf != nil || ex.Fld != nil
+	return ex.Normal != nil || ex.Fld != nil
 }
 
 func (ex AssetNameEx) DatasetItemKey() string {
 	switch {
 	case ex.Normal != nil:
 		return ex.Normal.DatasetItemKey()
-	case ex.Urf != nil:
-		return ex.Urf.DatasetItemKey()
 	case ex.Fld != nil:
 		return ex.Fld.DatasetItemKey()
 	}
@@ -58,8 +55,6 @@ func (ex AssetNameEx) DatasetKey() string {
 	switch {
 	case ex.Normal != nil:
 		return ex.Normal.DatasetKey()
-	case ex.Urf != nil:
-		return ex.Urf.DatasetKey()
 	case ex.Fld != nil:
 		return ex.Fld.DatasetKey()
 	}
@@ -70,8 +65,6 @@ func (ex AssetNameEx) DicKey() string {
 	switch {
 	case ex.Normal != nil:
 		return ex.Normal.DicKey()
-	case ex.Urf != nil:
-		return ex.Urf.DicKey()
 	case ex.Fld != nil:
 		return ex.Fld.DicKey()
 	}
@@ -80,43 +73,25 @@ func (ex AssetNameEx) DicKey() string {
 
 type AssetNameExNormal struct {
 	Type      string
+	Name      string
 	Format    string
 	WardCode  string
 	WardName  string
 	LOD       int
 	LODEx     int
 	NoTexture bool
+	NoLOD     bool
 }
 
 func (ex AssetNameExNormal) DatasetItemKey() string {
-	return ""
+	return ex.Name
 }
 
 func (ex AssetNameExNormal) DatasetKey() string {
-	return ""
+	return ex.Name
 }
 
 func (ex AssetNameExNormal) DicKey() string {
-	return ""
-}
-
-type AssetNameExUrf struct {
-	Type      string
-	Name      string
-	Format    string
-	LOD       int
-	NoTexture bool
-}
-
-func (ex AssetNameExUrf) DatasetItemKey() string {
-	return ex.Name
-}
-
-func (ex AssetNameExUrf) DatasetKey() string {
-	return ex.Name
-}
-
-func (ex AssetNameExUrf) DicKey() string {
 	return ex.Name
 }
 
@@ -184,78 +159,58 @@ func ParseAssetNameEx(name string) (ex AssetNameEx) {
 		return
 	}
 
-	ex.Urf = ParseAssetNameExUrf(name)
-	if ex.Urf != nil {
-		return
-	}
+	// ex.Urf = ParseAssetNameExUrf(name)
+	// if ex.Urf != nil {
+	// 	return
+	// }
 
 	ex.Normal = ParseAssetNameExNormal(name)
 	return
 }
 
-var reAasetNameExNormal = regexp.MustCompile(`^([a-z]+)_(mvt|3dtiles)(?:_(\d+)_([a-z0-9-]+))?(_lod\d\d?)?(_no_texture)?$`)
-var reAasetNameExNormalDM = regexp.MustCompile(`^([a-z]+)_dm_geometric_attributes$`)
+var reAssetNameExNormal = regexp.MustCompile(`^([a-z]+)(?:_([A-Za-z0-9-_]+))?_(mvt|3dtiles|dm_geometric_attributes)(?:_(\d+)_([a-z0-9-]+))?(_lod\d\d?)?(_no_texture)?$`)
 
 func ParseAssetNameExNormal(name string) *AssetNameExNormal {
 	if name == "" {
 		return nil
 	}
 
-	m := reAasetNameExNormal.FindStringSubmatch(name)
+	m := reAssetNameExNormal.FindStringSubmatch(name)
 	if len(m) == 0 {
-		m = reAasetNameExNormalDM.FindStringSubmatch(name)
-		if len(m) == 0 {
-			return nil
-		}
-
-		m = []string{m[0], m[1], "mvt", "", "", "0", ""}
+		return nil
 	}
 
+	if m[3] == "dm_geometric_attributes" {
+		m[3] = "mvt"
+		if m[6] == "" {
+			m[6] = "0"
+		}
+	}
+
+	nolod := false
 	lod := 0
 	lodex := 0
-	if m[5] != "" {
-		lods := strings.TrimPrefix(m[5], "_lod")
+	if m[6] != "" {
+		lods := strings.TrimPrefix(m[6], "_lod")
 		if len(lods) == 2 {
 			lodex, _ = strconv.Atoi(lods[1:])
 			lods = lods[:1]
 		}
 		lod, _ = strconv.Atoi(lods)
+	} else {
+		nolod = true
 	}
 
 	return &AssetNameExNormal{
 		Type:      m[1],
-		Format:    m[2],
-		WardCode:  m[3],
-		WardName:  m[4],
-		LOD:       lod,
-		LODEx:     lodex,
-		NoTexture: m[6] != "",
-	}
-}
-
-var reAssetNameExUrf = regexp.MustCompile(`^([a-z]+)_([A-Za-z0-9-_]+)_(mvt|3dtiles)(_lod\d+)?(_no_texture)?$`)
-
-func ParseAssetNameExUrf(name string) *AssetNameExUrf {
-	if name == "" {
-		return nil
-	}
-
-	m := reAssetNameExUrf.FindStringSubmatch(name)
-	if len(m) == 0 {
-		return nil
-	}
-
-	lod := 0
-	if m[4] != "" {
-		lod, _ = strconv.Atoi(m[4][4:])
-	}
-
-	return &AssetNameExUrf{
-		Type:      m[1],
 		Name:      m[2],
 		Format:    m[3],
+		WardCode:  m[4],
+		WardName:  m[5],
 		LOD:       lod,
-		NoTexture: m[5] != "",
+		LODEx:     lodex,
+		NoTexture: m[7] != "",
+		NoLOD:     nolod,
 	}
 }
 
