@@ -183,7 +183,7 @@ const StyledInput = styled(Input)(
       border: solid 2px #eee;
       outline: none;
       width: 370px;
-      border-box:content;
+      box-sizing: content-box;
       ${theme.breakpoints.down("mobile")} {
         width: 124px;
       }
@@ -202,7 +202,7 @@ const LayerInput = styled(Input)(
       border: solid 2px #eee;
       margin-bottom: 12px;
       outline: none;
-      border-box:content;
+      box-sizing: content-box;
     }
     `
 );

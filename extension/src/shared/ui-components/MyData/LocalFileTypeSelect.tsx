@@ -19,7 +19,6 @@ export type FileType =
   | "csv"
   | "czml"
   | "gpx"
-  | "georss"
   | "shapefile"
   | "gltf";
 
