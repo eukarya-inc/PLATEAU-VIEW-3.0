@@ -11,7 +11,10 @@ import { Label } from "./Label";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
 import { getAdditionalData, getFormatTip } from "./utils";
-import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
+import WebFileTypeSelect, {
+  FileType,
+  getSupportedType,
+} from "./WebFileTypeSelect";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -93,7 +96,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
       const newLayersArray = newValue.split(",");
       setLayers(newLayersArray);
     },
-    [selectedWebItem],
+    [selectedWebItem]
   );
 
   const handleSubmit = useCallback(() => {
@@ -112,7 +115,10 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     <Fragment>
       <FormControl fullWidth size="small">
         <Label>ファイルタイプを選択</Label>
-        <WebFileTypeSelect fileType={fileType} onFileTypeSelect={handleFileTypeSelect} />
+        <WebFileTypeSelect
+          fileType={fileType}
+          onFileTypeSelect={handleFileTypeSelect}
+        />
       </FormControl>
       <FormControl fullWidth size="small">
         <Label>データのURLを入力</Label>
@@ -120,7 +126,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
           <StyledInput
             placeholder="URLを入力してください"
             value={dataUrl}
-            onChange={e => handleSetUrl(e.target.value)}
+            onChange={(e) => handleSetUrl(e.target.value)}
           />
           <BrowseButton size="medium" disabled={!dataUrl} onClick={handleClick}>
             データの閲覧
@@ -153,7 +159,8 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
         startIcon={<AddIcon />}
         disabled={!selectedWebItem}
         type="submit"
-        onClick={handleSubmit}>
+        onClick={handleSubmit}
+      >
         シーンに追加
       </StyledButton>
     </Fragment>
@@ -176,11 +183,12 @@ const StyledInput = styled(Input)(
       border: solid 2px #eee;
       outline: none;
       width: 370px;
+      border-box:content;
       ${theme.breakpoints.down("mobile")} {
         width: 124px;
       }
     }
-  `,
+  `
 );
 
 const LayerInput = styled(Input)(
@@ -194,13 +202,16 @@ const LayerInput = styled(Input)(
       border: solid 2px #eee;
       margin-bottom: 12px;
       outline: none;
+      border-box:content;
     }
-    `,
+    `
 );
 
 const BrowseButton = styled(Button)(({ theme, disabled }) => ({
   color: theme.palette.text.primary,
-  backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
+  backgroundColor: disabled
+    ? theme.palette.grey[50]
+    : theme.palette.primary.main,
   borderRadius: "0 4px 4px 0",
   padding: "0 16px",
   "&:hover": {
