@@ -4,7 +4,7 @@ import Select from "@mui/material/Select";
 import React from "react";
 
 export const fileFormats =
-  ".kml,.csv,.czml,.gpx,.geojson,.georss,.shapefile,.zip,.glb,.gltf";
+  ".kml,.csv,.czml,.gpx,.geojson,.shapefile,.zip,.glb,.gltf";
 
 type Props = {
   fileType: string;

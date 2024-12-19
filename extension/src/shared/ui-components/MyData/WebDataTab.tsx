@@ -208,12 +208,12 @@ const LayerInput = styled(Input)(
 );
 
 const BrowseButton = styled(Button)(({ theme, disabled }) => ({
-  color: theme.palette.text.primary,
+  color: disabled ? theme.palette.grey[500] : theme.palette.common.white,
   backgroundColor: disabled
     ? theme.palette.grey[50]
     : theme.palette.primary.main,
   borderRadius: "0 4px 4px 0",
-  padding: "0 16px",
+  padding: theme.spacing(1, 2),
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
   },
