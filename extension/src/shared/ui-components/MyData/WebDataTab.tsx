@@ -213,7 +213,7 @@ const BrowseButton = styled(Button)(({ theme, disabled }) => ({
     ? theme.palette.grey[50]
     : theme.palette.primary.main,
   borderRadius: "0 4px 4px 0",
-  padding: theme.spacing(1, 2),
+  padding: "0 16px",
   "&:hover": {
     backgroundColor: !disabled && theme.palette.primary.main,
   },
