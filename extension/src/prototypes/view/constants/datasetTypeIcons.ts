@@ -37,6 +37,7 @@ export const datasetTypeIcons = {
   [PlateauDatasetType.Global]: UseCaseIcon,
   [PlateauDatasetType.HighTideRisk]: HighTideRiskIcon,
   [PlateauDatasetType.InlandFloodingRisk]: InlandFloodingRiskIcon,
+  [PlateauDatasetType.ReservoirFloodingRisk]: InlandFloodingRiskIcon,
   [PlateauDatasetType.Landmark]: LandmarkIcon,
   [PlateauDatasetType.LandSlideRisk]: LandSlideRiskIcon,
   [PlateauDatasetType.LandUse]: LandUseIcon,

@@ -9,6 +9,7 @@ export enum PlateauDatasetType {
   GenericCityObject = "gen",
   HighTideRisk = "htd",
   InlandFloodingRisk = "ifld",
+  ReservoirFloodingRisk = "rfld",
   LandSlideRisk = "lsld",
   LandUse = "luse",
   Landmark = "landmark",

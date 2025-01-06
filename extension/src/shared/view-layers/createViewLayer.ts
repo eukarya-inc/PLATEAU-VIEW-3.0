@@ -26,6 +26,7 @@ import {
   PEDESTRIAN_LAYER,
   PedestrianLayerModelParams,
   RAILWAY_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
   RIVER_FLOODING_RISK_LAYER,
   ROAD_LAYER,
   SHELTER_LAYER,
@@ -77,6 +78,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof GLOBAL_LAYER ? GeneralLayerModelParams : // GenericLayerModelParams
   T extends typeof HIGH_TIDE_RISK_LAYER ? GeneralLayerModelParams : // HighTideRiskLayerModelParams
   T extends typeof INLAND_FLOODING_RISK_LAYER ? GeneralLayerModelParams : // InlandFloodingRiskLayerModelParams
+  T extends typeof RESERVOIR_FLOODING_RISK_LAYER ? GeneralLayerModelParams : // ReservoirFloodingRiskLayerModelParams
   T extends typeof LAND_USE_LAYER ? GeneralLayerModelParams : // LandUseLayerModelParams :
   T extends typeof LANDMARK_LAYER ? GeneralLayerModelParams : // LandmarkLayerModelParams
   T extends typeof LAND_SLIDE_RISK_LAYER ? GeneralLayerModelParams : // LandSlideRiskLayerModelParams :
@@ -113,6 +115,7 @@ export function createViewLayer<T extends LayerType>(
     case BUILDING_LAYER: return createBuildingLayer(params as BuildingLayerModelParams)
     // Flood model
     case INLAND_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    case RESERVOIR_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case HIGH_TIDE_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case RIVER_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case TSUNAMI_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
