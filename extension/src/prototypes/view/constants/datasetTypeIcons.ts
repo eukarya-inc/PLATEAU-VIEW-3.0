@@ -20,6 +20,7 @@ import {
   UrbanPlanningIcon,
   UseCaseIcon,
   VegetationIcon,
+  ReservoirFloodingRiskIcon,
 } from "../../ui-components";
 
 import { PlateauDatasetType } from "./plateau";
@@ -37,7 +38,7 @@ export const datasetTypeIcons = {
   [PlateauDatasetType.Global]: UseCaseIcon,
   [PlateauDatasetType.HighTideRisk]: HighTideRiskIcon,
   [PlateauDatasetType.InlandFloodingRisk]: InlandFloodingRiskIcon,
-  [PlateauDatasetType.ReservoirFloodingRisk]: InlandFloodingRiskIcon,
+  [PlateauDatasetType.ReservoirFloodingRisk]: ReservoirFloodingRiskIcon,
   [PlateauDatasetType.Landmark]: LandmarkIcon,
   [PlateauDatasetType.LandSlideRisk]: LandSlideRiskIcon,
   [PlateauDatasetType.LandUse]: LandUseIcon,
