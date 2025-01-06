@@ -56,7 +56,6 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
   hidden,
   ...props
 }) => {
-  console.log("HEY", featureIndexAtom, layerIdAtom);
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
   const [layerId, setLayerId] = useAtom(layerIdAtom);
   console.log("HEY2");
