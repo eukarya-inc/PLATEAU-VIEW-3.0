@@ -58,7 +58,6 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
   const [layerId, setLayerId] = useAtom(layerIdAtom);
-  console.log("HEY2");
   useScreenSpaceSelectionResponder({
     type: TILESET_FEATURE,
     convertToSelection: object => {
