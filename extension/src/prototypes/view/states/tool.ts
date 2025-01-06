@@ -6,7 +6,7 @@ import { SketchGeometryType } from "../../sketch";
 
 import { createToolMachine, type ToolMachineState } from "./toolMachine";
 
-export type ToolType = "hand" | "select" | "sketch" | "pedestrian";
+export type ToolType = "hand" | "select" | "sketch" | "pedestrian" | "spatialId";
 
 export interface Tool {
   type: ToolType;
@@ -32,6 +32,8 @@ export function getModalTool(state: ToolMachineState): Tool | undefined {
     ? "sketch"
     : matchModal("pedestrian", state)
     ? "pedestrian"
+    : matchModal("spatialId", state)
+    ? "spatialId"
     : undefined;
   return modal != null
     ? {
@@ -69,3 +71,5 @@ export const momentaryToolAtom = atom<Tool | null>(
 export const sketchTypeAtom = atom<SketchGeometryType>("rectangle");
 
 export const preventToolKeyDownAtom = atom(false);
+
+export const spatialIdZoomAtom = atom<number>(18);

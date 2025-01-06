@@ -5,6 +5,7 @@ export type EventObject =
   | { type: "HAND" }
   | { type: "SKETCH" }
   | { type: "PEDESTRIAN" }
+  | { type: "SPATIAL_ID" }
   | { type: "MOUSE_UP" }
   | { type: "MOUSE_DOWN" }
   | { type: "PRESS_SPACE" }
@@ -47,6 +48,11 @@ export function createToolMachine() {
                   MOUSE_DOWN: "#tool.modal.active.pedestrian",
                 },
               },
+              spatialId: {
+                on: {
+                  MOUSE_DOWN: "#tool.modal.active.spatialId",
+                },
+              },
               history: {
                 type: "history",
               },
@@ -56,6 +62,7 @@ export function createToolMachine() {
               SELECT: ".select",
               PEDESTRIAN: ".pedestrian",
               SKETCH: ".sketch",
+              SPATIAL_ID: ".spatialId",
               PRESS_SPACE: "#tool.momentary.selected.hand",
               PRESS_COMMAND: "#tool.momentary.selected.select",
             },
@@ -67,6 +74,7 @@ export function createToolMachine() {
               select: {},
               pedestrian: {},
               sketch: {},
+              spatialId: {},
             },
             on: {
               MOUSE_UP: "selected.history",

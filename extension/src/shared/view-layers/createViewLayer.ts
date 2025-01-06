@@ -31,6 +31,7 @@ import {
   SHELTER_LAYER,
   SKETCH_LAYER,
   SketchLayerModelParams,
+  SPATIAL_ID_LAYER,
   STATION_LAYER,
   STORY_LAYER,
   TSUNAMI_RISK_LAYER,
@@ -46,6 +47,7 @@ import {
   type BuildingLayerModelParams,
 } from "./plateau-3dtiles/BuildingLayer";
 import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/FloodLayer";
+import { createSpatialIdLayer, SpatialIdLayerModelParams } from "./spatialId";
 import { StoryLayerModelParams, createStoryLayer } from "./story";
 // import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
 // import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
@@ -64,6 +66,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? SketchLayerModelParams :
+  T extends typeof SPATIAL_ID_LAYER ? SpatialIdLayerModelParams :
   T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
   T extends typeof STORY_LAYER ? StoryLayerModelParams :
 
@@ -105,6 +108,7 @@ export function createViewLayer<T extends LayerType>(
     case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return createSketchLayer(params as SketchLayerModelParams)
+    case SPATIAL_ID_LAYER: return createSpatialIdLayer(params as SpatialIdLayerModelParams)
     case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
     case STORY_LAYER: return createStoryLayer(params as StoryLayerModelParams)
 

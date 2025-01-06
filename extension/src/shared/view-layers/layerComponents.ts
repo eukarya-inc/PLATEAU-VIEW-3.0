@@ -28,6 +28,7 @@ import {
   ROAD_LAYER,
   SHELTER_LAYER,
   SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
   STATION_LAYER,
   STORY_LAYER,
   TSUNAMI_RISK_LAYER,
@@ -38,6 +39,7 @@ import {
 } from "../../prototypes/view-layers/layerTypes";
 
 import { FloodLayer } from "./plateau-3dtiles/FloodLayer";
+import { SpatialIdLayer } from "./spatialId";
 
 import { BuildingLayer, GeneralDatasetLayer, MyDataLayer, StoryLayer } from ".";
 // import { PedestrianLayer } from "./PedestrianLayer";
@@ -50,6 +52,7 @@ export const layerComponents: LayerComponents = {
   [HEATMAP_LAYER]: HeatmapLayer,
   [PEDESTRIAN_LAYER]: PedestrianLayer,
   [SKETCH_LAYER]: SketchLayer,
+  [SPATIAL_ID_LAYER]: SpatialIdLayer,
   [MY_DATA_LAYER]: MyDataLayer,
   [STORY_LAYER]: StoryLayer,
 
