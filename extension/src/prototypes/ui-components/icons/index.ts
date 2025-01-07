@@ -15,6 +15,7 @@ export * from "./HighTideRiskIcon";
 export * from "./HistoryIcon";
 export * from "./InfoIcon";
 export * from "./InlandFloodingRiskIcon";
+export * from "./ReservoirFloodingRiskIcon";
 export * from "./KeyboardMovementIcon";
 export * from "./LandmarkIcon";
 export * from "./LandSlideRiskIcon";
