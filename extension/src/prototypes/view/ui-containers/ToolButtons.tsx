@@ -91,7 +91,7 @@ export const ToolButtons: FC = () => {
           title: "Zoom Level",
           value: spatialIdZoom,
           min: 16,
-          max: 25,
+          max: 20,
           onValueChange: setSpatialIdZoom,
         }}>
         <SpatialIdIcon fontSize="medium" />
