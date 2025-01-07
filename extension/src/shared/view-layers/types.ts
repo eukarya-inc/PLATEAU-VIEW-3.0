@@ -31,6 +31,7 @@ import {
   VEGETATION_LAYER,
   CITY_LAYER,
   SPATIAL_ID_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
 import { SketchLayerModel } from "../../prototypes/view-layers/SketchLayer";
@@ -55,6 +56,7 @@ export interface LayerModelOverrides {
   [BUILDING_LAYER]: BuildingLayerModel;
   // Flood model
   [INLAND_FLOODING_RISK_LAYER]: FloodLayerModel; // InlandFloodingRiskLayerModel
+  [RESERVOIR_FLOODING_RISK_LAYER]: FloodLayerModel; // ReservoirFloodingRiskLayerModel
   [HIGH_TIDE_RISK_LAYER]: FloodLayerModel; // HighTideRiskLayerModel
   [RIVER_FLOODING_RISK_LAYER]: FloodLayerModel; // RiverFloodingRiskLayerModel;
   [TSUNAMI_RISK_LAYER]: FloodLayerModel; // TsunamiRiskLayerModel

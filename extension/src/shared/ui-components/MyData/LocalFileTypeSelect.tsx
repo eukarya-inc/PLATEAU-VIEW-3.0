@@ -3,7 +3,8 @@ import { MenuItem } from "@mui/material";
 import Select from "@mui/material/Select";
 import React from "react";
 
-export const fileFormats = ".kml,.csv,.czml,.gpx,.geojson,.georss,.shapefile,.zip,.glb,.gltf";
+export const fileFormats =
+  ".kml,.csv,.czml,.gpx,.geojson,.shapefile,.zip,.glb,.gltf";
 
 type Props = {
   fileType: string;
@@ -18,7 +19,6 @@ export type FileType =
   | "csv"
   | "czml"
   | "gpx"
-  | "georss"
   | "shapefile"
   | "gltf";
 
@@ -53,10 +53,6 @@ const FileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
       label: "GPX",
     },
     {
-      value: "georss",
-      label: "GeoRSS",
-    },
-    {
       value: "shapefile",
       label: "ShapeFile (zip)",
     },
@@ -73,7 +69,8 @@ const FileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
       value={fileType}
       defaultValue="auto"
       IconComponent={ArrowDropDownIcon}
-      onChange={e => onFileTypeSelect(e.target.value as FileType)}>
+      onChange={(e) => onFileTypeSelect(e.target.value as FileType)}
+    >
       {options.map((option, idx) => (
         <MenuItem key={idx} value={option.value}>
           {option.label}

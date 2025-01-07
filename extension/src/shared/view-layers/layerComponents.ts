@@ -24,6 +24,7 @@ import {
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   RAILWAY_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
   RIVER_FLOODING_RISK_LAYER,
   ROAD_LAYER,
   SHELTER_LAYER,
@@ -62,6 +63,7 @@ export const layerComponents: LayerComponents = {
   // Flood model
   [HIGH_TIDE_RISK_LAYER]: FloodLayer,
   [INLAND_FLOODING_RISK_LAYER]: FloodLayer,
+  [RESERVOIR_FLOODING_RISK_LAYER]: FloodLayer,
   [RIVER_FLOODING_RISK_LAYER]: FloodLayer,
   [TSUNAMI_RISK_LAYER]: FloodLayer,
   // General

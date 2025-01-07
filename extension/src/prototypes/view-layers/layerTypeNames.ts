@@ -32,6 +32,7 @@ import {
   VEGETATION_LAYER,
   WATERWAY_LAYER,
   SPATIAL_ID_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
 } from "./layerTypes";
 
 // Undefined means using the name from API.
@@ -54,6 +55,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [GLOBAL_LAYER]: "全球データ",
   [HIGH_TIDE_RISK_LAYER]: "高潮浸水想定区域",
   [INLAND_FLOODING_RISK_LAYER]: "内水浸水想定区域",
+  [RESERVOIR_FLOODING_RISK_LAYER]: "ため池ハザードマップ",
   [LAND_USE_LAYER]: "土地利用",
   [LANDMARK_LAYER]: "ランドマーク",
   [LAND_SLIDE_RISK_LAYER]: "土砂災害警戒区域",

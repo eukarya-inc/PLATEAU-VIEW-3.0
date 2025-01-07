@@ -11,7 +11,6 @@ export type FileType =
   | "csv"
   | "czml"
   | "gpx"
-  | "georss"
   | "shapefile";
 
 type Props = {
@@ -24,7 +23,6 @@ const SUPPORTED_TYPES: Record<string, string> = {
   wms: "wms",
   gpx: "gpx",
   czml: "czml",
-  xml: "georss",
   mvt: "mvt",
   kml: "kml",
   geojson: "geojson",
@@ -79,10 +77,6 @@ const WebFileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
       label: "3D Tiles",
     },
     {
-      value: "georss",
-      label: "GeoRSS",
-    },
-    {
       value: "shapefile",
       label: "ShapeFile (zip)",
     },
@@ -103,7 +97,8 @@ const WebFileTypeSelect: React.FC<Props> = ({ fileType, onFileTypeSelect }) => {
       value={fileType}
       defaultValue="auto"
       IconComponent={ArrowDropDownIcon}
-      onChange={e => onFileTypeSelect(e.target.value as FileType)}>
+      onChange={(e) => onFileTypeSelect(e.target.value as FileType)}
+    >
       {options.map((option, idx) => (
         <MenuItem key={idx} value={option.value}>
           {option.label}

@@ -13,6 +13,7 @@ export const datasetTypeNames: Record<PlateauDatasetType, string> = {
   [PlateauDatasetType.Global]: "全球データ",
   [PlateauDatasetType.HighTideRisk]: "高潮浸水想定区域",
   [PlateauDatasetType.InlandFloodingRisk]: "内水浸水想定区域",
+  [PlateauDatasetType.ReservoirFloodingRisk]: "ため池ハザードマップモデル",
   [PlateauDatasetType.Landmark]: "ランドマーク",
   [PlateauDatasetType.LandSlideRisk]: "土砂災害警戒区域",
   [PlateauDatasetType.LandUse]: "土地利用",
