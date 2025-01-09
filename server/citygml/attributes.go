@@ -544,7 +544,11 @@ func (r *fetchCodeResolver) Resolve(codeSpace, code string) (string, error) {
 		}
 	}
 	r.cache[codeSpace] = codeMap
-	return codeMap[code], nil
+	resolved, ok := codeMap[code]
+	if !ok {
+		return "", fmt.Errorf("code %q not found in codeSpace %q", code, codeSpace)
+	}
+	return resolved, nil
 }
 
 func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[string]any, error) {
