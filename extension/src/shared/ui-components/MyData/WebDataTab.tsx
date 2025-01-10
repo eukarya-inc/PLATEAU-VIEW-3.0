@@ -132,7 +132,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
             データの閲覧
           </BrowseButton>
         </UrlWrapper>
-        {dataUrl && selectedWebItem && (
+        {((dataUrl && selectedWebItem) || fileType !== "auto") && (
           <>
             {requireLayerName && (
               <FormControl>
@@ -144,11 +144,14 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                 />{" "}
               </FormControl>
             )}
-            {selectedWebItem.formatTip && (
-              <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-                {selectedWebItem.formatTip}
-              </Typography>
-            )}
+            {selectedWebItem?.formatTip ||
+              (fileType !== "auto" && (
+                <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+                  {selectedWebItem
+                    ? selectedWebItem.formatTip
+                    : getFormatTip(fileType)}
+                </Typography>
+              ))}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
               {selectedWebItem?.description}
             </Typography>
