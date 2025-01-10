@@ -31,6 +31,7 @@ import {
   CITY_LAYER,
   VEGETATION_LAYER,
   WATERWAY_LAYER,
+  SPATIAL_ID_LAYER,
   RESERVOIR_FLOODING_RISK_LAYER,
 } from "./layerTypes";
 
@@ -39,6 +40,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [HEATMAP_LAYER]: "統計データ",
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
+  [SPATIAL_ID_LAYER]: "空間ID",
   [MY_DATA_LAYER]: "マイデータ",
   [STORY_LAYER]: "ストーリー",
 

@@ -24,6 +24,7 @@ import {
   ROAD_LAYER,
   SHELTER_LAYER,
   SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
   STATION_LAYER,
   STORY_LAYER,
   TSUNAMI_RISK_LAYER,
@@ -98,6 +99,7 @@ export const layerDatasetTypes = {
   [HEATMAP_LAYER]: undefined,
   [PEDESTRIAN_LAYER]: undefined,
   [SKETCH_LAYER]: undefined,
+  [SPATIAL_ID_LAYER]: undefined,
   [MY_DATA_LAYER]: undefined,
   [STORY_LAYER]: undefined,
 } as const satisfies Record<LayerType, PlateauDatasetType | undefined>;

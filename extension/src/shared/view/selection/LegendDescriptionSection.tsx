@@ -7,7 +7,12 @@ import {
   IMAGE_SCHEME_SELECTION,
   SelectionGroup,
 } from "../../../prototypes/view/states/selection";
-import { HEATMAP_LAYER, PEDESTRIAN_LAYER, SKETCH_LAYER } from "../../../prototypes/view-layers";
+import {
+  HEATMAP_LAYER,
+  PEDESTRIAN_LAYER,
+  SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
+} from "../../../prototypes/view-layers";
 import { useOptionalAtomValue } from "../../hooks";
 import { LEGEND_DESCRIPTION_FIELD } from "../../types/fieldComponents/general";
 import { CommonContentWrapper } from "../../ui-components/CommonContentWrapper";
@@ -21,7 +26,10 @@ export interface LegendDescriptionSectionProps {
 
 export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ values }) => {
   const layer = values[0] as LayerModel<
-    Exclude<LayerType, typeof PEDESTRIAN_LAYER | typeof HEATMAP_LAYER | typeof SKETCH_LAYER>
+    Exclude<
+      LayerType,
+      typeof PEDESTRIAN_LAYER | typeof HEATMAP_LAYER | typeof SKETCH_LAYER | typeof SPATIAL_ID_LAYER
+    >
   >;
   const legendDescriptionAtom = useFindComponent(
     layer.componentAtoms ?? [],

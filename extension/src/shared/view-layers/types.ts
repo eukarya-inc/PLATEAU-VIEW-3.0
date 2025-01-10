@@ -30,6 +30,7 @@ import {
   WATERWAY_LAYER,
   VEGETATION_LAYER,
   CITY_LAYER,
+  SPATIAL_ID_LAYER,
   RESERVOIR_FLOODING_RISK_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
@@ -39,12 +40,14 @@ import { GeneralLayerModel } from "./general";
 import { MyDataLayerModel } from "./myData";
 import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
+import { SpatialIdLayerModel } from "./spatialId";
 import { StoryLayerModel } from "./story";
 
 export interface LayerModelOverrides {
   [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: SketchLayerModel;
+  [SPATIAL_ID_LAYER]: SpatialIdLayerModel;
   [MY_DATA_LAYER]: MyDataLayerModel;
   [STORY_LAYER]: StoryLayerModel;
 

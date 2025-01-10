@@ -13,7 +13,15 @@ import {
   SketchCircleIcon,
   SketchPolygonIcon,
 } from "../../ui-components";
-import { sketchTypeAtom, toolAtom, toolMachineAtom, type ToolType } from "../states/tool";
+import { AppToggleButtonSlider } from "../../ui-components/AppToggleButtonSlider";
+import { SpatialIdIcon } from "../../ui-components/icons/SpatialIdIcon";
+import {
+  sketchTypeAtom,
+  spatialIdZoomAtom,
+  toolAtom,
+  toolMachineAtom,
+  type ToolType,
+} from "../states/tool";
 import { type EventObject } from "../states/toolMachine";
 
 const eventTypes: Record<ToolType, EventObject["type"]> = {
@@ -21,6 +29,7 @@ const eventTypes: Record<ToolType, EventObject["type"]> = {
   select: "SELECT",
   sketch: "SKETCH",
   pedestrian: "PEDESTRIAN",
+  spatialId: "SPATIAL_ID",
 };
 
 const sketchItems = [
@@ -53,6 +62,8 @@ export const ToolButtons: FC = () => {
     [send, setSketchType],
   );
 
+  const [spatialIdZoom, setSpatialIdZoom] = useAtom(spatialIdZoomAtom);
+
   return (
     <AppToggleButtonGroup value={tool?.type} onChange={handleChange}>
       <AppToggleButton value="hand" title="移動" shortcutKey="H">
@@ -72,6 +83,19 @@ export const ToolButtons: FC = () => {
         selectedValue={sketchType}
         onValueChange={handleSketchTypeChange}
       />
+      <AppToggleButtonSlider
+        value="spatialId"
+        title="空間 ID"
+        shortcutKey="S"
+        item={{
+          title: "Zoom Level",
+          value: spatialIdZoom,
+          min: 16,
+          max: 20,
+          onValueChange: setSpatialIdZoom,
+        }}>
+        <SpatialIdIcon fontSize="medium" />
+      </AppToggleButtonSlider>
     </AppToggleButtonGroup>
   );
 };

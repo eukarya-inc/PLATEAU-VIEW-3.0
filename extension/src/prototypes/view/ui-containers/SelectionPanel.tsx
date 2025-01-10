@@ -4,6 +4,7 @@ import { type ResizeCallback } from "re-resizable";
 import { useCallback, type FC } from "react";
 
 import { GENERAL_FEATURE, TILESET_FEATURE } from "../../../shared/reearth/layers";
+import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { findRootLayerAtom } from "../../../shared/states/rootLayer";
 import {
   GeneralFeatureContent,
@@ -20,6 +21,7 @@ import { ImageSchemeContent } from "../selection/ImageSchemeContent";
 import { LayerContent } from "../selection/LayerContent";
 import { PedestrianLayerContent } from "../selection/PedestrianLayerContent";
 import { SketchObjectContent } from "../selection/SketchObjectContent";
+import { SpatialIdObjectContent } from "../selection/SpatialIdObjectContent";
 import { StoryLayerContent } from "../selection/StoryLayerContent";
 import { TileFeatureContent } from "../selection/TileFeatureContent";
 import { inspectorWidthAtom, pedestrianInspectorWidthAtom, viewportWidthAtom } from "../states/app";
@@ -94,6 +96,9 @@ export const SelectionPanel: FC = () => {
             break;
           case SKETCH_OBJECT:
             content = <SketchObjectContent values={selectionGroup.values} />;
+            break;
+          case SPATIAL_ID_OBJECT:
+            content = <SpatialIdObjectContent values={selectionGroup.values} />;
             break;
         }
         break;
