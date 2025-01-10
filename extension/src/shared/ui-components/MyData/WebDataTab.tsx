@@ -38,6 +38,9 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleSetUrl = useCallback((value: string) => {
+    if (!value) {
+      setSelectedWebItem(undefined);
+    }
     setDataUrl(value);
   }, []);
 
