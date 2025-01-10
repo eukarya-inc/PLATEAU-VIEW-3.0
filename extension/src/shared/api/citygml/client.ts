@@ -18,6 +18,8 @@ export class CityGMLClient {
   }
 
   async getFiles(conditions: string) {
-    return this.handleError(await fetchWithGet(`${this.url}/${conditions}`));
+    return this.handleError(await fetchWithGet(`${this.url}/${conditions}`)).catch((e: any) => {
+      console.error(e);
+    });
   }
 }
