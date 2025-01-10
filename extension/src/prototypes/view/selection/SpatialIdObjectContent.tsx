@@ -1,8 +1,10 @@
 import { Divider, IconButton, List, Tooltip } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { uniq } from "lodash";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import ReactJson from "react-json-view";
 
+import { cityGMLClient } from "../../../shared/api/citygml";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
@@ -91,6 +93,40 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
     ];
   }, [features, values]);
 
+  const [files, setFiles] = useState<object | undefined>();
+  const [_loading, setLoading] = useState<boolean>(true);
+  const [_error, setError] = useState<string | null>(null);
+  const conditions = useMemo(() => {
+    const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
+    if (!feature) return;
+    return `s:${feature.data.zfxyStr}`;
+  }, [features, values]);
+
+  useEffect(() => {
+    if (!conditions) {
+      setFiles(undefined);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+    const fetchFiles = async () => {
+      setLoading(true);
+      setFiles(undefined);
+      setError(null);
+
+      try {
+        const data = await cityGMLClient?.getFiles(conditions);
+        setFiles(data);
+      } catch (err: any) {
+        setError(err.message || "An error occurred while fetching files.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, [conditions]);
+
   return (
     <List disablePadding>
       <InspectorHeader
@@ -116,6 +152,17 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
       <InspectorItem>
         <ParameterList>
           <PropertyParameterItem properties={properties} featureType="spatialId" />
+          {files && (
+            <ReactJson
+              src={files}
+              displayDataTypes={false}
+              enableClipboard={false}
+              displayObjectSize={false}
+              quotesOnKeys={false}
+              indentWidth={2}
+              style={{ wordBreak: "break-all", lineHeight: 1.2 }}
+            />
+          )}
         </ParameterList>
       </InspectorItem>
     </List>

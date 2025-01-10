@@ -5,6 +5,7 @@ import { SnackbarProvider } from "notistack";
 import { FC, PropsWithChildren, useEffect, useState } from "react";
 
 import { lightTheme, lightThemeOptions } from "../../prototypes/ui-components";
+import { cityGMLClient, createCityGMLClient } from "../api/citygml";
 import {
   createSettingClient,
   settingClient,
@@ -33,12 +34,14 @@ import {
   useIsEnable,
   useStartTime,
   useFinishTime,
+  useCityGMLApiUrl,
 } from "../states/environmentVariables";
 
 type Props = {
   inEditor?: boolean;
   // Default settings
   geoUrl?: string;
+  cityGMLUrl?: string;
   gsiTileURL?: string;
   plateauUrl?: string;
   projectId?: string;
@@ -67,6 +70,7 @@ type Props = {
 
 export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   geoUrl,
+  cityGMLUrl,
   gsiTileURL,
   plateauUrl,
   projectId,
@@ -119,6 +123,13 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setGeoApiUrlState(geoUrl);
     }
   }, [geoUrl, geoApiUrlState, setGeoApiUrlState]);
+
+  const [cityGMLApiUrlState, setCityGMLApiUrlState] = useCityGMLApiUrl();
+  useEffect(() => {
+    if (!cityGMLApiUrlState && cityGMLUrl) {
+      setCityGMLApiUrlState(cityGMLUrl);
+    }
+  }, [cityGMLUrl, cityGMLApiUrlState, setCityGMLApiUrlState]);
 
   const [gsiTileURLState, setGSITileURLState] = useGsiTileUrl();
   useEffect(() => {
@@ -204,6 +215,12 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       createGeoClient(geoUrl);
     }
   }, [geoUrl]);
+
+  useEffect(() => {
+    if (!cityGMLClient && cityGMLUrl) {
+      createCityGMLClient(cityGMLUrl);
+    }
+  }, [cityGMLUrl]);
 
   useEffect(() => {
     const url = inEditor ? catalogURLForAdmin || catalogUrl : catalogUrl;
