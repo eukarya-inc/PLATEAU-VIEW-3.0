@@ -38,6 +38,7 @@ import { useSelectSpatialIdFeature } from "./hooks/useSelectSpatialIdFeature";
 
 type DefaultProps = {
   geoURL?: string;
+  cityGMLURL?: string;
   gsiTileURL?: string;
   arURL?: string;
   plateauURL?: string;
@@ -84,6 +85,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         catalogUrl={widget.property.default.catalogURL}
         catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
         geoUrl={widget.property.default.geoURL}
+        cityGMLUrl={widget.property.default.cityGMLURL}
         gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={
           widget.property.default.googleStreetViewAPIKey ||
