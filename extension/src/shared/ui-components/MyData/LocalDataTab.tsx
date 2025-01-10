@@ -97,6 +97,16 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
     setProcessedDataItem(undefined);
   }, [onSubmit, selectedLocalItem]);
 
+  const formatTip = useMemo(() => {
+    if (selectedLocalItem?.formatTip) {
+      return selectedLocalItem.formatTip;
+    }
+    if (fileType !== "auto") {
+      return getFormatTip(fileType);
+    }
+    return "";
+  }, [selectedLocalItem, fileType]);
+
   return (
     <FormControl fullWidth size="small">
       <Label>ファイルタイプを選択</Label>
@@ -138,11 +148,9 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
           />
         </Box>
       )}
-      {(fileType !== "auto" || selectedLocalItem) && (
+      {formatTip && (
         <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-          {selectedLocalItem
-            ? selectedLocalItem.formatTip
-            : getFormatTip(fileType)}
+          {formatTip}
         </Typography>
       )}
       <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
