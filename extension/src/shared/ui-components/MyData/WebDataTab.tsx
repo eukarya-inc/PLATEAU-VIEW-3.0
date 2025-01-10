@@ -1,7 +1,6 @@
 import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
-import { Button, Typography, styled } from "@mui/material";
-import FormControl from "@mui/material/FormControl";
+import { Button, FormControl, Typography, styled } from "@mui/material";
 import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
 
 import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
@@ -132,7 +131,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
             データの閲覧
           </BrowseButton>
         </UrlWrapper>
-        {dataUrl && selectedWebItem && (
+        {((dataUrl && selectedWebItem) || fileType !== "auto") && (
           <>
             {requireLayerName && (
               <FormControl>
@@ -144,11 +143,14 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                 />{" "}
               </FormControl>
             )}
-            {selectedWebItem.formatTip && (
-              <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-                {selectedWebItem.formatTip}
-              </Typography>
-            )}
+            {selectedWebItem?.formatTip ||
+              (fileType !== "auto" && (
+                <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+                  {selectedWebItem
+                    ? selectedWebItem.formatTip
+                    : getFormatTip(fileType)}
+                </Typography>
+              ))}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
               {selectedWebItem?.description}
             </Typography>
