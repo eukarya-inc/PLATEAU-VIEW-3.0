@@ -1,6 +1,7 @@
 import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
-import { Button, FormControl, Typography, styled } from "@mui/material";
+import { Button, Typography, styled } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
 import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
 
 import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
