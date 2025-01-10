@@ -96,14 +96,14 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
   const [files, setFiles] = useState<object | undefined>();
   const [_loading, setLoading] = useState<boolean>(true);
   const [_error, setError] = useState<string | null>(null);
-  const conditions = useMemo(() => {
+  const spaceZFXYStr = useMemo(() => {
     const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return;
-    return `s:${feature.data.zfxyStr}`;
+    return feature.data.zfxyStr;
   }, [features, values]);
 
   useEffect(() => {
-    if (!conditions) {
+    if (!spaceZFXYStr) {
       setFiles(undefined);
       setLoading(false);
       setError(null);
@@ -115,7 +115,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
       setError(null);
 
       try {
-        const data = await cityGMLClient?.getFiles(conditions);
+        const data = await cityGMLClient?.getFiles({ spaceZFXYStr });
         setFiles(data);
       } catch (err: any) {
         setError(err.message || "An error occurred while fetching files.");
@@ -125,7 +125,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
     };
 
     fetchFiles();
-  }, [conditions]);
+  }, [spaceZFXYStr]);
 
   return (
     <List disablePadding>
