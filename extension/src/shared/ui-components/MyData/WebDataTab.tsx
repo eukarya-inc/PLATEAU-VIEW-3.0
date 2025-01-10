@@ -2,7 +2,14 @@ import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
@@ -107,6 +114,16 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     setSelectedWebItem(undefined);
   }, [layers, onSubmit, selectedWebItem]);
 
+  const formatTip = useMemo(() => {
+    if (selectedWebItem?.formatTip) {
+      return selectedWebItem.formatTip;
+    }
+    if (fileType !== "auto") {
+      return getFormatTip(fileType);
+    }
+    return "";
+  }, [selectedWebItem, fileType]);
+
   useEffect(() => {
     handleClick();
   }, [fileType, handleClick]);
@@ -132,7 +149,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
             データの閲覧
           </BrowseButton>
         </UrlWrapper>
-        {dataUrl && selectedWebItem && (
+        {((dataUrl && selectedWebItem) || fileType !== "auto") && (
           <>
             {requireLayerName && (
               <FormControl>
@@ -144,9 +161,9 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                 />{" "}
               </FormControl>
             )}
-            {selectedWebItem.formatTip && (
+            {formatTip && (
               <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-                {selectedWebItem.formatTip}
+                {formatTip}
               </Typography>
             )}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
