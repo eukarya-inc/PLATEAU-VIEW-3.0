@@ -144,14 +144,13 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                 />{" "}
               </FormControl>
             )}
-            {selectedWebItem?.formatTip ||
-              (fileType !== "auto" && (
-                <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-                  {selectedWebItem
-                    ? selectedWebItem.formatTip
-                    : getFormatTip(fileType)}
-                </Typography>
-              ))}
+            {(selectedWebItem?.formatTip || fileType !== "auto") && (
+              <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+                {selectedWebItem
+                  ? selectedWebItem.formatTip
+                  : getFormatTip(fileType)}
+              </Typography>
+            )}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
               {selectedWebItem?.description}
             </Typography>
