@@ -14,7 +14,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/geo"
 )
 
-// zfxyTile represents a tile with zoomed level (z), floor (f), x-coordinate (x),
+// zfxyTile represents a tile with zoom level (z), floor (f), x-coordinate (x),
 // and y-coordinate (y)
 type zfxyTile struct {
 	z int
