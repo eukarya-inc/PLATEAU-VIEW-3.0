@@ -68,6 +68,9 @@ func Features(r io.Reader, spatialIDs []string) ([]string, error) {
 			if err := dec.Skip(); err != nil {
 				return nil, err
 			}
+			if len(faces) == 0 {
+				continue
+			}
 			fb := geo.Polyhedron(faces).Bounds()
 			for _, b := range spatialIDBounds {
 				if b.IsIntersect(fb) {
