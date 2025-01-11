@@ -148,6 +148,7 @@ func (s *tagScanner) Scan() bool {
 	for {
 		tok, err := s.dec.Token()
 		if err != nil {
+			s.err = err
 			return false
 		}
 		switch tok.Type() {
