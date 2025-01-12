@@ -16,7 +16,7 @@ import (
 )
 
 func TestFeatures(t *testing.T) {
-	b, err := os.ReadFile("testdata/udx/bldg/52382287_bldg_6697_psc_op.gml")
+	b, err := os.ReadFile("testdata/" + testdata)
 	require.NoError(t, err)
 
 	t.Run("full", func(t *testing.T) {
