@@ -71,9 +71,18 @@ func Features(r io.Reader, spatialIDs []string) ([]string, error) {
 			if len(faces) == 0 {
 				continue
 			}
-			fb := geo.Polyhedron(faces).Bounds()
+			po := geo.Polyhedron(faces)
+			poB := po.Bounds()
+			var lod1Solid *geo.LOD1Solid
 			for _, b := range spatialIDBounds {
-				if b.IsIntersect(fb) {
+				if !b.IsIntersect(poB) {
+					continue
+				}
+				if lod1Solid == nil {
+					so := geo.ReconstructLOD1Solid(po)
+					lod1Solid = &so
+				}
+				if lod1Solid.IsIntersect(b) {
 					features = append(features, feature)
 					break
 				}
@@ -112,21 +121,23 @@ func parsePosList(t string) ([]geo.Point3, error) {
 	if len(tokens)%3 != 0 {
 		return nil, fmt.Errorf("invalid length")
 	}
-	n := len(tokens) / 3
+	// gml:LinearRing の gml:posList なので末尾に先頭と同じ座標が入っているため取り除く
+	n := len(tokens)/3 - 1
 	if n < 3 {
 		return nil, fmt.Errorf("too few points")
 	}
 	points := make([]geo.Point3, 0, n)
-	for i := 0; i+3 < len(tokens); i += 3 {
-		y, err := strconv.ParseFloat(tokens[i+0], 64)
+	for i := 0; i < n; i++ {
+		p := tokens[i*3:][:3]
+		y, err := strconv.ParseFloat(p[0], 64)
 		if err != nil {
 			return nil, err
 		}
-		x, err := strconv.ParseFloat(tokens[i+1], 64)
+		x, err := strconv.ParseFloat(p[1], 64)
 		if err != nil {
 			return nil, err
 		}
-		z, err := strconv.ParseFloat(tokens[i+2], 64)
+		z, err := strconv.ParseFloat(p[2], 64)
 		if err != nil {
 			return nil, err
 		}

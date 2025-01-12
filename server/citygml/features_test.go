@@ -48,6 +48,27 @@ func TestFeatures(t *testing.T) {
 		}
 		require.Equal(t, expected, fs)
 	})
+	t.Run("no-aabb", func(t *testing.T) {
+		fs, err := Features(bytes.NewReader(b), []string{"/23/10/7418083/3325472"})
+		require.NoError(t, err)
+		require.Empty(t, fs)
+	})
+	t.Run("line-intersection", func(t *testing.T) {
+		fs, err := Features(bytes.NewReader(b), []string{"/23/10/7418083/3325473"})
+		expected := []string{
+			"bldg_2eb12f7a-c5d9-4145-9609-a6a0f5824368",
+		}
+		require.NoError(t, err)
+		require.Equal(t, expected, fs)
+	})
+	t.Run("box-in-polygon", func(t *testing.T) {
+		fs, err := Features(bytes.NewReader(b), []string{"/24/20/14836162/6650947"})
+		expected := []string{
+			"bldg_2eb12f7a-c5d9-4145-9609-a6a0f5824368",
+		}
+		require.NoError(t, err)
+		require.Equal(t, expected, fs)
+	})
 	t.Run("empty", func(t *testing.T) {
 		fs, err := Features(bytes.NewReader(b), []string{"/1/0/0/0"})
 		require.NoError(t, err)

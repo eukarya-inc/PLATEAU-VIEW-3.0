@@ -223,7 +223,9 @@ func featureHandler(domain string) echo.HandlerFunc {
 				"error": "internal",
 			})
 		}
-
+		if features == nil {
+			features = []string{}
+		}
 		return c.JSON(http.StatusOK, map[string]any{
 			"featureIds": features,
 		})
