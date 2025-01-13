@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/JamesLMilner/quadtree-go"
 	"github.com/eukarya-inc/reearth-plateauview/server/geo"
 )
 
@@ -23,23 +22,7 @@ type zfxyTile struct {
 	y int
 }
 
-// Bounds calculates the geographic bounds of the tile. It returns the bounds
-// as a quadtree.Bounds object which includes the longitude and latitude of the
-// tile's bottom-left corner, and its width and height in degrees.
-func (t *zfxyTile) Bounds() quadtree.Bounds {
-	z := zoom(t.z)
-	lngMin := z.lng(t.x)
-	lngMax := z.lng(t.x + 1)
-	latMin, latMax := minmax(z.lat(t.y), z.lat(t.y+1))
-	return quadtree.Bounds{
-		X:      lngMin,
-		Y:      latMin,
-		Width:  lngMax - lngMin,
-		Height: latMax - latMin,
-	}
-}
-
-func (t *zfxyTile) Bounds3() geo.Bounds3 {
+func (t *zfxyTile) Bounds() geo.Bounds3 {
 	z := zoom(t.z)
 	lngMin := z.lng(t.x)
 	lngMax := z.lng(t.x + 1)
@@ -97,35 +80,19 @@ func (z zoomed) floor(f int) float64 {
 // bounds of the tile. The input can be in the format "/z/x/y" or "/z/f/x/y", or
 // as a hash string. It returns an error if the format is invalid or the string
 // contains invalid characters.
-func Bounds(s string) (quadtree.Bounds, error) {
-	if strings.HasPrefix(s, "/") {
-		t, err := parseTile(s)
-		if err != nil {
-			return quadtree.Bounds{}, err
-		}
-		return t.Bounds(), nil
-	} else {
-		t, err := parseTileHash(s)
-		if err != nil {
-			return quadtree.Bounds{}, err
-		}
-		return t.Bounds(), nil
-	}
-}
-
-func Bounds3(s string) (geo.Bounds3, error) {
+func Bounds(s string) (geo.Bounds3, error) {
 	if strings.HasPrefix(s, "/") {
 		t, err := parseTile(s)
 		if err != nil {
 			return geo.Bounds3{}, err
 		}
-		return t.Bounds3(), nil
+		return t.Bounds(), nil
 	} else {
 		t, err := parseTileHash(s)
 		if err != nil {
 			return geo.Bounds3{}, err
 		}
-		return t.Bounds3(), nil
+		return t.Bounds(), nil
 	}
 }
 

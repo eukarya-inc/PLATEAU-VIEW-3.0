@@ -1,118 +1,101 @@
 package citygml
 
 import (
+	"encoding/xml"
 	"fmt"
 	"io"
 	"strconv"
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geo"
-	"github.com/eukarya-inc/reearth-plateauview/server/spatialid"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
+
 	"github.com/orisano/gosax/xmlb"
 )
 
 func Features(r io.Reader, spatialIDs []string) ([]string, error) {
-	var spatialIDBounds []geo.Bounds3
+	var filter lod1SolidFilter
 	for _, sid := range spatialIDs {
-		b, err := spatialid.Bounds3(sid)
+		b, err := spatialid.Bounds(sid)
 		if err != nil {
 			return nil, fmt.Errorf("invalid spatialID: %w", err)
 		}
-		spatialIDBounds = append(spatialIDBounds, b)
+		filter.Bounds = append(filter.Bounds, b)
 	}
-
 	dec := xmlb.NewDecoder(r, make([]byte, 32*1024))
+	fs := &featureScanner{
+		Dec: dec,
+	}
 	var features []string
-	for {
-		tok, err := dec.Token()
-		if err == io.EOF {
-			break
+	for fs.Scan() {
+		feature, _ := fs.Feature()
+		h := lod1SolidHandler{
+			Next: skipAttrHandler{},
 		}
-		if err != nil {
-			return nil, fmt.Errorf("token: %w", err)
+		if err := processFeature(dec, &h); err != nil {
+			return nil, err
 		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			el, err := tok.StartElement()
-			if err != nil {
-				return nil, fmt.Errorf("start element: %w", err)
-			}
-			feature, ok := findAttrNS(el.Attr, "gml", "id")
-			if !ok {
-				continue
-			}
-			if found, err := skipUntil(dec, "lod1Solid"); err != nil {
-				return nil, err
-			} else if !found {
-				continue
-			}
-			s := &tagScanner{
-				dec: dec,
-				tag: "gml:posList",
-			}
-			var faces []geo.Polygon3
-			for s.Scan() {
-				text, err := s.Text()
-				if err != nil {
-					return nil, err
-				}
-				posList, err := parsePosList(text)
-				if err != nil {
-					return nil, fmt.Errorf("parse posList(%s): %w", feature, err)
-				}
-				faces = append(faces, posList)
-			}
-			if err := s.Err(); err != nil {
-				return nil, err
-			}
-			if err := dec.Skip(); err != nil {
-				return nil, err
-			}
-			if len(faces) == 0 {
-				continue
-			}
-			po := geo.Polyhedron(faces)
-			poB := po.Bounds()
-			var lod1Solid *geo.LOD1Solid
-			for _, b := range spatialIDBounds {
-				if !b.IsIntersect(poB) {
-					continue
-				}
-				if lod1Solid == nil {
-					so := geo.ReconstructLOD1Solid(po)
-					lod1Solid = &so
-				}
-				if lod1Solid.IsIntersect(b) {
-					features = append(features, feature)
-					break
-				}
-			}
+		if filter.IsIntersect(h.Faces) {
+			features = append(features, feature)
 		}
+	}
+	if err := fs.Err(); err != nil {
+		return nil, err
 	}
 	return features, nil
 }
 
-func skipUntil(dec *xmlb.Decoder, tag string) (bool, error) {
-	for {
-		tok, err := dec.Token()
-		if err != nil {
-			return false, err
+type lod1SolidFilter struct {
+	Bounds []geo.Bounds3
+}
+
+func (f *lod1SolidFilter) IsIntersect(faces []geo.Polygon3) bool {
+	if len(faces) == 0 {
+		return false
+	}
+	po := geo.Polyhedron(faces)
+	poB := po.Bounds()
+	var lod1Solid *geo.LOD1Solid
+	for _, b := range f.Bounds {
+		if !b.IsIntersect(poB) {
+			continue
 		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			el, err := tok.StartElement()
+		if lod1Solid == nil {
+			so := geo.ReconstructLOD1Solid(po)
+			lod1Solid = &so
+		}
+		if lod1Solid.IsIntersect(b) {
+			return true
+		}
+	}
+	return false
+}
+
+type lod1SolidHandler struct {
+	Next  attrHandler
+	Faces []geo.Polygon3
+}
+
+func (h *lod1SolidHandler) HandleAttr(dec *xmlb.Decoder, el xml.StartElement) error {
+	if el.Name.Local == "lod1Solid" {
+		s := &tagScanner{
+			dec: dec,
+			tag: "gml:posList",
+		}
+		for s.Scan() {
+			text, err := s.Text()
 			if err != nil {
-				return false, err
+				return err
 			}
-			if el.Name.Local == tag {
-				return true, nil
+			posList, err := parsePosList(text)
+			if err != nil {
+				return fmt.Errorf("parse posList: %w", err)
 			}
-			if err := dec.Skip(); err != nil {
-				return false, err
-			}
-		case xmlb.EndElement:
-			return false, nil
+			h.Faces = append(h.Faces, posList)
 		}
+		return s.Err()
+	} else {
+		return h.Next.HandleAttr(dec, el)
 	}
 }
 
@@ -148,47 +131,4 @@ func parsePosList(t string) ([]geo.Point3, error) {
 		})
 	}
 	return points, nil
-}
-
-type tagScanner struct {
-	dec *xmlb.Decoder
-	tag string
-
-	err   error
-	depth int
-}
-
-func (s *tagScanner) Scan() bool {
-	for {
-		tok, err := s.dec.Token()
-		if err != nil {
-			s.err = err
-			return false
-		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			s.depth++
-			el, err := tok.StartElement()
-			if err != nil {
-				s.err = err
-				return false
-			}
-			if tagName(el.Name) == s.tag {
-				return true
-			}
-		case xmlb.EndElement:
-			if s.depth == 0 {
-				return false
-			}
-			s.depth--
-		}
-	}
-}
-
-func (s *tagScanner) Text() (string, error) {
-	return s.dec.Text()
-}
-
-func (s *tagScanner) Err() error {
-	return s.err
 }
