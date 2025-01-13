@@ -6,6 +6,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"net/http"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -255,6 +257,8 @@ func (h objectHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.
 
 type sliceHandler struct {
 	au attributeUnmarshaler
+
+	codeResolver codeResolver
 }
 
 func (h sliceHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.StartElement) error {
@@ -263,25 +267,50 @@ func (h sliceHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.S
 	if err != nil {
 		return err
 	}
-	if a, ok := obj[key]; ok {
-		obj[key] = append(a.([]any), v)
+	if codeSpace, ok := findAttr(e.Attr, "codeSpace"); ok {
+		if text, ok := v.(string); ok {
+			if h.codeResolver != nil {
+				resolved, err := h.codeResolver.Resolve(codeSpace, text)
+				if err != nil {
+					return fmt.Errorf("resolve code: %w", err)
+				}
+				v := resolved
+				if a, ok := obj[key]; ok {
+					obj[key] = append(a.([]any), v)
+				} else {
+					obj[key] = []any{v}
+				}
+			}
+			key := key + "_code"
+			v := text
+			if a, ok := obj[key]; ok {
+				obj[key] = append(a.([]any), v)
+			} else {
+				obj[key] = []any{v}
+			}
+		}
 	} else {
-		obj[key] = []any{v}
-	}
-	if uom, ok := findAttr(e.Attr, "uom"); ok {
-		k := key + "_uom"
-		if a, ok := obj[k]; ok {
-			obj[k] = append(a.([]any), uom)
+		if a, ok := obj[key]; ok {
+			obj[key] = append(a.([]any), v)
 		} else {
-			obj[k] = []any{uom}
+			obj[key] = []any{v}
+		}
+		if uom, ok := findAttr(e.Attr, "uom"); ok {
+			k := key + "_uom"
+			if a, ok := obj[k]; ok {
+				obj[k] = append(a.([]any), uom)
+			} else {
+				obj[k] = []any{uom}
+			}
 		}
 	}
-
-	return ae.Skip()
+	return nil
 }
 
 type valueHandler struct {
 	au attributeUnmarshaler
+
+	codeResolver codeResolver
 }
 
 func (h valueHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.StartElement) error {
@@ -290,11 +319,24 @@ func (h valueHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.S
 	if err != nil {
 		return err
 	}
-	obj[key] = v
-	if uom, ok := findAttr(e.Attr, "uom"); ok {
-		obj[key+"_uom"] = uom
+	if codeSpace, ok := findAttr(e.Attr, "codeSpace"); ok {
+		if text, ok := v.(string); ok {
+			if h.codeResolver != nil {
+				resolved, err := h.codeResolver.Resolve(codeSpace, text)
+				if err != nil {
+					return fmt.Errorf("resolve code: %w", err)
+				}
+				obj[key] = resolved
+			}
+			obj[key+"_code"] = text
+		}
+	} else {
+		obj[key] = v
+		if uom, ok := findAttr(e.Attr, "uom"); ok {
+			obj[key+"_uom"] = uom
+		}
 	}
-	return ae.Skip()
+	return nil
 }
 
 type objectUnmarshaler struct {
@@ -312,11 +354,15 @@ func (u objectUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartElem
 type textAttrUnmarshaler struct{}
 
 func (u textAttrUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartElement) (any, error) {
-	if t, err := ae.Text(); err == nil {
-		return string(t), nil
-	} else {
+	c, err := ae.Text()
+	if err != nil {
 		return nil, err
 	}
+	t := string(c)
+	if err := ae.Skip(); err != nil {
+		return nil, err
+	}
+	return t, nil
 }
 
 type anyAttrUnmarshaler struct{}
@@ -327,6 +373,9 @@ func (u anyAttrUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartEle
 		return nil, err
 	}
 	t := string(c)
+	if err := ae.Skip(); err != nil {
+		return nil, err
+	}
 	if strings.ContainsAny(t, "eE") {
 		if _, err := strconv.ParseFloat(t, 64); err == nil {
 			return t, nil
@@ -339,7 +388,7 @@ func (u anyAttrUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartEle
 	return parseText(t), nil
 }
 
-func toTagHandler(t string, types map[string][]schemaProperty) tagHandler {
+func toTagHandler(t string, types map[string][]schemaProperty, resolver codeResolver) tagHandler {
 	m := map[string]tagHandler{}
 	nonNumericTypes := map[string]bool{
 		"xs:string":    true,
@@ -362,7 +411,7 @@ func toTagHandler(t string, types map[string][]schemaProperty) tagHandler {
 		} else if len(p.Children) > 0 {
 			m2 := map[string]tagHandler{}
 			for _, c := range p.Children {
-				m2[c] = toTagHandler(c, types)
+				m2[c] = toTagHandler(c, types, resolver)
 			}
 			au = objectUnmarshaler{
 				h: objectHandler{children: m2},
@@ -374,11 +423,13 @@ func toTagHandler(t string, types map[string][]schemaProperty) tagHandler {
 		}
 		if p.Many() {
 			m[p.Name] = sliceHandler{
-				au: au,
+				au:           au,
+				codeResolver: resolver,
 			}
 		} else {
 			m[p.Name] = valueHandler{
-				au: au,
+				au:           au,
+				codeResolver: resolver,
 			}
 		}
 	}
@@ -407,14 +458,12 @@ func initSchema() {
 		}
 	}
 
-	types := map[string][]schemaProperty{}
-
-	for t, ps := range def.ComplexTypes {
-		types[t] = ps
-	}
 	commonProps := initCommonProperties()
 
 	schemaDefs = map[string][]schemaProperty{}
+	for t, ps := range def.ComplexTypes {
+		schemaDefs[t] = ps
+	}
 	for t, ps := range def.Features {
 		var props []schemaProperty
 		props = append(props, commonProps...)
@@ -427,7 +476,82 @@ func init() {
 	initSchema()
 }
 
-func Attributes(r io.Reader, gmlID []string) ([]map[string]any, error) {
+type codeResolver interface {
+	Resolve(codeSpace, code string) (string, error)
+}
+
+type fetchCodeResolver struct {
+	client *http.Client
+	url    string
+	// リクエストをまたぐ場合は LRU を検討する
+	// キャッシュヒット率, キャッシュヒット数とかログに出力しておく
+	cache map[string]map[string]string
+}
+
+func (r *fetchCodeResolver) Resolve(codeSpace, code string) (string, error) {
+	if r.cache == nil {
+		r.cache = map[string]map[string]string{}
+	}
+	u, err := url.JoinPath(r.url, "..", codeSpace)
+	if err != nil {
+		return "", err
+	}
+	if m, ok := r.cache[codeSpace]; ok {
+		return m[code], nil
+	}
+	resp, err := r.client.Get(u)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("status code: %d", resp.StatusCode)
+	}
+	codeMap := map[string]string{}
+	var name, description string
+	ae := &attributeExtractor{
+		dec: xmlb.NewDecoder(resp.Body, make([]byte, 32*1024)),
+	}
+	for {
+		tok, err := ae.Token()
+		if err == io.EOF {
+			break
+		}
+		switch tok.Type() {
+		case xmlb.StartElement:
+			el, err := ae.StartElement(tok)
+			if err != nil {
+				return "", err
+			}
+			switch tagName(el.Name) {
+			case "gml:Definition":
+				name = ""
+				description = ""
+			case "gml:description":
+				if t, err := ae.Text(); err == nil {
+					description = string(t)
+				}
+			case "gml:name":
+				if t, err := ae.Text(); err == nil {
+					name = string(t)
+				}
+			}
+		case xmlb.EndElement:
+			el := tok.EndElement()
+			if tagName(el.Name) == "gml:Definition" {
+				codeMap[name] = description
+			}
+		}
+	}
+	r.cache[codeSpace] = codeMap
+	resolved, ok := codeMap[code]
+	if !ok {
+		return "", fmt.Errorf("code %q not found in codeSpace %q", code, codeSpace)
+	}
+	return resolved, nil
+}
+
+func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[string]any, error) {
 	ae := attributeExtractor{
 		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
 	}
@@ -455,7 +579,7 @@ func Attributes(r io.Reader, gmlID []string) ([]map[string]any, error) {
 					"gml:id":       id,
 					"feature_type": tagName(el.Name),
 				}
-				h := toTagHandler(tagName(el.Name), schemaDefs)
+				h := toTagHandler(tagName(el.Name), schemaDefs, resolver)
 				if err := h.Handle(val, &ae, el); err != nil {
 					return nil, err
 				}

@@ -80,6 +80,7 @@ func attributeHandler(domain string) echo.HandlerFunc {
 				"error": "id parameter is required",
 			})
 		}
+		skipCodeListFetch := c.QueryParam("skip_code_list_fetch") != ""
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, citygmlURL, nil)
 		if err != nil {
@@ -107,7 +108,15 @@ func attributeHandler(domain string) echo.HandlerFunc {
 			})
 		}
 
-		attrs, err := Attributes(resp.Body, ids)
+		var resolver codeResolver
+		if !skipCodeListFetch {
+			resolver = &fetchCodeResolver{
+				client: httpClient,
+				url:    citygmlURL,
+			}
+		}
+
+		attrs, err := Attributes(resp.Body, ids, resolver)
 		if err != nil {
 			log.Errorfc(ctx, "citygml: failed to extract attributes: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]any{
