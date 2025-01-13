@@ -6,11 +6,20 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo/jisx0410"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
+	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
 
 type Config struct {
+	plateaucms.Config
 	Domain             string `json:"domain"`
 	Bucket             string `json:"bucket"`
 	CityGMLPackerImage string `json:"cityGMLPackerImage"`
@@ -24,6 +33,13 @@ var httpClient = &http.Client{
 
 func Echo(conf Config, g *echo.Group) error {
 	p := newPacker(conf)
+
+	repo, err := datacatalog.NewRepo(datacatalog.Config{
+		Config: conf.Config,
+	})
+	if err != nil {
+		return err
+	}
 
 	// すでに存在したらダウンロードできるエンドポイント
 	// URL Redirect で GCS から直接ダウンロードをできるようにする
@@ -50,7 +66,12 @@ func Echo(conf Config, g *echo.Group) error {
 	g.GET("/attributes", attributeHandler(p.conf.Domain))
 	g.GET("/features", featureHandler(p.conf.Domain))
 
-	g.GET("/spatialid_attributes", spatialIDAttributesHandler())
+	papi, err := repo.PlateauAPI()
+	if err != nil {
+		return err
+	}
+
+	g.GET("/spatialid_attributes", spatialIDAttributesHandler(papi, repo.Govpolygon()))
 
 	return nil
 }
@@ -129,9 +150,9 @@ func attributeHandler(domain string) echo.HandlerFunc {
 	}
 }
 
-func spatialIDAttributesHandler() echo.HandlerFunc {
+func spatialIDAttributesHandler(papi plateauapi.Repo, qt *govpolygon.Quadtree) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// ctx := c.Request().Context()
+		ctx := c.Request().Context()
 		sids := strings.Split(c.QueryParam("sid"), ",")
 		types := strings.Split(c.QueryParam("type"), ",")
 		if len(sids) == 0 || (len(sids) == 1 && sids[0] == "") {
@@ -145,31 +166,55 @@ func spatialIDAttributesHandler() echo.HandlerFunc {
 			})
 		}
 
-		// dummy
-		return c.JSON(http.StatusOK, []map[string]any{
-			{
-				"gml:id":       "dummy1",
-				"feature_type": "dummy",
-				"gen:genericAttribute": []map[string]any{
-					{
-						"name":  "dummy",
-						"type":  "string",
-						"value": "DUMMY",
-					},
-				},
-			},
-			{
-				"gml:id":       "dummy2",
-				"feature_type": "dummy",
-				"gen:genericAttribute": []map[string]any{
-					{
-						"name":  "dummy",
-						"type":  "string",
-						"value": "DUMMY",
-					},
-				},
-			},
-		})
+		var cityIDs []string
+		var bounds []geo.Bounds2
+		for _, sid := range sids {
+			b3, err := spatialid.Bounds(sid)
+			if err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]any{
+					"error": "invalid sid",
+					"sid":   sid,
+				})
+			}
+			b := b3.ToXY()
+			bounds = append(bounds, b)
+			cityIDs = append(cityIDs, qt.FindRect(b.QBounds())...)
+		}
+		var rs []Reader
+		for _, cityID := range lo.Uniq(cityIDs) {
+			resp, err := datacatalog.FetchCityGMLFiles(ctx, papi, cityID)
+			if err != nil {
+				log.Errorfc(ctx, "citygml: failed to fetch citygml files: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]any{
+					"error": "internal",
+				})
+			}
+			if resp == nil {
+				continue
+			}
+			for _, t := range types {
+				for _, f := range resp.Files[t] {
+					m, _ := jisx0410.Bounds(f.MeshCode)
+					for _, b := range bounds {
+						if m.IsIntersect(b) {
+							rs = append(rs, &urlReader{URL: f.URL, client: httpClient})
+							break
+						}
+					}
+				}
+			}
+		}
+		attributes, err := SpatialIDAttributes(rs, sids)
+		if err != nil {
+			log.Errorfc(ctx, "citygml: failed to extract attributes: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"error": "internal",
+			})
+		}
+		if attributes == nil {
+			attributes = []map[string]any{}
+		}
+		return c.JSON(http.StatusOK, attributes)
 	}
 }
 

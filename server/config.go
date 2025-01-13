@@ -240,6 +240,7 @@ func (c *Config) CityGML() citygml.Config {
 		citygmlPackerImage = "ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest"
 	}
 	return citygml.Config{
+		Config:             c.plateauCMS(),
 		Domain:             c.CityGML_Domain,
 		Bucket:             c.CityGML_Bucket,
 		CityGMLPackerImage: citygmlPackerImage,

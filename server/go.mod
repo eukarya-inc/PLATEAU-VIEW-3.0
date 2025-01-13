@@ -20,7 +20,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/oklog/ulid/v2 v2.1.0
-	github.com/orisano/gosax v1.1.0
+	github.com/orisano/gosax v1.1.1
 	github.com/paulmach/go.geojson v1.5.0
 	github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855
 	github.com/reearth/reearth-cms-api/go v0.0.0-20240821095141-7d8fed5a3a3b

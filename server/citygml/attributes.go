@@ -255,6 +255,23 @@ func (h objectHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.
 	}
 }
 
+func (h objectHandler) handleChildren(obj map[string]any, ae *attributeExtractor, e2 xml.StartElement) error {
+	key := tagName(e2.Name)
+	if ch, ok := h.children[key]; ok {
+		if err := ch.Handle(obj, ae, e2); err != nil {
+			return err
+		}
+	} else if ae.isGen(e2.Name) {
+		gh := genHandler{}
+		if err := gh.Handle(obj, ae, e2); err != nil {
+			return err
+		}
+	} else if err := ae.Skip(); err != nil {
+		return err
+	}
+	return nil
+}
+
 type sliceHandler struct {
 	au attributeUnmarshaler
 
@@ -507,41 +524,9 @@ func (r *fetchCodeResolver) Resolve(codeSpace, code string) (string, error) {
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("status code: %d", resp.StatusCode)
 	}
-	codeMap := map[string]string{}
-	var name, description string
-	ae := &attributeExtractor{
-		dec: xmlb.NewDecoder(resp.Body, make([]byte, 32*1024)),
-	}
-	for {
-		tok, err := ae.Token()
-		if err == io.EOF {
-			break
-		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			el, err := ae.StartElement(tok)
-			if err != nil {
-				return "", err
-			}
-			switch tagName(el.Name) {
-			case "gml:Definition":
-				name = ""
-				description = ""
-			case "gml:description":
-				if t, err := ae.Text(); err == nil {
-					description = string(t)
-				}
-			case "gml:name":
-				if t, err := ae.Text(); err == nil {
-					name = string(t)
-				}
-			}
-		case xmlb.EndElement:
-			el := tok.EndElement()
-			if tagName(el.Name) == "gml:Definition" {
-				codeMap[name] = description
-			}
-		}
+	codeMap, err := parseCodeMap(resp.Body)
+	if err != nil {
+		return "", err
 	}
 	r.cache[codeSpace] = codeMap
 	resolved, ok := codeMap[code]
@@ -552,155 +537,86 @@ func (r *fetchCodeResolver) Resolve(codeSpace, code string) (string, error) {
 }
 
 func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[string]any, error) {
-	ae := attributeExtractor{
-		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
-	}
 	var attributes []map[string]any
-	for {
-		tok, err := ae.Token()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, fmt.Errorf("token: %w", err)
-		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			el, err := ae.StartElement(tok)
+	dec := xmlb.NewDecoder(r, make([]byte, 32*1024))
+	fs := featureScanner{
+		Dec: dec,
+	}
+	for fs.Scan() {
+		id, el := fs.Feature()
+		if slices.Contains(gmlID, id) {
+			h, err := newFeatureAttributeHandler(fs.ns, id, el, resolver)
 			if err != nil {
-				return nil, fmt.Errorf("start element: %w", err)
+				return nil, err
 			}
-			if _, ok := xmlns[ae.Namespace(el.Name)]; !ok {
-				continue
+			if err := processFeature(dec, h); err != nil {
+				return nil, err
 			}
-			id := ae.gmlID(el.Attr)
-			if slices.Contains(gmlID, id) {
-				val := map[string]any{
-					"gml:id":       id,
-					"feature_type": tagName(el.Name),
-				}
-				h := toTagHandler(tagName(el.Name), schemaDefs, resolver)
-				if err := h.Handle(val, &ae, el); err != nil {
-					return nil, err
-				}
-				attributes = append(attributes, val)
-				if len(attributes) == len(gmlID) {
-					return attributes, nil
-				}
+			attributes = append(attributes, h.Val)
+			if len(attributes) == len(gmlID) {
+				return attributes, nil
 			}
+		} else if err := dec.Skip(); err != nil {
+			return nil, err
 		}
 	}
-	return nil, nil
+	if err := fs.Err(); err != nil {
+		return nil, err
+	}
+	return attributes, nil
 }
 
-func (ae *attributeExtractor) Skip() error {
-	var depth int64
-	for {
-		tok, err := ae.Token()
-		if err != nil {
-			return err
-		}
-		switch tok.Type() {
-		case xmlb.StartElement:
-			depth++
-		case xmlb.EndElement:
-			if depth == 0 {
-				return nil
-			}
-			depth--
-		default:
-		}
+type featureAttributeHandler struct {
+	ns map[string]string
+	oh objectHandler
+
+	Val map[string]any
+}
+
+func newFeatureAttributeHandler(ns map[string]string, id string, el xml.StartElement, resolver codeResolver) (*featureAttributeHandler, error) {
+	tag := tagName(el.Name)
+	h := toTagHandler(tag, schemaDefs, resolver)
+	oh, ok := h.(objectHandler)
+	if !ok {
+		return nil, fmt.Errorf("tag %q is not a feature", tag)
 	}
+	return &featureAttributeHandler{
+		ns: ns,
+		oh: oh,
+		Val: map[string]any{
+			"gml:id":       id,
+			"feature_type": tag,
+		},
+	}, nil
+}
+
+func (h *featureAttributeHandler) HandleAttr(dec *xmlb.Decoder, el xml.StartElement) error {
+	return h.oh.handleChildren(h.Val, &attributeExtractor{dec: dec, ns: h.ns}, el)
 }
 
 type attributeExtractor struct {
-	dec  *xmlb.Decoder
-	ns   map[string]string
-	next *xmlb.Token
+	dec *xmlb.Decoder
+	ns  map[string]string
+}
+
+func (ae *attributeExtractor) Skip() error {
+	return ae.dec.Skip()
 }
 
 func (ae *attributeExtractor) StartElement(tok xmlb.Token) (xml.StartElement, error) {
-	el, err := tok.StartElement()
-	if err != nil {
-		return xml.StartElement{}, err
-	}
-	ae.registerNamespace(el)
-	return el, nil
-}
-
-func (ae *attributeExtractor) Namespace(tok xml.Name) string {
-	return ae.ns[tok.Space]
+	return tok.StartElement()
 }
 
 func (ae *attributeExtractor) Token() (xmlb.Token, error) {
-	if t := ae.next; t != nil {
-		ae.next = nil
-		return *t, nil
-	}
 	return ae.dec.Token()
 }
 
-func (ae *attributeExtractor) Text() (xml.CharData, error) {
-	tok, err := ae.dec.Token()
-	if err != nil {
-		return nil, err
-	}
-	if tok.Type() != xmlb.CharData {
-		ae.next = &tok
-		return nil, nil
-	}
-	return tok.CharData()
+func (ae *attributeExtractor) Text() (string, error) {
+	return ae.dec.Text()
 }
 
 func (ae *attributeExtractor) isGen(n xml.Name) bool {
 	return ae.ns[n.Space] == "http://www.opengis.net/citygml/generics/2.0"
-}
-
-func (ae *attributeExtractor) registerNamespace(e xml.StartElement) {
-	if ae.ns == nil {
-		ae.ns = map[string]string{}
-	}
-	for _, a := range e.Attr {
-		if a.Name.Space == "xmlns" {
-			ae.ns[a.Name.Local] = a.Value
-		} else if a.Name.Space == "" && a.Name.Local == "xmlns" {
-			ae.ns[""] = a.Value
-		}
-	}
-}
-
-func (ae *attributeExtractor) gmlID(attr []xml.Attr) string {
-	for _, a := range attr {
-		if ae.ns[a.Name.Space] == "http://www.opengis.net/gml" && a.Name.Local == "id" {
-			return a.Value
-		}
-	}
-	return ""
-}
-
-func tagName(name xml.Name) string {
-	if name.Space != "" {
-		return name.Space + ":" + name.Local
-	}
-	return name.Local
-}
-
-func findAttr(attr []xml.Attr, name string) (string, bool) {
-	for _, a := range attr {
-		if a.Name.Local == name {
-			return a.Value, true
-		}
-	}
-	return "", false
-}
-
-func findAttrNS(attr []xml.Attr, ns, name string) (string, bool) {
-	for _, a := range attr {
-		if a.Name.Local == name && a.Name.Space == ns {
-			return a.Value, true
-		}
-	}
-	return "", false
 }
 
 func parseText(s string) any {
@@ -713,31 +629,6 @@ func parseText(s string) any {
 	return s
 }
 
-var xmlns = map[string]bool{
-	"http://www.opengis.net/citygml/appearance/2.0":      true,
-	"http://www.opengis.net/citygml/building/2.0":        true,
-	"http://www.opengis.net/citygml/bridge/2.0":          true,
-	"http://www.opengis.net/citygml/2.0":                 true,
-	"http://www.opengis.net/citygml/relief/2.0":          true,
-	"http://www.opengis.net/citygml/cityfurniture/2.0":   true,
-	"http://www.opengis.net/citygml/generics/2.0":        true,
-	"http://www.opengis.net/gml":                         true,
-	"http://www.opengis.net/citygml/cityobjectgroup/2.0": true,
-	"http://www.opengis.net/citygml/landuse/2.0":         true,
-	"http://www.opengis.net/citygml/profiles/base/2.0":   true,
-	"http://www.ascc.net/xml/schematron":                 true,
-	"http://www.w3.org/2001/SMIL20/":                     true,
-	"http://www.w3.org/2001/SMIL20/Language":             true,
-	"http://www.opengis.net/citygml/texturedsurface/2.0": true,
-	"http://www.opengis.net/citygml/transportation/2.0":  true,
-	"http://www.opengis.net/citygml/tunnel/2.0":          true,
-	"http://www.opengis.net/citygml/vegetation/2.0":      true,
-	"http://www.opengis.net/citygml/waterbody/2.0":       true,
-	"urn:oasis:names:tc:ciq:xsdschema:xAL:2.0":           true,
-	"http://www.w3.org/1999/xlink":                       true,
-	"http://www.w3.org/2001/XMLSchema-instance":          true,
-}
-
 var genAttrTypes = map[string]string{
 	"stringAttribute":     "string",
 	"intAttribute":        "int",
@@ -746,4 +637,44 @@ var genAttrTypes = map[string]string{
 	"uriAttribute":        "uri",
 	"measureAttribute":    "measure",
 	"genericAttributeSet": "attributeSet",
+}
+
+func parseCodeMap(r io.Reader) (map[string]string, error) {
+	codeMap := map[string]string{}
+	var name, description string
+	ae := &attributeExtractor{
+		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
+	}
+	for {
+		tok, err := ae.Token()
+		if err == io.EOF {
+			break
+		}
+		switch tok.Type() {
+		case xmlb.StartElement:
+			el, err := ae.StartElement(tok)
+			if err != nil {
+				return nil, err
+			}
+			switch tagName(el.Name) {
+			case "gml:Definition":
+				name = ""
+				description = ""
+			case "gml:description":
+				if t, err := ae.Text(); err == nil {
+					description = t
+				}
+			case "gml:name":
+				if t, err := ae.Text(); err == nil {
+					name = t
+				}
+			}
+		case xmlb.EndElement:
+			el := tok.EndElement()
+			if tagName(el.Name) == "gml:Definition" {
+				codeMap[name] = description
+			}
+		}
+	}
+	return codeMap, nil
 }
