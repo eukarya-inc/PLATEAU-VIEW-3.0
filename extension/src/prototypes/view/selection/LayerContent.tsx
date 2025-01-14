@@ -36,6 +36,7 @@ import { DatasetDialog } from "../ui-containers/DatasetDialog";
 import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
+import { LayerMeshCodeSection } from "./LayerMeshCodeSection";
 import { LayerSketchSection } from "./LayerSketchSection";
 import { LayerSpatialIdSection } from "./LayerSpatialIdSection";
 
@@ -224,6 +225,7 @@ export function LayerContent<T extends SupportedLayerType>({
         {/* <LayerShowWireframeSection layers={values} />*/}
         <LayerSketchSection layers={values} />
         <LayerSpatialIdSection layers={values} />
+        <LayerMeshCodeSection layers={values} />
         {/* </InspectorItem> */}
       </List>
       {rootLayerConfig && (

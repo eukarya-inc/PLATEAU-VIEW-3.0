@@ -2,11 +2,12 @@
 import { atom } from "jotai";
 import { atomWithMachine } from "jotai-xstate";
 
+import { MeshCodeType } from "../../../shared/meshCode/types";
 import { SketchGeometryType } from "../../sketch";
 
 import { createToolMachine, type ToolMachineState } from "./toolMachine";
 
-export type ToolType = "hand" | "select" | "sketch" | "pedestrian" | "spatialId";
+export type ToolType = "hand" | "select" | "sketch" | "pedestrian" | "spatialId" | "meshCode";
 
 export interface Tool {
   type: ToolType;
@@ -34,6 +35,8 @@ export function getModalTool(state: ToolMachineState): Tool | undefined {
     ? "pedestrian"
     : matchModal("spatialId", state)
     ? "spatialId"
+    : matchModal("meshCode", state)
+    ? "meshCode"
     : undefined;
   return modal != null
     ? {
@@ -73,3 +76,5 @@ export const sketchTypeAtom = atom<SketchGeometryType>("rectangle");
 export const preventToolKeyDownAtom = atom(false);
 
 export const spatialIdZoomAtom = atom<number>(18);
+
+export const meshCodeTypeAtom = atom<MeshCodeType>("2x");

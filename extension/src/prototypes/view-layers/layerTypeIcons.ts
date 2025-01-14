@@ -14,6 +14,7 @@ import {
   LandmarkIcon,
   LandSlideRiskIcon,
   LandUseIcon,
+  LayerIcon,
   ParkIcon,
   PedestrianIcon,
   RailwayIcon,
@@ -47,6 +48,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
@@ -71,6 +73,7 @@ export const layerTypeIcons: Record<LayerType, ComponentType<SvgIconProps>> = {
   [PEDESTRIAN_LAYER]: PedestrianIcon,
   [SKETCH_LAYER]: SketchIcon,
   [SPATIAL_ID_LAYER]: SketchRectangleIcon,
+  [MESH_CODE_LAYER]: LayerIcon,
   [MY_DATA_LAYER]: UseCaseIcon,
   [STORY_LAYER]: StoryIcon,
 

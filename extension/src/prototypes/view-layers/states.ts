@@ -3,10 +3,12 @@ import { atom } from "jotai";
 import { fromPairs, uniq, without } from "lodash-es";
 import invariant from "tiny-invariant";
 
+import { MESH_CODE_OBJECT, meshCodeSelectionAtom } from "../../shared/meshCode";
 import { SPATIAL_ID_OBJECT } from "../../shared/spatialId";
 import { spatialIdSelectionAtom } from "../../shared/spatialId/status";
 import { rootLayersAtom, rootLayersLayersAtom } from "../../shared/states/rootLayer";
 import { RootLayerAtom, StoryLayerModel } from "../../shared/view-layers";
+import { MeshCodeLayerModel } from "../../shared/view-layers/meshCode";
 import { SpatialIdLayerModel } from "../../shared/view-layers/spatialId";
 import { matchIdentifier, parseIdentifier } from "../cesium-helpers";
 import { featureSelectionAtom } from "../datasets";
@@ -17,7 +19,13 @@ import { atomsWithSelection } from "../shared-states";
 import { SKETCH_OBJECT, sketchSelectionAtom } from "../sketch";
 import { isNotNullish } from "../type-helpers";
 
-import { PEDESTRIAN_LAYER, SKETCH_LAYER, SPATIAL_ID_LAYER, STORY_LAYER } from "./layerTypes";
+import {
+  MESH_CODE_LAYER,
+  PEDESTRIAN_LAYER,
+  SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
+  STORY_LAYER,
+} from "./layerTypes";
 import { SketchLayerModel } from "./SketchLayer";
 
 // import { PEDESTRIAN_LAYER } from "./layerTypes";
@@ -50,6 +58,12 @@ export const sketchLayersAtom = atom(get =>
 export const spatialIdLayersAtom = atom(get =>
   get(rootLayersLayersAtom).filter(
     (layer): layer is SpatialIdLayerModel => layer.type === SPATIAL_ID_LAYER,
+  ),
+);
+
+export const meshCodeLayersAtom = atom(get =>
+  get(rootLayersLayersAtom).filter(
+    (layer): layer is MeshCodeLayerModel => layer.type === MESH_CODE_LAYER,
   ),
 );
 
@@ -110,12 +124,30 @@ export const highlightedSpatialIdLayersAtom = atom(get => {
   });
 });
 
+export const highlightedMeshCodeLayersAtom = atom(get => {
+  const entityIds = get(meshCodeSelectionAtom).map(({ value }) => value);
+  const meshCodeLayers = get(meshCodeLayersAtom);
+  return meshCodeLayers.filter(layer => {
+    const features = get(layer.featuresAtom);
+    return entityIds.some(entityId =>
+      features.some(feature =>
+        matchIdentifier(entityId, {
+          type: "MeshCode",
+          subtype: MESH_CODE_OBJECT,
+          key: feature.id,
+        }),
+      ),
+    );
+  });
+});
+
 export const highlightedLayersAtom = atom(get => {
   const screenSpaceSelection = get(screenSpaceSelectionAtom);
   const layers = get(rootLayersLayersAtom);
   const result: LayerModel[] = [];
   const highlightedSketchLayers = get(highlightedSketchLayersAtom);
   const highlightedSpatialIdLayers = get(highlightedSpatialIdLayersAtom);
+  const highlightedMeshCodeLayers = get(highlightedMeshCodeLayersAtom);
   for (const layer of layers) {
     const layerId = get(layer.layerIdAtom);
     const selection = screenSpaceSelection.some(v => {
@@ -126,6 +158,8 @@ export const highlightedLayersAtom = atom(get => {
           return highlightedSketchLayers.some(v => v.id === layer.id);
         case SPATIAL_ID_OBJECT:
           return highlightedSpatialIdLayers.some(v => v.id === layer.id);
+        case MESH_CODE_OBJECT:
+          return highlightedMeshCodeLayers.some(v => v.id === layer.id);
         default:
           return layerId === v.value.layerId;
       }

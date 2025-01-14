@@ -32,11 +32,13 @@ import {
   CITY_LAYER,
   SPATIAL_ID_LAYER,
   RESERVOIR_FLOODING_RISK_LAYER,
+  MESH_CODE_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
 import { SketchLayerModel } from "../../prototypes/view-layers/SketchLayer";
 
 import { GeneralLayerModel } from "./general";
+import { MeshCodeLayerModel } from "./meshCode";
 import { MyDataLayerModel } from "./myData";
 import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
@@ -48,6 +50,7 @@ export interface LayerModelOverrides {
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: SketchLayerModel;
   [SPATIAL_ID_LAYER]: SpatialIdLayerModel;
+  [MESH_CODE_LAYER]: MeshCodeLayerModel;
   [MY_DATA_LAYER]: MyDataLayerModel;
   [STORY_LAYER]: StoryLayerModel;
 

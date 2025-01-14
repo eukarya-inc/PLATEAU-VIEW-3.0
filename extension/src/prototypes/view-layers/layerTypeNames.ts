@@ -33,6 +33,7 @@ import {
   WATERWAY_LAYER,
   SPATIAL_ID_LAYER,
   RESERVOIR_FLOODING_RISK_LAYER,
+  MESH_CODE_LAYER,
 } from "./layerTypes";
 
 // Undefined means using the name from API.
@@ -41,6 +42,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
   [SPATIAL_ID_LAYER]: "空間ID",
+  [MESH_CODE_LAYER]: "メッシュコレクション",
   [MY_DATA_LAYER]: "マイデータ",
   [STORY_LAYER]: "ストーリー",
 

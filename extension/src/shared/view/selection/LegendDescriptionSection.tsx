@@ -9,6 +9,7 @@ import {
 } from "../../../prototypes/view/states/selection";
 import {
   HEATMAP_LAYER,
+  MESH_CODE_LAYER,
   PEDESTRIAN_LAYER,
   SKETCH_LAYER,
   SPATIAL_ID_LAYER,
@@ -28,7 +29,11 @@ export const LegendDescriptionSection: FC<LegendDescriptionSectionProps> = ({ va
   const layer = values[0] as LayerModel<
     Exclude<
       LayerType,
-      typeof PEDESTRIAN_LAYER | typeof HEATMAP_LAYER | typeof SKETCH_LAYER | typeof SPATIAL_ID_LAYER
+      | typeof PEDESTRIAN_LAYER
+      | typeof HEATMAP_LAYER
+      | typeof SKETCH_LAYER
+      | typeof SPATIAL_ID_LAYER
+      | typeof MESH_CODE_LAYER
     >
   >;
   const legendDescriptionAtom = useFindComponent(
