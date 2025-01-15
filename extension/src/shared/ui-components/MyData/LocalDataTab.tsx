@@ -34,10 +34,12 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const processData = useCallback(async (acceptedFiles: any) => {
     const fileName = acceptedFiles[0].name;
     const reader = new FileReader();
-    const content = await new Promise<string | ArrayBuffer | null>(resolve => {
-      reader.onload = () => resolve(reader.result);
-      reader.readAsDataURL(acceptedFiles[0]);
-    });
+    const content = await new Promise<string | ArrayBuffer | null>(
+      (resolve) => {
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(acceptedFiles[0]);
+      }
+    );
     const url = content as string;
     const contentString = decodeDataURL(String(content));
     setProcessedDataItem({
@@ -62,7 +64,10 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
       visible: true,
       url: processedDataItem.url,
       format,
-      additionalData: getAdditionalData(processedDataItem.contentString, format),
+      additionalData: getAdditionalData(
+        processedDataItem.contentString,
+        format
+      ),
     };
     return item;
   }, [processedDataItem, fileType]);
@@ -73,7 +78,7 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
         processData(acceptedFiles);
       }
     },
-    [processData],
+    [processData]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -92,17 +97,34 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
     setProcessedDataItem(undefined);
   }, [onSubmit, selectedLocalItem]);
 
+  const formatTip = useMemo(() => {
+    if (selectedLocalItem?.formatTip) {
+      return selectedLocalItem.formatTip;
+    }
+    if (fileType !== "auto") {
+      return getFormatTip(fileType);
+    }
+    return "";
+  }, [selectedLocalItem, fileType]);
+
   return (
     <FormControl fullWidth size="small">
       <Label>ファイルタイプを選択</Label>
-      <FileTypeSelect fileType={fileType} onFileTypeSelect={handleFileTypeSelect} />
+      <FileTypeSelect
+        fileType={fileType}
+        onFileTypeSelect={handleFileTypeSelect}
+      />
 
       <Label>ファイルをアップロード</Label>
       <DropzoneAreaWrapper>
         <div {...getRootProps({ className: "dropzone" })}>
           <input {...getInputProps()} />
           <StyledCopyIcon fontSize="large" />
-          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }} variant="body1">
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, mb: 1 }}
+            variant="body1"
+          >
             ここをクリックしてファイルを選択するか <br />{" "}
             ファイルをここにドラッグ＆ドロップしてください
           </Typography>
@@ -110,32 +132,35 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
       </DropzoneAreaWrapper>
 
       {selectedLocalItem && (
-        <>
-          <Box
-            sx={{
-              display: "flex",
-              gap: "10px",
-              border: "1px solid #0000001f",
-              padding: "8px",
-            }}>
-            <DescriptionOutlinedIcon />
-            <Typography>{selectedLocalItem.name}</Typography>
-            <CancelIcon
-              sx={{ cursor: "pointer" }}
-              onClick={() => setProcessedDataItem(undefined)}
-            />
-          </Box>
-          {selectedLocalItem.formatTip && (
-            <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-              {selectedLocalItem.formatTip}
-            </Typography>
-          )}
-          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-            {selectedLocalItem.description}
-          </Typography>
-        </>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "10px",
+            border: "1px solid #0000001f",
+            padding: "8px",
+          }}
+        >
+          <DescriptionOutlinedIcon />
+          <Typography>{selectedLocalItem.name}</Typography>
+          <CancelIcon
+            sx={{ cursor: "pointer" }}
+            onClick={() => setProcessedDataItem(undefined)}
+          />
+        </Box>
       )}
-      <StyledButton startIcon={<AddIcon />} disabled={!selectedLocalItem} onClick={handleSubmit}>
+      {formatTip && (
+        <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+          {formatTip}
+        </Typography>
+      )}
+      <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
+        このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。
+      </Typography>
+      <StyledButton
+        startIcon={<AddIcon />}
+        disabled={!selectedLocalItem}
+        onClick={handleSubmit}
+      >
         シーンに追加
       </StyledButton>
     </FormControl>
@@ -169,5 +194,9 @@ export default LocalDataTab;
 
 function getFormat(type: FileType, filename: string) {
   const extension = getExtension(filename);
-  return type === "auto" ? (extension === "zip" ? "shapefile" : extension) : type;
+  return type === "auto"
+    ? extension === "zip"
+      ? "shapefile"
+      : extension
+    : type;
 }
