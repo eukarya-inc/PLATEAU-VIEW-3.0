@@ -21,6 +21,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
@@ -42,6 +43,7 @@ import {
 } from "../../prototypes/view-layers";
 
 import { GeneralLayerModelParams, createGeneralDatasetLayer } from "./general";
+import { createMeshCodeLayer, MeshCodeLayerModelParams } from "./meshCode";
 import { MyDataLayerModelParams, createMyDataLayer } from "./myData";
 import {
   createBuildingLayer,
@@ -68,6 +70,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? SketchLayerModelParams :
   T extends typeof SPATIAL_ID_LAYER ? SpatialIdLayerModelParams :
+  T extends typeof MESH_CODE_LAYER ? MeshCodeLayerModelParams :
   T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
   T extends typeof STORY_LAYER ? StoryLayerModelParams :
 
@@ -111,6 +114,7 @@ export function createViewLayer<T extends LayerType>(
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return createSketchLayer(params as SketchLayerModelParams)
     case SPATIAL_ID_LAYER: return createSpatialIdLayer(params as SpatialIdLayerModelParams)
+    case MESH_CODE_LAYER: return createMeshCodeLayer(params as MeshCodeLayerModelParams)
     case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
     case STORY_LAYER: return createStoryLayer(params as StoryLayerModelParams)
 

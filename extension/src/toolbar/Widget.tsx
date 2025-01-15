@@ -25,6 +25,7 @@ import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
+import { MeshCodeTool } from "../shared/view/containers/MeshCodeTool";
 import { SpatialIdTool } from "../shared/view/containers/SpatialIdTool";
 import FeedBack from "../shared/view/ui-container/Feedback";
 import Help from "../shared/view/ui-container/Help";
@@ -129,6 +130,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <PedestrianTool />
         <SketchTool />
         <SpatialIdTool />
+        <MeshCodeTool />
         <MyData />
         <Help />
         <AutoRotateCamera />

@@ -23,6 +23,8 @@ export * from "./LandUseIcon";
 export * from "./LayerIcon";
 export * from "./LocationIcon";
 export * from "./MapIcon";
+export * from "./MeshLevel2Icon";
+export * from "./MeshLevel3Icon";
 export * from "./MinusIcon";
 export * from "./ParkIcon";
 export * from "./PedestrianIcon";

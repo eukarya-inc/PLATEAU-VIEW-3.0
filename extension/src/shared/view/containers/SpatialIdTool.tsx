@@ -13,7 +13,6 @@ import { SpatialIdSpaceData } from "../../reearth/types/reearthPluginAPIv2/spati
 import { SPATIAL_ID_OBJECT, SpatialIdFeature } from "../../spatialId";
 import { rootLayersLayersAtom } from "../../states/rootLayer";
 import { createRootLayerForLayerAtom } from "../../view-layers";
-// import useSpatialIdTool from "../hooks/useSpatialIdTool";
 
 const targetSpatialIdLayerAtom = atom<LayerModel<typeof SPATIAL_ID_LAYER> | null>(get => {
   const layers = get(rootLayersLayersAtom);
@@ -75,8 +74,6 @@ export const SpatialIdTool: FC = () => {
     },
     [addFeature, addLayer, setScreenSpaceSelection, layer],
   );
-
-  // useSpatialIdTool();
 
   const [toolType] = useAtom(toolAtom);
   const spatialIdZoom = useAtomValue(spatialIdZoomAtom);

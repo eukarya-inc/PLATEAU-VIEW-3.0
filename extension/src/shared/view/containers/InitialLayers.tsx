@@ -13,6 +13,7 @@ import {
 import { readyAtom } from "../../../prototypes/view/states/app";
 import {
   HEATMAP_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   SKETCH_LAYER,
@@ -239,6 +240,14 @@ export const InitialLayers: FC = () => {
               id: l.id,
               title: l.title,
               type: SPATIAL_ID_LAYER,
+              features: l.features,
+              hidden: l.hidden,
+            };
+          case "meshCode":
+            return {
+              id: l.id,
+              title: l.title,
+              type: MESH_CODE_LAYER,
               features: l.features,
               hidden: l.hidden,
             };

@@ -12,6 +12,7 @@ const TOOL_TO_INTERACTIONMODE: Record<ToolType, InteractionModeType> = {
   sketch: "sketch",
   pedestrian: "move", // TODO: Check later
   spatialId: "spatialId",
+  meshCode: "move",
 };
 
 export const useInteractionMode = () => {

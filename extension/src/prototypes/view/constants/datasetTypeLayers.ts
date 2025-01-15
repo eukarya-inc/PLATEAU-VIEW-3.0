@@ -15,6 +15,7 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
@@ -100,6 +101,7 @@ export const layerDatasetTypes = {
   [PEDESTRIAN_LAYER]: undefined,
   [SKETCH_LAYER]: undefined,
   [SPATIAL_ID_LAYER]: undefined,
+  [MESH_CODE_LAYER]: undefined,
   [MY_DATA_LAYER]: undefined,
   [STORY_LAYER]: undefined,
 } as const satisfies Record<LayerType, PlateauDatasetType | undefined>;
