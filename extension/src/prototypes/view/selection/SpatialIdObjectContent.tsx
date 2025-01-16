@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ReactJson from "react-json-view";
 
 import { cityGMLClient } from "../../../shared/api/citygml";
+import { useOptionalAtomValue } from "../../../shared/hooks";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
@@ -69,10 +70,10 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
     setSelection([]);
   }, [values, removeFeatures, setSelection]);
 
-  const features = useAtomValue(spatialIdLayers[0].featuresAtom);
+  const features = useOptionalAtomValue(spatialIdLayers[0]?.featuresAtom);
 
   const properties = useMemo(() => {
-    const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
+    const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return [];
     return [
       {
@@ -97,7 +98,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
   const [_loading, setLoading] = useState<boolean>(true);
   const [_error, setError] = useState<string | null>(null);
   const spaceZFXYStr = useMemo(() => {
-    const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
+    const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return;
     return feature.data.zfxyStr;
   }, [features, values]);
