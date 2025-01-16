@@ -10,8 +10,9 @@ type Props = {
 const appearances = {
   polygon: {
     fill: true,
-    fillColor: "#00bebe22",
+    fillColor: "#00bebe00",
     stroke: true,
+    strokeWidth: 2,
     strokeColor: "#00bebe",
     heightReference: "clamp" as const,
   },
