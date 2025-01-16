@@ -21,6 +21,7 @@ import {
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
 
+const fallbackAtom = atom([]);
 export interface MeshCodeObjectContentProps {
   values: (SelectionGroup & {
     type: typeof SCREEN_SPACE_SELECTION;
@@ -68,7 +69,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
     setSelection([]);
   }, [values, removeFeatures, setSelection]);
 
-  const features = useAtomValue(meshCodeLayers[0].featuresAtom);
+  const features = useAtomValue(meshCodeLayers[0]?.featuresAtom ?? fallbackAtom);
 
   const properties = useMemo(() => {
     const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);

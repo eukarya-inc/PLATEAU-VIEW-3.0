@@ -1,10 +1,11 @@
-import { useAtomValue } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { FC, useMemo } from "react";
 
 import { LayerModel } from "../../layers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { MESH_CODE_LAYER } from "../../view-layers";
 
+const fallbackAtom = atom([]);
 export interface LayerMeshCodeSectionProps {
   layers: readonly LayerModel[];
 }
@@ -18,7 +19,7 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
     [layers],
   );
 
-  const features = useAtomValue(meshCodeLayers[0].featuresAtom);
+  const features = useAtomValue(meshCodeLayers[0]?.featuresAtom ?? fallbackAtom);
 
   const properties = useMemo(() => {
     if (!features) return [];
