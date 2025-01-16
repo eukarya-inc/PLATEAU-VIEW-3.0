@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ReactJson from "react-json-view";
 
 import { cityGMLClient } from "../../../shared/api/citygml";
+import { useOptionalAtomValue } from "../../../shared/hooks";
 import { MESH_CODE_OBJECT } from "../../../shared/meshCode";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
@@ -21,7 +22,6 @@ import {
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
 
-const fallbackAtom = atom([]);
 export interface MeshCodeObjectContentProps {
   values: (SelectionGroup & {
     type: typeof SCREEN_SPACE_SELECTION;
@@ -69,10 +69,10 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
     setSelection([]);
   }, [values, removeFeatures, setSelection]);
 
-  const features = useAtomValue(meshCodeLayers[0]?.featuresAtom ?? fallbackAtom);
+  const features = useOptionalAtomValue(meshCodeLayers[0]?.featuresAtom);
 
   const properties = useMemo(() => {
-    const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
+    const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return [];
     return [
       {
@@ -87,7 +87,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
   const [_loading, setLoading] = useState<boolean>(true);
   const [_error, setError] = useState<string | null>(null);
   const meshCode = useMemo(() => {
-    const feature = features.find(feature => parseIdentifier(values[0]).key === feature.id);
+    const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return;
     return feature.meshCode;
   }, [features, values]);
