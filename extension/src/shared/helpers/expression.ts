@@ -25,7 +25,7 @@ export const isNumber = (prop: string) =>
   `!(${variable(prop)} === "" || ${variable(prop)} === null || isNaN(Number(${variable(prop)})))`;
 
 export const defaultConditionalNumber = (prop: string, defaultValue?: number) =>
-  `(${isNumber(prop)} ? Number(${variable(prop)}) : ${defaultValue ?? 1})`;
+  `(${isNumber(prop)} ? Number(${variable(prop)}) : ${defaultValue ?? "null"})`;
 
 export const condition = (cond: string, v: string, el: string) => {
   return `((${cond}) ? ${v} : ${el})`;
