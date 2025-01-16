@@ -7,7 +7,7 @@ import { ViewerProperty } from "../viewer";
 
 import { LatLngHeight } from "./common";
 
-export declare type InteractionModeType = "default" | "move" | "selection" | "sketch";
+export declare type InteractionModeType = "default" | "move" | "selection" | "sketch" | "spatialId";
 
 export declare type Viewer = {
   readonly property: ViewerProperty | undefined;

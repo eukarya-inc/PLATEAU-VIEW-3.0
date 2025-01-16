@@ -12,7 +12,6 @@ export const MY_DATA_SUPPORTED_FORMAT: DataType[] = [
   "shapefile",
   "gtfs",
   "gml",
-  "georss",
   "gltf",
   "tiles",
   "tms",

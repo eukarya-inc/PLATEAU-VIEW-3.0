@@ -2,7 +2,14 @@ import { Input, inputClasses } from "@mui/base/Input";
 import AddIcon from "@mui/icons-material/Add";
 import { Button, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import { ChangeEvent, Fragment, useCallback, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { AdditionalData } from "../../../../../tools/plateau-api-migrator/src/types/view2/core";
 import { getExtension } from "../../utils/file";
@@ -11,7 +18,10 @@ import { Label } from "./Label";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
 import { getAdditionalData, getFormatTip } from "./utils";
-import WebFileTypeSelect, { FileType, getSupportedType } from "./WebFileTypeSelect";
+import WebFileTypeSelect, {
+  FileType,
+  getSupportedType,
+} from "./WebFileTypeSelect";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -28,6 +38,9 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleSetUrl = useCallback((value: string) => {
+    if (!value) {
+      setSelectedWebItem(undefined);
+    }
     setDataUrl(value);
   }, []);
 
@@ -93,7 +106,7 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
       const newLayersArray = newValue.split(",");
       setLayers(newLayersArray);
     },
-    [selectedWebItem],
+    [selectedWebItem]
   );
 
   const handleSubmit = useCallback(() => {
@@ -104,6 +117,16 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     setSelectedWebItem(undefined);
   }, [layers, onSubmit, selectedWebItem]);
 
+  const formatTip = useMemo(() => {
+    if (selectedWebItem?.formatTip) {
+      return selectedWebItem.formatTip;
+    }
+    if (fileType !== "auto") {
+      return getFormatTip(fileType);
+    }
+    return "";
+  }, [selectedWebItem, fileType]);
+
   useEffect(() => {
     handleClick();
   }, [fileType, handleClick]);
@@ -112,7 +135,10 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
     <Fragment>
       <FormControl fullWidth size="small">
         <Label>ファイルタイプを選択</Label>
-        <WebFileTypeSelect fileType={fileType} onFileTypeSelect={handleFileTypeSelect} />
+        <WebFileTypeSelect
+          fileType={fileType}
+          onFileTypeSelect={handleFileTypeSelect}
+        />
       </FormControl>
       <FormControl fullWidth size="small">
         <Label>データのURLを入力</Label>
@@ -120,13 +146,13 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
           <StyledInput
             placeholder="URLを入力してください"
             value={dataUrl}
-            onChange={e => handleSetUrl(e.target.value)}
+            onChange={(e) => handleSetUrl(e.target.value)}
           />
           <BrowseButton size="medium" disabled={!dataUrl} onClick={handleClick}>
             データの閲覧
           </BrowseButton>
         </UrlWrapper>
-        {dataUrl && selectedWebItem && (
+        {((dataUrl && selectedWebItem) || fileType !== "auto") && (
           <>
             {requireLayerName && (
               <FormControl>
@@ -138,9 +164,9 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
                 />{" "}
               </FormControl>
             )}
-            {selectedWebItem.formatTip && (
+            {formatTip && (
               <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
-                {selectedWebItem.formatTip}
+                {formatTip}
               </Typography>
             )}
             <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
@@ -153,7 +179,8 @@ const WebDataTab: React.FC<Props> = ({ onSubmit }) => {
         startIcon={<AddIcon />}
         disabled={!selectedWebItem}
         type="submit"
-        onClick={handleSubmit}>
+        onClick={handleSubmit}
+      >
         シーンに追加
       </StyledButton>
     </Fragment>
@@ -176,11 +203,12 @@ const StyledInput = styled(Input)(
       border: solid 2px #eee;
       outline: none;
       width: 370px;
+      box-sizing: content-box;
       ${theme.breakpoints.down("mobile")} {
         width: 124px;
       }
     }
-  `,
+  `
 );
 
 const LayerInput = styled(Input)(
@@ -194,13 +222,16 @@ const LayerInput = styled(Input)(
       border: solid 2px #eee;
       margin-bottom: 12px;
       outline: none;
+      box-sizing: content-box;
     }
-    `,
+    `
 );
 
 const BrowseButton = styled(Button)(({ theme, disabled }) => ({
-  color: theme.palette.text.primary,
-  backgroundColor: disabled ? theme.palette.grey[50] : theme.palette.primary.main,
+  color: disabled ? theme.palette.grey[500] : theme.palette.common.white,
+  backgroundColor: disabled
+    ? theme.palette.grey[50]
+    : theme.palette.primary.main,
   borderRadius: "0 4px 4px 0",
   padding: "0 16px",
   "&:hover": {

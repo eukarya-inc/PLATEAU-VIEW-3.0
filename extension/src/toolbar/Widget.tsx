@@ -25,6 +25,8 @@ import { WidgetProps } from "../shared/types/widget";
 import { PLATEAUVIEW_TOOLBAR_DOM_ID } from "../shared/ui-components/common/ViewClickAwayListener";
 import { InitialLayers } from "../shared/view/containers/InitialLayers";
 import JapanPlateauPolygon from "../shared/view/containers/JapanPlateauPolygon";
+import { MeshCodeTool } from "../shared/view/containers/MeshCodeTool";
+import { SpatialIdTool } from "../shared/view/containers/SpatialIdTool";
 import FeedBack from "../shared/view/ui-container/Feedback";
 import Help from "../shared/view/ui-container/Help";
 import MyData from "../shared/view/ui-container/MyData";
@@ -33,9 +35,11 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
 import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
+import { useSelectSpatialIdFeature } from "./hooks/useSelectSpatialIdFeature";
 
 type DefaultProps = {
   geoURL?: string;
+  cityGMLURL?: string;
   gsiTileURL?: string;
   arURL?: string;
   plateauURL?: string;
@@ -70,6 +74,7 @@ export const Loading: FC = () => {
 export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEditor }) {
   useAttachScreenSpaceSelection();
   useSelectSketchFeature();
+  useSelectSpatialIdFeature();
 
   return (
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>
@@ -81,6 +86,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         catalogUrl={widget.property.default.catalogURL}
         catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
         geoUrl={widget.property.default.geoURL}
+        cityGMLUrl={widget.property.default.cityGMLURL}
         gsiTileURL={widget.property.default.gsiTileURL}
         googleStreetViewAPIKey={
           widget.property.default.googleStreetViewAPIKey ||
@@ -123,6 +129,8 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         <ReverseGeocoding />
         <PedestrianTool />
         <SketchTool />
+        <SpatialIdTool />
+        <MeshCodeTool />
         <MyData />
         <Help />
         <AutoRotateCamera />

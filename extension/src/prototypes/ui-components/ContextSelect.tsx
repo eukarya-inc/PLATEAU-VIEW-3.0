@@ -73,7 +73,7 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
           setOpen(false);
         }
       },
-      [autoClose, onChange]
+      [autoClose, onChange],
     );
     const renderValue = useCallback(
       (value: string[]) =>
@@ -83,7 +83,7 @@ export const ContextSelect = forwardRef<HTMLButtonElement, ContextSelectProps>(
             <Typography variant="body2">{label}</Typography>
           </Stack>
         ) : (
-          <Stack direction="row" spacing={0.75}>
+          <Stack direction="row" spacing={0.75} alignItems="center">
             <Badge>{value.length}</Badge>
             <Typography variant="body2" color="primary">
               {label}
