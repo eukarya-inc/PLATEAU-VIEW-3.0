@@ -24,6 +24,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
+var qt *govpolygon.Quadtree
+
+func init() {
+	qt = govpolygon.NewQuadtree(nil, 1.0/60.0)
+}
+
 type Repo struct {
 	h *reposHandler
 }
@@ -88,9 +94,6 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 	if conf.Debug {
 		reposv3.EnableDebug(true)
 	}
-
-	g, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
-	qt := govpolygon.NewQuadtree(g, 1.0/60.0)
 
 	return &reposHandler{
 		reposv3:            reposv3,

@@ -26,7 +26,6 @@ var cahceDuration = 6 * time.Hour
 type Handler struct {
 	// e.g. "http://[::]:8080"
 	gqlEndpoint       string
-	processor         *Processor
 	httpClient        *http.Client
 	lock              sync.RWMutex
 	geojson           []byte
@@ -38,7 +37,6 @@ type Handler struct {
 func New(gqlEndpoint string, updateIfNotExists bool) *Handler {
 	return &Handler{
 		gqlEndpoint:       gqlEndpoint,
-		processor:         NewProcessor(),
 		httpClient:        http.DefaultClient,
 		updateIfNotExists: updateIfNotExists,
 	}
@@ -93,7 +91,7 @@ func (h *Handler) Update(c echo.Context) error {
 		return err
 	}
 
-	g, notfound, err := h.processor.ComputeGeoJSON(q)
+	g, notfound, err := ComputeGeoJSON(q)
 	if err != nil {
 		return err
 	}

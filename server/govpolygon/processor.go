@@ -2,7 +2,6 @@ package govpolygon
 
 import (
 	_ "embed"
-	"fmt"
 	"sort"
 	"strings"
 
@@ -10,26 +9,8 @@ import (
 	"github.com/samber/lo"
 )
 
-//go:embed govpolygondata/japan_city.geojson
-var japanCityGeoJson []byte
-
-type Processor struct{}
-
-func NewProcessor() *Processor {
-	return &Processor{}
-}
-
-func (p *Processor) ComputeGeoJSON(names []string) ([]*geojson.Feature, []string, error) {
-	features, err := loadFeaturesFromGeoJSON()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(features) == 0 {
-		return nil, nil, fmt.Errorf("no features found")
-	}
-
-	res, notfound := computeGeojsonFeatures(features, names)
+func ComputeGeoJSON(names []string) ([]*geojson.Feature, []string, error) {
+	res, notfound := computeGeojsonFeatures(JapanCityFeatures, names)
 	return res.Features, notfound, nil
 }
 
@@ -105,13 +86,4 @@ func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojs
 	sort.Strings(notfounds)
 
 	return result, notfounds
-}
-
-func loadFeaturesFromGeoJSON() ([]*geojson.Feature, error) {
-	f, err := geojson.UnmarshalFeatureCollection(japanCityGeoJson)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal geojson: %w", err)
-	}
-
-	return f.Features, nil
 }
