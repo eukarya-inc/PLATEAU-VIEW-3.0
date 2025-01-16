@@ -77,4 +77,4 @@ export const preventToolKeyDownAtom = atom(false);
 
 export const spatialIdZoomAtom = atom<number>(18);
 
-export const meshCodeTypeAtom = atom<MeshCodeType>("2x");
+export const meshCodeTypeAtom = atom<MeshCodeType>("3x");
