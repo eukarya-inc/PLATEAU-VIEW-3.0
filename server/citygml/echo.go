@@ -194,9 +194,9 @@ func spatialIDAttributesHandler(papi plateauapi.Repo, qt *govpolygon.Quadtree) e
 			}
 			for _, t := range types {
 				for _, f := range resp.Files[t] {
-					m, _ := jisx0410.Bounds(f.MeshCode)
+					m, _ := jisx0410.Parse(f.MeshCode)
 					for _, b := range bounds {
-						if m.IsIntersect(b) {
+						if m.Bounds.IsIntersect(b) {
 							rs = append(rs, &urlReader{URL: f.URL, client: httpClient})
 							break
 						}
