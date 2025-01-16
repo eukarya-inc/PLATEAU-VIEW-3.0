@@ -77,18 +77,16 @@ const MeshCodeDrawer: FC = () => {
         addLayer(layer, { autoSelect: false });
       }
 
-      setTimeout(() => {
-        setScreenSpaceSelection([
-          {
-            type: MESH_CODE_OBJECT,
-            value: composeIdentifier({
-              type: "MeshCode",
-              subtype: MESH_CODE_OBJECT,
-              key: feature.id,
-            }),
-          },
-        ]);
-      }, 120);
+      setScreenSpaceSelection([
+        {
+          type: MESH_CODE_OBJECT,
+          value: composeIdentifier({
+            type: "MeshCode",
+            subtype: MESH_CODE_OBJECT,
+            key: feature.id,
+          }),
+        },
+      ]);
     },
     [addFeature, addLayer, setScreenSpaceSelection, layer, existFeatures],
   );
