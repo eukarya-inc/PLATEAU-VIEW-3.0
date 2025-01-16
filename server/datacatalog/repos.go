@@ -8,21 +8,48 @@ import (
 	"strings"
 	"time"
 
-	"github.com/JamesLMilner/quadtree-go"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogv2adapter"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/geocoding"
-	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/jisx0410"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo/jisx0410"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
-	"github.com/eukarya-inc/reearth-plateauview/server/spatialid"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
 )
+
+type Repo struct {
+	h *reposHandler
+}
+
+func NewRepo(conf Config) (*Repo, error) {
+	h, err := newReposHandler(conf)
+	if err != nil {
+		return nil, err
+	}
+	return &Repo{
+		h: h,
+	}, nil
+}
+
+func (r *Repo) PlateauAPI() (plateauapi.Repo, error) {
+	ctx := context.Background()
+	metadata, err := r.h.pcms.AllMetadata(ctx, true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all metadata: %w", err)
+	}
+	return r.h.prepareAndGetMergedRepo(ctx, "", metadata), nil
+}
+
+func (r *Repo) Govpolygon() *govpolygon.Quadtree {
+	return r.h.qt
+}
 
 type reposHandler struct {
 	reposv3            *datacatalogv3.Repos
@@ -101,7 +128,7 @@ func (h *reposHandler) Handler(admin bool) echo.HandlerFunc {
 
 func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var bounds []quadtree.Bounds
+		var bounds []geo.Bounds2
 		var cityIDs []string
 		conditions := c.Param(conditionsParamName)
 		switch conditionType, cond := parseConditions(conditions); conditionType {
@@ -112,23 +139,24 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid mesh: %w", err))
 				}
 				bounds = append(bounds, b)
-				cityIDs = append(cityIDs, h.qt.FindRect(b)...)
+				cityIDs = append(cityIDs, h.qt.FindRect(b.QBounds())...)
 			}
 		case "s":
 			for _, s := range strings.Split(cond, ",") {
-				b, err := spatialid.Bounds(s)
+				b3, err := spatialid.Bounds(s)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
 				}
+				b := b3.ToXY()
 				bounds = append(bounds, b)
-				cityIDs = h.qt.FindRect(b)
+				cityIDs = h.qt.FindRect(b.QBounds())
 			}
 		case "r":
 			b, err := parseBounds(cond)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid rectangle: %w", err))
 			}
-			bounds = append(bounds, b)
+			bounds = append(bounds, geo.ToBounds2(b))
 			cityIDs = h.qt.FindRect(b)
 		case "g":
 			ctx := context.TODO()
@@ -139,7 +167,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
 			}
-			bounds = append(bounds, b)
+			bounds = append(bounds, geo.ToBounds2(b))
 			cityIDs = h.qt.FindRect(b)
 		case "":
 			if cond == "" {
@@ -175,7 +203,7 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 					for _, f := range cityGmlFiles {
 						b, _ := jisx0410.Bounds(f.MeshCode)
 						for _, m := range bounds {
-							if intersects(b, m) {
+							if b.IsIntersect(m) {
 								filtered = append(filtered, f)
 								break
 							}

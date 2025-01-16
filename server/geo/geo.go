@@ -2,6 +2,8 @@ package geo
 
 import (
 	"math"
+
+	"github.com/JamesLMilner/quadtree-go"
 )
 
 type Vec3 struct {
@@ -20,10 +22,6 @@ func (v Vec2) Cross(v2 Vec2) float64 {
 
 func (v Vec2) Dot(v2 Vec2) float64 {
 	return v.X*v2.X + v.Y*v2.Y
-}
-
-func (v Vec2) Length() float64 {
-	return math.Sqrt(v.Dot(v))
 }
 
 type Point2 Vec2
@@ -47,7 +45,7 @@ func (b Bounds3) IsIntersect(b2 Bounds3) bool {
 		b.Min.Z <= b2.Max.Z && b.Max.Z >= b2.Min.Z
 }
 
-func (b Bounds3) toXY() Bounds2 {
+func (b Bounds3) ToXY() Bounds2 {
 	return Bounds2{
 		Min: Point2{b.Min.X, b.Min.Y},
 		Max: Point2{b.Max.X, b.Max.Y},
@@ -57,6 +55,27 @@ func (b Bounds3) toXY() Bounds2 {
 // Bounds2 represents an axis-aligned 2D bounding box.
 type Bounds2 struct {
 	Min, Max Point2
+}
+
+func ToBounds2(b quadtree.Bounds) Bounds2 {
+	return Bounds2{
+		Min: Point2{b.X, b.Y},
+		Max: Point2{b.X + b.Width, b.Y + b.Height},
+	}
+}
+
+func (b Bounds2) QBounds() quadtree.Bounds {
+	return quadtree.Bounds{
+		X:      b.Min.X,
+		Y:      b.Min.Y,
+		Width:  b.Max.X - b.Min.X,
+		Height: b.Max.Y - b.Min.Y,
+	}
+}
+
+func (b Bounds2) IsIntersect(b2 Bounds2) bool {
+	return b.Min.X <= b2.Max.X && b.Max.X >= b2.Min.X &&
+		b.Min.Y <= b2.Max.Y && b.Max.Y >= b2.Min.Y
 }
 
 func (b Bounds2) In(p Point2) bool {
@@ -204,7 +223,7 @@ type LOD1Solid struct {
 }
 
 func (so *LOD1Solid) IsIntersect(b Bounds3) bool {
-	return so.Bounds.IsIntersect(b) && so.Bottom.IsIntersect(b.toXY())
+	return so.Bounds.IsIntersect(b) && so.Bottom.IsIntersect(b.ToXY())
 }
 
 func ReconstructLOD1Solid(po Polyhedron) LOD1Solid {
