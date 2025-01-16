@@ -172,7 +172,7 @@ func (c *Config) SearchIndex() searchindex.Config {
 
 func (c *Config) SDKAPI() sdkapiv3.Config {
 	return sdkapiv3.Config{
-		DataCatagloAPIURL: c.LocalURL("/datacatalog"),
+		DataCatalogAPIURL: c.LocalURL("/datacatalog"),
 		Token:             c.SDK_Token,
 	}
 }
@@ -240,11 +240,11 @@ func (c *Config) CityGML() citygml.Config {
 		citygmlPackerImage = "ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest"
 	}
 	return citygml.Config{
-		Config:             c.plateauCMS(),
 		Domain:             c.CityGML_Domain,
 		Bucket:             c.CityGML_Bucket,
 		CityGMLPackerImage: citygmlPackerImage,
 		WorkerRegion:       workRegion,
 		WorkerProject:      workProject,
+		DataCatalogAPIURL:  c.LocalURL("/datacatalog"),
 	}
 }

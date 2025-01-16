@@ -15,7 +15,7 @@ import (
 	"github.com/samber/lo"
 )
 
-type CityGMLFilesResponse struct {
+type CityGMLFilesCity struct {
 	CityCode         string                        `json:"cityCode"`
 	CityName         string                        `json:"cityName"`
 	Year             int                           `json:"year"`
@@ -38,7 +38,7 @@ type CityGMLFeatureType struct {
 	Name string `json:"name"`
 }
 
-func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*CityGMLFilesResponse, error) {
+func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*CityGMLFilesCity, error) {
 	n, err := r.Node(ctx, plateauapi.CityGMLDatasetIDFrom(plateauapi.AreaCode(id)))
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		}
 	}
 
-	return &CityGMLFilesResponse{
+	return &CityGMLFilesCity{
 		CityCode:         string(citygml.CityCode),
 		CityName:         city.Name,
 		Year:             citygml.Year,

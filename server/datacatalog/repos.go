@@ -8,19 +8,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/JamesLMilner/quadtree-go"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogv2adapter"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/geocoding"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
-	"github.com/eukarya-inc/reearth-plateauview/server/geo"
-	"github.com/eukarya-inc/reearth-plateauview/server/geo/jisx0410"
-	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
+	"github.com/reearth/reearthx/rerror"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -129,162 +127,6 @@ func (h *reposHandler) Handler(admin bool) echo.HandlerFunc {
 	}
 }
 
-func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var cityIDs []string
-		var filter cityGMLFileFilterFunc
-		conditions := c.Param(conditionsParamName)
-		switch conditionType, cond := parseConditions(conditions); conditionType {
-		case "m":
-			var bounds []geo.Bounds2
-			for _, m := range strings.Split(cond, ",") {
-				b, err := jisx0410.Parse(m)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid mesh: %w", err))
-				}
-				bounds = append(bounds, b.Bounds)
-				cityIDs = append(cityIDs, h.qt.FindRect(b.Bounds.QBounds())...)
-			}
-			if len(bounds) > 10 {
-				log.Warnfc(c.Request().Context(), "too many bounds: %d", len(bounds))
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("too many bounds"))
-			}
-			filter = boundsCityGMLFileFilter(bounds)
-		case "mm":
-			var bounds []geo.Bounds2
-			var levels [7]int
-			for _, m := range strings.Split(cond, ",") {
-				b, err := jisx0410.Parse(m)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid mesh: %w", err))
-				}
-				if b.Level == 0 {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("unsupported mesh: %s", m))
-				}
-				levels[b.Level]++
-				bounds = append(bounds, b.Bounds)
-				cityIDs = append(cityIDs, h.qt.FindRect(b.Bounds.QBounds())...)
-			}
-			if len(bounds) > 10 {
-				log.Warnfc(c.Request().Context(), "too many bounds: %d", len(bounds))
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("too many bounds"))
-			}
-			switch {
-			case levels[2] == len(bounds):
-				filter = levelCityGMLFileFilter(2, bounds)
-			case levels[3] == len(bounds):
-				filter = levelCityGMLFileFilter(3, bounds)
-			default:
-				log.Warnfc(c.Request().Context(), "bounds for different levels: %v", levels)
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid bounds"))
-			}
-		case "s":
-			var bounds []geo.Bounds2
-			for _, s := range strings.Split(cond, ",") {
-				b3, err := spatialid.Bounds(s)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
-				}
-				b := b3.ToXY()
-				bounds = append(bounds, b)
-				cityIDs = h.qt.FindRect(b.QBounds())
-			}
-			if len(bounds) > 10 {
-				log.Warnfc(c.Request().Context(), "too many bounds: %d", len(bounds))
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("too many bounds"))
-			}
-			filter = boundsCityGMLFileFilter(bounds)
-		case "r":
-			b, err := parseBounds(cond)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid rectangle: %w", err))
-			}
-			filter = boundsCityGMLFileFilter([]geo.Bounds2{geo.ToBounds2(b)})
-			cityIDs = h.qt.FindRect(b)
-		case "g":
-			ctx := context.TODO()
-			b, err := geocoding.NewClient(h.geocodingAppID).Bounds(ctx, cond)
-			if errors.Is(err, geocoding.ErrNotFound) {
-				return echo.NewHTTPError(http.StatusNotFound, "not found")
-			}
-			if err != nil {
-				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
-			}
-			filter = boundsCityGMLFileFilter([]geo.Bounds2{geo.ToBounds2(b)})
-			cityIDs = h.qt.FindRect(b)
-		case "":
-			if cond == "" {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no conditions"))
-			}
-			cityIDs = strings.Split(cond, ",")
-		default:
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid condition type: %s", conditionType))
-		}
-
-		merged, err := h.prepareMergedRepo(c, admin)
-		if err != nil {
-			return err
-		}
-		adminContext(c, true, admin, admin && isAlpha(c))
-		ctx := c.Request().Context()
-
-		var response struct {
-			Cities       []*CityGMLFilesResponse       `json:"cities"`
-			FeatureTypes map[string]CityGMLFeatureType `json:"featureTypes"`
-			Next         string                        `json:"next,omitempty"`
-		}
-
-		response.FeatureTypes = make(map[string]CityGMLFeatureType)
-
-		for _, cid := range lo.Uniq(cityIDs) {
-			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
-			if err != nil {
-				return err
-			}
-			if cityGMLFiles == nil {
-				continue
-			}
-			if filter != nil {
-				for ft, cityGmlFiles := range cityGMLFiles.Files {
-					filtered := cityGmlFiles[:0]
-					for _, f := range cityGmlFiles {
-						if filter(f) {
-							filtered = append(filtered, f)
-						}
-					}
-					if len(filtered) == 0 {
-						delete(cityGMLFiles.Files, ft)
-					} else {
-						cityGMLFiles.Files[ft] = filtered
-					}
-				}
-			}
-
-			for code, ft := range cityGMLFiles.FeatureTypes {
-				response.FeatureTypes[code] = ft
-			}
-			cityGMLFiles.FeatureTypes = nil // simplify response
-
-			if len(cityGMLFiles.Files) > 0 {
-				response.Cities = append(response.Cities, cityGMLFiles)
-			}
-		}
-		if len(response.Cities) == 0 {
-			return echo.NewHTTPError(http.StatusNotFound, "not found")
-		}
-		return c.JSON(http.StatusOK, response)
-	}
-}
-
-func parseConditions(conditions string) (string, string) {
-	t, body, found := strings.Cut(conditions, ":")
-	if found {
-		return t, body
-	} else {
-		return "", conditions
-	}
-}
-
 func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		merged, err := h.prepareMergedRepo(c, false)
@@ -299,6 +141,57 @@ func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 		}
 
 		return c.JSONPretty(http.StatusOK, res, "  ")
+	}
+}
+
+func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
+	var geocoder GeoCoder
+	if h.geocodingAppID != "" {
+		g := geocoding.NewClient(h.geocodingAppID)
+		geocoder = func(ctx context.Context, address string) (quadtree.Bounds, error) {
+			return g.Bounds(ctx, address)
+		}
+	}
+
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
+		conditions := c.Param(conditionsParamName)
+
+		cityIDs, filter, err := ParseCityGMLFilesQuery(ctx, conditions, h.qt, geocoder)
+		if err != nil {
+			if errors.Is(err, rerror.ErrNotFound) {
+				return echo.NewHTTPError(http.StatusNotFound, "not found")
+			}
+
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		merged, err := h.prepareMergedRepo(c, admin)
+		if err != nil {
+			return err
+		}
+
+		adminContext(c, true, admin, admin && isAlpha(c))
+		ctx = c.Request().Context() // do not forget to update context
+
+		cities := []*CityGMLFilesCity{}
+		for _, cid := range cityIDs {
+			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
+			if err != nil {
+				return err
+			}
+			if cityGMLFiles == nil {
+				continue
+			}
+			cities = append(cities, cityGMLFiles)
+		}
+
+		res := ApplyCityGMLCityFilter(ctx, cities, filter)
+		if len(res.Cities) == 0 {
+			return echo.NewHTTPError(http.StatusNotFound, "not found")
+		}
+
+		return c.JSON(http.StatusOK, res)
 	}
 }
 
@@ -563,36 +456,4 @@ func newFetcherV2(md plateaucms.Metadata) (*datacatalogv2adapter.Fetcher, error)
 
 func isAlpha(c echo.Context) bool {
 	return c.Request().URL.Query().Has("alpha")
-}
-
-type cityGMLFileFilterFunc func(CityGMLFile) bool
-
-func boundsCityGMLFileFilter(bounds []geo.Bounds2) cityGMLFileFilterFunc {
-	return func(f CityGMLFile) bool {
-		m, _ := jisx0410.Parse(f.MeshCode)
-		for _, b := range bounds {
-			if m.Bounds.IsIntersect(b) {
-				return true
-			}
-		}
-		return false
-	}
-}
-
-func levelCityGMLFileFilter(level int, bounds []geo.Bounds2) cityGMLFileFilterFunc {
-	return func(f CityGMLFile) bool {
-		m, _ := jisx0410.Parse(f.MeshCode)
-		if level == 2 && m.Level != 2 {
-			return false
-		}
-		if level == 3 && m.Level < 3 {
-			return false
-		}
-		for _, b := range bounds {
-			if m.Bounds.IsIntersect(b) {
-				return true
-			}
-		}
-		return false
-	}
 }
