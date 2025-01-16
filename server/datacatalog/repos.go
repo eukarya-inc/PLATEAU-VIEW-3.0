@@ -186,9 +186,12 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 		ctx := c.Request().Context()
 
 		var response struct {
-			Cities []*CityGMLFilesResponse `json:"cities"`
-			Next   string                  `json:"next"`
+			Cities       []*CityGMLFilesResponse       `json:"cities"`
+			FeatureTypes map[string]CityGMLFeatureType `json:"featureTypes"`
 		}
+
+		response.FeatureTypes = make(map[string]CityGMLFeatureType)
+
 		for _, cid := range lo.Uniq(cityIDs) {
 			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
 			if err != nil {
@@ -216,6 +219,12 @@ func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
 					}
 				}
 			}
+
+			for code, ft := range cityGMLFiles.FeatureTypes {
+				response.FeatureTypes[code] = ft
+			}
+			cityGMLFiles.FeatureTypes = nil // simplify response
+
 			if len(cityGMLFiles.Files) > 0 {
 				response.Cities = append(response.Cities, cityGMLFiles)
 			}
