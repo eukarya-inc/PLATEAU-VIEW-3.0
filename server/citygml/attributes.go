@@ -694,6 +694,15 @@ func findAttr(attr []xml.Attr, name string) (string, bool) {
 	return "", false
 }
 
+func findAttrNS(attr []xml.Attr, ns, name string) (string, bool) {
+	for _, a := range attr {
+		if a.Name.Local == name && a.Name.Space == ns {
+			return a.Value, true
+		}
+	}
+	return "", false
+}
+
 func parseText(s string) any {
 	if x, err := strconv.ParseInt(s, 10, 64); err == nil {
 		return x
