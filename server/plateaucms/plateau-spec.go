@@ -21,6 +21,7 @@ type PlateauSpec struct {
 	Year            int    `json:"year" cms:"year,integer"`
 	MaxMinorVersion int    `json:"max_minor_version" cms:"max_minor_version,integer"`
 	FMEURL          string `json:"fme_url" cms:"fme_url,text"`
+	AttrList        string `json:"attr_list" cms:"-"`
 }
 
 func (s PlateauSpec) MinorVersions() []string {
@@ -40,7 +41,7 @@ func (h *CMS) PlateauSpecs(ctx context.Context) ([]PlateauSpec, error) {
 		return nil, rerror.ErrNotFound
 	}
 
-	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsMetadataProject, plateauSpecModel, false, 100)
+	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsMetadataProject, plateauSpecModel, true, 100)
 	if err != nil || items == nil {
 		if errors.Is(err, cms.ErrNotFound) || items == nil {
 			return nil, rerror.ErrNotFound
@@ -52,6 +53,9 @@ func (h *CMS) PlateauSpecs(ctx context.Context) ([]PlateauSpec, error) {
 	for _, item := range items.Items {
 		m := PlateauSpec{}
 		item.Unmarshal(&m)
+
+		m.AttrList = valueToAssetURL(item.FieldByKey("attr_list").GetValue())
+
 		all = append(all, m)
 	}
 

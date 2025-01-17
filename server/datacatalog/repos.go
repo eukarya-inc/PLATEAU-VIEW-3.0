@@ -28,33 +28,6 @@ func init() {
 	qt = govpolygon.NewQuadtree(nil, 1.0/60.0)
 }
 
-type Repo struct {
-	h *reposHandler
-}
-
-func NewRepo(conf Config) (*Repo, error) {
-	h, err := newReposHandler(conf)
-	if err != nil {
-		return nil, err
-	}
-	return &Repo{
-		h: h,
-	}, nil
-}
-
-func (r *Repo) PlateauAPI() (plateauapi.Repo, error) {
-	ctx := context.Background()
-	metadata, err := r.h.pcms.AllMetadata(ctx, true)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get all metadata: %w", err)
-	}
-	return r.h.prepareAndGetMergedRepo(ctx, "", metadata), nil
-}
-
-func (r *Repo) Govpolygon() *govpolygon.Quadtree {
-	return r.h.qt
-}
-
 type reposHandler struct {
 	reposv3            *datacatalogv3.Repos
 	reposv2            *datacatalogv2adapter.Repos
@@ -72,12 +45,7 @@ const gqlComplexityLimit = 1000
 const cmsSchemaVersion = "v3"
 const cmsSchemaVersionV2 = "v2"
 
-func newReposHandler(conf Config) (*reposHandler, error) {
-	pcms, err := plateaucms.New(conf.Config)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize plateau cms: %w", err)
-	}
-
+func newReposHandler(conf Config, pcms *plateaucms.CMS) (*reposHandler, error) {
 	reposv3 := datacatalogv3.NewRepos(pcms)
 	reposv2 := datacatalogv2adapter.NewRepos()
 
