@@ -4,6 +4,8 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"net/url"
+	"path"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
 	"github.com/klauspost/compress/gzip"
@@ -19,6 +21,8 @@ type Reader interface {
 type urlReader struct {
 	URL    string
 	client *http.Client
+
+	etagCache map[string]string
 }
 
 func (r *urlReader) Open(ctx context.Context) (io.Reader, func() error, error) {
@@ -27,15 +31,25 @@ func (r *urlReader) Open(ctx context.Context) (io.Reader, func() error, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	u, _ := url.ParseRequestURI(r.URL)
+	cacheKey := path.Base(u.Path)
+
 	req.Header.Set("Accept-Encoding", "gzip")
+	if etag, ok := r.etagCache[cacheKey]; ok {
+		req.Header.Set("If-None-Match", etag)
+	}
 	resp, err := r.client.Do(req)
 	if err != nil {
 		return nil, nil, err
+	}
+	if resp.StatusCode == http.StatusNotModified {
+		return nil, nil, resp.Body.Close()
 	}
 	if resp.StatusCode != http.StatusOK {
 		log.Debugfc(ctx, "citygml: failed to open: %s", resp.Status)
 		return nil, nil, resp.Body.Close()
 	}
+	r.etagCache[cacheKey] = resp.Header.Get("ETag")
 	if resp.Header.Get("Content-Encoding") == "gzip" {
 		gr, err := gzip.NewReader(resp.Body)
 		if err != nil {
@@ -79,6 +93,10 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 			rc, cleanup, err := r.Open(ctx)
 			if err != nil {
 				return err
+			}
+			if rc == nil {
+				log.Debugfc(ctx, "citygml: skip scan")
+				return nil
 			}
 			defer func() {
 				_ = cleanup()

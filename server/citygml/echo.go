@@ -183,8 +183,9 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 		log.Debugfc(ctx, "citygml: fetch %d citygml files", len(urls))
 
 		rs := make([]Reader, 0, len(urls))
+		etagCache := make(map[string]string)
 		for _, u := range urls {
-			rs = append(rs, &urlReader{URL: u, client: httpClient})
+			rs = append(rs, &urlReader{URL: u, client: httpClient, etagCache: etagCache})
 		}
 
 		attributes, err := SpatialIDAttributes(ctx, rs, sids)
