@@ -80,7 +80,9 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 			if err != nil {
 				return err
 			}
-			defer cleanup()
+			defer func() {
+				_ = cleanup()
+			}()
 			fs := &featureScanner{
 				Dec: xmlb.NewDecoder(rc, buf),
 			}
