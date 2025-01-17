@@ -146,7 +146,6 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 				"error": "type parameter is required",
 			})
 		}
-
 		res, err := dc.FetchCityGMLFiles(ctx, "s:"+strings.Join(sids, ","))
 		if err != nil {
 			log.Errorfc(ctx, "citygml: failed to fetch citygml files: %v", err)
@@ -174,7 +173,7 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 			}
 		}
 
-		lo.Uniq(urls)
+		urls = lo.Uniq(urls)
 		if len(urls) == 0 {
 			return c.JSON(http.StatusNotFound, map[string]any{
 				"error": "no citygml files for the given types",

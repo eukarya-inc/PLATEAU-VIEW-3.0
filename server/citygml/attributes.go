@@ -545,7 +545,9 @@ func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[strin
 	for fs.Scan() {
 		id, el := fs.Feature()
 		if slices.Contains(gmlID, id) {
-			h, err := newFeatureAttributeHandler(fs.ns, id, el, resolver)
+			tag := tagName(el.Name)
+			th := toTagHandler(tag, schemaDefs, resolver)
+			h, err := newFeatureAttributeHandler(fs.ns, id, tag, th)
 			if err != nil {
 				return nil, err
 			}
@@ -573,9 +575,7 @@ type featureAttributeHandler struct {
 	Val map[string]any
 }
 
-func newFeatureAttributeHandler(ns map[string]string, id string, el xml.StartElement, resolver codeResolver) (*featureAttributeHandler, error) {
-	tag := tagName(el.Name)
-	h := toTagHandler(tag, schemaDefs, resolver)
+func newFeatureAttributeHandler(ns map[string]string, id string, tag string, h tagHandler) (*featureAttributeHandler, error) {
 	oh, ok := h.(objectHandler)
 	if !ok {
 		return nil, fmt.Errorf("tag %q is not a feature", tag)
