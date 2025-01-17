@@ -2,6 +2,7 @@ package citygml
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -19,7 +20,8 @@ func TestSpatialIDAttributes(t *testing.T) {
 	r := &testReader{
 		r: bytes.NewReader(b),
 	}
-	attributes, err := SpatialIDAttributes([]Reader{r}, []string{"/18/0/231815/103921"})
+	ctx := context.Background()
+	attributes, err := SpatialIDAttributes(ctx, []Reader{r}, []string{"/18/0/231815/103921"})
 	require.NoError(t, err)
 	expected := []map[string]any{
 		{
@@ -106,7 +108,7 @@ type testReader struct {
 	r io.Reader
 }
 
-func (r *testReader) Open() (io.ReadCloser, error) {
+func (r *testReader) Open(_ context.Context) (io.ReadCloser, error) {
 	return io.NopCloser(r.r), nil
 }
 

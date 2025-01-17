@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
 
 type Config struct {
@@ -160,7 +161,7 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 			})
 		}
 
-		var rs []Reader
+		var urls []string
 		for _, resp := range res.Cities {
 			if resp == nil || resp.Files == nil {
 				continue
@@ -168,18 +169,26 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 
 			for _, t := range types {
 				for _, f := range resp.Files[t] {
-					rs = append(rs, &urlReader{URL: f.URL, client: httpClient})
+					urls = append(urls, f.URL)
 				}
 			}
 		}
 
-		if len(rs) == 0 {
+		lo.Uniq(urls)
+		if len(urls) == 0 {
 			return c.JSON(http.StatusNotFound, map[string]any{
 				"error": "no citygml files for the given types",
 			})
 		}
 
-		attributes, err := SpatialIDAttributes(rs, sids)
+		log.Debugfc(ctx, "citygml: fetch %d citygml files", len(urls))
+
+		rs := make([]Reader, 0, len(urls))
+		for _, u := range urls {
+			rs = append(rs, &urlReader{URL: u, client: httpClient})
+		}
+
+		attributes, err := SpatialIDAttributes(ctx, rs, sids)
 		if err != nil {
 			log.Errorfc(ctx, "citygml: failed to extract attributes: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]any{
@@ -189,7 +198,7 @@ func spatialIDAttributesHandler(dc *dataCatalogAPI) echo.HandlerFunc {
 
 		if attributes == nil {
 			return c.JSON(http.StatusNotFound, map[string]any{
-				"error": "no lod1solid feature found",
+				"error": "no features found",
 			})
 		}
 		return c.JSON(http.StatusOK, attributes)

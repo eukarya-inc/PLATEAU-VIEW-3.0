@@ -1,16 +1,17 @@
 package citygml
 
 import (
+	"context"
 	"io"
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
-
 	"github.com/orisano/gosax/xmlb"
+	"github.com/reearth/reearthx/log"
 )
 
 type Reader interface {
-	Open() (io.ReadCloser, error)
+	Open(ctx context.Context) (io.ReadCloser, error)
 	Resolver() codeResolver
 }
 
@@ -19,7 +20,8 @@ type urlReader struct {
 	client *http.Client
 }
 
-func (r *urlReader) Open() (io.ReadCloser, error) {
+func (r *urlReader) Open(ctx context.Context) (io.ReadCloser, error) {
+	log.Debugfc(ctx, "citygml: open url: %s", r.URL)
 	req, err := http.NewRequest(http.MethodGet, r.URL, nil)
 	if err != nil {
 		return nil, err
@@ -29,8 +31,10 @@ func (r *urlReader) Open() (io.ReadCloser, error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
+		log.Debugfc(ctx, "citygml: failed to open: %s", resp.Status)
 		return nil, resp.Body.Close()
 	}
+
 	return resp.Body, nil
 }
 
@@ -41,7 +45,7 @@ func (r *urlReader) Resolver() codeResolver {
 	}
 }
 
-func SpatialIDAttributes(rs []Reader, spatialIDs []string) ([]map[string]any, error) {
+func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) ([]map[string]any, error) {
 	var filter lod1SolidFilter
 	for _, sid := range spatialIDs {
 		b, err := spatialid.Bounds(sid)
@@ -51,11 +55,15 @@ func SpatialIDAttributes(rs []Reader, spatialIDs []string) ([]map[string]any, er
 		filter.Bounds = append(filter.Bounds, b)
 	}
 
+	if len(filter.Bounds) == 0 {
+		return nil, nil
+	}
+
 	var attributes []map[string]any
 	buf := make([]byte, 32*1024)
 	for _, r := range rs {
 		err := func(r Reader) error {
-			rc, err := r.Open()
+			rc, err := r.Open(ctx)
 			if err != nil {
 				return err
 			}
@@ -63,7 +71,12 @@ func SpatialIDAttributes(rs []Reader, spatialIDs []string) ([]map[string]any, er
 			fs := &featureScanner{
 				Dec: xmlb.NewDecoder(rc, buf),
 			}
+
+			count := 0
+			countIntersect := 0
 			for fs.Scan() {
+				count++
+
 				id, el := fs.Feature()
 				fah, err := newFeatureAttributeHandler(fs.ns, id, el, r.Resolver())
 				if err != nil {
@@ -77,11 +90,15 @@ func SpatialIDAttributes(rs []Reader, spatialIDs []string) ([]map[string]any, er
 				}
 				if filter.IsIntersect(h.Faces) {
 					attributes = append(attributes, fah.Val)
+					countIntersect++
 				}
 			}
+
 			if err := fs.Err(); err != nil {
 				return err
 			}
+
+			log.Debugfc(ctx, "citygml: %d features scanned and %d intersected", count, countIntersect)
 			return nil
 		}(r)
 		if err != nil {
