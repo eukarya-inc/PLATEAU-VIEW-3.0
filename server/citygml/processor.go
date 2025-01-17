@@ -1,9 +1,11 @@
 package citygml
 
 import (
+	"bytes"
 	"encoding/xml"
 	"io"
 
+	"github.com/orisano/gosax"
 	"github.com/orisano/gosax/xmlb"
 )
 
@@ -29,14 +31,18 @@ func (s *featureScanner) Scan() bool {
 		}
 		switch tok.Type() {
 		case xmlb.StartElement:
-			el, err := tok.StartElement()
-			if err != nil {
+			bel := tok.StartElementBytes()
+			if err := s.registerNamespace(bel.Attrs); err != nil {
 				s.err = err
 				return false
 			}
-			s.registerNamespace(el)
-			id := s.findFeatureID(el.Attr)
+			id := s.findFeatureID(bel.Attrs)
 			if id != "" {
+				el, err := tok.StartElement()
+				if err != nil {
+					s.err = err
+					return false
+				}
 				s.id = id
 				s.el = el
 				return true
@@ -53,26 +59,52 @@ func (s *featureScanner) Err() error {
 	return s.err
 }
 
-func (s *featureScanner) findFeatureID(attr []xml.Attr) string {
-	for _, a := range attr {
-		if s.ns[a.Name.Space] == "http://www.opengis.net/gml" && a.Name.Local == "id" {
-			return a.Value
+func (s *featureScanner) findFeatureID(attr xmlb.AttributesBytes) string {
+	b := []byte(attr)
+	for len(b) > 0 {
+		a, rest, err := gosax.NextAttribute(b)
+		if err != nil {
+			return ""
+		}
+		b = rest
+		space, local := attrName(a.Key)
+		if s.ns[string(space)] == "http://www.opengis.net/gml" && string(local) == "id" {
+			v, err := gosax.Unescape(a.Value[1 : len(a.Value)-1])
+			if err == nil {
+				return string(v)
+			}
 		}
 	}
 	return ""
 }
 
-func (s *featureScanner) registerNamespace(e xml.StartElement) {
+func (s *featureScanner) registerNamespace(attr xmlb.AttributesBytes) error {
 	if s.ns == nil {
 		s.ns = map[string]string{}
 	}
-	for _, a := range e.Attr {
-		if a.Name.Space == "xmlns" {
-			s.ns[a.Name.Local] = a.Value
-		} else if a.Name.Space == "" && a.Name.Local == "xmlns" {
-			s.ns[""] = a.Value
+	b := []byte(attr)
+	for len(b) > 0 {
+		a, rest, err := gosax.NextAttribute(b)
+		if err != nil {
+			return err
+		}
+		b = rest
+		space, local := attrName(a.Key)
+		if string(space) == "xmlns" {
+			v, err := gosax.Unescape(a.Value[1 : len(a.Value)-1])
+			if err != nil {
+				return err
+			}
+			s.ns[string(local)] = string(v)
+		} else if len(space) == 0 && string(local) == "xmlns" {
+			v, err := gosax.Unescape(a.Value[1 : len(a.Value)-1])
+			if err != nil {
+				return err
+			}
+			s.ns[""] = string(v)
 		}
 	}
+	return nil
 }
 
 type attrHandler interface {
@@ -163,4 +195,13 @@ func findAttr(attr []xml.Attr, name string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+func attrName(key []byte) ([]byte, []byte) {
+	p := bytes.IndexByte(key, ':')
+	if p >= 0 {
+		return key[:p], key[p+1:]
+	} else {
+		return nil, key
+	}
 }

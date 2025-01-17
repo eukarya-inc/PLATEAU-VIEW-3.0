@@ -6,12 +6,13 @@ import (
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
+	"github.com/klauspost/compress/gzip"
 	"github.com/orisano/gosax/xmlb"
 	"github.com/reearth/reearthx/log"
 )
 
 type Reader interface {
-	Open(ctx context.Context) (io.ReadCloser, error)
+	Open(ctx context.Context) (io.Reader, func() error, error)
 	Resolver() codeResolver
 }
 
@@ -20,22 +21,34 @@ type urlReader struct {
 	client *http.Client
 }
 
-func (r *urlReader) Open(ctx context.Context) (io.ReadCloser, error) {
+func (r *urlReader) Open(ctx context.Context) (io.Reader, func() error, error) {
 	log.Debugfc(ctx, "citygml: open url: %s", r.URL)
-	req, err := http.NewRequest(http.MethodGet, r.URL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, r.URL, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	req.Header.Set("Accept-Encoding", "gzip")
 	resp, err := r.client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
 		log.Debugfc(ctx, "citygml: failed to open: %s", resp.Status)
-		return nil, resp.Body.Close()
+		return nil, nil, resp.Body.Close()
 	}
-
-	return resp.Body, nil
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		gr, err := gzip.NewReader(resp.Body)
+		if err != nil {
+			_ = resp.Body.Close()
+			return nil, nil, err
+		}
+		cleanup := func() error {
+			_ = gr.Close()
+			return resp.Body.Close()
+		}
+		return gr, cleanup, nil
+	}
+	return resp.Body, resp.Body.Close, nil
 }
 
 func (r *urlReader) Resolver() codeResolver {
@@ -63,22 +76,29 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 	buf := make([]byte, 32*1024)
 	for _, r := range rs {
 		err := func(r Reader) error {
-			rc, err := r.Open(ctx)
+			rc, cleanup, err := r.Open(ctx)
 			if err != nil {
 				return err
 			}
-			defer rc.Close()
+			defer func() {
+				_ = cleanup()
+			}()
 			fs := &featureScanner{
 				Dec: xmlb.NewDecoder(rc, buf),
 			}
 
 			count := 0
-			countIntersect := 0
+
+			thCache := map[string]tagHandler{}
 			for fs.Scan() {
 				count++
 
 				id, el := fs.Feature()
-				fah, err := newFeatureAttributeHandler(fs.ns, id, el, r.Resolver())
+				tag := tagName(el.Name)
+				if _, ok := thCache[tag]; !ok {
+					thCache[tag] = toTagHandler(tag, schemaDefs, r.Resolver())
+				}
+				fah, err := newFeatureAttributeHandler(fs.ns, id, tag, thCache[tag])
 				if err != nil {
 					return err
 				}
@@ -90,7 +110,6 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 				}
 				if filter.IsIntersect(h.Faces) {
 					attributes = append(attributes, fah.Val)
-					countIntersect++
 				}
 			}
 
@@ -98,7 +117,7 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 				return err
 			}
 
-			log.Debugfc(ctx, "citygml: %d features scanned and %d intersected", count, countIntersect)
+			log.Debugfc(ctx, "citygml: %d features scanned and %d intersected", count, len(attributes))
 			return nil
 		}(r)
 		if err != nil {
