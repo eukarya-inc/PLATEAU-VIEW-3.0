@@ -108,8 +108,9 @@ type testReader struct {
 	r io.Reader
 }
 
-func (r *testReader) Open(_ context.Context) (io.ReadCloser, error) {
-	return io.NopCloser(r.r), nil
+func (r *testReader) Open(_ context.Context) (io.Reader, func() error, error) {
+	noop := func() error { return nil }
+	return r.r, noop, nil
 }
 
 func (r *testReader) Resolver() codeResolver {
