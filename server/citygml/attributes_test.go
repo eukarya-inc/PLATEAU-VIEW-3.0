@@ -58,10 +58,15 @@ func TestAttributes(t *testing.T) {
 	defer citygml.Close()
 
 	attrs, err := Attributes(citygml, ids, nil)
+	got := []map[string]any{}
+	b, err := json.Marshal(attrs)
+	require.NoError(t, err)
+	require.NoError(t, json.Unmarshal(b, &got))
+
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(attrs))
 	assert.Equal(t, ids[0], attrs[0]["gml:id"])
-	assert.Equal(t, expected, attrs)
+	assert.Equal(t, expected, got)
 }
 
 func TestAttributesHandlerCodeOnly(t *testing.T) {

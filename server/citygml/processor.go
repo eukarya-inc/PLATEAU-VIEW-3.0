@@ -3,6 +3,8 @@ package citygml
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
+	"fmt"
 	"io"
 
 	"github.com/orisano/gosax"
@@ -117,23 +119,29 @@ func (h skipAttrHandler) HandleAttr(dec *xmlb.Decoder, el xml.StartElement) erro
 	return dec.Skip()
 }
 
-func processFeature(dec *xmlb.Decoder, h attrHandler) error {
+var errSkipFeature = fmt.Errorf("skip feature")
+
+func processFeature(dec *xmlb.Decoder, h attrHandler) (bool, error) {
 	for {
 		tok, err := dec.Token()
 		if err != nil {
-			return err
+			return false, err
 		}
 		switch tok.Type() {
 		case xmlb.StartElement:
 			el, err := tok.StartElement()
 			if err != nil {
-				return err
+				return false, err
 			}
 			if err := h.HandleAttr(dec, el); err != nil {
-				return err
+				if errors.Is(err, errSkipFeature) {
+					return false, dec.Skip()
+				} else {
+					return false, err
+				}
 			}
 		case xmlb.EndElement:
-			return nil
+			return true, nil
 		}
 	}
 }
@@ -156,12 +164,8 @@ func (s *tagScanner) Scan() bool {
 		switch tok.Type() {
 		case xmlb.StartElement:
 			s.depth++
-			el, err := tok.StartElement()
-			if err != nil {
-				s.err = err
-				return false
-			}
-			if tagName(el.Name) == s.tag {
+			name, _ := gosax.Name(tok.Bytes)
+			if string(name) == s.tag {
 				return true
 			}
 		case xmlb.EndElement:
