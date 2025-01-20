@@ -58,6 +58,7 @@ func TestAttributes(t *testing.T) {
 	defer citygml.Close()
 
 	attrs, err := Attributes(citygml, ids, nil)
+	require.NoError(t, err)
 	got := []map[string]any{}
 	b, err := json.Marshal(attrs)
 	require.NoError(t, err)
