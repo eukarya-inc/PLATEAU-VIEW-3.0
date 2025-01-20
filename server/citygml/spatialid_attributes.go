@@ -85,6 +85,9 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 	if len(filter.Bounds) == 0 {
 		return nil, nil
 	}
+	h := lod1SolidHandler{
+		Filter: filter,
+	}
 
 	var attributes []map[string]any
 	buf := make([]byte, 32*1024)
@@ -101,12 +104,11 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 			defer func() {
 				_ = cleanup()
 			}()
+
 			fs := &featureScanner{
 				Dec: xmlb.NewDecoder(rc, buf),
 			}
-
 			count := 0
-
 			thCache := map[string]tagHandler{}
 			for fs.Scan() {
 				count++
@@ -120,13 +122,12 @@ func SpatialIDAttributes(ctx context.Context, rs []Reader, spatialIDs []string) 
 				if err != nil {
 					return err
 				}
-				h := lod1SolidHandler{
-					Next: fah,
-				}
-				if err := processFeature(fs.Dec, &h); err != nil {
+				h.Next = fah
+				ok, err := processFeature(fs.Dec, &h)
+				if err != nil {
 					return err
 				}
-				if filter.IsIntersect(h.Faces) {
+				if ok {
 					attributes = append(attributes, fah.Val)
 				}
 			}
