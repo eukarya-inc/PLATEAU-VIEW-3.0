@@ -6,6 +6,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/geo"
 	"github.com/eukarya-inc/reearth-plateauview/server/geo/spatialid"
@@ -30,12 +31,14 @@ func Features(r io.Reader, spatialIDs []string) ([]string, error) {
 	for fs.Scan() {
 		feature, _ := fs.Feature()
 		h := lod1SolidHandler{
-			Next: skipAttrHandler{},
+			Next:   skipAttrHandler{},
+			Filter: filter,
 		}
-		if err := processFeature(dec, &h); err != nil {
+		ok, err := processFeature(dec, &h)
+		if err != nil {
 			return nil, err
 		}
-		if filter.IsIntersect(h.Faces) {
+		if ok {
 			features = append(features, feature)
 		}
 	}
@@ -72,63 +75,89 @@ func (f *lod1SolidFilter) IsIntersect(faces []geo.Polygon3) bool {
 }
 
 type lod1SolidHandler struct {
-	Next  attrHandler
-	Faces []geo.Polygon3
+	Next   attrHandler
+	Filter lod1SolidFilter
+
+	faces  []geo.Polygon3
+	points []geo.Point3
 }
 
 func (h *lod1SolidHandler) HandleAttr(dec *xmlb.Decoder, el xml.StartElement) error {
 	if el.Name.Local == "lod1Solid" {
+		if h.points != nil {
+			h.points = h.points[:0]
+		}
+		if h.faces != nil {
+			h.faces = h.faces[:0]
+		}
 		s := &tagScanner{
 			dec: dec,
 			tag: "gml:posList",
 		}
 		for s.Scan() {
-			text, err := s.Text()
+			tok, err := dec.Peek()
 			if err != nil {
 				return err
 			}
-			posList, err := parsePosList(text)
+			if tok.Type() != xmlb.CharData {
+				return fmt.Errorf("invalid posList")
+			}
+			cd, err := tok.CharData()
+			if err != nil {
+				return err
+			}
+			begin := len(h.points)
+			h.points, err = parsePosList(h.points, unsafe.String(&cd[0], len(cd)))
 			if err != nil {
 				return fmt.Errorf("parse posList: %w", err)
 			}
-			h.Faces = append(h.Faces, posList)
+			h.faces = append(h.faces, h.points[begin:])
 		}
-		return s.Err()
+		if err := s.Err(); err != nil {
+			return err
+		}
+		if !h.Filter.IsIntersect(h.faces) {
+			return errSkipFeature
+		}
+		return nil
 	} else {
 		return h.Next.HandleAttr(dec, el)
 	}
 }
 
-func parsePosList(t string) ([]geo.Point3, error) {
-	tokens := strings.Split(t, " ")
-	if len(tokens)%3 != 0 {
+func parsePosList(dest []geo.Point3, t string) ([]geo.Point3, error) {
+	n := strings.Count(t, " ") + 1
+	if n%3 != 0 {
 		return nil, fmt.Errorf("invalid length")
 	}
 	// gml:LinearRing の gml:posList なので末尾に先頭と同じ座標が入っているため取り除く
-	n := len(tokens)/3 - 1
-	if n < 3 {
+	p := n/3 - 1
+	if p < 3 {
 		return nil, fmt.Errorf("too few points")
 	}
-	points := make([]geo.Point3, 0, n)
-	for i := 0; i < n; i++ {
-		p := tokens[i*3:][:3]
-		y, err := strconv.ParseFloat(p[0], 64)
+	for i := 0; i < p; i++ {
+		rest := t
+		p1, rest, _ := strings.Cut(rest, " ")
+		p2, rest, _ := strings.Cut(rest, " ")
+		p3, rest, _ := strings.Cut(rest, " ")
+		t = rest
+		y, err := strconv.ParseFloat(p1, 64)
 		if err != nil {
 			return nil, err
 		}
-		x, err := strconv.ParseFloat(p[1], 64)
+		x, err := strconv.ParseFloat(p2, 64)
 		if err != nil {
 			return nil, err
 		}
-		z, err := strconv.ParseFloat(p[2], 64)
+		z, err := strconv.ParseFloat(p3, 64)
 		if err != nil {
 			return nil, err
 		}
-		points = append(points, geo.Point3{
+		dest = append(dest, geo.Point3{
 			X: x,
 			Y: y,
 			Z: z,
 		})
 	}
-	return points, nil
+	return dest, nil
 }

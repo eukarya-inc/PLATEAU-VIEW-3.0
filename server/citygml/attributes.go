@@ -69,6 +69,13 @@ type attributeUnmarshaler interface {
 type genHandler struct {
 }
 
+type genAttr struct {
+	Type  string `json:"type"`
+	Name  string `json:"name"`
+	Value any    `json:"value"`
+	UOM   string `json:"uom,omitempty"`
+}
+
 func (h genHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.StartElement) error {
 	key := "gen:genericAttribute"
 	t := "unknown"
@@ -89,11 +96,10 @@ func (h genHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.Sta
 				return err
 			}
 			if ae.isGen(e2.Name) && e2.Name.Local == "value" {
-				b, err := ae.Text()
+				text, err := ae.Text()
 				if err != nil {
 					return err
 				}
-				text := string(b)
 				if err := ae.Skip(); err != nil {
 					return err
 				}
@@ -101,32 +107,32 @@ func (h genHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.Sta
 					return err
 				}
 				name, _ := findAttr(e.Attr, "name")
-				attr := map[string]any{
-					"type": t,
-					"name": name,
+				attr := &genAttr{
+					Type: t,
+					Name: name,
 				}
 				switch t {
 				case "int":
 					if v, err := strconv.Atoi(text); err == nil {
-						attr["value"] = v
+						attr.Value = v
 					} else {
 						return fmt.Errorf("value not int: %w", err)
 					}
 				case "double":
 					if v, err := strconv.ParseFloat(text, 64); err == nil {
-						attr["value"] = v
+						attr.Value = v
 					} else {
 						return fmt.Errorf("value not float: %w", err)
 					}
 				case "measure":
 					if v, err := strconv.ParseFloat(text, 64); err == nil {
-						attr["value"] = v
+						attr.Value = v
 					} else {
 						return fmt.Errorf("value not float: %w", err)
 					}
-					attr["uom"], _ = findAttr(e2.Attr, "uom")
+					attr.UOM, _ = findAttr(e2.Attr, "uom")
 				default:
-					attr["value"] = text
+					attr.Value = text
 				}
 				if a, ok := obj[key]; ok {
 					obj[key] = append(a.([]any), attr)
@@ -551,7 +557,7 @@ func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[strin
 			if err != nil {
 				return nil, err
 			}
-			if err := processFeature(dec, h); err != nil {
+			if _, err := processFeature(dec, h); err != nil {
 				return nil, err
 			}
 			attributes = append(attributes, h.Val)
