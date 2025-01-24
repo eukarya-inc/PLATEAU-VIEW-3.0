@@ -9,7 +9,6 @@ import {
   CityGMLGetFilesParams,
   CityGMLGetGmlIdsBySpaceData,
   CityGMLGetGmlIdsBySpaceParams,
-  // CityGMLGetPackSizeParams,
   CityGMLGetPackStatusData,
   CityGMLGetPackStatusParams,
   CityGMLPostPackData,

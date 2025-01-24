@@ -56,19 +56,3 @@ const toJSON = (response: Response) => {
 const checkStatusCode = (response: Response) => {
   return response.ok;
 };
-
-// export const fetchFileSize = async (url: string): Promise<number | null> => {
-//   return await window
-//     .fetch(url, {
-//       method: "GET",
-//       headers: { Range: "bytes=0-0" },
-//     })
-//     .then(response => {
-//       const contentRange = response.headers.get("Content-Range");
-//       if (contentRange) {
-//         const totalSize = contentRange.split("/")[1];
-//         return parseInt(totalSize, 10);
-//       }
-//       return null;
-//     });
-// };
