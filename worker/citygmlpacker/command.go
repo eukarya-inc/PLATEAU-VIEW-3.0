@@ -244,7 +244,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 			}
 			d := d
 			go func() {
-				bw := bufio.NewWriterSize(d.pw, 2*1024)
+				bw := bufio.NewWriterSize(d.pw, 2*1024*1024)
 				defer func() {
 					<-sem
 				}()
