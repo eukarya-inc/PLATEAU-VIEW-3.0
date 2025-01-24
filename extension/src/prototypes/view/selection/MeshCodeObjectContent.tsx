@@ -1,10 +1,10 @@
-import { Divider, IconButton, List, Tooltip } from "@mui/material";
+import { Divider, IconButton, List, styled, Tooltip } from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { uniq } from "lodash-es";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import ReactJson from "react-json-view";
+import { FC, useCallback, useMemo } from "react";
 
-import { cityGMLClient } from "../../../shared/api/citygml";
+import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
+import useCityGMLPacks from "../../../shared/api/citygml/hooks/useCityGMLPacks";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { MESH_CODE_OBJECT } from "../../../shared/meshCode";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -13,14 +13,33 @@ import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import { isNotNullish } from "../../type-helpers";
 import {
   InspectorHeader,
-  InspectorItem,
   LayerIcon,
   ParameterList,
   PropertyParameterItem,
   TrashIcon,
+  PropertyActionItem,
+  PackageIcon,
+  DownloadIcon,
+  LoadingAnimationIcon,
 } from "../../ui-components";
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
+
+const LoadingIconWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  padding: theme.spacing(1),
+}));
+
+const LoadingWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  padding: theme.spacing(2),
+}));
+
+const PropertyActionsWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 0),
+}));
 
 export interface MeshCodeObjectContentProps {
   values: (SelectionGroup & {
@@ -71,7 +90,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
 
   const features = useOptionalAtomValue(meshCodeLayers[0]?.featuresAtom);
 
-  const properties = useMemo(() => {
+  const meshCodeProperties = useMemo(() => {
     const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return [];
     return [
@@ -83,39 +102,27 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
     ];
   }, [features, values]);
 
-  const [files, setFiles] = useState<object | undefined>();
-  const [_loading, setLoading] = useState<boolean>(true);
-  const [_error, setError] = useState<string | null>(null);
-  const meshCode = useMemo(() => {
+  const meshCodes = useMemo(() => {
     const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
-    if (!feature) return;
-    return feature.meshCode;
+    if (!feature) return [];
+    return [feature.meshCode];
   }, [features, values]);
 
-  useEffect(() => {
-    if (!meshCode) {
-      setFiles(undefined);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-    const fetchFiles = async () => {
-      setLoading(true);
-      setFiles(undefined);
-      setError(null);
+  const { cityNames, loading, data } = useCityGMLFiles({
+    meshIdsStrict: meshCodes,
+  });
 
-      try {
-        const data = await cityGMLClient?.getFiles({ meshId: meshCode });
-        setFiles(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching files.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { packs, handlePacking, handleDownloadPack } = useCityGMLPacks({ data });
 
-    fetchFiles();
-  }, [meshCode]);
+  const cityProperties = useMemo(() => {
+    return [
+      {
+        id: "cityNames",
+        name: "関連市区町村",
+        values: cityNames ?? [],
+      },
+    ];
+  }, [cityNames]);
 
   return (
     <List disablePadding>
@@ -139,22 +146,59 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
         onClose={handleClose}
       />
       <Divider />
-      <InspectorItem>
-        <ParameterList>
-          <PropertyParameterItem properties={properties} featureType="meshCode" />
-        </ParameterList>
-        {files && (
-          <ReactJson
-            src={files}
-            displayDataTypes={false}
-            enableClipboard={false}
-            displayObjectSize={false}
-            quotesOnKeys={false}
-            indentWidth={2}
-            style={{ wordBreak: "break-all", lineHeight: 1.2 }}
-          />
+      <ParameterList>
+        <PropertyParameterItem properties={meshCodeProperties} featureType="tags" />
+        {loading ? (
+          <LoadingWrapper>
+            <LoadingAnimationIcon size={16} />
+          </LoadingWrapper>
+        ) : (
+          <>
+            {cityProperties[0].values.length > 0 && (
+              <>
+                <Divider />
+                <PropertyParameterItem properties={cityProperties} featureType="tags" />
+              </>
+            )}
+            {packs.length > 0 && (
+              <>
+                <Divider />
+                <PropertyActionsWrapper>
+                  {packs.map(item => (
+                    <PropertyActionItem key={item.id} name={item.name}>
+                      {item.status === "idle" && (
+                        <Tooltip title="Pack">
+                          <IconButton
+                            aria-label="Pack"
+                            onClick={() => handlePacking(item.id)}
+                            size="small">
+                            <PackageIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {(item.status === "requesting" || item.status === "polling") && (
+                        <LoadingIconWrapper>
+                          <LoadingAnimationIcon size={16} />
+                        </LoadingIconWrapper>
+                      )}
+                      {item.status === "packed" && (
+                        <Tooltip title="Download">
+                          <IconButton
+                            aria-label="Download"
+                            onClick={() => handleDownloadPack(item.id)}
+                            size="small">
+                            <DownloadIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </PropertyActionItem>
+                  ))}
+                </PropertyActionsWrapper>
+              </>
+            )}
+          </>
         )}
-      </InspectorItem>
+      </ParameterList>
     </List>
   );
 };

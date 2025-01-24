@@ -140,6 +140,7 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 type: "meshCode",
                 id: l.id,
                 title: l.title,
+                meshCodeLevel: l.meshCodeLevel,
                 features: get(l.featuresAtom),
                 hidden: get(l.hiddenAtom),
               };

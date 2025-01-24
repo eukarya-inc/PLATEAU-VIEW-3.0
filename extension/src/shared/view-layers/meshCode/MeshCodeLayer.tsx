@@ -13,14 +13,17 @@ import {
 } from "../../../prototypes/view-layers";
 import { MeshCode, MeshCodeFeature } from "../../meshCode";
 
-let nextLayerIndex = 1;
+let nextLevel2LayerIndex = 1;
+let nextLevel3LayerIndex = 1;
 
 export interface MeshCodeLayerModelParams extends ViewLayerModelParams {
+  meshCodeLevel: number;
   features?: readonly MeshCodeFeature[];
 }
 
 export interface MeshCodeLayerModel extends ViewLayerModel {
   title: string;
+  meshCodeLevel: number;
   featuresAtom: PrimitiveAtom<MeshCodeFeature[]>;
   featureAtomsAtom: SplitAtom<MeshCodeFeature>;
 }
@@ -29,6 +32,7 @@ export type SharedMeshCodeLayer = {
   type: "meshCode";
   id: string;
   title: string;
+  meshCodeLevel: number;
   features: MeshCodeFeature[];
 };
 
@@ -36,7 +40,10 @@ export function createMeshCodeLayer(
   params: MeshCodeLayerModelParams,
 ): ConfigurableLayerModel<MeshCodeLayerModel> {
   const featuresAtom = atom<MeshCodeFeature[]>([...(params.features ?? [])]);
-  const title = `メッシュコレクション ${nextLayerIndex++}`;
+  const title =
+    params.meshCodeLevel === 2
+      ? `2次 メッシュコレクション ${nextLevel2LayerIndex++}`
+      : `3次 メッシュコレクション ${nextLevel3LayerIndex++}`;
   return {
     ...createViewLayerModel({
       ...params,
@@ -44,6 +51,7 @@ export function createMeshCodeLayer(
     }),
     title,
     type: MESH_CODE_LAYER,
+    meshCodeLevel: params.meshCodeLevel,
     featuresAtom,
     featureAtomsAtom: splitAtom(featuresAtom),
   };

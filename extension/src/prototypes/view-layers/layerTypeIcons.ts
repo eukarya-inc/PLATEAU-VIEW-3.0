@@ -23,7 +23,6 @@ import {
   RoadIcon,
   ShelterIcon,
   SketchIcon,
-  SketchRectangleIcon,
   StationIcon,
   StoryIcon,
   TsunamiRiskIcon,
@@ -31,6 +30,7 @@ import {
   UseCaseIcon,
   VegetationIcon,
 } from "../ui-components/icons";
+import { SpatialIdIcon } from "../ui-components/icons/SpatialIdIcon";
 
 import {
   AREA_LAYER,
@@ -72,7 +72,7 @@ export const layerTypeIcons: Record<LayerType, ComponentType<SvgIconProps>> = {
   [HEATMAP_LAYER]: UseCaseIcon,
   [PEDESTRIAN_LAYER]: PedestrianIcon,
   [SKETCH_LAYER]: SketchIcon,
-  [SPATIAL_ID_LAYER]: SketchRectangleIcon,
+  [SPATIAL_ID_LAYER]: SpatialIdIcon,
   [MESH_CODE_LAYER]: LayerIcon,
   [MY_DATA_LAYER]: UseCaseIcon,
   [STORY_LAYER]: StoryIcon,

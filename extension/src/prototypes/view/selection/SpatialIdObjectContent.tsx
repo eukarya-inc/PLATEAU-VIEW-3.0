@@ -1,10 +1,11 @@
-import { Divider, IconButton, List, Tooltip } from "@mui/material";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import { Divider, IconButton, List, styled, Tooltip } from "@mui/material";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import { uniq } from "lodash";
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo } from "react";
 import ReactJson from "react-json-view";
 
-import { cityGMLClient } from "../../../shared/api/citygml";
+import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
+import useCityGMLSpaceAttributes from "../../../shared/api/citygml/hooks/useCityGMLSpaceAttributes";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -15,14 +16,27 @@ import {
   InspectorHeader,
   InspectorItem,
   LayerIcon,
+  LoadingAnimationIcon,
   ParameterList,
   PropertyParameterItem,
-  SketchPolygonIcon,
+  SelectParameterItem,
   TrashIcon,
 } from "../../ui-components";
+import { SpatialIdIcon } from "../../ui-components/icons/SpatialIdIcon";
 import { highlightedSpatialIdLayersAtom, SPATIAL_ID_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
 
+const featureTypeAtom = atom<string | null>(null);
+
+const JSONWrapper = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2, 2, 2),
+}));
+
+const LoadingWrapper = styled("div")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  padding: theme.spacing(0, 2, 2, 2),
+}));
 export interface SpatialIdObjectContentProps {
   values: (SelectionGroup & {
     type: typeof SCREEN_SPACE_SELECTION;
@@ -72,7 +86,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
 
   const features = useOptionalAtomValue(spatialIdLayers[0]?.featuresAtom);
 
-  const properties = useMemo(() => {
+  const spaceIdProperties = useMemo(() => {
     const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
     if (!feature) return [];
     return [
@@ -81,58 +95,53 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
         name: "空間ID",
         values: [feature.data.id],
       },
+    ];
+  }, [features, values]);
+
+  const spaceIdZFXYProperties = useMemo(() => {
+    const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
+    if (!feature) return [];
+    return [
       {
-        id: "spaceIdZoom",
-        name: "Resolution",
-        values: [feature.data.zoom],
-      },
-      {
-        id: "spaceIdZoomZFXY",
+        id: "spaceIdZFXY",
         name: "ZFXY",
         values: [feature.data.zfxyStr],
       },
     ];
   }, [features, values]);
 
-  const [files, setFiles] = useState<object | undefined>();
-  const [_loading, setLoading] = useState<boolean>(true);
-  const [_error, setError] = useState<string | null>(null);
-  const spaceZFXYStr = useMemo(() => {
+  const spaceZFXYStrs = useMemo(() => {
     const feature = features?.find(feature => parseIdentifier(values[0]).key === feature.id);
-    if (!feature) return;
-    return feature.data.zfxyStr;
+    if (!feature) return [];
+    return [feature.data.zfxyStr];
   }, [features, values]);
 
+  const { featureTypes } = useCityGMLFiles({
+    spaceZFXYStrs,
+  });
+
+  const featureTypeOptions: string[][] | undefined = useMemo(() => {
+    return featureTypes?.map(type => [type.value, type.name]);
+  }, [featureTypes]);
+
+  const [currentType, setCurrentType] = useAtom(featureTypeAtom);
+
   useEffect(() => {
-    if (!spaceZFXYStr) {
-      setFiles(undefined);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-    const fetchFiles = async () => {
-      setLoading(true);
-      setFiles(undefined);
-      setError(null);
+    setCurrentType(featureTypes?.[0]?.value ?? null);
+  }, [featureTypes, setCurrentType]);
 
-      try {
-        const data = await cityGMLClient?.getFiles({ spaceZFXYStr });
-        setFiles(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred while fetching files.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const types = useMemo(() => [currentType], [currentType]);
 
-    fetchFiles();
-  }, [spaceZFXYStr]);
+  const { attributes, loading } = useCityGMLSpaceAttributes({
+    spaceZFXYStrs,
+    featureTypes: types,
+  });
 
   return (
     <List disablePadding>
       <InspectorHeader
         title={`${values.length}個の空間`}
-        iconComponent={SketchPolygonIcon}
+        iconComponent={SpatialIdIcon}
         actions={
           <>
             <Tooltip title="レイヤーを選択">
@@ -150,22 +159,45 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
         onClose={handleClose}
       />
       <Divider />
-      <InspectorItem>
-        <ParameterList>
-          <PropertyParameterItem properties={properties} featureType="spatialId" />
-          {files && (
-            <ReactJson
-              src={files}
-              displayDataTypes={false}
-              enableClipboard={false}
-              displayObjectSize={false}
-              quotesOnKeys={false}
-              indentWidth={2}
-              style={{ wordBreak: "break-all", lineHeight: 1.2 }}
-            />
-          )}
-        </ParameterList>
-      </InspectorItem>
+      <ParameterList>
+        <PropertyParameterItem properties={spaceIdProperties} featureType="tags" />
+        <Divider />
+        <PropertyParameterItem properties={spaceIdZFXYProperties} featureType="tags" />
+        {featureTypeOptions && featureTypeOptions.length > 0 && currentType && (
+          <>
+            <Divider />
+            <InspectorItem>
+              <SelectParameterItem
+                label="地物タイプ"
+                atom={featureTypeAtom}
+                items={featureTypeOptions as [string, string][]}
+                layout="stack"
+              />
+            </InspectorItem>
+            {loading ? (
+              <LoadingWrapper>
+                <LoadingAnimationIcon size={16} />
+              </LoadingWrapper>
+            ) : (
+              attributes &&
+              attributes.length > 0 && (
+                <JSONWrapper>
+                  <ReactJson
+                    src={attributes}
+                    displayDataTypes={false}
+                    enableClipboard={false}
+                    displayObjectSize={false}
+                    quotesOnKeys={false}
+                    indentWidth={2}
+                    collapsed={true}
+                    style={{ wordBreak: "break-all", lineHeight: 1.2 }}
+                  />
+                </JSONWrapper>
+              )
+            )}
+          </>
+        )}
+      </ParameterList>
     </List>
   );
 };

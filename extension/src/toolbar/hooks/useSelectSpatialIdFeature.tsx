@@ -40,4 +40,16 @@ export const useSelectSpatialIdFeature = () => {
       prevLayersRef.current = selectedSpatialIdLayers;
     });
   }, [hasSpatialIdFeatureSelected, selectedSpatialIdLayers]);
+
+  useEffect(() => {
+    const prevFeatureIds = prevLayersRef.current.flatMap(({ featureId }) => featureId);
+    const currentFeatureIds = selectedSpatialIdLayers.flatMap(({ featureId }) => featureId);
+    console.log("prevFeatureIds", prevFeatureIds);
+    console.log("currentFeatureIds", currentFeatureIds);
+    if (prevFeatureIds.length > 0 && currentFeatureIds.length === 0) {
+      console.log("do deselect");
+      window.reearth?.layers?.selectFeatures?.([]);
+    }
+    prevLayersRef.current = selectedSpatialIdLayers;
+  }, [selectedSpatialIdLayers]);
 };
