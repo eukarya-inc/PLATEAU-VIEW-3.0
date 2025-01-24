@@ -183,9 +183,10 @@ export const LayerTilesetDrawClippingField: FC<LayerTilesetDrawClippingFieldProp
             bottom: e.feature.properties.extrudedHeight ? 0 : DEFAULT_BOTTOM,
           },
         });
+        handleSetType(undefined);
       }
     },
-    [component, setComponent],
+    [component, setComponent, handleSetType],
   );
 
   useReEarthEvent("sketchfeaturecreated", handleSketchFeatureCreated);
