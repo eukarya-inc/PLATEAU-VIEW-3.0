@@ -14,6 +14,18 @@ func cmsWebhookHandler(g *echo.Group, secret []byte, handlers []cmswebhook.Handl
 		Logger: log.Debugfc,
 	}))
 
+	g.GET("/ping", func(c echo.Context) error {
+		return c.String(http.StatusOK, "pong")
+	})
+
+	g.POST("/ping", func(c echo.Context) error {
+		jsonMap := make(map[string]any)
+		if err := c.Bind(&jsonMap); err == nil {
+			log.Debugfc(c.Request().Context(), "ping json: %v", jsonMap)
+		}
+		return c.String(http.StatusOK, "pong")
+	})
+
 	g.POST("", func(c echo.Context) error {
 		w := cmswebhook.GetPayload(c.Request().Context())
 		if w == nil {
