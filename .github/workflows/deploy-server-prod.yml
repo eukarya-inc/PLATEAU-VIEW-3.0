@@ -18,8 +18,8 @@ jobs:
       - uses: actions/checkout@v3
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
       - name: Configure docker
@@ -40,11 +40,9 @@ jobs:
         run: |
           gcloud run deploy plateauview-api \
             --image $IMAGE_GCP \
-            --region $GCP_REGION \
+            --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
-        env:
-          GCP_REGION: ${{ vars.GCP_REGION }}
 
   push_hub:
     runs-on: ubuntu-latest
