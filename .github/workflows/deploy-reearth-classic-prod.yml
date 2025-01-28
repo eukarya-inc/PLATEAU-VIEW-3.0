@@ -111,7 +111,7 @@ jobs:
       - name: Pull docker image
         run: docker pull $WEB_IMAGE_NAME_GHCR
       - name: Push docker image
-        run: docker tag $WEB_IMAGE_NAME_GHCR $IMAGE_NAME_GCP && docker push WEB_IMAGE_NAME_GHCR $WEB_IMAGE_NAME_GCP
+        run: docker tag $WEB_IMAGE_NAME_GHCR $IMAGE_NAME_GCP && docker push $WEB_IMAGE_NAME_GCP
       - name: Deploy
         run: |
           gcloud run deploy reearth-classic-web \
