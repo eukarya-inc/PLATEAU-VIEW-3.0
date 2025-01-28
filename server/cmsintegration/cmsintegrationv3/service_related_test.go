@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -49,8 +50,8 @@ func TestConvertRelatedDataset(t *testing.T) {
 		},
 	}
 	s := &Services{CMS: c, HTTP: http.DefaultClient}
-	item := &RelatedItem{
-		Items: map[string]RelatedItemDatum{
+	item := &cmsintegrationcommon.RelatedItem{
+		Items: map[string]cmsintegrationcommon.RelatedItemDatum{
 			"border": {
 				ID:    "border",
 				Asset: []string{"border"},
@@ -92,10 +93,10 @@ func TestConvertRelatedDataset(t *testing.T) {
 		}, updatedFields)
 		assert.Equal(t, [][]*cms.Field{
 			{
-				{Key: "border_status", Type: "tag", Value: string(ConvertionStatusRunning)},
+				{Key: "border_status", Type: "tag", Value: string(cmsintegrationcommon.ConvertionStatusRunning)},
 			},
 			{
-				{Key: "border_status", Type: "tag", Value: string(ConvertionStatusSuccess)},
+				{Key: "border_status", Type: "tag", Value: string(cmsintegrationcommon.ConvertionStatusSuccess)},
 			},
 		}, updatedMetadataFields)
 		assert.Equal(t, []string{"hoge_border.czml"}, uploaded)
@@ -141,7 +142,7 @@ func TestPackRelatedDataset(t *testing.T) {
 	ctx := context.Background()
 	c := &cmsMock{
 		getItem: func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
-			return (&CityItem{
+			return (&cmsintegrationcommon.CityItem{
 				CityNameEn: "hoge",
 				CityCode:   "00000",
 			}).CMSItem(), nil
@@ -169,9 +170,9 @@ func TestPackRelatedDataset(t *testing.T) {
 		},
 	}
 	s := &Services{CMS: c, HTTP: http.DefaultClient}
-	item := &RelatedItem{
+	item := &cmsintegrationcommon.RelatedItem{
 		City: "city",
-		Items: map[string]RelatedItemDatum{
+		Items: map[string]cmsintegrationcommon.RelatedItemDatum{
 			"shelter":         {Asset: []string{"00000_hoge_city_2023_shelter"}},
 			"landmark":        {Asset: []string{"00000_hoge_city_2023_00001_foo_landmark", "00000_hoge_city_2023_00002_bar_landmark"}},
 			"station":         {Asset: []string{"00000_hoge_city_2023_station"}},
@@ -210,10 +211,10 @@ func TestPackRelatedDataset(t *testing.T) {
 		}, updatedFields)
 		assert.Equal(t, [][]*cms.Field{
 			{
-				{Key: "merge_status", Type: "tag", Value: string(ConvertionStatusRunning)},
+				{Key: "merge_status", Type: "tag", Value: string(cmsintegrationcommon.ConvertionStatusRunning)},
 			},
 			{
-				{Key: "merge_status", Type: "tag", Value: string(ConvertionStatusSuccess)},
+				{Key: "merge_status", Type: "tag", Value: string(cmsintegrationcommon.ConvertionStatusSuccess)},
 			},
 		}, updatedMetadataFields)
 		assert.Equal(t, []string{"00000_hoge_2023_related.zip"}, uploaded)

@@ -16,7 +16,7 @@ func TestQueryDatasets(t *testing.T) {
 		t.Skip("baseURL is not set")
 	}
 
-	client, err := NewAPIClient(Config{DataCatagloAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
+	client, err := NewAPIClient(Config{DataCatalogAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
 	assert.NoError(t, err)
 
 	q, err := client.QueryDatasets(context.Background())
@@ -40,7 +40,7 @@ func TestQueryDatasetFiles(t *testing.T) {
 		t.Skip("baseURL is not set")
 	}
 
-	client, err := NewAPIClient(Config{DataCatagloAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
+	client, err := NewAPIClient(Config{DataCatalogAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
 	assert.NoError(t, err)
 
 	q, err := client.QueryDatasetFiles(context.Background(), cityId)

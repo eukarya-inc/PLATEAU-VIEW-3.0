@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintegrationcommon
 
 import (
 	"testing"
@@ -253,4 +253,77 @@ func TestCityItem_SpecMajorVersionInt(t *testing.T) {
 	assert.Equal(t, 4, (&CityItem{Spec: "第4.2版"}).SpecMajorVersionInt())
 	assert.Equal(t, 4, (&CityItem{Spec: "4.2版"}).SpecMajorVersionInt())
 	assert.Equal(t, 4, (&CityItem{Spec: "v4.2"}).SpecMajorVersionInt())
+}
+
+func TestIsQCAndConvSkipped(t *testing.T) {
+	skipQC, skipConv := (&FeatureItem{}).IsQCAndConvSkipped("")
+	assert.False(t, skipQC)
+	assert.False(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		QCStatus: &cms.Tag{
+			Name: "成功",
+		},
+	}).IsQCAndConvSkipped("")
+	assert.True(t, skipQC)
+	assert.False(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		ConvertionStatus: &cms.Tag{
+			Name: "成功",
+		},
+	}).IsQCAndConvSkipped("")
+	assert.False(t, skipQC)
+	assert.True(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		QCStatus: &cms.Tag{
+			Name: "成功",
+		},
+	}).IsQCAndConvSkipped("dem")
+	assert.True(t, skipQC)
+	assert.True(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipQCConv: &cms.Tag{
+			Name: "品質検査のみをスキップ",
+		},
+	}).IsQCAndConvSkipped("")
+	assert.True(t, skipQC)
+	assert.False(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipQCConv: &cms.Tag{
+			Name: "変換のみをスキップ",
+		},
+	}).IsQCAndConvSkipped("")
+	assert.False(t, skipQC)
+	assert.True(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipQCConv: &cms.Tag{
+			Name: "品質検査・変換のみをスキップ",
+		},
+	}).IsQCAndConvSkipped("")
+	assert.True(t, skipQC)
+	assert.True(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipQC: true,
+	}).IsQCAndConvSkipped("")
+	assert.True(t, skipQC)
+	assert.False(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipConvert: true,
+	}).IsQCAndConvSkipped("")
+	assert.False(t, skipQC)
+	assert.True(t, skipConv)
+
+	skipQC, skipConv = (&FeatureItem{
+		SkipQC:      true,
+		SkipConvert: true,
+	}).IsQCAndConvSkipped("")
+	assert.True(t, skipQC)
+	assert.True(t, skipConv)
 }

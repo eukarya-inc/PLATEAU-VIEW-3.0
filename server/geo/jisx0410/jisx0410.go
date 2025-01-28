@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/JamesLMilner/quadtree-go"
+	"github.com/eukarya-inc/reearth-plateauview/server/geo"
 )
 
 const (
@@ -63,9 +64,14 @@ func init() {
 	}
 }
 
-// Bounds converts JIS X 0410 Square Grid Code to quadtree.Bounds and returns them.
-func Bounds(s string) (quadtree.Bounds, error) {
-	var zero quadtree.Bounds
+type MeshCode struct {
+	Level  int
+	Bounds geo.Bounds2
+}
+
+// Parse converts JIS X 0410 Square Grid Code to MeshCode and returns them.
+func Parse(s string) (MeshCode, error) {
+	var zero MeshCode
 	if len(s) < 4 || len(s) == 5 || 11 < len(s) {
 		return zero, fmt.Errorf("invalid length: %d", len(s))
 	}
@@ -79,11 +85,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 	lat := int32(c0*10+c1) * lv1hi
 	lng := int32(c2*10+c3+100) * lv1wi
 	if len(s) == 4 {
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv1w,
-			Height: lv1h,
+		return MeshCode{
+			Level: 1,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv1w,
+				Height: lv1h,
+			}),
 		}, nil
 	}
 	c5 := digits[s[5]]
@@ -94,11 +103,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 	lat += int32(c4) * lv2hi
 	lng += int32(c5) * lv2wi
 	if len(s) == 6 {
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv2w,
-			Height: lv2h,
+		return MeshCode{
+			Level: 2,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv2w,
+				Height: lv2h,
+			}),
 		}, nil
 	}
 	if len(s) == 7 {
@@ -112,11 +124,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 		if x&2 != 0 {
 			lat += lv3h5i
 		}
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv3w5,
-			Height: lv3h5,
+		return MeshCode{
+			Level: 0,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv3w5,
+				Height: lv3h5,
+			}),
 		}, nil
 	}
 	if len(s) == 9 && s[8] == '5' {
@@ -127,11 +142,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 		}
 		lat += int32(c6>>1) * lv3h2i // [02468]
 		lng += int32(c7>>1) * lv3w2i // [02468]
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv3w2,
-			Height: lv3h2,
+		return MeshCode{
+			Level: 0,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv3w2,
+				Height: lv3h2,
+			}),
 		}, nil
 	}
 	c7 := digits[s[7]]
@@ -142,11 +160,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 	lat += int32(c6) * lv3hi
 	lng += int32(c7) * lv3wi
 	if len(s) == 8 {
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv3w,
-			Height: lv3h,
+		return MeshCode{
+			Level: 3,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv3w,
+				Height: lv3h,
+			}),
 		}, nil
 	}
 	{
@@ -162,11 +183,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 		}
 	}
 	if len(s) == 9 {
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv3wh,
-			Height: lv3hh,
+		return MeshCode{
+			Level: 4,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv3wh,
+				Height: lv3hh,
+			}),
 		}, nil
 	}
 	{
@@ -182,11 +206,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 		}
 	}
 	if len(s) == 10 {
-		return quadtree.Bounds{
-			X:      float64(lng) / degree,
-			Y:      float64(lat) / degree,
-			Width:  lv3wq,
-			Height: lv3hq,
+		return MeshCode{
+			Level: 5,
+			Bounds: geo.ToBounds2(quadtree.Bounds{
+				X:      float64(lng) / degree,
+				Y:      float64(lat) / degree,
+				Width:  lv3wq,
+				Height: lv3hq,
+			}),
 		}, nil
 	}
 	{
@@ -201,11 +228,14 @@ func Bounds(s string) (quadtree.Bounds, error) {
 			lat += lv3hei
 		}
 	}
-	return quadtree.Bounds{
-		X:      float64(lng) / degree,
-		Y:      float64(lat) / degree,
-		Width:  lv3we,
-		Height: lv3he,
+	return MeshCode{
+		Level: 6,
+		Bounds: geo.ToBounds2(quadtree.Bounds{
+			X:      float64(lng) / degree,
+			Y:      float64(lat) / degree,
+			Width:  lv3we,
+			Height: lv3he,
+		}),
 	}, nil
 }
 

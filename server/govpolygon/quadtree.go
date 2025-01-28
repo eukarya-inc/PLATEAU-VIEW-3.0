@@ -11,6 +11,10 @@ type Quadtree struct {
 }
 
 func NewQuadtree(f []*geojson.Feature, margin float64) *Quadtree {
+	if f == nil {
+		f = JapanCityFeatures
+	}
+
 	ft := map[quadtree.Bounds]*geojson.Feature{}
 	qt := &quadtree.Quadtree{
 		MaxObjects: 10,

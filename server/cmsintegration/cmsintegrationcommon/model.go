@@ -1,23 +1,23 @@
-package cmsintegrationv3
+package cmsintegrationcommon
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/oklog/ulid/v2"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
 
-const modelPrefix = "plateau-"
-const cityModel = "city"
-const sampleModel = "sample"
-const relatedModel = "related"
-const geospatialjpIndex = "geospatialjp-index"
-const geospatialjpData = "geospatialjp-data"
+const ModelPrefix = "plateau-"
+const CityModel = "city"
+const SampleModel = "sample"
+const RelatedModel = "related"
+const GeospatialjpIndex = "geospatialjp-index"
+const GeospatialjpData = "geospatialjp-data"
 
-var featureTypes = []string{
+var FeatureTypes = []string{
 	"bldg", // 建築物モデル
 	"tran", // 交通（道路）モデル
 	"rwy",  // 交通（鉄道）モデル
@@ -45,7 +45,7 @@ var featureTypes = []string{
 	"gen",  // 汎用都市オブジェクトモデル
 }
 
-var featureTypesWithItems = []string{
+var FeatureTypesWithItems = []string{
 	"veg",  // 植生モデル
 	"fld",  // 洪水浸水想定区域モデル
 	"tnm",  // 津波浸水想定区域モデル
@@ -56,7 +56,7 @@ var featureTypesWithItems = []string{
 	"gen",  // 汎用都市オブジェクトモデル
 }
 
-var relatedDataTypes = []string{
+var RelatedDataTypes = []string{
 	"shelter",
 	"park",
 	"landmark",
@@ -94,23 +94,23 @@ const (
 )
 
 type CityItem struct {
-	ID                string                    `json:"id,omitempty" cms:"id"`
-	Prefecture        string                    `json:"prefecture,omitempty" cms:"prefecture,select"`
-	CityName          string                    `json:"city_name,omitempty" cms:"city_name,text"`
-	CityNameEn        string                    `json:"city_name_en,omitempty" cms:"city_name_en,text"`
-	CityCode          string                    `json:"city_code,omitempty" cms:"city_code,text"`
-	Spec              string                    `json:"spec,omitempty" cms:"spec,select"`
-	OpenDataUrl       string                    `json:"open_data_url,omitempty" cms:"open_data_url,url"`
-	PRCS              cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
-	CodeLists         string                    `json:"codelists,omitempty" cms:"codelists,asset"`
-	Schemas           string                    `json:"schemas,omitempty" cms:"schemas,asset"`
-	Metadata          string                    `json:"metadata,omitempty" cms:"metadata,asset"`
-	Specification     string                    `json:"specification,omitempty" cms:"specification,asset"`
-	ObjectLists       string                    `json:"objectLists,omitempty" cms:"objectLists,asset"`
-	References        map[string]string         `json:"references,omitempty" cms:"-"`
-	RelatedDataset    string                    `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
-	GeospatialjpIndex string                    `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
-	GeospatialjpData  string                    `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
+	ID                string            `json:"id,omitempty" cms:"id"`
+	Prefecture        string            `json:"prefecture,omitempty" cms:"prefecture,select"`
+	CityName          string            `json:"city_name,omitempty" cms:"city_name,text"`
+	CityNameEn        string            `json:"city_name_en,omitempty" cms:"city_name_en,text"`
+	CityCode          string            `json:"city_code,omitempty" cms:"city_code,text"`
+	Spec              string            `json:"spec,omitempty" cms:"spec,select"`
+	OpenDataUrl       string            `json:"open_data_url,omitempty" cms:"open_data_url,url"`
+	PRCS              PRCS              `json:"prcs,omitempty" cms:"prcs,select"`
+	CodeLists         string            `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas           string            `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata          string            `json:"metadata,omitempty" cms:"metadata,asset"`
+	Specification     string            `json:"specification,omitempty" cms:"specification,asset"`
+	ObjectLists       string            `json:"objectLists,omitempty" cms:"objectLists,asset"`
+	References        map[string]string `json:"references,omitempty" cms:"-"`
+	RelatedDataset    string            `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
+	GeospatialjpIndex string            `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
+	GeospatialjpData  string            `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
 	// meatadata
 	PlateauDataStatus string          `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	CityPublic        bool            `json:"city_public,omitempty" cms:"city_public,bool,metadata"`
@@ -124,7 +124,7 @@ func CityItemFrom(item *cms.Item) (i *CityItem) {
 
 	references := map[string]string{}
 	public := map[string]bool{}
-	for _, ft := range featureTypes {
+	for _, ft := range FeatureTypes {
 		if ref := item.FieldByKey(ft).GetValue().String(); ref != nil {
 			references[ft] = *ref
 		}
@@ -161,7 +161,7 @@ func (i *CityItem) CMSItem() *cms.Item {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 
-	for _, ft := range featureTypes {
+	for _, ft := range FeatureTypes {
 		if ref, ok := i.References[ft]; ok {
 			item.Fields = append(item.Fields, &cms.Field{
 				Key:   ft,
@@ -289,7 +289,7 @@ func RelatedItemFrom(item *cms.Item) (i *RelatedItem) {
 		i.ConvertStatus = map[string]*cms.Tag{}
 	}
 
-	for _, t := range relatedDataTypes {
+	for _, t := range RelatedDataTypes {
 		g := item.FieldByKey(t).GetValue().String()
 		if g == nil {
 			continue
@@ -317,7 +317,7 @@ func (i *RelatedItem) CMSItem() *cms.Item {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 
-	for _, t := range relatedDataTypes {
+	for _, t := range RelatedDataTypes {
 		if d, ok := i.Items[t]; ok {
 			if d.ID == "" {
 				d.ID = ulid.Make().String()
@@ -415,4 +415,44 @@ func (i *GeospatialjpDataItem) CMSItem() *cms.Item {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 	return item
+}
+
+var noconvFeatureTypes = []string{"dem", "app", "ext"}
+
+func (item *FeatureItem) IsQCAndConvSkipped(featureType string) (skipQC bool, skipConv bool) {
+	const (
+		skip = "スキップ"
+		qc   = "品質検査"
+		conv = "変換"
+	)
+
+	if TagIsNot(item.QCStatus, ConvertionStatusNotStarted) {
+		skipQC = true
+	}
+	if TagIsNot(item.ConvertionStatus, ConvertionStatusNotStarted) ||
+		(slices.Contains(noconvFeatureTypes, featureType)) {
+		skipConv = true
+	}
+
+	if skipQC && skipConv {
+		return true, true
+	}
+
+	if item.SkipQCConv != nil {
+		if n := item.SkipQCConv.Name; strings.Contains(n, skip) {
+			qc := strings.Contains(n, qc)
+			conv := strings.Contains(n, conv)
+			if !qc && !conv {
+				skipQC = true
+				skipConv = true
+			} else {
+				skipQC = skipQC || qc
+				skipConv = skipConv || conv
+			}
+		}
+	}
+
+	skipQC = skipQC || item.SkipQC
+	skipConv = skipConv || item.SkipConvert
+	return
 }

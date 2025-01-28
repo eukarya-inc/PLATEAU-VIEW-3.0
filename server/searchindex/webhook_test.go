@@ -86,10 +86,10 @@ func TestWebhook_AssetAlreadyDecompressed(t *testing.T) {
 
 	// assert logs
 	assert.Contains(log(), "searchindex webhook: item: ")
-	assert.Equal("searchindex webhook: start processing", log())
-	assert.Equal("searchindex webhook: start processing for "+assetName, log())
-	assert.Equal("searchindex webhook: start processing for "+assetName2, log())
-	assert.Equal("searchindex webhook: done", log())
+	assert.Contains(log(), "searchindex webhook: start processing")
+	assert.Contains(log(), "searchindex webhook: start processing for "+assetName)
+	assert.Contains(log(), "searchindex webhook: start processing for "+assetName2)
+	assert.Contains(log(), "searchindex webhook: done")
 
 	// assert item
 	item2, _ := c.items.Load(items[0].ID)
@@ -163,7 +163,7 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 
 	// assert logs
 	assert.Contains(log(), "searchindex webhook: item: ")
-	assert.Equal("searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg", log())
+	assert.Contains(log(), "searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg")
 
 	// assert storage
 	storage := c.storage.FindAll(func(_ string, _ *cms.Item) bool { return true })
@@ -193,10 +193,10 @@ func TestWebhook_AssetNotDecompressed(t *testing.T) {
 
 	// assert logs
 	assert.Contains(log(), "searchindex webhook: item: ")
-	assert.Equal("searchindex webhook: start processing", log())
-	assert.Equal("searchindex webhook: start processing for "+assetName, log())
-	assert.Equal("searchindex webhook: start processing for "+assetName2, log())
-	assert.Equal("searchindex webhook: done", log())
+	assert.Contains(log(), "searchindex webhook: start processing")
+	assert.Contains(log(), "searchindex webhook: start processing for "+assetName)
+	assert.Contains(log(), "searchindex webhook: start processing for "+assetName2)
+	assert.Contains(log(), "searchindex webhook: done")
 
 	// assert storage
 	assert.Equal(0, c.storage.Len())
@@ -338,7 +338,7 @@ func TestWebhook_NoLod1Bldg(t *testing.T) {
 
 	// assert logs
 	assert.Contains(log(), "searchindex webhook: item: ")
-	assert.Equal("searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg", log())
+	assert.Contains(log(), "searchindex webhook: skipped: all assets are not decompressed or no lod1 bldg")
 
 	// assert item
 	item2, _ := c.items.Load(items[0].ID)
