@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintegrationcommon
 
 import (
 	"fmt"
@@ -7,15 +7,15 @@ import (
 	cms "github.com/reearth/reearth-cms-api/go"
 )
 
-func tagIs(t *cms.Tag, v fmt.Stringer) bool {
+func TagIs(t *cms.Tag, v fmt.Stringer) bool {
 	return t != nil && t.Name == v.String()
 }
 
-func tagIsNot(t *cms.Tag, v fmt.Stringer) bool {
+func TagIsNot(t *cms.Tag, v fmt.Stringer) bool {
 	return t != nil && t.Name != v.String()
 }
 
-func tagFrom(t fmt.Stringer) *cms.Tag {
+func TagFrom(t fmt.Stringer) *cms.Tag {
 	s := t.String()
 	if s == "" {
 		return nil
@@ -25,9 +25,9 @@ func tagFrom(t fmt.Stringer) *cms.Tag {
 	}
 }
 
-func getLastBracketContent(s string) string {
+func GetLastBracketContent(s string) string {
 	if strings.Contains(s, "（") && strings.Contains(s, "）") {
-		_, s := cutStringRight(s, "（")
+		_, s := CutStringRight(s, "（")
 		s, _, _ = strings.Cut(s, "）")
 		return s
 	}
@@ -35,7 +35,7 @@ func getLastBracketContent(s string) string {
 	return ""
 }
 
-func cutStringRight(s string, sep string) (string, string) {
+func CutStringRight(s string, sep string) (string, string) {
 	if i := strings.LastIndex(s, sep); i >= 0 {
 		return s[:i], s[i+len(sep):]
 	}

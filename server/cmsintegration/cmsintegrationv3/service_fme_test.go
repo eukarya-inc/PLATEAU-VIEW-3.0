@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -348,7 +349,7 @@ func TestSendRequestToFME(t *testing.T) {
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "conv_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
 		c.commentToItem = func(ctx context.Context, assetID, content string) error {
@@ -421,7 +422,7 @@ func TestSendRequestToFME(t *testing.T) {
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "qc_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
 		c.commentToItem = func(ctx context.Context, assetID, content string) error {
@@ -501,7 +502,7 @@ func TestSendRequestToFME(t *testing.T) {
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "conv_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
 		c.commentToItem = func(ctx context.Context, assetID, content string) error {
@@ -620,12 +621,12 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
@@ -657,9 +658,9 @@ func TestReceiveResultFromFME(t *testing.T) {
 		uploaded := []string{}
 		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
-			return (&FeatureItem{
+			return (&cmsintegrationcommon.FeatureItem{
 				ID: "itemID",
-				Items: []FeatureItemDatum{
+				Items: []cmsintegrationcommon.FeatureItemDatum{
 					{
 						ID:   "ida",
 						Key:  "fld/aaa",
@@ -731,12 +732,12 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
@@ -768,12 +769,12 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusError),
+					Value: string(cmsintegrationcommon.ConvertionStatusError),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusError),
+					Value: string(cmsintegrationcommon.ConvertionStatusError),
 				},
 			}, metadataFields)
 			return nil, nil
@@ -857,12 +858,12 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
@@ -949,79 +950,6 @@ func (c *cmsMock) CommentToItem(ctx context.Context, assetID, content string) er
 
 func (c *cmsMock) GetModels(ctx context.Context, projectID string) (*cms.Models, error) {
 	return c.getModels(ctx, projectID)
-}
-
-func TestIsQCAndConvSkipped(t *testing.T) {
-	skipQC, skipConv := isQCAndConvSkipped(&FeatureItem{}, "")
-	assert.False(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		QCStatus: &cms.Tag{
-			Name: "成功",
-		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		ConvertionStatus: &cms.Tag{
-			Name: "成功",
-		},
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		QCStatus: &cms.Tag{
-			Name: "成功",
-		},
-	}, "dem")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "品質検査のみをスキップ",
-		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "変換のみをスキップ",
-		},
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "品質検査・変換のみをスキップ",
-		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQC: true,
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipConvert: true,
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQC:      true,
-		SkipConvert: true,
-	}, "")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
 }
 
 type plateauCMSMock struct {

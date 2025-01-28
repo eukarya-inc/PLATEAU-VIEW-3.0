@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/stretchr/testify/assert"
@@ -177,7 +178,7 @@ func TestSetupCityItems(t *testing.T) {
 		assert.NoError(t, err)
 
 		assert.Equal(t, 14, len(createdItems))
-		assertCityItem(t, &CityItem{
+		assertCityItem(t, &cmsintegrationcommon.CityItem{
 			ID:         "item0",
 			CityName:   "八王子市",
 			CityNameEn: "hachioji-shi",
@@ -188,9 +189,9 @@ func TestSetupCityItems(t *testing.T) {
 		assertFeatureItem(t, "geospatialjp-index", "item0", "", createdItems[2])
 		assertFeatureItem(t, "geospatialjp-data", "item0", "", createdItems[3])
 		assertFeatureItem(t, "bldg", "item0", "", createdItems[4])
-		assertFeatureItem(t, "tran", "item0", ManagementStatusSkip, createdItems[5])
+		assertFeatureItem(t, "tran", "item0", cmsintegrationcommon.ManagementStatusSkip, createdItems[5])
 		assertFeatureItem(t, "luse", "item0", "", createdItems[6])
-		assertCityItem(t, &CityItem{
+		assertCityItem(t, &cmsintegrationcommon.CityItem{
 			ID:         "item7",
 			CityName:   "東村山市",
 			CityNameEn: "higashimurayama-shi",
@@ -202,10 +203,10 @@ func TestSetupCityItems(t *testing.T) {
 		assertFeatureItem(t, "geospatialjp-data", "item7", "", createdItems[10])
 		assertFeatureItem(t, "bldg", "item7", "", createdItems[11])
 		assertFeatureItem(t, "tran", "item7", "", createdItems[12])
-		assertFeatureItem(t, "luse", "item7", ManagementStatusSkip, createdItems[13])
+		assertFeatureItem(t, "luse", "item7", cmsintegrationcommon.ManagementStatusSkip, createdItems[13])
 
 		assert.Equal(t, 2, len(updateditems))
-		assertUpdatedCityItem(t, &CityItem{
+		assertUpdatedCityItem(t, &cmsintegrationcommon.CityItem{
 			ID: "item0",
 			References: map[string]string{
 				"bldg": "item4",
@@ -216,7 +217,7 @@ func TestSetupCityItems(t *testing.T) {
 			GeospatialjpIndex: "item2",
 			GeospatialjpData:  "item3",
 		}, updateditems[0])
-		assertUpdatedCityItem(t, &CityItem{
+		assertUpdatedCityItem(t, &cmsintegrationcommon.CityItem{
 			ID: "item7",
 			References: map[string]string{
 				"bldg": "item11",
@@ -230,11 +231,11 @@ func TestSetupCityItems(t *testing.T) {
 	})
 }
 
-func assertCityItem(t *testing.T, expected *CityItem, actual *cms.Item) {
+func assertCityItem(t *testing.T, expected *cmsintegrationcommon.CityItem, actual *cms.Item) {
 	t.Helper()
 	assert.Equal(t, "city", actual.ModelID)
-	a := CityItemFrom(actual)
-	am := &CityItem{
+	a := cmsintegrationcommon.CityItemFrom(actual)
+	am := &cmsintegrationcommon.CityItem{
 		ID:         a.ID,
 		CityName:   a.CityName,
 		CityNameEn: a.CityNameEn,
@@ -244,7 +245,7 @@ func assertCityItem(t *testing.T, expected *CityItem, actual *cms.Item) {
 	assert.Equal(t, expected, am)
 }
 
-func assertFeatureItem(t *testing.T, expectedModel, expectedCity string, status ManagementStatus, actual *cms.Item) {
+func assertFeatureItem(t *testing.T, expectedModel, expectedCity string, status cmsintegrationcommon.ManagementStatus, actual *cms.Item) {
 	t.Helper()
 	assert.Equal(t, expectedModel, actual.ModelID, "model of "+actual.ID)
 	assert.Equal(t, expectedCity, actual.FieldByKey("city").GetValue().Interface(), "city of "+actual.ID)
@@ -256,10 +257,10 @@ func assertFeatureItem(t *testing.T, expectedModel, expectedCity string, status 
 	assert.Equal(t, string(status), statusv, "status of "+actual.ID)
 }
 
-func assertUpdatedCityItem(t *testing.T, expected *CityItem, actual *cms.Item) {
+func assertUpdatedCityItem(t *testing.T, expected *cmsintegrationcommon.CityItem, actual *cms.Item) {
 	t.Helper()
-	a := CityItemFrom(actual)
-	am := &CityItem{
+	a := cmsintegrationcommon.CityItemFrom(actual)
+	am := &cmsintegrationcommon.CityItem{
 		ID:                a.ID,
 		References:        a.References,
 		RelatedDataset:    a.RelatedDataset,
