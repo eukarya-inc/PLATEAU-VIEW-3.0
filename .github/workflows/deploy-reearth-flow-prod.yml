@@ -157,32 +157,32 @@ jobs:
       - name: Push docker image
         run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_GCP && docker push $WORKER_IMAGE_NAME_GCP
 
-  push_hub:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: read
-    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0' }}
-    steps:
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Pull image
-        run: docker pull $IMAGE_NAME_GHCR
-      - name: Log in to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USER }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Push image
-        run: docker tag $IMAGE_NAME_GHCR $IMAGE_NAME_HUB && docker push $IMAGE_NAME_HUB
-      - name: Pull websocket image
-        run: docker pull $WS_IMAGE_NAME_GHCR
-      - name: Push websocket image
-        run: docker tag $WS_IMAGE_NAME_GHCR $WS_IMAGE_NAME_HUB && docker push $WS_IMAGE_NAME_HUB
-      - name: Pull worker image
-        run: docker pull $WORKER_IMAGE_NAME_GHCR
-      - name: Push worker image
-        run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_HUB && docker push $WORKER_IMAGE_NAME_HUB
+  # push_hub:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     packages: read
+  #   if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0' }}
+  #   steps:
+  #     - name: Log in to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Pull image
+  #       run: docker pull $IMAGE_NAME_GHCR
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USER }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     - name: Push image
+  #       run: docker tag $IMAGE_NAME_GHCR $IMAGE_NAME_HUB && docker push $IMAGE_NAME_HUB
+  #     - name: Pull websocket image
+  #       run: docker pull $WS_IMAGE_NAME_GHCR
+  #     - name: Push websocket image
+  #       run: docker tag $WS_IMAGE_NAME_GHCR $WS_IMAGE_NAME_HUB && docker push $WS_IMAGE_NAME_HUB
+  #     - name: Pull worker image
+  #       run: docker pull $WORKER_IMAGE_NAME_GHCR
+  #     - name: Push worker image
+  #       run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_HUB && docker push $WORKER_IMAGE_NAME_HUB
