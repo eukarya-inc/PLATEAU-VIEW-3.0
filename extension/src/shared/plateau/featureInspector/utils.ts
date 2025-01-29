@@ -198,7 +198,7 @@ export const makePropertyForFeatureInspector = ({
                       ? makePropertyValue(attrVal, f.properties?.[name])
                       : f.properties?.[name],
                   )
-                  .filter(Boolean),
+                  .filter(isNotNullish),
                 path: isValueObject ? [name] : undefined,
               };
             })
