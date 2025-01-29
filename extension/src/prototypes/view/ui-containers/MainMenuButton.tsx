@@ -104,7 +104,7 @@ export const MainMenuButton = forwardRef<HTMLButtonElement, MainMenuButtonProps>
             rel="noopener noreferrer"
             onClick={handleClick}>
             {customMenuLogo ? (
-              <img src={customMenuLogo} alt="customMenuIcon" height={32} />
+              <img src={customMenuLogo} alt="customMenuIcon" height={32} style={{ height: 32 }} />
             ) : (
               <PlateauLogotype sx={{ height: 32, marginX: 2, marginY: 1 }} />
             )}
