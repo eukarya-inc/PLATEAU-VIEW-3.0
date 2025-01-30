@@ -19,11 +19,13 @@ export interface FloodLayerModelParams extends LayerModelParams, PlateauTilesetL
   title: string;
   type: FloodLayerType;
   municipalityCode: string;
+  version: number;
 }
 
 export interface FloodLayerModel extends LayerModel, PlateauTilesetLayerState {
   title: string;
   municipalityCode: string;
+  version: number;
 }
 
 export function createFloodLayer(
@@ -35,6 +37,7 @@ export function createFloodLayer(
     type: params.type,
     title: params.title,
     municipalityCode: params.municipalityCode,
+    version: params.version,
   };
 }
 
@@ -55,6 +58,7 @@ export const FloodLayer: FC<LayerProps<FloodLayerType>> = ({
   colorMapAtom,
   colorRangeAtom,
   componentAtoms,
+  version,
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
@@ -92,6 +96,7 @@ export const FloodLayer: FC<LayerProps<FloodLayerType>> = ({
         colorMapAtom={colorMapAtom}
         colorRangeAtom={colorRangeAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
+        version={version}
         // Field components
         componentAtoms={componentAtoms ?? []}
       />

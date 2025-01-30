@@ -53,6 +53,7 @@ export type RootLayerForDatasetParams = {
   shouldInitialize: boolean;
   hidden?: boolean;
   hasShareIdInParams?: boolean;
+  version: number;
 };
 
 export type RootLayerForLayerAtomParams<T extends LayerType> = {
@@ -210,6 +211,7 @@ const createViewLayerWithComponentGroup = (
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
   shouldInitialize: boolean,
+  version: number,
   hidden?: boolean,
   hasShareIdInParams?: boolean,
 ): LayerModel => {
@@ -224,6 +226,7 @@ const createViewLayerWithComponentGroup = (
       textured: !data?.name.includes("（テクスチャなし）"),
       shouldInitializeAtom: shouldInitialize,
       hidden: !!hidden,
+      version,
     }),
     componentAtoms: makeComponentAtoms(
       datasetId,
@@ -258,6 +261,7 @@ const createRootLayerForDataset = ({
   shouldInitialize,
   hidden,
   hasShareIdInParams,
+  version,
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
@@ -295,6 +299,7 @@ const createRootLayerForDataset = ({
         componentGroup,
         shareId,
         shouldInitialize,
+        version,
         hidden,
         hasShareIdInParams,
       ),
@@ -312,6 +317,9 @@ export const createRootLayerForDatasetAtom = (
     datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const subName =
     dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
+
+  const version =
+    dataset.__typename === "PlateauDataset" ? dataset.plateauSpecMinor.majorVersion : 0;
 
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
@@ -334,6 +342,7 @@ export const createRootLayerForDatasetAtom = (
       shouldInitialize: true,
       hasShareIdInParams: !!params.shareId,
       hidden: initialHidden,
+      version,
     }),
   );
 
@@ -360,6 +369,7 @@ export const createRootLayerForDatasetAtom = (
           currentGroupId: currentGroupId,
           shareId,
           shouldInitialize: false,
+          version,
         }),
       );
       set(settingsPrimitiveAtom, settings);
@@ -401,6 +411,7 @@ export const createRootLayerForDatasetAtom = (
           currentGroupId: currentGroupId,
           shareId,
           shouldInitialize: false,
+          version,
         }),
       );
       set(currentDataIdAtom, () => update);
@@ -439,6 +450,7 @@ export const createRootLayerForDatasetAtom = (
           group,
           shareId,
           false,
+          version,
         ),
       );
       set(currentGroupIdAtom, () => update);

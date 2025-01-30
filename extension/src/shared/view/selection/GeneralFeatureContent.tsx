@@ -17,7 +17,8 @@ import {
 import { FeatureInspectorSettings } from "../../api/types";
 import { GENERAL_FEATURE } from "../../reearth/layers";
 import { Feature } from "../../reearth/types/layer";
-import { RootLayerForDataset } from "../../view-layers";
+import { rootLayersAtom } from "../../states/rootLayer";
+import { RootLayerConfigForDataset, RootLayerForDataset } from "../../view-layers";
 
 import { DescriptionFeatureContent } from "./DescriptionFeatureContent";
 import { GeneralFeaturePropertiesSection } from "./GeneralFeaturePropertiesSection";
@@ -107,6 +108,20 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
     setHeaderHeight(e?.getBoundingClientRect().height ?? 0);
   }, []);
 
+  const rootLayerConfigs = useAtomValue(rootLayersAtom);
+  const rootLayerConfig = useMemo(
+    () =>
+      rootLayerConfigs.find(
+        (c): c is RootLayerConfigForDataset =>
+          c.type === "dataset" && c.id === values[0]?.datasetId,
+      ),
+    [rootLayerConfigs, values],
+  );
+  const plateauSpecMajorVersion =
+    rootLayerConfig?.rawDataset.__typename === "PlateauDataset"
+      ? rootLayerConfig.rawDataset.plateauSpecMinor.majorVersion
+      : 0;
+
   return (
     <List disablePadding>
       <div ref={handleSetHeaderHeight}>
@@ -135,7 +150,10 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
         <Divider />
       </div>
       {displayType === "propertyList" ? (
-        <GeneralFeaturePropertiesSection values={values} />
+        <GeneralFeaturePropertiesSection
+          values={values}
+          plateauSpecMajorVersion={plateauSpecMajorVersion}
+        />
       ) : displayType === "CZMLDescription" ? (
         <DescriptionFeatureContent
           html={firstFeature?.metaData?.description}

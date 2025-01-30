@@ -3,8 +3,12 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useState, type FC, useMemo, useEffect } from "react";
 
 import { TILESET_FEATURE } from "../../../shared/reearth/layers";
-import { findRootLayerAtom, rootLayersLayersAtom } from "../../../shared/states/rootLayer";
-import { RootLayerAtom } from "../../../shared/view-layers";
+import {
+  findRootLayerAtom,
+  rootLayersAtom,
+  rootLayersLayersAtom,
+} from "../../../shared/states/rootLayer";
+import { RootLayerAtom, RootLayerConfigForDataset } from "../../../shared/view-layers";
 import { findLayerAtom, layerSelectionAtom } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
 import {
@@ -92,6 +96,19 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
     return defaultTitle;
   }, [rootLayer, values, isBuildingModel, defaultTitle]);
 
+  const rootLayerConfigs = useAtomValue(rootLayersAtom);
+  const rootLayerConfig = useMemo(
+    () =>
+      rootLayerConfigs.find(
+        (c): c is RootLayerConfigForDataset => c.type === "dataset" && c.id === layer?.id,
+      ),
+    [rootLayerConfigs, layer],
+  );
+  const plateauSpecMajorVersion =
+    rootLayerConfig?.rawDataset.__typename === "PlateauDataset"
+      ? rootLayerConfig.rawDataset.plateauSpecMinor.majorVersion
+      : 0;
+
   useEffect(() => {
     setHidden(false);
   }, [values]);
@@ -123,7 +140,10 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
         onClose={handleClose}
       />
       <Divider />
-      <TileFeaturePropertiesSection values={values} />
+      <TileFeaturePropertiesSection
+        values={values}
+        plateauSpecMajorVersion={plateauSpecMajorVersion}
+      />
     </List>
   );
 };
