@@ -157,10 +157,7 @@ export function LayerContent<T extends SupportedLayerType>({
 
   const layerName = layerTypeNames[type] ?? rootLayer?.layerName;
 
-  const plateauSpecMajorVersion =
-    rootLayerConfig?.rawDataset.__typename === "PlateauDataset"
-      ? rootLayerConfig.rawDataset.plateauSpecMinor.majorVersion
-      : 0;
+  const plateauSpecMajorVersion = "version" in layer ? layer.version ?? 0 : 0;
 
   return (
     <>

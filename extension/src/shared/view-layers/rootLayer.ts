@@ -226,7 +226,6 @@ const createViewLayerWithComponentGroup = (
       textured: !data?.name.includes("（テクスチャなし）"),
       shouldInitializeAtom: shouldInitialize,
       hidden: !!hidden,
-      version,
     }),
     componentAtoms: makeComponentAtoms(
       datasetId,
@@ -238,6 +237,7 @@ const createViewLayerWithComponentGroup = (
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
+    version,
     layers: data?.layers ?? undefined,
     cameraAtom: atom<CameraPosition | undefined>(undefined),
     componentGroups: (template ?? setting?.fieldComponents)?.groups?.map(

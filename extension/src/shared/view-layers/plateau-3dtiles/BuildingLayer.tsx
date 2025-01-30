@@ -22,7 +22,6 @@ export interface BuildingLayerModelParams extends LayerModelParams, PlateauTiles
   municipalityCode: string;
   title: string;
   textured?: boolean;
-  version: number;
 }
 
 export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState {
@@ -30,7 +29,6 @@ export interface BuildingLayerModel extends LayerModel, PlateauTilesetLayerState
   title: string;
   showWireframeAtom: PrimitiveAtom<boolean>;
   textured: boolean;
-  version: number;
 }
 
 export function createBuildingLayer(
@@ -44,7 +42,6 @@ export function createBuildingLayer(
     municipalityCode: params.municipalityCode,
     title: params.title,
     showWireframeAtom: atom(false),
-    version: params.version,
   };
 }
 
@@ -121,7 +118,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         colorRangeAtom={colorRangeAtom}
         searchedFeaturesAtom={searchedFeaturesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
-        version={version}
+        version={version ?? 0}
         // showWireframe={showWireframe}
 
         // Field components
