@@ -52,7 +52,12 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		if err := sendRequestToFlow(ctx, s, &conf, w, featureType); err != nil {
+		mainItem, err := s.GetMainItemWithMetadata(ctx, w.ItemData.Item)
+		if err != nil {
+			return err
+		}
+
+		if err := sendRequestToFlow(ctx, s, &conf, w.ProjectID(), mainItem, featureType, ""); err != nil {
 			log.Errorfc(ctx, "failed to trigger flow: %v", err)
 			return nil
 		}

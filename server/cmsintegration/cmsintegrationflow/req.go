@@ -6,11 +6,19 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
-	"github.com/reearth/reearth-cms-api/go/cmswebhook"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
 
-func sendRequestToFlow(ctx context.Context, s *Services, conf *Config, w *cmswebhook.Payload, featureType plateaucms.PlateauFeatureType) error {
+func sendRequestToFlow(
+	ctx context.Context,
+	s *Services,
+	conf *Config,
+	projectID string,
+	mainItem *cms.Item,
+	featureType plateaucms.PlateauFeatureType,
+	overrideReqType ReqType,
+) error {
 	ctx = log.UpdateContext(ctx, func(l *log.Logger) *log.Logger {
 		return l.AppendPrefixMessage("flow: ")
 	})
@@ -18,11 +26,6 @@ func sendRequestToFlow(ctx context.Context, s *Services, conf *Config, w *cmsweb
 	if !featureType.Conv && !featureType.QC {
 		log.Debugfc(ctx, "skip qc and convert")
 		return nil
-	}
-
-	mainItem, err := s.GetMainItemWithMetadata(ctx, w.ItemData.Item)
-	if err != nil {
-		return err
 	}
 
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
@@ -63,23 +66,24 @@ func sendRequestToFlow(ctx context.Context, s *Services, conf *Config, w *cmsweb
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
 
+	// trigger id
 	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw)
 	specv := cityItem.SpecMajorVersionInt()
 	var triggerID string
-	if ty.IsQC() {
+	if overrideReqType == ReqTypeQC || (overrideReqType == "" && ty.IsQC()) {
 		triggerID = featureType.FlowQCTriggerID(specv)
-	} else if ty.IsConv() {
+	} else if overrideReqType == ReqTypeConv || (overrideReqType == "" && ty.IsConv()) {
 		triggerID = featureType.FlowConvTriggerID(specv)
 	}
 	if triggerID == "" {
-		_ = s.Fail(ctx, mainItem.ID, ty, "v%dの%sのFlowトリガーIDが設定されていません。", specv, ty.Title())
-		return fmt.Errorf("no trigger id for %s v%d", ty, specv)
+		_ = s.Fail(ctx, mainItem.ID, ty, "CMSでFlowの実行に必要な設定が正しく行われていないため実行できません。")
+		return fmt.Errorf("no trigger id: ty=%s, oty=%s, v=%d", ty, overrideReqType, specv)
 	}
 
 	// sign id
 	sig := ID{
 		ItemID:      mainItem.ID,
-		ProjectID:   w.ProjectID(),
+		ProjectID:   projectID,
 		FeatureType: featureType.Code,
 	}.Sign(conf.Secret)
 

@@ -58,6 +58,10 @@ func (f *flowImpl) Request(ctx context.Context, r FlowRequest) (res FlowRequestR
 
 	defer resp.Body.Close()
 	resb, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return FlowRequestResult{}, fmt.Errorf("failed to read response: %w", err)
+	}
+
 	log.Debugfc(ctx, "flow resp: status=%s, body=%s", resp.Status, resb)
 
 	if resp.StatusCode != http.StatusOK {

@@ -7,11 +7,13 @@ import (
 )
 
 type FlowResult struct {
-	ID        string   `json:"-"`
-	TriggerID string   `json:"triggerId"`
-	Status    string   `json:"status"`
-	LogURL    string   `json:"logUrl"`
-	Outputs   []string `json:"outputs"`
+	ID           string   `json:"-"`
+	RunID        string   `json:"runId"`
+	TriggerID    string   `json:"triggerId"`
+	DeploymentID string   `json:"deploymentId"`
+	Status       string   `json:"status"`
+	Logs         []string `json:"logs"`
+	Outputs      []string `json:"outputs"`
 }
 
 type FlowInternalResult struct {

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
@@ -23,10 +24,16 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 
 	log.Infofc(ctx, "id: %#v", id)
 
+	// log urls
+	logurls := strings.Join(res.Logs, "\n")
+	if logurls != "" {
+		logurls = "ログ: " + logurls
+	}
+
 	// handle error
 	if res.IsError() {
-		log.Debugfc(ctx, "failed to convert: %s", res.LogURL)
-		_ = s.Fail(ctx, id.ItemID, ReqType(id.Type), "%sに失敗しました。ログ: %s", ReqType(id.Type).Title(), res.LogURL)
+		log.Debugfc(ctx, "failed to convert: logs=%v", res.Logs)
+		_ = s.Fail(ctx, id.ItemID, ReqType(id.Type), "%sに失敗しました。%s", ReqType(id.Type).Title(), logurls)
 		return nil
 	}
 
@@ -45,14 +52,14 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 		return nil
 	}
 
-	// get item
-	item, err := s.CMS.GetItem(ctx, id.ItemID, false)
+	// get mainItem
+	mainItem, err := s.CMS.GetItem(ctx, id.ItemID, false)
 	if err != nil {
 		log.Debugfc(ctx, "failed to get item: %v", err)
 		return fmt.Errorf("failed to get item: %w", err)
 	}
 
-	baseFeatureItem := cmsintegrationcommon.FeatureItemFrom(item)
+	baseFeatureItem := cmsintegrationcommon.FeatureItemFrom(mainItem)
 
 	// outputs
 	internal := res.Internal()
@@ -144,12 +151,20 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	}
 
 	// comment to the item
-	err = s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("Flowの%sが完了しました。", id.Type.Title()))
-	if err != nil {
+	if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("Flowの%sが完了しました。%s", id.Type.Title(), logurls)); err != nil {
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
 	log.Infofc(ctx, "success to receive result from flow: %s", id.Type)
+
+	// if the qc is success, trigger the conversion
+	if id.Type == ReqTypeQC && qcStatus == cmsintegrationcommon.ConvertionStatusSuccess {
+		log.Infofc(ctx, "trigger conversion")
+		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, mainItem, featureType, ReqTypeConv); err != nil {
+			return fmt.Errorf("failed to send request to flow: %w", err)
+		}
+	}
+
 	return nil
 }
 
