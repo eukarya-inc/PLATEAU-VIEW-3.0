@@ -15,6 +15,7 @@ import {
   Setting,
   Template,
 } from "../api/types";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../constants";
 import { DatasetFragmentFragment, DatasetItem, DatasetType } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
@@ -319,7 +320,9 @@ export const createRootLayerForDatasetAtom = (
     dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
 
   const version =
-    dataset.__typename === "PlateauDataset" ? dataset.plateauSpecMinor.majorVersion : 0;
+    dataset.__typename === "PlateauDataset"
+      ? dataset.plateauSpecMinor.majorVersion
+      : DEFAULT_PLATEAU_SPEC_VERSION;
 
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
