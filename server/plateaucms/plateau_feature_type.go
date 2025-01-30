@@ -33,8 +33,31 @@ type PlateauFeatureType struct {
 	UseCategoryNameAsMVTLayer bool     `json:"useCategoryAsMVTLayer" cms:"use_category_as_mvt_layer,boolean"`
 	Flood                     bool     `json:"flood" cms:"flood,boolean"`
 	HideTexture               bool     `json:"hideTexture" cms:"hide_texture,boolean"`
+	UseGroups                 bool     `json:"useGroups" cms:"use_groups,boolean"`
 	FlowQCV4                  string   `json:"flowQCV4" cms:"flow_qc_v4,text"`
 	FlowConvV4                string   `json:"flowConvV4" cms:"flow_conv_v4,text"`
+	FlowQCV3                  string   `json:"flowQCV3" cms:"flow_qc_v3,text"`
+	FlowConvV3                string   `json:"flowConvV3" cms:"flow_conv_v3,text"`
+}
+
+func (f PlateauFeatureType) FlowQCTriggerID(v int) string {
+	switch v {
+	case 3:
+		return f.FlowQCV3
+	case 4:
+		return f.FlowQCV4
+	}
+	return ""
+}
+
+func (f PlateauFeatureType) FlowConvTriggerID(v int) string {
+	switch v {
+	case 3:
+		return f.FlowConvV3
+	case 4:
+		return f.FlowConvV4
+	}
+	return ""
 }
 
 const (

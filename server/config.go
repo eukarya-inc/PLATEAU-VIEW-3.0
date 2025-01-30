@@ -89,6 +89,8 @@ type Config struct {
 	CityGML_CityGMLPackerImage         string   `pp:",omitempty"`
 	CityGML_WorkerRegion               string   `pp:",omitempty"`
 	CityGML_WorkerProject              string   `pp:",omitempty"`
+	Flow_BaseURL                       string   `pp:",omitempty"`
+	Flow_Token                         string   `pp:",omitempty"`
 }
 
 func NewConfig() (*Config, error) {
@@ -154,6 +156,8 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		TaskImage:                         c.CMSINT_TaskImage,
 		GCPProject:                        cloudBuildProject,
 		GCPRegion:                         cloudBuildRegion,
+		FlowBaseURL:                       c.Flow_BaseURL,
+		FlowToken:                         c.Flow_Token,
 	}
 }
 

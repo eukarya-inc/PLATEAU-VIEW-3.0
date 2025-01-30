@@ -60,6 +60,11 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return nil
 	}
 
+	if item.UseFlow {
+		log.Debugfc(ctx, "use flow so skipped")
+		return nil
+	}
+
 	skipQC, skipConv := item.IsQCAndConvSkipped(featureType)
 	if skipQC && skipConv {
 		log.Debugfc(ctx, "skip qc and convert")
