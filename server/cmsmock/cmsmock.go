@@ -15,7 +15,7 @@ type CMSMock struct {
 	updateItem          func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error)
 	asset               func(ctx context.Context, id string) (*cms.Asset, error)
 	uploadAsset         func(ctx context.Context, projectID, url string) (string, error)
-	uploadAssetDirectly func(ctx context.Context, projectID, name string, r io.Reader) (string, error)
+	uploadAssetDirectly func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error)
 	commentToItem       func(ctx context.Context, assetID, content string) error
 	getModels           func(ctx context.Context, projectID string) (*cms.Models, error)
 }
@@ -57,8 +57,8 @@ func (c *CMSMock) UploadAsset(ctx context.Context, projectID, url string) (strin
 	return c.uploadAsset(ctx, projectID, url)
 }
 
-func (c *CMSMock) UploadAssetDirectly(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
-	return c.uploadAssetDirectly(ctx, projectID, name, r)
+func (c *CMSMock) UploadAssetDirectly(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
+	return c.uploadAssetDirectly(ctx, projectID, name, r, opts...)
 }
 
 func (c *CMSMock) CommentToItem(ctx context.Context, assetID, content string) error {

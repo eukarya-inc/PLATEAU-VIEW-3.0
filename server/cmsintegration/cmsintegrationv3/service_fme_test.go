@@ -344,7 +344,7 @@ func TestSendRequestToFME(t *testing.T) {
 		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
@@ -417,7 +417,7 @@ func TestSendRequestToFME(t *testing.T) {
 		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
@@ -497,7 +497,7 @@ func TestSendRequestToFME(t *testing.T) {
 		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
@@ -898,7 +898,7 @@ type cmsMock struct {
 	updateItem          func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error)
 	asset               func(ctx context.Context, id string) (*cms.Asset, error)
 	uploadAsset         func(ctx context.Context, projectID, url string) (string, error)
-	uploadAssetDirectly func(ctx context.Context, projectID, name string, r io.Reader) (string, error)
+	uploadAssetDirectly func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error)
 	commentToItem       func(ctx context.Context, assetID, content string) error
 	getModels           func(ctx context.Context, projectID string) (*cms.Models, error)
 }
@@ -940,8 +940,8 @@ func (c *cmsMock) UploadAsset(ctx context.Context, projectID, url string) (strin
 	return c.uploadAsset(ctx, projectID, url)
 }
 
-func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
-	return c.uploadAssetDirectly(ctx, projectID, name, r)
+func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
+	return c.uploadAssetDirectly(ctx, projectID, name, r, opts...)
 }
 
 func (c *cmsMock) CommentToItem(ctx context.Context, assetID, content string) error {

@@ -40,7 +40,7 @@ func TestConvertRelatedDataset(t *testing.T) {
 			updatedMetadataFields = append(updatedMetadataFields, metadataFields)
 			return nil, nil
 		},
-		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader) (string, error) {
+		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			uploaded = append(uploaded, name)
 			return "asset", nil
 		},
@@ -157,7 +157,7 @@ func TestPackRelatedDataset(t *testing.T) {
 			updatedMetadataFields = append(updatedMetadataFields, metadataFields)
 			return nil, nil
 		},
-		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader) (string, error) {
+		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			uploaded = append(uploaded, name)
 			b := bytes.NewBuffer(nil)
 			_, _ = io.Copy(b, r)

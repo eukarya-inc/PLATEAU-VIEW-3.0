@@ -33,14 +33,14 @@ func AdminContext(ctx context.Context, bypassAdminRemoval, includeBeta, includeA
 }
 
 type Repos struct {
-	pcms  plateaucms.SpecStore
+	pcms  *plateaucms.CMS
 	cms   *util.SyncMap[string, *CMS]
 	cache bool
 	debug bool
 	*plateauapi.Repos
 }
 
-func NewRepos(pcms plateaucms.SpecStore) *Repos {
+func NewRepos(pcms *plateaucms.CMS) *Repos {
 	r := &Repos{
 		pcms: pcms,
 		cms:  util.NewSyncMap[string, *CMS](),

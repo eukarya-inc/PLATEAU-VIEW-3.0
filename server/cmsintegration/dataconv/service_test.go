@@ -41,6 +41,6 @@ func (c *cmsMock) Asset(ctx context.Context, id string) (*cms.Asset, error) {
 	return nil, rerror.ErrNotFound
 }
 
-func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error) {
+func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 	return "asset", nil
 }
