@@ -92,6 +92,8 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
     return defaultTitle;
   }, [rootLayer, values, isBuildingModel, defaultTitle]);
 
+  const plateauSpecMajorVersion = layer && "version" in layer ? layer.version ?? 0 : 0;
+
   useEffect(() => {
     setHidden(false);
   }, [values]);
@@ -123,7 +125,10 @@ export const TileFeatureContent: FC<TileFeatureContentProps> = ({ values }) => {
         onClose={handleClose}
       />
       <Divider />
-      <TileFeaturePropertiesSection values={values} />
+      <TileFeaturePropertiesSection
+        values={values}
+        plateauSpecMajorVersion={plateauSpecMajorVersion}
+      />
     </List>
   );
 };

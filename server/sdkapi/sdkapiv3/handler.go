@@ -11,13 +11,13 @@ import (
 )
 
 type Config struct {
-	DataCatagloAPIURL   string
+	DataCatalogAPIURL   string
 	DataCatalogAPIToken string
 	Token               string
 }
 
 func Handler(conf Config, g *echo.Group) (bool, error) {
-	if conf.DataCatagloAPIURL == "" {
+	if conf.DataCatalogAPIURL == "" {
 		return false, nil
 	}
 

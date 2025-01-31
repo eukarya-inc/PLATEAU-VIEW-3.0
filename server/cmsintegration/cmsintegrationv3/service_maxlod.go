@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/gcptaskrunner"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -28,7 +29,7 @@ func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error
 
 	found := false
 	for _, f := range maxlodFeatures {
-		if w.ItemData.Model.Key == modelPrefix+f {
+		if w.ItemData.Model.Key == cmsintegrationcommon.ModelPrefix+f {
 			found = true
 			break
 		}

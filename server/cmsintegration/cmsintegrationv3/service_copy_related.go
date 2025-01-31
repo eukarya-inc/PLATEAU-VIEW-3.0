@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -37,12 +38,12 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 	log.Infofc(ctx, "cmsintegrationv3: copy_related: loading items from CMS...")
 
 	// get model info
-	model1, err := s.CMS.GetModelByKey(ctx, opts.FromProject, modelPrefix+relatedModel)
+	model1, err := s.CMS.GetModelByKey(ctx, opts.FromProject, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel)
 	if err != nil || model1 == nil {
 		return fmt.Errorf("failed to get model from %s: %w", opts.FromProject, err)
 	}
 
-	model2, err := s.CMS.GetModelByKey(ctx, opts.ToProject, modelPrefix+relatedModel)
+	model2, err := s.CMS.GetModelByKey(ctx, opts.ToProject, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel)
 	if err != nil || model2 == nil {
 		return fmt.Errorf("failed to get model from %s: %w", opts.ToProject, err)
 	}
@@ -57,8 +58,8 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 		return fmt.Errorf("failed to get cities from %s: %w", opts.ToProject, err)
 	}
 
-	citySrcMap := map[string]*CityItem{}
-	cityTargetMap := map[string]*CityItem{}
+	citySrcMap := map[string]*cmsintegrationcommon.CityItem{}
+	cityTargetMap := map[string]*cmsintegrationcommon.CityItem{}
 	for _, city := range citiesSrc {
 		citySrcMap[city.ID] = city
 	}
@@ -76,7 +77,7 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 		return fmt.Errorf("failed to get related items from %s: %w", opts.ToProject, err)
 	}
 
-	cityCodeToRelatedTarget := map[string]*RelatedItem{}
+	cityCodeToRelatedTarget := map[string]*cmsintegrationcommon.RelatedItem{}
 	for _, related := range relatedTarget {
 		city := cityTargetMap[related.City]
 		if city == nil {

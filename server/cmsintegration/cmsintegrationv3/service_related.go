@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/dataconv"
 	geojson "github.com/paulmach/go.geojson"
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -33,7 +34,7 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 		return nil
 	}
 
-	if w.ItemData.Model.Key != modelPrefix+relatedModel {
+	if w.ItemData.Model.Key != cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel {
 		log.Debugfc(ctx, "cmsintegrationv3: not related dataset")
 		return nil
 	}
@@ -43,7 +44,7 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 		return err
 	}
 
-	item := RelatedItemFrom(mainItem)
+	item := cmsintegrationcommon.RelatedItemFrom(mainItem)
 	log.Debugfc(ctx, "cmsintegrationv3: related dataset: %#v", item)
 
 	if err := convertRelatedDataset(ctx, s, w, item); err != nil {
@@ -57,7 +58,7 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 	return nil
 }
 
-func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *RelatedItem) (err error) {
+func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *cmsintegrationcommon.RelatedItem) (err error) {
 	if item.Items == nil {
 		log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: no items")
 		return nil
@@ -66,10 +67,10 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 	project := w.ProjectID()
 	convTargets := make([]string, 0, len(relatedDataConvertionTargets))
 	newStatus := map[string]*cms.Tag{}
-	newItems := map[string]RelatedItemDatum{}
+	newItems := map[string]cmsintegrationcommon.RelatedItemDatum{}
 
 	for _, target := range relatedDataConvertionTargets {
-		if tagIsNot(item.ConvertStatus[target], ConvertionStatusNotStarted) {
+		if cmsintegrationcommon.TagIsNot(item.ConvertStatus[target], cmsintegrationcommon.ConvertionStatusNotStarted) {
 			log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: already converted: %s", target)
 			continue
 		}
@@ -79,7 +80,7 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 		}
 
 		convTargets = append(convTargets, target)
-		newStatus[target] = tagFrom(ConvertionStatusRunning)
+		newStatus[target] = cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusRunning)
 	}
 
 	if len(convTargets) == 0 {
@@ -90,7 +91,7 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 	log.Infofc(ctx, "cmsintegrationv3: convertRelatedDataset: start conv for %v", convTargets)
 
 	// update status
-	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&RelatedItem{
+	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&cmsintegrationcommon.RelatedItem{
 		ConvertStatus: newStatus,
 	}).CMSItem().MetadataFields); err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
@@ -98,13 +99,13 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 
 	defer func() {
 		for k, v := range newStatus {
-			if tagIs(v, ConvertionStatusRunning) {
-				newStatus[k] = tagFrom(ConvertionStatusNotStarted)
+			if cmsintegrationcommon.TagIs(v, cmsintegrationcommon.ConvertionStatusRunning) {
+				newStatus[k] = cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusNotStarted)
 			}
 		}
 
 		// update item
-		ritem := (&RelatedItem{
+		ritem := (&cmsintegrationcommon.RelatedItem{
 			Items:         newItems,
 			ConvertStatus: newStatus,
 		}).CMSItem()
@@ -114,7 +115,7 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 
 		// comment to the item
 		succeeded := lo.EveryBy(convTargets, func(t string) bool {
-			return tagIs(newStatus[t], ConvertionStatusSuccess)
+			return cmsintegrationcommon.TagIs(newStatus[t], cmsintegrationcommon.ConvertionStatusSuccess)
 		})
 
 		var comment string
@@ -152,10 +153,10 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 		}
 
 		if converror {
-			newStatus[target] = tagFrom(ConvertionStatusError)
+			newStatus[target] = cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusError)
 		} else {
-			newStatus[target] = tagFrom(ConvertionStatusSuccess)
-			newItems[target] = RelatedItemDatum{
+			newStatus[target] = cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusSuccess)
+			newItems[target] = cmsintegrationcommon.RelatedItemDatum{
 				ID:        d.ID,
 				Converted: convassets,
 			}
@@ -212,7 +213,7 @@ func convRelatedType(ctx context.Context, project, target, assetID string, s *Se
 	return newAssetID, nil
 }
 
-func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *RelatedItem) (err error) {
+func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *cmsintegrationcommon.RelatedItem) (err error) {
 	if item.City == "" {
 		log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: no city")
 		return nil
@@ -220,13 +221,13 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 
 	doMerge := lo.FromPtr(getChangedBool(w, "merge"))
 
-	if !doMerge && tagIsNot(item.MergeStatus, ConvertionStatusNotStarted) {
+	if !doMerge && cmsintegrationcommon.TagIsNot(item.MergeStatus, cmsintegrationcommon.ConvertionStatusNotStarted) {
 		log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: already merged")
 		return nil
 	}
 
 	if !doMerge {
-		if missingTypes := lo.Filter(relatedDataTypes, func(t string, _ int) bool {
+		if missingTypes := lo.Filter(cmsintegrationcommon.RelatedDataTypes, func(t string, _ int) bool {
 			return len(item.Items[t].Asset) == 0
 		}); len(missingTypes) > 0 {
 			log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: cannot pack because there are some missing assets: %v", missingTypes)
@@ -237,8 +238,8 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 	log.Infofc(ctx, "cmsintegrationv3: packRelatedDataset")
 
 	// update status
-	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&RelatedItem{
-		MergeStatus: tagFrom(ConvertionStatusRunning),
+	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&cmsintegrationcommon.RelatedItem{
+		MergeStatus: cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusRunning),
 	}).CMSItem().MetadataFields); err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
 	}
@@ -246,16 +247,16 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 	var mergedAssetID string
 
 	defer func() {
-		var status ConvertionStatus
+		var status cmsintegrationcommon.ConvertionStatus
 		if err == nil {
-			status = ConvertionStatusSuccess
+			status = cmsintegrationcommon.ConvertionStatusSuccess
 		} else {
-			status = ConvertionStatusError
+			status = cmsintegrationcommon.ConvertionStatusError
 		}
 
-		newItem := (&RelatedItem{
+		newItem := (&cmsintegrationcommon.RelatedItem{
 			Merged:      mergedAssetID,
-			MergeStatus: tagFrom(status),
+			MergeStatus: cmsintegrationcommon.TagFrom(status),
 		}).CMSItem()
 		if _, err := s.CMS.UpdateItem(ctx, item.ID, newItem.Fields, newItem.MetadataFields); err != nil {
 			log.Errorfc(ctx, "cmsintegrationv3: packRelatedDataset: failed to update item: %v", err)
@@ -285,14 +286,14 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 		return fmt.Errorf("failed to get city: %w", err)
 	}
 
-	cityItem := CityItemFrom(cityItemRaw)
+	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw)
 
 	zipbuf := bytes.NewBuffer(nil)
 	zw := zip.NewWriter(zipbuf)
 
 	assetMerged := false
 	var year int
-	for _, target := range relatedDataTypes {
+	for _, target := range cmsintegrationcommon.RelatedDataTypes {
 		d := item.Items[target]
 
 		if len(d.Asset) == 0 {

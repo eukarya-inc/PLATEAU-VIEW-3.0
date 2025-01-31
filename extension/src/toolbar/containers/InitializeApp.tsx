@@ -14,6 +14,7 @@ import { settingForCityIdsAtom, updateAllSettingAtom } from "../../shared/states
 import { updateAllTemplateAtom } from "../../shared/states/template";
 import { isAppReadyAtom } from "../../shared/view/state/app";
 import { useInteractionMode } from "../hooks/useInteractionMode";
+import { useSetupDatasetAttributes } from "../hooks/useSetupDatasetAttributes";
 
 export const InitializeApp: FC = () => {
   const [plateauApiUrl] = usePlateauApiUrl();
@@ -72,6 +73,8 @@ export const InitializeApp: FC = () => {
   }, [handleTimelineJump, initialClock]);
 
   useInteractionMode();
+
+  useSetupDatasetAttributes();
 
   return null;
 };

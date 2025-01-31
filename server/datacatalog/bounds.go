@@ -41,29 +41,3 @@ func parseBounds(s string) (quadtree.Bounds, error) {
 		Height: fs[3] - fs[1],
 	}, nil
 }
-
-func intersects(a, b quadtree.Bounds) bool {
-	aMaxX := a.X + a.Width
-	aMaxY := a.Y + a.Height
-	bMaxX := b.X + b.Width
-	bMaxY := b.Y + b.Height
-
-	// a is left of b
-	if aMaxX <= b.X {
-		return false
-	}
-	// a is right of b
-	if a.X >= bMaxX {
-		return false
-	}
-	// a is above b
-	if aMaxY <= b.Y {
-		return false
-	}
-	// a is below b
-	if a.Y >= bMaxY {
-		return false
-	}
-	// The two overlap
-	return true
-}

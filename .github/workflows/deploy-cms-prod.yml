@@ -32,10 +32,8 @@ jobs:
     steps:
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Configure docker
         run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
       - name: Log in to GitHub Container Registry
@@ -54,11 +52,9 @@ jobs:
         run: |
           gcloud run deploy reearth-cms-web \
             --image $CMS_WEB_IMAGE_NAME_GCP \
-            --region $GCP_REGION \
+            --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
-        env:
-          GCP_REGION: ${{ vars.GCP_REGION }}
 
   deploy_server:
     runs-on: ubuntu-latest
@@ -71,10 +67,8 @@ jobs:
     steps:
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Configure docker
         run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
       - name: Log in to GitHub Container Registry
@@ -100,11 +94,10 @@ jobs:
             --quiet
           gcloud run deploy reearth-cms-worker \
             --image $WORKER_IMAGE_NAME_GCP \
-            --region $GCP_REGION \
+            --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
-        env:
-          GCP_REGION: ${{ vars.GCP_REGION }}
+  
   push_hub:
     runs-on: ubuntu-latest
     permissions:

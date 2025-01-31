@@ -151,7 +151,18 @@ const ObjectValue: FC<{
   featureType: string;
   ancestorsFeatureType?: string;
   hasDefaultPath: boolean;
-}> = ({ id, name, values, level, path, featureType, ancestorsFeatureType, hasDefaultPath }) => {
+  version: number;
+}> = ({
+  id,
+  name,
+  values,
+  level,
+  path,
+  featureType,
+  ancestorsFeatureType,
+  hasDefaultPath,
+  version,
+}) => {
   const properties = useMemo(() => {
     return intersection(...values.map(v => Object.keys(v ?? {})))
       .filter(name => !name.startsWith("_"))
@@ -184,6 +195,7 @@ const ObjectValue: FC<{
       path={path ? [...path, ...(isNaN(Number(name)) && !hasDefaultPath ? [name] : [])] : []}
       featureType={featureType}
       ancestorsFeatureType={ancestorsFeatureType}
+      version={version}
     />
   );
 };
@@ -217,12 +229,14 @@ const Property: FC<{
   path?: string[];
   featureType: string;
   ancestorsFeatureType?: string;
+  version: number;
 }> = ({
   property: { id, name, values, path: defaultPath },
   level,
   path,
   featureType,
   ancestorsFeatureType,
+  version,
 }) => {
   const isPrimitive = ["string", "number"].includes(typeof values[0]);
   const hasAncestors = !!path?.includes(ancestorsKey);
@@ -230,7 +244,7 @@ const Property: FC<{
     ...((hasAncestors ? path?.filter(p => p !== ancestorsKey) : path) ?? []),
     ...(isNaN(Number(name)) ? [name] : []),
   ].join("_")}`;
-  const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
+  const attrVal = isPrimitive ? getPropertyAttributeValue(actualName, version) : undefined;
 
   return featureType === "tags" ? (
     values.length === 1 ? (
@@ -263,7 +277,7 @@ const Property: FC<{
   ) : isPrimitive ? (
     <TableRow style={{ wordBreak: "break-all" }}>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {makePropertyName(actualName, name, attrVal)}
+        {makePropertyName(actualName, name, version, attrVal)}
       </PropertyNameCell>
       <TableCell width="50%">
         {typeof values[0] === "string" ? (
@@ -293,6 +307,7 @@ const Property: FC<{
       path={path ?? defaultPath}
       featureType={featureType}
       ancestorsFeatureType={ancestorsFeatureType}
+      version={version}
     />
   );
 };
@@ -324,7 +339,17 @@ const PropertyGroup: FC<{
   path?: string[];
   featureType: string;
   ancestorsFeatureType?: string;
-}> = ({ id = "", name, properties, level = 0, path, featureType, ancestorsFeatureType }) => {
+  version: number;
+}> = ({
+  id = "",
+  name,
+  properties,
+  level = 0,
+  path,
+  featureType,
+  ancestorsFeatureType,
+  version,
+}) => {
   const hasAncestors = path?.slice(-1)[0] !== ancestorsKey && !!path?.includes(ancestorsKey);
   const expandedAtom = groupExpandedAtomFamily(id ?? name);
   const [expanded, setExpanded] = useAtom(expandedAtom);
@@ -349,6 +374,7 @@ const PropertyGroup: FC<{
                       : [name]),
                   ].join("_")}`,
                   name,
+                  version,
                 )
               : name}
           </PropertyGroupName>
@@ -371,6 +397,7 @@ const PropertyGroup: FC<{
                     path={path}
                     featureType={featureType}
                     ancestorsFeatureType={ancestorsFeatureType}
+                    version={version}
                   />
                 ))}
               </TableBody>
@@ -388,10 +415,11 @@ export interface PropertyParameterItemProps
   labelFontSize?: "small" | "medium";
   featureType: string;
   ancestorsFeatureType?: string;
+  version: number;
 }
 
 export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParameterItemProps>(
-  ({ properties, featureType, ancestorsFeatureType, ...props }, ref) => {
+  ({ properties, featureType, ancestorsFeatureType, version, ...props }, ref) => {
     const groups = Object.entries(groupBy(properties, property => property.name))
       .map(([name, properties]) => ({ name, properties }))
       .filter(({ name }) => !name.startsWith("_"));
@@ -406,6 +434,7 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
                   property={properties[0]}
                   featureType={featureType}
                   ancestorsFeatureType={ancestorsFeatureType}
+                  version={version}
                 />
               ) : (
                 <PropertyGroup
@@ -415,6 +444,7 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
                   properties={properties}
                   featureType={featureType}
                   ancestorsFeatureType={ancestorsFeatureType}
+                  version={version}
                 />
               ),
             )}

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
 	"golang.org/x/exp/slices"
@@ -17,35 +18,20 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
+		ctx = log.WithPrefixMessage(ctx, "cmsintegrationv3 webhook: ")
 
-		log.Debugfc(ctx, "cmsintegrationv3 webhook: incoming: %+v", w)
+		log.Debugfc(ctx, "incoming: %+v", w)
 
-		if !w.Operator.IsUser() && w.Operator.IsIntegrationBy(conf.CMSIntegration) {
-			log.Debugfc(ctx, "cmsintegrationv3 webhook: invalid event operator: %+v", w.Operator)
+		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf) {
 			return nil
 		}
 
-		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate {
-			log.Debugfc(ctx, "cmsintegrationv3 webhook: invalid event type: %s", w.Type)
-			return nil
-		}
-
-		if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Model == nil {
-			log.Debugfc(ctx, "cmsintegrationv3 webhook: invalid event data: %+v", w.Data)
-			return nil
-		}
-
-		if !strings.HasPrefix(w.ItemData.Model.Key, modelPrefix) {
-			log.Debugfc(ctx, "cmsintegrationv3 webhook: invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
-			return nil
-		}
-
-		modelName := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
+		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
 		var err error
 
-		if modelName == relatedModel {
+		if modelName == cmsintegrationcommon.RelatedModel {
 			err = handleRelatedDataset(ctx, s, w)
-		} else if modelName == sampleModel || slices.Contains(featureTypes, modelName) {
+		} else if modelName == cmsintegrationcommon.SampleModel || slices.Contains(cmsintegrationcommon.FeatureTypes, modelName) {
 			err = sendRequestToFME(ctx, s, &conf, w)
 			if err == nil {
 				err = handleMaxLOD(ctx, s, w)
@@ -53,10 +39,10 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		if err != nil {
-			log.Errorfc(ctx, "cmsintegrationv3 webhook: failed to process event: %v", err)
+			log.Errorfc(ctx, "failed to process event: %v", err)
 		}
 
-		log.Debugfc(ctx, "cmsintegrationv3 webhook: done: %s", modelName)
+		log.Debugfc(ctx, "done: %s", modelName)
 		return nil
 	}, nil
 }

@@ -1,0 +1,1 @@
+export const DEFAULT_PLATEAU_SPEC_VERSION = 3;

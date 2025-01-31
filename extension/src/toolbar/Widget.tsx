@@ -47,6 +47,7 @@ type DefaultProps = {
   plateauAccessToken?: string;
   catalogURL?: string;
   catalogURLForAdmin?: string;
+  datasetAttributesURL?: string;
   projectName?: string;
   googleStreetViewAPIKey?: string;
   geojsonURL?: string;
@@ -87,6 +88,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
         plateauToken={widget.property.default.plateauAccessToken}
         catalogUrl={widget.property.default.catalogURL}
         catalogURLForAdmin={widget.property.default.catalogURLForAdmin}
+        datasetAttributesURL={widget.property.default.datasetAttributesURL}
         geoUrl={widget.property.default.geoURL}
         cityGMLUrl={widget.property.default.cityGMLURL}
         gsiTileURL={widget.property.default.gsiTileURL}

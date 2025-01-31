@@ -22,9 +22,13 @@ export interface TileFeaturePropertiesSectionProps {
     type: typeof SCREEN_SPACE_SELECTION;
     subtype: typeof TILESET_FEATURE;
   })["values"];
+  plateauSpecMajorVersion: number;
 }
 
-export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps> = ({ values }) => {
+export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps> = ({
+  values,
+  plateauSpecMajorVersion,
+}) => {
   const rootLayersLayers = useAtomValue(rootLayersLayersAtom);
   const findRootLayer = useSetAtom(findRootLayerAtom);
   const findLayer = useFindLayer();
@@ -80,12 +84,13 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
             return [...sortedNames, ...restNames];
           },
           featureType,
+          version: plateauSpecMajorVersion,
         }),
       );
     }, [] as Feature["properties"][]);
 
     return intersectionBy(properties, "name");
-  }, [layers, tilesetProperties]);
+  }, [layers, tilesetProperties, plateauSpecMajorVersion]);
 
   return (
     <ParameterList>
@@ -93,6 +98,7 @@ export const TileFeaturePropertiesSection: FC<TileFeaturePropertiesSectionProps>
         properties={properties}
         featureType={featureType}
         ancestorsFeatureType={ancestorsFeatureType}
+        version={plateauSpecMajorVersion}
       />
     </ParameterList>
   );

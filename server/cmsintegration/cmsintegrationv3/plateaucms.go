@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	cms "github.com/reearth/reearth-cms-api/go"
 )
 
@@ -19,16 +20,16 @@ func NewPlateauCMS(cms cms.Interface, cacheBasePath string) *PlateauCMS {
 	return &PlateauCMS{CMS: cms, cacheBasePath: cacheBasePath}
 }
 
-func (c *PlateauCMS) GetAllCities(ctx context.Context, prj string) ([]*CityItem, error) {
-	return getAllItems(ctx, c.CMS, prj, modelPrefix+cityModel, c.cacheBasePath, func(item *cms.Item) (*CityItem, bool, error) {
-		city := CityItemFrom(item)
+func (c *PlateauCMS) GetAllCities(ctx context.Context, prj string) ([]*cmsintegrationcommon.CityItem, error) {
+	return getAllItems(ctx, c.CMS, prj, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.CityModel, c.cacheBasePath, func(item *cms.Item) (*cmsintegrationcommon.CityItem, bool, error) {
+		city := cmsintegrationcommon.CityItemFrom(item)
 		return city, city != nil, nil
 	})
 }
 
-func (c *PlateauCMS) GetAllRelated(ctx context.Context, prj string) ([]*RelatedItem, error) {
-	return getAllItems(ctx, c.CMS, prj, modelPrefix+relatedModel, c.cacheBasePath, func(item *cms.Item) (*RelatedItem, bool, error) {
-		city := RelatedItemFrom(item)
+func (c *PlateauCMS) GetAllRelated(ctx context.Context, prj string) ([]*cmsintegrationcommon.RelatedItem, error) {
+	return getAllItems(ctx, c.CMS, prj, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel, c.cacheBasePath, func(item *cms.Item) (*cmsintegrationcommon.RelatedItem, bool, error) {
+		city := cmsintegrationcommon.RelatedItemFrom(item)
 		return city, city != nil, nil
 	})
 }

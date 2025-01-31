@@ -43,6 +43,9 @@ export const DATASET_FRAGMENT = gql(`
     admin
     ... on PlateauDataset {
       subname
+      plateauSpecMinor {
+        majorVersion
+      }
     }
   }
 `);

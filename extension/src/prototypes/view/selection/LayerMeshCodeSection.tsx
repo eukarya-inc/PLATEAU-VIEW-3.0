@@ -3,6 +3,7 @@ import { FC, useMemo } from "react";
 
 import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
 import useCityGMLPacks from "../../../shared/api/citygml/hooks/useCityGMLPacks";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { LayerModel } from "../../layers";
 import {
@@ -83,7 +84,7 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
   return (
     <ParameterList>
       <Divider />
-      <PropertyParameterItem properties={meshCodeProperties} featureType="tags" />
+      <PropertyParameterItem properties={meshCodeProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
       {loading ? (
         <LoadingWrapper>
           <LoadingAnimationIcon size={16} />

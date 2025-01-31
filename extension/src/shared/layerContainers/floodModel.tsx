@@ -40,6 +40,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   colorSchemeAtom: ViewLayerModel["colorSchemeAtom"];
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
+  version: number;
   componentAtoms: ComponentAtom[];
 };
 
@@ -54,6 +55,7 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
   componentAtoms,
   selections,
   hidden,
+  version,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -117,10 +119,14 @@ export const FloodModelLayerContainer: FC<TilesetContainerProps> = ({
       const shareId =
         (await getSharedStoreValue<string>(SHARED_PROJECT_ID_KEY)) ?? SHARED_PROJECT_ID;
       setProperties(
-        new PlateauTilesetProperties(layerId, { floodColor: floodColorRef.current, shareId }),
+        new PlateauTilesetProperties(layerId, {
+          floodColor: floodColorRef.current,
+          shareId,
+          version,
+        }),
       );
     },
-    [onLoad, setFeatureIndex, setProperties, setLayerId],
+    [onLoad, setFeatureIndex, setProperties, setLayerId, version],
   );
 
   const colorProperty = useAtomValue(colorPropertyAtom);

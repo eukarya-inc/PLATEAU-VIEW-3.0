@@ -5,6 +5,7 @@ import { FC, useCallback, useMemo } from "react";
 
 import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
 import useCityGMLPacks from "../../../shared/api/citygml/hooks/useCityGMLPacks";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { MESH_CODE_OBJECT } from "../../../shared/meshCode";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -147,7 +148,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
       />
       <Divider />
       <ParameterList>
-        <PropertyParameterItem properties={meshCodeProperties} featureType="tags" />
+        <PropertyParameterItem properties={meshCodeProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
         {loading ? (
           <LoadingWrapper>
             <LoadingAnimationIcon size={16} />
@@ -157,7 +158,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
             {cityProperties[0].values.length > 0 && (
               <>
                 <Divider />
-                <PropertyParameterItem properties={cityProperties} featureType="tags" />
+                <PropertyParameterItem properties={cityProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
               </>
             )}
             {packs.length > 0 && (

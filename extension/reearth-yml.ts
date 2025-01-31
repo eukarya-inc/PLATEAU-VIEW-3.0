@@ -58,6 +58,11 @@ const yml = {
                 title: "Admin用データカタログURL",
               },
               {
+                id: "datasetAttributesURL",
+                type: "string",
+                title: "データセット属性用URL",
+              },
+              {
                 id: "cityGMLURL",
                 type: "string",
                 title: "CityGMLサーバーバックエンドURL",

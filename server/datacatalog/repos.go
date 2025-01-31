@@ -13,16 +13,20 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv2/datacatalogv2adapter"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/geocoding"
-	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/jisx0410"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
-	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/spatialid"
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
+	"github.com/reearth/reearthx/rerror"
 	"golang.org/x/sync/errgroup"
 )
+
+var qt *govpolygon.Quadtree
+
+func init() {
+	qt = govpolygon.NewQuadtree(nil, 1.0/60.0)
+}
 
 type reposHandler struct {
 	reposv3            *datacatalogv3.Repos
@@ -41,12 +45,7 @@ const gqlComplexityLimit = 1000
 const cmsSchemaVersion = "v3"
 const cmsSchemaVersionV2 = "v2"
 
-func newReposHandler(conf Config) (*reposHandler, error) {
-	pcms, err := plateaucms.New(conf.Config)
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize plateau cms: %w", err)
-	}
-
+func newReposHandler(conf Config, pcms *plateaucms.CMS) (*reposHandler, error) {
 	reposv3 := datacatalogv3.NewRepos(pcms)
 	reposv2 := datacatalogv2adapter.NewRepos()
 
@@ -61,9 +60,6 @@ func newReposHandler(conf Config) (*reposHandler, error) {
 	if conf.Debug {
 		reposv3.EnableDebug(true)
 	}
-
-	g, _, _ := govpolygon.NewProcessor().ComputeGeoJSON(nil)
-	qt := govpolygon.NewQuadtree(g, 1.0/60.0)
 
 	return &reposHandler{
 		reposv3:            reposv3,
@@ -99,115 +95,6 @@ func (h *reposHandler) Handler(admin bool) echo.HandlerFunc {
 	}
 }
 
-func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		var bounds []quadtree.Bounds
-		var cityIDs []string
-		conditions := c.Param(conditionsParamName)
-		switch conditionType, cond := parseConditions(conditions); conditionType {
-		case "m":
-			for _, m := range strings.Split(cond, ",") {
-				b, err := jisx0410.Bounds(m)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid mesh: %w", err))
-				}
-				bounds = append(bounds, b)
-				cityIDs = append(cityIDs, h.qt.FindRect(b)...)
-			}
-		case "s":
-			for _, s := range strings.Split(cond, ",") {
-				b, err := spatialid.Bounds(s)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid spatial id: %w", err))
-				}
-				bounds = append(bounds, b)
-				cityIDs = h.qt.FindRect(b)
-			}
-		case "r":
-			b, err := parseBounds(cond)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid rectangle: %w", err))
-			}
-			bounds = append(bounds, b)
-			cityIDs = h.qt.FindRect(b)
-		case "g":
-			ctx := context.TODO()
-			b, err := geocoding.NewClient(h.geocodingAppID).Bounds(ctx, cond)
-			if errors.Is(err, geocoding.ErrNotFound) {
-				return echo.NewHTTPError(http.StatusNotFound, "not found")
-			}
-			if err != nil {
-				return echo.NewHTTPError(http.StatusServiceUnavailable, fmt.Errorf("geocoding: %w", err))
-			}
-			bounds = append(bounds, b)
-			cityIDs = h.qt.FindRect(b)
-		case "":
-			if cond == "" {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("no conditions"))
-			}
-			cityIDs = strings.Split(cond, ",")
-		default:
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Errorf("invalid condition type: %s", conditionType))
-		}
-
-		merged, err := h.prepareMergedRepo(c, admin)
-		if err != nil {
-			return err
-		}
-		adminContext(c, true, admin, admin && isAlpha(c))
-		ctx := c.Request().Context()
-
-		var response struct {
-			Cities []*CityGMLFilesResponse `json:"cities"`
-			Next   string                  `json:"next"`
-		}
-		for _, cid := range lo.Uniq(cityIDs) {
-			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
-			if err != nil {
-				return err
-			}
-			if cityGMLFiles == nil {
-				continue
-			}
-			if len(bounds) > 0 {
-				for ft, cityGmlFiles := range cityGMLFiles.Files {
-					filtered := cityGmlFiles[:0]
-					for _, f := range cityGmlFiles {
-						b, _ := jisx0410.Bounds(f.MeshCode)
-						for _, m := range bounds {
-							if intersects(b, m) {
-								filtered = append(filtered, f)
-								break
-							}
-						}
-					}
-					if len(filtered) == 0 {
-						delete(cityGMLFiles.Files, ft)
-					} else {
-						cityGMLFiles.Files[ft] = filtered
-					}
-				}
-			}
-			if len(cityGMLFiles.Files) > 0 {
-				response.Cities = append(response.Cities, cityGMLFiles)
-			}
-		}
-		if len(response.Cities) == 0 {
-			return echo.NewHTTPError(http.StatusNotFound, "not found")
-		}
-		return c.JSON(http.StatusOK, response)
-	}
-}
-
-func parseConditions(conditions string) (string, string) {
-	t, body, found := strings.Cut(conditions, ":")
-	if found {
-		return t, body
-	} else {
-		return "", conditions
-	}
-}
-
 func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		merged, err := h.prepareMergedRepo(c, false)
@@ -222,6 +109,57 @@ func (h *reposHandler) SimplePlateauDatasetsAPI() echo.HandlerFunc {
 		}
 
 		return c.JSONPretty(http.StatusOK, res, "  ")
+	}
+}
+
+func (h *reposHandler) CityGMLFiles(admin bool) echo.HandlerFunc {
+	var geocoder GeoCoder
+	if h.geocodingAppID != "" {
+		g := geocoding.NewClient(h.geocodingAppID)
+		geocoder = func(ctx context.Context, address string) (quadtree.Bounds, error) {
+			return g.Bounds(ctx, address)
+		}
+	}
+
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
+		conditions := c.Param(conditionsParamName)
+
+		cityIDs, filter, err := ParseCityGMLFilesQuery(ctx, conditions, h.qt, geocoder)
+		if err != nil {
+			if errors.Is(err, rerror.ErrNotFound) {
+				return echo.NewHTTPError(http.StatusNotFound, "not found")
+			}
+
+			return echo.NewHTTPError(http.StatusBadRequest, err)
+		}
+
+		merged, err := h.prepareMergedRepo(c, admin)
+		if err != nil {
+			return err
+		}
+
+		adminContext(c, true, admin, admin && isAlpha(c))
+		ctx = c.Request().Context() // do not forget to update context
+
+		cities := []*CityGMLFilesCity{}
+		for _, cid := range cityIDs {
+			cityGMLFiles, err := FetchCityGMLFiles(ctx, merged, cid)
+			if err != nil {
+				return err
+			}
+			if cityGMLFiles == nil {
+				continue
+			}
+			cities = append(cities, cityGMLFiles)
+		}
+
+		res := ApplyCityGMLCityFilter(ctx, cities, filter)
+		if len(res.Cities) == 0 {
+			return echo.NewHTTPError(http.StatusNotFound, "not found")
+		}
+
+		return c.JSON(http.StatusOK, res)
 	}
 }
 

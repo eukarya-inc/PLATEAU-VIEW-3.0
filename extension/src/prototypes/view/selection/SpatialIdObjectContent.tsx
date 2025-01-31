@@ -6,6 +6,7 @@ import ReactJson from "react-json-view";
 
 import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
 import useCityGMLSpaceAttributes from "../../../shared/api/citygml/hooks/useCityGMLSpaceAttributes";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -160,9 +161,9 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
       />
       <Divider />
       <ParameterList>
-        <PropertyParameterItem properties={spaceIdProperties} featureType="tags" />
+        <PropertyParameterItem properties={spaceIdProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
         <Divider />
-        <PropertyParameterItem properties={spaceIdZFXYProperties} featureType="tags" />
+        <PropertyParameterItem properties={spaceIdZFXYProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
         {featureTypeOptions && featureTypeOptions.length > 0 && currentType && (
           <>
             <Divider />

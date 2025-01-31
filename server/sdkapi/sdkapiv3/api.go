@@ -18,12 +18,12 @@ type APIClient struct {
 }
 
 func NewAPIClient(conf Config) (*APIClient, error) {
-	u, err := url.JoinPath(conf.DataCatagloAPIURL, "/graphql")
+	u, err := url.JoinPath(conf.DataCatalogAPIURL, "/graphql")
 	if err != nil {
 		return nil, fmt.Errorf("error joining url path: %w", err)
 	}
 
-	u2, err := url.JoinPath(conf.DataCatagloAPIURL, "/citygml")
+	u2, err := url.JoinPath(conf.DataCatalogAPIURL, "/citygml")
 	if err != nil {
 		return nil, fmt.Errorf("error joining url path: %w", err)
 	}
