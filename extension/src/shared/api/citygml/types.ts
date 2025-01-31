@@ -90,7 +90,7 @@ export type CityGMLPackItem = {
   id: string;
   name: string;
   fileUrls: string[];
-  status: "idle" | "requesting" | "polling" | "packed";
+  status: "idle" | "requesting" | "polling" | "packed" | "retry";
   pollingCount: number;
   packId?: string;
   packSize?: number;

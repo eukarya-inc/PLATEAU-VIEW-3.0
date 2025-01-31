@@ -66,7 +66,7 @@ export default ({ data }: UseCityGMLPacksProps) => {
                         response.status === "succeeded"
                           ? "packed"
                           : response.status === "failed" || pack.pollingCount >= MAX_POLLING_COUNT
-                          ? "idle"
+                          ? "retry"
                           : "polling",
                     }
                   : p,

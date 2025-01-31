@@ -10,6 +10,7 @@ import {
   DownloadIcon,
   LoadingAnimationIcon,
   PackageIcon,
+  PackageWarningIcon,
   ParameterList,
   PropertyActionItem,
   PropertyParameterItem,
@@ -118,6 +119,16 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
                           onClick={() => handlePacking(item.id)}
                           size="small">
                           <PackageIcon />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                    {item.status === "retry" && (
+                      <Tooltip title="Something wrong happened, click icon to pack again">
+                        <IconButton
+                          aria-label="Retry"
+                          onClick={() => handlePacking(item.id)}
+                          size="small">
+                          <PackageWarningIcon />
                         </IconButton>
                       </Tooltip>
                     )}

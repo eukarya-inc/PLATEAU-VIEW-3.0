@@ -22,6 +22,7 @@ import {
   PackageIcon,
   DownloadIcon,
   LoadingAnimationIcon,
+  PackageWarningIcon,
 } from "../../ui-components";
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
@@ -148,7 +149,11 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
       />
       <Divider />
       <ParameterList>
-        <PropertyParameterItem properties={meshCodeProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
+        <PropertyParameterItem
+          properties={meshCodeProperties}
+          featureType="tags"
+          version={DEFAULT_PLATEAU_SPEC_VERSION}
+        />
         {loading ? (
           <LoadingWrapper>
             <LoadingAnimationIcon size={16} />
@@ -158,7 +163,11 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
             {cityProperties[0].values.length > 0 && (
               <>
                 <Divider />
-                <PropertyParameterItem properties={cityProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
+                <PropertyParameterItem
+                  properties={cityProperties}
+                  featureType="tags"
+                  version={DEFAULT_PLATEAU_SPEC_VERSION}
+                />
               </>
             )}
             {packs.length > 0 && (
@@ -174,6 +183,16 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
                             onClick={() => handlePacking(item.id)}
                             size="small">
                             <PackageIcon />
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                      {item.status === "retry" && (
+                        <Tooltip title="Something wrong happened, click icon to pack again">
+                          <IconButton
+                            aria-label="Retry"
+                            onClick={() => handlePacking(item.id)}
+                            size="small">
+                            <PackageWarningIcon />
                           </IconButton>
                         </Tooltip>
                       )}

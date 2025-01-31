@@ -29,6 +29,7 @@ export * from "./MeshLevel2Icon";
 export * from "./MeshLevel3Icon";
 export * from "./MinusIcon";
 export * from "./PackageIcon";
+export * from "./PackageWarningIcon";
 export * from "./ParkIcon";
 export * from "./PedestrianIcon";
 export * from "./PlusIcon";
