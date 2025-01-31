@@ -35,7 +35,6 @@ export const useSelectSketchFeature = () => {
   useEffect(() => {
     if (!hasSketchFeatureSelected || isEqual(prevLayersRef.current, selectedSketchLayers)) return;
     setTimeout(() => {
-      console.log("do select", selectedSketchLayers);
       window.reearth?.layers?.selectFeatures?.(selectedSketchLayers);
       prevLayersRef.current = selectedSketchLayers;
     }, 100);
