@@ -17,14 +17,15 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/k0kubun/pp/v3 v3.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/klauspost/compress v1.13.6
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/oklog/ulid/v2 v2.1.0
-	github.com/orisano/gosax v1.0.1
+	github.com/orisano/gosax v1.1.1
 	github.com/paulmach/go.geojson v1.5.0
 	github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855
-	github.com/reearth/reearth-cms-api/go v0.0.0-20240821095141-7d8fed5a3a3b
-	github.com/reearth/reearthx v0.0.0-20240222072751-402668db71a9
+	github.com/reearth/reearth-cms-api/go v0.0.0-20250129123244-dcf65b6d0af8
+	github.com/reearth/reearthx v0.0.0-20250130135542-7860571926f2
 	github.com/samber/lo v1.39.0
 	github.com/sendgrid/sendgrid-go v3.14.0+incompatible
 	github.com/spf13/afero v1.11.0

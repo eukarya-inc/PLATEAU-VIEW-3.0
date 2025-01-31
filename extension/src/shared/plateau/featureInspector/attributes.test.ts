@@ -1,43 +1,54 @@
-import { expect, test } from "vitest";
+import { beforeAll, expect, test } from "vitest";
 
 import { getRootFields } from "./attributes";
+import rawTestAttributesV3 from "./attributes_test_v3.csv?raw";
+import { loadAttributes } from "./loadAttributes";
+
+const VERSION = 3;
+
+beforeAll(() => {
+  loadAttributes("", [3, 4], [rawTestAttributesV3, ""]);
+});
 
 test("getRootFields bldg", () => {
   expect(
-    getRootFields({
-      "bldg:measuredHeight": 11.3,
-      "uro:BuildingDetailAttribute_uro:surveyYear": 2021,
-      _lod: 1,
-      _x: 138.14665217202196,
-      _y: 36.00597282717696,
-      _xmin: 138.1465778211494,
-      _xmax: 138.14672652289448,
-      _ymin: 36.005906203235355,
-      _ymax: 36.00603945111857,
-      _zmin: 813.316,
-      _zmax: 822.282,
-      meshcode: "54380101",
-      feature_type: "bldg:Building",
-      city_code: "20214",
-      city_name: "長野県茅野市",
-      gml_id: "bldg_b7f3a2bd-f50b-4a6a-9741-76336f2af940",
-      attributes: {},
-      "bldg:usage": "住宅",
-      "bldg:storeysAboveGround": 2,
-      "bldg:storeysBelowGround": 0,
-      "uro:BuildingIDAttribute_uro:buildingID": "20214-bldg-46906",
-      "uro:BuildingIDAttribute_uro:prefecture": "長野県",
-      "uro:BuildingIDAttribute_uro:city": "長野県茅野市",
-      "uro:BuildingDetailAttribute_uro:buildingStructureType": "木造・土蔵造",
-      "uro:BuildingDetailAttribute_uro:landUseType":
-        "住宅用地（住宅、共同住宅、店舗等併用住宅、店舗等併用共同住宅、作業所併用住宅）",
-      "uro:BuildingDataQualityAttribute_uro:lod1HeightType": "点群から取得_中央値",
-      建築年区分: "1993年以降",
-      土砂災害リスク_急傾斜地の崩落_区域区分: "土砂災害警戒区域（指定済）",
-      土砂災害リスク_急傾斜地の崩落_区域区分コード: 1,
-      土砂災害リスク_土石流_区域区分: "土砂災害警戒区域（指定済）",
-      土砂災害リスク_土石流_区域区分コード: 1,
-    }),
+    getRootFields(
+      {
+        "bldg:measuredHeight": 11.3,
+        "uro:BuildingDetailAttribute_uro:surveyYear": 2021,
+        _lod: 1,
+        _x: 138.14665217202196,
+        _y: 36.00597282717696,
+        _xmin: 138.1465778211494,
+        _xmax: 138.14672652289448,
+        _ymin: 36.005906203235355,
+        _ymax: 36.00603945111857,
+        _zmin: 813.316,
+        _zmax: 822.282,
+        meshcode: "54380101",
+        feature_type: "bldg:Building",
+        city_code: "20214",
+        city_name: "長野県茅野市",
+        gml_id: "bldg_b7f3a2bd-f50b-4a6a-9741-76336f2af940",
+        attributes: {},
+        "bldg:usage": "住宅",
+        "bldg:storeysAboveGround": 2,
+        "bldg:storeysBelowGround": 0,
+        "uro:BuildingIDAttribute_uro:buildingID": "20214-bldg-46906",
+        "uro:BuildingIDAttribute_uro:prefecture": "長野県",
+        "uro:BuildingIDAttribute_uro:city": "長野県茅野市",
+        "uro:BuildingDetailAttribute_uro:buildingStructureType": "木造・土蔵造",
+        "uro:BuildingDetailAttribute_uro:landUseType":
+          "住宅用地（住宅、共同住宅、店舗等併用住宅、店舗等併用共同住宅、作業所併用住宅）",
+        "uro:BuildingDataQualityAttribute_uro:lod1HeightType": "点群から取得_中央値",
+        建築年区分: "1993年以降",
+        土砂災害リスク_急傾斜地の崩落_区域区分: "土砂災害警戒区域（指定済）",
+        土砂災害リスク_急傾斜地の崩落_区域区分コード: 1,
+        土砂災害リスク_土石流_区域区分: "土砂災害警戒区域（指定済）",
+        土砂災害リスク_土石流_区域区分コード: 1,
+      },
+      VERSION,
+    ),
   ).toEqual({
     ID: "bldg_b7f3a2bd-f50b-4a6a-9741-76336f2af940",
     LOD1の立ち上げに使用する建築物の高さ: "点群から取得_中央値",
@@ -66,10 +77,13 @@ test("getRootFields bldg", () => {
 
 test("getRootFields veg", () => {
   expect(
-    getRootFields({
-      feature_type: "veg:PlantCover",
-      "tran:function": "test",
-    }),
+    getRootFields(
+      {
+        feature_type: "veg:PlantCover",
+        "tran:function": "test",
+      },
+      VERSION,
+    ),
   ).toEqual({
     地物タイプ: "veg:PlantCover",
     "分類 ※植被": "test",

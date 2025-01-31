@@ -159,6 +159,8 @@ export function LayerContent<T extends SupportedLayerType>({
 
   const layerName = layerTypeNames[type] ?? rootLayer?.layerName;
 
+  const plateauSpecMajorVersion = "version" in layer ? layer.version ?? 0 : 0;
+
   return (
     <>
       <List disablePadding>
@@ -242,6 +244,7 @@ export function LayerContent<T extends SupportedLayerType>({
           state={buildingSearchPanelState}
           layer={layer}
           layerId={layerId}
+          plateauSpecMajorVersion={plateauSpecMajorVersion}
         />
       )}
     </>

@@ -20,7 +20,9 @@ const (
 	tokenProject                 = "system"
 	metadataModel                = "workspaces"
 	plateauSpecModel             = "plateau-spec"
+	plateauFeatureTypesModel     = "plateau-features"
 	plateauProjectModel          = "plateau-projects"
+	datasetTypesModel            = "plateau-dataset-types"
 	projectAliasField            = "project_alias"
 	datacatalogProjectAliasField = "datacatalog_project_alias"
 	plateauPrefix                = "plateau-"
@@ -196,4 +198,36 @@ func (h *CMS) InitContext(ctx context.Context, conf AuthMiddlewareConfig, prj, t
 	ctx = context.WithValue(ctx, cmsMetadataContextKey{}, md)
 	ctx = context.WithValue(ctx, cmsContextKey{}, cmsh)
 	return ctx, nil
+}
+
+func valueToAssetURL(v *cms.Value) string {
+	return anyToAssetURL(v.Interface())
+}
+
+func anyToAssetURL(v any) string {
+	if v == nil {
+		return ""
+	}
+
+	m, ok := v.(map[string]any)
+	if !ok {
+		m2, ok := v.(map[any]any)
+		if !ok {
+			return ""
+		}
+
+		m = map[string]interface{}{}
+		for k, v := range m2 {
+			if s, ok := k.(string); ok {
+				m[s] = v
+			}
+		}
+	}
+
+	url, ok := m["url"].(string)
+	if !ok {
+		return ""
+	}
+
+	return url
 }

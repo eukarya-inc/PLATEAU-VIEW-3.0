@@ -1,23 +1,18 @@
 import { omit } from "lodash-es";
 
-import attributesData from "./attributes.txt?raw";
+import { attributesMap } from "./loadAttributes";
 import type { FldInfo, Properties } from "./types";
 import { getPropertyAttributeValue, makePropertyName, makePropertyValue } from "./utils";
 
-export type AttributeValue = { featureType?: string; description?: string; dataType?: string };
+export const getAttributeLabel = (key: string, version: number) =>
+  attributesMap?.get(version)?.get(key);
 
-export const attributesMap = new Map<string, AttributeValue | undefined>();
-
-attributesData
-  .split("\n")
-  .map(l => l.split(",{"))
-  .forEach(l => {
-    attributesMap.set(l[0], JSON.parse("{" + l[1]));
-  });
-
-export const getAttributeLabel = (key: string) => attributesMap?.get(key);
-
-export function getRootFields(properties: Properties, _dataType?: string, _fld?: FldInfo): any {
+export function getRootFields(
+  properties: Properties,
+  version: number,
+  _dataType?: string,
+  _fld?: FldInfo,
+): any {
   const featureType = properties["feature_type"];
   const overriddenRootPropertyDefinitions = {
     "分類 ※大規模集客施設": "uro:LargeCustomerFacilityAttribute_uro:class",
@@ -38,9 +33,9 @@ export function getRootFields(properties: Properties, _dataType?: string, _fld?:
       if (k.startsWith("_")) return [k, undefined];
       if (typeof v !== "string" && typeof v !== "number") return [k, undefined];
       const key = `${featureType}_${k}`;
-      const attrVal = getPropertyAttributeValue(key);
+      const attrVal = getPropertyAttributeValue(key, version);
       const value: string | number | undefined = attrVal ? makePropertyValue(attrVal, v) : v;
-      return [makePropertyName(key, k, attrVal), value];
+      return [makePropertyName(key, k, version, attrVal), value];
     }),
   );
   const overriddenRootProperties = Object.fromEntries(

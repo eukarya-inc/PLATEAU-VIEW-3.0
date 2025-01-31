@@ -9,8 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestProcessor(t *testing.T) {
-	p := &Processor{}
+func TestComputeGeoJSON(t *testing.T) {
 	names := [][]string{
 		{"北海道"},
 		{"北海道/札幌市"},
@@ -23,7 +22,7 @@ func TestProcessor(t *testing.T) {
 	for i, n := range names {
 		n := n
 		t.Run(fmt.Sprintf("%v", n), func(t *testing.T) {
-			geojson, notfound, err := p.ComputeGeoJSON(n)
+			geojson, notfound, err := ComputeGeoJSON(n)
 			assert.NoError(t, err)
 			assert.Empty(t, notfound)
 			assert.NotEmpty(t, geojson)

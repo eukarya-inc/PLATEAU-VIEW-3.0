@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ReactJson from "react-json-view";
 
 import { cityGMLClient } from "../../../shared/api/citygml";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -152,7 +153,11 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
       <Divider />
       <InspectorItem>
         <ParameterList>
-          <PropertyParameterItem properties={properties} featureType="spatialId" />
+          <PropertyParameterItem
+            properties={properties}
+            featureType="spatialId"
+            version={DEFAULT_PLATEAU_SPEC_VERSION}
+          />
           {files && (
             <ReactJson
               src={files}

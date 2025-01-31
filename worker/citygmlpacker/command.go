@@ -2,6 +2,7 @@ package citygmlpacker
 
 import (
 	"archive/zip"
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -9,12 +10,13 @@ import (
 	"net/http"
 	"net/url"
 	"path"
-	"sort"
+	"slices"
 	"strings"
 
 	"cloud.google.com/go/storage"
 	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
-	"github.com/orisano/gosax"
+	"github.com/klauspost/compress/gzip"
+	"github.com/orisano/gosax/xmlb"
 	"github.com/reearth/reearthx/log"
 	"google.golang.org/api/googleapi"
 )
@@ -85,6 +87,8 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 
 	var httpClient http.Client
 
+	seen := map[string]struct{}{}
+
 	zw := zip.NewWriter(w)
 	defer zw.Close()
 	for len(q) > 0 {
@@ -99,7 +103,7 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 				return fmt.Errorf("invalid host: %s", u.Host)
 			}
 
-			nq, err = writeZip(ctx, zw, &httpClient, u, nq)
+			nq, err = writeZip(ctx, zw, &httpClient, u, nq, seen)
 			if err != nil {
 				return fmt.Errorf("writeZip: %w", err)
 			}
@@ -112,7 +116,7 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 	return nil
 }
 
-func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *url.URL, q []string) ([]string, error) {
+func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *url.URL, q []string, seen map[string]struct{}) ([]string, error) {
 	depsMap := map[string]struct{}{}
 	gml := strings.SplitN(u.Path, "/", 5)[4]
 	root := path.Dir(gml)
@@ -126,6 +130,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 	if err != nil {
 		return nil, fmt.Errorf("invalid url: %w", err)
 	}
+	req.Header.Set("Accept-Encoding", "gzip")
 
 	resp, err := httpClient.Do(req)
 	if err != nil {
@@ -133,86 +138,142 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 	}
 	defer resp.Body.Close()
 
-	sax := gosax.NewReader(io.TeeReader(resp.Body, ze))
-	sax.EmitSelfClosingTag = true
-	inAppImageURI := false
-
-	for {
-		e, err := sax.Event()
+	var r io.Reader = resp.Body
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		gr, err := gzip.NewReader(r)
 		if err != nil {
-			return nil, fmt.Errorf("event error: %w", err)
+			return nil, fmt.Errorf("gzip.NewReader: %w", err)
 		}
-		if e.Type() == gosax.EventEOF {
+		defer gr.Close()
+		r = gr
+	}
+
+	log.Infof("parsing... %s", req.URL)
+	dec := xmlb.NewDecoder(io.TeeReader(r, ze), make([]byte, 32*1024))
+	for {
+		tok, err := dec.Token()
+		if err == io.EOF {
 			break
 		}
-		switch e.Type() {
-		case gosax.EventStart:
-			t, err := gosax.StartElement(e.Bytes)
+		switch tok.Type() {
+		case xmlb.StartElement:
+			el, err := tok.StartElement()
 			if err != nil {
-				return nil, fmt.Errorf("start element error: %w", err)
+				return nil, err
 			}
 
-			inAppImageURI = t.Name.Space == "app" && t.Name.Local == "imageURI"
+			if el.Name.Space == "app" && el.Name.Local == "imageURI" {
+				uri, err := dec.Text()
+				if err != nil {
+					return nil, err
+				}
+				depsMap[uri] = struct{}{}
+			}
 
-			for _, a := range t.Attr {
+			for _, a := range el.Attr {
 				if a.Name.Space == "" && a.Name.Local == "codeSpace" {
 					depsMap[a.Value] = struct{}{}
 				}
 
 				if a.Name.Space == "xsi" && a.Name.Local == "schemaLocation" {
 					s := a.Value
-					for s != "" {
-						var u string
-						u, s, _ = strings.Cut(s, " ")
-						if u == "" {
-							continue
+					for _, v := range strings.Fields(s) {
+						u, err := url.Parse(v)
+						if err != nil {
+							return nil, fmt.Errorf("invalid schemaLocation: %w", err)
 						}
-						if !(strings.HasPrefix(u, "http://") || strings.HasPrefix(u, "https://")) {
-							depsMap[u] = struct{}{}
+						if u.Scheme == "" {
+							depsMap[u.Path] = struct{}{}
 						}
 					}
 				}
 			}
-		case gosax.EventEnd:
-			inAppImageURI = false
-		case gosax.EventText:
-			if inAppImageURI {
-				depsMap[string(e.Bytes)] = struct{}{}
-			}
-		default:
 		}
 	}
+	log.Infof("completed %s", req.URL)
 
 	deps := make([]string, 0, len(depsMap))
 	for dep := range depsMap {
+		u := *u
+		dir := path.Dir(u.Path)
+		u.Path = path.Join(dir, dep)
+		if _, ok := seen[u.String()]; ok {
+			continue
+		}
+		seen[u.String()] = struct{}{}
 		deps = append(deps, dep)
 	}
-	sort.Strings(deps)
+
+	slices.Sort(deps)
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	type download struct {
+		dep string
+		req *http.Request
+		pr  *io.PipeReader
+		pw  *io.PipeWriter
+	}
+	downloads := make([]*download, 0, len(deps))
 
 	for _, dep := range deps {
 		u := *u
 		dir := path.Dir(u.Path)
 		u.Path = path.Join(dir, dep)
-
-		w, err := zw.Create(path.Join(root, dep))
-		if err != nil {
-			return nil, fmt.Errorf("create: %w", err)
-		}
-
 		req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
 		if err != nil {
 			return nil, fmt.Errorf("invalid url: %w", err)
 		}
+		pr, pw := io.Pipe()
+		downloads = append(downloads, &download{
+			dep: dep,
+			req: req,
+			pr:  pr,
+			pw:  pw,
+		})
+	}
 
-		resp, err := httpClient.Do(req)
-		if err != nil {
-			return nil, fmt.Errorf("request: %w", err)
+	go func() {
+		sem := make(chan struct{}, 512)
+		for _, d := range downloads {
+			select {
+			case sem <- struct{}{}:
+			case <-ctx.Done():
+				return
+			}
+			d := d
+			go func() {
+				bw := bufio.NewWriterSize(d.pw, 2*1024*1024)
+				defer func() {
+					<-sem
+				}()
+				resp, err := httpClient.Do(d.req)
+				if err != nil {
+					_ = d.pw.CloseWithError(err)
+					return
+				}
+				if resp.StatusCode != http.StatusOK {
+					_ = d.pw.CloseWithError(fmt.Errorf("status code: %d", resp.StatusCode))
+					return
+				}
+				if _, err := io.Copy(bw, resp.Body); err != nil {
+					_ = d.pw.CloseWithError(err)
+					return
+				}
+				log.Infof("downloaded: %s", d.req.URL)
+				_ = d.pw.CloseWithError(bw.Flush())
+			}()
 		}
+	}()
 
-		_, err = io.Copy(w, resp.Body)
-		_ = resp.Body.Close()
+	for _, d := range downloads {
+		w, err := zw.Create(path.Join(root, d.dep))
 		if err != nil {
-			return nil, fmt.Errorf("copy response: %w", err)
+			return nil, fmt.Errorf("create: %w", err)
+		}
+		if _, err := io.Copy(w, d.pr); err != nil {
+			return nil, fmt.Errorf("copy: %w", err)
 		}
 	}
 

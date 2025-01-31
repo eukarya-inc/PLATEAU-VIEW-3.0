@@ -99,8 +99,8 @@ func (s *Services) GetFME(url string) fmeInterface {
 	return newFME(url, s.FMEResultURL)
 }
 
-func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status ConvertionStatus) error {
-	var qcStatus, convStatus ConvertionStatus
+func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status cmsintegrationcommon.ConvertionStatus) error {
+	var qcStatus, convStatus cmsintegrationcommon.ConvertionStatus
 	switch convType {
 	case fmeTypeConv:
 		convStatus = status
@@ -111,9 +111,9 @@ func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, c
 		convStatus = status
 	}
 
-	fields := (&FeatureItem{
-		ConvertionStatus: tagFrom(convStatus),
-		QCStatus:         tagFrom(qcStatus),
+	fields := (&cmsintegrationcommon.FeatureItem{
+		ConvertionStatus: cmsintegrationcommon.TagFrom(convStatus),
+		QCStatus:         cmsintegrationcommon.TagFrom(qcStatus),
 	}).CMSItem().MetadataFields
 	_, err := s.CMS.UpdateItem(ctx, itemID, nil, fields)
 	if err != nil {

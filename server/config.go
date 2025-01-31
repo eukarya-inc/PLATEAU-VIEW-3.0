@@ -172,7 +172,7 @@ func (c *Config) SearchIndex() searchindex.Config {
 
 func (c *Config) SDKAPI() sdkapiv3.Config {
 	return sdkapiv3.Config{
-		DataCatagloAPIURL: c.LocalURL("/datacatalog"),
+		DataCatalogAPIURL: c.LocalURL("/datacatalog"),
 		Token:             c.SDK_Token,
 	}
 }
@@ -245,5 +245,6 @@ func (c *Config) CityGML() citygml.Config {
 		CityGMLPackerImage: citygmlPackerImage,
 		WorkerRegion:       workRegion,
 		WorkerProject:      workProject,
+		DataCatalogAPIURL:  c.LocalURL("/datacatalog"),
 	}
 }

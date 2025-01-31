@@ -5,12 +5,13 @@ import (
 	"path"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func echov3(conf Config, g *echo.Group) (func(ctx context.Context) error, error) {
-	h, err := newReposHandler(conf)
+func echov3(conf Config, g *echo.Group, pcms *plateaucms.CMS) (func(ctx context.Context) error, error) {
+	h, err := newReposHandler(conf, pcms)
 	if err != nil {
 		return nil, err
 	}

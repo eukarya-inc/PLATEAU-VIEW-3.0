@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/k0kubun/pp/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -32,6 +33,8 @@ var generateID = func() string {
 }
 
 func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebhook.Payload) error {
+	ctx = log.WithPrefixMessage(ctx, "fme: ")
+
 	// if event type is "item.create" and payload is metadata, skip it
 	if w.Type == cmswebhook.EventItemCreate && (w.ItemData.Item.OriginalItemID != nil || w.ItemData.Item.IsMetadata) {
 		return nil
@@ -42,29 +45,29 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return err
 	}
 
-	item := FeatureItemFrom(mainItem)
+	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
 
-	featureType := strings.TrimPrefix(w.ItemData.Model.Key, modelPrefix)
-	if featureType == sampleModel && item.FeatureType != "" {
-		if ft := getLastBracketContent(item.FeatureType); ft != "" {
+	featureType := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
+	if featureType == cmsintegrationcommon.SampleModel && item.FeatureType != "" {
+		if ft := cmsintegrationcommon.GetLastBracketContent(item.FeatureType); ft != "" {
 			featureType = ft
-			log.Debugfc(ctx, "cmsintegrationv3 fme: sample item: feature type is %s", ft)
+			log.Debugfc(ctx, "sample item: feature type is %s", ft)
 		}
 	}
 
-	if !slices.Contains(featureTypes, featureType) {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: not feature item: %s", featureType)
+	if !slices.Contains(cmsintegrationcommon.FeatureTypes, featureType) {
+		log.Debugfc(ctx, "not feature item: %s", featureType)
 		return nil
 	}
 
-	skipQC, skipConv := isQCAndConvSkipped(item, featureType)
+	skipQC, skipConv := item.IsQCAndConvSkipped(featureType)
 	if skipQC && skipConv {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: skip qc and convert")
+		log.Debugfc(ctx, "skip qc and convert")
 		return nil
 	}
 
 	if item.CityGML == "" || item.City == "" {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: no city or no citygml")
+		log.Debugfc(ctx, "no city or no citygml")
 		return nil
 	}
 
@@ -75,12 +78,12 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		ty = fmeTypeQC
 	}
 
-	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: itemID=%s featureType=%s", mainItem.ID, featureType)
-	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: raw item: %s", ppp.Sprint(mainItem))
-	log.Debugfc(ctx, "cmsintegrationv3 fme: sendRequestToFME: item: %s", ppp.Sprint(item))
+	log.Debugfc(ctx, "itemID=%s featureType=%s", mainItem.ID, featureType)
+	log.Debugfc(ctx, "raw item: %s", ppp.Sprint(mainItem))
+	log.Debugfc(ctx, "item: %s", ppp.Sprint(item))
 
 	// update convertion status
-	err = s.UpdateFeatureItemStatus(ctx, mainItem.ID, ty, ConvertionStatusRunning)
+	err = s.UpdateFeatureItemStatus(ctx, mainItem.ID, ty, cmsintegrationcommon.ConvertionStatusRunning)
 	if err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
 	}
@@ -99,7 +102,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
 
-	cityItem := CityItemFrom(cityItemRaw)
+	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw)
 
 	// validate city item
 	if cityItem.CodeLists == "" {
@@ -164,7 +167,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: sendRequestToFME: success")
+	log.Infofc(ctx, "sendRequestToFME: success")
 	return nil
 }
 
@@ -174,7 +177,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		return fmt.Errorf("invalid id: %s", f.ID)
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: receiveResultFromFME: itemID=%s featureType=%s type=%s", id.ItemID, id.FeatureType, id.Type)
+	log.Infofc(ctx, "receiveResultFromFME: itemID=%s featureType=%s type=%s", id.ItemID, id.FeatureType, id.Type)
 
 	logmsg := f.Message
 	if f.LogURL != "" {
@@ -186,7 +189,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 
 	// notify
 	if f.Type == "notify" {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: notify: %s", logmsg)
+		log.Debugfc(ctx, "notify: %s", logmsg)
 
 		if err := s.CMS.CommentToItem(ctx, id.ItemID, logmsg); err != nil {
 			return fmt.Errorf("failed to comment: %w", err)
@@ -196,15 +199,15 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		if f.Results != nil {
 			if qcResult, ok := f.Results["_qc_result"]; ok {
 				if qcResultStr, ok := qcResult.(string); ok {
-					log.Debugfc(ctx, "cmsintegrationv3 fme: upload qc result: %s", qcResultStr)
+					log.Debugfc(ctx, "upload qc result: %s", qcResultStr)
 					var err error
 					qcResultAsset, err := s.UploadAsset(ctx, id.ProjectID, qcResultStr)
 					if err != nil {
 						return fmt.Errorf("failed to upload maxlod: %w", err)
 					}
 
-					item := (&FeatureItem{
-						QCStatus: tagFrom(ConvertionStatusSuccess),
+					item := (&cmsintegrationcommon.FeatureItem{
+						QCStatus: cmsintegrationcommon.TagFrom(cmsintegrationcommon.ConvertionStatusSuccess),
 						QCResult: qcResultAsset,
 					}).CMSItem()
 
@@ -212,8 +215,8 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 					if err != nil {
 						j1, _ := json.Marshal(item.Fields)
 						j2, _ := json.Marshal(item.MetadataFields)
-						log.Debugfc(ctx, "cmsintegrationv3 fme: item update for %s: %s, %s", id.ItemID, j1, j2)
-						log.Errorfc(ctx, "cmsintegrationv3 fme: failed to update item: %v", err)
+						log.Debugfc(ctx, "item update for %s: %s, %s", id.ItemID, j1, j2)
+						log.Errorfc(ctx, "failed to update item: %v", err)
 						return fmt.Errorf("failed to update item: %w", err)
 					}
 				}
@@ -225,7 +228,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 
 	// handle error
 	if f.Status == "error" {
-		log.Warnfc(ctx, "cmsintegrationv3: failed to convert: %v", f.LogURL)
+		log.Warnfc(ctx, "failed to convert: %v", f.LogURL)
 		_ = failToConvert(ctx, s, id.ItemID, fmeRequestType(id.Type), "%sに失敗しました。%s", fmeRequestType(id.Type).Title(), logmsg)
 		return nil
 	}
@@ -233,17 +236,17 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// get newitem
 	item, err := s.CMS.GetItem(ctx, id.ItemID, false)
 	if err != nil {
-		log.Errorfc(ctx, "cmsintegrationv3: failed to get item: %v", err)
+		log.Errorfc(ctx, "failed to get item: %v", err)
 		return fmt.Errorf("failed to get item: %w", err)
 	}
 
-	baseFeatureItem := FeatureItemFrom(item)
+	baseFeatureItem := cmsintegrationcommon.FeatureItemFrom(item)
 
 	// get url from the result
 	assets := f.GetResultURLs(id.FeatureType)
 
 	// upload assets
-	log.Infofc(ctx, "cmsintegrationv3: upload assets: %v", assets.Data)
+	log.Infofc(ctx, "upload assets: %v", assets.Data)
 	var dataAssets []string
 	dataAssetMap := map[string][]string{}
 	if len(assets.DataMap) > 0 {
@@ -253,7 +256,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 			for _, url := range urls {
 				aid, err := s.UploadAsset(ctx, id.ProjectID, url)
 				if err != nil {
-					log.Errorfc(ctx, "cmsintegrationv3: failed to upload asset (%s): %v", url, err)
+					log.Errorfc(ctx, "failed to upload asset (%s): %v", url, err)
 					return nil
 				}
 				dataAssets = append(dataAssets, aid)
@@ -267,10 +270,10 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	var dic string
 	if assets.Dic != "" {
 		var err error
-		log.Debugfc(ctx, "cmsintegrationv3 fme: read and upload dic: %s", assets.Dic)
+		log.Debugfc(ctx, "read and upload dic: %s", assets.Dic)
 		dic, err = readDic(ctx, assets.Dic)
 		if err != nil {
-			log.Errorfc(ctx, "cmsintegrationv3: failed to read dic: %v", err)
+			log.Errorfc(ctx, "failed to read dic: %v", err)
 			return nil
 		}
 	}
@@ -278,7 +281,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// upload maxlod
 	var maxlodAssetID string
 	if assets.MaxLOD != "" {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: upload maxlod: %s", assets.MaxLOD)
+		log.Debugfc(ctx, "upload maxlod: %s", assets.MaxLOD)
 		var err error
 		maxlodAssetID, err = s.UploadAsset(ctx, id.ProjectID, assets.MaxLOD)
 		if err != nil {
@@ -289,7 +292,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// upload qc result
 	var qcResult string
 	if assets.QCResult != "" {
-		log.Debugfc(ctx, "cmsintegrationv3 fme: upload qc result: %s", assets.QCResult)
+		log.Debugfc(ctx, "upload qc result: %s", assets.QCResult)
 		var err error
 		qcResult, err = s.UploadAsset(ctx, id.ProjectID, assets.QCResult)
 		if err != nil {
@@ -298,25 +301,25 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	}
 
 	// update item
-	convStatus := ConvertionStatus("")
-	qcStatus := ConvertionStatus("")
+	convStatus := cmsintegrationcommon.ConvertionStatus("")
+	qcStatus := cmsintegrationcommon.ConvertionStatus("")
 
 	if id.Type == string(fmeTypeConv) {
-		convStatus = ConvertionStatusSuccess
+		convStatus = cmsintegrationcommon.ConvertionStatusSuccess
 	} else if id.Type == string(fmeTypeQC) {
-		qcStatus = ConvertionStatusSuccess
+		qcStatus = cmsintegrationcommon.ConvertionStatusSuccess
 	} else if id.Type == string(fmeTypeQcConv) {
-		convStatus = ConvertionStatusSuccess
-		qcStatus = ConvertionStatusSuccess
+		convStatus = cmsintegrationcommon.ConvertionStatusSuccess
+		qcStatus = cmsintegrationcommon.ConvertionStatusSuccess
 	}
 
 	// items
 	var data []string
-	var items []FeatureItemDatum
-	if slices.Contains(featureTypesWithItems, id.FeatureType) {
+	var items []cmsintegrationcommon.FeatureItemDatum
+	if slices.Contains(cmsintegrationcommon.FeatureTypesWithItems, id.FeatureType) {
 		for _, k := range assets.Keys {
 			assets := dataAssetMap[k]
-			i, ok := lo.Find(baseFeatureItem.Items, func(i FeatureItemDatum) bool {
+			i, ok := lo.Find(baseFeatureItem.Items, func(i cmsintegrationcommon.FeatureItemDatum) bool {
 				return i.Key == k
 			})
 
@@ -327,7 +330,7 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 				id = generateID()
 			}
 
-			items = append(items, FeatureItemDatum{
+			items = append(items, cmsintegrationcommon.FeatureItemDatum{
 				ID:   id,
 				Data: assets,
 				Key:  k,
@@ -337,24 +340,24 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		data = dataAssets
 	}
 
-	newitem := (&FeatureItem{
+	newitem := (&cmsintegrationcommon.FeatureItem{
 		Data:             data,
 		Items:            items,
 		Dic:              dic,
 		MaxLOD:           maxlodAssetID,
-		ConvertionStatus: tagFrom(convStatus),
-		QCStatus:         tagFrom(qcStatus),
+		ConvertionStatus: cmsintegrationcommon.TagFrom(convStatus),
+		QCStatus:         cmsintegrationcommon.TagFrom(qcStatus),
 		QCResult:         qcResult,
 	}).CMSItem()
 
-	log.Debugfc(ctx, "cmsintegrationv3 fme: update item: %s", ppp.Sprint(newitem))
+	log.Debugfc(ctx, "update item: %s", ppp.Sprint(newitem))
 
 	_, err = s.CMS.UpdateItem(ctx, id.ItemID, newitem.Fields, newitem.MetadataFields)
 	if err != nil {
 		j1, _ := json.Marshal(newitem.Fields)
 		j2, _ := json.Marshal(newitem.MetadataFields)
-		log.Debugfc(ctx, "cmsintegrationv3 fme: item update for %s: %s, %s", id.ItemID, j1, j2)
-		log.Errorfc(ctx, "cmsintegrationv3 fme: failed to update item: %v", err)
+		log.Debugfc(ctx, "item update for %s: %s, %s", id.ItemID, j1, j2)
+		log.Errorfc(ctx, "failed to update item: %v", err)
 		return fmt.Errorf("failed to update item: %w", err)
 	}
 
@@ -364,12 +367,12 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3 fme: receiveResultFromFME: success")
+	log.Infofc(ctx, "receiveResultFromFME: success")
 	return nil
 }
 
 func failToConvert(ctx context.Context, s *Services, itemID string, convType fmeRequestType, message string, args ...any) error {
-	if err := s.UpdateFeatureItemStatus(ctx, itemID, convType, ConvertionStatusError); err != nil {
+	if err := s.UpdateFeatureItemStatus(ctx, itemID, convType, cmsintegrationcommon.ConvertionStatusError); err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
 	}
 
@@ -404,44 +407,4 @@ func readDic(ctx context.Context, u string) (string, error) {
 		return "", err
 	}
 	return string(s), nil
-}
-
-const (
-	skip = "スキップ"
-	qc   = "品質検査"
-	conv = "変換"
-)
-
-var noConvFeatureTypes = []string{"dem"}
-
-func isQCAndConvSkipped(item *FeatureItem, featureType string) (skipQC bool, skipConv bool) {
-	if tagIsNot(item.QCStatus, ConvertionStatusNotStarted) {
-		skipQC = true
-	}
-	if tagIsNot(item.ConvertionStatus, ConvertionStatusNotStarted) ||
-		slices.Contains(noConvFeatureTypes, featureType) {
-		skipConv = true
-	}
-
-	if skipQC && skipConv {
-		return true, true
-	}
-
-	if item.SkipQCConv != nil {
-		if n := item.SkipQCConv.Name; strings.Contains(n, skip) {
-			qc := strings.Contains(n, qc)
-			conv := strings.Contains(n, conv)
-			if !qc && !conv {
-				skipQC = true
-				skipConv = true
-			} else {
-				skipQC = skipQC || qc
-				skipConv = skipConv || conv
-			}
-		}
-	}
-
-	skipQC = skipQC || item.SkipQC
-	skipConv = skipConv || item.SkipConvert
-	return
 }

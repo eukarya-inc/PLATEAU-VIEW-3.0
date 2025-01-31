@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/eukarya-inc/jpareacode"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"golang.org/x/exp/slices"
@@ -51,21 +52,21 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 	}
 
 	for _, m := range models.Models {
-		if !strings.HasPrefix(m.Key, modelPrefix) {
+		if !strings.HasPrefix(m.Key, cmsintegrationcommon.ModelPrefix) {
 			continue
 		}
-		modelIDs[strings.TrimPrefix(m.Key, modelPrefix)] = m.ID
+		modelIDs[strings.TrimPrefix(m.Key, cmsintegrationcommon.ModelPrefix)] = m.ID
 	}
-	if len(modelIDs) == 0 || modelIDs[cityModel] == "" || modelIDs[relatedModel] == "" {
+	if len(modelIDs) == 0 || modelIDs[cmsintegrationcommon.CityModel] == "" || modelIDs[cmsintegrationcommon.RelatedModel] == "" {
 		return fmt.Errorf("no models found")
 	}
 
 	log.Infofc(ctx, "cmsintegrationv3: models\n%s", pp.Sprint(modelIDs))
 
-	cityModel := modelIDs[cityModel]
-	relatedModel := modelIDs[relatedModel]
-	geospatialjpIndexModel := modelIDs[geospatialjpIndex]
-	geospatialjpDataModel := modelIDs[geospatialjpData]
+	cityModel := modelIDs[cmsintegrationcommon.CityModel]
+	relatedModel := modelIDs[cmsintegrationcommon.RelatedModel]
+	geospatialjpIndexModel := modelIDs[cmsintegrationcommon.GeospatialjpIndex]
+	geospatialjpDataModel := modelIDs[cmsintegrationcommon.GeospatialjpData]
 
 	// check city item total count
 	if !inp.Force {
@@ -111,7 +112,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			continue
 		}
 
-		cityItem := &CityItem{
+		cityItem := &cmsintegrationcommon.CityItem{
 			Prefecture: item.Prefecture,
 			CityName:   item.Name,
 			CityNameEn: item.NameEn,
@@ -124,7 +125,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			return fmt.Errorf("failed to create city item (%d/%d): %w", i, len(setupItems), err)
 		}
 
-		relatedItem := &RelatedItem{
+		relatedItem := &cmsintegrationcommon.RelatedItem{
 			City: newCityItem.ID,
 		}
 
@@ -135,7 +136,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 		}
 
 		// geospatialjp-index
-		gindexItemFields := (&GeospatialjpIndexItem{
+		gindexItemFields := (&cmsintegrationcommon.GeospatialjpIndexItem{
 			City: newCityItem.ID,
 		}).CMSItem().Fields
 		newGeospatialjpIndexItem, err := s.CMS.CreateItem(ctx, geospatialjpIndexModel, gindexItemFields, nil)
@@ -144,7 +145,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 		}
 
 		// geospatialjp-data
-		newGeospatialjpDataItem, err := s.CMS.CreateItem(ctx, geospatialjpDataModel, (&GeospatialjpDataItem{
+		newGeospatialjpDataItem, err := s.CMS.CreateItem(ctx, geospatialjpDataModel, (&cmsintegrationcommon.GeospatialjpDataItem{
 			City: newCityItem.ID,
 		}).CMSItem().Fields, nil)
 		if err != nil {
@@ -153,14 +154,14 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 
 		featureItemIDs := map[string]string{}
 		for _, f := range features {
-			var status ManagementStatus
+			var status cmsintegrationcommon.ManagementStatus
 			if !slices.Contains(item.Features, f) {
-				status = ManagementStatusSkip
+				status = cmsintegrationcommon.ManagementStatusSkip
 			}
 
-			featureItem := &FeatureItem{
+			featureItem := &cmsintegrationcommon.FeatureItem{
 				City:   newCityItem.ID,
-				Status: tagFrom(status),
+				Status: cmsintegrationcommon.TagFrom(status),
 			}
 			featureCMSItem := featureItem.CMSItem()
 
@@ -172,7 +173,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			featureItemIDs[f] = newFeatureItem.ID
 		}
 
-		if _, err := s.CMS.UpdateItem(ctx, newCityItem.ID, (&CityItem{
+		if _, err := s.CMS.UpdateItem(ctx, newCityItem.ID, (&cmsintegrationcommon.CityItem{
 			References:        featureItemIDs,
 			RelatedDataset:    newRelatedItem.ID,
 			GeospatialjpIndex: newGeospatialjpIndexItem.ID,

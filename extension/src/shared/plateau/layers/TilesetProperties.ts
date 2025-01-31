@@ -174,6 +174,7 @@ export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
   private _floodColors: QualitativeColor[] | undefined;
   private _shareId: string | undefined;
+  private _version: number;
   private _overrideProperty: OverrideProperty | undefined;
 
   constructor(
@@ -181,10 +182,12 @@ export class PlateauTilesetProperties extends Properties {
     {
       floodColor,
       shareId,
+      version,
       overrideProperty,
     }: {
       floodColor?: TilesetFloodColorField;
       shareId?: string;
+      version?: number;
       overrideProperty?: OverrideProperty;
     } = {},
   ) {
@@ -201,6 +204,7 @@ export class PlateauTilesetProperties extends Properties {
       )
       .filter(isNotNullish);
     this._shareId = shareId;
+    this._version = version ?? 0;
     this._overrideProperty = overrideProperty;
   }
 
@@ -236,7 +240,7 @@ export class PlateauTilesetProperties extends Properties {
               : [];
           const displayName =
             qualitativeProperty.getDisplayName?.(name) ??
-            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
+            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name, this._version) ??
             name;
           return {
             name,
@@ -270,7 +274,7 @@ export class PlateauTilesetProperties extends Properties {
           if (numberProperty != null) {
             const displayName =
               numberProperty.getDisplayName?.(name) ??
-              makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
+              makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name, this._version) ??
               name;
             return {
               name,

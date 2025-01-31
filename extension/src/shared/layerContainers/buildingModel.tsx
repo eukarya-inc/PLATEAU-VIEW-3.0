@@ -48,6 +48,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
   textured?: boolean;
+  version: number;
   componentAtoms: ComponentAtom[];
 };
 
@@ -65,6 +66,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   hiddenFeaturesAtom,
   searchedFeaturesAtom,
   textured,
+  version,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -168,10 +170,11 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       setProperties(
         new PlateauTilesetProperties(layerId, {
           overrideProperty: (...args) => overridePropertyRef.current(...args),
+          version,
         }),
       );
     },
-    [onLoad, setFeatureIndex, setProperties, setLayerId],
+    [onLoad, setFeatureIndex, setProperties, setLayerId, version],
   );
 
   const drawClipping = useDrawClipping(
