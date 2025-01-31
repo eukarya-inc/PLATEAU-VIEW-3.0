@@ -5,6 +5,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import ReactJson from "react-json-view";
 
 import { cityGMLClient } from "../../../shared/api/citygml";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { MESH_CODE_OBJECT } from "../../../shared/meshCode";
 import { parseIdentifier } from "../../cesium-helpers";
@@ -141,7 +142,11 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
       <Divider />
       <InspectorItem>
         <ParameterList>
-          <PropertyParameterItem properties={properties} featureType="meshCode" />
+          <PropertyParameterItem
+            properties={properties}
+            featureType="meshCode"
+            version={DEFAULT_PLATEAU_SPEC_VERSION}
+          />
         </ParameterList>
         {files && (
           <ReactJson

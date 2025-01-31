@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react";
 
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { LayerModel } from "../../layers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
@@ -37,7 +38,11 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
   }
   return (
     <ParameterList>
-      <PropertyParameterItem properties={properties} featureType="meshCode" />
+      <PropertyParameterItem
+        properties={properties}
+        featureType="meshCode"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
     </ParameterList>
   );
 };
