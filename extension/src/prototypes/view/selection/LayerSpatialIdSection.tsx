@@ -2,6 +2,7 @@ import { Divider } from "@mui/material";
 import { atom, useAtomValue } from "jotai";
 import { FC, useMemo } from "react";
 
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { LayerModel } from "../../layers";
 import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { SPATIAL_ID_LAYER } from "../../view-layers";
@@ -54,9 +55,17 @@ export const LayerSpatialIdSection: FC<LayerSpatialIdSectionProps> = ({ layers }
   return (
     <ParameterList>
       <Divider />
-      <PropertyParameterItem properties={spaceIdProperties} featureType="tags" />
+      <PropertyParameterItem
+        properties={spaceIdProperties}
+        featureType="tags"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
       <Divider />
-      <PropertyParameterItem properties={spaceIdZFXYProperties} featureType="tags" />
+      <PropertyParameterItem
+        properties={spaceIdZFXYProperties}
+        featureType="tags"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
     </ParameterList>
   );
 };

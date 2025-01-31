@@ -84,7 +84,11 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
   return (
     <ParameterList>
       <Divider />
-      <PropertyParameterItem properties={meshCodeProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
+      <PropertyParameterItem
+        properties={meshCodeProperties}
+        featureType="tags"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
       {loading ? (
         <LoadingWrapper>
           <LoadingAnimationIcon size={16} />
@@ -94,7 +98,11 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
           {cityProperties[0].values.length > 0 && (
             <>
               <Divider />
-              <PropertyParameterItem properties={cityProperties} featureType="tags" />
+              <PropertyParameterItem
+                properties={cityProperties}
+                featureType="tags"
+                version={DEFAULT_PLATEAU_SPEC_VERSION}
+              />
             </>
           )}
           {packs.length > 0 && (

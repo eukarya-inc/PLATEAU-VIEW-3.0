@@ -250,7 +250,7 @@ const Property: FC<{
     values.length === 1 ? (
       <TableRow style={{ wordBreak: "break-all" }}>
         <PropertyNameCell variant="head" width="50%" level={level}>
-          {makePropertyName(actualName, name, attrVal)}
+          {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="50%" align="right">
           {values.map((value, index) => (
@@ -263,7 +263,7 @@ const Property: FC<{
     ) : (
       <VerticalTableRow>
         <PropertyNameCell variant="head" width="100%" level={level}>
-          {makePropertyName(actualName, name, attrVal)}
+          {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="100%">
           {values.map((value, index) => (
