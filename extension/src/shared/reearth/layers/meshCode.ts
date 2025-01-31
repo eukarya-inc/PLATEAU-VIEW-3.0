@@ -37,6 +37,7 @@ export const MeshCodeLayer: FC<MeshCodeLayerProps> = ({
     }
     return {
       type: "geojson",
+      idProperty: "id",
       value: {
         type: "FeatureCollection",
         features: geojsonFeatures,

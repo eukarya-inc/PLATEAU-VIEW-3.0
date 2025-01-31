@@ -34,9 +34,10 @@ export const useSelectSketchFeature = () => {
   const prevLayersRef = useRef(selectedSketchLayers);
   useEffect(() => {
     if (!hasSketchFeatureSelected || isEqual(prevLayersRef.current, selectedSketchLayers)) return;
-    requestAnimationFrame(() => {
+    setTimeout(() => {
+      console.log("do select", selectedSketchLayers);
       window.reearth?.layers?.selectFeatures?.(selectedSketchLayers);
       prevLayersRef.current = selectedSketchLayers;
-    });
+    }, 100);
   }, [hasSketchFeatureSelected, selectedSketchLayers]);
 };

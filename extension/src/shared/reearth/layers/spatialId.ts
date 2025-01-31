@@ -38,6 +38,7 @@ export const SpatialIdLayer: FC<SpatialIdLayerProps> = ({
     }
     return {
       type: "geojson",
+      idProperty: "id",
       value: {
         type: "FeatureCollection",
         features: geojsonFeatures,

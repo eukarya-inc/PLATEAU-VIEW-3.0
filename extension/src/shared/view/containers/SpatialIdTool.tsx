@@ -70,7 +70,7 @@ export const SpatialIdTool: FC = () => {
             }),
           },
         ]);
-      }, 120);
+      }, 320);
     },
     [addFeature, addLayer, setScreenSpaceSelection, layer],
   );

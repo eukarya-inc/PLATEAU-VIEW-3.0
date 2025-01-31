@@ -34,6 +34,7 @@ import { layerComponents } from "../shared/view-layers/layerComponents";
 
 import { InitializeApp } from "./containers/InitializeApp";
 import { useAttachScreenSpaceSelection } from "./hooks/useAttachScreenSpaceSelection";
+import { useSelectMeshCodeFeature } from "./hooks/useSelectMeshCodeFeature";
 import { useSelectSketchFeature } from "./hooks/useSelectSketchFeature";
 import { useSelectSpatialIdFeature } from "./hooks/useSelectSpatialIdFeature";
 
@@ -75,6 +76,7 @@ export const Widget: FC<Props> = memo(function WidgetPresenter({ widget, inEdito
   useAttachScreenSpaceSelection();
   useSelectSketchFeature();
   useSelectSpatialIdFeature();
+  useSelectMeshCodeFeature();
 
   return (
     <div id={PLATEAUVIEW_TOOLBAR_DOM_ID}>

@@ -35,21 +35,9 @@ export const useSelectSpatialIdFeature = () => {
   useEffect(() => {
     if (!hasSpatialIdFeatureSelected || isEqual(prevLayersRef.current, selectedSpatialIdLayers))
       return;
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       window.reearth?.layers?.selectFeatures?.(selectedSpatialIdLayers);
       prevLayersRef.current = selectedSpatialIdLayers;
-    });
+    }, 100);
   }, [hasSpatialIdFeatureSelected, selectedSpatialIdLayers]);
-
-  useEffect(() => {
-    const prevFeatureIds = prevLayersRef.current.flatMap(({ featureId }) => featureId);
-    const currentFeatureIds = selectedSpatialIdLayers.flatMap(({ featureId }) => featureId);
-    console.log("prevFeatureIds", prevFeatureIds);
-    console.log("currentFeatureIds", currentFeatureIds);
-    if (prevFeatureIds.length > 0 && currentFeatureIds.length === 0) {
-      console.log("do deselect");
-      window.reearth?.layers?.selectFeatures?.([]);
-    }
-    prevLayersRef.current = selectedSpatialIdLayers;
-  }, [selectedSpatialIdLayers]);
 };
