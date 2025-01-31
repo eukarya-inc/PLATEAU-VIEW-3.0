@@ -20,7 +20,7 @@ const cachePrefix = "cache-datacatalogv3-"
 
 type CMS struct {
 	cms      cms.Interface
-	pcms     plateaucms.SpecStore
+	pcms     *plateaucms.CMS
 	project  string
 	year     int
 	plateau  bool
@@ -30,7 +30,7 @@ type CMS struct {
 
 type CMSOpts struct {
 	CMS     cms.Interface
-	PCMS    plateaucms.SpecStore
+	PCMS    *plateaucms.CMS
 	Year    int
 	Plateau bool
 	Project string
@@ -385,11 +385,19 @@ func (c *CMS) GetPlateauSpecs(ctx context.Context) ([]plateauapi.PlateauSpecSimp
 
 func (c *CMS) GetFeatureTypes(ctx context.Context) (FeatureTypes, error) {
 	// TODO: load feature types from CMS
-	return FeatureTypes{
+
+	// ft, err := getFeatureTypes(ctx, c.pcms)
+	// if err != nil {
+	// 	return FeatureTypes{}, fmt.Errorf("failed to get feature types: %w", err)
+	// }
+	// return ft, nil
+
+	res := FeatureTypes{
 		Plateau: plateauFeatureTypes,
 		Related: relatedFeatureTypes,
 		Generic: genericFeatureTypes,
-	}, nil
+	}
+	return res, nil
 }
 
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {

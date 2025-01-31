@@ -10,7 +10,7 @@ import (
 )
 
 type SpecStore interface {
-	PlateauSpecs(ctx context.Context) ([]PlateauSpec, error)
+	PlateauSpecs(context.Context) ([]PlateauSpec, error)
 }
 
 var _ SpecStore = &CMS{}

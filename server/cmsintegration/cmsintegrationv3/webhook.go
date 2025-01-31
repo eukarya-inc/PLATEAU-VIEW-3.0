@@ -18,29 +18,11 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
-		ctx = log.UpdateContext(ctx, func(l *log.Logger) *log.Logger {
-			return l.AppendPrefixMessage("cmsintegrationv3 webhook: ")
-		})
+		ctx = log.WithPrefixMessage(ctx, "cmsintegrationv3 webhook: ")
 
 		log.Debugfc(ctx, "incoming: %+v", w)
 
-		if !w.Operator.IsUser() && w.Operator.IsIntegrationBy(conf.CMSIntegration) {
-			log.Debugfc(ctx, "invalid event operator: %+v", w.Operator)
-			return nil
-		}
-
-		if w.Type != cmswebhook.EventItemCreate && w.Type != cmswebhook.EventItemUpdate {
-			log.Debugfc(ctx, "invalid event type: %s", w.Type)
-			return nil
-		}
-
-		if w.ItemData == nil || w.ItemData.Item == nil || w.ItemData.Model == nil {
-			log.Debugfc(ctx, "invalid event data: %+v", w.Data)
-			return nil
-		}
-
-		if !strings.HasPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix) {
-			log.Debugfc(ctx, "invalid model id: %s, key: %s", w.ItemData.Item.ModelID, w.ItemData.Model.Key)
+		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf) {
 			return nil
 		}
 

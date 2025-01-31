@@ -33,9 +33,7 @@ var generateID = func() string {
 }
 
 func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebhook.Payload) error {
-	ctx = log.UpdateContext(ctx, func(l *log.Logger) *log.Logger {
-		return l.AppendPrefixMessage("fme: ")
-	})
+	ctx = log.WithPrefixMessage(ctx, "fme: ")
 
 	// if event type is "item.create" and payload is metadata, skip it
 	if w.Type == cmswebhook.EventItemCreate && (w.ItemData.Item.OriginalItemID != nil || w.ItemData.Item.IsMetadata) {

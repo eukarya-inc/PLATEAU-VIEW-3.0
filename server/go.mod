@@ -24,8 +24,8 @@ require (
 	github.com/orisano/gosax v1.1.1
 	github.com/paulmach/go.geojson v1.5.0
 	github.com/reearth/go3dtiles v0.0.0-20230612053146-a6d07c1ab855
-	github.com/reearth/reearth-cms-api/go v0.0.0-20240821095141-7d8fed5a3a3b
-	github.com/reearth/reearthx v0.0.0-20250128100336-471511f39d3c
+	github.com/reearth/reearth-cms-api/go v0.0.0-20250129123244-dcf65b6d0af8
+	github.com/reearth/reearthx v0.0.0-20250130135542-7860571926f2
 	github.com/samber/lo v1.39.0
 	github.com/sendgrid/sendgrid-go v3.14.0+incompatible
 	github.com/spf13/afero v1.11.0

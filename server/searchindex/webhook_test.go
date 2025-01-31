@@ -388,6 +388,8 @@ type mockedCMS struct {
 	assets            *util.SyncMap[string, *cms.Asset]
 }
 
+var _ cms.Interface = (*mockedCMS)(nil)
+
 func newMockedCMS(t *testing.T, itemsprojectkey, itemskey, storageprojectkey, storagekey string, items []*cms.Item, assets []*cms.Asset) *mockedCMS {
 	return &mockedCMS{
 		t:                 t,
@@ -527,7 +529,7 @@ func (c *mockedCMS) Asset(ctx context.Context, id string) (*cms.Asset, error) {
 	return a, nil
 }
 
-func (c *mockedCMS) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader) (string, error) {
+func (c *mockedCMS) UploadAssetDirectly(ctx context.Context, projectID, name string, data io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 	if projectID != c.itemsprojectkey {
 		return "", rerror.ErrNotFound
 	}
