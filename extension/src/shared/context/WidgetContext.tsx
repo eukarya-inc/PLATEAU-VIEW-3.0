@@ -33,6 +33,7 @@ import {
   useIsEnable,
   useStartTime,
   useFinishTime,
+  useDatasetAttributesURL,
 } from "../states/environmentVariables";
 
 type Props = {
@@ -45,6 +46,7 @@ type Props = {
   plateauToken?: string;
   catalogUrl?: string;
   catalogURLForAdmin?: string;
+  datasetAttributesURL?: string;
   googleStreetViewAPIKey?: string;
   geojsonURL?: string;
   hideFeedback?: boolean;
@@ -73,6 +75,7 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
   plateauToken,
   catalogUrl,
   catalogURLForAdmin,
+  datasetAttributesURL,
   googleStreetViewAPIKey,
   hideFeedback,
   children,
@@ -197,6 +200,16 @@ export const WidgetContext: FC<PropsWithChildren<Props>> = ({
       setPlateauGeojsonUrlState(geojsonURL);
     }
   }, [geojsonURL, geojsonURLState, setPlateauGeojsonUrlState]);
+
+  const [datasetAttributesURLState, setDatasetAttributesURLState] = useDatasetAttributesURL();
+  useEffect(() => {
+    if (
+      datasetAttributesURL &&
+      (!datasetAttributesURLState || datasetAttributesURLState !== datasetAttributesURL)
+    ) {
+      setDatasetAttributesURLState(datasetAttributesURL);
+    }
+  }, [datasetAttributesURL, datasetAttributesURLState, setDatasetAttributesURLState]);
 
   // create clients
   useEffect(() => {

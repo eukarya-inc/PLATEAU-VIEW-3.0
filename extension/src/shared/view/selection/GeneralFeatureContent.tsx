@@ -107,6 +107,9 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
     setHeaderHeight(e?.getBoundingClientRect().height ?? 0);
   }, []);
 
+  const layer = useAtomValue(rootLayer.layer);
+  const plateauSpecMajorVersion = "version" in layer ? layer.version ?? 0 : 0;
+
   return (
     <List disablePadding>
       <div ref={handleSetHeaderHeight}>
@@ -135,7 +138,10 @@ export const GeneralFeatureContent: FC<GeneralFeatureContentProps> = ({
         <Divider />
       </div>
       {displayType === "propertyList" ? (
-        <GeneralFeaturePropertiesSection values={values} />
+        <GeneralFeaturePropertiesSection
+          values={values}
+          plateauSpecMajorVersion={plateauSpecMajorVersion}
+        />
       ) : displayType === "CZMLDescription" ? (
         <DescriptionFeatureContent
           html={firstFeature?.metaData?.description}

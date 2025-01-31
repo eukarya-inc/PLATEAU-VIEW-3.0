@@ -8,7 +8,8 @@ import { datasetTypeNames } from "../../../prototypes/view/constants/datasetType
 import { Feature } from "../../reearth/types/layer";
 import { RootLayerForDataset } from "../../view-layers";
 
-import { AttributeValue, getAttributeLabel, getRootFields } from "./attributes";
+import { getAttributeLabel, getRootFields } from "./attributes";
+import type { AttributeValue } from "./loadAttributes";
 
 export const attributesKey = "attributes";
 export const ancestorsKey = "ancestors";
@@ -43,6 +44,7 @@ export const makePropertyForFeatureInspector = ({
   builtin,
   featureType,
   sortRootPropertyNames,
+  version,
 }: {
   featureInspector?: RootLayerForDataset["featureInspector"];
   layer: LayerModel | undefined;
@@ -50,6 +52,7 @@ export const makePropertyForFeatureInspector = ({
   builtin?: boolean;
   sortRootPropertyNames?: (names: string[]) => string[];
   featureType: string;
+  version: number;
 }) => {
   const shouldUseSettingProperty =
     (!builtin &&
@@ -88,7 +91,7 @@ export const makePropertyForFeatureInspector = ({
           )
           .join("_");
         const label = lastPathName
-          ? getAttributeLabel(`${featureType}_${lastPathName}`)?.description
+          ? getAttributeLabel(`${featureType}_${lastPathName}`, version)?.description
           : undefined;
         return {
           name: p.displayName || label || lastPathName,
@@ -131,6 +134,7 @@ export const makePropertyForFeatureInspector = ({
                 Object.fromEntries(
                   sortedRawBuiltInRootPropertyNames.map(n => [n, f.properties[n]]),
                 ),
+                version,
                 datasetType,
                 {
                   name: "title" in layer ? layer?.title : undefined,
@@ -187,11 +191,11 @@ export const makePropertyForFeatureInspector = ({
             })
             .map(name => {
               const joinedName = `${featureType}_${name}`;
-              const attrVal = getPropertyAttributeValue(joinedName);
+              const attrVal = getPropertyAttributeValue(joinedName, version);
               const firstValue = features[0]?.properties?.[name];
               const isValueObject = firstValue && typeof firstValue === "object";
               return {
-                name: makePropertyName(joinedName, name, attrVal) || name,
+                name: makePropertyName(joinedName, name, version, attrVal) || name,
                 values: features
                   .map(f =>
                     attrVal
@@ -219,8 +223,13 @@ const UNION_MAP = [
   ["uom", "単位"],
 ] as const;
 
-export const makePropertyName = (name: string, defaultName: string, attrVal_?: AttributeValue) => {
-  const attrVal = attrVal_ ?? getPropertyAttributeValue(name);
+export const makePropertyName = (
+  name: string,
+  defaultName: string,
+  version: number,
+  attrVal_?: AttributeValue,
+) => {
+  const attrVal = attrVal_ ?? getPropertyAttributeValue(name, version);
   if (attrVal) return attrVal.description;
 
   // Find a name which has a suffix for union.
@@ -228,7 +237,7 @@ export const makePropertyName = (name: string, defaultName: string, attrVal_?: A
     if (!name.endsWith(key)) return;
 
     const attr =
-      getAttributeLabel(name.split(key)[0])?.description ||
+      getAttributeLabel(name.split(key)[0], version)?.description ||
       defaultName.split(key)[0].replaceAll("_", "");
 
     return attr + val;
@@ -238,13 +247,16 @@ export const makePropertyName = (name: string, defaultName: string, attrVal_?: A
   return defaultName.replaceAll("_", "");
 };
 
-export const getPropertyAttributeValue = (name: string) => {
-  const first = getAttributeLabel(name);
+export const getPropertyAttributeValue = (name: string, version: number) => {
+  const first = getAttributeLabel(name, version);
   if (first) return first;
 
   const featureType = name.split("_")[0];
   if (featureType) {
-    const withoutFeatureType = getAttributeLabel(name.split(featureType + "_").slice(-1)[0]);
+    const withoutFeatureType = getAttributeLabel(
+      name.split(featureType + "_").slice(-1)[0],
+      version,
+    );
     if (withoutFeatureType) return withoutFeatureType;
   }
 
@@ -259,13 +271,14 @@ export const getPropertyAttributeValue = (name: string) => {
             .replace("_", ":"),
         ].join("_")
       : name.replace("_", ":"),
+    version,
   );
   if (second) return second;
 
   // Find last name, because the nested structure is expressed by `_`.
   // For example, `parent_child_attr` should be `attr`.
   const lastName = name.split("_").slice(-1)[0];
-  const third = getAttributeLabel(lastName);
+  const third = getAttributeLabel(lastName, version);
   if (third) return third;
 };
 
