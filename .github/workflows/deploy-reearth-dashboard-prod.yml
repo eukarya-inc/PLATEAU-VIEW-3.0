@@ -4,7 +4,7 @@ on:
 env:
   IMAGE_NAME_GHCR_REEARTH: ghcr.io/eukarya-inc/reearth/reearth-dashboard-api:rc
   IMAGE_NAME_GHCR_PLATEAU: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-dashboard-api:latest
-  d: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-dashboard-api:latest
+  IMAGE_NAME_GCP_PLATEAU: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-dashboard-api:latest
 concurrency:
   group: ${{ github.workflow }}
 jobs:
@@ -36,15 +36,15 @@ jobs:
         run: docker pull $IMAGE_NAME_GHCR_REEARTH
 
       - name: Tag docker images for GitHub Container Registry and Google Cloud
-        run: docker tag $IMAGE_NAME_GHCR_REEARTH $IMAGE_NAME_GHCR_PLATEAU && docker tag $IMAGE_NAME_GHCR_REEARTH $d
+        run: docker tag $IMAGE_NAME_GHCR_REEARTH $IMAGE_NAME_GHCR_PLATEAU && docker tag $IMAGE_NAME_GHCR_REEARTH $IMAGE_NAME_GCP_PLATEAU
 
       - name: Push docker images to GitHub Container Registry and Google Cloud
-        run: docker push $IMAGE_NAME_GHCR_PLATEAU && docker push $d
+        run: docker push $IMAGE_NAME_GHCR_PLATEAU && docker push $IMAGE_NAME_GCP_PLATEAU
 
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy reearth-dashboard-api \
-            --image $d \
+            --image $IMAGE_NAME_GCP_PLATEAU \
             --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
