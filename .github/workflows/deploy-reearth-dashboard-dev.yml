@@ -1,4 +1,4 @@
-name: 👥 Deploy Re:earth Dashboard Development Environment
+name: 👥 Deploy Re:Earth Dashboard dev
 on:
   workflow_dispatch:
 env:

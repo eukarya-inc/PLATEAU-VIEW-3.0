@@ -1,4 +1,4 @@
-name: 👥 Deploy Re:earth Dashboard Production Environment
+name: 👥 Deploy Re:Earth Dashboard prod
 on:
   workflow_dispatch:
 env:
