@@ -3,9 +3,6 @@ on:
   workflow_dispatch:
   repository_dispatch:
     types: [deploy-geo-dev]
-env:
-  IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-geo:latest
-  IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/plateauview-geo:latest
 jobs:
   deploy_geo:
     runs-on: ubuntu-latest
@@ -42,13 +39,13 @@ jobs:
         run: docker load < plateauview-geo.tar.gz
       - name: docker push
         run: |
-          docker tag $IMAGE $IMAGE_GCP && \
-          docker push $IMAGE &&
-          docker push $IMAGE_GCP
+          docker tag ${{ vars.GEO_IMAGE }} ${{ vars.GEO_IMAGE_GCP }} && \
+          docker push ${{ vars.GEO_IMAGE }} &&
+          docker push ${{ vars.GEO_IMAGE_GCP }}
       - name: Deploy geo to Cloud Run
         run: |
           gcloud run deploy plateauview-geo \
-            --image $IMAGE_GCP \
+            --image ${{ vars.GEO_IMAGE_GCP }} \
             --region ${{ vars.GCP_REGION }} \
             --platform managed \
             --quiet
