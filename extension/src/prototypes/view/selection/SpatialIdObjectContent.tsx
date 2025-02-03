@@ -9,6 +9,7 @@ import useCityGMLSpaceAttributes from "../../../shared/api/citygml/hooks/useCity
 import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { SPATIAL_ID_OBJECT } from "../../../shared/spatialId";
+import { LoadingAnimationIcon } from "../../../shared/ui-components/LoadingAnimationIcon";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
@@ -17,7 +18,6 @@ import {
   InspectorHeader,
   InspectorItem,
   LayerIcon,
-  LoadingAnimationIcon,
   ParameterList,
   PropertyParameterItem,
   SelectParameterItem,
@@ -161,9 +161,17 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
       />
       <Divider />
       <ParameterList>
-        <PropertyParameterItem properties={spaceIdProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
+        <PropertyParameterItem
+          properties={spaceIdProperties}
+          featureType="tags"
+          version={DEFAULT_PLATEAU_SPEC_VERSION}
+        />
         <Divider />
-        <PropertyParameterItem properties={spaceIdZFXYProperties} featureType="tags" version={DEFAULT_PLATEAU_SPEC_VERSION}/>
+        <PropertyParameterItem
+          properties={spaceIdZFXYProperties}
+          featureType="tags"
+          version={DEFAULT_PLATEAU_SPEC_VERSION}
+        />
         {featureTypeOptions && featureTypeOptions.length > 0 && currentType && (
           <>
             <Divider />

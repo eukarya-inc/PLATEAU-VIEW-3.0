@@ -30,12 +30,12 @@ import {
 import invariant from "tiny-invariant";
 
 import useMeshCode from "../../shared/meshCode/useMeshCode";
+import { SearchOptionAreaButton } from "../../shared/ui-components/SearchOptionAreaButton";
 
 import { EntityTitleButton } from "./EntityTitleButton";
 import { AddressIcon, BuildingIcon, DatasetIcon, HistoryIcon } from "./icons";
 import { SearchField } from "./SearchField";
 import { SearchListbox } from "./SearchListbox";
-import { SearchOptionAreaButton } from "./SearchOptionAreaButton";
 
 const Root = styled("div")(({ theme }) => ({
   position: "relative",

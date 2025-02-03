@@ -23,6 +23,7 @@ import {
   RoadIcon,
   ShelterIcon,
   SketchIcon,
+  SpatialIdIcon,
   StationIcon,
   StoryIcon,
   TsunamiRiskIcon,
@@ -30,7 +31,6 @@ import {
   UseCaseIcon,
   VegetationIcon,
 } from "../ui-components/icons";
-import { SpatialIdIcon } from "../ui-components/icons/SpatialIdIcon";
 
 import {
   AREA_LAYER,

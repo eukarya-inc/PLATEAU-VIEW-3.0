@@ -2,15 +2,13 @@ import { IconButton, Tooltip } from "@mui/material";
 import { Stack } from "@mui/system";
 import { FC, HTMLAttributes, SyntheticEvent, useCallback, useState } from "react";
 
+import { EntityTitleButton, SearchOption } from "../../prototypes/ui-components";
+import { AddMeshIcon, AddressIcon } from "../../prototypes/ui-components/icons";
 import {
   getCenterCoordinatesFromMeshCode,
   getMeshCodeFromCoordinates,
 } from "../../shared/meshCode/utils";
 import { flyToCamera } from "../../shared/reearth/utils";
-
-import { EntityTitleButton } from "./EntityTitleButton";
-import { AddMeshIcon, AddressIcon } from "./icons";
-import { SearchOption } from "./SearchAutocomplete";
 
 interface HoverMenuProps {
   hovered?: boolean;

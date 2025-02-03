@@ -8,6 +8,8 @@ import useCityGMLPacks from "../../../shared/api/citygml/hooks/useCityGMLPacks";
 import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
 import { MESH_CODE_OBJECT } from "../../../shared/meshCode";
+import { LoadingAnimationIcon } from "../../../shared/ui-components/LoadingAnimationIcon";
+import { PropertyActionItem } from "../../../shared/ui-components/PropertyActionItem";
 import { parseIdentifier } from "../../cesium-helpers";
 import { layerSelectionAtom } from "../../layers";
 import { screenSpaceSelectionAtom } from "../../screen-space-selection";
@@ -18,10 +20,8 @@ import {
   ParameterList,
   PropertyParameterItem,
   TrashIcon,
-  PropertyActionItem,
   PackageIcon,
   DownloadIcon,
-  LoadingAnimationIcon,
   PackageWarningIcon,
 } from "../../ui-components";
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";

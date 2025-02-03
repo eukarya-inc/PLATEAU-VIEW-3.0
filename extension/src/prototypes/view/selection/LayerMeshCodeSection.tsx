@@ -5,14 +5,14 @@ import useCityGMLFiles from "../../../shared/api/citygml/hooks/useCityGMLFiles";
 import useCityGMLPacks from "../../../shared/api/citygml/hooks/useCityGMLPacks";
 import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { useOptionalAtomValue } from "../../../shared/hooks";
+import { LoadingAnimationIcon } from "../../../shared/ui-components/LoadingAnimationIcon";
+import { PropertyActionItem } from "../../../shared/ui-components/PropertyActionItem";
 import { LayerModel } from "../../layers";
 import {
   DownloadIcon,
-  LoadingAnimationIcon,
   PackageIcon,
   PackageWarningIcon,
   ParameterList,
-  PropertyActionItem,
   PropertyParameterItem,
 } from "../../ui-components";
 import { MESH_CODE_LAYER } from "../../view-layers";

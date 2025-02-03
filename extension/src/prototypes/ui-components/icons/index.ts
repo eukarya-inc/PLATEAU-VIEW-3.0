@@ -49,6 +49,7 @@ export * from "./SketchIcon";
 export * from "./SketchCircleIcon";
 export * from "./SketchPolygonIcon";
 export * from "./SketchRectangleIcon";
+export * from "./SpatialIdIcon";
 export * from "./StationIcon";
 export * from "./StoryIcon";
 export * from "./TrashIcon";
