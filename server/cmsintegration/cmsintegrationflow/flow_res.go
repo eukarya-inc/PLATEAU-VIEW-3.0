@@ -21,6 +21,7 @@ type FlowInternalResult struct {
 	Dic      string
 	MaxLOD   string
 	QCResult string
+	QCOK     bool
 }
 
 func (r FlowResult) IsSucceeded() bool {
@@ -42,22 +43,32 @@ func (r FlowResult) Internal() (res FlowInternalResult) {
 		case "maxlod.csv":
 			res.MaxLOD = output
 			continue
-		case "qc_result.xlsx":
+		case "qc_result.zip":
 			res.QCResult = output
+			continue
+		case "qc_result_succeeded":
+			res.QCOK = true
+			continue
+		}
+
+		if path.Ext(base) != ".zip" {
 			continue
 		}
 
 		key := getOutputKey(base)
+		if res.Conv == nil {
+			res.Conv = map[string][]string{}
+		}
 		res.Conv[key] = append(res.Conv[key], output)
 	}
 
 	return
 }
 
-var reDigits = regexp.MustCompile(`^\d+_(.*)(?:\..+)?$`)
+var reDigits = regexp.MustCompile(`^\d+_(.*)$`)
 
 func getOutputKey(s string) string {
-	k := reDigits.ReplaceAllString(s, "$1")
+	k := reDigits.ReplaceAllString(fileName(s), "$1")
 	k = strings.TrimSuffix(k, "_no_texture")
 	k = strings.TrimSuffix(k, "_l1")
 	k = strings.TrimSuffix(k, "_l2")
@@ -67,4 +78,8 @@ func getOutputKey(s string) string {
 	k = strings.TrimSuffix(k, "_lod3")
 	k = strings.TrimSuffix(k, "_lod4")
 	return k
+}
+
+func fileName(s string) string {
+	return strings.TrimSuffix(path.Base(s), path.Ext(s))
 }
