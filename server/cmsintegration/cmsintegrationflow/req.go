@@ -92,6 +92,7 @@ func sendRequestToFlow(
 		TriggerID:       triggerID,
 		NotificationURL: resultURL(conf, sig),
 		CityGMLURL:      cityGMLAsset.URL,
+		AuthToken:       conf.FlowToken,
 	})
 	if err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "Flowへのリクエストに失敗しました。%v", err)

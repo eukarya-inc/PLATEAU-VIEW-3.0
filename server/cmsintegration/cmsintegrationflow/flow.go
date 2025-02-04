@@ -46,9 +46,6 @@ func (f *flowImpl) Request(ctx context.Context, r FlowRequest) (res FlowRequestR
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	if f.token != "" {
-		req.Header.Set("Authorization", f.token)
-	}
 
 	log.Debugfc(ctx, "flow req: url=%s, token=%s, body=%s", u, f.token, b)
 	resp, err := f.h.Do(req)
@@ -85,6 +82,6 @@ func (f *flowImpl) getTriggerURL(triggerID string) string {
 		return ""
 	}
 
-	u, _ := url.JoinPath(f.baseURL, triggerID)
+	u, _ := url.JoinPath(f.baseURL, "api", "trigger", triggerID, "run")
 	return u
 }
