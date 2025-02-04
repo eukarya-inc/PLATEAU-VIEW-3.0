@@ -402,7 +402,7 @@ func (c *CMS) GetFeatureTypes(ctx context.Context) (FeatureTypes, error) {
 
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {
 	items, err := cms.GetItemsByKeyInParallel(ctx, project, model, true, 100)
-	if err != nil {
+	if err != nil && model != modelPrefix+sampleModel { // sample is optional
 		log.Warnfc(ctx, "datacatalogv3: failed to get items (%s/%s): %v", project, model, err)
 	}
 	if items == nil {

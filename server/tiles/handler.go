@@ -126,6 +126,8 @@ func (h *Handler) streamTile(c echo.Context, base, z, x, y string) error {
 
 	if h.conf.CacheControl != "" {
 		c.Response().Header().Set("Cache-Control", h.conf.CacheControl)
+	} else if h := resp.Header.Get("Cache-Control"); h != "" {
+		c.Response().Header().Set("Cache-Control", h)
 	}
 
 	return c.Stream(resp.StatusCode, resp.Header.Get("Content-Type"), resp.Body)
