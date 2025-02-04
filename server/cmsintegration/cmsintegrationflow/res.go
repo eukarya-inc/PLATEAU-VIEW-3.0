@@ -31,7 +31,7 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	}
 
 	// handle error
-	if res.IsError() {
+	if res.IsFailed() {
 		log.Debugfc(ctx, "failed to convert: logs=%v", res.Logs)
 		_ = s.Fail(ctx, id.ItemID, ReqType(id.Type), "%sに失敗しました。%s", ReqType(id.Type).Title(), logurls)
 		return nil

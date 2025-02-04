@@ -21,7 +21,7 @@ type ID struct {
 }
 
 func parseID(id, secret string) (ID, error) {
-	payload, err := unsignFMEID(id, secret)
+	payload, err := unsignID(id, secret)
 	if err != nil {
 		return ID{}, err
 	}
@@ -51,7 +51,7 @@ func signID(payload, secret string) string {
 	return fmt.Sprintf("%s:%s", sig, payload)
 }
 
-func unsignFMEID(id, secret string) (string, error) {
+func unsignID(id, secret string) (string, error) {
 	_, payload, found := strings.Cut(id, ":")
 	if !found {
 		return "", ErrInvalidID

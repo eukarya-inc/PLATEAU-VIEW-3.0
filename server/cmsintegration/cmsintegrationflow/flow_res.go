@@ -23,8 +23,12 @@ type FlowInternalResult struct {
 	QCResult string
 }
 
-func (r FlowResult) IsError() bool {
-	return r.Status == "error"
+func (r FlowResult) IsSucceeded() bool {
+	return r.Status == "succeeded"
+}
+
+func (r FlowResult) IsFailed() bool {
+	return r.Status == "failed"
 }
 
 func (r FlowResult) Internal() (res FlowInternalResult) {

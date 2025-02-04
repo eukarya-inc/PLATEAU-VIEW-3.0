@@ -26,7 +26,7 @@ func readDic(ctx context.Context, u string) (string, error) {
 		_ = res.Body.Close()
 	}()
 	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("status code is %d", err)
+		return "", fmt.Errorf("status code is %d", res.StatusCode)
 	}
 	s, err := io.ReadAll(bom.NewReader(res.Body))
 	if err != nil {

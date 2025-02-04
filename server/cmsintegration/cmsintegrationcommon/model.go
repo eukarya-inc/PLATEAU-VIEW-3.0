@@ -189,11 +189,12 @@ type FeatureItem struct {
 	Data        []string           `json:"data,omitempty" cms:"data,asset"`
 	Desc        string             `json:"desc,omitempty" cms:"desc,textarea"`
 	Items       []FeatureItemDatum `json:"items,omitempty" cms:"items,group"`
-	QCResult    string             `json:"qcresult,omitempty" cms:"qc_result,asset"`
+	QCResult    string             `json:"qc_result,omitempty" cms:"qc_result,asset"`
 	SearchIndex string             `json:"search_index,omitempty" cms:"search_index,asset"`
 	Dic         string             `json:"dic,omitempty" cms:"dic,textarea"`
 	MaxLOD      string             `json:"maxlod,omitempty" cms:"maxlod,asset"`
 	FeatureType string             `json:"featureType,omitempty" cms:"feature_type,select"`
+
 	// metadata
 	SkipQCConv       *cms.Tag `json:"skip_qc_conv,omitempty" cms:"skip_qc_conv,tag,metadata"`
 	Status           *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
