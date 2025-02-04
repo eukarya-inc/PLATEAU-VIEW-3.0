@@ -35,9 +35,9 @@ export const useSelectSpatialIdFeature = () => {
   useEffect(() => {
     if (!hasSpatialIdFeatureSelected || isEqual(prevLayersRef.current, selectedSpatialIdLayers))
       return;
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       window.reearth?.layers?.selectFeatures?.(selectedSpatialIdLayers);
       prevLayersRef.current = selectedSpatialIdLayers;
-    });
+    }, 100);
   }, [hasSpatialIdFeatureSelected, selectedSpatialIdLayers]);
 };

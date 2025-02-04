@@ -248,6 +248,7 @@ export const InitialLayers: FC = () => {
               id: l.id,
               title: l.title,
               type: MESH_CODE_LAYER,
+              meshCodeLevel: l.meshCodeLevel,
               features: l.features,
               hidden: l.hidden,
             };

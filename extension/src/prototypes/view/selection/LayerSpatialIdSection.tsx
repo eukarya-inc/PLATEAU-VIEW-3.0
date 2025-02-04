@@ -1,9 +1,10 @@
-import { saveAs } from "file-saver";
+import { Divider } from "@mui/material";
 import { atom, useAtomValue } from "jotai";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useMemo } from "react";
 
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../../../shared/constants";
 import { LayerModel } from "../../layers";
-import { ButtonParameterItem, ParameterList } from "../../ui-components";
+import { ParameterList, PropertyParameterItem } from "../../ui-components";
 import { SPATIAL_ID_LAYER } from "../../view-layers";
 
 export interface LayerSpatialIdSectionProps {
@@ -26,13 +27,26 @@ export const LayerSpatialIdSection: FC<LayerSpatialIdSectionProps> = ({ layers }
     ),
   );
 
-  const handleExport = useCallback(() => {
-    saveAs(
-      new Blob([JSON.stringify(features)], {
-        type: "text/plain",
-      }),
-      "spatialIdSpaces.json",
-    );
+  const spaceIdProperties = useMemo(() => {
+    if (!features || features.length === 0) return [];
+    return [
+      {
+        id: "spaceId",
+        name: "空間ID",
+        values: features.map(feature => feature.data.id),
+      },
+    ];
+  }, [features]);
+
+  const spaceIdZFXYProperties = useMemo(() => {
+    if (!features || features.length === 0) return [];
+    return [
+      {
+        id: "spaceIdZoomZFXY",
+        name: "ZFXY",
+        values: features.map(feature => feature.data.zfxyStr),
+      },
+    ];
   }, [features]);
 
   if (spatialIdLayers.length === 0) {
@@ -40,10 +54,18 @@ export const LayerSpatialIdSection: FC<LayerSpatialIdSectionProps> = ({ layers }
   }
   return (
     <ParameterList>
-      <ButtonParameterItem disabled={features.length === 0} onClick={handleExport}>
-        {spatialIdLayers.length > 1 ? `${spatialIdLayers.length}個の` : ""}
-        空間をエキスポート
-      </ButtonParameterItem>
+      <Divider />
+      <PropertyParameterItem
+        properties={spaceIdProperties}
+        featureType="tags"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
+      <Divider />
+      <PropertyParameterItem
+        properties={spaceIdZFXYProperties}
+        featureType="tags"
+        version={DEFAULT_PLATEAU_SPEC_VERSION}
+      />
     </ParameterList>
   );
 };
