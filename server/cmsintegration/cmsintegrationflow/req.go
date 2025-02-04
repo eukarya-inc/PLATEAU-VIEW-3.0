@@ -8,6 +8,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
 
 func sendRequestToFlow(
@@ -15,21 +16,20 @@ func sendRequestToFlow(
 	s *Services,
 	conf *Config,
 	projectID string,
+	modelName string,
 	mainItem *cms.Item,
-	featureType plateaucms.PlateauFeatureType,
+	featureTypes []plateaucms.PlateauFeatureType,
 	overrideReqType ReqType,
 ) error {
-	ctx = log.UpdateContext(ctx, func(l *log.Logger) *log.Logger {
-		return l.AppendPrefixMessage("flow: ")
-	})
-
-	if !featureType.Conv && !featureType.QC {
-		log.Debugfc(ctx, "skip qc and convert")
-		return nil
-	}
+	ctx = log.WithPrefixMessage(ctx, "flow: ")
 
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
 	log.Debugfc(ctx, "item: %+v", item)
+
+	if item == nil {
+		log.Debugfc(ctx, "no item")
+		return nil
+	}
 
 	if !item.UseFlow {
 		log.Debugfc(ctx, "flow is disabled")
@@ -38,6 +38,20 @@ func sendRequestToFlow(
 
 	if item.CityGML == "" || item.City == "" {
 		log.Debugfc(ctx, "no city or no citygml")
+		return nil
+	}
+
+	featureTypeCode := item.FeatureTypeCode()
+	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
+		return ft.Code == modelName || ft.Code == featureTypeCode
+	})
+	if !ok {
+		log.Debugfc(ctx, "invalid feature type or model name: %s, %s", modelName, featureTypeCode)
+		return nil
+	}
+
+	if !featureType.Conv && !featureType.QC {
+		log.Debugfc(ctx, "skip qc and convert")
 		return nil
 	}
 
@@ -80,6 +94,16 @@ func sendRequestToFlow(
 		return fmt.Errorf("no trigger id: ty=%s, oty=%s, v=%d", ty, overrideReqType, specv)
 	}
 
+	// conv settings
+	convSettings := cityItem.ConvSettings().Merge(item.ConvSettings())
+	if convSettings == nil {
+		_ = s.Fail(ctx, mainItem.ID, ty, "変換設定が見つかりません。")
+		return fmt.Errorf("no conv settings")
+	}
+	if convSettings.FeatureType == "" {
+		convSettings.FeatureType = featureType.Code
+	}
+
 	// sign id
 	sig := ID{
 		ItemID:      mainItem.ID,
@@ -87,12 +111,13 @@ func sendRequestToFlow(
 		FeatureType: featureType.Code,
 	}.Sign(conf.Secret)
 
-	// request to fme
+	// request to flow
 	res, err := s.Flow.Request(ctx, FlowRequest{
 		TriggerID:       triggerID,
 		NotificationURL: resultURL(conf, sig),
-		CityGMLURL:      cityGMLAsset.URL,
 		AuthToken:       conf.FlowToken,
+		CityGMLURL:      cityGMLAsset.URL,
+		ConvSettings:    convSettings,
 	})
 	if err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "Flowへのリクエストに失敗しました。%v", err)

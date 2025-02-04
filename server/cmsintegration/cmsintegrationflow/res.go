@@ -151,7 +151,13 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	}
 
 	// comment to the item
-	if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("Flowの%sが完了しました。%s", id.Type.Title(), logurls)); err != nil {
+	qcmsg := ""
+	if internal.QCOK {
+		qcmsg = "エラーは検出されませんでした。"
+	} else {
+		qcmsg = "エラーが検出されました。"
+	}
+	if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("Flowの%sが完了しました。%s%s", id.Type.Title(), qcmsg, logurls)); err != nil {
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
@@ -160,7 +166,7 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	// if the qc is success, trigger the conversion
 	if id.Type == ReqTypeQC && qcStatus == cmsintegrationcommon.ConvertionStatusSuccess {
 		log.Infofc(ctx, "trigger conversion")
-		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, mainItem, featureType, ReqTypeConv); err != nil {
+		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, featureType.Code, mainItem, featureTypes, ReqTypeConv); err != nil {
 			return fmt.Errorf("failed to send request to flow: %w", err)
 		}
 	}

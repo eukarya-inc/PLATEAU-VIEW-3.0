@@ -7,11 +7,9 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
-	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
-	"github.com/samber/lo"
 )
 
 const handlerPath = "/notify_flow"
@@ -24,7 +22,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
-		ctx = log.WithPrefixMessage(ctx, "cmsintegrationv4 webhook: ")
+		ctx = log.WithPrefixMessage(ctx, "cmsintegrationflow webhook: ")
 
 		log.Debugfc(ctx, "incoming: %+v", w)
 		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf.CMSIntegration) {
@@ -38,17 +36,8 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
-		featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
-		if err != nil {
-			log.Errorfc(ctx, "failed to get feature types: %v", err)
-			return nil
-		}
-
-		featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
-			return ft.Code == modelName
-		})
-		if !ok {
-			log.Debugfc(ctx, "invalid model name: %s", modelName)
+		if modelName != "flow" { // only trigger flow for flow model
+			log.Debugfc(ctx, "skip model: %s", modelName)
 			return nil
 		}
 
@@ -57,12 +46,18 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return err
 		}
 
-		if err := sendRequestToFlow(ctx, s, &conf, w.ProjectID(), mainItem, featureType, ""); err != nil {
+		featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+		if err != nil {
+			log.Errorfc(ctx, "failed to get feature types: %v", err)
+			return nil
+		}
+
+		if err := sendRequestToFlow(ctx, s, &conf, w.ProjectID(), modelName, mainItem, featureTypes, ""); err != nil {
 			log.Errorfc(ctx, "failed to trigger flow: %v", err)
 			return nil
 		}
 
-		log.Debugfc(ctx, "done: %s", modelName)
+		log.Debugfc(ctx, "done")
 		return nil
 	}, nil
 }
@@ -75,8 +70,12 @@ func Handler(conf Config, g *echo.Group) error {
 
 	g.POST(path.Join(handlerPath, ":id"), func(c echo.Context) error {
 		ctx := c.Request().Context()
-		ctx = log.WithPrefixMessage(ctx, "cmsintegrationv3 notify: ")
+		ctx = log.WithPrefixMessage(ctx, "cmsintegrationflow notify: ")
 		id := c.Param("id")
+		if id == "" {
+			log.Infofc(ctx, "empty id")
+			return c.JSON(http.StatusBadRequest, "empty id")
+		}
 
 		var f FlowResult
 		if err := c.Bind(&f); err != nil {
