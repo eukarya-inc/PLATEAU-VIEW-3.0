@@ -45,6 +45,18 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return err
 	}
 
+	// metadata
+	md, _, err := s.PCMS.Metadata(ctx, w.ProjectID(), false, false)
+	if err != nil {
+		log.Errorfc(ctx, "failed to get metadata: %v", err)
+		return nil
+	}
+	if !md.IsFMEEnabled() {
+		log.Debugfc(ctx, "fme is disabled")
+		return nil
+	}
+
+	// feature item
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
 
 	featureType := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)

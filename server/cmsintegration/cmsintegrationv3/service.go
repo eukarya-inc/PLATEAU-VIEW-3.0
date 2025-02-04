@@ -30,9 +30,15 @@ type Services struct {
 	PlateauCMS   *PlateauCMS
 	HTTP         *http.Client
 	TaskRunner   gcptaskrunner.TaskRunner
-	PCMS         plateaucms.SpecStore
+	PCMS         PCMS
 	FMEResultURL string
 	mockFME      fmeInterface
+}
+
+type PCMS interface {
+	plateaucms.SpecStore
+	plateaucms.FeatureTypeStore
+	plateaucms.MetadataStore
 }
 
 func NewServices(c Config) (s *Services, _ error) {

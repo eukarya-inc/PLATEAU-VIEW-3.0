@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
+	"github.com/k0kubun/pp/v3"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
@@ -35,15 +37,26 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
-		if modelName != "flow" { // only trigger flow for flow model
-			log.Debugfc(ctx, "skip model: %s", modelName)
-			return nil
-		}
-
 		mainItem, err := s.GetMainItemWithMetadata(ctx, w.ItemData.Item)
 		if err != nil {
 			return err
+		}
+
+		md, _, err := s.PCMS.Metadata(ctx, w.ProjectID(), false, false)
+		if err != nil {
+			log.Errorfc(ctx, "failed to get metadata: %v", err)
+			return nil
+		}
+		log.Debugfc(ctx, "metadata: %s", pp.Sprint(md))
+		if !md.IsFlowEnabled() {
+			log.Debugfc(ctx, "flow is disabled")
+			return nil
+		}
+
+		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
+		if md.Converter == plateaucms.ConverterFMEFlow && modelName != "flow" {
+			log.Debugfc(ctx, "skip model: %s", modelName)
+			return nil
 		}
 
 		featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
