@@ -12,6 +12,7 @@ type FlowRequest struct {
 	AuthToken       string
 	CityGMLURL      string
 	ConvSettings    *cmsintegrationcommon.ConvSettings
+	DryRun          bool
 }
 
 func (r FlowRequest) MarshalJSON() ([]byte, error) {

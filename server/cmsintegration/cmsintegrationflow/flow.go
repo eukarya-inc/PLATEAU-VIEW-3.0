@@ -47,7 +47,12 @@ func (f *flowImpl) Request(ctx context.Context, r FlowRequest) (res FlowRequestR
 
 	req.Header.Set("Content-Type", "application/json")
 
-	log.Debugfc(ctx, "flow req: url=%s, token=%s, body=%s", u, f.token, b)
+	log.Debugfc(ctx, "flow req: url=%s, has_token=%s, body=%s", u, len(f.token) > 0, b)
+	if r.DryRun {
+		log.Debugfc(ctx, "dry run")
+		return
+	}
+
 	resp, err := f.h.Do(req)
 	if err != nil {
 		return FlowRequestResult{}, fmt.Errorf("failed to send request: %w", err)

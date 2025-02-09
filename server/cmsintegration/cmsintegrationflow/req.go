@@ -6,6 +6,7 @@ import (
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
@@ -24,15 +25,10 @@ func sendRequestToFlow(
 	ctx = log.WithPrefixMessage(ctx, "flow: ")
 
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
-	log.Debugfc(ctx, "item: %+v", item)
+	log.Debugfc(ctx, "item: %s", pp.Sprint(item))
 
 	if item == nil {
 		log.Debugfc(ctx, "no item")
-		return nil
-	}
-
-	if !item.UseFlow {
-		log.Debugfc(ctx, "flow is disabled")
 		return nil
 	}
 
@@ -76,7 +72,7 @@ func sendRequestToFlow(
 	// get city item
 	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, false)
 	if err != nil {
-		_ = s.Fail(ctx, mainItem.ID, ty, "都市アイテムが見つかりません。")
+		_ = s.Fail(ctx, mainItem.ID, ty, "都市アイテムが正常に紐づけられていません。")
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
 
@@ -89,19 +85,20 @@ func sendRequestToFlow(
 	} else if overrideReqType == ReqTypeConv || (overrideReqType == "" && ty.IsConv()) {
 		triggerID = featureType.FlowConvTriggerID(specv)
 	}
-	if triggerID == "" {
-		_ = s.Fail(ctx, mainItem.ID, ty, "CMSでFlowの実行に必要な設定が正しく行われていないため実行できません。")
-		return fmt.Errorf("no trigger id: ty=%s, oty=%s, v=%d", ty, overrideReqType, specv)
-	}
 
 	// conv settings
 	convSettings := cityItem.ConvSettings().Merge(item.ConvSettings())
 	if convSettings == nil {
-		_ = s.Fail(ctx, mainItem.ID, ty, "変換設定が見つかりません。")
+		_ = s.Fail(ctx, mainItem.ID, ty, "変換設定が見つかりません。都市アイテムの設定を確認してください。")
 		return fmt.Errorf("no conv settings")
 	}
 	if convSettings.FeatureType == "" {
 		convSettings.FeatureType = featureType.Code
+	}
+
+	dryrun := ""
+	if triggerID == "" {
+		dryrun = "（dryrun）"
 	}
 
 	// sign id
@@ -118,6 +115,7 @@ func sendRequestToFlow(
 		AuthToken:       conf.FlowToken,
 		CityGMLURL:      cityGMLAsset.URL,
 		ConvSettings:    convSettings,
+		DryRun:          dryrun != "",
 	})
 	if err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "Flowへのリクエストに失敗しました。%v", err)
@@ -127,8 +125,7 @@ func sendRequestToFlow(
 	log.Infofc(ctx, "success to trigger flow: %#v", res)
 
 	// post a comment to the item
-	err = s.CMS.CommentToItem(ctx, mainItem.ID, fmt.Sprintf("Flowでの%sを開始しました。", ty.Title()))
-	if err != nil {
+	if err = s.CMS.CommentToItem(ctx, mainItem.ID, fmt.Sprintf("Flowでの%sを開始しました。%s", ty.Title(), dryrun)); err != nil {
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 

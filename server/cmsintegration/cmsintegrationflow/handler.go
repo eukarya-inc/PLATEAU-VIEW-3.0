@@ -54,7 +54,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
-		if md.Converter == plateaucms.ConverterFMEFlow && modelName != "flow" {
+		if md.Converter == plateaucms.ConverterFMEFlow && modelName != "flow" { // plateau-flow model for testing Flow
 			log.Debugfc(ctx, "skip model: %s", modelName)
 			return nil
 		}

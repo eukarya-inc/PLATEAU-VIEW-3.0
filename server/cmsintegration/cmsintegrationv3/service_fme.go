@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/k0kubun/pp/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -59,27 +60,36 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	// feature item
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
 
-	featureType := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
-	if featureType == cmsintegrationcommon.SampleModel && item.FeatureType != "" {
-		if ft := cmsintegrationcommon.GetLastBracketContent(item.FeatureType); ft != "" {
-			featureType = ft
-			log.Debugfc(ctx, "sample item: feature type is %s", ft)
-		}
+	featureTypeCode := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
+	if ft := item.FeatureTypeCode(); ft != "" {
+		featureTypeCode = ft
+		log.Debugfc(ctx, "feature type is overridden: %s", ft)
 	}
 
-	if !slices.Contains(cmsintegrationcommon.FeatureTypes, featureType) {
-		log.Debugfc(ctx, "not feature item: %s", featureType)
+	// feature types
+	featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+	if err != nil {
+		log.Errorfc(ctx, "failed to get feature types: %v", err)
 		return nil
 	}
 
-	if item.UseFlow {
-		log.Debugfc(ctx, "use flow so skipped")
+	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
+		return ft.Code == featureTypeCode
+	})
+	if !ok {
+		log.Debugfc(ctx, "invalid feature item: %s", featureTypeCode)
 		return nil
 	}
 
-	skipQC, skipConv := item.IsQCAndConvSkipped(featureType)
+	log.Debugfc(ctx, "featureType: %s", pp.Sprint(featureType))
+	if !featureType.QC && !featureType.Conv {
+		log.Debugfc(ctx, "skip qc and convert by feature type")
+		return nil
+	}
+
+	skipQC, skipConv := item.IsQCAndConvSkipped(featureTypeCode)
 	if skipQC && skipConv {
-		log.Debugfc(ctx, "skip qc and convert")
+		log.Debugfc(ctx, "skip qc and convert by item")
 		return nil
 	}
 
@@ -89,13 +99,13 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	}
 
 	ty := fmeTypeQcConv
-	if skipQC {
+	if !featureType.QC || skipQC {
 		ty = fmeTypeConv
-	} else if skipConv {
+	} else if !featureType.Conv || skipConv {
 		ty = fmeTypeQC
 	}
 
-	log.Debugfc(ctx, "itemID=%s featureType=%s", mainItem.ID, featureType)
+	log.Debugfc(ctx, "itemID=%s featureType=%s", mainItem.ID, featureTypeCode)
 	log.Debugfc(ctx, "raw item: %s", ppp.Sprint(mainItem))
 	log.Debugfc(ctx, "item: %s", ppp.Sprint(item))
 
@@ -163,7 +173,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		ID: fmeID{
 			ItemID:      mainItem.ID,
 			ProjectID:   w.ProjectID(),
-			FeatureType: featureType,
+			FeatureType: featureTypeCode,
 			Type:        string(ty),
 		}.String(conf.Secret),
 		Target:      cityGMLAsset.URL,

@@ -218,7 +218,6 @@ type FeatureItem struct {
 	Status           *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	ConvertionStatus *cms.Tag `json:"conv_status,omitempty" cms:"conv_status,tag,metadata"`
 	QCStatus         *cms.Tag `json:"qc_status,omitempty" cms:"qc_status,tag,metadata"`
-	UseFlow          bool     `json:"use_flow,omitempty" cms:"use_flow,bool,metadata"`
 
 	// compat
 	SkipQC      bool `json:"skip_qc,omitempty" cms:"skip_qc,bool,metadata"`
@@ -226,7 +225,7 @@ type FeatureItem struct {
 }
 
 func (f *FeatureItem) FeatureTypeCode() string {
-	if f == nil {
+	if f == nil || f.FeatureType == "" {
 		return ""
 	}
 	// remain only alphabet
