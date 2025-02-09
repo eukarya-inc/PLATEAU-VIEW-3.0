@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/spkg/bom"
 )
+
+var httpClient = &http.Client{
+	Timeout: 30 * time.Second,
+}
 
 func readDic(ctx context.Context, u string) (string, error) {
 	if u == "" {
@@ -18,7 +23,8 @@ func readDic(ctx context.Context, u string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	res, err := http.DefaultClient.Do(req)
+
+	res, err := httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -26,7 +32,7 @@ func readDic(ctx context.Context, u string) (string, error) {
 		_ = res.Body.Close()
 	}()
 	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("status code is %d", res.StatusCode)
+		return "", fmt.Errorf("unexpected status code %d for URL %s", res.StatusCode, u)
 	}
 	s, err := io.ReadAll(bom.NewReader(res.Body))
 	if err != nil {
