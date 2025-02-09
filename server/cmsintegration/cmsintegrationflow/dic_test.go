@@ -2,7 +2,6 @@ package cmsintegrationflow
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -27,7 +26,6 @@ func TestReadDic(t *testing.T) {
 	})
 
 	t.Run("error", func(t *testing.T) {
-		wantErr := fmt.Errorf("status code is %d", http.StatusNotFound)
 
 		httpmock.Activate()
 		defer httpmock.DeactivateAndReset()
@@ -35,7 +33,7 @@ func TestReadDic(t *testing.T) {
 		httpmock.RegisterResponder(http.MethodGet, u, httpmock.NewStringResponder(http.StatusNotFound, want))
 
 		got, err := readDic(ctx, u)
-		assert.EqualError(t, err, wantErr.Error())
+		assert.ErrorContains(t, err, "status code 404")
 		assert.Empty(t, got)
 	})
 }

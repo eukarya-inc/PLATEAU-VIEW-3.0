@@ -961,6 +961,23 @@ func (p *plateauCMSMock) PlateauSpecs(ctx context.Context) ([]plateaucms.Plateau
 	return p.plateauSpecs(ctx)
 }
 
+func (p *plateauCMSMock) PlateauFeatureTypes(ctx context.Context) ([]plateaucms.PlateauFeatureType, error) {
+	return []plateaucms.PlateauFeatureType{
+		{
+			Code: "bldg",
+			Name: "建築物モデル",
+			QC:   true,
+			Conv: true,
+		},
+		{
+			Code: "fld",
+			Name: "洪水浸水想定区域モデル",
+			QC:   true,
+			Conv: true,
+		},
+	}, nil
+}
+
 func (p *plateauCMSMock) Metadata(ctx context.Context, prj string, findDataCatalog, useDefault bool) (plateaucms.Metadata, plateaucms.MetadataList, error) {
 	return plateaucms.Metadata{
 		Converter: "fme",
