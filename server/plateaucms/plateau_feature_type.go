@@ -84,11 +84,11 @@ func (f *PlateauFeatureType) MVTLayersOfLOD(lod int) []string {
 }
 
 func (h *CMS) PlateauFeatureTypes(ctx context.Context) ([]PlateauFeatureType, error) {
-	if h.cmsMetadataProject == "" {
+	if h.cmsSysProject == "" {
 		return nil, rerror.ErrNotFound
 	}
 
-	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsMetadataProject, plateauFeatureTypesModel, true, 100)
+	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsSysProject, plateauFeatureTypesModel, true, 100)
 	if err != nil || items == nil {
 		if errors.Is(err, cms.ErrNotFound) || items == nil {
 			return nil, rerror.ErrNotFound
@@ -107,11 +107,11 @@ func (h *CMS) PlateauFeatureTypes(ctx context.Context) ([]PlateauFeatureType, er
 }
 
 func (h *CMS) DatasetTypes(ctx context.Context) ([]DatasetType, error) {
-	if h.cmsMetadataProject == "" {
+	if h.cmsSysProject == "" {
 		return nil, rerror.ErrNotFound
 	}
 
-	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsMetadataProject, datasetTypesModel, true, 100)
+	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsSysProject, datasetTypesModel, true, 100)
 	if err != nil || items == nil {
 		if errors.Is(err, cms.ErrNotFound) || items == nil {
 			return nil, rerror.ErrNotFound

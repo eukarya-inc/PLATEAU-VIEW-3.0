@@ -53,9 +53,9 @@ type Config struct {
 }
 
 type CMS struct {
-	cmsbase            string
-	cmsMetadataProject string
-	cmsMain            cms.Interface
+	cmsbase       string
+	cmsSysProject string
+	cmsMain       cms.Interface
 	// comapt
 	cmsMainProject string
 	cmsToken       string
@@ -73,9 +73,9 @@ func New(c Config) (*CMS, error) {
 	}
 
 	return &CMS{
-		cmsbase:            c.CMSBaseURL,
-		cmsMetadataProject: c.CMSSystemProject,
-		cmsMain:            cmsMain,
+		cmsbase:       c.CMSBaseURL,
+		cmsSysProject: c.CMSSystemProject,
+		cmsMain:       cmsMain,
 		// compat
 		cmsMainProject: c.CMSMainProject,
 		cmsToken:       c.CMSMainToken,
@@ -85,9 +85,9 @@ func New(c Config) (*CMS, error) {
 
 func (h *CMS) Clone() *CMS {
 	return &CMS{
-		cmsbase:            h.cmsbase,
-		cmsMetadataProject: h.cmsMetadataProject,
-		cmsMain:            h.cmsMain,
+		cmsbase:       h.cmsbase,
+		cmsSysProject: h.cmsSysProject,
+		cmsMain:       h.cmsMain,
 		// compat
 		cmsMainProject: h.cmsMainProject,
 		cmsToken:       h.cmsToken,

@@ -200,11 +200,11 @@ func (h *CMS) Metadata(ctx context.Context, prj string, findDataCatalog, useDefa
 }
 
 func (h *CMS) AllMetadata(ctx context.Context, findDataCatalog bool) (MetadataList, error) {
-	if h.cmsMetadataProject == "" {
+	if h.cmsSysProject == "" {
 		return nil, rerror.ErrNotFound
 	}
 
-	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsMetadataProject, metadataModel, false, 100)
+	items, err := h.cmsMain.GetItemsByKeyInParallel(ctx, h.cmsSysProject, metadataModel, false, 100)
 	if err != nil || items == nil {
 		if errors.Is(err, cms.ErrNotFound) || items == nil {
 			return nil, rerror.ErrNotFound
