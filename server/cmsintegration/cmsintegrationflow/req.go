@@ -19,7 +19,7 @@ func sendRequestToFlow(
 	projectID string,
 	modelName string,
 	mainItem *cms.Item,
-	featureTypes []plateaucms.PlateauFeatureType,
+	featureTypes plateaucms.PlateauFeatureTypeList,
 	overrideReqType ReqType,
 ) error {
 	ctx = log.WithPrefixMessage(ctx, "flow: ")
@@ -37,6 +37,7 @@ func sendRequestToFlow(
 		return nil
 	}
 
+	featureTypeCodes := featureTypes.Codes()
 	featureTypeCode := item.FeatureTypeCode()
 	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
 		return ft.Code == modelName || ft.Code == featureTypeCode
@@ -77,7 +78,7 @@ func sendRequestToFlow(
 	}
 
 	// trigger id
-	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw)
+	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw, featureTypeCodes)
 	specv := cityItem.SpecMajorVersionInt()
 	var triggerID string
 	if overrideReqType == ReqTypeQC || (overrideReqType == "" && ty.IsQC()) {

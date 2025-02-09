@@ -10,6 +10,7 @@ import (
 
 	"github.com/eukarya-inc/jpareacode"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"golang.org/x/exp/slices"
@@ -55,7 +56,8 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 		if !strings.HasPrefix(m.Key, cmsintegrationcommon.ModelPrefix) {
 			continue
 		}
-		modelIDs[strings.TrimPrefix(m.Key, cmsintegrationcommon.ModelPrefix)] = m.ID
+		code := strings.TrimPrefix(m.Key, cmsintegrationcommon.ModelPrefix)
+		modelIDs[code] = m.ID
 	}
 	if len(modelIDs) == 0 || modelIDs[cmsintegrationcommon.CityModel] == "" || modelIDs[cmsintegrationcommon.RelatedModel] == "" {
 		return fmt.Errorf("no models found")
@@ -67,6 +69,20 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 	relatedModel := modelIDs[cmsintegrationcommon.RelatedModel]
 	geospatialjpIndexModel := modelIDs[cmsintegrationcommon.GeospatialjpIndex]
 	geospatialjpDataModel := modelIDs[cmsintegrationcommon.GeospatialjpData]
+
+	// get feature types
+	featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get feature types: %w", err)
+	}
+
+	featureTypeCodes := featureTypes.Codes()
+	datasetTypes, err := s.PCMS.DatasetTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get dataset types: %w", err)
+	}
+
+	relatedDataTypes := datasetTypes.Codes(plateaucms.DatasetCategoryRelated)
 
 	// check city item total count
 	if !inp.Force {
@@ -118,7 +134,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			CityNameEn: item.NameEn,
 			CityCode:   item.Code,
 		}
-		cityCMSItem := cityItem.CMSItem()
+		cityCMSItem := cityItem.CMSItem(featureTypeCodes)
 
 		newCityItem, err := s.CMS.CreateItem(ctx, cityModel, cityCMSItem.Fields, cityCMSItem.MetadataFields)
 		if err != nil {
@@ -130,7 +146,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 		}
 
 		// related
-		newRelatedItem, err := s.CMS.CreateItem(ctx, relatedModel, relatedItem.CMSItem().Fields, nil)
+		newRelatedItem, err := s.CMS.CreateItem(ctx, relatedModel, relatedItem.CMSItem(relatedDataTypes).Fields, nil)
 		if err != nil {
 			return fmt.Errorf("failed to create related data item (%d/%d): %w", i, len(setupItems), err)
 		}
@@ -178,7 +194,7 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			RelatedDataset:    newRelatedItem.ID,
 			GeospatialjpIndex: newGeospatialjpIndexItem.ID,
 			GeospatialjpData:  newGeospatialjpDataItem.ID,
-		}).CMSItem().Fields, nil); err != nil {
+		}).CMSItem(featureTypeCodes).Fields, nil); err != nil {
 			return fmt.Errorf("failed to update city item (%d/%d): %w", i, len(setupItems), err)
 		}
 	}

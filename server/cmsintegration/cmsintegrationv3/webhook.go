@@ -7,7 +7,6 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
-	"golang.org/x/exp/slices"
 )
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
@@ -31,7 +30,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		if modelName == cmsintegrationcommon.RelatedModel {
 			err = handleRelatedDataset(ctx, s, w)
-		} else if modelName == cmsintegrationcommon.SampleModel || slices.Contains(cmsintegrationcommon.FeatureTypes, modelName) {
+		} else {
 			err = sendRequestToFME(ctx, s, &conf, w)
 			if err == nil {
 				err = handleMaxLOD(ctx, s, w)

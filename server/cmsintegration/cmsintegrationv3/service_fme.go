@@ -17,7 +17,6 @@ import (
 	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
 	"github.com/spkg/bom"
-	"golang.org/x/exp/slices"
 )
 
 const plateauSpecMinMajorVersionObjectListsNeeded = 4
@@ -73,6 +72,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return nil
 	}
 
+	featureTypeCodes := featureTypes.Codes()
 	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
 		return ft.Code == featureTypeCode
 	})
@@ -129,7 +129,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
 
-	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw)
+	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw, featureTypeCodes)
 
 	// validate city item
 	if cityItem.CodeLists == "" {
@@ -260,6 +260,23 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 		return nil
 	}
 
+	// feature types
+	featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+	if err != nil {
+		log.Errorfc(ctx, "failed to get feature types: %v", err)
+		return nil
+	}
+
+	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
+		return ft.Code == id.FeatureType
+	})
+	if !ok {
+		log.Debugfc(ctx, "invalid feature type: %s", id.FeatureType)
+		return nil
+	}
+
+	log.Debugfc(ctx, "featureType: %s", pp.Sprint(featureType))
+
 	// get newitem
 	item, err := s.CMS.GetItem(ctx, id.ItemID, false)
 	if err != nil {
@@ -343,7 +360,9 @@ func receiveResultFromFME(ctx context.Context, s *Services, conf *Config, f fmeR
 	// items
 	var data []string
 	var items []cmsintegrationcommon.FeatureItemDatum
-	if slices.Contains(cmsintegrationcommon.FeatureTypesWithItems, id.FeatureType) {
+	if featureType.UseGroups {
+		log.Debugfc(ctx, "use groups")
+
 		for _, k := range assets.Keys {
 			assets := dataAssetMap[k]
 			i, ok := lo.Find(baseFeatureItem.Items, func(i cmsintegrationcommon.FeatureItemDatum) bool {

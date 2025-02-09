@@ -98,13 +98,11 @@ func (h *handler) Webhook(conf Config) (cmswebhook.Handler, error) {
 
 		// feature types
 		featureTypes, err := h.pcms.PlateauFeatureTypes(ctx)
+		featureTypeCodes := featureTypes.Codes()
 		if err != nil {
 			log.Errorfc(ctx, "geospatialjpv3 webhook: failed to get feature types: %v", err)
 			return nil
 		}
-		featureTypeCodes := lo.FilterMap(featureTypes, func(ft plateaucms.PlateauFeatureType, _ int) (string, bool) {
-			return ft.Code, true
-		})
 
 		cityItem := CityItemFrom(item, featureTypeCodes)
 
@@ -152,7 +150,7 @@ func (h *handler) Webhook(conf Config) (cmswebhook.Handler, error) {
 		log.Debugfc(ctx, "geospatialjpv3 webhook: %s", ppp.Sprint(cityItem))
 
 		if b := getChangedBool(w, prepareFieldKey); b != nil && *b {
-			if err := Prepare(ctx, cityItem.ID, w.ProjectID(), conf); err != nil {
+			if err := Prepare(ctx, cityItem.ID, w.ProjectID(), conf, featureTypeCodes); err != nil {
 				log.Errorfc(ctx, "geospatialjpv3 webhook: failed to prepare: %v", err)
 			}
 		} else {

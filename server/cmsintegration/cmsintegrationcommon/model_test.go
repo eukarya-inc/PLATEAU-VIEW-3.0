@@ -42,9 +42,9 @@ func TestCityItemFrom(t *testing.T) {
 		CityPublic: true,
 	}
 
-	cityItem := CityItemFrom(item)
+	cityItem := CityItemFrom(item, []string{"bldg"})
 	assert.Equal(t, expected, cityItem)
-	item2 := cityItem.CMSItem()
+	item2 := cityItem.CMSItem([]string{"bldg"})
 	assert.Equal(t, item, item2)
 }
 
@@ -247,9 +247,9 @@ func TestRelatedItemFrom(t *testing.T) {
 		},
 	}
 
-	relatedItem := RelatedItemFrom(item)
+	relatedItem := RelatedItemFrom(item, []string{"park", "landmark"})
 	assert.Equal(t, expected, relatedItem)
-	item2 := relatedItem.CMSItem()
+	item2 := relatedItem.CMSItem([]string{"park", "landmark"})
 	assert.Equal(t, expected2, item2)
 }
 

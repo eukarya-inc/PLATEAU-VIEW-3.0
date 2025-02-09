@@ -68,7 +68,7 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 	cz := NewZip2zip(zip.NewWriter(f))
 	defer cz.Close()
 
-	for _, ft := range featureTypes {
+	for _, ft := range m.FeatureTypes {
 		fi, ok := allFeatureItems[ft]
 		if !ok || fi.Data == nil {
 			log.Debugfc(ctx, "no data for %s", ft)

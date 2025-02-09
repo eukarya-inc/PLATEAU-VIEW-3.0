@@ -3,6 +3,7 @@ package geospatialjpv3
 import (
 	"context"
 	"path"
+	"strings"
 
 	"github.com/reearth/reearthx/log"
 	"google.golang.org/api/cloudbuild/v1"
@@ -13,6 +14,7 @@ type prepareOnCloudBuildConfig struct {
 	Project               string
 	CMSURL                string
 	CMSToken              string
+	FeatureTypes          []string
 	CloudBuildImage       string
 	CloudBuildMachineType string
 	CloudBuildProject     string
@@ -39,6 +41,7 @@ func prepareOnCloudBuild(ctx context.Context, conf prepareOnCloudBuildConfig) er
 			"prepare-gspatialjp",
 			"--city=" + conf.City,
 			"--project=" + conf.Project,
+			"--feature-types=" + strings.Join(conf.FeatureTypes, ","),
 			"--wetrun",
 		},
 		Env: []string{

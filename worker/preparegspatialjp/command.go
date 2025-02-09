@@ -29,6 +29,7 @@ type Config struct {
 	Clean               bool
 	SkipImcompleteItems bool
 	IgnoreStatus        bool
+	FeatureTypes        []string
 }
 
 type MergeContext struct {
@@ -38,6 +39,7 @@ type MergeContext struct {
 	GspatialjpDataItem *GspatialjpDataItem
 	UC                 int
 	WetRun             bool
+	FeatureTypes       []string
 }
 
 func CommandSingle(conf *Config) (err error) {
@@ -46,6 +48,10 @@ func CommandSingle(conf *Config) (err error) {
 
 	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
+	}
+
+	if len(conf.FeatureTypes) == 0 {
+		return fmt.Errorf("feature types is required")
 	}
 
 	cms, err := cms.New(conf.CMSURL, conf.CMSToken)
@@ -62,7 +68,7 @@ func CommandSingle(conf *Config) (err error) {
 	}
 	log.Infofc(ctx, "city item raw: %s", ppp.Sprint(cityItemRaw))
 
-	cityItem := CityItemFrom(cityItemRaw)
+	cityItem := CityItemFrom(cityItemRaw, conf.FeatureTypes)
 	log.Infofc(ctx, "city item: %s", ppp.Sprint(cityItem))
 
 	if cityItem == nil || cityItem.CityCode == "" || cityItem.CityName == "" || cityItem.CityNameEn == "" || cityItem.GeospatialjpData == "" {
@@ -184,6 +190,7 @@ func CommandSingle(conf *Config) (err error) {
 		GspatialjpDataItem: gdataItem,
 		UC:                 uc,
 		WetRun:             conf.WetRun,
+		FeatureTypes:       conf.FeatureTypes,
 	}
 
 	cw.NotifyRunning(ctx)
@@ -269,7 +276,7 @@ func CommandSingle(conf *Config) (err error) {
 			RelatedZipPath: relatedPath,
 			Generic:        indexItem.Generic,
 			Dic:            dic,
-		}); err != nil {
+		}, conf.FeatureTypes); err != nil {
 			return err
 		}
 	} else {

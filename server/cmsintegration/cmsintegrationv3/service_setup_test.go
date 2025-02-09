@@ -161,6 +161,7 @@ func TestSetupCityItems(t *testing.T) {
 				return item, nil
 			},
 		},
+		PCMS: &plateauCMSMock{},
 		HTTP: http.DefaultClient,
 	}
 
@@ -234,7 +235,7 @@ func TestSetupCityItems(t *testing.T) {
 func assertCityItem(t *testing.T, expected *cmsintegrationcommon.CityItem, actual *cms.Item) {
 	t.Helper()
 	assert.Equal(t, "city", actual.ModelID)
-	a := cmsintegrationcommon.CityItemFrom(actual)
+	a := cmsintegrationcommon.CityItemFrom(actual, []string{"bldg", "tran", "luse"})
 	am := &cmsintegrationcommon.CityItem{
 		ID:         a.ID,
 		CityName:   a.CityName,
@@ -259,7 +260,7 @@ func assertFeatureItem(t *testing.T, expectedModel, expectedCity string, status 
 
 func assertUpdatedCityItem(t *testing.T, expected *cmsintegrationcommon.CityItem, actual *cms.Item) {
 	t.Helper()
-	a := cmsintegrationcommon.CityItemFrom(actual)
+	a := cmsintegrationcommon.CityItemFrom(actual, []string{"bldg", "tran", "luse"})
 	am := &cmsintegrationcommon.CityItem{
 		ID:                a.ID,
 		References:        a.References,

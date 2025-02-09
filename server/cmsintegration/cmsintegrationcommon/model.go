@@ -12,59 +12,9 @@ import (
 
 const ModelPrefix = "plateau-"
 const CityModel = "city"
-const SampleModel = "sample"
 const RelatedModel = "related"
 const GeospatialjpIndex = "geospatialjp-index"
 const GeospatialjpData = "geospatialjp-data"
-
-var FeatureTypes = []string{
-	"bldg", // 建築物モデル
-	"tran", // 交通（道路）モデル
-	"rwy",  // 交通（鉄道）モデル
-	"trk",  // 交通（徒歩道）モデル
-	"squr", // 交通（広場）モデル
-	"wwy",  // 交通（航路）モデル
-	"luse", // 土地利用モデル
-	"fld",  // 洪水浸水想定区域モデル
-	"tnm",  // 津波浸水想定区域モデル
-	"htd",  // 高潮浸水想定区域モデル
-	"ifld", // 内水浸水想定区域モデル
-	"rfld", // ため池ハザードマップモデル
-	"lsld", // 土砂災害モデル
-	"urf",  // 都市計画決定情報モデル*
-	"unf",  // 地下埋設物モデル
-	"brid", // 橋梁モデル
-	"tun",  // トンネルモデル
-	"cons", // その他の構造物モデル
-	"frn",  // 都市設備モデル
-	"ubld", // 地下街モデル
-	"veg",  // 植生モデル
-	"dem",  // 地形モデル
-	"wtr",  // 水部モデル
-	"area", // 区域モデル
-	"gen",  // 汎用都市オブジェクトモデル
-}
-
-var FeatureTypesWithItems = []string{
-	"veg",  // 植生モデル
-	"fld",  // 洪水浸水想定区域モデル
-	"tnm",  // 津波浸水想定区域モデル
-	"htd",  // 高潮浸水想定区域モデル
-	"ifld", // 内水浸水想定区域モデル
-	"rfld", // ため池ハザードマップモデル
-	"urf",  // 都市計画決定情報モデル
-	"gen",  // 汎用都市オブジェクトモデル
-}
-
-var RelatedDataTypes = []string{
-	"shelter",
-	"park",
-	"landmark",
-	"station",
-	"railway",
-	"emergency_route",
-	"border",
-}
 
 type ManagementStatus string
 
@@ -118,13 +68,13 @@ type CityItem struct {
 	Public            map[string]bool `json:"public,omitempty" cms:"-"`
 }
 
-func CityItemFrom(item *cms.Item) (i *CityItem) {
+func CityItemFrom(item *cms.Item, featureTypes []string) (i *CityItem) {
 	i = &CityItem{}
 	item.Unmarshal(i)
 
 	references := map[string]string{}
 	public := map[string]bool{}
-	for _, ft := range FeatureTypes {
+	for _, ft := range featureTypes {
 		if ref := item.FieldByKey(ft).GetValue().String(); ref != nil {
 			references[ft] = *ref
 		}
@@ -157,11 +107,11 @@ func (i *CityItem) SpecMajorVersionInt() int {
 	return v
 }
 
-func (i *CityItem) CMSItem() *cms.Item {
+func (i *CityItem) CMSItem(featureTypes []string) *cms.Item {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 
-	for _, ft := range FeatureTypes {
+	for _, ft := range featureTypes {
 		if ref, ok := i.References[ft]; ok {
 			item.Fields = append(item.Fields, &cms.Field{
 				Key:   ft,
@@ -357,7 +307,7 @@ type RelatedItemDatum struct {
 	Description string   `json:"description,omitempty" cms:"description,textarea"`
 }
 
-func RelatedItemFrom(item *cms.Item) (i *RelatedItem) {
+func RelatedItemFrom(item *cms.Item, relatedDataTypes []string) (i *RelatedItem) {
 	i = &RelatedItem{}
 	item.Unmarshal(i)
 
@@ -368,7 +318,7 @@ func RelatedItemFrom(item *cms.Item) (i *RelatedItem) {
 		i.ConvertStatus = map[string]*cms.Tag{}
 	}
 
-	for _, t := range RelatedDataTypes {
+	for _, t := range relatedDataTypes {
 		g := item.FieldByKey(t).GetValue().String()
 		if g == nil {
 			continue
@@ -392,11 +342,11 @@ func RelatedItemFrom(item *cms.Item) (i *RelatedItem) {
 	return
 }
 
-func (i *RelatedItem) CMSItem() *cms.Item {
+func (i *RelatedItem) CMSItem(relatedDataTypes []string) *cms.Item {
 	item := &cms.Item{}
 	cms.Marshal(i, item)
 
-	for _, t := range RelatedDataTypes {
+	for _, t := range relatedDataTypes {
 		if d, ok := i.Items[t]; ok {
 			if d.ID == "" {
 				d.ID = ulid.Make().String()

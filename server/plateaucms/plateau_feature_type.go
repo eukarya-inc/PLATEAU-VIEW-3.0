@@ -10,8 +10,8 @@ import (
 )
 
 type FeatureTypeStore interface {
-	PlateauFeatureTypes(context.Context) ([]PlateauFeatureType, error)
-	DatasetTypes(context.Context) ([]DatasetType, error)
+	PlateauFeatureTypes(context.Context) (PlateauFeatureTypeList, error)
+	DatasetTypes(context.Context) (DatasetTypeList, error)
 }
 
 var _ FeatureTypeStore = &CMS{}
@@ -60,6 +60,16 @@ func (f PlateauFeatureType) FlowConvTriggerID(v int) string {
 	return ""
 }
 
+type PlateauFeatureTypeList []PlateauFeatureType
+
+func (f PlateauFeatureTypeList) Codes() []string {
+	codes := make([]string, 0, len(f))
+	for _, ft := range f {
+		codes = append(codes, ft.Code)
+	}
+	return codes
+}
+
 const (
 	DatasetCategoryRelated = "関連データセット"
 	DatasetCategoryGeneric = "その他のデータセット"
@@ -83,7 +93,20 @@ func (f *PlateauFeatureType) MVTLayersOfLOD(lod int) []string {
 	return nil
 }
 
-func (h *CMS) PlateauFeatureTypes(ctx context.Context) ([]PlateauFeatureType, error) {
+type DatasetTypeList []DatasetType
+
+func (f DatasetTypeList) Codes(cat string) []string {
+	codes := make([]string, 0, len(f))
+	for _, ft := range f {
+		if ft.Category != cat {
+			continue
+		}
+		codes = append(codes, ft.Code)
+	}
+	return codes
+}
+
+func (h *CMS) PlateauFeatureTypes(ctx context.Context) (PlateauFeatureTypeList, error) {
 	if h.cmsSysProject == "" {
 		return nil, rerror.ErrNotFound
 	}
@@ -106,7 +129,7 @@ func (h *CMS) PlateauFeatureTypes(ctx context.Context) ([]PlateauFeatureType, er
 	return all, nil
 }
 
-func (h *CMS) DatasetTypes(ctx context.Context) ([]DatasetType, error) {
+func (h *CMS) DatasetTypes(ctx context.Context) (DatasetTypeList, error) {
 	if h.cmsSysProject == "" {
 		return nil, rerror.ErrNotFound
 	}

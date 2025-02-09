@@ -17,6 +17,9 @@ import (
 
 const cacheDir = "cache"
 const cachePrefix = "cache-datacatalogv3-"
+const gespatialjpDatasetURL = "https://www.geospatial.jp/ckan/dataset/"
+const datasetTypeNameUsecase = "ユースケース"
+const datasetTypeNameCity = "自治体データ"
 
 type CMS struct {
 	cms      cms.Interface
@@ -384,20 +387,7 @@ func (c *CMS) GetPlateauSpecs(ctx context.Context) ([]plateauapi.PlateauSpecSimp
 }
 
 func (c *CMS) GetFeatureTypes(ctx context.Context) (FeatureTypes, error) {
-	// TODO: load feature types from CMS
-
-	// ft, err := getFeatureTypes(ctx, c.pcms)
-	// if err != nil {
-	// 	return FeatureTypes{}, fmt.Errorf("failed to get feature types: %w", err)
-	// }
-	// return ft, nil
-
-	res := FeatureTypes{
-		Plateau: plateauFeatureTypes,
-		Related: relatedFeatureTypes,
-		Generic: genericFeatureTypes,
-	}
-	return res, nil
+	return getFeatureTypes(ctx, c.pcms)
 }
 
 func getItemsAndConv[T any](cms cms.Interface, ctx context.Context, project, model string, conv func(cms.Item) *T) ([]*T, error) {

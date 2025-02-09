@@ -30,6 +30,7 @@ func prepareGspatialjp(conf *Config) {
 		CMSToken: conf.CMS_Token,
 	}
 
+	ft := ""
 	flag := flag.NewFlagSet("prepare-gspatialjp", flag.ExitOnError)
 	flag.StringVar(&config.ProjectID, "project", "", "CMS project ID")
 	flag.StringVar(&config.CityItemID, "city", "", "CMS city item ID")
@@ -39,6 +40,8 @@ func prepareGspatialjp(conf *Config) {
 	flag.BoolVar(&config.SkipPlateau, "skip-plateau", false, "skip plateau")
 	flag.BoolVar(&config.SkipMaxLOD, "skip-maxlod", false, "skip maxlod")
 	flag.BoolVar(&config.SkipRelated, "skip-related", false, "skip related")
+	flag.StringVar(&ft, "feature-types", "", "feature types")
+	config.FeatureTypes = strings.Split(ft, ",")
 
 	if err := flag.Parse(os.Args[2:]); err != nil {
 		panic(err)
