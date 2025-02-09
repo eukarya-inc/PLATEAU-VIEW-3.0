@@ -6,8 +6,8 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2/geospatialjpv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3/geospatialjpv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/dataconv"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/geospatialjpv3"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 )
