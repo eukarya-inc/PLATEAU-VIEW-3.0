@@ -88,6 +88,13 @@ func TestFeatureItemFrom(t *testing.T) {
 	assert.Equal(t, expected2, item2)
 }
 
+func TestFeatureItem_FeatureTypeCode(t *testing.T) {
+	assert.Equal(t, "", (&FeatureItem{FeatureType: ""}).FeatureTypeCode())
+	assert.Equal(t, "bldg", (&FeatureItem{FeatureType: "bldg"}).FeatureTypeCode())
+	assert.Equal(t, "bldg", (&FeatureItem{FeatureType: "建築物モデル（bldg）"}).FeatureTypeCode())
+	assert.Equal(t, "bldg", (&FeatureItem{FeatureType: "建築物モデル (bldg)"}).FeatureTypeCode())
+}
+
 func TestGenericItemFrom(t *testing.T) {
 	item := &cms.Item{
 		ID: "id",

@@ -953,10 +953,16 @@ func (c *cmsMock) GetModels(ctx context.Context, projectID string) (*cms.Models,
 }
 
 type plateauCMSMock struct {
-	plateaucms.SpecStore
+	PCMS
 	plateauSpecs func(ctx context.Context) ([]plateaucms.PlateauSpec, error)
 }
 
 func (p *plateauCMSMock) PlateauSpecs(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
 	return p.plateauSpecs(ctx)
+}
+
+func (p *plateauCMSMock) Metadata(ctx context.Context, prj string, findDataCatalog, useDefault bool) (plateaucms.Metadata, plateaucms.MetadataList, error) {
+	return plateaucms.Metadata{
+		Converter: "fme",
+	}, nil, nil
 }

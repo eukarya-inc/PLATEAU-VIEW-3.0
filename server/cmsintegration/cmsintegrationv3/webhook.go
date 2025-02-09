@@ -22,7 +22,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 		log.Debugfc(ctx, "incoming: %+v", w)
 
-		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf) {
+		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf.CMSIntegration) {
 			return nil
 		}
 

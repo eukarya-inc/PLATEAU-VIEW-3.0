@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintegrationflow
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/gcptaskrunner"
@@ -17,51 +16,40 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-type Config = cmsintegrationcommon.Config
-
-const fmeHandlerPath = "/notify_fme/v3"
-
-func resultURL(conf *Config) string {
-	return fmt.Sprintf("%s%s", conf.Host, fmeHandlerPath)
+type Config struct {
+	Host             string
+	CMSBaseURL       string
+	CMSToken         string
+	CMSSystemProject string
+	CMSIntegration   string
+	FlowBaseURL      string
+	FlowToken        string
+	Secret           string
 }
 
 type Services struct {
-	CMS          cms.Interface
-	PlateauCMS   *PlateauCMS
-	HTTP         *http.Client
-	TaskRunner   gcptaskrunner.TaskRunner
-	PCMS         PCMS
-	FMEResultURL string
-	mockFME      fmeInterface
-}
-
-type PCMS interface {
-	plateaucms.SpecStore
-	plateaucms.FeatureTypeStore
-	plateaucms.MetadataStore
+	CMS        cms.Interface
+	HTTP       *http.Client
+	TaskRunner gcptaskrunner.TaskRunner
+	PCMS       *plateaucms.CMS
+	Flow       Flow
 }
 
 func NewServices(c Config) (s *Services, _ error) {
 	s = &Services{}
 
-	if !c.FMEMock {
-		resultURL, err := url.JoinPath(c.Host, "/notify_fme")
-		if err != nil {
-			return nil, fmt.Errorf("failed to init fme: %w", err)
-		}
+	// init flow
+	flow := NewFlow(nil, c.FlowBaseURL, c.FlowToken)
+	s.Flow = flow
 
-		s.FMEResultURL = resultURL
-	} else {
-		s.mockFME = &fmeMock{}
-	}
-
+	// init cms
 	cms, err := cms.New(c.CMSBaseURL, c.CMSToken)
 	if err != nil {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 	s.CMS = cms
-	s.PlateauCMS = NewPlateauCMS(cms, "")
 
+	// init plateau cms
 	pcms, err := plateaucms.New(plateaucms.Config{
 		CMSBaseURL:      c.CMSBaseURL,
 		CMSMainToken:    c.CMSToken,
@@ -72,47 +60,17 @@ func NewServices(c Config) (s *Services, _ error) {
 	}
 	s.PCMS = pcms
 
-	if c.GCPProject != "" {
-		image := c.TaskImage
-		if image == "" {
-			image = defaultTaskImage
-		}
-
-		s.TaskRunner = gcptaskrunner.NewGCPTaskRunner(gcptaskrunner.Config{
-			Service: gcptaskrunner.ServiceCloudBuild,
-			Project: c.GCPProject,
-			Region:  c.GCPRegion,
-			Task: gcptaskrunner.Task{
-				Image: image,
-			},
-			Env: map[string]string{
-				"REEARTH_CMS_URL":   c.CMSBaseURL,
-				"REEARTH_CMS_TOKEN": c.CMSToken,
-				"NO_COLOR":          "true",
-			},
-			Timeout:  "86400s", // 1 day
-			QueueTtl: "86400s", // 1 day
-		})
-	}
-
 	return
 }
 
-func (s *Services) GetFME(url string) fmeInterface {
-	if s.mockFME != nil {
-		return s.mockFME
-	}
-	return newFME(url, s.FMEResultURL)
-}
-
-func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status cmsintegrationcommon.ConvertionStatus) error {
+func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, ty ReqType, status cmsintegrationcommon.ConvertionStatus) error {
 	var qcStatus, convStatus cmsintegrationcommon.ConvertionStatus
-	switch convType {
-	case fmeTypeConv:
+	switch ty {
+	case ReqTypeConv:
 		convStatus = status
-	case fmeTypeQC:
+	case ReqTypeQC:
 		qcStatus = status
-	case fmeTypeQcConv:
+	case ReqTypeQcConv:
 		qcStatus = status
 		convStatus = status
 	}
@@ -239,22 +197,14 @@ func (s *Services) GETAsBytes(ctx context.Context, url string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (s *Services) GetFMEURL(ctx context.Context, majorVersion int) string {
-	specs, err := s.PCMS.PlateauSpecs(ctx)
-	if err != nil {
-		log.Errorfc(ctx, "cmsintegrationv3: failed to get plateau specs: %v", err)
-		return ""
+func (s *Services) Fail(ctx context.Context, itemID string, ty ReqType, message string, args ...any) error {
+	if err := s.UpdateFeatureItemStatus(ctx, itemID, ty, cmsintegrationcommon.ConvertionStatusError); err != nil {
+		return fmt.Errorf("failed to update item: %w", err)
 	}
 
-	for _, spec := range specs {
-		if spec.FMEURL == "" {
-			continue
-		}
-
-		if spec.MajorVersion == majorVersion {
-			return spec.FMEURL
-		}
+	if err := s.CMS.CommentToItem(ctx, itemID, fmt.Sprintf(message, args...)); err != nil {
+		return fmt.Errorf("failed to add comment: %w", err)
 	}
 
-	return ""
+	return nil
 }

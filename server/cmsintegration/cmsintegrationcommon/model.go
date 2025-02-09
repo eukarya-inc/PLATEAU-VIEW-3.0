@@ -182,6 +182,18 @@ func (i *CityItem) CMSItem() *cms.Item {
 	return item
 }
 
+func (i *CityItem) ConvSettings() *ConvSettings {
+	if i == nil {
+		return nil
+	}
+	return &ConvSettings{
+		PRCS:        i.PRCS.EPSGCode(),
+		Schemas:     i.Schemas,
+		CodeLists:   i.CodeLists,
+		ObjectLists: i.ObjectLists,
+	}
+}
+
 type FeatureItem struct {
 	ID          string             `json:"id,omitempty" cms:"id"`
 	City        string             `json:"city,omitempty" cms:"city,reference"`
@@ -189,19 +201,86 @@ type FeatureItem struct {
 	Data        []string           `json:"data,omitempty" cms:"data,asset"`
 	Desc        string             `json:"desc,omitempty" cms:"desc,textarea"`
 	Items       []FeatureItemDatum `json:"items,omitempty" cms:"items,group"`
-	QCResult    string             `json:"qcresult,omitempty" cms:"qc_result,asset"`
+	QCResult    string             `json:"qc_result,omitempty" cms:"qc_result,asset"`
 	SearchIndex string             `json:"search_index,omitempty" cms:"search_index,asset"`
 	Dic         string             `json:"dic,omitempty" cms:"dic,textarea"`
 	MaxLOD      string             `json:"maxlod,omitempty" cms:"maxlod,asset"`
 	FeatureType string             `json:"featureType,omitempty" cms:"feature_type,select"`
+
+	// override city item's settings
+	PRCS        string `json:"prcs" cms:"prcs,text"`
+	Schemas     string `json:"schemas" cms:"schemas,asset"`
+	CodeLists   string `json:"codelists" cms:"code_lists,asset"`
+	ObjectLists string `json:"objectLists" cms:"object_lists,asset"`
+
 	// metadata
 	SkipQCConv       *cms.Tag `json:"skip_qc_conv,omitempty" cms:"skip_qc_conv,tag,metadata"`
 	Status           *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	ConvertionStatus *cms.Tag `json:"conv_status,omitempty" cms:"conv_status,tag,metadata"`
 	QCStatus         *cms.Tag `json:"qc_status,omitempty" cms:"qc_status,tag,metadata"`
+
 	// compat
 	SkipQC      bool `json:"skip_qc,omitempty" cms:"skip_qc,bool,metadata"`
 	SkipConvert bool `json:"skip_conv,omitempty" cms:"skip_conv,bool,metadata"`
+}
+
+func (f *FeatureItem) FeatureTypeCode() string {
+	if f == nil || f.FeatureType == "" {
+		return ""
+	}
+	// remain only alphabet
+	return strings.Map(func(r rune) rune {
+		if r >= 'a' && r <= 'z' {
+			return r
+		}
+		return -1
+	}, f.FeatureType)
+}
+
+func (f *FeatureItem) ConvSettings() *ConvSettings {
+	if f == nil {
+		return nil
+	}
+	return &ConvSettings{
+		FeatureType: f.FeatureTypeCode(),
+		PRCS:        f.PRCS,
+		Schemas:     f.Schemas,
+		CodeLists:   f.CodeLists,
+		ObjectLists: f.ObjectLists,
+	}
+}
+
+type ConvSettings struct {
+	FeatureType string `json:"featureType"`
+	PRCS        string `json:"prcs"`
+	Schemas     string `json:"schemas"`
+	CodeLists   string `json:"codelists"`
+	ObjectLists string `json:"objectLists"`
+}
+
+func (c *ConvSettings) Merge(other *ConvSettings) *ConvSettings {
+	if c == nil {
+		return other
+	}
+	if other == nil {
+		return c
+	}
+	if other.FeatureType != "" {
+		c.FeatureType = other.FeatureType
+	}
+	if other.PRCS != "" {
+		c.PRCS = other.PRCS
+	}
+	if other.Schemas != "" {
+		c.Schemas = other.Schemas
+	}
+	if other.CodeLists != "" {
+		c.CodeLists = other.CodeLists
+	}
+	if other.ObjectLists != "" {
+		c.ObjectLists = other.ObjectLists
+	}
+	return c
 }
 
 type FeatureItemDatum struct {
