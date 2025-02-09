@@ -9,13 +9,14 @@ import (
 )
 
 type Config struct {
-	CkanBase       string
-	CkanOrg        string
-	CkanToken      string
-	CMSBase        string
-	CMSToken       string
-	CMSIntegration string
-	BuildType      string
+	CkanBase         string
+	CkanOrg          string
+	CkanToken        string
+	CMSBase          string
+	CMSToken         string
+	CMSIntegration   string
+	CMSSystemProject string
+	BuildType        string
 	// cloud run jobs
 	CloudRunJobsJobName string
 	// cloud build image

@@ -51,9 +51,9 @@ func NewServices(c Config) (s *Services, _ error) {
 
 	// init plateau cms
 	pcms, err := plateaucms.New(plateaucms.Config{
-		CMSBaseURL:      c.CMSBaseURL,
-		CMSMainToken:    c.CMSToken,
-		CMSTokenProject: c.CMSSystemProject,
+		CMSBaseURL:       c.CMSBaseURL,
+		CMSMainToken:     c.CMSToken,
+		CMSSystemProject: c.CMSSystemProject,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to init plateau cms: %w", err)

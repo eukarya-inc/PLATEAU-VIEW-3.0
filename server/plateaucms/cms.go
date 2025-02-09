@@ -44,9 +44,9 @@ var HTTPMethodsExceptGET = []string{
 }
 
 type Config struct {
-	CMSBaseURL      string
-	CMSMainToken    string
-	CMSTokenProject string
+	CMSBaseURL       string
+	CMSMainToken     string
+	CMSSystemProject string
 	// compat
 	CMSMainProject string
 	AdminToken     string
@@ -68,13 +68,13 @@ func New(c Config) (*CMS, error) {
 		return nil, fmt.Errorf("failed to initialize cms: %w", err)
 	}
 
-	if c.CMSTokenProject == "" {
-		c.CMSTokenProject = tokenProject
+	if c.CMSSystemProject == "" {
+		c.CMSSystemProject = tokenProject
 	}
 
 	return &CMS{
 		cmsbase:            c.CMSBaseURL,
-		cmsMetadataProject: c.CMSTokenProject,
+		cmsMetadataProject: c.CMSSystemProject,
 		cmsMain:            cmsMain,
 		// compat
 		cmsMainProject: c.CMSMainProject,

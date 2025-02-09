@@ -51,7 +51,7 @@ func TestPublish(t *testing.T) {
 		item, err := cms.GetItem(ctx, city, false)
 		require.NoError(t, err)
 
-		cityItem := CityItemFrom(item)
+		cityItem := CityItemFrom(item, []string{"bldg"})
 		if cityItem.CityName == "" {
 			continue
 		}

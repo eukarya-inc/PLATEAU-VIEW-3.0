@@ -32,9 +32,9 @@ func TestRepos(t *testing.T) {
 
 	cms := lo.Must(cms.New("https://example.com", "token"))
 	pcms := lo.Must(plateaucms.New(plateaucms.Config{
-		CMSBaseURL:      "https://example.com",
-		CMSMainToken:    "token",
-		CMSTokenProject: "sys",
+		CMSBaseURL:       "https://example.com",
+		CMSMainToken:     "token",
+		CMSSystemProject: "sys",
 	}))
 
 	repos := NewRepos(pcms)

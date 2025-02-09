@@ -221,9 +221,9 @@ func (c *Config) Tiles() tiles.Config {
 
 func (c *Config) plateauCMS() plateaucms.Config {
 	return plateaucms.Config{
-		CMSBaseURL:      c.CMS_BaseURL,
-		CMSMainToken:    c.CMS_Token,
-		CMSTokenProject: c.CMS_TokenProject,
+		CMSBaseURL:       c.CMS_BaseURL,
+		CMSMainToken:     c.CMS_Token,
+		CMSSystemProject: c.CMS_TokenProject,
 		// compat
 		CMSMainProject: c.CMS_SystemProject,
 		AdminToken:     c.Sidebar_Token,

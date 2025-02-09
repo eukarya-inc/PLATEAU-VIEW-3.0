@@ -110,6 +110,7 @@ func geospatialjpv3Config(conf Config) geospatialjpv3.Config {
 	return geospatialjpv3.Config{
 		CMSBase:               conf.CMSBaseURL,
 		CMSToken:              conf.CMSToken,
+		CMSSystemProject:      conf.CMSSystemProject,
 		CMSIntegration:        conf.CMSIntegration,
 		CkanBase:              conf.CkanBaseURL,
 		CkanOrg:               conf.CkanOrg,

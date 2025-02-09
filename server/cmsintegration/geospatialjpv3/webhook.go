@@ -1,9 +1,11 @@
 package geospatialjpv3
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/ckan"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/log"
@@ -17,12 +19,21 @@ const (
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	c, err := cms.New(conf.CMSBase, conf.CMSToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 
 	ck, err := ckan.New(conf.CkanBase, conf.CkanToken)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to init ckan: %w", err)
+	}
+
+	pcms, err := plateaucms.New(plateaucms.Config{
+		CMSBaseURL:       conf.CMSBase,
+		CMSMainToken:     conf.CMSToken,
+		CMSSystemProject: conf.CMSSystemProject,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to init plateau cms: %w", err)
 	}
 
 	return (&handler{
@@ -30,6 +41,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		ckan:     ck,
 		ckanOrg:  conf.CkanOrg,
 		ckanBase: conf.CkanBase,
+		pcms:     pcms,
 	}).Webhook(conf)
 }
 
@@ -38,6 +50,7 @@ type handler struct {
 	ckan     ckan.Interface
 	ckanOrg  string
 	ckanBase string
+	pcms     plateaucms.FeatureTypeStore
 }
 
 const prepareFieldKey = "geospatialjp_prepare"
@@ -83,7 +96,17 @@ func (h *handler) Webhook(conf Config) (cmswebhook.Handler, error) {
 			return nil
 		}
 
-		cityItem := CityItemFrom(item)
+		// feature types
+		featureTypes, err := h.pcms.PlateauFeatureTypes(ctx)
+		if err != nil {
+			log.Errorfc(ctx, "geospatialjpv3 webhook: failed to get feature types: %v", err)
+			return nil
+		}
+		featureTypeCodes := lo.FilterMap(featureTypes, func(ft plateaucms.PlateauFeatureType, _ int) (string, bool) {
+			return ft.Code, true
+		})
+
+		cityItem := CityItemFrom(item, featureTypeCodes)
 
 		if cityItem.ID == "" {
 			log.Debugfc(ctx, "geospatialjpv3 webhook: invalid city item id")
