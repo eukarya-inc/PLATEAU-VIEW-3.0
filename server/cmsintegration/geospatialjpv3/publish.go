@@ -66,6 +66,19 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 		resources = append(resources, r)
 	}
 
+	if seed.IndexMapURL != "" {
+		log.Debugfc(ctx, "geospatialjpv3: index map: %s", seed.IndexMapURL)
+		r, err := h.createOrUpdateResource(ctx, pkg, ResourceInfo{
+			Name:        "索引図",
+			URL:         seed.IndexMapURL,
+			Description: "データ整備範囲の標準地域メッシュ（２次メッシュ、３次メッシュ）のメッシュとメッシュ番号を示したPDFファイルです。",
+		})
+		if err != nil {
+			return fmt.Errorf("G空間情報センターでリソースの作成に失敗しました（索引図）: %w", err)
+		}
+		resources = append(resources, r)
+	}
+
 	if seed.CityGML != "" {
 		log.Debugfc(ctx, "geospatialjpv3: citygml: %s", seed.CityGML)
 		r, err := h.createOrUpdateResource(ctx, pkg, ResourceInfo{
@@ -112,12 +125,12 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 				return fmt.Errorf("その他データセットのアセットURLを正しく取得できませんでした。アセットが存在していません。: %v", g)
 			}
 
-			url := valueToAssetURL(g.Asset)
+			url := g.Asset.URL
 			if url == "" {
 				return fmt.Errorf("その他データセットのアセットURLを正しく取得できませんでした。アセットが存在していません。: %v", g)
 			}
 
-			size := valueToAssetSize(g.Asset)
+			size := g.Asset.TotalSize
 			if size == 0 {
 				return fmt.Errorf("その他データセットのアセットサイズを正しく取得できませんでした。: %v", g)
 			}
@@ -134,14 +147,14 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 		}
 	}
 
-	if (seed.CityGML != "" || seed.Plateau != "" || seed.Related != "" || seed.Generics != nil) && shouldReorder(pkg, seed.V) {
+	if len(resources) > 0 && shouldReorder(pkg, seed.V) {
 		log.Debugfc(ctx, "geospatialjpv3: reorder: %v", resources)
 		resourceIDs := lo.Map(resources, func(r ckan.Resource, _ int) string {
 			return r.ID
 		})
 
 		if err := h.reorderResources(ctx, pkg.ID, resourceIDs); err != nil {
-			return fmt.Errorf("G空間情報センターでリソースの並び替えに失敗しました（登録更新は既にできています）: %w", err)
+			return fmt.Errorf("G空間情報センターでリソースの並び替えに失敗しました（リソースの登録・更新自体は既に完了しています）: %w", err)
 		}
 	}
 
