@@ -121,7 +121,7 @@ func (l MetadataList) FindMetadata(prj string, findDataCatalog, useDefault bool)
 	}
 
 	md, ok := lo.Find(l, func(i Metadata) bool {
-		return findDataCatalog && i.DataCatalogProjectAlias == prj || i.ProjectAlias == prj
+		return findDataCatalog && i.DataCatalogProjectAlias == prj || i.ProjectAlias == prj || i.ProjectID == prj
 	})
 
 	if !ok {
