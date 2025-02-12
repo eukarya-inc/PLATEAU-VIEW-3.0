@@ -122,6 +122,7 @@ func sendRequestToFlow(
 		ItemID:      mainItem.ID,
 		ProjectID:   projectID,
 		FeatureType: featureType.Code,
+		Type:        ty,
 	}.Sign(conf.Secret)
 
 	// request to flow
