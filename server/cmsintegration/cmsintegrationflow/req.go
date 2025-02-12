@@ -47,6 +47,7 @@ func sendRequestToFlow(
 		return nil
 	}
 
+	log.Debugfc(ctx, "feature type: %s", pp.Sprint(featureType))
 	if !featureType.Conv && !featureType.QC {
 		log.Debugfc(ctx, "skip qc and convert")
 		return nil

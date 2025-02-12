@@ -20,6 +20,7 @@ import (
 )
 
 const plateauSpecMinMajorVersionObjectListsNeeded = 4
+const flowTestModel = "flow"
 
 var ppp *pp.PrettyPrinter
 
@@ -60,6 +61,10 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	item := cmsintegrationcommon.FeatureItemFrom(mainItem)
 
 	featureTypeCode := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
+	if featureTypeCode == flowTestModel {
+		log.Debugfc(ctx, "skip model: %s", featureTypeCode)
+		return nil
+	}
 	if ft := item.FeatureTypeCode(); ft != "" {
 		featureTypeCode = ft
 		log.Debugfc(ctx, "feature type is overridden: %s", ft)

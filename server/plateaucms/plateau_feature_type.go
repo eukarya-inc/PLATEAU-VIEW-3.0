@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/rerror"
@@ -17,47 +19,85 @@ type FeatureTypeStore interface {
 var _ FeatureTypeStore = &CMS{}
 
 type PlateauFeatureType struct {
-	Code                      string   `json:"code" cms:"code,text"`
-	Name                      string   `json:"name" cms:"name,text"`
-	GroupName                 string   `json:"groupName" cms:"group_name,text"`
-	MinSpecMajor              int      `json:"minSpecMajor" cms:"min_spec_major,integer"`
-	MinYear                   int      `json:"minYear" cms:"min_year,integer"`
-	Order                     int      `json:"order" cms:"order,integer"`
-	QC                        bool     `json:"qc" cms:"qc,boolean"`
-	Conv                      bool     `json:"conv" cms:"conv,boolean"`
-	MVTLayers                 []string `json:"layers" cms:"mvt_layers,text"`
-	MVTLayersLOD0             []string `json:"layersLod0" cms:"mvt_layers_lod0,text"`
-	MVTLayersLOD1             []string `json:"layersLod1" cms:"mvt_layers_lod1,text"`
-	MVTLayersLOD2             []string `json:"layersLod2" cms:"mvt_layers_lod2,text"`
-	MVTLayerNamePrefix        string   `json:"mvtLayerNamePrefix" cms:"mvt_layer_name_prefix,text"`
-	UseCategoryNameAsMVTLayer bool     `json:"useCategoryAsMVTLayer" cms:"use_category_as_mvt_layer,boolean"`
-	Flood                     bool     `json:"flood" cms:"flood,boolean"`
-	HideTexture               bool     `json:"hideTexture" cms:"hide_texture,boolean"`
-	UseGroups                 bool     `json:"useGroups" cms:"use_groups,boolean"`
-	FlowQCV4                  string   `json:"flowQCV4" cms:"flow_qc_v4,text"`
-	FlowConvV4                string   `json:"flowConvV4" cms:"flow_conv_v4,text"`
-	FlowQCV3                  string   `json:"flowQCV3" cms:"flow_qc_v3,text"`
-	FlowConvV3                string   `json:"flowConvV3" cms:"flow_conv_v3,text"`
+	Code                      string         `json:"code" cms:"code,text"`
+	Name                      string         `json:"name" cms:"name,text"`
+	GroupName                 string         `json:"groupName" cms:"group_name,text"`
+	MinSpecMajor              int            `json:"minSpecMajor" cms:"min_spec_major,integer"`
+	MinYear                   int            `json:"minYear" cms:"min_year,integer"`
+	Order                     int            `json:"order" cms:"order,integer"`
+	QC                        bool           `json:"qc" cms:"qc,boolean"`
+	Conv                      bool           `json:"conv" cms:"conv,boolean"`
+	MVTLayers                 []string       `json:"layers" cms:"mvt_layers,text"`
+	MVTLayersLOD0             []string       `json:"layersLod0" cms:"mvt_layers_lod0,text"`
+	MVTLayersLOD1             []string       `json:"layersLod1" cms:"mvt_layers_lod1,text"`
+	MVTLayersLOD2             []string       `json:"layersLod2" cms:"mvt_layers_lod2,text"`
+	MVTLayerNamePrefix        string         `json:"mvtLayerNamePrefix" cms:"mvt_layer_name_prefix,text"`
+	UseCategoryNameAsMVTLayer bool           `json:"useCategoryAsMVTLayer" cms:"use_category_as_mvt_layer,boolean"`
+	Flood                     bool           `json:"flood" cms:"flood,boolean"`
+	HideTexture               bool           `json:"hideTexture" cms:"hide_texture,boolean"`
+	UseGroups                 bool           `json:"useGroups" cms:"use_groups,boolean"`
+	FlowQCV                   map[int]string `json:"flowQcV" cms:"-"`
+	FlowConvV                 map[int]string `json:"flowConvV" cms:"-"`
+	FlowQC                    string         `json:"flowQc" cms:"flow_qc,text"`
+	FlowConv                  string         `json:"flowConv" cms:"flow_conv,text"`
+}
+
+func PlateauFeatureTypeFrom(item *cms.Item) *PlateauFeatureType {
+	if item == nil {
+		return nil
+	}
+
+	res := &PlateauFeatureType{}
+	item.Unmarshal(res)
+
+	for _, f := range item.Fields {
+		const qck = "flow_qc_v"
+		const convk = "flow_conv_v"
+
+		if strings.HasPrefix(f.Key, qck) {
+			if res.FlowQCV == nil {
+				res.FlowQCV = map[int]string{}
+			}
+			if v, _ := strconv.Atoi(strings.TrimPrefix(f.Key, qck)); v > 0 {
+				if t, _ := f.Value.(string); t != "" {
+					res.FlowQCV[v] = t
+				}
+			}
+		}
+
+		if strings.HasPrefix(f.Key, convk) {
+			if res.FlowConvV == nil {
+				res.FlowConvV = map[int]string{}
+			}
+			if v, _ := strconv.Atoi(strings.TrimPrefix(f.Key, convk)); v > 0 {
+				if t, _ := f.Value.(string); t != "" {
+					res.FlowConvV[v] = t
+				}
+			}
+		}
+	}
+
+	return res
 }
 
 func (f PlateauFeatureType) FlowQCTriggerID(v int) string {
-	switch v {
-	case 3:
-		return f.FlowQCV3
-	case 4:
-		return f.FlowQCV4
+	if f.FlowQCV == nil {
+		return ""
 	}
-	return ""
+	if t := f.FlowQCV[v]; t != "" {
+		return t
+	}
+	return f.FlowQC
 }
 
 func (f PlateauFeatureType) FlowConvTriggerID(v int) string {
-	switch v {
-	case 3:
-		return f.FlowConvV3
-	case 4:
-		return f.FlowConvV4
+	if f.FlowConvV == nil {
+		return ""
 	}
-	return ""
+	if t := f.FlowConvV[v]; t != "" {
+		return t
+	}
+	return f.FlowConv
 }
 
 type PlateauFeatureTypeList []PlateauFeatureType
@@ -121,9 +161,9 @@ func (h *CMS) PlateauFeatureTypes(ctx context.Context) (PlateauFeatureTypeList, 
 
 	all := make([]PlateauFeatureType, 0, len(items.Items))
 	for _, item := range items.Items {
-		m := PlateauFeatureType{}
-		item.Unmarshal(&m)
-		all = append(all, m)
+		if m := PlateauFeatureTypeFrom(&item); m != nil {
+			all = append(all, *m)
+		}
 	}
 
 	return all, nil
