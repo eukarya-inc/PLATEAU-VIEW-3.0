@@ -31,8 +31,13 @@ type Services struct {
 	CMS        cms.Interface
 	HTTP       *http.Client
 	TaskRunner gcptaskrunner.TaskRunner
-	PCMS       *plateaucms.CMS
+	PCMS       PCMS
 	Flow       Flow
+}
+
+type PCMS interface {
+	plateaucms.FeatureTypeStore
+	plateaucms.MetadataStore
 }
 
 func NewServices(c Config) (s *Services, _ error) {
@@ -63,14 +68,14 @@ func NewServices(c Config) (s *Services, _ error) {
 	return
 }
 
-func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, ty ReqType, status cmsintegrationcommon.ConvertionStatus) error {
+func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, ty cmsintegrationcommon.ReqType, status cmsintegrationcommon.ConvertionStatus) error {
 	var qcStatus, convStatus cmsintegrationcommon.ConvertionStatus
 	switch ty {
-	case ReqTypeConv:
+	case cmsintegrationcommon.ReqTypeConv:
 		convStatus = status
-	case ReqTypeQC:
+	case cmsintegrationcommon.ReqTypeQC:
 		qcStatus = status
-	case ReqTypeQcConv:
+	case cmsintegrationcommon.ReqTypeQCConv:
 		qcStatus = status
 		convStatus = status
 	}
@@ -197,7 +202,7 @@ func (s *Services) GETAsBytes(ctx context.Context, url string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (s *Services) Fail(ctx context.Context, itemID string, ty ReqType, message string, args ...any) error {
+func (s *Services) Fail(ctx context.Context, itemID string, ty cmsintegrationcommon.ReqType, message string, args ...any) error {
 	if err := s.UpdateFeatureItemStatus(ctx, itemID, ty, cmsintegrationcommon.ConvertionStatusError); err != nil {
 		return fmt.Errorf("failed to update item: %w", err)
 	}

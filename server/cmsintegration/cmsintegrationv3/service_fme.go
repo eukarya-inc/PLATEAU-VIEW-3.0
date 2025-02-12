@@ -92,7 +92,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		return nil
 	}
 
-	skipQC, skipConv := item.IsQCAndConvSkipped(featureTypeCode)
+	skipQC, skipConv := item.IsQCAndConvSkipped()
 	if skipQC && skipConv {
 		log.Debugfc(ctx, "skip qc and convert by item")
 		return nil

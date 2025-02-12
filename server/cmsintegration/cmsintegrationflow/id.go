@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 )
 
 var ErrInvalidID = errors.New("invalid fme id")
@@ -17,7 +19,7 @@ type ID struct {
 	ItemID      string
 	ProjectID   string
 	FeatureType string
-	Type        ReqType
+	Type        cmsintegrationcommon.ReqType
 }
 
 func parseID(id, secret string) (ID, error) {
@@ -35,7 +37,7 @@ func parseID(id, secret string) (ID, error) {
 		ItemID:      s[1],
 		ProjectID:   s[2],
 		FeatureType: s[3],
-		Type:        ReqType(s[4]),
+		Type:        cmsintegrationcommon.ReqType(s[4]),
 	}, nil
 }
 

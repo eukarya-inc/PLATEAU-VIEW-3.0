@@ -14,6 +14,10 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+func init() {
+	pp.ColoringEnabled = false
+}
+
 const handlerPath = "/notify_flow"
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {

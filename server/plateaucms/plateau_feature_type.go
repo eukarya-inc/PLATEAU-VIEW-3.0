@@ -81,9 +81,6 @@ func PlateauFeatureTypeFrom(item *cms.Item) *PlateauFeatureType {
 }
 
 func (f PlateauFeatureType) FlowQCTriggerID(v int) string {
-	if f.FlowQCV == nil {
-		return ""
-	}
 	if t := f.FlowQCV[v]; t != "" {
 		return t
 	}
@@ -91,9 +88,6 @@ func (f PlateauFeatureType) FlowQCTriggerID(v int) string {
 }
 
 func (f PlateauFeatureType) FlowConvTriggerID(v int) string {
-	if f.FlowConvV == nil {
-		return ""
-	}
 	if t := f.FlowConvV[v]; t != "" {
 		return t
 	}

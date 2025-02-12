@@ -47,7 +47,7 @@ func (f *flowImpl) Request(ctx context.Context, r FlowRequest) (res FlowRequestR
 
 	req.Header.Set("Content-Type", "application/json")
 
-	log.Debugfc(ctx, "flow req: url=%s, has_token=%s, body=%s", u, len(f.token) > 0, b)
+	log.Debugfc(ctx, "flow req: url=%s, body=%s", u, b)
 	if r.DryRun {
 		log.Debugfc(ctx, "dry run")
 		return
@@ -87,6 +87,6 @@ func (f *flowImpl) getTriggerURL(triggerID string) string {
 		return ""
 	}
 
-	u, _ := url.JoinPath(f.baseURL, "api", "trigger", triggerID, "run")
+	u, _ := url.JoinPath(f.baseURL, "api", "triggers", triggerID, "run")
 	return u
 }

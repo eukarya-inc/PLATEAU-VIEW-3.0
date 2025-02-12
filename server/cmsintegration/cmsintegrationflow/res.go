@@ -33,7 +33,7 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	// handle error
 	if res.IsFailed() {
 		log.Debugfc(ctx, "failed to convert: logs=%v", res.Logs)
-		_ = s.Fail(ctx, id.ItemID, ReqType(id.Type), "%sに失敗しました。%s", ReqType(id.Type).Title(), logurls)
+		_ = s.Fail(ctx, id.ItemID, cmsintegrationcommon.ReqType(id.Type), "%sに失敗しました。%s", cmsintegrationcommon.ReqType(id.Type).Title(), logurls)
 		return nil
 	}
 
@@ -164,9 +164,9 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 	log.Infofc(ctx, "success to receive result from flow: %s", id.Type)
 
 	// if the qc is success, trigger the conversion
-	if id.Type == ReqTypeQC && qcStatus == cmsintegrationcommon.ConvertionStatusSuccess {
+	if id.Type == cmsintegrationcommon.ReqTypeQC && qcStatus == cmsintegrationcommon.ConvertionStatusSuccess {
 		log.Infofc(ctx, "trigger conversion")
-		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, featureType.Code, mainItem, featureTypes, ReqTypeConv); err != nil {
+		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, featureType.Code, mainItem, featureTypes, cmsintegrationcommon.ReqTypeConv); err != nil {
 			return fmt.Errorf("failed to send request to flow: %w", err)
 		}
 	}

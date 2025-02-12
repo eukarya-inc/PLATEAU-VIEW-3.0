@@ -2,7 +2,6 @@ package cmsintegrationcommon
 
 import (
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -481,9 +480,11 @@ func (i *GeospatialjpDataItem) CMSItem() *cms.Item {
 	return item
 }
 
-var noconvFeatureTypes = []string{"dem", "app", "ext"}
+func (item *FeatureItem) ReqType() ReqType {
+	return ReqTypeFrom(item.IsQCAndConvSkipped())
+}
 
-func (item *FeatureItem) IsQCAndConvSkipped(featureType string) (skipQC bool, skipConv bool) {
+func (item *FeatureItem) IsQCAndConvSkipped() (skipQC bool, skipConv bool) {
 	const (
 		skip = "スキップ"
 		qc   = "品質検査"
@@ -493,8 +494,7 @@ func (item *FeatureItem) IsQCAndConvSkipped(featureType string) (skipQC bool, sk
 	if TagIsNot(item.QCStatus, ConvertionStatusNotStarted) {
 		skipQC = true
 	}
-	if TagIsNot(item.ConvertionStatus, ConvertionStatusNotStarted) ||
-		(slices.Contains(noconvFeatureTypes, featureType)) {
+	if TagIsNot(item.ConvertionStatus, ConvertionStatusNotStarted) {
 		skipConv = true
 	}
 
@@ -519,4 +519,82 @@ func (item *FeatureItem) IsQCAndConvSkipped(featureType string) (skipQC bool, sk
 	skipQC = skipQC || item.SkipQC
 	skipConv = skipConv || item.SkipConvert
 	return
+}
+
+type ReqType string
+
+const (
+	ReqTypeQC     ReqType = "qc"
+	ReqTypeConv   ReqType = "conv"
+	ReqTypeQCConv ReqType = "qc_conv"
+)
+
+func ReqTypeFrom(skipQC, skipConv bool) ReqType {
+	if skipQC && skipConv {
+		return ""
+	} else if skipQC {
+		return ReqTypeConv
+	} else if skipConv {
+		return ReqTypeQC
+	}
+	return ReqTypeQCConv
+}
+
+func (r ReqType) IsQC() bool {
+	return r == ReqTypeQC || r == ReqTypeQCConv
+}
+
+func (r ReqType) IsConv() bool {
+	return r == ReqTypeConv || r == ReqTypeQCConv
+}
+
+func (r ReqType) Title() string {
+	switch r {
+	case ReqTypeConv:
+		return "変換"
+	case ReqTypeQC:
+		return "品質検査"
+	}
+	return "品質検査・変換"
+}
+
+func (t ReqType) CMSStatus(s ConvertionStatus) (qc ConvertionStatus, conv ConvertionStatus) {
+	if t == ReqTypeConv {
+		conv = s
+	} else if t == ReqTypeQC {
+		qc = s
+	} else {
+		qc = s
+		conv = s
+	}
+	return
+}
+
+func (ty ReqType) Override(override ReqType) ReqType {
+	if override != "" {
+		return override
+	}
+	return ty
+}
+
+func (ty ReqType) Intersection(other ReqType) ReqType {
+	intersectionQC := ty.IsQC() && other.IsQC()
+	intersectionConv := ty.IsConv() && other.IsConv()
+	if intersectionQC && intersectionConv {
+		return ReqTypeQCConv
+	}
+	if intersectionQC {
+		return ReqTypeQC
+	}
+	if intersectionConv {
+		return ReqTypeConv
+	}
+	return ""
+}
+
+func (ty ReqType) Normalize() ReqType {
+	if ty == ReqTypeQCConv {
+		return ReqTypeQC
+	}
+	return ty
 }

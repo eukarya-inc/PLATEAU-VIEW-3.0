@@ -20,7 +20,7 @@ func sendRequestToFlow(
 	modelName string,
 	mainItem *cms.Item,
 	featureTypes plateaucms.PlateauFeatureTypeList,
-	overrideReqType ReqType,
+	overrideReqType cmsintegrationcommon.ReqType,
 ) error {
 	ctx = log.WithPrefixMessage(ctx, "flow: ")
 
@@ -37,6 +37,7 @@ func sendRequestToFlow(
 		return nil
 	}
 
+	// feature type
 	featureTypeCodes := featureTypes.Codes()
 	featureTypeCode := item.FeatureTypeCode()
 	featureType, ok := lo.Find(featureTypes, func(ft plateaucms.PlateauFeatureType) bool {
@@ -53,9 +54,12 @@ func sendRequestToFlow(
 		return nil
 	}
 
-	ty := ReqTypeFrom(item.IsQCAndConvSkipped(featureType.Code))
-	if ty == "" {
-		log.Debugfc(ctx, "skip qc and convert")
+	// type
+	fty := cmsintegrationcommon.ReqTypeFrom(!featureType.QC, !featureType.Conv)
+	ity := item.ReqType().Override(overrideReqType)
+	ty := fty.Intersection(ity).Normalize()
+	if ty == "" || ty == cmsintegrationcommon.ReqTypeQCConv {
+		log.Debugfc(ctx, "skip qc and convert: fty=%s, ity=%s, ty=%s", fty, ity, ty)
 		return nil
 	}
 
@@ -78,13 +82,24 @@ func sendRequestToFlow(
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
 
-	// trigger id
 	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw, featureTypeCodes)
+	log.Debugfc(ctx, "city item: %s", pp.Sprint(cityItem))
+
+	// specv
 	specv := cityItem.SpecMajorVersionInt()
+	if specv == 0 {
+		_ = s.Fail(ctx, mainItem.ID, ty, "仕様書バージョンを指定してください。")
+		return fmt.Errorf("failed to get specv: specv=%d", specv)
+	}
+
+	// trigger id
+	var qc bool
+	log.Debugfc(ctx, "status: ty=%s, overrideReqType=%s, specv=%d", ty, overrideReqType, specv)
 	var triggerID string
-	if overrideReqType == ReqTypeQC || (overrideReqType == "" && ty.IsQC()) {
+	if ty == cmsintegrationcommon.ReqTypeQC {
 		triggerID = featureType.FlowQCTriggerID(specv)
-	} else if overrideReqType == ReqTypeConv || (overrideReqType == "" && ty.IsConv()) {
+		qc = true
+	} else if ty == cmsintegrationcommon.ReqTypeConv {
 		triggerID = featureType.FlowConvTriggerID(specv)
 	}
 	if triggerID == "" {
@@ -97,7 +112,7 @@ func sendRequestToFlow(
 	if convSettings != nil && convSettings.FeatureType == "" {
 		convSettings.FeatureType = featureType.Code
 	}
-	if err := convSettings.Validate(ty == ReqTypeQC); err != nil {
+	if err := convSettings.Validate(qc); err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "%v", err)
 		return fmt.Errorf("invalid conv settings: %w", err)
 	}

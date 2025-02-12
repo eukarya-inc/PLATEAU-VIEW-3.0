@@ -1,6 +1,7 @@
 package cmsintegrationcommon
 
 import (
+	"fmt"
 	"testing"
 
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -263,7 +264,7 @@ func TestCityItem_SpecMajorVersionInt(t *testing.T) {
 }
 
 func TestIsQCAndConvSkipped(t *testing.T) {
-	skipQC, skipConv := (&FeatureItem{}).IsQCAndConvSkipped("")
+	skipQC, skipConv := (&FeatureItem{}).IsQCAndConvSkipped()
 	assert.False(t, skipQC)
 	assert.False(t, skipConv)
 
@@ -271,7 +272,7 @@ func TestIsQCAndConvSkipped(t *testing.T) {
 		QCStatus: &cms.Tag{
 			Name: "成功",
 		},
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.True(t, skipQC)
 	assert.False(t, skipConv)
 
@@ -279,23 +280,15 @@ func TestIsQCAndConvSkipped(t *testing.T) {
 		ConvertionStatus: &cms.Tag{
 			Name: "成功",
 		},
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = (&FeatureItem{
-		QCStatus: &cms.Tag{
-			Name: "成功",
-		},
-	}).IsQCAndConvSkipped("dem")
-	assert.True(t, skipQC)
 	assert.True(t, skipConv)
 
 	skipQC, skipConv = (&FeatureItem{
 		SkipQCConv: &cms.Tag{
 			Name: "品質検査のみをスキップ",
 		},
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.True(t, skipQC)
 	assert.False(t, skipConv)
 
@@ -303,7 +296,7 @@ func TestIsQCAndConvSkipped(t *testing.T) {
 		SkipQCConv: &cms.Tag{
 			Name: "変換のみをスキップ",
 		},
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.False(t, skipQC)
 	assert.True(t, skipConv)
 
@@ -311,26 +304,73 @@ func TestIsQCAndConvSkipped(t *testing.T) {
 		SkipQCConv: &cms.Tag{
 			Name: "品質検査・変換のみをスキップ",
 		},
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.True(t, skipQC)
 	assert.True(t, skipConv)
 
 	skipQC, skipConv = (&FeatureItem{
 		SkipQC: true,
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.True(t, skipQC)
 	assert.False(t, skipConv)
 
 	skipQC, skipConv = (&FeatureItem{
 		SkipConvert: true,
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.False(t, skipQC)
 	assert.True(t, skipConv)
 
 	skipQC, skipConv = (&FeatureItem{
 		SkipQC:      true,
 		SkipConvert: true,
-	}).IsQCAndConvSkipped("")
+	}).IsQCAndConvSkipped()
 	assert.True(t, skipQC)
 	assert.True(t, skipConv)
+}
+
+func TestReqType_Intersection(t *testing.T) {
+	tests := []struct {
+		input    ReqType
+		other    ReqType
+		expected ReqType
+	}{
+		{input: ReqTypeQC, other: ReqTypeQC, expected: ReqTypeQC},
+		{input: ReqTypeQC, other: ReqTypeQCConv, expected: ReqTypeQC},
+		{input: ReqTypeQC, other: ReqTypeConv, expected: ""},
+		{input: ReqTypeConv, other: ReqTypeConv, expected: ReqTypeConv},
+		{input: ReqTypeConv, other: ReqTypeQCConv, expected: ReqTypeConv},
+		{input: ReqTypeConv, other: ReqTypeQC, expected: ""},
+		{input: ReqTypeQCConv, other: ReqTypeQCConv, expected: ReqTypeQCConv},
+		{input: ReqTypeQCConv, other: ReqTypeQC, expected: ReqTypeQC},
+		{input: ReqTypeQCConv, other: ReqTypeConv, expected: ReqTypeConv},
+		{input: ReqTypeQCConv, other: "", expected: ""},
+		{input: "", other: ReqTypeQCConv, expected: ""},
+	}
+
+	for _, tt := range tests {
+		name := fmt.Sprintf("%s and %s", tt.input, tt.other)
+		t.Run(name, func(t *testing.T) {
+			result := tt.input.Intersection(tt.other)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
+func TestReqType_Normalize(t *testing.T) {
+	tests := []struct {
+		input    ReqType
+		expected ReqType
+	}{
+		{input: ReqTypeQC, expected: ReqTypeQC},
+		{input: ReqTypeConv, expected: ReqTypeConv},
+		{input: ReqTypeQCConv, expected: ReqTypeQC},
+		{input: "", expected: ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(string(tt.input), func(t *testing.T) {
+			result := tt.input.Normalize()
+			assert.Equal(t, tt.expected, result)
+		})
+	}
 }
