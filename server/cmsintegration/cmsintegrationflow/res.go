@@ -10,6 +10,7 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/k0kubun/pp/v3"
+	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
 	"golang.org/x/exp/maps"
@@ -152,10 +153,12 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 
 	// comment to the item
 	qcmsg := ""
-	if internal.QCOK {
-		qcmsg = "エラーは検出されませんでした。"
-	} else {
-		qcmsg = "エラーが検出されました。"
+	if id.Type == cmsintegrationcommon.ReqTypeQC {
+		if internal.QCOK {
+			qcmsg = ""
+		} else {
+			qcmsg = "品質検査でエラーが検出されました。"
+		}
 	}
 	if err := s.CMS.CommentToItem(ctx, id.ItemID, fmt.Sprintf("Flowの%sが完了しました。%s%s", id.Type.Title(), qcmsg, logurls)); err != nil {
 		return fmt.Errorf("failed to add comment: %w", err)
@@ -165,8 +168,10 @@ func receiveResultFromFlow(ctx context.Context, s *Services, conf *Config, res F
 
 	// if the qc is success, trigger the conversion
 	if id.Type == cmsintegrationcommon.ReqTypeQC && qcStatus == cmsintegrationcommon.ConvertionStatusSuccess {
-		log.Infofc(ctx, "trigger conversion")
+		log.Infofc(ctx, "trigger conv")
+		rewriteQCStatus(mainItem, cmsintegrationcommon.ConvertionStatusSuccess)
 		if err := sendRequestToFlow(ctx, s, conf, id.ProjectID, featureType.Code, mainItem, featureTypes, cmsintegrationcommon.ReqTypeConv); err != nil {
+			log.Errorfc(ctx, "failed to trigger conv: %v", err)
 			return fmt.Errorf("failed to send request to flow: %w", err)
 		}
 	}
@@ -199,4 +204,16 @@ func getFeatureItemData(assets map[string][]string, items []cmsintegrationcommon
 	}
 
 	return
+}
+
+func rewriteQCStatus(item *cms.Item, status cmsintegrationcommon.ConvertionStatus) {
+	if item == nil {
+		return
+	}
+	for i, f := range item.Fields {
+		if f.Key == "qc_status" {
+			item.Fields[i].Value = cmsintegrationcommon.TagFrom(status)
+			return
+		}
+	}
 }

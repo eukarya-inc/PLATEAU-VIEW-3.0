@@ -20,10 +20,10 @@ func TestFlowResult_Internal(t *testing.T) {
 		Status:       "succeeded",
 		Logs:         []string{"https://example.com/logs.log"},
 		Outputs: []string{
-			"https://example.com/dic.json",
-			"https://example.com/maxlod.csv",
-			"https://example.com/qc_result.zip",
-			"https://example.com/qc_result_succeeded",
+			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_dic.json",
+			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_maxLod.csv",
+			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_qc_result.zip",
+			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_qc_result_succeeded",
 			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_3dtiles_lod1.zip",
 			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_3dtiles_lod2.zip",
 			"https://example.com/13999_hoge-shi_citygml_op_1_bldg_3dtiles_lod2_no_texture.zip",
@@ -39,9 +39,9 @@ func TestFlowResult_Internal(t *testing.T) {
 				"https://example.com/13999_hoge-shi_citygml_op_1_bldg_3dtiles_lod2_no_texture.zip",
 			},
 		},
-		Dic:      "https://example.com/dic.json",
-		MaxLOD:   "https://example.com/maxlod.csv",
-		QCResult: "https://example.com/qc_result.zip",
+		Dic:      "https://example.com/13999_hoge-shi_citygml_op_1_bldg_dic.json",
+		MaxLOD:   "https://example.com/13999_hoge-shi_citygml_op_1_bldg_maxLod.csv",
+		QCResult: "https://example.com/13999_hoge-shi_citygml_op_1_bldg_qc_result.zip",
 		QCOK:     true,
 	}
 

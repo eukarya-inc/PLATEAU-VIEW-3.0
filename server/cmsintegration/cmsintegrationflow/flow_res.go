@@ -36,17 +36,17 @@ func (r FlowResult) Internal() (res FlowInternalResult) {
 	for _, output := range r.Outputs {
 		base := path.Base(output)
 
-		switch base {
-		case "dic.json":
+		switch {
+		case strings.HasSuffix(base, "dic.json"):
 			res.Dic = output
 			continue
-		case "maxlod.csv":
+		case strings.HasSuffix(base, "maxlod.csv") || strings.HasSuffix(base, "maxLod.csv"):
 			res.MaxLOD = output
 			continue
-		case "qc_result.zip":
+		case strings.HasSuffix(base, "qc_result.zip"):
 			res.QCResult = output
 			continue
-		case "qc_result_succeeded":
+		case strings.HasSuffix(base, "qc_result_succeeded"):
 			res.QCOK = true
 			continue
 		}
