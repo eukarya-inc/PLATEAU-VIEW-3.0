@@ -128,7 +128,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	}
 
 	// get city item
-	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, false)
+	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, true)
 	if err != nil {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "都市アイテムが見つかりません。")
 		return fmt.Errorf("failed to get city item: %w", err)
@@ -137,33 +137,20 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 	cityItem := cmsintegrationcommon.CityItemFrom(cityItemRaw, featureTypeCodes)
 
 	// validate city item
-	if cityItem.CodeLists == "" {
+	if cityItem.CodeLists == nil {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "コードリストが都市アイテムに登録されていないため品質検査・変換を開始できません。")
 		return fmt.Errorf("city item has no codelist")
 	}
 
-	if !skipQC && cityItem.ObjectLists == "" && cityItem.SpecMajorVersionInt() >= plateauSpecMinMajorVersionObjectListsNeeded {
+	if !skipQC && cityItem.ObjectLists == nil && cityItem.SpecMajorVersionInt() >= plateauSpecMinMajorVersionObjectListsNeeded {
 		_ = failToConvert(ctx, s, mainItem.ID, ty, "オブジェクトリストが都市アイテムに登録されていないため品質検査を開始できません。")
 		return fmt.Errorf("city item has no objectlists")
 	}
 
-	// get codelist asset
-	codelistAsset, err := s.CMS.Asset(ctx, cityItem.CodeLists)
-	if err != nil {
-		_ = failToConvert(ctx, s, mainItem.ID, ty, "コードリストが見つかりません。")
-		return fmt.Errorf("failed to get codelist asset: %w", err)
-	}
-
 	// get objectLists asset
 	var objectListsAssetURL string
-	if cityItem.ObjectLists != "" {
-		objectListsAsset, err := s.CMS.Asset(ctx, cityItem.ObjectLists)
-		if err != nil {
-			_ = failToConvert(ctx, s, mainItem.ID, ty, "オブジェクトリストが見つかりません。")
-			return fmt.Errorf("failed to get objectlists asset: %w", err)
-		}
-
-		objectListsAssetURL = objectListsAsset.URL
+	if cityItem.ObjectLists != nil {
+		objectListsAssetURL = cityItem.ObjectLists.URL
 	}
 
 	// get FME URL
@@ -183,7 +170,7 @@ func sendRequestToFME(ctx context.Context, s *Services, conf *Config, w *cmswebh
 		}.String(conf.Secret),
 		Target:      cityGMLAsset.URL,
 		PRCS:        cityItem.PRCS.EPSGCode(),
-		Codelists:   codelistAsset.URL,
+		Codelists:   cityItem.CodeLists.URL,
 		ObjectLists: objectListsAssetURL,
 		ResultURL:   resultURL(conf),
 		Type:        ty,

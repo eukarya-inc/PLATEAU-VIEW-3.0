@@ -61,8 +61,27 @@ func TestSendRequestToFME(t *testing.T) {
 		ID: "cityID",
 		Fields: []*cms.Field{
 			{
-				Key:   "codelists",
-				Value: "codelistID",
+				Key: "codelists",
+				Value: &cms.Asset{
+					ID:  "codelistID",
+					URL: "codelists",
+				},
+			},
+			{
+				Key:   "citygml",
+				Value: "citygmlID",
+			},
+			{
+				Key:   "spec",
+				Value: "第3.5版",
+			},
+		},
+	}
+	cityItemWithoutCodelists := &cms.Item{
+		ID: "cityID",
+		Fields: []*cms.Field{
+			{
+				Key: "codelists",
 			},
 			{
 				Key:   "citygml",
@@ -288,7 +307,7 @@ func TestSendRequestToFME(t *testing.T) {
 					ID: "metadataItemID",
 				}, nil
 			}
-			return cityItem, nil
+			return cityItemWithoutCodelists, nil
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
@@ -299,15 +318,16 @@ func TestSendRequestToFME(t *testing.T) {
 					ID: "citygmlID",
 				}, nil
 			}
-			return nil, fmt.Errorf("failed to get codelist asset")
+			return nil, fmt.Errorf("failed to get asset")
 		}
 		c.commentToItem = func(ctx context.Context, assetID, content string) error {
-			assert.Contains(t, content, "コードリストが見つかりません。")
+			assert.Contains(t, content, "コードリストが")
+			assert.Contains(t, content, "ません。")
 			return nil
 		}
 
 		err := sendRequestToFME(ctx, s, conf, w)
-		assert.ErrorContains(t, err, "failed to get codelist asset")
+		assert.ErrorContains(t, err, "city item has no codelist")
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -336,10 +356,7 @@ func TestSendRequestToFME(t *testing.T) {
 					URL: "target",
 				}, nil
 			}
-			return &cms.Asset{
-				ID:  "codelistID",
-				URL: "codelists",
-			}, nil
+			return nil, fmt.Errorf("failed to get asset")
 		}
 		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil

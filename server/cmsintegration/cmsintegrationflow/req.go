@@ -72,7 +72,7 @@ func sendRequestToFlow(
 	}
 
 	// get city item
-	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, false)
+	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, true)
 	if err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "都市アイテムが正常に紐づけられていません。")
 		return fmt.Errorf("failed to get city item: %w", err)
@@ -87,20 +87,19 @@ func sendRequestToFlow(
 	} else if overrideReqType == ReqTypeConv || (overrideReqType == "" && ty.IsConv()) {
 		triggerID = featureType.FlowConvTriggerID(specv)
 	}
+	if triggerID == "" {
+		_ = s.Fail(ctx, mainItem.ID, ty, "Flowの%s（v%d）用トリガーIDが設定されていません。", ty.Title(), specv)
+		return fmt.Errorf("failed to get trigger id: ty=%s, v=%d", ty, specv)
+	}
 
 	// conv settings
 	convSettings := cityItem.ConvSettings().Merge(item.ConvSettings())
-	if convSettings == nil {
-		_ = s.Fail(ctx, mainItem.ID, ty, "変換設定が見つかりません。都市アイテムの設定を確認してください。")
-		return fmt.Errorf("no conv settings")
-	}
-	if convSettings.FeatureType == "" {
+	if convSettings != nil && convSettings.FeatureType == "" {
 		convSettings.FeatureType = featureType.Code
 	}
-
-	dryrun := ""
-	if triggerID == "" {
-		dryrun = "（dryrun）"
+	if err := convSettings.Validate(ty == ReqTypeQC); err != nil {
+		_ = s.Fail(ctx, mainItem.ID, ty, "%v", err)
+		return fmt.Errorf("invalid conv settings: %w", err)
 	}
 
 	// sign id
@@ -117,7 +116,6 @@ func sendRequestToFlow(
 		AuthToken:       conf.FlowToken,
 		CityGMLURL:      cityGMLAsset.URL,
 		ConvSettings:    convSettings,
-		DryRun:          dryrun != "",
 	})
 	if err != nil {
 		_ = s.Fail(ctx, mainItem.ID, ty, "Flowへのリクエストに失敗しました。%v", err)
@@ -127,7 +125,7 @@ func sendRequestToFlow(
 	log.Infofc(ctx, "success to trigger flow: %#v", res)
 
 	// post a comment to the item
-	if err = s.CMS.CommentToItem(ctx, mainItem.ID, fmt.Sprintf("Flowでの%sを開始しました。%s", ty.Title(), dryrun)); err != nil {
+	if err = s.CMS.CommentToItem(ctx, mainItem.ID, fmt.Sprintf("Flowでの%s（v%d）を開始しました。", ty.Title(), specv)); err != nil {
 		return fmt.Errorf("failed to add comment: %w", err)
 	}
 

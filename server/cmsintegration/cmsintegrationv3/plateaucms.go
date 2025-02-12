@@ -41,7 +41,7 @@ func getAllItems[T any](ctx context.Context, c cms.Interface, prj, model, cacheB
 	if found, err := findCache(cacheBase, key, items); err != nil {
 		return nil, fmt.Errorf("failed to find cache: %w", err)
 	} else if !found {
-		items2, err := c.GetItemsByKeyInParallel(ctx, prj, model, false, 0)
+		items2, err := c.GetItemsByKeyInParallel(ctx, prj, model, true, 0)
 		if err != nil {
 			return nil, err
 		}

@@ -305,7 +305,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 	}
 
 	// get city
-	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, false)
+	cityItemRaw, err := s.CMS.GetItem(ctx, item.City, true)
 	if err != nil {
 		return fmt.Errorf("failed to get city: %w", err)
 	}

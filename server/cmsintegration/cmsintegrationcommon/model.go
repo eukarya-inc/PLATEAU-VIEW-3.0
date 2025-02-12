@@ -1,6 +1,7 @@
 package cmsintegrationcommon
 
 import (
+	"fmt"
 	"slices"
 	"strconv"
 	"strings"
@@ -52,11 +53,11 @@ type CityItem struct {
 	Spec              string            `json:"spec,omitempty" cms:"spec,select"`
 	OpenDataUrl       string            `json:"open_data_url,omitempty" cms:"open_data_url,url"`
 	PRCS              PRCS              `json:"prcs,omitempty" cms:"prcs,select"`
-	CodeLists         string            `json:"codelists,omitempty" cms:"codelists,asset"`
-	Schemas           string            `json:"schemas,omitempty" cms:"schemas,asset"`
-	Metadata          string            `json:"metadata,omitempty" cms:"metadata,asset"`
-	Specification     string            `json:"specification,omitempty" cms:"specification,asset"`
-	ObjectLists       string            `json:"objectLists,omitempty" cms:"objectLists,asset"`
+	CodeLists         *cms.PublicAsset  `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas           *cms.PublicAsset  `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata          *cms.PublicAsset  `json:"metadata,omitempty" cms:"metadata,asset"`
+	Specification     *cms.PublicAsset  `json:"specification,omitempty" cms:"specification,asset"`
+	ObjectLists       *cms.PublicAsset  `json:"objectLists,omitempty" cms:"objectLists,asset"`
 	References        map[string]string `json:"references,omitempty" cms:"-"`
 	RelatedDataset    string            `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
 	GeospatialjpIndex string            `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
@@ -136,11 +137,21 @@ func (i *CityItem) ConvSettings() *ConvSettings {
 	if i == nil {
 		return nil
 	}
+	var schemas, codeLists, objectLists string
+	if i.Schemas != nil {
+		schemas = i.Schemas.URL
+	}
+	if i.CodeLists != nil {
+		codeLists = i.CodeLists.URL
+	}
+	if i.ObjectLists != nil {
+		objectLists = i.ObjectLists.URL
+	}
 	return &ConvSettings{
 		PRCS:        i.PRCS.EPSGCode(),
-		Schemas:     i.Schemas,
-		CodeLists:   i.CodeLists,
-		ObjectLists: i.ObjectLists,
+		Schemas:     schemas,
+		CodeLists:   codeLists,
+		ObjectLists: objectLists,
 	}
 }
 
@@ -231,6 +242,30 @@ func (c *ConvSettings) Merge(other *ConvSettings) *ConvSettings {
 		c.ObjectLists = other.ObjectLists
 	}
 	return c
+}
+
+func (c *ConvSettings) Validate(qc bool) error {
+	if c == nil {
+		return fmt.Errorf("変換設定が見つかりません。")
+	}
+	if c.FeatureType == "" {
+		return fmt.Errorf("地物型が不明です。")
+	}
+	if c.Schemas == "" {
+		return fmt.Errorf("schemasが登録されていません。")
+	}
+	if c.CodeLists == "" {
+		return fmt.Errorf("codelistsが登録されていません。")
+	}
+	if qc {
+		if c.PRCS == "" {
+			return fmt.Errorf("PRCSの指定が必要です。")
+		}
+		if c.ObjectLists == "" {
+			return fmt.Errorf("objectListsが登録されていません。")
+		}
+	}
+	return nil
 }
 
 type FeatureItemDatum struct {
