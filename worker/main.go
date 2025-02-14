@@ -41,12 +41,12 @@ func prepareGspatialjp(conf *Config) {
 	flag.BoolVar(&config.SkipMaxLOD, "skip-maxlod", false, "skip maxlod")
 	flag.BoolVar(&config.SkipRelated, "skip-related", false, "skip related")
 	flag.StringVar(&ft, "feature-types", "", "feature types")
-	config.FeatureTypes = strings.Split(ft, ",")
 
 	if err := flag.Parse(os.Args[2:]); err != nil {
 		panic(err)
 	}
 
+	config.FeatureTypes = strings.Split(ft, ",")
 	if err := preparegspatialjp.Command(&config); err != nil {
 		panic(err)
 	}
