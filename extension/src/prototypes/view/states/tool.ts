@@ -78,3 +78,5 @@ export const preventToolKeyDownAtom = atom(false);
 export const spatialIdZoomAtom = atom<number>(18);
 
 export const meshCodeTypeAtom = atom<MeshCodeType>("3x");
+
+export const isDrawClippingAtom = atom(false);

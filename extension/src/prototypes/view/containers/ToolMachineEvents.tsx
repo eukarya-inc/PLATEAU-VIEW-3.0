@@ -4,7 +4,12 @@ import { useEffect, type FC } from "react";
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
-import { getTool, preventToolKeyDownAtom, toolMachineAtom } from "../states/tool";
+import {
+  getTool,
+  isDrawClippingAtom,
+  preventToolKeyDownAtom,
+  toolMachineAtom,
+} from "../states/tool";
 
 export const ToolMachineEvents: FC = () => {
   const [state, send] = useAtom(toolMachineAtom);
@@ -74,11 +79,14 @@ export const ToolMachineEvents: FC = () => {
     send({ type: "MOUSE_UP" });
   });
 
+  const isDrawClipping = useAtomValue(isDrawClippingAtom);
   const canvas = getCesiumCanvas();
   useEffect(() => {
     let cursor;
     const tool = getTool(state);
-    if (tool?.type === "hand" && tool.active) {
+    if (isDrawClipping) {
+      cursor = "crosshair";
+    } else if (tool?.type === "hand" && tool.active) {
       cursor = "grabbing";
     } else if (tool?.type === "hand" && !tool.active) {
       cursor = "grab";
@@ -91,7 +99,7 @@ export const ToolMachineEvents: FC = () => {
     if (canvas) {
       canvas.style.cursor = cursor;
     }
-  }, [canvas, state]);
+  }, [canvas, state, isDrawClipping]);
 
   return null;
 };

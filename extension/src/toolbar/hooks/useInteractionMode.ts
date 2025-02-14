@@ -24,8 +24,8 @@ export const useInteractionMode = () => {
     // There's no tools support on mobile.
     if (isMobile) {
       setInteractionMode("default");
-    } else if (tool) {
+    } else if (tool?.type) {
       setInteractionMode(TOOL_TO_INTERACTIONMODE[tool.type]);
     }
-  }, [tool, isMobile, setInteractionMode]);
+  }, [tool?.type, isMobile, setInteractionMode]);
 };
