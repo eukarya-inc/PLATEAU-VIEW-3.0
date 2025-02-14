@@ -38,6 +38,14 @@ const LoadingWrapper = styled("div")(({ theme }) => ({
   justifyContent: "center",
   padding: theme.spacing(0, 2, 2, 2),
 }));
+
+const Tips = styled("div")(({ theme }) => ({
+  padding: theme.spacing(0, 2, 2, 2),
+  color: theme.palette.text.secondary,
+  fontSize: theme.typography.body2.fontSize,
+  display: "flex",
+  justifyContent: "center",
+}));
 export interface SpatialIdObjectContentProps {
   values: (SelectionGroup & {
     type: typeof SCREEN_SPACE_SELECTION;
@@ -133,7 +141,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
 
   const types = useMemo(() => [currentType], [currentType]);
 
-  const { attributes, loading } = useCityGMLSpaceAttributes({
+  const { attributes, loading, error } = useCityGMLSpaceAttributes({
     spaceZFXYStrs,
     featureTypes: types,
   });
@@ -187,23 +195,22 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
               <LoadingWrapper>
                 <LoadingAnimationIcon size={16} />
               </LoadingWrapper>
-            ) : (
-              attributes &&
-              attributes.length > 0 && (
-                <JSONWrapper>
-                  <ReactJson
-                    src={attributes}
-                    displayDataTypes={false}
-                    enableClipboard={false}
-                    displayObjectSize={false}
-                    quotesOnKeys={false}
-                    indentWidth={2}
-                    collapsed={true}
-                    style={{ wordBreak: "break-all", lineHeight: 1.2 }}
-                  />
-                </JSONWrapper>
-              )
-            )}
+            ) : attributes && attributes.length > 0 ? (
+              <JSONWrapper>
+                <ReactJson
+                  src={attributes}
+                  displayDataTypes={false}
+                  enableClipboard={false}
+                  displayObjectSize={false}
+                  quotesOnKeys={false}
+                  indentWidth={2}
+                  collapsed={true}
+                  style={{ wordBreak: "break-all", lineHeight: 1.2 }}
+                />
+              </JSONWrapper>
+            ) : attributes === null ? (
+              <Tips>データが見つかりません</Tips>
+            ) : null}
           </>
         )}
       </ParameterList>
