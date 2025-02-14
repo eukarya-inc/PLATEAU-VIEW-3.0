@@ -168,6 +168,7 @@ export type SearchAutocompleteProps = Omit<AutocompleteProps, "renderInput"> & {
   maxHeight?: number;
   filters?: string[];
   isResizing?: MutableRefObject<boolean>;
+  onDeepBlur?: () => void;
   children?: ReactNode;
 };
 
@@ -187,6 +188,7 @@ export const SearchAutocomplete = forwardRef<HTMLInputElement, SearchAutocomplet
       onInputChange,
       onFocus,
       onBlur,
+      onDeepBlur,
       ...props
     },
     ref,
@@ -233,12 +235,13 @@ export const SearchAutocomplete = forwardRef<HTMLInputElement, SearchAutocomplet
     const handleCreateMeshCodeLayer = useCallback(
       (location: { lat: number; lng: number }) => {
         setFocused(false);
+        onDeepBlur?.();
         if (isMutableRefObject(inputRef)) {
           inputRef.current?.blur();
         }
         handleCreateMeshCodeFeature({ location, forceCreateNewLayer: true });
       },
-      [inputRef, handleCreateMeshCodeFeature],
+      [inputRef, onDeepBlur, handleCreateMeshCodeFeature],
     );
 
     const renderOption = useCallback(

@@ -82,7 +82,7 @@ export const ToolMachineEvents: FC = () => {
       cursor = "grabbing";
     } else if (tool?.type === "hand" && !tool.active) {
       cursor = "grab";
-    } else if (tool?.type === "sketch") {
+    } else if (tool?.type === "sketch" || tool?.type === "spatialId" || tool?.type === "meshCode") {
       cursor = "crosshair";
     } else {
       cursor = "auto";

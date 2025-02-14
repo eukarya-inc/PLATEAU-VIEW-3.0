@@ -141,7 +141,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
   return (
     <List disablePadding>
       <InspectorHeader
-        title={`${values.length}個の空間`}
+        title={`${values.length}個の空間ID`}
         iconComponent={SpatialIdIcon}
         actions={
           <>

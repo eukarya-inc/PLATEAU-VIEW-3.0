@@ -41,7 +41,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [HEATMAP_LAYER]: "統計データ",
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
-  [SPATIAL_ID_LAYER]: "空間ID",
+  [SPATIAL_ID_LAYER]: "空間IDコレクション",
   [MESH_CODE_LAYER]: "メッシュコレクション",
   [MY_DATA_LAYER]: "マイデータ",
   [STORY_LAYER]: "ストーリー",

@@ -93,6 +93,9 @@ export const SpatialIdTool: FC = () => {
       zoom: zoomRef.current,
       rightClickToExit: false,
       dataOnly: true,
+      selectorColor: "#00bebe33",
+      selectorOutlineColor: "#00bebe00",
+      groundIndicatorColor: "#00000033",
     });
   }, []);
   const startPickSpaceRef = useRef(startPickSpace);
