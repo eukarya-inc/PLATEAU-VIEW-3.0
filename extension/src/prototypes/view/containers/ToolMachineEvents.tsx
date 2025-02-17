@@ -82,7 +82,7 @@ export const ToolMachineEvents: FC = () => {
   const isDrawClipping = useAtomValue(isDrawClippingAtom);
   const canvas = getCesiumCanvas();
   useEffect(() => {
-    let cursor;
+    let cursor: string;
     const tool = getTool(state);
     if (isDrawClipping) {
       cursor = "crosshair";
