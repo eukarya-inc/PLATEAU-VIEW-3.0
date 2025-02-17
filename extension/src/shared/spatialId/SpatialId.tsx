@@ -40,7 +40,7 @@ export const SpatialId: FC<SpatialIdProps> = ({ featuresAtom, onLoad }) => {
   const shadowAppearances: Partial<LayerAppearanceTypes> = useMemo(
     () => ({
       polygon: {
-        classificationType: "terrain",
+        classificationType: "both",
         stroke: false,
         fill: true,
         fillColor: "#00000033",
