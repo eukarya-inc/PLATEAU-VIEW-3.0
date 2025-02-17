@@ -96,9 +96,12 @@ export const ToolMachineEvents: FC = () => {
       cursor = "auto";
     }
 
-    if (canvas) {
-      canvas.style.cursor = cursor;
-    }
+    // Delay cursor change to make sure it can override the change from Re:Earth.
+    setTimeout(() => {
+      if (canvas) {
+        canvas.style.cursor = cursor;
+      }
+    }, 100);
   }, [canvas, state, isDrawClipping]);
 
   return null;
