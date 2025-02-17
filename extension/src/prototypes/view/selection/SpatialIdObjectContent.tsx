@@ -141,7 +141,7 @@ export const SpatialIdObjectContent: FC<SpatialIdObjectContentProps> = ({ values
 
   const types = useMemo(() => [currentType], [currentType]);
 
-  const { attributes, loading, error } = useCityGMLSpaceAttributes({
+  const { attributes, loading } = useCityGMLSpaceAttributes({
     spaceZFXYStrs,
     featureTypes: types,
   });
