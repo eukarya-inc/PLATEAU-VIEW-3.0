@@ -36,7 +36,7 @@ export function createSpatialIdLayer(
   params: SpatialIdLayerModelParams,
 ): ConfigurableLayerModel<SpatialIdLayerModel> {
   const featuresAtom = atom<SpatialIdFeature[]>([...(params.features ?? [])]);
-  const title = `空間${nextLayerIndex++}`;
+  const title = `空間IDコレクション${nextLayerIndex++}`;
   return {
     ...createViewLayerModel({
       ...params,

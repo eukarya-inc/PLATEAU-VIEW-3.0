@@ -32,9 +32,7 @@ export default ({ spaceZFXYStrs, featureTypes }: UseCityGMLSpaceAttributesProps)
           spaceZFXYStrs,
           types,
         });
-        if (!data) return;
-
-        setAttributes(data);
+        setAttributes(data ?? null);
       } catch (err: any) {
         setError(err.message || "An error occurred while fetching attributes.");
       } finally {

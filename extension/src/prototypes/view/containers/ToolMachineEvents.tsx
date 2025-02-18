@@ -4,7 +4,12 @@ import { useEffect, type FC } from "react";
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
 import { useWindowEvent } from "../../react-helpers";
-import { getTool, preventToolKeyDownAtom, toolMachineAtom } from "../states/tool";
+import {
+  getTool,
+  isDrawClippingAtom,
+  preventToolKeyDownAtom,
+  toolMachineAtom,
+} from "../states/tool";
 
 export const ToolMachineEvents: FC = () => {
   const [state, send] = useAtom(toolMachineAtom);
@@ -74,24 +79,30 @@ export const ToolMachineEvents: FC = () => {
     send({ type: "MOUSE_UP" });
   });
 
+  const isDrawClipping = useAtomValue(isDrawClippingAtom);
   const canvas = getCesiumCanvas();
   useEffect(() => {
-    let cursor;
+    let cursor: string;
     const tool = getTool(state);
-    if (tool?.type === "hand" && tool.active) {
+    if (isDrawClipping) {
+      cursor = "crosshair";
+    } else if (tool?.type === "hand" && tool.active) {
       cursor = "grabbing";
     } else if (tool?.type === "hand" && !tool.active) {
       cursor = "grab";
-    } else if (tool?.type === "sketch") {
+    } else if (tool?.type === "sketch" || tool?.type === "spatialId" || tool?.type === "meshCode") {
       cursor = "crosshair";
     } else {
       cursor = "auto";
     }
 
-    if (canvas) {
-      canvas.style.cursor = cursor;
-    }
-  }, [canvas, state]);
+    // Delay cursor change to make sure it can override the change from Re:Earth.
+    setTimeout(() => {
+      if (canvas) {
+        canvas.style.cursor = cursor;
+      }
+    }, 100);
+  }, [canvas, state, isDrawClipping]);
 
   return null;
 };
