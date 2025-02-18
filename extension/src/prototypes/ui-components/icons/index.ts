@@ -67,3 +67,4 @@ export * from "./CameraIcon";
 export * from "./Compass";
 export * from "./ARIcon";
 export * from "./PencilIcon";
+export * from "./ExternalLink";
