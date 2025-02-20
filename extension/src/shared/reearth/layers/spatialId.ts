@@ -74,7 +74,7 @@ const getRectangeParamsFromSpace = (space: SpatialIdSpaceData) => {
     ],
   ];
 
-  const height = vertices[0][2];
-  const extrudedHeight = vertices[4][2];
+  const height = vertices[0][2] + space.geoidHeight;
+  const extrudedHeight = vertices[4][2] + space.geoidHeight;
   return { wsen, coordinates, height, extrudedHeight };
 };

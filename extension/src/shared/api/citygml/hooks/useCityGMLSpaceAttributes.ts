@@ -27,6 +27,8 @@ export default ({ spaceZFXYStrs, featureTypes }: UseCityGMLSpaceAttributesProps)
     const fetchAttributes = async () => {
       try {
         setLoading(true);
+        setError(null);
+        setAttributes(null);
 
         const data = await cityGMLClient?.getAttributesBySpace({
           spaceZFXYStrs,
