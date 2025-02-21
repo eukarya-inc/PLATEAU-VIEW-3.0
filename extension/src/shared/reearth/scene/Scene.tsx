@@ -192,6 +192,12 @@ export const Scene: FC<SceneProps> = ({
               }
             : {}),
         },
+        geoid: {
+          server: {
+            url: "https://api-vt.geolonia.com/api/altitude?lat=${lat}&lng=${lng}",
+            geoidProperty: "geoid",
+          },
+        },
         render: {
           antialias,
           ambientOcclusion,
