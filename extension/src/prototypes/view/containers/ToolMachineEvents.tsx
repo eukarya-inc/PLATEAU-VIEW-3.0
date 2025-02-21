@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from "jotai";
-import { useEffect, type FC } from "react";
+import { useEffect, useRef, type FC } from "react";
 
 import { useReEarthEvent } from "../../../shared/reearth/hooks";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
@@ -9,6 +9,7 @@ import {
   isDrawClippingAtom,
   preventToolKeyDownAtom,
   toolMachineAtom,
+  ToolType,
 } from "../states/tool";
 
 export const ToolMachineEvents: FC = () => {
@@ -81,6 +82,9 @@ export const ToolMachineEvents: FC = () => {
 
   const isDrawClipping = useAtomValue(isDrawClippingAtom);
   const canvas = getCesiumCanvas();
+
+  const lastToolType = useRef<ToolType | undefined>(undefined);
+
   useEffect(() => {
     let cursor: string;
     const tool = getTool(state);
@@ -96,12 +100,18 @@ export const ToolMachineEvents: FC = () => {
       cursor = "auto";
     }
 
+    // Avoid unnecessary cursor change
+    if (tool?.type !== "hand" && lastToolType.current === tool?.type) {
+      return;
+    }
+    lastToolType.current = tool?.type;
+
     // Delay cursor change to make sure it can override the change from Re:Earth.
     setTimeout(() => {
       if (canvas) {
         canvas.style.cursor = cursor;
       }
-    }, 100);
+    }, 30);
   }, [canvas, state, isDrawClipping]);
 
   return null;
