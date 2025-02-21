@@ -69,7 +69,7 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 	if seed.IndexMapURL != "" {
 		log.Debugfc(ctx, "geospatialjpv3: index map: %s", seed.IndexMapURL)
 		r, err := h.createOrUpdateResource(ctx, pkg, ResourceInfo{
-			Name:        "索引図",
+			Name:        fmt.Sprintf("索引図（v%d）", seed.V),
 			URL:         seed.IndexMapURL,
 			Description: "データ整備範囲の標準地域メッシュ（２次メッシュ、３次メッシュ）のメッシュとメッシュ番号を示したPDFファイルです。",
 		})
