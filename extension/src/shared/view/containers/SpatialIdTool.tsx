@@ -7,7 +7,7 @@ import { LayerModel, layerSelectionAtom, useAddLayer } from "../../../prototypes
 import { screenSpaceSelectionAtom } from "../../../prototypes/screen-space-selection";
 import { spatialIdZoomAtom, toolAtom } from "../../../prototypes/view/states/tool";
 import { highlightedSpatialIdLayersAtom, SPATIAL_ID_LAYER } from "../../../prototypes/view-layers";
-import { useReEarthEvent } from "../../reearth/hooks";
+import { useReEarthEvent, useViewer } from "../../reearth/hooks";
 import { useSpatialId } from "../../reearth/hooks/useSpatialId";
 import { SpatialIdSpaceData } from "../../reearth/types/reearthPluginAPIv2/spatialId";
 import { SPATIAL_ID_OBJECT, SpatialIdFeature } from "../../spatialId";
@@ -40,6 +40,12 @@ const addFeatureAtom = atom(null, (get, set, value: SpatialIdFeature) => {
 });
 
 export const SpatialIdTool: FC = () => {
+  const { setGeoidServer } = useViewer();
+  setGeoidServer({
+    url: "https://api-vt.geolonia.com/api/altitude?lat=${lat}&lng=${lng}",
+    geoidProperty: "geoid",
+  });
+
   const layer = useAtomValue(targetSpatialIdLayerAtom);
   const addFeature = useSetAtom(addFeatureAtom);
   const addLayer = useAddLayer();

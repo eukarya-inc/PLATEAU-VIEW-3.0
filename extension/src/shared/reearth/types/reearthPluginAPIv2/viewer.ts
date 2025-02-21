@@ -5,7 +5,7 @@ import {
 } from "../event";
 import { ViewerProperty } from "../viewer";
 
-import { LatLngHeight } from "./common";
+import { GeoidServer, LatLngHeight } from "./common";
 
 export declare type InteractionModeType = "default" | "move" | "selection" | "sketch" | "spatialId";
 
@@ -76,6 +76,8 @@ export declare type Tools = {
     screenOffset: [x: number, y: number],
   ) => [x: number, y: number, z: number] | undefined;
   readonly isPositionVisibleOnGlobe: (position: [x: number, y: number, z: number]) => boolean;
+  readonly setGeoidServer: (params: GeoidServer) => void;
+  readonly getGeoidHeight: (lng?: number, lat?: number) => Promise<number | undefined>;
 };
 
 export declare type ViewerEventType = {

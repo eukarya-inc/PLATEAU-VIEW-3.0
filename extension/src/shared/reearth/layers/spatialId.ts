@@ -1,7 +1,7 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 
 import { SpatialIdFeature } from "../../spatialId";
-import { useLayer } from "../hooks";
+import { useLayer, useViewer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 import { SpatialIdSpaceData } from "../types/reearthPluginAPIv2/spatialId";
 
@@ -18,17 +18,38 @@ export const SpatialIdLayer: FC<SpatialIdLayerProps> = ({
   visible,
   onLoad,
 }) => {
+  const [geoidHeights, setGeoidHeights] = useState<Record<string, number>>({});
+  const geoidHeightsRef = useRef(geoidHeights);
+  geoidHeightsRef.current = geoidHeights;
+
+  const { getGeoidHeight } = useViewer();
+
+  useEffect(() => {
+    for (const feature of features) {
+      const center = feature.data.center;
+      if (geoidHeightsRef.current[`${center.lng},${center.lat}`] !== undefined) continue;
+      getGeoidHeight(center.lng, center.lat)?.then(geoidHeight => {
+        if (geoidHeight === undefined) return;
+        setGeoidHeights(prev => ({ ...prev, [`${center.lng},${center.lat}`]: geoidHeight }));
+      });
+    }
+  }, [features, getGeoidHeight]);
+
   const data: Data = useMemo(() => {
     const geojsonFeatures = [];
     for (const feature of features) {
+      const geoidHeight = geoidHeights[`${feature.data.center.lng},${feature.data.center.lat}`];
+      if (geoidHeight === undefined) continue;
+
       const { coordinates, height, extrudedHeight } = getRectangeParamsFromSpace(feature.data);
+
       geojsonFeatures.push({
         type: "Feature",
         id: feature.id,
         properties: {
           id: feature.id,
-          height,
-          extrudedHeight,
+          height: height + geoidHeight,
+          extrudedHeight: extrudedHeight + geoidHeight,
         },
         geometry: {
           coordinates,
@@ -36,6 +57,7 @@ export const SpatialIdLayer: FC<SpatialIdLayerProps> = ({
         },
       });
     }
+
     return {
       type: "geojson",
       idProperty: "id",
@@ -44,7 +66,7 @@ export const SpatialIdLayer: FC<SpatialIdLayerProps> = ({
         features: geojsonFeatures,
       },
     };
-  }, [features]);
+  }, [features, geoidHeights]);
 
   useLayer({
     data,
@@ -74,7 +96,7 @@ const getRectangeParamsFromSpace = (space: SpatialIdSpaceData) => {
     ],
   ];
 
-  const height = vertices[0][2] + space.geoidHeight;
-  const extrudedHeight = vertices[4][2] + space.geoidHeight;
+  const height = vertices[0][2];
+  const extrudedHeight = vertices[4][2];
   return { wsen, coordinates, height, extrudedHeight };
 };

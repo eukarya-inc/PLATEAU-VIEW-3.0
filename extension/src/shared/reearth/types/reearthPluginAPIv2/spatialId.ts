@@ -38,7 +38,6 @@ export declare type SpatialIdSpaceData = {
   hilbertTilehash: string;
   hilbertIndex: bigint;
   vertices: [number, number, number][];
-  geoidHeight: number;
 };
 
 export declare type SpatialIdEventType = {
