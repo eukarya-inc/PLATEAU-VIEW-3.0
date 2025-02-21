@@ -41,10 +41,13 @@ const addFeatureAtom = atom(null, (get, set, value: SpatialIdFeature) => {
 
 export const SpatialIdTool: FC = () => {
   const { setGeoidServer } = useViewer();
-  setGeoidServer({
-    url: "https://api-vt.geolonia.com/api/altitude?lat=${lat}&lng=${lng}",
-    geoidProperty: "geoid",
-  });
+
+  useEffect(() => {
+    setGeoidServer({
+      url: "https://api-vt.geolonia.com/api/altitude?lat=${lat}&lng=${lng}",
+      geoidProperty: "geoid",
+    });
+  }, [setGeoidServer]);
 
   const layer = useAtomValue(targetSpatialIdLayerAtom);
   const addFeature = useSetAtom(addFeatureAtom);
