@@ -11,7 +11,10 @@ import (
 	"net/url"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
@@ -22,7 +25,9 @@ import (
 )
 
 func Run(conf Config) (err error) {
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	destURL, err := url.Parse(conf.Dest)
 	if err != nil {
 		return fmt.Errorf("invalid destination bucket(%s): %w", conf.Dest, err)
@@ -56,40 +61,141 @@ func Run(conf Config) (err error) {
 		log.Printf("SKIPPED: already exists (status=%s)", status)
 		return nil
 	}
+	startedAt := time.Now().Format(time.RFC3339Nano)
+	metadata := status(PackStatusProcessing)
+	metadata["startedAt"] = startedAt
+	{
+		_, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
+			Update(ctx, storage.ObjectAttrsToUpdate{Metadata: metadata})
 
-	_, err = obj.If(storage.Conditions{GenerationMatch: attrs.Generation, MetagenerationMatch: attrs.Metageneration}).
-		Update(ctx, storage.ObjectAttrsToUpdate{Metadata: status(PackStatusProcessing)})
-	if err != nil {
-		var gErr *googleapi.Error
-		if !(errors.As(err, &gErr) && gErr.Code == http.StatusPreconditionFailed) {
-			log.Printf("SKIPPED: someone else is processing")
-			return nil
+		if err != nil {
+			var gErr *googleapi.Error
+			if !(errors.As(err, &gErr) && gErr.Code == http.StatusPreconditionFailed) {
+				log.Printf("SKIPPED: someone else is processing")
+				return nil
+			}
+			return fmt.Errorf("update metadata: %v", err)
 		}
-		return fmt.Errorf("update metadata: %v", err)
 	}
 
 	w := obj.NewWriter(ctx)
-	w.ObjectAttrs.Metadata = citygml.Status(PackStatusSucceeded)
+	completedMetadata := status(PackStatusSucceeded)
+	completedMetadata["startedAt"] = startedAt
+	w.ObjectAttrs.Metadata = completedMetadata
 	defer w.Close()
-	if err := pack(ctx, w, conf.Domain, conf.URLs); err != nil {
+
+	p := &packer{
+		w: w,
+		p: progress{
+			steps: int64(len(conf.URLs)) * 2,
+		},
+		httpClient: &http.Client{},
+	}
+	var finished bool
+	var finishedMu sync.Mutex
+	go func() {
+		t := time.NewTicker(5 * time.Second)
+		defer t.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-t.C:
+				finishedMu.Lock()
+				ok := finished
+				if ok {
+					finishedMu.Unlock()
+					return
+				}
+				metadata["total"] = strconv.FormatInt(p.p.Total(), 64)
+				metadata["processed"] = strconv.FormatInt(p.p.Processed(), 64)
+				_, err := obj.Update(ctx, storage.ObjectAttrsToUpdate{
+					Metadata: metadata,
+				})
+				finishedMu.Unlock()
+				if err != nil {
+					log.Printf("[WARN] failed to update progress: %s", err)
+				}
+			}
+		}
+	}()
+
+	if err := p.pack(ctx, conf.Domain, conf.URLs); err != nil {
 		return fmt.Errorf("pack: %w", err)
 	}
+	finishedMu.Lock()
+	defer finishedMu.Unlock()
 	if err := w.Close(); err != nil {
 		return fmt.Errorf("close object writer: %v", err)
 	}
+	finished = true
 	return nil
 }
 
-func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error {
+const (
+	progressResolution = 10000
+)
+
+type progress struct {
+	steps int64
+
+	mu      sync.RWMutex
+	s, n, c int64
+}
+
+func (p *progress) Total() int64 {
+	return p.steps * progressResolution
+}
+
+func (p *progress) Processed() int64 {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+	if p.n == 0 {
+		return p.s * progressResolution
+	} else {
+		return p.s*progressResolution + int64(float64(p.c)/float64(p.n)*progressResolution)
+	}
+}
+
+func (p *progress) gml(deps int64) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.s += 1
+	p.n = deps
+	p.c = 0
+}
+
+func (p *progress) depOne() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.c += 1
+}
+
+func (p *progress) depEnd() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.s += 1
+	p.n = 0
+	p.c = 0
+}
+
+type packer struct {
+	w io.Writer
+	p progress
+
+	httpClient *http.Client
+}
+
+func (p *packer) pack(ctx context.Context, host string, gmlURLs []string) error {
 	// gmlURLs をあらかじめパースして許可されていないホストがないことを確認する
 	var q []string
 	q = append(q, gmlURLs...)
 
-	var httpClient http.Client
-
 	seen := map[string]struct{}{}
 
-	zw := zip.NewWriter(w)
+	t := time.Now()
+
+	zw := zip.NewWriter(p.w)
 	defer zw.Close()
 	for len(q) > 0 {
 		var nq []string
@@ -103,7 +209,7 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 				return fmt.Errorf("invalid host: %s", u.Host)
 			}
 
-			nq, err = writeZip(ctx, zw, &httpClient, u, nq, seen)
+			nq, err = p.writeZip(ctx, t, zw, u, nq, seen)
 			if err != nil {
 				return fmt.Errorf("writeZip: %w", err)
 			}
@@ -116,12 +222,16 @@ func pack(ctx context.Context, w io.Writer, host string, gmlURLs []string) error
 	return nil
 }
 
-func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *url.URL, q []string, seen map[string]struct{}) ([]string, error) {
+func (p *packer) writeZip(ctx context.Context, t time.Time, zw *zip.Writer, u *url.URL, q []string, seen map[string]struct{}) ([]string, error) {
 	depsMap := map[string]struct{}{}
 	gml := strings.SplitN(u.Path, "/", 5)[4]
 	root := path.Dir(gml)
 
-	ze, err := zw.Create(gml)
+	ze, err := zw.CreateHeader(&zip.FileHeader{
+		Name:     gml,
+		Method:   zip.Deflate,
+		Modified: t,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
@@ -132,7 +242,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 	}
 	req.Header.Set("Accept-Encoding", "gzip")
 
-	resp, err := httpClient.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request gml: %w", err)
 	}
@@ -154,6 +264,9 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 		tok, err := dec.Token()
 		if err == io.EOF {
 			break
+		}
+		if err != nil {
+			return nil, err
 		}
 		switch tok.Type() {
 		case xmlb.StartElement:
@@ -203,6 +316,8 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 		seen[u.String()] = struct{}{}
 		deps = append(deps, dep)
 	}
+	p.p.gml(int64(len(deps)))
+	defer p.p.depEnd()
 
 	slices.Sort(deps)
 
@@ -248,7 +363,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 				defer func() {
 					<-sem
 				}()
-				resp, err := httpClient.Do(d.req)
+				resp, err := p.httpClient.Do(d.req)
 				if err != nil {
 					_ = d.pw.CloseWithError(err)
 					return
@@ -275,6 +390,7 @@ func writeZip(ctx context.Context, zw *zip.Writer, httpClient *http.Client, u *u
 		if _, err := io.Copy(w, d.pr); err != nil {
 			return nil, fmt.Errorf("copy: %w", err)
 		}
+		p.p.depOne()
 	}
 
 	return q, nil
