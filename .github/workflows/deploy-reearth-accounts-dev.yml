@@ -1,0 +1,50 @@
+name: 👥 Deploy Re:Earth Accounts dev
+on:
+  workflow_dispatch:
+env:
+  IMAGE_NAME_GHCR_REEARTH: ghcr.io/eukarya-inc/reearth/reearth-accounts-api:latest
+  IMAGE_NAME_GHCR_PLATEAU: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-accounts-api:latest
+  IMAGE_NAME_GCP_PLATEAU: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-accounts-api:latest
+concurrency:
+  group: ${{ github.workflow }}
+jobs:
+  deploy_server:
+    runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      id-token: write
+      packages: write
+    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0' }}
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Configure docker for GCP
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+
+      - name: Pull docker image from GitHub Container Registry
+        run: docker pull $IMAGE_NAME_GHCR_REEARTH
+
+      - name: Tag docker images for GitHub Container Registry and Google Cloud
+        run: docker tag $IMAGE_NAME_GHCR_REEARTH $IMAGE_NAME_GHCR_PLATEAU && docker tag $IMAGE_NAME_GHCR_REEARTH $IMAGE_NAME_GCP_PLATEAU
+
+      - name: Push docker images to GitHub Container Registry and Google Cloud
+        run: docker push $IMAGE_NAME_GHCR_PLATEAU && docker push $IMAGE_NAME_GCP_PLATEAU
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy reearth-accounts-api \
+            --image $IMAGE_NAME_GCP_PLATEAU \
+            --region ${{ vars.GCP_REGION }} \
+            --platform managed \
+            --quiet
