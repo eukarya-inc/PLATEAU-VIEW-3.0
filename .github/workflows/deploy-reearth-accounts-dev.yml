@@ -2,7 +2,7 @@ name: 👥 Deploy Re:Earth Accounts dev
 on:
   workflow_dispatch:
 env:
-  IMAGE_NAME_GHCR_REEARTH: ghcr.io/eukarya-inc/reearth/reearth-accounts-api:rc
+  IMAGE_NAME_GHCR_REEARTH: ghcr.io/eukarya-inc/reearth/reearth-accounts-api:latest
   IMAGE_NAME_GHCR_PLATEAU: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-accounts-api:latest
   IMAGE_NAME_GCP_PLATEAU: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-accounts-api:latest
 concurrency:
