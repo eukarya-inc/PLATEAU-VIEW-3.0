@@ -181,14 +181,15 @@ func (h *handler) packageURL(pkg *ckan.Package) string {
 }
 
 func shouldReorder(pkg *ckan.Package, currentVersion int) bool {
+	maxVersion := 0
 	for _, res := range pkg.Resources {
-		// if there is already a resource with a higher version, we should not reorder
 		v := extractVersionFromResourceName(res.Name)
-		if v != nil && *v > currentVersion {
-			return false
+		if v != nil && *v > maxVersion {
+			maxVersion = *v
 		}
 	}
-	return true
+	// 新しいバージョンが既存の最大バージョンより大きい場合のみ並び替えを実行
+	return currentVersion > maxVersion
 }
 
 var reResourceVersion = regexp.MustCompile(`(?:\(|（)v(\d+)(?:\)|）)$`)
