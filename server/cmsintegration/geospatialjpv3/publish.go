@@ -121,18 +121,18 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 	if seed.Generics != nil {
 		log.Debugfc(ctx, "geospatialjpv3: generics: %s", ppp.Sprint(seed.Generics))
 		for _, g := range seed.Generics {
-			if g.Name == "" || g.Asset == nil {
-				return fmt.Errorf("その他データセットのアセットURLを正しく取得できませんでした。アセットが存在していません。: %v", g)
+			if g.Asset == nil || g.Asset.URL == "" {
+				continue
 			}
 
 			url := g.Asset.URL
-			if url == "" {
-				return fmt.Errorf("その他データセットのアセットURLを正しく取得できませんでした。アセットが存在していません。: %v", g)
+			if g.Name == "" {
+				return fmt.Errorf("その他データセットの名前は必須です。: %#v", g)
 			}
 
 			size := g.Asset.TotalSize
 			if size == 0 {
-				return fmt.Errorf("その他データセットのアセットサイズを正しく取得できませんでした。: %v", g)
+				return fmt.Errorf("その他データセットのアセットサイズを正しく取得できませんでした。: %#v", g)
 			}
 
 			r, err := h.createOrUpdateResource(ctx, pkg, ResourceInfo{
