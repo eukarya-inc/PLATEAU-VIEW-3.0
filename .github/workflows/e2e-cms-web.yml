@@ -22,6 +22,7 @@ jobs:
     with:
       api: ${{ inputs.api || vars.REEARTH_CMS_API }}
       baseUrl: ${{ inputs.baseUrl || vars.REEARTH_CMS_E2E_BASEURL }}
+      branch: release
     secrets:
       REEARTH_WEB_E2E_USERNAME: ${{ secrets.REEARTH_PROD_E2E_EMAIL }}
       REEARTH_WEB_E2E_PASSWORD: ${{ secrets.REEARTH_PROD_E2E_PASSWORD }}
