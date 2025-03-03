@@ -50,11 +50,8 @@ func PreparePlateau(ctx context.Context, c *CMSWrapper, m MergeContext) (res str
 func mergePlateau(ctx context.Context, m MergeContext) (string, []string, error) {
 	var warning []string
 	tmpDir := m.TmpDir
-	cityItem := m.CityItem
 	allFeatureItems := m.AllFeatureItems
-	uc := m.UC
-
-	dataName := fmt.Sprintf("%s_%s_city_%d_3dtiles_mvt_%d_op", cityItem.CityCode, cityItem.CityNameEn, cityItem.YearInt(), uc)
+	dataName := m.FileName("3dtiles_mvt", "")
 
 	zipFileName := dataName + ".zip"
 	zipFilePath := filepath.Join(tmpDir, zipFileName)
