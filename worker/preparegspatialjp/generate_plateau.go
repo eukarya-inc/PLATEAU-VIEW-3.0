@@ -5,7 +5,9 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/dustin/go-humanize"
 	"github.com/reearth/reearthx/log"
@@ -79,8 +81,12 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 
 		for _, url := range fi.Data {
 			log.Debugfc(ctx, "downloading url: %s", url)
-
 			if url == "" {
+				continue
+			}
+
+			fileName := strings.TrimSuffix(path.Base(url), path.Ext(url))
+			if fileName == "" {
 				continue
 			}
 
@@ -89,6 +95,15 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 
 				return cz.Run(zr, func(f *zip.File) (string, error) {
 					p := normalizeZipFilePath(f.Name)
+					if p == "" {
+						return "", nil
+					}
+
+					rootDir, _, found := strings.Cut(p, "/")
+					if !found || rootDir != fileName {
+						p = path.Join(fileName, p)
+					}
+
 					log.Debugfc(ctx, "zipping %s -> %s", f.Name, p)
 					return p, nil
 				})
