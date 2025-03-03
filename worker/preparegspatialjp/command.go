@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -246,9 +247,13 @@ func CommandSingle(conf *Config) (err error) {
 
 	// plateau
 	if !conf.SkipPlateau {
-		res, err := PreparePlateau(ctx, cw, mc)
+		res, w, err := PreparePlateau(ctx, cw, mc)
 		if err != nil {
 			return err
+		}
+
+		if len(w) > 0 {
+			cw.Comment(ctx, "公開準備処理中に警告が発生しました：\n"+strings.Join(w, "\n"))
 		}
 
 		plateauPath = res

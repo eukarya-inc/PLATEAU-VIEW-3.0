@@ -13,7 +13,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-func PreparePlateau(ctx context.Context, c *CMSWrapper, m MergeContext) (res string, err error) {
+func PreparePlateau(ctx context.Context, c *CMSWrapper, m MergeContext) (res string, warning []string, err error) {
 	defer func() {
 		if err == nil {
 			return
@@ -22,7 +22,7 @@ func PreparePlateau(ctx context.Context, c *CMSWrapper, m MergeContext) (res str
 		c.NotifyError(ctx, err, false, true, false)
 	}()
 
-	path, err := mergePlateau(ctx, m)
+	path, warning, err := mergePlateau(ctx, m)
 	if err != nil {
 		err = fmt.Errorf("failed to prepare plateau: %w", err)
 		return
@@ -47,7 +47,8 @@ func PreparePlateau(ctx context.Context, c *CMSWrapper, m MergeContext) (res str
 	return
 }
 
-func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
+func mergePlateau(ctx context.Context, m MergeContext) (string, []string, error) {
+	var warning []string
 	tmpDir := m.TmpDir
 	cityItem := m.CityItem
 	allFeatureItems := m.AllFeatureItems
@@ -62,7 +63,7 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 
 	f, err := os.Create(zipFilePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to create file: %w", err)
+		return "", nil, fmt.Errorf("failed to create file: %w", err)
 	}
 
 	defer f.Close()
@@ -85,8 +86,9 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 				continue
 			}
 
-			fileName := strings.TrimSuffix(path.Base(url), path.Ext(url))
-			if fileName == "" {
+			var needRootDir bool
+			rootDirName := strings.TrimSuffix(path.Base(url), path.Ext(url))
+			if rootDirName == "" {
 				continue
 			}
 
@@ -100,19 +102,23 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, error) {
 					}
 
 					rootDir, _, found := strings.Cut(p, "/")
-					if !found || rootDir != fileName {
-						p = path.Join(fileName, p)
+					if !found || rootDir != rootDirName {
+						needRootDir = true
+						p = path.Join(rootDirName, p)
 					}
 
 					log.Debugfc(ctx, "zipping %s -> %s", f.Name, p)
 					return p, nil
 				})
 			})
+			if needRootDir {
+				warning = append(warning, fmt.Sprintf("zipファイル内にルートディレクトリ \"%s\" が必要です: %s", rootDirName, path.Base(url)))
+			}
 			if err != nil {
-				return "", fmt.Errorf("failed to download and consume zip: %w", err)
+				return "", warning, fmt.Errorf("failed to download and consume zip: %w", err)
 			}
 		}
 	}
 
-	return zipFilePath, nil
+	return zipFilePath, warning, nil
 }
