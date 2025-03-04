@@ -107,8 +107,8 @@ func Run(conf Config) (err error) {
 					finishedMu.Unlock()
 					return
 				}
-				metadata["total"] = strconv.FormatInt(p.p.Total(), 64)
-				metadata["processed"] = strconv.FormatInt(p.p.Processed(), 64)
+				metadata["total"] = strconv.FormatInt(p.p.Total(), 10)
+				metadata["processed"] = strconv.FormatInt(p.p.Processed(), 10)
 				_, err := obj.Update(ctx, storage.ObjectAttrsToUpdate{
 					Metadata: metadata,
 				})

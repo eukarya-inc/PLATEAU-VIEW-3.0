@@ -147,7 +147,7 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 		}
 	}
 
-	if len(resources) > 0 && shouldReorder(pkg, seed.V) {
+	if len(resources) > 0 {
 		log.Debugfc(ctx, "geospatialjpv3: reorder: %v", resources)
 		resourceIDs := lo.Map(resources, func(r ckan.Resource, _ int) string {
 			return r.ID
@@ -178,17 +178,6 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 
 func (h *handler) packageURL(pkg *ckan.Package) string {
 	return fmt.Sprintf("%s/dataset/%s", strings.TrimSuffix(h.ckanBase, "/"), pkg.Name)
-}
-
-func shouldReorder(pkg *ckan.Package, currentVersion int) bool {
-	for _, res := range pkg.Resources {
-		// if there is already a resource with a higher version, we should not reorder
-		v := extractVersionFromResourceName(res.Name)
-		if v != nil && *v > currentVersion {
-			return false
-		}
-	}
-	return true
 }
 
 var reResourceVersion = regexp.MustCompile(`(?:\(|（)v(\d+)(?:\)|）)$`)

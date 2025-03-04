@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	cms "github.com/reearth/reearth-cms-api/go"
@@ -37,9 +38,12 @@ type MergeContext struct {
 	CityItem           *CityItem
 	AllFeatureItems    map[string]FeatureItem
 	GspatialjpDataItem *GspatialjpDataItem
-	UC                 int
 	WetRun             bool
 	FeatureTypes       []string
+}
+
+func (m MergeContext) FileName(ty, suffix string) string {
+	return m.CityItem.FileName(ty, suffix)
 }
 
 func CommandSingle(conf *Config) (err error) {
@@ -146,8 +150,7 @@ func CommandSingle(conf *Config) (err error) {
 		return fmt.Errorf("invalid spec version: %s", cityItem.Spec)
 	}
 
-	uc := GetUpdateCount(cityItem.CodeLists)
-	if uc == 0 {
+	if cityItem.GetUpdateCount() == 0 {
 		if conf.SkipImcompleteItems {
 			log.Infofc(ctx, "skip because update count is invalid")
 			return nil
@@ -188,7 +191,6 @@ func CommandSingle(conf *Config) (err error) {
 		CityItem:           cityItem,
 		AllFeatureItems:    allFeatureItems,
 		GspatialjpDataItem: gdataItem,
-		UC:                 uc,
 		WetRun:             conf.WetRun,
 		FeatureTypes:       conf.FeatureTypes,
 	}
@@ -246,9 +248,13 @@ func CommandSingle(conf *Config) (err error) {
 
 	// plateau
 	if !conf.SkipPlateau {
-		res, err := PreparePlateau(ctx, cw, mc)
+		res, w, err := PreparePlateau(ctx, cw, mc)
 		if err != nil {
 			return err
+		}
+
+		if len(w) > 0 {
+			cw.Comment(ctx, "公開準備処理中に警告が発生しました：\n"+strings.Join(w, "\n"))
 		}
 
 		plateauPath = res
