@@ -9,6 +9,7 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/ckan"
+	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"github.com/samber/lo"
 )
@@ -38,7 +39,7 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 		return fmt.Errorf("failed to get seed: %w", err)
 	}
 
-	log.Debugfc(ctx, "geospatialjpv3: seed: %s", ppp.Sprint(seed))
+	log.Debugfc(ctx, "geospatialjpv3: seed: %s", pp.Sprint(seed))
 	if !seed.Valid() {
 		return fmt.Errorf("アップロード可能なアイテムがありません。")
 	}
@@ -50,7 +51,7 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 		return fmt.Errorf("G空間情報センターでパッケージの検索・作成に失敗しました: %w", err)
 	}
 
-	log.Debugfc(ctx, "geospatialjpv3: pkg: %s", ppp.Sprint(pkg))
+	log.Debugfc(ctx, "geospatialjpv3: pkg: %s", pp.Sprint(pkg))
 	resources := []ckan.Resource{}
 
 	if seed.Index != "" {
@@ -119,7 +120,7 @@ func (h *handler) Publish(ctx context.Context, cityItem *CityItem) (err error) {
 	}
 
 	if seed.Generics != nil {
-		log.Debugfc(ctx, "geospatialjpv3: generics: %s", ppp.Sprint(seed.Generics))
+		log.Debugfc(ctx, "geospatialjpv3: generics: %s", pp.Sprint(seed.Generics))
 		for _, g := range seed.Generics {
 			if g.Asset == nil || g.Asset.URL == "" {
 				continue

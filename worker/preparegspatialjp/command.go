@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -48,7 +49,7 @@ func (m MergeContext) FileName(ty, suffix string) string {
 
 func CommandSingle(conf *Config) (err error) {
 	ctx := context.Background()
-	log.Infofc(ctx, "preparegeospatialjp conf: %s", ppp.Sprint(conf))
+	log.Infofc(ctx, "preparegeospatialjp conf: %s", pp.Sprint(conf))
 
 	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
@@ -70,10 +71,10 @@ func CommandSingle(conf *Config) (err error) {
 	if err != nil {
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
-	log.Infofc(ctx, "city item raw: %s", ppp.Sprint(cityItemRaw))
+	log.Infofc(ctx, "city item raw: %s", pp.Sprint(cityItemRaw))
 
 	cityItem := CityItemFrom(cityItemRaw, conf.FeatureTypes)
-	log.Infofc(ctx, "city item: %s", ppp.Sprint(cityItem))
+	log.Infofc(ctx, "city item: %s", pp.Sprint(cityItem))
 
 	if cityItem == nil || cityItem.CityCode == "" || cityItem.CityName == "" || cityItem.CityNameEn == "" || cityItem.GeospatialjpData == "" {
 		if conf.SkipImcompleteItems {
@@ -89,7 +90,7 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	indexItem := GspatialjpIndexItemFrom(indexItemRaw)
-	log.Infofc(ctx, "geospatialjp index item: %s", ppp.Sprint(indexItem))
+	log.Infofc(ctx, "geospatialjp index item: %s", pp.Sprint(indexItem))
 
 	gdataItemRaw, err := cms.GetItem(ctx, cityItem.GeospatialjpData, true)
 	if err != nil {
@@ -97,7 +98,7 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	gdataItem := GspatialjpDataItemFrom(gdataItemRaw)
-	log.Infofc(ctx, "geospatialjp data item: %s", ppp.Sprint(gdataItem))
+	log.Infofc(ctx, "geospatialjp data item: %s", pp.Sprint(gdataItem))
 
 	if gdataItem != nil && !conf.IgnoreStatus {
 		if !gdataItem.ShouldMergeCityGML() {
@@ -181,10 +182,10 @@ func CommandSingle(conf *Config) (err error) {
 		return fmt.Errorf("failed to get all feature items: %w", err)
 	}
 
-	log.Infofc(ctx, "feature items: %s", ppp.Sprint(allFeatureItems))
+	log.Infofc(ctx, "feature items: %s", pp.Sprint(allFeatureItems))
 
 	dic := mergeDics(allFeatureItems)
-	log.Infofc(ctx, "dic: %s", ppp.Sprint(dic))
+	log.Infofc(ctx, "dic: %s", pp.Sprint(dic))
 
 	mc := MergeContext{
 		TmpDir:             tmpDir,
