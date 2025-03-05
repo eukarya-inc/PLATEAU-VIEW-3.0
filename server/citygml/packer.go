@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,12 +22,10 @@ import (
 )
 
 const (
-	PackStatusAccepted   = "accepted"
-	PackStatusProcessing = "processing"
-	PackStatusSucceeded  = "succeeded"
-	PackStatusFailed     = "failed"
+	PackStatusAccepted  = "accepted"
+	PackStatusSucceeded = "succeeded"
 
-	timeooutSignedURL = 10 * time.Minute
+	timeoutSignedURL = 10 * time.Minute
 )
 
 type packer struct {
@@ -64,7 +63,7 @@ func (p *packer) handleGetZip(c echo.Context, hash string) error {
 
 	signedURL, err := p.bucket.SignedURL(obj.ObjectName(), &storage.SignedURLOptions{
 		Method:  http.MethodGet,
-		Expires: time.Now().Add(timeooutSignedURL),
+		Expires: time.Now().Add(timeoutSignedURL),
 	})
 
 	if err != nil {
@@ -83,9 +82,40 @@ func (p *packer) handleGetStatus(c echo.Context, hash string) error {
 	if errors.Is(err, storage.ErrObjectNotExist) {
 		return c.JSON(http.StatusNotFound, map[string]any{"error": "not found"})
 	}
-	return c.JSON(http.StatusOK, map[string]any{
-		"status": getStatus(attrs.Metadata),
-	})
+	status := getStatus(attrs.Metadata)
+	resp := map[string]any{
+		"status": status,
+	}
+	if startedAt, ok := attrs.Metadata["startedAt"]; ok {
+		resp["startedAt"] = startedAt
+	}
+	if status == PackStatusSucceeded {
+		resp["progress"] = 1.0
+	} else if progress, ok := getProgress(attrs.Metadata); ok {
+		resp["progress"] = progress
+	}
+
+	return c.JSON(http.StatusOK, resp)
+}
+
+func getProgress(metadata map[string]string) (float64, bool) {
+	totalStr, ok := metadata["total"]
+	if !ok {
+		return 0, false
+	}
+	processedStr, ok := metadata["processed"]
+	if !ok {
+		return 0, false
+	}
+	total, err := strconv.ParseInt(totalStr, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	processed, err := strconv.ParseInt(processedStr, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return float64(processed) / float64(total), true
 }
 
 func (p *packer) handlePackRequest(c echo.Context) error {
@@ -165,6 +195,7 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...),
 			},
 		},
+		Tags: []string{"citygml-packer"},
 	}
 	var err error
 	if p.conf.WorkerRegion != "" {

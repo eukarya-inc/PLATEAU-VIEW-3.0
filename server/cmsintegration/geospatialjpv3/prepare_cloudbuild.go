@@ -3,7 +3,9 @@ package geospatialjpv3
 import (
 	"context"
 	"path"
+	"strings"
 
+	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"google.golang.org/api/cloudbuild/v1"
 )
@@ -13,6 +15,7 @@ type prepareOnCloudBuildConfig struct {
 	Project               string
 	CMSURL                string
 	CMSToken              string
+	FeatureTypes          []string
 	CloudBuildImage       string
 	CloudBuildMachineType string
 	CloudBuildProject     string
@@ -31,7 +34,7 @@ func prepareOnCloudBuild(ctx context.Context, conf prepareOnCloudBuildConfig) er
 		conf.CloudBuildDiskSizeGb = defaultDiskSizeGb
 	}
 
-	log.Debugfc(ctx, "geospatialjp webhook: prepare (cloud build): %s", ppp.Sprint(conf))
+	log.Debugfc(ctx, "geospatialjp webhook: prepare (cloud build): %s", pp.Sprint(conf))
 
 	return runCloudBuild(ctx, CloudBuildConfig{
 		Image: conf.CloudBuildImage,
@@ -39,6 +42,7 @@ func prepareOnCloudBuild(ctx context.Context, conf prepareOnCloudBuildConfig) er
 			"prepare-gspatialjp",
 			"--city=" + conf.City,
 			"--project=" + conf.Project,
+			"--feature-types=" + strings.Join(conf.FeatureTypes, ","),
 			"--wetrun",
 		},
 		Env: []string{

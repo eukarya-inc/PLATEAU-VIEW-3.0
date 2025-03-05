@@ -51,7 +51,7 @@ func TestPublish(t *testing.T) {
 		item, err := cms.GetItem(ctx, city, false)
 		require.NoError(t, err)
 
-		cityItem := CityItemFrom(item)
+		cityItem := CityItemFrom(item, []string{"bldg"})
 		if cityItem.CityName == "" {
 			continue
 		}
@@ -59,28 +59,6 @@ func TestPublish(t *testing.T) {
 		err = h.Publish(ctx, cityItem)
 		require.NoError(t, err)
 	}
-}
-
-func TestShouldReorder(t *testing.T) {
-	pkg := &ckan.Package{
-		Resources: []ckan.Resource{
-			{
-				Name: "Resource 1 (v1)",
-			},
-			{
-				Name: "Resource 2 (v2)",
-			},
-			{
-				Name: "Resource 3 (v3)",
-			},
-		},
-	}
-
-	result := shouldReorder(pkg, 4)
-	assert.True(t, result)
-
-	result = shouldReorder(pkg, 2)
-	assert.False(t, result)
 }
 
 func TestExtractVersionFromResourceName(t *testing.T) {

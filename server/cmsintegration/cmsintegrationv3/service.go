@@ -30,9 +30,15 @@ type Services struct {
 	PlateauCMS   *PlateauCMS
 	HTTP         *http.Client
 	TaskRunner   gcptaskrunner.TaskRunner
-	PCMS         plateaucms.SpecStore
+	PCMS         PCMS
 	FMEResultURL string
 	mockFME      fmeInterface
+}
+
+type PCMS interface {
+	plateaucms.SpecStore
+	plateaucms.FeatureTypeStore
+	plateaucms.MetadataStore
 }
 
 func NewServices(c Config) (s *Services, _ error) {
@@ -57,9 +63,9 @@ func NewServices(c Config) (s *Services, _ error) {
 	s.PlateauCMS = NewPlateauCMS(cms, "")
 
 	pcms, err := plateaucms.New(plateaucms.Config{
-		CMSBaseURL:      c.CMSBaseURL,
-		CMSMainToken:    c.CMSToken,
-		CMSTokenProject: c.CMSSystemProject,
+		CMSBaseURL:       c.CMSBaseURL,
+		CMSMainToken:     c.CMSToken,
+		CMSSystemProject: c.CMSSystemProject,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to init plateau cms: %w", err)

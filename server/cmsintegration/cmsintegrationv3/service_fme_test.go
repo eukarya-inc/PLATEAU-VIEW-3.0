@@ -61,8 +61,27 @@ func TestSendRequestToFME(t *testing.T) {
 		ID: "cityID",
 		Fields: []*cms.Field{
 			{
-				Key:   "codelists",
-				Value: "codelistID",
+				Key: "codelists",
+				Value: &cms.Asset{
+					ID:  "codelistID",
+					URL: "codelists",
+				},
+			},
+			{
+				Key:   "citygml",
+				Value: "citygmlID",
+			},
+			{
+				Key:   "spec",
+				Value: "第3.5版",
+			},
+		},
+	}
+	cityItemWithoutCodelists := &cms.Item{
+		ID: "cityID",
+		Fields: []*cms.Field{
+			{
+				Key: "codelists",
 			},
 			{
 				Key:   "citygml",
@@ -288,7 +307,7 @@ func TestSendRequestToFME(t *testing.T) {
 					ID: "metadataItemID",
 				}, nil
 			}
-			return cityItem, nil
+			return cityItemWithoutCodelists, nil
 		}
 		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
@@ -299,15 +318,16 @@ func TestSendRequestToFME(t *testing.T) {
 					ID: "citygmlID",
 				}, nil
 			}
-			return nil, fmt.Errorf("failed to get codelist asset")
+			return nil, fmt.Errorf("failed to get asset")
 		}
 		c.commentToItem = func(ctx context.Context, assetID, content string) error {
-			assert.Contains(t, content, "コードリストが見つかりません。")
+			assert.Contains(t, content, "コードリストが")
+			assert.Contains(t, content, "ません。")
 			return nil
 		}
 
 		err := sendRequestToFME(ctx, s, conf, w)
-		assert.ErrorContains(t, err, "failed to get codelist asset")
+		assert.ErrorContains(t, err, "city item has no codelist")
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -336,10 +356,7 @@ func TestSendRequestToFME(t *testing.T) {
 					URL: "target",
 				}, nil
 			}
-			return &cms.Asset{
-				ID:  "codelistID",
-				URL: "codelists",
-			}, nil
+			return nil, fmt.Errorf("failed to get asset")
 		}
 		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
@@ -555,8 +572,10 @@ func TestReceiveResultFromFME(t *testing.T) {
 
 	ctx := context.Background()
 	c := &cmsMock{}
+	pc := &plateauCMSMock{}
 	s := &Services{
-		CMS: c,
+		CMS:  c,
+		PCMS: pc,
 	}
 	conf := &Config{
 		Secret: "secret",
@@ -953,10 +972,86 @@ func (c *cmsMock) GetModels(ctx context.Context, projectID string) (*cms.Models,
 }
 
 type plateauCMSMock struct {
-	plateaucms.SpecStore
+	PCMS
 	plateauSpecs func(ctx context.Context) ([]plateaucms.PlateauSpec, error)
 }
 
 func (p *plateauCMSMock) PlateauSpecs(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
 	return p.plateauSpecs(ctx)
+}
+
+func (p *plateauCMSMock) PlateauFeatureTypes(ctx context.Context) (plateaucms.PlateauFeatureTypeList, error) {
+	return []plateaucms.PlateauFeatureType{
+		{
+			Code: "bldg",
+			Name: "建築物モデル",
+			QC:   true,
+			Conv: true,
+		},
+		{
+			Code: "tran",
+			Name: "交通モデル（道路）",
+			QC:   true,
+			Conv: true,
+		},
+		{
+			Code: "luse",
+			Name: "土地利用モデル",
+			QC:   true,
+			Conv: true,
+		},
+		{
+			Code:      "fld",
+			Name:      "洪水浸水想定区域モデル",
+			QC:        true,
+			Conv:      true,
+			UseGroups: true,
+		},
+	}, nil
+}
+
+func (p *plateauCMSMock) DatasetTypes(ctx context.Context) (plateaucms.DatasetTypeList, error) {
+	return plateaucms.DatasetTypeList{
+		{
+			Code:     "shelter",
+			Name:     "SHELTER",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "park",
+			Name:     "PARK",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "landmark",
+			Name:     "LANDMARK",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "station",
+			Name:     "STATION",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "railway",
+			Name:     "RAILWAY",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "emergency_route",
+			Name:     "EMERGENCY_ROUTE",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "border",
+			Name:     "BORDER",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+	}, nil
+}
+
+func (p *plateauCMSMock) Metadata(ctx context.Context, prj string, findDataCatalog, useDefault bool) (plateaucms.Metadata, plateaucms.MetadataList, error) {
+	return plateaucms.Metadata{
+		Converter: "fme",
+	}, nil, nil
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -25,9 +26,9 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 		return fmt.Errorf("fromProject and toProject are required")
 	}
 
-	plateaucms := s.PlateauCMS
-	if plateaucms == nil {
-		plateaucms = NewPlateauCMS(s.CMS, opts.CacheBasePath)
+	pcms := s.PlateauCMS
+	if pcms == nil {
+		pcms = NewPlateauCMS(s.CMS, opts.CacheBasePath)
 	}
 
 	log.Infofc(ctx, "cmsintegrationv3: copy_related: copy related dataset items from %s to %s", opts.FromProject, opts.ToProject)
@@ -36,6 +37,14 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 	}
 
 	log.Infofc(ctx, "cmsintegrationv3: copy_related: loading items from CMS...")
+
+	// get relatedDataTypes
+	datasetTypes, err := s.PCMS.DatasetTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get dataset types: %w", err)
+	}
+
+	relatedDataTypes := datasetTypes.Codes(plateaucms.DatasetCategoryRelated)
 
 	// get model info
 	model1, err := s.CMS.GetModelByKey(ctx, opts.FromProject, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel)
@@ -49,11 +58,11 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 	}
 
 	// get all cities and create a map of city item IDs between two projects
-	citiesSrc, err := plateaucms.GetAllCities(ctx, opts.FromProject)
+	citiesSrc, err := pcms.GetAllCities(ctx, opts.FromProject, nil)
 	if err != nil {
 		return fmt.Errorf("failed to get cities from %s: %w", opts.FromProject, err)
 	}
-	citiesTarget, err := plateaucms.GetAllCities(ctx, opts.ToProject)
+	citiesTarget, err := pcms.GetAllCities(ctx, opts.ToProject, nil)
 	if err != nil {
 		return fmt.Errorf("failed to get cities from %s: %w", opts.ToProject, err)
 	}
@@ -68,11 +77,11 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 	}
 
 	// get all related items
-	relatedsSrc, err := plateaucms.GetAllRelated(ctx, opts.FromProject)
+	relatedsSrc, err := pcms.GetAllRelated(ctx, opts.FromProject, relatedDataTypes)
 	if err != nil {
 		return fmt.Errorf("failed to get related items from %s: %w", opts.FromProject, err)
 	}
-	relatedTarget, err := plateaucms.GetAllRelated(ctx, opts.ToProject)
+	relatedTarget, err := pcms.GetAllRelated(ctx, opts.ToProject, relatedDataTypes)
 	if err != nil {
 		return fmt.Errorf("failed to get related items from %s: %w", opts.ToProject, err)
 	}
@@ -135,7 +144,7 @@ func CopyRelatedDatasetItems(ctx context.Context, s *Services, opts CopyRelatedI
 				newRelatedItem.ConvertStatus[k] = &cms.Tag{Name: tag.Name}
 			}
 		}
-		newItem := newRelatedItem.CMSItem()
+		newItem := newRelatedItem.CMSItem(relatedDataTypes)
 
 		// update a related item
 		if !opts.DryRun {
