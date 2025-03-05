@@ -1,4 +1,12 @@
-import { Divider, IconButton, List, styled, Tooltip } from "@mui/material";
+import {
+  Divider,
+  IconButton,
+  LinearProgress,
+  linearProgressClasses,
+  List,
+  styled,
+  Tooltip,
+} from "@mui/material";
 import { atom, useAtomValue, useSetAtom } from "jotai";
 import { uniq } from "lodash-es";
 import { FC, useCallback, useMemo } from "react";
@@ -27,10 +35,26 @@ import {
 import { highlightedMeshCodeLayersAtom, MESH_CODE_LAYER } from "../../view-layers";
 import { SCREEN_SPACE_SELECTION, SelectionGroup } from "../states/selection";
 
-const LoadingIconWrapper = styled("div")(({ theme }) => ({
+const ProgressWrapper = styled("div")(({ theme }) => ({
+  width: 80,
+  height: 32,
   display: "flex",
+  justifyContent: "center",
   alignItems: "center",
-  padding: theme.spacing(1),
+  paddingRight: theme.spacing(0.5),
+}));
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 8,
+  borderRadius: 4,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    borderRadius: 4,
+    backgroundColor: theme.palette.grey[200],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 4,
+    backgroundColor: theme.palette.primary.main,
+  },
 }));
 
 const LoadingWrapper = styled("div")(({ theme }) => ({
@@ -42,6 +66,8 @@ const LoadingWrapper = styled("div")(({ theme }) => ({
 const PropertyActionsWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
+
+const TOOL_TIP_MAX_WIDTH = 167;
 
 export interface MeshCodeObjectContentProps {
   values: (SelectionGroup & {
@@ -111,7 +137,7 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
   }, [features, values]);
 
   const { cityNames, loading, data } = useCityGMLFiles({
-    meshIdsStrict: meshCodes,
+    meshIds: meshCodes,
   });
 
   const { packs, handlePacking, handleDownloadPack } = useCityGMLPacks({ data });
@@ -177,7 +203,9 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
                   {packs.map(item => (
                     <PropertyActionItem key={item.id} name={item.name}>
                       {item.status === "idle" && (
-                        <Tooltip title="Pack">
+                        <Tooltip
+                          title="CityGMLをZIPファイルに圧縮する"
+                          PopperProps={{ sx: { maxWidth: TOOL_TIP_MAX_WIDTH } }}>
                           <IconButton
                             aria-label="Pack"
                             onClick={() => handlePacking(item.id)}
@@ -187,7 +215,9 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
                         </Tooltip>
                       )}
                       {item.status === "retry" && (
-                        <Tooltip title="Something wrong happened, click icon to pack again">
+                        <Tooltip
+                          title="Something wrong happened, click icon to pack again"
+                          PopperProps={{ sx: { maxWidth: TOOL_TIP_MAX_WIDTH } }}>
                           <IconButton
                             aria-label="Retry"
                             onClick={() => handlePacking(item.id)}
@@ -197,12 +227,18 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
                         </Tooltip>
                       )}
                       {(item.status === "requesting" || item.status === "polling") && (
-                        <LoadingIconWrapper>
-                          <LoadingAnimationIcon size={16} />
-                        </LoadingIconWrapper>
+                        <ProgressWrapper>
+                          <BorderLinearProgress
+                            variant="determinate"
+                            value={item.progress * 100}
+                            sx={{ width: "100%" }}
+                          />
+                        </ProgressWrapper>
                       )}
                       {item.status === "packed" && (
-                        <Tooltip title="Download">
+                        <Tooltip
+                          title="パッケージングが完了しました。ダウンロードしてください。"
+                          PopperProps={{ sx: { maxWidth: TOOL_TIP_MAX_WIDTH } }}>
                           <IconButton
                             aria-label="Download"
                             onClick={() => handleDownloadPack(item.id)}

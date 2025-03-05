@@ -5,7 +5,7 @@ import { isNotNullish } from "../../../../prototypes/type-helpers";
 import { CityGMLGetFilesData, CityGMLPackItem } from "../types";
 
 const POLLING_INTERVAL = 2000;
-const MAX_POLLING_COUNT = 20;
+const MAX_POLLING_COUNT = Infinity;
 
 export type UseCityGMLPacksProps = {
   data: CityGMLGetFilesData | null;
@@ -25,6 +25,7 @@ export default ({ data }: UseCityGMLPacksProps) => {
           status: "idle" as const,
           fileUrls: data.cities.map(city => city.files[key]?.map(file => file.url)).flat(),
           pollingCount: 0,
+          progress: 0,
         }))
       : [];
 
@@ -36,6 +37,7 @@ export default ({ data }: UseCityGMLPacksProps) => {
             status: "idle" as const,
             fileUrls: packsByType.flatMap(item => item.fileUrls),
             pollingCount: 0,
+            progress: 0,
           }
         : null;
 
@@ -68,6 +70,7 @@ export default ({ data }: UseCityGMLPacksProps) => {
                           : response.status === "failed" || pack.pollingCount >= MAX_POLLING_COUNT
                           ? "retry"
                           : "polling",
+                      progress: response.progress ?? 0,
                     }
                   : p,
               ),
@@ -85,6 +88,9 @@ export default ({ data }: UseCityGMLPacksProps) => {
               console.error(`Task ${pack.packId} has been polling for too long.`);
             }
           } catch (error) {
+            if (pack.packId) {
+              clearInterval(intervals[pack.packId]);
+            }
             console.error(`Error checking status for task ${pack.packId}`);
           }
         }, POLLING_INTERVAL);

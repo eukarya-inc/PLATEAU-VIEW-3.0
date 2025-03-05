@@ -56,6 +56,8 @@ export type CityGMLGetPackStatusParams = {
 
 export type CityGMLGetPackStatusData = {
   status: "accepted" | "processing" | "succeeded" | "failed";
+  startedAt?: string;
+  progress?: number;
 };
 
 export type CityGMLGetAttributesParams = {
@@ -91,6 +93,7 @@ export type CityGMLPackItem = {
   name: string;
   fileUrls: string[];
   status: "idle" | "requesting" | "polling" | "packed" | "retry";
+  progress: number;
   pollingCount: number;
   packId?: string;
   packSize?: number;
