@@ -69,7 +69,7 @@ func Run(conf Config) error {
 }
 
 func processCity(ctx context.Context, conf Config, cms *cms.CMS, city *City, tmpDir string) error {
-	if city.References == nil || len(city.References) == 0 {
+	if len(city.References) == 0 {
 		log.Infofc(ctx, "city is skipped: references is nil")
 		return nil
 	}

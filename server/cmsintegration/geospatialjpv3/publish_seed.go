@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 	"github.com/vincent-petithory/dataurl"
@@ -27,6 +28,7 @@ type Seed struct {
 	RelatedDescription   string
 	Area                 string
 	ThumbnailURL         string `pp:"-"`
+	IndexMapURL          string
 	Author               string
 	AuthorEmail          string
 	Maintainer           string
@@ -63,13 +65,13 @@ func getSeed(ctx context.Context, c cms.Interface, cityItem *CityItem, org strin
 	var indexItem CMSIndexItem
 	rawIndexItem.Unmarshal(&indexItem)
 
-	log.Debugfc(ctx, "geospatialjpv3: rawDataItem: %s", ppp.Sprint(rawDataItem))
-	log.Debugfc(ctx, "geospatialjpv3: rawIndexItem: %s", ppp.Sprint(rawIndexItem))
-	log.Debugfc(ctx, "geospatialjpv3: dataItem: %s", ppp.Sprint(dataItem))
-	log.Debugfc(ctx, "geospatialjpv3: indexItem: %s", ppp.Sprint(indexItem))
+	log.Debugfc(ctx, "geospatialjpv3: rawDataItem: %s", pp.Sprint(rawDataItem))
+	log.Debugfc(ctx, "geospatialjpv3: rawIndexItem: %s", pp.Sprint(rawIndexItem))
+	log.Debugfc(ctx, "geospatialjpv3: dataItem: %s", pp.Sprint(dataItem))
+	log.Debugfc(ctx, "geospatialjpv3: indexItem: %s", pp.Sprint(indexItem))
 
-	if thumnailURL := valueToAssetURL(indexItem.Thumbnail); thumnailURL != "" {
-		seed.ThumbnailURL, err = fetchAndGetDataURL(thumnailURL)
+	if indexItem.Thumbnail != nil && indexItem.Thumbnail.URL != "" {
+		seed.ThumbnailURL, err = fetchAndGetDataURL(indexItem.Thumbnail.URL)
 		if err != nil {
 			return seed, fmt.Errorf("サムネイルが取得できませんでした: %w", err)
 		}
@@ -77,16 +79,19 @@ func getSeed(ctx context.Context, c cms.Interface, cityItem *CityItem, org strin
 
 	seed.GspatialjpDataItemID = dataItem.ID
 	if dataItem.CityGML != nil {
-		seed.CityGML = valueToAssetURL(dataItem.CityGML)
-		seed.CityGMLSize = valueToAssetSize(dataItem.CityGML)
+		seed.CityGML = dataItem.CityGML.URL
+		seed.CityGMLSize = dataItem.CityGML.TotalSize
 	}
 	if dataItem.Plateau != nil {
-		seed.Plateau = valueToAssetURL(dataItem.Plateau)
-		seed.PlateauSize = valueToAssetSize(dataItem.Plateau)
+		seed.Plateau = dataItem.Plateau.URL
+		seed.PlateauSize = dataItem.Plateau.TotalSize
 	}
 	if dataItem.Related != nil {
-		seed.Related = valueToAssetURL(dataItem.Related)
-		seed.RelatedSize = valueToAssetSize(dataItem.Related)
+		seed.Related = dataItem.Related.URL
+		seed.RelatedSize = dataItem.Related.TotalSize
+	}
+	if indexItem.IndexMap != nil {
+		seed.IndexMapURL = indexItem.IndexMap.URL
 	}
 	if indexItem.Desc != "" {
 		seed.Desc = indexItem.Desc
@@ -96,7 +101,9 @@ func getSeed(ctx context.Context, c cms.Interface, cityItem *CityItem, org strin
 	if seed.Index == "" {
 		seed.Index = dataItem.DescIndex
 	}
-	seed.IndexURL = valueToAssetURL(indexItem.IndexData)
+	if indexItem.IndexData != nil {
+		seed.IndexURL = indexItem.IndexData.URL
+	}
 	if seed.Index != "" && seed.IndexURL == "" {
 		seed.IndexURL = dataurl.New([]byte(seed.Index), "text/markdown").String()
 	}
@@ -119,26 +126,6 @@ func getSeed(ctx context.Context, c cms.Interface, cityItem *CityItem, org strin
 	seed.SpecVersion = cityItem.SpecVersionFull()
 
 	return seed, nil
-}
-
-func valueToAssetURL(v map[string]any) string {
-	if v == nil {
-		return ""
-	}
-	if url, ok := v["url"].(string); ok {
-		return url
-	}
-	return ""
-}
-
-func valueToAssetSize(v map[string]any) uint64 {
-	if v == nil {
-		return 0
-	}
-	if size, ok := v["totalSize"].(float64); ok {
-		return uint64(size)
-	}
-	return 0
 }
 
 func fetchAndGetDataURL(url string) (string, error) {

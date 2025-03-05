@@ -33,6 +33,9 @@ type Config struct {
 	TaskImage  string
 	GCPProject string
 	GCPRegion  string
+	// Flow
+	FlowBaseURL string
+	FlowToken   string
 
 	// compat
 	// geospatial.jp v2

@@ -5,7 +5,7 @@ on:
 env:
   IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/plateauview-api-worker:latest
-  IMAGE_HUB: eukarya/plateauview2-sidecar-worker:latest
+  IMAGE_HUB: eukarya/plateauview-api-worker:latest
 concurrency:
   group: ${{ github.workflow }}
 jobs:

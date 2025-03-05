@@ -50,11 +50,9 @@ func mergeCityGML(ctx context.Context, c MergeContext) (string, error) {
 	tmpDir := c.TmpDir
 	cityItem := c.CityItem
 	allFeatureItems := c.AllFeatureItems
-	uc := c.UC
 
 	// create a zip file
-	rootName := fmt.Sprintf("%s_%s_city_%d_citygml_%d_op", cityItem.CityCode, cityItem.CityNameEn, cityItem.YearInt(), uc)
-
+	rootName := c.FileName("citygml", "")
 	zipFileName := rootName + ".zip"
 	zipFilePath := filepath.Join(tmpDir, zipFileName)
 	f, err := os.Create(zipFilePath)
