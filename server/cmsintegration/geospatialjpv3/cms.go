@@ -37,53 +37,25 @@ var defaultTags = []ckan.Tag{
 	{Name: "防災"},
 }
 
-var featureTypes = []string{
-	// *: データカタログ上で複数の項目に分かれて存在
-	"bldg", // 建築物モデル
-	"tran", // 交通（道路）モデル
-	"rwy",  // 交通（鉄道）モデル
-	"trk",  // 交通（徒歩道）モデル
-	"squr", // 交通（広場）モデル
-	"wwy",  // 交通（航路）モデル
-	"luse", // 土地利用モデル
-	"fld",  // 洪水浸水想定区域モデル*
-	"tnm",  // 津波浸水想定区域モデル*
-	"htd",  // 高潮浸水想定区域モデル*
-	"ifld", // 内水浸水想定区域モデル*
-	"rfld", // ため池ハザードマップモデル*
-	"lsld", // 土砂災害モデル
-	"urf",  // 都市計画決定情報モデル*
-	"unf",  // 地下埋設物モデル
-	"brid", // 橋梁モデル
-	"tun",  // トンネルモデル
-	"cons", // その他の構造物モデル
-	"frn",  // 都市設備モデル
-	"ubld", // 地下街モデル
-	"veg",  // 植生モデル
-	"dem",  // 地形モデル
-	"wtr",  // 水部モデル
-	"area", // 区域モデル*
-	"gen",  // 汎用都市オブジェクトモデル*
-}
-
 type CityItem struct {
-	ID                  string            `json:"id,omitempty" cms:"id"`
-	Prefecture          string            `json:"prefecture,omitempty" cms:"prefecture,select"`
-	CityName            string            `json:"city_name,omitempty" cms:"city_name,text"`
-	CityNameEn          string            `json:"city_name_en,omitempty" cms:"city_name_en,text"`
-	CityCode            string            `json:"city_code,omitempty" cms:"city_code,text"`
-	CodeLists           string            `json:"codelists,omitempty" cms:"codelists,asset"`
-	Schemas             string            `json:"schemas,omitempty" cms:"schemas,asset"`
-	Metadata            string            `json:"metadata,omitempty" cms:"metadata,asset"`
-	Spec                string            `json:"spec,omitempty" cms:"spec,asset"`
-	Misc                string            `json:"misc,omitempty" cms:"misc,asset"`
-	Year                string            `json:"year,omitempty" cms:"year,select"`
-	References          map[string]string `json:"references,omitempty" cms:"-"`
-	RelatedDataset      string            `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
-	GeospatialjpIndex   string            `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
-	GeospatialjpData    string            `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
-	GeospatialjpPrepare bool              `json:"geospatialjp_prepare,omitempty" cms:"geospatialjp_prepare,bool,metadata"`
-	GeospatialjpPublish bool              `json:"geospatialjp_publish,omitempty" cms:"geospatialjp_publish,bool,metadata"`
+	ID                string            `json:"id,omitempty" cms:"id"`
+	Prefecture        string            `json:"prefecture,omitempty" cms:"prefecture,select"`
+	CityName          string            `json:"city_name,omitempty" cms:"city_name,text"`
+	CityNameEn        string            `json:"city_name_en,omitempty" cms:"city_name_en,text"`
+	CityCode          string            `json:"city_code,omitempty" cms:"city_code,text"`
+	CodeLists         string            `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas           string            `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata          string            `json:"metadata,omitempty" cms:"metadata,asset"`
+	Spec              string            `json:"spec,omitempty" cms:"spec,asset"`
+	Misc              string            `json:"misc,omitempty" cms:"misc,asset"`
+	Year              string            `json:"year,omitempty" cms:"year,select"`
+	References        map[string]string `json:"references,omitempty" cms:"-"`
+	RelatedDataset    string            `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
+	GeospatialjpIndex string            `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
+	GeospatialjpData  string            `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
+	// metadata
+	GeospatialjpPrepare bool `json:"geospatialjp_prepare,omitempty" cms:"geospatialjp_prepare,bool,metadata"`
+	GeospatialjpPublish bool `json:"geospatialjp_publish,omitempty" cms:"geospatialjp_publish,bool,metadata"`
 }
 
 func (c *CityItem) SpecVersion() string {
@@ -114,7 +86,7 @@ func (c *CityItem) YearInt() int {
 	return YearInt(c.Year)
 }
 
-func CityItemFrom(item *cms.Item) (i *CityItem) {
+func CityItemFrom(item *cms.Item, featureTypes []string) (i *CityItem) {
 	i = &CityItem{}
 	item.Unmarshal(i)
 
@@ -134,17 +106,17 @@ func CityItemFrom(item *cms.Item) (i *CityItem) {
 }
 
 type CMSDataItem struct {
-	ID        string         `json:"id,omitempty" cms:"id"`
-	CityGML   map[string]any `json:"citygml,omitempty" cms:"citygml,asset"`
-	Plateau   map[string]any `json:"plateau,omitempty" cms:"plateau,asset"`
-	Related   map[string]any `json:"related,omitempty" cms:"related,asset"`
-	DescIndex string         `json:"desc_index,omitempty" cms:"desc_index,markdown"`
+	ID        string           `json:"id,omitempty" cms:"id"`
+	CityGML   *cms.PublicAsset `json:"citygml,omitempty" cms:"citygml,asset"`
+	Plateau   *cms.PublicAsset `json:"plateau,omitempty" cms:"plateau,asset"`
+	Related   *cms.PublicAsset `json:"related,omitempty" cms:"related,asset"`
+	DescIndex string           `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 }
 
 type CMSIndexItem struct {
 	ID              string           `json:"id,omitempty" cms:"id"`
-	Thumbnail       map[string]any   `json:"thumbnail,omitempty" cms:"thumbnail,asset"`
-	IndexData       map[string]any   `json:"index_data,omitempty" cms:"index_data,asset"`
+	Thumbnail       *cms.PublicAsset `json:"thumbnail,omitempty" cms:"thumbnail,asset"`
+	IndexData       *cms.PublicAsset `json:"index_data,omitempty" cms:"index_data,asset"`
 	Desc            string           `json:"desc,omitempty" cms:"desc,markdown"`
 	DescIndex       string           `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 	DescCityGML     string           `json:"desc_citygml,omitempty" cms:"desc_citygml,markdown"`
@@ -157,12 +129,13 @@ type CMSIndexItem struct {
 	Maintainer      string           `json:"maintainer,omitempty" cms:"maintainer,text"`
 	MaintainerEmail string           `json:"maintainer_email,omitempty" cms:"maintainer_email,text"`
 	Quality         string           `json:"quality,omitempty" cms:"quality,text"`
+	IndexMap        *cms.PublicAsset `json:"index_map,omitempty" cms:"index_map,asset"`
 }
 
 type CMSGenericItem struct {
-	Name  string         `json:"name,omitempty" cms:"name,text"`
-	Desc  string         `json:"desc,omitempty" cms:"desc,markdown"`
-	Asset map[string]any `json:"asset,omitempty" cms:"asset,asset"`
+	Name  string           `json:"name,omitempty" cms:"name,text"`
+	Desc  string           `json:"desc,omitempty" cms:"desc,markdown"`
+	Asset *cms.PublicAsset `json:"asset,omitempty" cms:"asset,asset"`
 }
 
 func GetMainItemWithMetadata(ctx context.Context, c cms.Interface, i *cms.Item) (_ *cms.Item, err error) {

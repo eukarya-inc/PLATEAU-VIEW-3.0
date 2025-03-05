@@ -246,6 +246,14 @@ const Property: FC<{
   ].join("_")}`;
   const attrVal = isPrimitive ? getPropertyAttributeValue(actualName, version) : undefined;
 
+  const displayedValues = useMemo(
+    () =>
+      isPrimitive
+        ? values.map(v => (attrVal ? makePropertyValue(attrVal, v as string | number) : v))
+        : null,
+    [values, attrVal, isPrimitive],
+  );
+
   return featureType === "tags" ? (
     values.length === 1 ? (
       <TableRow style={{ wordBreak: "break-all" }}>
@@ -280,20 +288,10 @@ const Property: FC<{
         {makePropertyName(actualName, name, version, attrVal)}
       </PropertyNameCell>
       <TableCell width="50%">
-        {typeof values[0] === "string" ? (
-          <StringValue
-            name={name}
-            values={(values as string[]).map(v =>
-              attrVal ? (makePropertyValue(attrVal, v) as string) : v,
-            )}
-          />
-        ) : typeof values[0] === "number" ? (
-          <NumberValue
-            name={name}
-            values={(values as number[]).map(v =>
-              attrVal ? (makePropertyValue(attrVal, v) as number) : v,
-            )}
-          />
+        {typeof displayedValues?.[0] === "string" ? (
+          <StringValue name={name} values={displayedValues as string[]} />
+        ) : typeof displayedValues?.[0] === "number" ? (
+          <NumberValue name={name} values={displayedValues as number[]} />
         ) : null}
       </TableCell>
     </TableRow>

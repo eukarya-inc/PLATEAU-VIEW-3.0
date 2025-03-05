@@ -20,16 +20,16 @@ func NewPlateauCMS(cms cms.Interface, cacheBasePath string) *PlateauCMS {
 	return &PlateauCMS{CMS: cms, cacheBasePath: cacheBasePath}
 }
 
-func (c *PlateauCMS) GetAllCities(ctx context.Context, prj string) ([]*cmsintegrationcommon.CityItem, error) {
+func (c *PlateauCMS) GetAllCities(ctx context.Context, prj string, featureTypes []string) ([]*cmsintegrationcommon.CityItem, error) {
 	return getAllItems(ctx, c.CMS, prj, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.CityModel, c.cacheBasePath, func(item *cms.Item) (*cmsintegrationcommon.CityItem, bool, error) {
-		city := cmsintegrationcommon.CityItemFrom(item)
+		city := cmsintegrationcommon.CityItemFrom(item, featureTypes)
 		return city, city != nil, nil
 	})
 }
 
-func (c *PlateauCMS) GetAllRelated(ctx context.Context, prj string) ([]*cmsintegrationcommon.RelatedItem, error) {
+func (c *PlateauCMS) GetAllRelated(ctx context.Context, prj string, relatedDataTypes []string) ([]*cmsintegrationcommon.RelatedItem, error) {
 	return getAllItems(ctx, c.CMS, prj, cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel, c.cacheBasePath, func(item *cms.Item) (*cmsintegrationcommon.RelatedItem, bool, error) {
-		city := cmsintegrationcommon.RelatedItemFrom(item)
+		city := cmsintegrationcommon.RelatedItemFrom(item, relatedDataTypes)
 		return city, city != nil, nil
 	})
 }
@@ -41,7 +41,7 @@ func getAllItems[T any](ctx context.Context, c cms.Interface, prj, model, cacheB
 	if found, err := findCache(cacheBase, key, items); err != nil {
 		return nil, fmt.Errorf("failed to find cache: %w", err)
 	} else if !found {
-		items2, err := c.GetItemsByKeyInParallel(ctx, prj, model, false, 0)
+		items2, err := c.GetItemsByKeyInParallel(ctx, prj, model, true, 0)
 		if err != nil {
 			return nil, err
 		}

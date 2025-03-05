@@ -183,7 +183,7 @@ export const InitialLayers: FC = () => {
     skip: !!shareId && !isSharedDataLoaded && !sharedRootLayers?.length,
   });
 
-  const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
+  const initialDatasets = useMemo(() => query.data?.nodes?.filter(isNotNullish) ?? [], [query]);
 
   const initialLayers: InitialLayerParams = useMemo(() => {
     if (!sharedRootLayers?.length) return defaultLayerParams;

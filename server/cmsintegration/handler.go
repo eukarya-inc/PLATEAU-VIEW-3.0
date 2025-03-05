@@ -2,11 +2,12 @@ package cmsintegration
 
 import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationflow"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2/geospatialjpv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3/geospatialjpv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/dataconv"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/geospatialjpv3"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 )
@@ -14,6 +15,11 @@ import (
 type Config = cmsintegrationcommon.Config
 
 func Handler(conf Config, g *echo.Group) error {
+	// flow
+	if err := cmsintegrationflow.Handler(flowConfig(conf), g); err != nil {
+		return err
+	}
+
 	// v3
 	if err := cmsintegrationv3.Handler(conf, g); err != nil {
 		return err
@@ -46,6 +52,11 @@ func compatHandler(conf Config, g *echo.Group) error {
 }
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
+	hflow, err := cmsintegrationflow.WebhookHandler(flowConfig(conf))
+	if err != nil {
+		return nil, err
+	}
+
 	hv3, err := cmsintegrationv3.WebhookHandler(conf)
 	if err != nil {
 		return nil, err
@@ -75,7 +86,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return cmswebhook.MergeHandlers([]cmswebhook.Handler{
-		hv3, hv3geo, hv2, hv2geo, hv2dataconv,
+		hflow, hv3, hv3geo, hv2, hv2geo, hv2dataconv,
 	}), nil
 }
 
@@ -99,6 +110,7 @@ func geospatialjpv3Config(conf Config) geospatialjpv3.Config {
 	return geospatialjpv3.Config{
 		CMSBase:               conf.CMSBaseURL,
 		CMSToken:              conf.CMSToken,
+		CMSSystemProject:      conf.CMSSystemProject,
 		CMSIntegration:        conf.CMSIntegration,
 		CkanBase:              conf.CkanBaseURL,
 		CkanOrg:               conf.CkanOrg,
@@ -120,5 +132,18 @@ func dataConvConfig(conf Config) dataconv.Config {
 		CMSToken: conf.CMSToken,
 		APIToken: conf.APIToken,
 		// CMSModel: conf.CMSModel,
+	}
+}
+
+func flowConfig(conf Config) cmsintegrationflow.Config {
+	return cmsintegrationflow.Config{
+		Host:             conf.Host,
+		CMSBaseURL:       conf.CMSBaseURL,
+		CMSToken:         conf.CMSToken,
+		CMSSystemProject: conf.CMSSystemProject,
+		CMSIntegration:   conf.CMSIntegration,
+		FlowBaseURL:      conf.FlowBaseURL,
+		FlowToken:        conf.FlowToken,
+		Secret:           conf.Secret,
 	}
 }

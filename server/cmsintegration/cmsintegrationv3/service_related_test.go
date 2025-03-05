@@ -49,7 +49,8 @@ func TestConvertRelatedDataset(t *testing.T) {
 			return nil
 		},
 	}
-	s := &Services{CMS: c, HTTP: http.DefaultClient}
+	pc := &plateauCMSMock{}
+	s := &Services{CMS: c, PCMS: pc, HTTP: http.DefaultClient}
 	item := &cmsintegrationcommon.RelatedItem{
 		Items: map[string]cmsintegrationcommon.RelatedItemDatum{
 			"border": {
@@ -63,7 +64,7 @@ func TestConvertRelatedDataset(t *testing.T) {
 			Model: &cms.Model{
 				Key: "plateau-related",
 			},
-			Item: item.CMSItem(),
+			Item: item.CMSItem([]string{"border"}),
 		},
 	}
 
@@ -145,7 +146,7 @@ func TestPackRelatedDataset(t *testing.T) {
 			return (&cmsintegrationcommon.CityItem{
 				CityNameEn: "hoge",
 				CityCode:   "00000",
-			}).CMSItem(), nil
+			}).CMSItem(nil), nil
 		},
 		asset: func(ctx context.Context, id string) (*cms.Asset, error) {
 			return &cms.Asset{
@@ -169,7 +170,8 @@ func TestPackRelatedDataset(t *testing.T) {
 			return nil
 		},
 	}
-	s := &Services{CMS: c, HTTP: http.DefaultClient}
+	pc := &plateauCMSMock{}
+	s := &Services{CMS: c, PCMS: pc, HTTP: http.DefaultClient}
 	item := &cmsintegrationcommon.RelatedItem{
 		City: "city",
 		Items: map[string]cmsintegrationcommon.RelatedItemDatum{
@@ -187,7 +189,7 @@ func TestPackRelatedDataset(t *testing.T) {
 			Model: &cms.Model{
 				Key: "plateau-related",
 			},
-			Item: item.CMSItem(),
+			Item: item.CMSItem([]string{"shelter", "landmark", "station", "park", "railway", "emergency_route", "border"}),
 		},
 	}
 

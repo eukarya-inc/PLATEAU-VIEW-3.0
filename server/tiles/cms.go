@@ -100,6 +100,7 @@ func assetBaseURL(zipURL string) string {
 }
 
 func extractZ(name string) (res []string) {
+	// hogeghoge.zip -> [0, ..., 19]
 	// hogehoge_z0.zip -> [0]
 	// hogehoge_z10-12.zip -> [10, 11, 12]
 	name = strings.TrimSuffix(path.Base(name), path.Ext(name))
@@ -135,6 +136,12 @@ func extractZ(name string) (res []string) {
 		}
 
 		res = append(res, part)
+	}
+
+	if len(res) == 0 {
+		for i := 0; i < 20; i++ { // 0 to 19
+			res = append(res, strconv.Itoa(i))
+		}
 	}
 
 	return res
