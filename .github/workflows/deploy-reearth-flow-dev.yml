@@ -122,7 +122,7 @@ jobs:
         run: docker push $SUBSCRIBER_IMAGE_NAME_GHCR && docker push $SUBSCRIBER_IMAGE_NAME_GCP
       - name: Deploy
         run: |
-          gcloud run deploy reearth-flow-websocket \
+          gcloud run deploy reearth-flow-subscriber \
             --image $SUBSCRIBER_IMAGE_NAME_GCP \
             --region ${{ vars.GCP_REGION }} \
             --platform managed \
