@@ -152,7 +152,7 @@ plateauview_cms_url = "*"
 plateauview_cms_webhook_secret = <sensitive>
 plateauview_cms_webhook_url = "*"
 plateauview_geo_url = "*"
-plateauview_reearth_url = "*"
+plateauview_url = "*"
 plateauview_sdk_token = <sensitive>
 plateauview_sidebar_token = <sensitive>
 plateauview_sidecar_url = "*"
@@ -171,7 +171,7 @@ terraform output <確認したいOutput>
 | `plateauview_cms_webhook_secret` | 下記「CMS インテグレーション設定」で使用 |
 | `plateauview_cms_webhook_url` | 下記「CMS インテグレーション設定」で使用 |
 | `plateauview_geo_url` | タイルなどを変換・処理するサーバーのURL |
-| `plateauview_reearth_url` | エディタ（Re:Earth）のURL |
+| `plateauview_url` | エディタ（Re:Earth）のURL |
 | `plateauview_sdk_token` | PLATEAU SDK用のトークン。SDKのUIで設定する（詳しくはマニュアルを参照） |
 | `plateauview_sidebar_token` | ビューワのサイドバー用のAPIトークン。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照） |
 | `plateauview_sidecar_url` | サイドカーサーバーのURL。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照） |
@@ -207,10 +207,10 @@ Terraformのの `plateauview_cms_url` のURL（`https://reearth.${DOMAIN}`）か
 
 作成後、作成したワークスペースに作成したインテグレーションを追加し、オーナー権限に変更する。
 
-先ほど作成したインテグレーションの詳細画面でインテグレーショントークンをコピーし、以下の `${REEARTH_PLATEAUVIEW_CMS_TOKEN}` に貼り付けて以下のコマンドを実行する。
+先ほど作成したインテグレーションの詳細画面でインテグレーショントークンをコピーし、以下の `${PLATEAUVIEW_CMS_TOKEN}` に貼り付けて以下のコマンドを実行する。
 
 ```console
-echo -n "${REEARTH_PLATEAUVIEW_CMS_TOKEN}" | gcloud secrets versions add reearth-cms-REEARTH_PLATEAUVIEW_CMS_TOKEN --data-file=-
+echo -n "${PLATEAUVIEW_CMS_TOKEN}" | gcloud secrets versions add cms-PLATEAUVIEW_CMS_TOKEN --data-file=-
 ```
 
 環境変数の変更を適用するため、もう一度 Cloud Run をデプロイしてください。
@@ -227,7 +227,7 @@ gcloud run deploy plateauview-api \
 
 以下のアプリケーションにログインし、正常に使用できることを確認します。ここの `${DOMAIN}` はドメインです。
 
-- Re:Earth: Terraformのoutputsの `plateauview_reearth_url` の値（`https://reearth.${DOMAIN}`）
+- Re:Earth: Terraformのoutputsの `plateauview_url` の値（`https://reearth.${DOMAIN}`）
 - Re:Earth CMS: Terraformのoutputsの `plateauview_cms_url` の値（`https://cms.${DOMAIN}`）
 
 この後は画面上での設定作業になります。続きは[マニュアル](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)をご覧ください。
