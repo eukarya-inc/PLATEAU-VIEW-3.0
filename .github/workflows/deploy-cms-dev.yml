@@ -103,3 +103,13 @@ jobs:
             --platform managed \
             --quiet
 
+  e2e_web:
+    needs: [deploy_web, deploy_server_worker]
+    if: needs.deploy_web.result == 'success' && needs.deploy_server_worker.result == 'success'
+    uses: ./.github/workflows/e2e-cms-web.yml
+    with:
+      REEARTH_CMS_API: ${{ vars.REEARTH_CMS_DEV_API }}
+      REEARTH_CMS_E2E_BASEURL: ${{ vars.REEARTH_CMS_DEV_E2E_BASEURL }}
+    secrets:
+      REEARTH_PROD_E2E_EMAIL: ${{ secrets.REEARTH_PROD_E2E_EMAIL }}
+      REEARTH_PROD_E2E_PASSWORD: ${{ secrets.REEARTH_PROD_E2E_PASSWORD }}
