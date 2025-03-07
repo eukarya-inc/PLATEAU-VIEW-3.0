@@ -110,7 +110,7 @@ func attributeHandler(domain string) echo.HandlerFunc {
 			})
 		}
 
-		var resolver codeResolver
+		var resolver CodeResolver
 		if !skipCodeListFetch {
 			resolver = &fetchCodeResolver{
 				client: httpClient,
