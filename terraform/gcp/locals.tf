@@ -21,14 +21,15 @@ locals {
   cms_assets_domain = "assets.${local.cms_domain}"
   cms_worker_domain = "worker.${local.cms_domain}"
 
-  tiles_domain = "tiles.${var.domain}"
-
   editor_domain        = "editor.${var.domain}"
   editor_api_domain    = "api.${local.editor_domain}"
   editor_static_domain = "static.${local.editor_domain}"
 
+  flow_domain = "flow.${var.domain}"
+
   geo_domain             = "geo.${var.domain}"
   plateauview_api_domain = "api.${var.domain}"
+  tiles_domain           = "tiles.${var.domain}"
 }
 
 locals {

@@ -11,12 +11,16 @@ output "plateauview_cms_webhook_secret" {
   sensitive = true
 }
 
-output "plateauview_geo_url" {
-  value = "https://${local.geo_domain}"
+output "plateauview_editor_url" {
+  value = "https://${local.editor_domain}"
 }
 
-output "plateauview_url" {
-  value = "https://${local.editor_domain}"
+output "plateauview_flow_url" {
+  value = "https://${local.flow_domain}"
+}
+
+output "plateauview_geo_url" {
+  value = "https://${local.geo_domain}"
 }
 
 output "plateauview_sdk_token" {

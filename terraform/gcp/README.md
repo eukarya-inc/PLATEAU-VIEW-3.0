@@ -1,6 +1,6 @@
 # PLATEAU VIEW 4.0 Terraform for Google Cloud
 
-PLATEAU VIEW 4.0（CMS・Editor・VIEW）を Google Cloud で構築するための Terraform 用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
+PLATEAU VIEW 4.0（CMS・Editor・VIEW・Flow）を Google Cloud で構築するための Terraform 用ファイルです。システム構築手順は[『実証環境構築マニュアル Series No.09』](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)（以下、マニュアル）も併せて参照してください。
 
 ## 1. 改訂履歴
 
@@ -26,7 +26,7 @@ cp terraform.tfvars.example terraform.tfvars
 ```
 
 > [!TIP]
-> ここでは`terraform.tfvars`と命名しましたが拡張子`tfvars`であれば何でも構いません。
+> ここでは`terraform.tfvars`と命名しましたが拡張子 `tfvars` であれば何でも構いません。
 
 ### 3.2 `gcloud`CLI のセットアップ
 
@@ -50,7 +50,7 @@ Google Cloud コンソールからプロジェクトを作成します。
 
 作成したバケットのストレージクラスおよびロケーションを`google_storage_bucket.tf`に設定します。
 
-以下の例では、ストレージクラス`STANDARD`およびロケーション`ASIA`に設定しています。
+以下の例では、ストレージクラス `STANDARD` およびロケーション `ASIA` に設定しています。
 
 ```diff
 resource "google_storage_bucket" "terraform" {
@@ -93,7 +93,7 @@ $ terraform import google_storage_bucket.terraform <バケット名>
 - IP アドレスの許可 (インターネットからアクセスを許可するため CIDR`0.0.0.0/0`を追加)
 
 > [!WARNING]
-> CIDR`0.0.0.0/0`でアクセスを許可するとインターネット上からアクセスできるようになるため、データベースユーザーの管理には十分注意してください。
+> CIDR `0.0.0.0/0` でアクセスを許可するとインターネット上からアクセスできるようになるため、データベースユーザーの管理には十分注意してください。
 
 データベース作成完了後に、データベース詳細ページから接続文字列（Connection String）を取得します。
 
@@ -113,7 +113,7 @@ $ terraform import google_storage_bucket.terraform <バケット名>
 $ terraform apply --target google_project_service.project
 ```
 
-実行の承認を求められるので、`yes`を入力してください（以降の`terraform apply`の実行でも同様にしてください）。
+実行の承認を求められるので、 `yes` を入力してください（以降の `terraform apply` の実行でも同様にしてください）。
 
 ### 3.8 Cloud DNS マネージドゾーンの作成およびドメイン解決の委譲
 
@@ -149,8 +149,9 @@ $ terraform apply
 plateauview_cms_url = "*"
 plateauview_cms_webhook_secret = <sensitive>
 plateauview_cms_webhook_url = "*"
-plateauview_geo_url = "*"
 plateauview_editor_url = "*"
+plateauview_flow_url = "*"
+plateauview_geo_url = "*"
 plateauview_sdk_token = <sensitive>
 plateauview_sidebar_token = <sensitive>
 plateauview_sidecar_url = "*"
@@ -168,8 +169,9 @@ terraform output <確認したいOutput>
 | `plateauview_cms_url`            | PLATEAU CMS の URL                                                                                                      |
 | `plateauview_cms_webhook_secret` | 下記「CMS インテグレーション設定」で使用                                                                                |
 | `plateauview_cms_webhook_url`    | 下記「CMS インテグレーション設定」で使用                                                                                |
-| `plateauview_geo_url`            | タイルなどを変換・処理するサーバーの URL                                                                                |
 | `plateauview_editor_url`         | PLATEAU Editor の URL                                                                                                   |
+| `plateauview_flow_url`           | PLATEAU Flow の URL                                                                                                     |
+| `plateauview_geo_url`            | タイルなどを変換・処理するサーバーの URL                                                                                |
 | `plateauview_sdk_token`          | PLATEAU SDK 用のトークン。SDK の UI で設定する（詳しくはマニュアルを参照）                                              |
 | `plateauview_sidebar_token`      | ビューワのサイドバー用の API トークン。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照） |
 | `plateauview_sidecar_url`        | サイドカーサーバーの URL。エディタ上でサイドバーウィジェットの設定から設定する（詳しくはマニュアルを参照）              |
@@ -193,7 +195,7 @@ curl https://api.${DOMAIN}/ping
 
 ### 3.12 CMS インテグレーション設定
 
-Terraform のの `plateauview_cms_url` の URL（`https://reearth.${DOMAIN}`）から Re:Earth CMS にログインします。
+Terraform のの `plateauview_cms_url` の URL（`https://cms.${DOMAIN}`）から PLATEAU CMS にログインします。
 
 ログイン後、ワークスペース・My インテグレーションを作成します。
 
@@ -227,5 +229,6 @@ gcloud run deploy plateauview-api \
 
 - PLATEAU Editor: Terraform の outputs の `plateauview_editor_url` の値（`https://editor.${DOMAIN}`）
 - PLATEAU CMS: Terraform の outputs の `plateauview_cms_url` の値（`https://cms.${DOMAIN}`）
+- PLATEAU Flow: Terraform の outputs の `plateauview_flow_url` の値（`https://flow.${DOMAIN}`）
 
 この後は画面上での設定作業になります。続きは[マニュアル](https://www.mlit.go.jp/plateau/file/libraries/doc/plateau_doc_0009_ver03.pdf)をご覧ください。
