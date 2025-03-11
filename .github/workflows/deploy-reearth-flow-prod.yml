@@ -27,6 +27,10 @@ env:
   WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-worker:latest
   WORKER_IMAGE_NAME_HUB: eukarya/plateauview-flow-worker:latest
 
+  CERBOS_IMAGE_NAME: cerbos/cerbos:0.40.0
+  CERBOS_BUCKET_NAME_REEARTH_OSS: gs://cerbos-policy-reearth-oss
+  CERBOS_BUCKET_NAME_PLATEAU_PROD: gs://cerbos-policy-reearth-plateau
+
 concurrency:
   group: ${{ github.workflow }}
 
@@ -188,3 +192,48 @@ jobs:
         run: docker pull $WORKER_IMAGE_NAME_GHCR
       - name: Tag and push docker image
         run: docker tag $WORKER_IMAGE_NAME_GHCR $WORKER_IMAGE_NAME_GCP && docker push $WORKER_IMAGE_NAME_GCP
+
+  update-policies:
+    runs-on: ubuntu-latest
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    environment: prod
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Sync policies with Cloud Storage
+        run: |
+          set -euo pipefail
+          gsutil -m rsync -r -d $CERBOS_BUCKET_NAME_REEARTH_OSS $CERBOS_BUCKET_NAME_PLATEAU_PROD
+          echo "Policy files synchronized from oss to plateau-prod"
+
+  deploy-cerbos:
+    needs: update-policies
+    runs-on: ubuntu-latest
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    environment: prod
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure docker
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+      - name: Deploy
+        run: |
+          gcloud run deploy cerbos \
+            --image $CERBOS_IMAGE_NAME \
+            --region ${{ vars.GCP_REGION }} \
+            --platform managed \
+            --quiet
