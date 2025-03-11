@@ -1,5 +1,3 @@
-
-
 name: ⭐️ Deploy reearth dev
 on:
   workflow_dispatch:
@@ -9,11 +7,11 @@ env:
 
   # TODO: allow to specify version of reearth
   IMAGE_NAME: reearth/reearth:rc
-  IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth:latest
+  IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth:latest
   IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth:latest
 
   WEB_IMAGE_NAME: reearth/reearth-classic-web:rc
-  WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view-3.0/reearth-classic-web:latest
+  WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-classic-web:latest
   WEB_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-classic-web:latest
 concurrency:
   group: ${{ github.workflow }}
@@ -25,7 +23,7 @@ jobs:
       contents: read
       id-token: write
       packages: write
-    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0' }}
+    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -60,7 +58,7 @@ jobs:
       contents: read
       id-token: write
       packages: write
-    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0' }}
+    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:

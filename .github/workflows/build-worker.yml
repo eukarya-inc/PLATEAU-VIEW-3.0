@@ -6,7 +6,7 @@ jobs:
     name: Build and push Docker image
     runs-on: ubuntu-latest
     env:
-      IMAGE_NAME: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest
+      IMAGE_NAME: ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-api-worker:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
