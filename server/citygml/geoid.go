@@ -36,9 +36,9 @@ func GeoidHanlder(c echo.Context) error {
 	height := geoid.GetHeight(lngFloat, latFloat)
 
 	return c.JSON(200, map[string]any{
-		"lat":           latFloat,
-		"lng":           lngFloat,
-		"geoide_height": height,
+		"lat":          latFloat,
+		"lng":          lngFloat,
+		"geoid_height": height,
 		// compatibility with https://api-vt.geolonia.com/api/altitude?lat=x&lng=x
 		"geoid": fmt.Sprintf("%.3f", height),
 	})
