@@ -2,7 +2,7 @@ name: ⭐️ Deploy PLATEAU Geo production
 on:
   workflow_dispatch:
 env:
-  IMAGE: ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-geo:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-geo:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/plateauview-geo:latest
   IMAGE_HUB: eukarya/plateauview-geo:latest
 jobs:

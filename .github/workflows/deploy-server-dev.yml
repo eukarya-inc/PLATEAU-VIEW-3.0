@@ -4,7 +4,7 @@ on:
   repository_dispatch:
     types: [deploy-server-dev]
 env:
-  IMAGE: ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-api:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-api:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/plateauview-api:latest
 jobs:
   deploy_server:

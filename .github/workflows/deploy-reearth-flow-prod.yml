@@ -7,23 +7,23 @@ on:
         description: Deploy the specific version of web to specify the run ID. If specified, deployment of the server will be skipped. (Optional)
         required: false
 env:
-  API_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-flow-api:latest
+  API_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-api:latest
   API_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-api:latest
   API_IMAGE_NAME_HUB: eukarya/plateauview-flow-api:latest
 
-  SUBSCRIBER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-flow-subscriber:latest
+  SUBSCRIBER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-subscriber:latest
   SUBSCRIBER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-subscriber:latest
   SUBSCRIBER_IMAGE_NAME_HUB: eukarya/plateauview-flow-subscriber:latest
 
-  WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-flow-web:latest
+  WEB_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-web:latest
   WEB_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-web:latest
   WEB_IMAGE_NAME_HUB: eukarya/plateauview-flow-web:latest
 
-  WS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-flow-websocket:latest
+  WS_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-websocket:latest
   WS_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-websocket:latest
   WS_IMAGE_NAME_HUB: eukarya/plateauview-flow-websocket:latest
 
-  WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/PLATEAU-VIEW/reearth-flow-worker:latest
+  WORKER_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-worker:latest
   WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/reearth-flow-worker:latest
   WORKER_IMAGE_NAME_HUB: eukarya/plateauview-flow-worker:latest
 

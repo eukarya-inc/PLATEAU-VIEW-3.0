@@ -19,7 +19,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-const citygmlPackerImageDefault = "ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-api-worker:latest"
+const citygmlPackerImageDefault = "ghcr.io/eukarya-inc/plateau-view/plateauview-api-worker:latest"
 
 var noColorPP *pp.PrettyPrinter
 

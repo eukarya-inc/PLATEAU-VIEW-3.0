@@ -2,7 +2,7 @@ name: ⭐️ Deploy PLATEAU Tiles production
 on:
   workflow_dispatch:
 env:
-  IMAGE: ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-tiles:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-tiles:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/plateauview-tiles:latest
   IMAGE_HUB: eukarya/plateauview-tiles:latest
 jobs:

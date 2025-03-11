@@ -4,7 +4,7 @@ on:
   repository_dispatch:
     types: [deploy-tiles-dev]
 env:
-  IMAGE: ghcr.io/eukarya-inc/PLATEAU-VIEW/plateauview-tiles:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-tiles:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/plateauview-tiles:latest
 jobs:
   deploy_tiles:
