@@ -1,4 +1,4 @@
-name: ⭐️ Run migration PLATEAU dev
+name: 👥 Run Accounts migration PLATEAU dev
 on:
   workflow_dispatch:
 
