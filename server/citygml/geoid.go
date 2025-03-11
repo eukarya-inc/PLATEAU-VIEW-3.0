@@ -40,6 +40,6 @@ func GeoidHanlder(c echo.Context) error {
 		"lng":           lngFloat,
 		"geoide_height": height,
 		// compatibility with https://api-vt.geolonia.com/api/altitude?lat=x&lng=x
-		"geoid": fmt.Sprintf("%f", height),
+		"geoid": fmt.Sprintf("%.3f", height),
 	})
 }
