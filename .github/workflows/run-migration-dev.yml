@@ -10,6 +10,7 @@ jobs:
   migrate:
     name: Run migration For Plateau Dev
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       contents: read
       id-token: write
