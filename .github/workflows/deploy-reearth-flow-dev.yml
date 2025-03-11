@@ -23,7 +23,6 @@ env:
   WORKER_IMAGE_NAME_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/reearth-flow-worker:latest
 
   CERBOS_IMAGE_NAME: cerbos/cerbos:0.40.0
-  CERBOS_BUCKET_NAME_REEARTH_OSS: gs://cerbos-policy-reearth-oss
   CERBOS_BUCKET_NAME_PLATEAU_DEV: gs://cerbos-policy-reearth-plateau-dev
 
 concurrency:
@@ -207,11 +206,42 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-      - name: Sync policies with Cloud Storage
+      - name: Download and merge all policies from GAR
         run: |
           set -euo pipefail
-          gsutil -m rsync -r -d $CERBOS_BUCKET_NAME_REEARTH_OSS $CERBOS_BUCKET_NAME_PLATEAU_DEV
-          echo "Policy files synchronized from oss to plateau-dev"
+
+          GCP_PROJECT_ID=reearth-oss
+          GAR_REPO=cerbos-policies
+          LOCATION=us-central1
+          OUT_DIR=merged-policies
+
+          mkdir -p $OUT_DIR
+
+          echo "Fetching package list from GAR..."
+          PACKAGE_NAMES=$(gcloud artifacts packages list \
+            --project=$GCP_PROJECT_ID \
+            --repository=$GAR_REPO \
+            --location=$LOCATION \
+            --format="value(name)" | sed 's#.*/##')
+
+          for PACKAGE in $PACKAGE_NAMES; do
+            echo "→ Downloading package: $PACKAGE"
+            gcloud artifacts files download \
+              --project=$GCP_PROJECT_ID \
+              --repository=$GAR_REPO \
+              --location=$LOCATION \
+              --package=$PACKAGE \
+              --version=latest \
+              --output=${PACKAGE}.tar.gz
+
+            echo "→ Extracting $PACKAGE.tar.gz"
+            tar -xzf ${PACKAGE}.tar.gz -C $OUT_DIR
+          done
+      - name: Sync merged policies to GCS
+        run: |
+          set -euo pipefail
+          gsutil -m rsync -r -d merged-policies/ $CERBOS_BUCKET_NAME_PLATEAU_DEV
+          echo "All policies merged and synced to $CERBOS_BUCKET_NAME_PLATEAU_DEV"
 
   deploy-cerbos:
     needs: update-policies
