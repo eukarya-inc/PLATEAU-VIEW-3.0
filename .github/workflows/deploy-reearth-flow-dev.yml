@@ -44,7 +44,6 @@ jobs:
     permissions:
       id-token: write
       packages: write
-    if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
