@@ -231,7 +231,7 @@ jobs:
               --repository=$GAR_REPO \
               --location=$LOCATION \
               --package=$PACKAGE \
-              --version=latest \
+              --version=current \
               --output=${PACKAGE}.tar.gz
 
             echo "→ Extracting $PACKAGE.tar.gz"
