@@ -23,7 +23,7 @@ paths:
                 format: html
     post:
       summary: データカタログ GraphQL API
-      description: GraphQL スキーマは Playground で確認できます。
+      description: GraphQLスキーマはPlaygroundで確認できます。
       tags:
         - Data Catalog API
       requestBody:
@@ -71,6 +71,127 @@ paths:
                               column:
                                 type: integer
                                 description: The column number
+
+  /datacatalog/plateau-datasets:
+    get:
+      summary: データカタログ シンプルAPI
+      tags:
+        - Data Catalog API
+      description: 3D Tiles/MVT のデータセット一覧がJSON形式で返却されます。
+      responses:
+        "200":
+          description: 成功時のレスポンス
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  datasets:
+                    type: array
+                    items:
+                      type: object
+                      description: 3D Tiles/MVT のデータセットを表すオブジェクト。
+                      properties:
+                        id:
+                          type: string
+                          description: データセットのID
+                        name:
+                          type: string
+                          description: データの名称
+                        pref:
+                          type: string
+                          description: 都道府県名
+                        pref_code:
+                          type: string
+                          description: 2桁の都道府県コード
+                        city:
+                          type: string
+                          description: 市区町村名
+                        city_code:
+                          type: string
+                          description: 5桁の市の市区町村コード
+                        ward:
+                          type: string
+                          nullable: true
+                          description: |
+                            区名。政令指定都市の場合のみ、区の名前が含まれる。
+                        ward_code:
+                          type: string
+                          nullable: true
+                          description: |
+                            5桁の区の市区町村コード。政令指定都市の場合のみ、区ごとの市区町村コードが含まれる。
+                        type:
+                          type: string
+                          description: |
+                            配信している3D都市モデルの地物型の種別。
+                            例: "建築物モデル"
+                          example: "建築物モデル"
+                        type_en:
+                          type: string
+                          description: |
+                            種別の英語名。
+                            例: "bldg" は建築物モデルを意味する。
+                          example: "bldg"
+                        url:
+                          type: string
+                          format: uri
+                          description: |
+                            3D Tiles の場合は tileset.json の URL。
+                            MVT の場合は `{z}/{x}/{y}.mvt` のようなタイル URL。
+                        layers:
+                          type: array
+                          nullable: true
+                          description: MVTのみ利用可能なレイヤー名リスト。3D Tilesの場合はnull。
+                          items:
+                            type: string
+                        year:
+                          type: integer
+                          description: |
+                            データが整備された年度。
+                            例: 2023 は2023年度に整備されたデータ。
+                          example: 2023
+                        registration_year:
+                          type: integer
+                          description: |
+                            データがPLATEAU VIEWに登録された年度。
+                            例: 2023 は2023年度に登録されたデータ。
+                          example: 2023
+                        spec:
+                          type: string
+                          description: |
+                            原典となるCityGMLデータが準拠するPLATEAU 3D都市モデル標準製品仕様書のバージョン（文字列）。
+                          example: "3.3"
+                        format:
+                          type: string
+                          description: データ形式
+                          enum:
+                            - "3D Tiles"
+                            - "MVT"
+                        lod:
+                          type: string
+                          description: データのLOD
+                          example: "1"
+                        texture:
+                          type: boolean
+                          description: 3D Tilesでテクスチャがある場合は `true`。テクスチャがない場合やMVTの場合は `false`。
+                      required:
+                        - id
+                        - name
+                        - pref
+                        - pref_code
+                        - city
+                        - city_code
+                        - type
+                        - type_en
+                        - url
+                        - year
+                        - registration_year
+                        - spec
+                        - format
+                        - lod
+                        - texture
+                required:
+                  - datasets
 
   /datacatalog/citygml/{conditions}:
     get:
