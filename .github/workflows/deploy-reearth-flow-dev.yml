@@ -254,7 +254,7 @@ jobs:
       - name: Sync merged policies to GCS
         run: |
           set -euo pipefail
-          gsutil -m rsync -r -d merged-policies/ $CERBOS_BUCKET_NAME_PLATEAU_DEV
+          gsutil -m rsync -r -d -x "\.cerbos\.yaml$" merged-policies/ $CERBOS_BUCKET_NAME_PLATEAU_DEV
           echo "All policies merged and synced to $CERBOS_BUCKET_NAME_PLATEAU_DEV"
 
   deploy-cerbos:
