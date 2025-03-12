@@ -237,19 +237,18 @@ jobs:
 
           for PACKAGE in $PACKAGE_NAMES; do
             echo "→ Downloading package: $PACKAGE"
+
+            SAFE_NAME="${PACKAGE}_current_policies.tar.gz"
+            DEST_PATH="${ARTIFACT_DIR}/${SAFE_NAME}"
+
             gcloud artifacts files download "${PACKAGE}:current:policies.tar.gz" \
               --project="$GCP_PROJECT_ID" \
               --repository="$GAR_REPO" \
               --location="$LOCATION" \
-              --destination="$ARTIFACT_DIR"
+              --destination="$DEST_PATH"
 
-            RAW_NAME="${ARTIFACT_DIR}/${PACKAGE}:current:policies.tar.gz"
-            SAFE_NAME="${ARTIFACT_DIR}/${PACKAGE}_current_policies.tar.gz"
-
-            mv "$RAW_NAME" "$SAFE_NAME"
-
-            echo "→ Extracting $SAFE_NAME"
-            tar -xzf "$SAFE_NAME" -C "$OUT_DIR"
+            echo "→ Extracting $DEST_PATH"
+            tar -xzf "$DEST_PATH" -C "$OUT_DIR"
           done
       - name: Sync merged policies to GCS
         run: |
