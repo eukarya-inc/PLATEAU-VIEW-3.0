@@ -280,8 +280,6 @@ func (h objectHandler) handleChildren(obj map[string]any, ae *attributeExtractor
 
 type sliceHandler struct {
 	au attributeUnmarshaler
-
-	codeResolver codeResolver
 }
 
 func (h sliceHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.StartElement) error {
@@ -332,8 +330,6 @@ func (h sliceHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.S
 
 type valueHandler struct {
 	au attributeUnmarshaler
-
-	codeResolver codeResolver
 }
 
 func (h valueHandler) Handle(obj map[string]any, ae *attributeExtractor, e xml.StartElement) error {
@@ -411,7 +407,7 @@ func (u anyAttrUnmarshaler) UnmarshalAttr(ae *attributeExtractor, e xml.StartEle
 	return parseText(t), nil
 }
 
-func toTagHandler(t string, types map[string][]schemaProperty, resolver codeResolver) tagHandler {
+func toTagHandler(t string, types map[string][]schemaProperty) tagHandler {
 	m := map[string]tagHandler{}
 	nonNumericTypes := map[string]bool{
 		"xs:string":    true,
@@ -499,50 +495,10 @@ func init() {
 	initSchema()
 }
 
-type codeResolver interface {
-	Resolve(codeSpace, code string) (string, error)
-}
-
-type fetchCodeResolver struct {
-	client *http.Client
-	url    string
-	// リクエストをまたぐ場合は LRU を検討する
-	// キャッシュヒット率, キャッシュヒット数とかログに出力しておく
-	cache map[string]map[string]string
-}
-
-func (r *fetchCodeResolver) Resolve(codeSpace, code string) (string, error) {
-	if r.cache == nil {
-		r.cache = map[string]map[string]string{}
+func Attributes(r io.Reader, gmlID []string) ([]map[string]any, error) {
+	ae := attributeExtractor{
+		dec: xmlb.NewDecoder(r, make([]byte, 32*1024)),
 	}
-	u, err := url.JoinPath(r.url, "..", codeSpace)
-	if err != nil {
-		return "", err
-	}
-	if m, ok := r.cache[codeSpace]; ok {
-		return m[code], nil
-	}
-	resp, err := r.client.Get(u)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("status code: %d", resp.StatusCode)
-	}
-	codeMap, err := parseCodeMap(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	r.cache[codeSpace] = codeMap
-	resolved, ok := codeMap[code]
-	if !ok {
-		return "", fmt.Errorf("code %q not found in codeSpace %q", code, codeSpace)
-	}
-	return resolved, nil
-}
-
-func Attributes(r io.Reader, gmlID []string, resolver codeResolver) ([]map[string]any, error) {
 	var attributes []map[string]any
 	dec := xmlb.NewDecoder(r, make([]byte, 32*1024))
 	fs := featureScanner{

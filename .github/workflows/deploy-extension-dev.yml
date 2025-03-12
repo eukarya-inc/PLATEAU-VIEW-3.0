@@ -14,7 +14,7 @@ env:
 jobs:
   deploy_extension:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       contents: read
