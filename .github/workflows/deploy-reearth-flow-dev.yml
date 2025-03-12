@@ -230,21 +230,21 @@ jobs:
 
           echo "Fetching package list from GAR..."
           PACKAGE_NAMES=$(gcloud artifacts packages list \
-            --project=$GCP_PROJECT_ID \
-            --repository=$GAR_REPO \
-            --location=$LOCATION \
+            --project="$GCP_PROJECT_ID" \
+            --repository="$GAR_REPO" \
+            --location="$LOCATION" \
             --format="value(name)" | sed 's#.*/##')
 
           for PACKAGE in $PACKAGE_NAMES; do
             echo "→ Downloading package: $PACKAGE"
             gcloud artifacts files download "${PACKAGE}:current:policies.tar.gz" \
-              --project=$GCP_PROJECT_ID \
-              --repository=$GAR_REPO \
-              --location=$LOCATION \
-              --destination="${ARTIFACT_DIR}/${PACKAGE}.tar.gz"
+              --project="$GCP_PROJECT_ID" \
+              --repository="$GAR_REPO" \
+              --location="$LOCATION" \
+              --destination="${ARTIFACT_DIR}"
 
-            echo "→ Extracting ${PACKAGE}.tar.gz"
-            tar -xzf "${ARTIFACT_DIR}/${PACKAGE}.tar.gz" -C "${OUT_DIR}"
+            echo "→ Extracting ${PACKAGE}:current:policies.tar.gz"
+            tar -xzf "${ARTIFACT_DIR}/${PACKAGE}:current:policies.tar.gz" -C "$OUT_DIR"
           done
       - name: Sync merged policies to GCS
         run: |
