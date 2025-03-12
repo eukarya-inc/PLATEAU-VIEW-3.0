@@ -1,6 +1,15 @@
 name: 🌊 Deploy Re:earth Flow Development Environment
 on:
   workflow_dispatch:
+    inputs:
+      only_policies:
+        description: 'Run only update-policies and deploy-cerbos jobs'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 env:
   API_IMAGE_NAME: reearth/reearth-flow-api:nightly
   API_IMAGE_NAME_GHCR: ghcr.io/eukarya-inc/plateau-view/reearth-flow-api:latest
@@ -36,6 +45,7 @@ jobs:
       id-token: write
       packages: write
     if: ${{ github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
+    if: ${{ github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW' }}
     steps:
       - uses: google-github-actions/auth@v2
         with:
@@ -65,7 +75,7 @@ jobs:
 
   deploy_web:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    if: github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       id-token: write
@@ -99,7 +109,7 @@ jobs:
 
   deploy_subscriber:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    if: github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       id-token: write
@@ -133,7 +143,7 @@ jobs:
 
   deploy_websocket:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    if: github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       id-token: write
@@ -167,7 +177,7 @@ jobs:
 
   deploy_worker:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
+    if: github.event.inputs.only_policies != 'true' && github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       id-token: write
