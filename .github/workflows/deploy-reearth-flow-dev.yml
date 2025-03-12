@@ -241,10 +241,15 @@ jobs:
               --project="$GCP_PROJECT_ID" \
               --repository="$GAR_REPO" \
               --location="$LOCATION" \
-              --destination="${ARTIFACT_DIR}"
+              --destination="$ARTIFACT_DIR"
 
-            echo "→ Extracting ${PACKAGE}:current:policies.tar.gz"
-            tar -xzf "${ARTIFACT_DIR}/${PACKAGE}:current:policies.tar.gz" -C "$OUT_DIR"
+            RAW_NAME="${ARTIFACT_DIR}/${PACKAGE}:current:policies.tar.gz"
+            SAFE_NAME="${ARTIFACT_DIR}/${PACKAGE}_current_policies.tar.gz"
+
+            mv "$RAW_NAME" "$SAFE_NAME"
+
+            echo "→ Extracting $SAFE_NAME"
+            tar -xzf "$SAFE_NAME" -C "$OUT_DIR"
           done
       - name: Sync merged policies to GCS
         run: |
