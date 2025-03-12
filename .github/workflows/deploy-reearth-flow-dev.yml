@@ -215,7 +215,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-      - name: Download and merge all policies from GAR
+        - name: Download and merge all policies from GAR
         run: |
           set -euo pipefail
 
@@ -238,17 +238,18 @@ jobs:
           for PACKAGE in $PACKAGE_NAMES; do
             echo "→ Downloading package: $PACKAGE"
 
-            SAFE_NAME="${PACKAGE}_current_policies.tar.gz"
-            DEST_PATH="${ARTIFACT_DIR}/${SAFE_NAME}"
-
             gcloud artifacts files download "${PACKAGE}:current:policies.tar.gz" \
               --project="$GCP_PROJECT_ID" \
               --repository="$GAR_REPO" \
               --location="$LOCATION" \
-              --destination="$DEST_PATH"
+              --destination="$ARTIFACT_DIR"
 
-            echo "→ Extracting $DEST_PATH"
-            tar -xzf "$DEST_PATH" -C "$OUT_DIR"
+            DOWNLOADED_FILE=$(find "$ARTIFACT_DIR" -name '*.tar.gz' | head -n 1)
+            SAFE_NAME="${PACKAGE}_current_policies.tar.gz"
+            mv "$DOWNLOADED_FILE" "${ARTIFACT_DIR}/${SAFE_NAME}"
+
+            echo "→ Extracting ${SAFE_NAME}"
+            tar -xzf "${ARTIFACT_DIR}/${SAFE_NAME}" -C "$OUT_DIR"
           done
       - name: Sync merged policies to GCS
         run: |
