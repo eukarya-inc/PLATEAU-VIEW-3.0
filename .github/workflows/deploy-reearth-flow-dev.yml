@@ -214,8 +214,10 @@ jobs:
           GAR_REPO=cerbos-policies
           LOCATION=us-central1
           OUT_DIR=merged-policies
+          ARTIFACT_DIR=artifacts
 
           mkdir -p $OUT_DIR
+          mkdir -p $ARTIFACT_DIR
 
           echo "Fetching package list from GAR..."
           PACKAGE_NAMES=$(gcloud artifacts packages list \
@@ -226,14 +228,15 @@ jobs:
 
           for PACKAGE in $PACKAGE_NAMES; do
             echo "→ Downloading package: $PACKAGE"
+
             gcloud artifacts files download $PACKAGE:current:policies.tar.gz \
               --project=$GCP_PROJECT_ID \
               --repository=$GAR_REPO \
               --location=$LOCATION \
-              --destination=${PACKAGE}.tar.gz
+              --destination=$ARTIFACT_DIR/${PACKAGE}.tar.gz
 
-            echo "→ Extracting $PACKAGE.tar.gz"
-            tar -xzf ${PACKAGE}.tar.gz -C $OUT_DIR
+            echo "→ Extracting ${PACKAGE}.tar.gz"
+            tar -xzf $ARTIFACT_DIR/${PACKAGE}.tar.gz -C $OUT_DIR
           done
       - name: Sync merged policies to GCS
         run: |
