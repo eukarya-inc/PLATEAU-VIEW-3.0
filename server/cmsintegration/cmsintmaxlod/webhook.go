@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintmaxlod
 
 import (
 	"net/http"
@@ -9,6 +9,16 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+type Config struct {
+	GCPProject       string
+	GCPRegion        string
+	CMSBaseURL       string
+	CMSToken         string
+	CMSSystemProject string
+	CMSIntegration   string
+	WorkerImage      string
+}
+
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	s, err := NewServices(conf)
 	if err != nil {
@@ -17,7 +27,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
-		ctx = log.WithPrefixMessage(ctx, "cmsintegrationv3 webhook: ")
+		ctx = log.WithPrefixMessage(ctx, "cmsintegrationmaxlod: ")
 
 		log.Debugfc(ctx, "incoming: %+v", w)
 
@@ -26,9 +36,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		}
 
 		modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
-
-		err := sendRequestToFME(ctx, s, &conf, w)
-		if err != nil {
+		if err := extractMaxLOD(ctx, s, w); err != nil {
 			log.Errorfc(ctx, "failed to process event: %v", err)
 		}
 
