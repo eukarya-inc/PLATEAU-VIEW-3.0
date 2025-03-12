@@ -1,6 +1,6 @@
 module github.com/eukarya-inc/reearth-plateauview/server
 
-go 1.22.2
+go 1.24.0
 
 require (
 	cloud.google.com/go/batch v1.9.2
@@ -9,6 +9,7 @@ require (
 	github.com/99designs/gqlgen v0.17.43
 	github.com/JamesLMilner/quadtree-go v0.0.0-20191212211504-d12870ffe403
 	github.com/dustin/go-humanize v1.0.1
+	github.com/eukarya-inc/japan-geoid-go v1.0.0
 	github.com/eukarya-inc/jpareacode v1.0.1-0.20240314080116-ae89cfd85c6a
 	github.com/go-openapi/runtime v0.28.0
 	github.com/go-playground/validator/v10 v10.16.0

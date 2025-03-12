@@ -54,6 +54,9 @@ func Echo(conf Config, g *echo.Group) error {
 	g.GET("/features", featureHandler(p.conf.Domain))
 	g.GET("/spatialid_attributes", spatialIDAttributesHandler(dc))
 
+	// ジオイド高取得API
+	g.GET("/geoid_height", GeoidHanlder)
+
 	return nil
 }
 

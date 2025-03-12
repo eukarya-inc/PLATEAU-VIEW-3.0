@@ -6,6 +6,8 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2/geospatialjpv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintmaxlod"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintrelated"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/dataconv"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/geospatialjpv3"
 	"github.com/labstack/echo/v4"
@@ -67,6 +69,16 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 		return nil, err
 	}
 
+	hmaxlod, err := cmsintmaxlod.WebhookHandler(maxlodConfig(conf))
+	if err != nil {
+		return nil, err
+	}
+
+	hrelated, err := cmsintrelated.WebhookHandler(relatedConfig(conf))
+	if err != nil {
+		return nil, err
+	}
+
 	// compat
 	hv2, err := cmsintegrationv2.WebhookHandler(conf)
 	if err != nil {
@@ -86,8 +98,31 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 	}
 
 	return cmswebhook.MergeHandlers([]cmswebhook.Handler{
-		hflow, hv3, hv3geo, hv2, hv2geo, hv2dataconv,
+		hflow, hv3, hv3geo, hmaxlod, hrelated,
+		// compat
+		hv2, hv2geo, hv2dataconv,
 	}), nil
+}
+
+func maxlodConfig(conf Config) cmsintmaxlod.Config {
+	return cmsintmaxlod.Config{
+		CMSBaseURL:       conf.CMSBaseURL,
+		CMSToken:         conf.CMSToken,
+		CMSSystemProject: conf.CMSSystemProject,
+		CMSIntegration:   conf.CMSIntegration,
+		GCPProject:       conf.GCPProject,
+		GCPRegion:        conf.GCPRegion,
+		WorkerImage:      conf.TaskImage,
+	}
+}
+
+func relatedConfig(conf Config) cmsintrelated.Config {
+	return cmsintrelated.Config{
+		CMSBaseURL:       conf.CMSBaseURL,
+		CMSToken:         conf.CMSToken,
+		CMSSystemProject: conf.CMSSystemProject,
+		CMSIntegration:   conf.CMSIntegration,
+	}
 }
 
 func geospatialjpv2Config(conf Config) geospatialjpv2.Config {
@@ -117,7 +152,7 @@ func geospatialjpv3Config(conf Config) geospatialjpv3.Config {
 		CkanToken:             conf.CkanToken,
 		BuildType:             conf.GeospatialjpBuildType,
 		CloudRunJobsJobName:   conf.GeospatialjpCloudRunJobsJobName,
-		CloudBuildImage:       conf.GeospatialjpCloudBuildImage,
+		CloudBuildImage:       conf.TaskImage,
 		CloudBuildMachineType: conf.GeospatialjpCloudBuildMachineType,
 		CloudBuildProject:     conf.GeospatialjpCloudBuildProject,
 		CloudBuildRegion:      conf.GeospatialjpCloudBuildRegion,

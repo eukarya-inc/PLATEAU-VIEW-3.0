@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintrelated
 
 import (
 	"archive/zip"
@@ -36,7 +36,7 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 	}
 
 	if w.ItemData.Model.Key != cmsintegrationcommon.ModelPrefix+cmsintegrationcommon.RelatedModel {
-		log.Debugfc(ctx, "cmsintegrationv3: not related dataset")
+		log.Debugfc(ctx, "not related dataset")
 		return nil
 	}
 
@@ -54,7 +54,7 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 	}
 
 	item := cmsintegrationcommon.RelatedItemFrom(mainItem, relatedDataTypes)
-	log.Debugfc(ctx, "cmsintegrationv3: related dataset: %#v", item)
+	log.Debugfc(ctx, "related dataset: %#v", item)
 
 	if err := convertRelatedDataset(ctx, s, w, item); err != nil {
 		return err
@@ -68,8 +68,9 @@ func handleRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payloa
 }
 
 func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *cmsintegrationcommon.RelatedItem) (err error) {
+	ctx = log.WithPrefixMessage(ctx, "convertRelatedDataset: ")
 	if item.Items == nil {
-		log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: no items")
+		log.Debugfc(ctx, "no items")
 		return nil
 	}
 
@@ -88,7 +89,7 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 
 	for _, target := range relatedDataConvertionTargets {
 		if cmsintegrationcommon.TagIsNot(item.ConvertStatus[target], cmsintegrationcommon.ConvertionStatusNotStarted) {
-			log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: already converted: %s", target)
+			log.Debugfc(ctx, "already converted: %s", target)
 			continue
 		}
 
@@ -101,11 +102,11 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 	}
 
 	if len(convTargets) == 0 {
-		log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: no conv targets")
+		log.Debugfc(ctx, "no conv targets")
 		return nil
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: convertRelatedDataset: start conv for %v", convTargets)
+	log.Infofc(ctx, "start conv for %v", convTargets)
 
 	// update status
 	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&cmsintegrationcommon.RelatedItem{
@@ -154,14 +155,14 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 
 	for _, target := range convTargets {
 		d := item.Items[target]
-		log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: convert %s: %#v", target, d)
+		log.Debugfc(ctx, "convert %s: %#v", target, d)
 
 		var converror bool
 		var convassets []string
 		for _, a := range d.Asset {
 			newAsset, err2 := convRelatedType(ctx, project, target, a, s)
 			if err2 != nil {
-				log.Infofc(ctx, "cmsintegrationv3: convertRelatedDataset: failed to convert %s: %v", target, err2)
+				log.Infofc(ctx, "convertRelatedDataset: failed to convert %s: %v", target, err2)
 				err = errors.Join(err, fmt.Errorf("%s: %s", target, err2))
 				converror = true
 			} else {
@@ -180,7 +181,7 @@ func convertRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Paylo
 		}
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: convertRelatedDataset: converted: %v", convTargets)
+	log.Infofc(ctx, "convertRelatedDataset: converted: %v", convTargets)
 	return err
 }
 
@@ -226,13 +227,13 @@ func convRelatedType(ctx context.Context, project, target, assetID string, s *Se
 		return "", fmt.Errorf("failed to upload asset: %w", err)
 	}
 
-	log.Debugfc(ctx, "cmsintegrationv3: convertRelatedDataset: done: %s (%s) -> %s", target, id, newAssetID)
+	log.Debugfc(ctx, "done: %s (%s) -> %s", target, id, newAssetID)
 	return newAssetID, nil
 }
 
 func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload, item *cmsintegrationcommon.RelatedItem) (err error) {
 	if item.City == "" {
-		log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: no city")
+		log.Debugfc(ctx, "packRelatedDataset: no city")
 		return nil
 	}
 
@@ -246,7 +247,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 	doMerge := lo.FromPtr(getChangedBool(w, "merge"))
 
 	if !doMerge && cmsintegrationcommon.TagIsNot(item.MergeStatus, cmsintegrationcommon.ConvertionStatusNotStarted) {
-		log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: already merged")
+		log.Debugfc(ctx, "packRelatedDataset: already merged")
 		return nil
 	}
 
@@ -254,12 +255,12 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 		if missingTypes := lo.Filter(relatedDataTypes, func(t string, _ int) bool {
 			return len(item.Items[t].Asset) == 0
 		}); len(missingTypes) > 0 {
-			log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: cannot pack because there are some missing assets: %v", missingTypes)
+			log.Debugfc(ctx, "packRelatedDataset: cannot pack because there are some missing assets: %v", missingTypes)
 			return nil
 		}
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: packRelatedDataset")
+	log.Infofc(ctx, "packRelatedDataset")
 
 	// update status
 	if _, err := s.CMS.UpdateItem(ctx, item.ID, nil, (&cmsintegrationcommon.RelatedItem{
@@ -283,7 +284,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 			MergeStatus: cmsintegrationcommon.TagFrom(status),
 		}).CMSItem(relatedDataTypes)
 		if _, err := s.CMS.UpdateItem(ctx, item.ID, newItem.Fields, newItem.MetadataFields); err != nil {
-			log.Errorfc(ctx, "cmsintegrationv3: packRelatedDataset: failed to update item: %v", err)
+			log.Errorfc(ctx, "packRelatedDataset: failed to update item: %v", err)
 		}
 
 		// comment to the item
@@ -295,7 +296,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 		}
 
 		if err := s.CMS.CommentToItem(ctx, item.ID, comment); err != nil {
-			log.Errorfc(ctx, "cmsintegrationv3: packRelatedDataset: failed to add comment: %v", err)
+			log.Errorfc(ctx, "packRelatedDataset: failed to add comment: %v", err)
 		}
 	}()
 
@@ -334,7 +335,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 	}
 
 	if !assetMerged {
-		log.Debugfc(ctx, "cmsintegrationv3: packRelatedDataset: no assets")
+		log.Debugfc(ctx, "packRelatedDataset: no assets")
 		return nil
 	}
 
@@ -349,7 +350,7 @@ func packRelatedDataset(ctx context.Context, s *Services, w *cmswebhook.Payload,
 		return fmt.Errorf("failed to upload zip: %w", err)
 	}
 
-	log.Infofc(ctx, "cmsintegrationv3: packRelatedDataset: done")
+	log.Infofc(ctx, "packRelatedDataset: done")
 	return nil
 }
 

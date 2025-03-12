@@ -101,8 +101,8 @@ func TestSetupCityItems(t *testing.T) {
 	var updateditems []*cms.Item
 
 	s := &Services{
-		CMS: &cmsMock{
-			getModels: func(ctx context.Context, projectID string) (*cms.Models, error) {
+		CMS: &cmsintegrationcommon.CMSMock{
+			MockGetModels: func(ctx context.Context, projectID string) (*cms.Models, error) {
 				return &cms.Models{
 					Models: []cms.Model{
 						{
@@ -136,12 +136,12 @@ func TestSetupCityItems(t *testing.T) {
 					},
 				}, nil
 			},
-			getItemsPartially: func(ctx context.Context, modelID string, page, perPage int, asset bool) (*cms.Items, error) {
+			MockGetItemsPartially: func(ctx context.Context, modelID string, page, perPage int, asset bool) (*cms.Items, error) {
 				return &cms.Items{
 					TotalCount: 0,
 				}, nil
 			},
-			createItem: func(ctx context.Context, modelID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+			MockCreateItem: func(ctx context.Context, modelID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 				item := &cms.Item{
 					ID:             fmt.Sprintf("item%d", len(createdItems)),
 					ModelID:        modelID,
@@ -151,7 +151,7 @@ func TestSetupCityItems(t *testing.T) {
 				createdItems = append(createdItems, item)
 				return item, nil
 			},
-			updateItem: func(ctx context.Context, itemID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+			MockUpdateItem: func(ctx context.Context, itemID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 				item := &cms.Item{
 					ID:             itemID,
 					Fields:         fields,

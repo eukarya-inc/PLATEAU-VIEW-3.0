@@ -1,8 +1,9 @@
-package cmsintegrationv3
+package cmsintmaxlod
 
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/gcptaskrunner"
@@ -12,11 +13,7 @@ import (
 	"github.com/samber/lo"
 )
 
-const defaultTaskImage = "eukarya/plateauview2-sidecar-worker:latest"
-
-var maxlodFeatures = []string{"dem"}
-
-func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error {
+func extractMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error {
 	if s.TaskRunner == nil {
 		return nil
 	}
@@ -27,15 +24,21 @@ func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error
 		return nil
 	}
 
-	found := false
-	for _, f := range maxlodFeatures {
-		if w.ItemData.Model.Key == cmsintegrationcommon.ModelPrefix+f {
-			found = true
-			break
-		}
+	// feature types
+	modelName := strings.TrimPrefix(w.ItemData.Model.Key, cmsintegrationcommon.ModelPrefix)
+	featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("maxlod: failed to get feature types: %w", err)
 	}
 
-	if !found {
+	ft, ok := featureTypes.GetByCode(modelName)
+	if !ok {
+		log.Debugfc(ctx, "invalid feature type: %s", modelName)
+		return nil
+	}
+
+	if ft.Conv {
+		log.Debugfc(ctx, "no need to extract maxlod: %s", modelName)
 		return nil
 	}
 
@@ -44,28 +47,26 @@ func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error
 		return fmt.Errorf("maxlod: failed to get main item: %w", err)
 	}
 
+	if tag := mainItem.MetadataFieldByKey("maxlod_status").GetValue().Tag(); tag != nil && tag.Name != "" && tag.Name != "未実行" {
+		log.Debugfc(ctx, "already running")
+		return nil
+	}
+
 	city := lo.FromPtr(mainItem.FieldByKey("city").GetValue().String())
 	if city == "" {
-		log.Debugfc(ctx, "cmsintegrationv3: maxlod: city not found")
+		log.Debugfc(ctx, "city not found")
 		return nil
 	}
 
-	var asset string
-	if w.Type == cmswebhook.EventItemCreate {
-		asset = *mainItem.FieldByKey("citygml").GetValue().String()
-	} else {
-		asset = lo.FromPtr(getChangedString(w, "citygml"))
-	}
-
+	asset := *mainItem.FieldByKey("citygml").GetValue().String()
 	if asset == "" {
-		log.Debugfc(ctx, "cmsintegrationv3: maxlod: citygml not updated")
+		log.Debugfc(ctx, "citygml not updated")
 		return nil
 	}
 
-	log.Debugfc(ctx, "cmsintegrationv3: maxlod: run")
+	log.Debugfc(ctx, "run")
 
 	if err := s.TaskRunner.Run(ctx, gcptaskrunner.Task{
-		Image: defaultTaskImage,
 		Args: []string{
 			"extract-maxlod",
 			"--city=" + city,
@@ -92,29 +93,6 @@ func handleMaxLOD(ctx context.Context, s *Services, w *cmswebhook.Payload) error
 
 	_ = s.CMS.CommentToItem(ctx, mainItem.ID, "CityGMLが変更されたため最大LOD抽出を開始しました。")
 
-	log.Debugfc(ctx, "cmsintegrationv3: maxlod: done")
-	return nil
-}
-
-func getChangedString(w *cmswebhook.Payload, key string) *string {
-	// w.ItemData.Item is a metadata item, so we need to use FieldByKey instead of MetadataFieldByKey
-	if f := w.ItemData.Item.FieldByKey(key); f != nil {
-		changed, ok := lo.Find(w.ItemData.Changes, func(c cms.FieldChange) bool {
-			return c.ID == f.ID
-		})
-
-		if ok {
-			b := changed.GetCurrentValue().String()
-			if b != nil {
-				return b
-			}
-
-			// workaround for string array
-			if res := changed.GetCurrentValue().Strings(); len(res) > 0 {
-				return lo.ToPtr(res[0])
-			}
-		}
-	}
-
+	log.Debugfc(ctx, "done")
 	return nil
 }

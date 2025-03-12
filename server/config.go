@@ -150,12 +150,11 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		APIToken:                          c.Sidebar_Token,
 		GeospatialjpBuildType:             c.Geospatialjp_BuildType,
 		GeospatialjpCloudRunJobsJobName:   c.Geospatialjp_JobName,
-		GeospatialjpCloudBuildImage:       c.Geospatialjp_CloudBuildImage,
 		GeospatialjpCloudBuildMachineType: c.Geospatialjp_CloudBuildMachineType,
 		GeospatialjpCloudBuildProject:     cloudBuildProject,
 		GeospatialjpCloudBuildRegion:      cloudBuildRegion,
 		GeospatialjpCloudBuildDiskSizeGb:  c.Geospatialjp_CloudBuildDiskSizeGb,
-		TaskImage:                         c.CMSINT_TaskImage,
+		TaskImage:                         c.Geospatialjp_CloudBuildImage, // TODO: change env var name
 		GCPProject:                        cloudBuildProject,
 		GCPRegion:                         cloudBuildRegion,
 		FlowBaseURL:                       c.Flow_BaseURL,
