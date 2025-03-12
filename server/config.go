@@ -19,6 +19,8 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
+const citygmlPackerImageDefault = "ghcr.io/eukarya-inc/plateau-view/plateauview-api-worker:latest"
+
 var noColorPP *pp.PrettyPrinter
 
 func init() {
@@ -241,7 +243,7 @@ func (c *Config) CityGML() citygml.Config {
 	}
 	citygmlPackerImage := c.CityGML_CityGMLPackerImage
 	if citygmlPackerImage == "" {
-		citygmlPackerImage = "ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest"
+		citygmlPackerImage = citygmlPackerImageDefault
 	}
 	return citygml.Config{
 		Domain:             c.CityGML_Domain,

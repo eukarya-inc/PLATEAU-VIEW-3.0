@@ -4,12 +4,12 @@ on:
   repository_dispatch:
     types: [deploy-server-dev]
 env:
-  IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-api:latest
   IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau-dev/reearth-plateau/plateauview-api:latest
 jobs:
   deploy_server:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: dev
     permissions:
       contents: read
