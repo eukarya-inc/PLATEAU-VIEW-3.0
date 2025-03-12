@@ -215,7 +215,7 @@ jobs:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
-        - name: Download and merge all policies from GAR
+      - name: Download and merge all policies from GAR
         run: |
           set -euo pipefail
 
