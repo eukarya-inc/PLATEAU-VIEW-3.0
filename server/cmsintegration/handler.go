@@ -2,10 +2,10 @@ package cmsintegration
 
 import (
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
-	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationflow"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv2/geospatialjpv2"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintflow"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintmaxlod"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintrelated"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/dataconv"
@@ -18,7 +18,7 @@ type Config = cmsintegrationcommon.Config
 
 func Handler(conf Config, g *echo.Group) error {
 	// flow
-	if err := cmsintegrationflow.Handler(flowConfig(conf), g); err != nil {
+	if err := cmsintflow.Handler(flowConfig(conf), g); err != nil {
 		return err
 	}
 
@@ -54,7 +54,7 @@ func compatHandler(conf Config, g *echo.Group) error {
 }
 
 func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
-	hflow, err := cmsintegrationflow.WebhookHandler(flowConfig(conf))
+	hflow, err := cmsintflow.WebhookHandler(flowConfig(conf))
 	if err != nil {
 		return nil, err
 	}
@@ -170,8 +170,8 @@ func dataConvConfig(conf Config) dataconv.Config {
 	}
 }
 
-func flowConfig(conf Config) cmsintegrationflow.Config {
-	return cmsintegrationflow.Config{
+func flowConfig(conf Config) cmsintflow.Config {
+	return cmsintflow.Config{
 		Host:             conf.Host,
 		CMSBaseURL:       conf.CMSBaseURL,
 		CMSToken:         conf.CMSToken,

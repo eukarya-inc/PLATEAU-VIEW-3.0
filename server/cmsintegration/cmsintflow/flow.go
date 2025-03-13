@@ -1,4 +1,4 @@
-package cmsintegrationflow
+package cmsintflow
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
-package cmsintegrationflow
+package cmsintflow
 
 import (
 	"net/http"
@@ -28,7 +28,7 @@ func WebhookHandler(conf Config) (cmswebhook.Handler, error) {
 
 	return func(req *http.Request, w *cmswebhook.Payload) error {
 		ctx := req.Context()
-		ctx = log.WithPrefixMessage(ctx, "cmsintegrationflow webhook: ")
+		ctx = log.WithPrefixMessage(ctx, "cmsintflow webhook: ")
 
 		log.Debugfc(ctx, "incoming: %+v", w)
 		if !cmsintegrationcommon.ValidatePayload(ctx, w, conf.CMSIntegration) {
@@ -87,7 +87,7 @@ func Handler(conf Config, g *echo.Group) error {
 
 	g.POST(path.Join(handlerPath, ":id"), func(c echo.Context) error {
 		ctx := c.Request().Context()
-		ctx = log.WithPrefixMessage(ctx, "cmsintegrationflow notify: ")
+		ctx = log.WithPrefixMessage(ctx, "cmsintflow notify: ")
 		id := c.Param("id")
 		if id == "" {
 			log.Infofc(ctx, "empty id")
