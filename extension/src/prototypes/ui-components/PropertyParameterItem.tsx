@@ -257,7 +257,7 @@ const Property: FC<{
   return featureType === "tags" ? (
     values.length === 1 ? (
       <TableRow style={{ wordBreak: "break-all" }}>
-        <PropertyNameCell variant="head" width="40%" level={level}>
+        <PropertyNameCell width="40%" level={level}>
           {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="60%" align="right">
@@ -272,7 +272,7 @@ const Property: FC<{
       </TableRow>
     ) : (
       <VerticalTableRow>
-        <PropertyNameCell variant="head" width="100%" level={level}>
+        <PropertyNameCell width="100%" level={level}>
           {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="100%">
