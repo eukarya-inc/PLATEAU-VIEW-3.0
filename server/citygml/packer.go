@@ -172,9 +172,10 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 		return c.JSON(http.StatusOK, resp)
 	}
 	packReq := PackAsyncRequest{
-		Dest:   toURL(obj),
-		Domain: p.conf.Domain,
-		URLs:   req.URLs,
+		Dest:    toURL(obj),
+		Domain:  p.conf.Domain,
+		URLs:    req.URLs,
+		Timeout: time.Duration(p.conf.PackerTimeout) * time.Second,
 	}
 	if err := p.packAsync(ctx, packReq); err != nil {
 		log.Errorfc(ctx, "citygml: packer: failed to write metadata: %v", err)
@@ -192,7 +193,7 @@ func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
 		Steps: []*cloudbuild.BuildStep{
 			{
 				Name: p.conf.CityGMLPackerImage,
-				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain}, req.URLs...),
+				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain, "-timeout", req.Timeout.String()}, req.URLs...),
 			},
 		},
 		Tags: []string{"citygml-packer"},
@@ -226,7 +227,8 @@ func toURL(obj *storage.ObjectHandle) string {
 }
 
 type PackAsyncRequest struct {
-	Dest   string   `json:"dest"`
-	Domain string   `json:"domain"`
-	URLs   []string `json:"urls"`
+	Dest    string        `json:"dest"`
+	Domain  string        `json:"domain"`
+	URLs    []string      `json:"urls"`
+	Timeout time.Duration `json:"timeout"`
 }

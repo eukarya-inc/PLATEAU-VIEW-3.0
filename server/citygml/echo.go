@@ -18,6 +18,7 @@ type Config struct {
 	WorkerRegion       string `json:"workerRegion"`
 	WorkerProject      string `json:"workerProject"`
 	DataCatalogAPIURL  string `json:"dataCatalogApiUrl"`
+	PackerTimeout      uint   `json:"packerTimeout"`
 }
 
 var httpClient = &http.Client{
