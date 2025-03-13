@@ -67,6 +67,23 @@ const PropertyActionsWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
+const PacksHeader = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+}));
+
+const PacksTitle = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  color: theme.palette.text.primary,
+}));
+
+const PacksDescription = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.caption.fontSize,
+  color: theme.palette.text.secondary,
+}));
+
 const TOOL_TIP_MAX_WIDTH = 167;
 
 export interface MeshCodeObjectContentProps {
@@ -136,21 +153,11 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
     return [feature.meshCode];
   }, [features, values]);
 
-  const { cityNames, loading, data } = useCityGMLFiles({
+  const { loading, data } = useCityGMLFiles({
     meshIds: meshCodes,
   });
 
   const { packs, handlePacking, handleDownloadPack } = useCityGMLPacks({ data });
-
-  const cityProperties = useMemo(() => {
-    return [
-      {
-        id: "cityNames",
-        name: "関連市区町村",
-        values: cityNames ?? [],
-      },
-    ];
-  }, [cityNames]);
 
   return (
     <List disablePadding>
@@ -186,20 +193,14 @@ export const MeshCodeObjectContent: FC<MeshCodeObjectContentProps> = ({ values }
           </LoadingWrapper>
         ) : (
           <>
-            {cityProperties[0].values.length > 0 && (
-              <>
-                <Divider />
-                <PropertyParameterItem
-                  properties={cityProperties}
-                  featureType="tags"
-                  version={DEFAULT_PLATEAU_SPEC_VERSION}
-                />
-              </>
-            )}
             {packs.length > 0 && (
               <>
                 <Divider />
                 <PropertyActionsWrapper>
+                  <PacksHeader>
+                    <PacksTitle>CityGMLダウンロード </PacksTitle>
+                    <PacksDescription>指定した範囲を含むファイルのダウンロード</PacksDescription>
+                  </PacksHeader>
                   {packs.map(item => (
                     <PropertyActionItem key={item.id} name={item.name}>
                       {item.status === "idle" && (

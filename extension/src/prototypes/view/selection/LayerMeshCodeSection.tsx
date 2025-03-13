@@ -57,6 +57,23 @@ const PropertyActionsWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(1, 0),
 }));
 
+const PacksHeader = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+}));
+
+const PacksTitle = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.body2.fontSize,
+  color: theme.palette.text.primary,
+}));
+
+const PacksDescription = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.caption.fontSize,
+  color: theme.palette.text.secondary,
+}));
+
 const Warning = styled("div")(({ theme }) => ({
   padding: theme.spacing(2),
   color: theme.palette.warning.main,
@@ -99,21 +116,11 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
     return features?.map(feature => feature.meshCode) ?? [];
   }, [features]);
 
-  const { cityNames, loading, data } = useCityGMLFiles({
+  const { loading, data } = useCityGMLFiles({
     meshIds: meshCodes,
   });
 
   const { packs, handlePacking, handleDownloadPack } = useCityGMLPacks({ data });
-
-  const cityProperties = useMemo(() => {
-    return [
-      {
-        id: "cityName",
-        name: "関連市区町村",
-        values: cityNames ?? [],
-      },
-    ];
-  }, [cityNames]);
 
   if (meshCodeLayers.length === 0) {
     return null;
@@ -132,16 +139,6 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
         </LoadingWrapper>
       ) : (
         <>
-          {cityProperties[0].values.length > 0 && (
-            <>
-              <Divider />
-              <PropertyParameterItem
-                properties={cityProperties}
-                featureType="tags"
-                version={DEFAULT_PLATEAU_SPEC_VERSION}
-              />
-            </>
-          )}
           {meshCodes.length > MAX_MESH_CODES ? (
             <>
               <Divider />
@@ -155,6 +152,10 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
               <>
                 <Divider />
                 <PropertyActionsWrapper>
+                  <PacksHeader>
+                    <PacksTitle>CityGMLダウンロード </PacksTitle>
+                    <PacksDescription>指定した範囲を含むファイルのダウンロード</PacksDescription>
+                  </PacksHeader>
                   {packs.map(item => (
                     <PropertyActionItem key={item.id} name={item.name}>
                       {item.status === "idle" && (

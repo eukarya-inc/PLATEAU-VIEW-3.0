@@ -257,20 +257,22 @@ const Property: FC<{
   return featureType === "tags" ? (
     values.length === 1 ? (
       <TableRow style={{ wordBreak: "break-all" }}>
-        <PropertyNameCell variant="head" width="40%" level={level}>
+        <PropertyNameCell width="40%" level={level}>
           {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="60%" align="right">
           {values.map((value, index) => (
             <Tag key={index}>
-              <Typography variant={"body2"}>{value as string}</Typography>
+              <Typography variant={"body2"} noWrap>
+                {value as string}
+              </Typography>
             </Tag>
           ))}
         </TableCell>
       </TableRow>
     ) : (
       <VerticalTableRow>
-        <PropertyNameCell variant="head" width="100%" level={level}>
+        <PropertyNameCell width="100%" level={level}>
           {makePropertyName(actualName, name, version, attrVal)}
         </PropertyNameCell>
         <TableCell width="100%">
