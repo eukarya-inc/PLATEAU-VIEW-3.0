@@ -25,8 +25,10 @@ import (
 )
 
 func Run(conf Config) (err error) {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), conf.Timeout)
 	defer cancel()
+
+	startedAt := time.Now().Format(time.RFC3339Nano)
 
 	destURL, err := url.Parse(conf.Dest)
 	if err != nil {
@@ -44,8 +46,10 @@ func Run(conf Config) (err error) {
 		if err == nil {
 			return
 		}
+		metadata := citygml.Status(PackStatusFailed)
+		metadata["startedAt"] = startedAt
 		_, uErr := obj.Update(ctx, storage.ObjectAttrsToUpdate{
-			Metadata: citygml.Status(PackStatusFailed),
+			Metadata: metadata,
 		})
 		if uErr != nil {
 			log.Printf("failed to update status: (to=%s): %v", PackStatusFailed, uErr)
@@ -61,7 +65,6 @@ func Run(conf Config) (err error) {
 		log.Printf("SKIPPED: already exists (status=%s)", status)
 		return nil
 	}
-	startedAt := time.Now().Format(time.RFC3339Nano)
 	metadata := status(PackStatusProcessing)
 	metadata["startedAt"] = startedAt
 	{
