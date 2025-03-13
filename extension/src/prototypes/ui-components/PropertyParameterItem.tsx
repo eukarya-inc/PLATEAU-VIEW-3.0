@@ -263,7 +263,9 @@ const Property: FC<{
         <TableCell width="60%" align="right">
           {values.map((value, index) => (
             <Tag key={index}>
-              <Typography variant={"body2"}>{value as string}</Typography>
+              <Typography variant={"body2"} noWrap>
+                {value as string}
+              </Typography>
             </Tag>
           ))}
         </TableCell>

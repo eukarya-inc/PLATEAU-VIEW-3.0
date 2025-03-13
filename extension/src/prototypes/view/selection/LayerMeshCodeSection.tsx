@@ -58,9 +58,20 @@ const PropertyActionsWrapper = styled("div")(({ theme }) => ({
 }));
 
 const PacksHeader = styled("div")(({ theme }) => ({
+  padding: theme.spacing(1, 2),
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.spacing(1),
+}));
+
+const PacksTitle = styled("div")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
   color: theme.palette.text.primary,
-  padding: theme.spacing(1, 2),
+}));
+
+const PacksDescription = styled("div")(({ theme }) => ({
+  fontSize: theme.typography.caption.fontSize,
+  color: theme.palette.text.secondary,
 }));
 
 const Warning = styled("div")(({ theme }) => ({
@@ -141,7 +152,10 @@ export const LayerMeshCodeSection: FC<LayerMeshCodeSectionProps> = ({ layers }) 
               <>
                 <Divider />
                 <PropertyActionsWrapper>
-                  <PacksHeader>指定した範囲を含むファイルのダウンロード</PacksHeader>
+                  <PacksHeader>
+                    <PacksTitle>CityGMLダウンロード </PacksTitle>
+                    <PacksDescription>指定した範囲を含むファイルのダウンロード</PacksDescription>
+                  </PacksHeader>
                   {packs.map(item => (
                     <PropertyActionItem key={item.id} name={item.name}>
                       {item.status === "idle" && (
