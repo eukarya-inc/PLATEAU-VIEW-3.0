@@ -187,28 +187,42 @@ func (p *packer) handlePackRequest(c echo.Context) error {
 }
 
 func (p *packer) packAsync(ctx context.Context, req PackAsyncRequest) error {
+	for _, u := range req.URLs {
+		if strings.Contains(u, ",") {
+			return fmt.Errorf("invalid url: %s", u)
+		}
+	}
+
+	urls := strings.Join(req.URLs, ",")
+	log.Debugfc(ctx, "citygml: packer: enqueue pack job: dest=%s, domain=%s, urls=%s", req.Dest, req.Domain, urls)
+
 	build := &cloudbuild.Build{
 		Timeout:  "86400s", // 1 day
 		QueueTtl: "86400s", // 1 day
 		Steps: []*cloudbuild.BuildStep{
 			{
 				Name: p.conf.CityGMLPackerImage,
-				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain, "-timeout", req.Timeout.String()}, req.URLs...),
+				Args: append([]string{"citygml-packer", "-dest", req.Dest, "-domain", req.Domain, "-timeout", req.Timeout.String()}, urls),
 			},
 		},
 		Tags: []string{"citygml-packer"},
 	}
+
+	var op *cloudbuild.Operation
 	var err error
+
 	if p.conf.WorkerRegion != "" {
 		call := p.build.Projects.Locations.Builds.Create(path.Join("projects", p.conf.WorkerProject, "locations", p.conf.WorkerRegion), build)
-		_, err = call.Do()
+		op, err = call.Do()
 	} else {
 		call := p.build.Projects.Builds.Create(p.conf.WorkerProject, build)
-		_, err = call.Context(ctx).Do()
+		op, err = call.Context(ctx).Do()
 	}
 	if err != nil {
 		return fmt.Errorf("create build: %w", err)
 	}
+
+	log.Debugfc(ctx, "citygml: packer: enqueued pack job: %s", op.Metadata)
 	return nil
 }
 

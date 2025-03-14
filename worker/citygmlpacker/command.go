@@ -371,7 +371,16 @@ func (p *packer) writeZip(ctx context.Context, t time.Time, zw *zip.Writer, u *u
 					_ = d.pw.CloseWithError(err)
 					return
 				}
+
+				// defer resp.Body.Close()
+
 				if resp.StatusCode != http.StatusOK {
+					if resp.StatusCode == http.StatusNotFound {
+						log.Warnf("failed to download: %s (status code: %d) -> skipped", d.req.URL, resp.StatusCode)
+						_ = d.pw.CloseWithError(nil)
+						return
+					}
+
 					_ = d.pw.CloseWithError(fmt.Errorf("status code: %d", resp.StatusCode))
 					return
 				}
