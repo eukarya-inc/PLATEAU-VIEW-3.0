@@ -101,7 +101,7 @@ func cityGMLPacker(conf *Config) {
 	if err := flag.Parse(os.Args[2:]); err != nil {
 		panic(err)
 	}
-	config.URLs = lo.FlatMap(flag.Args(), func(s string, _ int) []string {
+	config.GMLURLs = lo.FlatMap(flag.Args(), func(s string, _ int) []string {
 		return strings.Split(s, ",")
 	})
 

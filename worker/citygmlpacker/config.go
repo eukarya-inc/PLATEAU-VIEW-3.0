@@ -7,6 +7,7 @@ import (
 type Config struct {
 	Dest    string
 	Domain  string
-	URLs    []string
+	GMLURLs []string
+	ZipURLs []string
 	Timeout time.Duration
 }

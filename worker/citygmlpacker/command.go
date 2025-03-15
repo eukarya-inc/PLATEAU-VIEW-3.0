@@ -81,7 +81,7 @@ func Run(conf Config) (err error) {
 	w.ObjectAttrs.Metadata = completedMetadata
 	defer w.Close()
 
-	p := NewPacker(w, len(conf.URLs), nil)
+	p := NewPacker(w, len(conf.GMLURLs), nil)
 
 	var finished bool
 	var finishedMu sync.Mutex
@@ -115,7 +115,7 @@ func Run(conf Config) (err error) {
 		}
 	}()
 
-	if err := p.Pack(ctx, conf.Domain, conf.URLs); err != nil {
+	if err := p.Pack(ctx, conf.Domain, conf.GMLURLs); err != nil {
 		return fmt.Errorf("pack: %w", err)
 	}
 	finishedMu.Lock()
