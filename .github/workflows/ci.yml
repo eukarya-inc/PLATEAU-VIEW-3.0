@@ -44,7 +44,7 @@ jobs:
             .github/workflows/deploy-extension-prod.yml
       - name: changed files for server
         id: server
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             server
