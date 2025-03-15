@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
       - name: changed files for extension
         id: extension
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             extension
@@ -54,14 +54,14 @@ jobs:
             .github/workflows/deploy-server-prod.yml
       - name: changed files for tools
         id: tools
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             tools
             .github/workflows/ci-tools.yml
       - name: changed files for geo
         id: geo
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             geo
@@ -71,7 +71,7 @@ jobs:
             .github/workflows/deploy-geo-prod.yml
       - name: changed files for tiles
         id: tiles
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             tiles
@@ -81,7 +81,7 @@ jobs:
             .github/workflows/deploy-tiles-prod.yml
       - name: changed files for worker
         id: worker
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           since_last_remote_commit: true
           files: |
