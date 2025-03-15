@@ -40,10 +40,10 @@ func (p *Packer) Progress() *progress {
 	return &p.p
 }
 
-func (p *Packer) Pack(ctx context.Context, host string, gmlURLs []string) error {
+func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 	// pre-parsing gmlURLs to make sure there are no unauthorized hosts
 	var q []string
-	q = append(q, gmlURLs...)
+	q = append(q, urls...)
 
 	seen := map[string]struct{}{}
 
