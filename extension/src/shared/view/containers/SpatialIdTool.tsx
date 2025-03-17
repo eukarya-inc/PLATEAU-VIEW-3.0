@@ -128,19 +128,27 @@ export const SpatialIdTool: FC = () => {
 
   const tempSwitchToMoveMode = useRef(false);
   useEffect(() => {
-    return window.addEventListener("keydown", e => {
+    function handleKeyDown(e: KeyboardEvent) {
       if (e.code === "Space") {
         tempSwitchToMoveMode.current = true;
       }
-    });
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   useEffect(() => {
-    return window.addEventListener("keyup", () => {
+    function handleKeyUp() {
       if (tempSwitchToMoveMode.current === true) {
         tempSwitchToMoveMode.current = false;
       }
-    });
+    }
+    window.addEventListener("keyup", handleKeyUp);
+    return () => {
+      window.removeEventListener("keyup", handleKeyUp);
+    };
   }, []);
 
   return null;
