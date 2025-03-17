@@ -7,18 +7,22 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
+	"path/filepath"
 	"slices"
 	"strings"
 	"time"
 
+	"github.com/eukarya-inc/reearth-plateauview/worker/workerutil"
 	"github.com/orisano/gosax/xmlb"
 	"github.com/reearth/reearthx/log"
 )
 
 type Packer struct {
-	w io.Writer
-	p progress
+	w        io.Writer
+	p        progress
+	cachedir string
 
 	httpClient *http.Client
 }
@@ -32,6 +36,7 @@ func NewPacker(w io.Writer, counts int, c *http.Client) *Packer {
 		p: progress{
 			steps: int64(counts) * 2,
 		},
+		cachedir:   filepath.Join(os.TempDir(), "reearth-plateauview"),
 		httpClient: c,
 	}
 }
@@ -67,9 +72,17 @@ func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 				return fmt.Errorf("invalid host: %s", u.Host)
 			}
 
-			nq, err = p.writeGMLToZip(ctx, t, zw, u, nq, seen)
-			if err != nil {
-				return fmt.Errorf("writeZip: %w", err)
+			if ext := path.Ext(u.Path); ext == ".zip" {
+				if err := p.writeZipFilesToZip(ctx, zw, u); err != nil {
+					return fmt.Errorf("write zip: %w", err)
+				}
+			} else if ext == ".gml" {
+				nq, err = p.writeGMLToZip(ctx, t, zw, u, nq, seen)
+				if err != nil {
+					return fmt.Errorf("write gml: %w", err)
+				}
+			} else {
+				return fmt.Errorf("invalid extension: %s", ext)
 			}
 		}
 		q = nq
@@ -81,10 +94,19 @@ func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 }
 
 func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer, u *url.URL, q []string, seen map[string]struct{}) ([]string, error) {
+	upath := getBasePath(u.Path)
+	if upath == "" {
+		return nil, fmt.Errorf("invalid path: %s", u.String())
+	}
+
+	uext := path.Ext(upath)
+	if uext != ".gml" {
+		return nil, fmt.Errorf("invalid extension: %s", uext)
+	}
+
+	root := path.Dir(upath)
 	depsMap := map[string]struct{}{}
 	ustr := u.String()
-	_, upath, _ := splitAtLastN(u.Path, "/", 4)
-	root := path.Dir(upath)
 
 	body, err := httpGet(ctx, p.httpClient, ustr)
 	if body != nil {
@@ -117,7 +139,7 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 
 	log.Infof("completed %s (%d deps)", ustr, len(deps))
 
-	p.p.GML(int64(len(deps)))
+	p.p.AddDep(int64(len(deps)))
 	defer p.p.DepEnd()
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -161,6 +183,69 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 	}
 
 	return q, nil
+}
+
+func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.URL) error {
+	upath := getBasePath(u.Path)
+	if upath == "" {
+		return fmt.Errorf("invalid path: %s", u.String())
+	}
+
+	ustr := u.String()
+	uext := path.Ext(upath)
+	if uext != ".zip" {
+		return fmt.Errorf("invalid extension: %s", uext)
+	}
+
+	uname := strings.TrimSuffix(path.Base(ustr), uext)
+	root := getRootFromZipFileName(path.Base(upath))
+	body, err := httpGet(ctx, p.httpClient, ustr)
+	if body != nil {
+		defer body.Close()
+	}
+	if err != nil {
+		return fmt.Errorf("get: %w", err)
+	}
+	if u == nil {
+		log.Warnf("skipped download: %s", ustr)
+		return nil // skip
+	}
+
+	log.Infofc(ctx, "downloading %s", ustr)
+
+	zz := workerutil.NewZip2zip(zw).SkipMkdir(true)
+	err = workerutil.DownloadAndConsumeZip(ctx, ustr, p.cachedir, func(zr *zip.Reader, fi os.FileInfo) error {
+		log.Infofc(ctx, "unzipping %d files from %s", len(zr.File), ustr)
+		p.p.AddDep(int64(len(zr.File)))
+		defer p.p.DepEnd()
+
+		return zz.Run(zr, func(f *zip.File) (string, error) {
+			name := workerutil.NormalizeZipFilePath(f.Name)
+			if name == "" {
+				return "", nil // ignore
+			}
+
+			paths := strings.Split(name, "/")
+			if len(paths) == 0 {
+				return "", nil // ignore
+			}
+
+			if paths[0] == uname {
+				name = strings.Join(paths[1:], "/")
+			}
+			res := path.Join(root, name)
+
+			log.Infofc(ctx, "%s -> %s", f.Name, res)
+			p.p.DepOne()
+
+			return res, nil
+		})
+	})
+	if err != nil {
+		return fmt.Errorf("zip2zip: %w", err)
+	}
+
+	return nil
 }
 
 func findDeps(gml io.Reader, depsMap map[string]struct{}) error {
@@ -227,4 +312,19 @@ func depsMapToSlice(depsMap, seen map[string]struct{}, u *url.URL) []string {
 	}
 	slices.Sort(deps)
 	return deps
+}
+
+// /assets/xx/xxxxxx/hoge/foo.gml -> /hoge/foo.gml
+func getBasePath(p string) string {
+	parts := strings.SplitN(p, "/", 5)
+	if len(parts) != 5 {
+		return ""
+	}
+	return path.Join(parts[4:]...)
+}
+
+// 30406_susami-cho_city_2024_citygml_1_op_codelists.zip -> 30406_susami-cho_city_2024_citygml_1_op
+func getRootFromZipFileName(s string) string {
+	b, _, _ := splitAtLastN(s, "_", 1)
+	return b
 }

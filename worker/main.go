@@ -92,21 +92,18 @@ func extractMaxLOD(conf *Config) {
 	}
 }
 
-func cityGMLPacker(conf *Config) {
+func cityGMLPacker(*Config) {
 	var config citygmlpacker.Config
-	var zipURLs string
 	flag := flag.NewFlagSet("citygml-packer", flag.ExitOnError)
 	flag.StringVar(&config.Dest, "dest", "", "destination url (gs://...)")
 	flag.StringVar(&config.Domain, "domain", "", "allowed domain")
-	flag.StringVar(&zipURLs, "zip", "", "zip files")
 	flag.DurationVar(&config.Timeout, "timeout", 30*time.Second, "timeout")
 	if err := flag.Parse(os.Args[2:]); err != nil {
 		panic(err)
 	}
-	config.GMLURLs = lo.FlatMap(flag.Args(), func(s string, _ int) []string {
+	config.URLs = lo.FlatMap(flag.Args(), func(s string, _ int) []string {
 		return strings.Split(s, ",")
 	})
-	config.ZipURLs = strings.Split(zipURLs, ",")
 
 	if err := citygmlpacker.Run(config); err != nil {
 		panic(err)

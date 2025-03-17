@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/eukarya-inc/reearth-plateauview/worker/workerutil"
 	"github.com/reearth/reearthx/log"
 )
 
@@ -93,7 +94,7 @@ func mergePlateau(ctx context.Context, m MergeContext) (string, []string, error)
 				log.Debugfc(ctx, "donwloaded %s (%s)", url, humanize.Bytes(uint64(fi.Size())))
 
 				return cz.Run(zr, func(f *zip.File) (string, error) {
-					p := normalizeZipFilePath(f.Name)
+					p := workerutil.NormalizeZipFilePath(f.Name)
 					if p == "" {
 						return "", nil
 					}

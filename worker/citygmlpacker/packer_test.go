@@ -21,22 +21,33 @@ func TestPacker_Pack(t *testing.T) {
 	const testgml3 = `<?xml version="1.0" encoding="UTF-8"?>`
 	const testimg = `hoge` // it's not a real image but it doesn't matter
 
+	zbuf := bytes.NewBuffer(nil)
+	zw := zip.NewWriter(zbuf)
+	f, _ := zw.Create("codelists/hoge.gml")
+	_, _ = f.Write([]byte("foobar"))
+	f, _ = zw.Create("example_citygml_codelists/codelists/foo.gml")
+	_, _ = f.Write([]byte("barfoo"))
+	_ = zw.Close()
+
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	httpmock.RegisterResponder("GET", "http://example.com/hogehoge/example_citygml/udx/bldg/1.gml",
+	httpmock.RegisterResponder("GET", "http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/1.gml",
 		httpmock.NewStringResponder(200, testgml1))
-	httpmock.RegisterResponder("GET", "http://example.com/hogehoge/example_citygml/udx/bldg/2.gml",
+	httpmock.RegisterResponder("GET", "http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/2.gml",
 		httpmock.NewStringResponder(200, testgml2))
-	httpmock.RegisterResponder("GET", "http://example.com/hogehoge/example_citygml/codelists/dep.gml",
+	httpmock.RegisterResponder("GET", "http://example.com/assets/xx/xxxxx/example_citygml/codelists/dep.gml",
 		httpmock.NewStringResponder(200, testgml3))
-	httpmock.RegisterResponder("GET", "http://example.com/hogehoge/example_citygml/udx/bldg/image.png",
+	httpmock.RegisterResponder("GET", "http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/image.png",
 		httpmock.NewStringResponder(200, testimg))
+	httpmock.RegisterResponder("GET", "http://example.com/assets/xx/xxxxx/example_citygml_codelists.zip",
+		httpmock.NewBytesResponder(200, zbuf.Bytes()))
 
 	buf := bytes.NewBuffer(nil)
 	urls := []string{
-		"http://example.com/hogehoge/example_citygml/udx/bldg/1.gml",
-		"http://example.com/hogehoge/example_citygml/udx/bldg/2.gml",
+		"http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/1.gml",
+		"http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/2.gml",
+		"http://example.com/assets/xx/xxxxx/example_citygml_codelists.zip",
 	}
 	packer := NewPacker(buf, len(urls), nil)
 
@@ -47,11 +58,13 @@ func TestPacker_Pack(t *testing.T) {
 	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	require.NoError(t, err)
 
-	assert.Len(t, zr.File, 4)
+	assert.Len(t, zr.File, 6)
 	assert.Equal(t, "example_citygml/udx/bldg/1.gml", zr.File[0].Name)
 	assert.Equal(t, "example_citygml/udx/bldg/2.gml", zr.File[1].Name)
 	assert.Equal(t, "example_citygml/codelists/dep.gml", zr.File[2].Name)
 	assert.Equal(t, "example_citygml/udx/bldg/image.png", zr.File[3].Name)
+	assert.Equal(t, "example_citygml/codelists/hoge.gml", zr.File[4].Name)
+	assert.Equal(t, "example_citygml/codelists/foo.gml", zr.File[5].Name)
 
 	b := string(lo.Must(io.ReadAll(lo.Must(zr.File[0].Open()))))
 	assert.Equal(t, testgml1, b, "1.gml")
@@ -64,6 +77,12 @@ func TestPacker_Pack(t *testing.T) {
 
 	b = string(lo.Must(io.ReadAll(lo.Must(zr.File[3].Open()))))
 	assert.Equal(t, testimg, b, "image.png")
+
+	b = string(lo.Must(io.ReadAll(lo.Must(zr.File[4].Open()))))
+	assert.Equal(t, "foobar", b, "hoge.gml")
+
+	b = string(lo.Must(io.ReadAll(lo.Must(zr.File[5].Open()))))
+	assert.Equal(t, "barfoo", b, "foo.gml")
 }
 
 func TestFindDeps(t *testing.T) {
@@ -85,4 +104,15 @@ func TestFindDeps(t *testing.T) {
 		"my-codespace":      {},
 		"../schemas/my.xsd": {},
 	}, depsMap)
+}
+
+func TestGetBasePath(t *testing.T) {
+	assert.Equal(t, "hoge/foo.gml", getBasePath("/assets/xx/xxxxxx/hoge/foo.gml"))
+	assert.Equal(t, "hoge/bar/foo.gml", getBasePath("/assets/xx/xxxxxx/hoge/bar/foo.gml"))
+	assert.Equal(t, "foo.gml", getBasePath("/assets/xx/xxxxxx/foo.gml"))
+	assert.Equal(t, "", getBasePath("/assets/xx/xxxxxx"))
+}
+
+func TestGetRootFromZipFileName(t *testing.T) {
+	assert.Equal(t, "30406_susami-cho_city_2024_citygml_1_op", getRootFromZipFileName("30406_susami-cho_city_2024_citygml_1_op_codelists.zip"))
 }

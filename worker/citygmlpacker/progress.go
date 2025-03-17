@@ -27,7 +27,7 @@ func (p *progress) Processed() int64 {
 	}
 }
 
-func (p *progress) GML(deps int64) {
+func (p *progress) AddDep(deps int64) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.s += 1
