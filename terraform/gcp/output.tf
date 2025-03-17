@@ -15,6 +15,11 @@ output "plateauview_editor_url" {
   value = "https://${local.editor_domain}"
 }
 
+output "plateauview_flow_token" {
+  value     = module.plateauview_api.plateauview_flow_token
+  sensitive = true
+}
+
 output "plateauview_flow_url" {
   value = "https://${local.flow_domain}"
 }
@@ -27,6 +32,12 @@ output "plateauview_sdk_token" {
   value     = module.plateauview_api.plateauview_sdk_token
   sensitive = true
 }
+
+output "plateauview_setup_token" {
+  value     = module.plateauview_api.plateauview_setup_token
+  sensitive = true
+}
+
 
 output "plateauview_sidebar_token" {
   value     = module.plateauview_api.plateauview_sidebar_token
