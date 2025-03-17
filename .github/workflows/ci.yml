@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
       - name: changed files for extension
         id: extension
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             extension
@@ -44,7 +44,7 @@ jobs:
             .github/workflows/deploy-extension-prod.yml
       - name: changed files for server
         id: server
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             server
@@ -54,14 +54,14 @@ jobs:
             .github/workflows/deploy-server-prod.yml
       - name: changed files for tools
         id: tools
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             tools
             .github/workflows/ci-tools.yml
       - name: changed files for geo
         id: geo
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             geo
@@ -71,7 +71,7 @@ jobs:
             .github/workflows/deploy-geo-prod.yml
       - name: changed files for tiles
         id: tiles
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           files: |
             tiles
@@ -81,7 +81,7 @@ jobs:
             .github/workflows/deploy-tiles-prod.yml
       - name: changed files for worker
         id: worker
-        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
+        uses: tj-actions/changed-files@2f7c5bfce28377bc069a65ba478de0a74aa0ca32 # v46.0.1
         with:
           since_last_remote_commit: true
           files: |
