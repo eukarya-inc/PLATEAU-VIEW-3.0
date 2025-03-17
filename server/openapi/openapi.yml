@@ -229,6 +229,12 @@ paths:
                   spec:
                     type: string
                     description: The specification of the CityGML data.
+                  metadataZipUrls:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                      description: The URL for accessing the metadata zip file.
                   url:
                     type: string
                     format: uri
@@ -270,6 +276,7 @@ paths:
                   - year
                   - registrationYear
                   - spec
+                  - metadataZipUrls
                   - url
                   - files
                   - featureTypes
