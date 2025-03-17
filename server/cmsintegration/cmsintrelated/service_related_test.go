@@ -1,4 +1,4 @@
-package cmsintegrationv3
+package cmsintrelated
 
 import (
 	"archive/zip"
@@ -29,28 +29,28 @@ func TestConvertRelatedDataset(t *testing.T) {
 	var uploaded []string
 	var comments []string
 	ctx := context.Background()
-	c := &cmsMock{
-		asset: func(ctx context.Context, id string) (*cms.Asset, error) {
+	c := &cmsintegrationcommon.CMSMock{
+		MockAsset: func(ctx context.Context, id string) (*cms.Asset, error) {
 			return &cms.Asset{
 				URL: "https://example.com/hoge_border.geojson",
 			}, nil
 		},
-		updateItem: func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		MockUpdateItem: func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			updatedFields = append(updatedFields, fields)
 			updatedMetadataFields = append(updatedMetadataFields, metadataFields)
 			return nil, nil
 		},
-		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
+		MockUploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			uploaded = append(uploaded, name)
 			return "asset", nil
 		},
-		commentToItem: func(ctx context.Context, id string, comment string) error {
+		MockCommentToItem: func(ctx context.Context, id string, comment string) error {
 			comments = append(comments, comment)
 			return nil
 		},
 	}
 	pc := &plateauCMSMock{}
-	s := &Services{CMS: c, PCMS: pc, HTTP: http.DefaultClient}
+	s := &Services{CMS: c, PCMS: pc}
 	item := &cmsintegrationcommon.RelatedItem{
 		Items: map[string]cmsintegrationcommon.RelatedItemDatum{
 			"border": {
@@ -141,37 +141,37 @@ func TestPackRelatedDataset(t *testing.T) {
 	var uploaded []string
 	var comments []string
 	ctx := context.Background()
-	c := &cmsMock{
-		getItem: func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+	c := &cmsintegrationcommon.CMSMock{
+		MockGetItem: func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			return (&cmsintegrationcommon.CityItem{
 				CityNameEn: "hoge",
 				CityCode:   "00000",
 			}).CMSItem(nil), nil
 		},
-		asset: func(ctx context.Context, id string) (*cms.Asset, error) {
+		MockAsset: func(ctx context.Context, id string) (*cms.Asset, error) {
 			return &cms.Asset{
 				URL: fmt.Sprintf("https://example.com/%s.geojson", id),
 			}, nil
 		},
-		updateItem: func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		MockUpdateItem: func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			updatedFields = append(updatedFields, fields)
 			updatedMetadataFields = append(updatedMetadataFields, metadataFields)
 			return nil, nil
 		},
-		uploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
+		MockUploadAssetDirectly: func(ctx context.Context, prjectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			uploaded = append(uploaded, name)
 			b := bytes.NewBuffer(nil)
 			_, _ = io.Copy(b, r)
 			uploadedData = append(uploadedData, b.Bytes())
 			return "asset", nil
 		},
-		commentToItem: func(ctx context.Context, id string, comment string) error {
+		MockCommentToItem: func(ctx context.Context, id string, comment string) error {
 			comments = append(comments, comment)
 			return nil
 		},
 	}
 	pc := &plateauCMSMock{}
-	s := &Services{CMS: c, PCMS: pc, HTTP: http.DefaultClient}
+	s := &Services{CMS: c, PCMS: pc}
 	item := &cmsintegrationcommon.RelatedItem{
 		City: "city",
 		Items: map[string]cmsintegrationcommon.RelatedItemDatum{

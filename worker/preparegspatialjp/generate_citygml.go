@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/dustin/go-humanize"
+	"github.com/eukarya-inc/reearth-plateauview/worker/workerutil"
 	"github.com/reearth/reearthx/log"
 )
 
@@ -188,7 +189,7 @@ func (z *CityGMLZipWriter) Write(ctx context.Context, src *zip.Reader, ty, prefi
 // base: base directory added to new path
 func cityGMLZipPath(ty, prefix, base string) func(string) (string, error) {
 	return func(rawPath string) (string, error) {
-		p := normalizeZipFilePath(rawPath)
+		p := workerutil.NormalizeZipFilePath(rawPath)
 		if p == "" {
 			return "", nil
 		}

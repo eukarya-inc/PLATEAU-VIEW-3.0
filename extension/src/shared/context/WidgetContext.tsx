@@ -35,7 +35,6 @@ import {
   useStartTime,
   useFinishTime,
   useDatasetAttributesURL,
-  useCityGMLApiUrl,
 } from "../states/environmentVariables";
 
 type Props = {

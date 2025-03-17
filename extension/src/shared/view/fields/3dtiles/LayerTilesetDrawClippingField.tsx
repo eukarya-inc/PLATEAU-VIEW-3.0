@@ -193,7 +193,7 @@ export const LayerTilesetDrawClippingField: FC<LayerTilesetDrawClippingFieldProp
         handleSetType(undefined);
       }
     },
-    [component, setComponent, handleSetType, setIsDrawClipping],
+    [component, setComponent, handleSetType],
   );
 
   useReEarthEvent("sketchfeaturecreated", handleSketchFeatureCreated);

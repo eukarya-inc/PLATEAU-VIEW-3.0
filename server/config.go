@@ -91,6 +91,7 @@ type Config struct {
 	CityGML_CityGMLPackerImage         string   `pp:",omitempty"`
 	CityGML_WorkerRegion               string   `pp:",omitempty"`
 	CityGML_WorkerProject              string   `pp:",omitempty"`
+	CityGML_PackerTimeout              uint     `default:"30" pp:",omitempty"`
 	Flow_BaseURL                       string   `pp:",omitempty"`
 	Flow_Token                         string   `pp:",omitempty"`
 }
@@ -150,12 +151,11 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		APIToken:                          c.Sidebar_Token,
 		GeospatialjpBuildType:             c.Geospatialjp_BuildType,
 		GeospatialjpCloudRunJobsJobName:   c.Geospatialjp_JobName,
-		GeospatialjpCloudBuildImage:       c.Geospatialjp_CloudBuildImage,
 		GeospatialjpCloudBuildMachineType: c.Geospatialjp_CloudBuildMachineType,
 		GeospatialjpCloudBuildProject:     cloudBuildProject,
 		GeospatialjpCloudBuildRegion:      cloudBuildRegion,
 		GeospatialjpCloudBuildDiskSizeGb:  c.Geospatialjp_CloudBuildDiskSizeGb,
-		TaskImage:                         c.CMSINT_TaskImage,
+		TaskImage:                         c.Geospatialjp_CloudBuildImage, // TODO: change env var name
 		GCPProject:                        cloudBuildProject,
 		GCPRegion:                         cloudBuildRegion,
 		FlowBaseURL:                       c.Flow_BaseURL,
@@ -252,5 +252,6 @@ func (c *Config) CityGML() citygml.Config {
 		WorkerRegion:       workRegion,
 		WorkerProject:      workProject,
 		DataCatalogAPIURL:  c.LocalURL("/datacatalog"),
+		PackerTimeout:      c.CityGML_PackerTimeout,
 	}
 }

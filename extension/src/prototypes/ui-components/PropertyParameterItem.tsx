@@ -254,6 +254,14 @@ const Property: FC<{
     [values, attrVal, isPrimitive],
   );
 
+  const displayedValues = useMemo(
+    () =>
+      isPrimitive
+        ? values.map(v => (attrVal ? makePropertyValue(attrVal, v as string | number) : v))
+        : null,
+    [values, attrVal, isPrimitive],
+  );
+
   return featureType === "tags" ? (
     values.length === 1 ? (
       <TableRow style={{ wordBreak: "break-all" }}>
