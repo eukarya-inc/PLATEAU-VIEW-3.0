@@ -23,7 +23,12 @@ export default ({ data }: UseCityGMLPacksProps) => {
           id: key,
           name: data.featureTypes[key].name,
           status: "idle" as const,
-          fileUrls: data.cities.map(city => city.files[key]?.map(file => file.url)).flat(),
+          fileUrls: data.cities
+            .map(city => [
+              ...(city.files[key]?.map(file => file.url) ?? []),
+              ...(city.metadataZipUrls ?? []),
+            ])
+            .flat(),
           pollingCount: 0,
           progress: 0,
         }))

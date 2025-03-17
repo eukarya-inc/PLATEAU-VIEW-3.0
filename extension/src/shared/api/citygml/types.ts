@@ -24,6 +24,7 @@ export type CityGMLFileCityData = {
   registrationYear: number;
   spec: string;
   url: string;
+  metadataZipUrls: string[];
   files: {
     [key: string]: {
       code: string;
