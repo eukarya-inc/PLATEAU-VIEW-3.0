@@ -140,15 +140,15 @@ jobs:
     steps:
       - run: echo OK
 
-  # deploy-extension-dev:
-  #   needs: [prepare, ci-extension]
-  #   if: ${{ success() && needs.prepare.outputs.build == 'true' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Dispatch deployment
-  #       uses: peter-evans/repository-dispatch@v2
-  #       with:
-  #         event-type: deploy-extension-dev
+  deploy-extension-dev:
+    needs: [prepare, ci-extension]
+    if: ${{ success() && needs.prepare.outputs.build == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch deployment
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          event-type: deploy-extension-dev
 
   build-geo:
     needs: [prepare, ci-geo]
