@@ -15,7 +15,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer, u *url.URL, q []string, seen map[string]struct{}) ([]string, error) {
+func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer, u *url.URL, q []string, seen map[string]struct{}, roots map[string]struct{}) ([]string, error) {
 	upath := getBasePath(u.Path)
 	if upath == "" {
 		return nil, fmt.Errorf("invalid path: %s", u.String())
@@ -27,6 +27,11 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 	}
 
 	root := path.Dir(upath)
+	rootDir, _, _ := strings.Cut(root, "/")
+	if rootDir == "" {
+		return nil, fmt.Errorf("invalid root: %s", root)
+	}
+
 	depsMap := map[string]struct{}{}
 	ustr := u.String()
 
@@ -50,6 +55,8 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}
+
+	roots[rootDir] = struct{}{}
 
 	log.Infof("parsing... %s", ustr)
 

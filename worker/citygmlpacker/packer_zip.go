@@ -13,7 +13,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.URL) error {
+func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.URL, roots map[string]struct{}) error {
 	upath := getBasePath(u.Path)
 	if upath == "" {
 		return fmt.Errorf("invalid path: %s", u.String())
@@ -26,7 +26,11 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 	}
 
 	uname := strings.TrimSuffix(path.Base(ustr), uext)
-	root := getRootFromZipFileName(path.Base(upath))
+	root := findRoot(uname, roots)
+	if root == "" {
+		return fmt.Errorf("invalid zip file name: %s", ustr)
+	}
+
 	body, err := httpGet(ctx, p.httpClient, ustr)
 	if body != nil {
 		defer body.Close()
@@ -97,24 +101,25 @@ func getBasePath(p string) string {
 	return path.Join(parts[4:]...)
 }
 
-// 30406_susami-cho_city_2024_citygml_1_op_codelists.zip -> 30406_susami-cho_city_2024_citygml_1_op
-func getRootFromZipFileName(s string) string {
-	b, _, _ := splitAtLastN(s, "_", 1)
-	return b
-}
-
-func getCityCodeFromZipFileName(s string) string {
-	c, _, ok := strings.Cut(s, "_")
+func findRoot(s string, roots map[string]struct{}) string {
+	code, _, ok := strings.Cut(s, "_")
 	if !ok {
 		return ""
 	}
 
 	// c should be numeric
-	for _, c := range c {
+	for _, c := range code {
 		if c < '0' || c > '9' {
 			return ""
 		}
 	}
 
-	return c
+	code = code + "_"
+	for r := range roots {
+		if strings.HasPrefix(r, code) {
+			return r
+		}
+	}
+
+	return ""
 }

@@ -50,6 +50,7 @@ func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 	q = append(q, urls...)
 
 	seen := map[string]struct{}{}
+	roots := map[string]struct{}{}
 
 	t := time.Now()
 
@@ -72,11 +73,11 @@ func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 			}
 
 			if ext := path.Ext(u.Path); ext == ".zip" {
-				if err := p.writeZipFilesToZip(ctx, zw, u); err != nil {
+				if err := p.writeZipFilesToZip(ctx, zw, u, roots); err != nil {
 					return fmt.Errorf("write zip: %w", err)
 				}
 			} else if ext == ".gml" {
-				nq, err = p.writeGMLToZip(ctx, t, zw, u, nq, seen)
+				nq, err = p.writeGMLToZip(ctx, t, zw, u, nq, seen, roots)
 				if err != nil {
 					return fmt.Errorf("write gml: %w", err)
 				}
