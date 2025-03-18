@@ -222,9 +222,10 @@ func cityGMLZipPath(ty, prefix, base string) func(string) (string, error) {
 				paths[0] = ty
 			}
 
-			if paths[0] != ty {
-				return "", fmt.Errorf("unexpected path: %s", rawPath)
-			}
+			// squr zip file includes tran directory also, so we don't need to check the first path
+			// if paths[0] != ty {
+			// 	return "", fmt.Errorf("unexpected path: %s", rawPath)
+			// }
 		}
 
 		if base != "" {
