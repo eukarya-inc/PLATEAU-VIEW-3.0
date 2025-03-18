@@ -14,6 +14,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/reearth/reearthx/log"
 )
 
 type Packer struct {
@@ -21,6 +23,15 @@ type Packer struct {
 	p          progress
 	cachedir   string
 	httpClient *http.Client
+}
+
+type packerContext struct {
+	zw       *zip.Writer
+	modified time.Time
+	urls     []string
+	seen     map[string]struct{}
+	roots    map[string]struct{}
+	files    map[string]struct{}
 }
 
 func NewPacker(w io.Writer, c *http.Client) *Packer {
@@ -45,47 +56,47 @@ func (p *Packer) Pack(ctx context.Context, host string, urls []string) error {
 	// sort urls by extension (.gml -> .zip)
 	urls = sortURLs(urls)
 
-	// pre-parsing gmlURLs to make sure there are no unauthorized hosts
-	var q []string
-	q = append(q, urls...)
-
-	seen := map[string]struct{}{}
-	roots := map[string]struct{}{}
-
-	t := time.Now()
-
 	zw := zip.NewWriter(p.w)
 	defer zw.Close()
-	for len(q) > 0 {
-		var nq []string
-		for _, uu := range q {
-			u, err := url.Parse(uu)
-			if err != nil {
-				return fmt.Errorf("invalid URL: %w", err)
-			}
 
-			if u.Scheme != "http" && u.Scheme != "https" {
-				return fmt.Errorf("invalid scheme: %s", u.Scheme)
-			}
+	pctx := &packerContext{
+		zw:       zw,
+		modified: time.Now(),
+		urls:     urls,
+		seen:     map[string]struct{}{},
+		roots:    map[string]struct{}{},
+		files:    map[string]struct{}{},
+	}
 
-			if u.Host == "" || (host != "" && u.Host != host) {
-				return fmt.Errorf("invalid host: %s", u.Host)
-			}
-
-			if ext := path.Ext(u.Path); ext == ".zip" {
-				if err := p.writeZipFilesToZip(ctx, zw, u, roots); err != nil {
-					return fmt.Errorf("write zip: %w", err)
-				}
-			} else if ext == ".gml" {
-				nq, err = p.writeGMLToZip(ctx, t, zw, u, nq, seen, roots)
-				if err != nil {
-					return fmt.Errorf("write gml: %w", err)
-				}
-			} else {
-				return fmt.Errorf("invalid extension: %s", ext)
-			}
+	for len(pctx.urls) > 0 {
+		uu := pctx.urls[0]
+		u, err := url.Parse(uu)
+		if err != nil {
+			return fmt.Errorf("invalid URL: %w", err)
 		}
-		q = nq
+
+		if u.Scheme != "http" && u.Scheme != "https" {
+			return fmt.Errorf("invalid scheme: %s", u.Scheme)
+		}
+
+		if u.Host == "" || (host != "" && u.Host != host) {
+			return fmt.Errorf("invalid host: %s", u.Host)
+		}
+
+		if ext := path.Ext(u.Path); ext == ".zip" {
+			if err := p.writeZip(ctx, u, pctx); err != nil {
+				return fmt.Errorf("write zip: %w", err)
+			}
+		} else if ext == ".gml" {
+			err := p.writeGML(ctx, u, pctx)
+			if err != nil {
+				return fmt.Errorf("write gml: %w", err)
+			}
+		} else {
+			log.Warnfc(ctx, "invalid extension: %s", ext)
+		}
+
+		pctx.urls = pctx.urls[1:]
 	}
 
 	if err := zw.Close(); err != nil {

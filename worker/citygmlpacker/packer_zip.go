@@ -13,7 +13,7 @@ import (
 	"github.com/reearth/reearthx/log"
 )
 
-func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.URL, roots map[string]struct{}) error {
+func (p *Packer) writeZip(ctx context.Context, u *url.URL, pctx *packerContext) error {
 	if u == nil {
 		return nil // skip
 	}
@@ -30,7 +30,7 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 	}
 
 	uname := strings.TrimSuffix(path.Base(ustr), uext)
-	root := findRoot(uname, roots)
+	root := findRoot(uname, pctx.roots)
 	if root == "" {
 		log.Warnf("skipped download: %s", ustr)
 		return nil // skip
@@ -46,7 +46,7 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 
 	log.Infofc(ctx, "downloading %s", ustr)
 
-	zz := workerutil.NewZip2zip(zw).SkipMkdir(true)
+	zz := workerutil.NewZip2zip(pctx.zw).SkipMkdir(true)
 	err = workerutil.DownloadAndConsumeZip(ctx, ustr, p.cachedir, func(zr *zip.Reader, fi os.FileInfo) error {
 		log.Infofc(ctx, "unzipping %d files from %s", len(zr.File), ustr)
 		p.p.AddDep(int64(len(zr.File)))
@@ -80,6 +80,11 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 
 			name = strings.Join(paths, "/")
 			res := path.Join(root, name)
+
+			if _, ok := pctx.files[res]; ok {
+				log.Infofc(ctx, "%s -> %s (skipped)", f.Name, res)
+				return "", nil // ignore
+			}
 
 			log.Infofc(ctx, "%s -> %s", f.Name, res)
 			return res, nil

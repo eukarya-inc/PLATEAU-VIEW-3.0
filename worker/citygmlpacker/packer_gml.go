@@ -9,27 +9,26 @@ import (
 	"path"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/orisano/gosax/xmlb"
 	"github.com/reearth/reearthx/log"
 )
 
-func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer, u *url.URL, q []string, seen map[string]struct{}, roots map[string]struct{}) ([]string, error) {
+func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) error {
 	upath := getBasePath(u.Path)
 	if upath == "" {
-		return nil, fmt.Errorf("invalid path: %s", u.String())
+		return fmt.Errorf("invalid path: %s", u.String())
 	}
 
 	uext := path.Ext(upath)
 	if uext != ".gml" {
-		return nil, fmt.Errorf("invalid extension: %s", uext)
+		return fmt.Errorf("invalid extension: %s", uext)
 	}
 
 	root := path.Dir(upath)
 	rootDir, _, _ := strings.Cut(root, "/")
 	if rootDir == "" {
-		return nil, fmt.Errorf("invalid root: %s", root)
+		return fmt.Errorf("invalid root: %s", root)
 	}
 
 	depsMap := map[string]struct{}{}
@@ -40,31 +39,32 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 		defer body.Close()
 	}
 	if err != nil {
-		return nil, fmt.Errorf("get: %w", err)
+		return fmt.Errorf("get: %w", err)
 	}
 	if u == nil {
 		log.Warnf("skipped download: %s", ustr)
-		return q, nil // skip
+		return nil // skip
 	}
 
-	ze, err := zw.CreateHeader(&zip.FileHeader{
+	ze, err := pctx.zw.CreateHeader(&zip.FileHeader{
 		Name:     upath,
 		Method:   zip.Deflate,
-		Modified: t,
+		Modified: pctx.modified,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("create: %w", err)
+		return fmt.Errorf("create: %w", err)
 	}
 
-	roots[rootDir] = struct{}{}
+	pctx.roots[rootDir] = struct{}{}
+	pctx.files[upath] = struct{}{}
 
 	log.Infof("parsing... %s", ustr)
 
 	if err := findDeps(io.TeeReader(body, ze), depsMap); err != nil {
-		return nil, fmt.Errorf("findDeps: %w", err)
+		return fmt.Errorf("findDeps: %w", err)
 	}
 
-	deps := depsMapToSlice(depsMap, seen, u)
+	deps := depsMapToSlice(depsMap, pctx.seen, u)
 
 	log.Infof("completed %s (%d deps)", ustr, len(deps))
 
@@ -76,7 +76,7 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 
 	downloads, err := DownloadsFromUrls(ctx, deps, u)
 	if err != nil {
-		return nil, fmt.Errorf("downloadsFromUrls: %w", err)
+		return fmt.Errorf("downloadsFromUrls: %w", err)
 	}
 
 	go func() {
@@ -104,14 +104,21 @@ func (p *Packer) writeGMLToZip(ctx context.Context, t time.Time, zw *zip.Writer,
 	}()
 
 	for _, d := range downloads {
-		if err := d.WriteToZip(zw, root); err != nil {
-			return nil, err
+		n := path.Join(root, d.dep)
+		w, err := pctx.zw.Create(n)
+		if err != nil {
+			return fmt.Errorf("create: %w", err)
 		}
 
+		if err := d.WriteTo(w); err != nil {
+			return err
+		}
+
+		pctx.files[n] = struct{}{}
 		p.p.DepOne()
 	}
 
-	return q, nil
+	return nil
 }
 
 func findDeps(gml io.Reader, depsMap map[string]struct{}) error {
