@@ -81,7 +81,7 @@ func Run(conf Config) (err error) {
 	w.ObjectAttrs.Metadata = completedMetadata
 	defer w.Close()
 
-	p := NewPacker(w, len(conf.URLs), nil)
+	p := NewPacker(w, nil)
 
 	var finished bool
 	var finishedMu sync.Mutex

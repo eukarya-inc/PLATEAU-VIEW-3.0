@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 type multiReadCloser struct {
@@ -75,23 +74,4 @@ func newHTTPGetRequest(ctx context.Context, u *url.URL) *http.Request {
 		Body:       nil,
 		Host:       u.Host,
 	}).WithContext(ctx)
-}
-
-func splitAtLastN(s, sep string, n int) (string, string, bool) {
-	if n <= 0 {
-		return "", s, false
-	}
-
-	parts := strings.Split(s, sep)
-	count := len(parts) - 1
-
-	if count < n {
-		return "", s, false
-	}
-
-	splitIndex := count - n
-
-	before := strings.Join(parts[:splitIndex+1], sep)
-	after := strings.Join(parts[splitIndex+1:], sep)
-	return before, after, true
 }

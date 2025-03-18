@@ -48,3 +48,12 @@ func (p *progress) DepEnd() {
 	p.n = 0
 	p.c = 0
 }
+
+func (p *progress) Reset(le int64) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.s = 0
+	p.n = 0
+	p.c = 0
+	p.steps = le
+}

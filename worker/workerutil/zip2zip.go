@@ -64,7 +64,11 @@ func (z *Zip2zip) Run(src *zip.Reader, fn Zip2zipFn) error {
 }
 
 func (z *Zip2zip) copyZipFile(f *zip.File, p string) error {
-	dst, err := z.w.Create(p)
+	dst, err := z.w.CreateHeader(&zip.FileHeader{
+		Name:     p,
+		Method:   zip.Deflate,
+		Modified: f.Modified,
+	})
 	if err != nil {
 		return err
 	}

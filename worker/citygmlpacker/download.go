@@ -1,7 +1,6 @@
 package citygmlpacker
 
 import (
-	"archive/zip"
 	"bufio"
 	"context"
 	"fmt"
@@ -66,16 +65,10 @@ func (d *Download) Download(client *http.Client) bool {
 	return true
 }
 
-func (d *Download) WriteToZip(zw *zip.Writer, root string) error {
-	w, err := zw.Create(path.Join(root, d.dep))
-	if err != nil {
-		return fmt.Errorf("create: %w", err)
-	}
-
+func (d *Download) WriteTo(w io.Writer) error {
 	if _, err := io.Copy(w, d.pr); err != nil {
 		return fmt.Errorf("copy: %w", err)
 	}
-
 	return nil
 }
 
