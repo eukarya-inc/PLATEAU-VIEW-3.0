@@ -14,6 +14,10 @@ import (
 )
 
 func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.URL, roots map[string]struct{}) error {
+	if u == nil {
+		return nil // skip
+	}
+
 	upath := getBasePath(u.Path)
 	if upath == "" {
 		return fmt.Errorf("invalid path: %s", u.String())
@@ -28,7 +32,8 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 	uname := strings.TrimSuffix(path.Base(ustr), uext)
 	root := findRoot(uname, roots)
 	if root == "" {
-		return fmt.Errorf("invalid zip file name: %s", ustr)
+		log.Warnf("skipped download: %s", ustr)
+		return nil // skip
 	}
 
 	body, err := httpGet(ctx, p.httpClient, ustr)
@@ -37,10 +42,6 @@ func (p *Packer) writeZipFilesToZip(ctx context.Context, zw *zip.Writer, u *url.
 	}
 	if err != nil {
 		return fmt.Errorf("get: %w", err)
-	}
-	if u == nil {
-		log.Warnf("skipped download: %s", ustr)
-		return nil // skip
 	}
 
 	log.Infofc(ctx, "downloading %s", ustr)
