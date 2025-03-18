@@ -192,6 +192,12 @@ export const Scene: FC<SceneProps> = ({
               }
             : {}),
         },
+        geoid: {
+          server: {
+            url: "https://api.plateauview.mlit.go.jp/citygml/geoid_height?lat=${lat}&lng=${lng}",
+            geoidProperty: "geoid_height",
+          },
+        },
         render: {
           antialias,
           ambientOcclusion,
