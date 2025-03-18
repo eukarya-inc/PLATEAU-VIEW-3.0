@@ -3,6 +3,7 @@ package datacatalogv3
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/samber/lo"
@@ -36,6 +37,7 @@ func (i *PlateauFeatureItem) toWards(pref *plateauapi.Prefecture, city *plateaua
 			PrefectureCode: pref.Code,
 			CityID:         city.ID,
 			CityCode:       city.Code,
+			ParentID:       lo.ToPtr(city.ID),
 		}
 
 		res = append(res, ward)
@@ -45,21 +47,19 @@ func (i *PlateauFeatureItem) toWards(pref *plateauapi.Prefecture, city *plateaua
 }
 
 type ToPlateauDatasetsOptions struct {
-	CMSURL      string
+	ID          string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Area        *areaContext
 	Spec        *plateauapi.PlateauSpecMinor
 	DatasetType *plateauapi.PlateauDatasetType
 	LayerNames  LayerNames
 	FeatureType *FeatureType
 	Year        int
+	CMSInfo     CMSInfo
 }
 
-func (i *PlateauFeatureItem) toDatasets(opts ToPlateauDatasetsOptions) ([]plateauapi.Dataset, []string) {
-	res, w := i.toDatasetsRaw(opts)
-	return plateauapi.ToDatasets(res), w
-}
-
-func (i *PlateauFeatureItem) toDatasetsRaw(opts ToPlateauDatasetsOptions) (res []*plateauapi.PlateauDataset, warning []string) {
+func (i *PlateauFeatureItem) toDatasets(opts ToPlateauDatasetsOptions) (res []*plateauapi.PlateauDataset, warning []string) {
 	if !opts.Area.IsValid() {
 		warning = append(warning, fmt.Sprintf("plateau %s: invalid area", i.ID))
 		return
@@ -141,6 +141,7 @@ func seedToDataset(seed plateauDatasetSeed) (res *plateauapi.PlateauDataset, war
 		Admin:              seed.Admin,
 		Groups:             seed.Groups,
 		Items:              items,
+		Ar:                 true,
 	}
 
 	return
@@ -154,6 +155,7 @@ func seedToDatasetItem(i plateauDatasetItemSeed, parentID string) *plateauapi.Pl
 		Layers:              i.Layers,
 		Format:              i.Format,
 		Lod:                 i.LOD,
+		LodEx:               i.LODEx,
 		Texture:             textureFrom(i.NoTexture),
 		ParentID:            plateauapi.NewID(parentID, plateauapi.TypeDataset),
 		FloodingScale:       i.FloodingScale,

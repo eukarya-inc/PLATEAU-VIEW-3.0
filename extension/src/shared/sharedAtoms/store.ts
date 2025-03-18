@@ -1,4 +1,4 @@
-import { PLATEAU_API_URL, PROJECT_ID, USE_LOCAL_STORAGE } from "../constants";
+import { USE_LOCAL_STORAGE } from "../constants";
 
 import { MOCK_SHARED_DATA } from "./mock";
 
@@ -14,7 +14,7 @@ export let SHARED_STORE: Promise<Record<string, any>> = new Promise(r => setTime
 
 // TODO(ReEarth): Support share feature
 
-export const fetchShare = () => {
+export const fetchShare = (plateauApiUrl?: string, projectId?: string) => {
   const shareId = getShareId();
   if (!shareId) {
     SHARED_STORE = Promise.resolve({});
@@ -29,7 +29,7 @@ export const fetchShare = () => {
     });
     return;
   }
-  SHARED_STORE = fetch(`${PLATEAU_API_URL}/share/${PROJECT_ID}/${shareId}`, {
+  SHARED_STORE = fetch(`${plateauApiUrl}/share/${projectId}/${shareId}`, {
     headers: {
       "Content-Type": "application/json",
     },

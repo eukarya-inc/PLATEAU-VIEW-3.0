@@ -7,21 +7,21 @@ import (
 )
 
 var config = map[string]any{
-	"reactVersion":          "18",
+	"reactVersion":          "18.0.0",
 	"graphiqlVersion":       "3.0.6",
 	"pluginExplorerVersion": "0.3.5",
 	// get SRI at https://www.srihash.org/
-	// https://unpkg.com/react/umd/react.production.min.js
-	"reactSRI": "sha256-S0lp+k7zWUMk2ixteM6HZvu8L9Eh//OVrt+ZfbCpmgY=",
-	// https://unpkg.com/react-dom/umd/react-dom.production.min.js
-	"reactDOMSRI": "sha256-IXWO0ITNDjfnNXIu5POVfqlgYoop36bDzhodR6LW5Pc=",
-	// https://unpkg.com/graphiql/graphiql.min.js
+	// https://unpkg.com/react@18.0.0/umd/react.production.min.js
+	"reactSRI": "sha256-szynC/cyKlP69gowR20H8eiI1FfL22b1C7PABj08Bt0=",
+	// https://unpkg.com/react-dom@18.0.0/umd/react-dom.production.min.js
+	"reactDOMSRI": "sha256-pf3DwEl1jeZyGLMYtKbKD20fUGnB36k46kYhM9WrPPo=",
+	// https://unpkg.com/graphiql@3.0.6/graphiql.min.js
 	"graphiqlJSSRI": "sha256-eNxH+Ah7Z9up9aJYTQycgyNuy953zYZwE9Rqf5rH+r4=",
-	// https://unpkg.com/graphiql/graphiql.min.css
+	// https://unpkg.com/graphiql@3.0.6/graphiql.min.css
 	"graphiqlCSSSRI": "sha256-wTzfn13a+pLMB5rMeysPPR1hO7x0SwSeQI+cnw7VdbE=",
-	// https://unpkg.com/@graphiql/plugin-explorer/dist/index.umd.js
+	// https://unpkg.com/@graphiql/plugin-explorer@0.3.5/dist/index.umd.js
 	"pluginExplorerJSSRI": "sha256-CD435QHT45IKYOYnuCGRrwVgCRJNzoKjMuisdNtso4s=",
-	// https://unpkg.com/@graphiql/plugin-explorer/dist/style.css
+	// https://unpkg.com/@graphiql/plugin-explorer@0.3.5/dist/style.css
 	"pluginExplorerCSSSRI": "sha256-dihQy2mHNADQqxc3xhWK7pH1w4GVvEow7gKjxdWvTgE=",
 }
 

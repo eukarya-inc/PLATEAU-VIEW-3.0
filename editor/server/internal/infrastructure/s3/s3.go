@@ -21,6 +21,7 @@ import (
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/samber/lo"
+	"github.com/spf13/afero"
 )
 
 const (
@@ -28,6 +29,7 @@ const (
 	pluginBasePath string = "plugins"
 	mapBasePath    string = "maps"
 	storyBasePath  string = "stories"
+	exportBasePath string = "export"
 	fileSizeLimit  int64  = 1024 * 1024 * 100 // about 100MB
 )
 
@@ -65,6 +67,8 @@ func NewS3(ctx context.Context, bucketName, baseURL, cacheControl string) (gatew
 	}, nil
 }
 
+// asset
+
 func (f *fileRepo) ReadAsset(ctx context.Context, name string) (io.ReadCloser, error) {
 	sn := sanitize.Path(name)
 	if sn == "" {
@@ -97,6 +101,11 @@ func (f *fileRepo) UploadAsset(ctx context.Context, file *file.File) (*url.URL, 
 		return nil, 0, err
 	}
 	return u, s, nil
+}
+
+func (f *fileRepo) UploadAssetFromURL(ctx context.Context, u *url.URL) (*url.URL, int64, error) {
+	// Note: not implemented
+	return nil, 0, errors.New("UploadAssetFromURL: not implemented for local file storage")
 }
 
 func (f *fileRepo) RemoveAsset(ctx context.Context, u *url.URL) error {
@@ -206,6 +215,27 @@ func (f *fileRepo) RemoveStory(ctx context.Context, name string) error {
 		return gateway.ErrInvalidFile
 	}
 	return f.delete(ctx, path.Join(storyBasePath, sn))
+}
+
+// export
+
+func (f *fileRepo) ReadExportProjectZip(ctx context.Context, name string) (io.ReadCloser, error) {
+	sn := sanitize.Path(name)
+	if sn == "" {
+		return nil, rerror.ErrNotFound
+	}
+	return f.read(ctx, path.Join(exportBasePath, sn))
+}
+
+func (f *fileRepo) UploadExportProjectZip(ctx context.Context, zipFile afero.File) error {
+	sanitizedName := sanitize.Path(zipFile.Name())
+	_, err := f.upload(ctx, path.Join(exportBasePath, sanitizedName), zipFile)
+	return err
+}
+
+func (f *fileRepo) RemoveExportProjectZip(ctx context.Context, filename string) error {
+	sanitizedFilename := sanitize.Path(filename)
+	return f.delete(ctx, path.Join(exportBasePath, sanitizedFilename))
 }
 
 // helpers

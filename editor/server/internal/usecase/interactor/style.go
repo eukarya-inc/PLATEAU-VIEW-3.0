@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/reearth/reearth/server/internal/usecase"
@@ -8,7 +9,8 @@ import (
 	"github.com/reearth/reearth/server/internal/usecase/repo"
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearth/server/pkg/scene"
-	"github.com/reearth/reearth/server/pkg/scene/sceneops"
+	"github.com/reearth/reearth/server/pkg/scene/builder"
+	"github.com/reearth/reearthx/idx"
 	"github.com/reearth/reearthx/usecasex"
 )
 
@@ -16,6 +18,8 @@ type Style struct {
 	common
 	commonSceneLock
 	styleRepo     repo.Style
+	projectRepo   repo.Project
+	sceneRepo     repo.Scene
 	sceneLockRepo repo.SceneLock
 	transaction   usecasex.Transaction
 }
@@ -24,6 +28,8 @@ func NewStyle(r *repo.Container) interfaces.Style {
 	return &Style{
 		commonSceneLock: commonSceneLock{sceneLockRepo: r.SceneLock},
 		styleRepo:       r.Style,
+		projectRepo:     r.Project,
+		sceneRepo:       r.Scene,
 		sceneLockRepo:   r.SceneLock,
 		transaction:     r.Transaction,
 	}
@@ -54,16 +60,21 @@ func (i *Style) AddStyle(ctx context.Context, param interfaces.AddStyleInput, op
 	// 	return nil, interfaces.ErrOperationDenied
 	// }
 
-	style, err := sceneops.Style{
-		SceneID: param.SceneID,
-		Value:   param.Value,
-		Name:    param.Name,
-	}.Initialize()
+	style, err := scene.NewStyle().
+		NewID().
+		Scene(param.SceneID).
+		Name(param.Name).
+		Value(param.Value).Build()
 	if err != nil {
 		return nil, err
 	}
 
 	if err := i.styleRepo.Save(ctx, *style); err != nil {
+		return nil, err
+	}
+
+	err = updateProjectUpdatedAtByScene(ctx, style.Scene(), i.projectRepo, i.sceneRepo)
+	if err != nil {
 		return nil, err
 	}
 
@@ -104,6 +115,11 @@ func (i *Style) UpdateStyle(ctx context.Context, param interfaces.UpdateStyleInp
 		return nil, err
 	}
 
+	err = updateProjectUpdatedAtByScene(ctx, style.Scene(), i.projectRepo, i.sceneRepo)
+	if err != nil {
+		return nil, err
+	}
+
 	tx.Commit()
 	return style, nil
 }
@@ -139,6 +155,11 @@ func (i *Style) RemoveStyle(ctx context.Context, styleID id.StyleID, operator *u
 		return
 	}
 
+	err = updateProjectUpdatedAtByScene(ctx, s.Scene(), i.projectRepo, i.sceneRepo)
+	if err != nil {
+		return styleID, err
+	}
+
 	tx.Commit()
 	return styleID, nil
 }
@@ -171,6 +192,63 @@ func (i *Style) DuplicateStyle(ctx context.Context, styleID id.StyleID, operator
 		return nil, err
 	}
 
+	err = updateProjectUpdatedAtByScene(ctx, style.Scene(), i.projectRepo, i.sceneRepo)
+	if err != nil {
+		return nil, err
+	}
+
 	tx.Commit()
 	return duplicatedStyle, nil
+}
+
+func (i *Style) ImportStyles(ctx context.Context, sceneID idx.ID[id.Scene], data *[]byte) (scene.StyleList, error) {
+
+	sceneJSON, err := builder.ParseSceneJSONByByte(data)
+	if err != nil {
+		return nil, err
+	}
+
+	if sceneJSON.LayerStyles == nil {
+		return nil, nil
+	}
+
+	filter := Filter(sceneID)
+
+	styleIDs := id.StyleIDList{}
+	styles := []*scene.Style{}
+
+	for _, layerStyleJson := range sceneJSON.LayerStyles {
+		newStyleID := id.NewStyleID()
+		styleIDs = append(styleIDs, newStyleID)
+
+		// Replace new style id
+		*data = bytes.Replace(*data, []byte(layerStyleJson.ID), []byte(newStyleID.String()), -1)
+
+		style, err := scene.NewStyle().
+			ID(newStyleID).
+			Name(layerStyleJson.Name).
+			Value((*scene.StyleValue)(layerStyleJson.Value)).
+			Scene(sceneID).
+			Build()
+		if err != nil {
+			return nil, err
+		}
+		styles = append(styles, style)
+	}
+
+	// Save style
+	styleList := scene.StyleList(styles)
+	if err := i.styleRepo.Filtered(filter).SaveAll(ctx, styleList); err != nil {
+		return nil, err
+	}
+
+	if len(styleIDs) == 0 {
+		return nil, nil
+	}
+
+	results, err := i.styleRepo.Filtered(filter).FindByIDs(ctx, styleIDs)
+	if err != nil {
+		return nil, err
+	}
+	return *results, nil
 }

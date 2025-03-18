@@ -6,8 +6,10 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -15,33 +17,48 @@ import (
 const tmpDirBase = "plateau-api-worker-tmp"
 
 type Config struct {
-	CMSURL      string
-	CMSToken    string
-	ProjectID   string
-	CityItemID  string
-	SkipCityGML bool
-	SkipPlateau bool
-	SkipMaxLOD  bool
-	SkipIndex   bool
-	SkipRelated bool
-	WetRun      bool
-	Clean       bool
+	CMSURL              string
+	CMSToken            string
+	ProjectID           string
+	CityItemID          string
+	SkipCityGML         bool
+	SkipPlateau         bool
+	SkipMaxLOD          bool
+	SkipIndex           bool
+	SkipRelated         bool
+	ValidateMaxLOD      bool
+	WetRun              bool
+	Clean               bool
+	SkipImcompleteItems bool
+	IgnoreStatus        bool
+	FeatureTypes        []string
 }
 
 type MergeContext struct {
-	TmpDir          string
-	CityItem        *CityItem
-	AllFeatureItems map[string]FeatureItem
-	UC              int
-	WetRun          bool
+	TmpDir             string
+	CityItem           *CityItem
+	AllFeatureItems    map[string]FeatureItem
+	GspatialjpDataItem *GspatialjpDataItem
+	WetRun             bool
+	FeatureTypes       []string
+}
+
+func (m MergeContext) FileName(ty, suffix string) string {
+	return m.CityItem.FileName(ty, suffix)
 }
 
 func CommandSingle(conf *Config) (err error) {
-	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
+	ctx := context.Background()
+	log.Infofc(ctx, "preparegeospatialjp conf: %s", pp.Sprint(conf))
+
+	if conf == nil || conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
 	}
 
-	ctx := context.Background()
+	if len(conf.FeatureTypes) == 0 {
+		return fmt.Errorf("feature types is required")
+	}
+
 	cms, err := cms.New(conf.CMSURL, conf.CMSToken)
 	if err != nil {
 		return fmt.Errorf("failed to initialize CMS client: %w", err)
@@ -54,12 +71,16 @@ func CommandSingle(conf *Config) (err error) {
 	if err != nil {
 		return fmt.Errorf("failed to get city item: %w", err)
 	}
-	log.Infofc(ctx, "city item raw: %s", ppp.Sprint(cityItemRaw))
+	log.Infofc(ctx, "city item raw: %s", pp.Sprint(cityItemRaw))
 
-	cityItem := CityItemFrom(cityItemRaw)
-	log.Infofc(ctx, "city item: %s", ppp.Sprint(cityItem))
+	cityItem := CityItemFrom(cityItemRaw, conf.FeatureTypes)
+	log.Infofc(ctx, "city item: %s", pp.Sprint(cityItem))
 
 	if cityItem == nil || cityItem.CityCode == "" || cityItem.CityName == "" || cityItem.CityNameEn == "" || cityItem.GeospatialjpData == "" {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because city item is incomplete")
+			return nil
+		}
 		return fmt.Errorf("invalid city item: %s", conf.CityItemID)
 	}
 
@@ -69,7 +90,7 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	indexItem := GspatialjpIndexItemFrom(indexItemRaw)
-	log.Infofc(ctx, "geospatialjp index item: %s", ppp.Sprint(indexItem))
+	log.Infofc(ctx, "geospatialjp index item: %s", pp.Sprint(indexItem))
 
 	gdataItemRaw, err := cms.GetItem(ctx, cityItem.GeospatialjpData, true)
 	if err != nil {
@@ -77,21 +98,24 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	gdataItem := GspatialjpDataItemFrom(gdataItemRaw)
-	log.Infofc(ctx, "geospatialjp data item: %s", ppp.Sprint(gdataItem))
+	log.Infofc(ctx, "geospatialjp data item: %s", pp.Sprint(gdataItem))
 
-	if gdataItem != nil {
+	if gdataItem != nil && !conf.IgnoreStatus {
 		if !gdataItem.ShouldMergeCityGML() {
+			log.Infofc(ctx, "skip citygml because status is running")
 			conf.SkipCityGML = true
 		}
 		if !gdataItem.ShouldMergePlateau() {
+			log.Infofc(ctx, "skip plateau because status is running")
 			conf.SkipPlateau = true
 		}
 		if !gdataItem.ShouldMergeMaxLOD() {
+			log.Infofc(ctx, "skip maxlod because status is running")
 			conf.SkipMaxLOD = true
 		}
 	}
 
-	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex {
+	if conf.SkipCityGML && conf.SkipPlateau && conf.SkipMaxLOD && conf.SkipRelated && conf.SkipIndex && !conf.ValidateMaxLOD {
 		return fmt.Errorf("no command to run")
 	}
 
@@ -108,23 +132,38 @@ func CommandSingle(conf *Config) (err error) {
 	}
 
 	if cityItem.YearInt() == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because year is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。整備年度が不正です: %s", cityItem.Year)
 		return fmt.Errorf("invalid year: %s", cityItem.Year)
 	}
 
 	if cityItem.SpecVersionMajorInt() == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because spec version is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。仕様書バージョンが不正です: %s", cityItem.Spec)
 		return fmt.Errorf("invalid spec version: %s", cityItem.Spec)
 	}
 
-	uc := GetUpdateCount(cityItem.CodeLists)
-	if uc == 0 {
+	if cityItem.GetUpdateCount() == 0 {
+		if conf.SkipImcompleteItems {
+			log.Infofc(ctx, "skip because update count is invalid")
+			return nil
+		}
+
 		cw.Commentf(ctx, "公開準備処理を開始できません。codeListsのzipファイルの命名規則が不正のため版数を読み取れませんでした。もう一度ファイル名の命名規則を確認してください。_1_op_のような文字が必須です。: %s", cityItem.CodeLists)
 		return fmt.Errorf("invalid update count: %s", cityItem.CodeLists)
 	}
 
 	tmpDirName := fmt.Sprintf("%s-%d", time.Now().Format("20060102-150405"), rand.Intn(1000))
 	tmpDir := filepath.Join(tmpDirBase, tmpDirName)
+	_ = os.MkdirAll(tmpDir, 0755)
 	log.Infofc(ctx, "tmp dir: %s", tmpDir)
 
 	if conf.Clean {
@@ -143,24 +182,29 @@ func CommandSingle(conf *Config) (err error) {
 		return fmt.Errorf("failed to get all feature items: %w", err)
 	}
 
-	log.Infofc(ctx, "feature items: %s", ppp.Sprint(allFeatureItems))
+	log.Infofc(ctx, "feature items: %s", pp.Sprint(allFeatureItems))
 
 	dic := mergeDics(allFeatureItems)
-	log.Infofc(ctx, "dic: %s", ppp.Sprint(dic))
+	log.Infofc(ctx, "dic: %s", pp.Sprint(dic))
 
 	mc := MergeContext{
-		TmpDir:          tmpDir,
-		CityItem:        cityItem,
-		AllFeatureItems: allFeatureItems,
-		UC:              uc,
-		WetRun:          conf.WetRun,
+		TmpDir:             tmpDir,
+		CityItem:           cityItem,
+		AllFeatureItems:    allFeatureItems,
+		GspatialjpDataItem: gdataItem,
+		WetRun:             conf.WetRun,
+		FeatureTypes:       conf.FeatureTypes,
 	}
 
 	cw.NotifyRunning(ctx)
 
-	// prepare
+	// maxlod
 	if !conf.SkipMaxLOD {
 		if err := PrepareMaxLOD(ctx, cw, mc); err != nil {
+			return err
+		}
+	} else if conf.ValidateMaxLOD {
+		if err := ValidateMaxLOD(ctx, cw, mc); err != nil {
 			return err
 		}
 	}
@@ -205,9 +249,13 @@ func CommandSingle(conf *Config) (err error) {
 
 	// plateau
 	if !conf.SkipPlateau {
-		res, err := PreparePlateau(ctx, cw, mc)
+		res, w, err := PreparePlateau(ctx, cw, mc)
 		if err != nil {
 			return err
+		}
+
+		if len(w) > 0 {
+			cw.Comment(ctx, "公開準備処理中に警告が発生しました：\n"+strings.Join(w, "\n"))
 		}
 
 		plateauPath = res
@@ -221,6 +269,9 @@ func CommandSingle(conf *Config) (err error) {
 		}
 	}
 
+	log.Infofc(ctx, "citygml path: %s", citygmlPath)
+	log.Infofc(ctx, "plateau path: %s", plateauPath)
+
 	if !conf.SkipIndex && citygmlPath != "" && plateauPath != "" {
 		if err := PrepareIndex(ctx, cw, &IndexSeed{
 			CityName:       cityItem.CityName,
@@ -232,7 +283,7 @@ func CommandSingle(conf *Config) (err error) {
 			RelatedZipPath: relatedPath,
 			Generic:        indexItem.Generic,
 			Dic:            dic,
-		}); err != nil {
+		}, conf.FeatureTypes); err != nil {
 			return err
 		}
 	} else {

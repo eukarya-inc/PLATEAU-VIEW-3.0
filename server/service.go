@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/govpolygon"
+	"github.com/eukarya-inc/reearth-plateauview/server/openapi"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
 	"github.com/eukarya-inc/reearth-plateauview/server/putil"
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
+	"github.com/eukarya-inc/reearth-plateauview/server/tiles"
 	"github.com/labstack/echo/v4"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
 	"github.com/reearth/reearthx/util"
@@ -24,6 +28,7 @@ type Service struct {
 }
 
 var services = [](func(*Config) (*Service, error)){
+	OpenAPI,
 	CMSIntegration,
 	SDKAPI,
 	SearchIndex,
@@ -31,7 +36,9 @@ var services = [](func(*Config) (*Service, error)){
 	Sidebar,
 	DataCatalog,
 	GovPolygon,
+	Tiles,
 	Embed,
+	CityGML,
 }
 
 func Services(conf *Config) (srv []*Service, _ error) {
@@ -46,6 +53,15 @@ func Services(conf *Config) (srv []*Service, _ error) {
 		srv = append(srv, s)
 	}
 	return
+}
+
+func OpenAPI(*Config) (*Service, error) {
+	return &Service{
+		Name: "openapi",
+		Echo: func(g *echo.Group) error {
+			return openapi.Handler(g)
+		},
+	}, nil
 }
 
 func CMSIntegration(conf *Config) (*Service, error) {
@@ -162,6 +178,22 @@ func GovPolygon(conf *Config) (*Service, error) {
 	}, nil
 }
 
+func Tiles(conf *Config) (*Service, error) {
+	return &Service{
+		Name: "tiles",
+		Echo: func(g *echo.Group) error {
+			h, err := tiles.New(conf.Tiles())
+			if err != nil {
+				return err
+			}
+
+			h.Route(g.Group(""))
+			h.Init(context.Background())
+			return nil
+		},
+	}, nil
+}
+
 func Embed(conf *Config) (*Service, error) {
 	return &Service{
 		Name: "embed",
@@ -169,6 +201,15 @@ func Embed(conf *Config) (*Service, error) {
 			_ = putil.DeliverFile(g, "PlateauView3.js", "text/javascript")
 			_ = putil.DeliverFile(g, "reearth.yml", "application/yaml")
 			return nil
+		},
+	}, nil
+}
+
+func CityGML(conf *Config) (*Service, error) {
+	return &Service{
+		Name: "citygml",
+		Echo: func(g *echo.Group) error {
+			return citygml.Echo(conf.CityGML(), g.Group("/citygml"))
 		},
 	}, nil
 }

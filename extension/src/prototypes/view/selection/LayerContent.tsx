@@ -36,7 +36,9 @@ import { DatasetDialog } from "../ui-containers/DatasetDialog";
 import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
+import { LayerMeshCodeSection } from "./LayerMeshCodeSection";
 import { LayerSketchSection } from "./LayerSketchSection";
+import { LayerSpatialIdSection } from "./LayerSpatialIdSection";
 
 type SupportedLayerType = Exclude<LayerType, typeof PEDESTRIAN_LAYER>;
 
@@ -157,6 +159,8 @@ export function LayerContent<T extends SupportedLayerType>({
 
   const layerName = layerTypeNames[type] ?? rootLayer?.layerName;
 
+  const plateauSpecMajorVersion = "version" in layer ? layer.version ?? 0 : 0;
+
   return (
     <>
       <List disablePadding>
@@ -222,6 +226,8 @@ export function LayerContent<T extends SupportedLayerType>({
         {/* <InspectorItem> */}
         {/* <LayerShowWireframeSection layers={values} />*/}
         <LayerSketchSection layers={values} />
+        <LayerSpatialIdSection layers={values} />
+        <LayerMeshCodeSection layers={values} />
         {/* </InspectorItem> */}
       </List>
       {rootLayerConfig && (
@@ -238,6 +244,7 @@ export function LayerContent<T extends SupportedLayerType>({
           state={buildingSearchPanelState}
           layer={layer}
           layerId={layerId}
+          plateauSpecMajorVersion={plateauSpecMajorVersion}
         />
       )}
     </>

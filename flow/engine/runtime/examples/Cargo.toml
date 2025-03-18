@@ -1,0 +1,43 @@
+[package]
+description = "Re:Earth Flow examples"
+name = "reearth-flow-examples"
+
+authors.workspace = true
+edition.workspace = true
+homepage.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+publish = false
+
+[dev-dependencies]
+reearth-flow-action-log.workspace = true
+reearth-flow-action-plateau-processor.workspace = true
+reearth-flow-action-processor.workspace = true
+reearth-flow-action-sink.workspace = true
+reearth-flow-action-source.workspace = true
+reearth-flow-common.workspace = true
+reearth-flow-eval-expr.workspace = true
+reearth-flow-runner.workspace = true
+reearth-flow-runtime.workspace = true
+reearth-flow-state.workspace = true
+reearth-flow-storage.workspace = true
+reearth-flow-types.workspace = true
+
+async-trait.workspace = true
+bytes.workspace = true
+directories.workspace = true
+num_cpus.workspace = true
+once_cell.workspace = true
+time.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+uuid.workspace = true
+yaml-include = "0.7.0"
+
+[[example]]
+name = "example_main"
+path = "example_main.rs"

@@ -1,0 +1,49 @@
+mutation CreateDeployment($input: CreateDeploymentInput!) {
+  createDeployment(input: $input) {
+    deployment {
+      ...Deployment
+    }
+  }
+}
+
+mutation UpdateDeployment($input: UpdateDeploymentInput!) {
+  updateDeployment(input: $input) {
+    deployment {
+      ...Deployment
+    }
+  }
+}
+
+mutation DeleteDeployment($input: DeleteDeploymentInput!) {
+  deleteDeployment(input: $input) {
+    deploymentId
+  }
+}
+
+mutation ExecuteDeployment($input: ExecuteDeploymentInput!) {
+  executeDeployment(input: $input) {
+    job {
+      ...Job
+    }
+  }
+}
+
+query GetDeployments($workspaceId: ID!, $pagination: PageBasedPagination!) {
+  deployments(workspaceId: $workspaceId, pagination: $pagination) {
+    totalCount
+    nodes {
+      ...Deployment
+    }
+    pageInfo {
+      totalCount
+      currentPage
+      totalPages
+    }
+  }
+}
+
+query GetDeploymentHead($input: GetHeadInput!) {
+  deploymentHead(input: $input) {
+    ...Deployment
+  }
+}

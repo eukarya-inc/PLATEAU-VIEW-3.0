@@ -1,0 +1,18 @@
+api:
+  - changed-files:
+      - any-glob-to-any-file: server/api/**/*
+cicd:
+  - changed-files:
+      - any-glob-to-any-file: .github/workflows/**/*
+engine:
+  - changed-files:
+      - any-glob-to-any-file: engine/**/*
+subscriber:
+  - changed-files:
+      - any-glob-to-any-file: server/subscriber/**/*
+ui:
+  - changed-files:
+      - any-glob-to-any-file: ui/**/*
+websocket:
+  - changed-files:
+      - any-glob-to-any-file: server/websocket/**/*

@@ -3,9 +3,11 @@ package datacatalogv3
 import (
 	"context"
 	"encoding/json"
+	"net/http"
 	"testing"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
@@ -14,18 +16,33 @@ import (
 
 func TestRepos(t *testing.T) {
 	ctx := context.Background()
+
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 	mockCMS(t)
 
-	cms := lo.Must(cms.New("https://example.com", "token"))
+	ctx = plateaucms.SetAllCMSMetadataFromContext(ctx, plateaucms.MetadataList{
+		{
+			ProjectAlias: "prj",
+			CMSURL:       "https://example.com",
+			WorkspaceID:  "ws",
+			ProjectID:    "prj",
+		},
+	})
 
-	repos := NewRepos()
-	err := repos.Prepare(ctx, "prj", 2023, cms)
+	cms := lo.Must(cms.New("https://example.com", "token"))
+	pcms := lo.Must(plateaucms.New(plateaucms.Config{
+		CMSBaseURL:       "https://example.com",
+		CMSMainToken:     "token",
+		CMSSystemProject: "sys",
+	}))
+
+	repos := NewRepos(pcms)
+	err := repos.Prepare(ctx, "prj", 2023, true, cms)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"plateau bldg2 bldg: invalid city: city2", "plateau bldg2: city not found: city2"}, repos.Warnings("prj"))
 
-	assertRes := func(t *testing.T, ctx context.Context, r plateauapi.Repo, cityName, cityCode string, admin bool, stage *string, isPref, found, noCity bool) {
+	assertRes := func(t *testing.T, ctx context.Context, r plateauapi.Repo, cityName, cityCode, itemID string, admin bool, stage *string, isPref, found, noCity bool) {
 		t.Helper()
 
 		prefCode := cityCode[:2]
@@ -38,6 +55,7 @@ func TestRepos(t *testing.T) {
 					Type:           plateauapi.AreaTypeCity,
 					Code:           plateauapi.AreaCode(cityCode),
 					Name:           cityName,
+					ParentID:       lo.ToPtr(plateauapi.ID("p_" + prefCode)),
 					PrefectureID:   plateauapi.ID("p_" + prefCode),
 					PrefectureCode: plateauapi.AreaCode(prefCode),
 					CitygmlID:      lo.ToPtr(plateauapi.ID("cg_" + cityCode)),
@@ -61,10 +79,15 @@ func TestRepos(t *testing.T) {
 		assert.NoError(t, err)
 
 		var adminData any
-		if admin && stage != nil {
-			adminData = map[string]any{
-				"stage": *stage,
+		if admin {
+			a := &plateauapi.Admin{
+				CMSItemID: itemID,
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/xxx/details/" + itemID,
 			}
+			if stage != nil {
+				a.Stage = *stage
+			}
+			adminData = a
 		}
 
 		var cityID *plateauapi.ID
@@ -88,6 +111,7 @@ func TestRepos(t *testing.T) {
 					TypeID:             plateauapi.NewID("bldg_3", plateauapi.TypeDatasetType),
 					TypeCode:           "bldg",
 					PlateauSpecMinorID: plateauapi.ID("ps_3.2"),
+					Ar:                 true,
 					Items: []*plateauapi.PlateauDatasetItem{
 						{
 							ID:       plateauapi.ID("di_" + cityCode + "_bldg_lod1"),
@@ -96,6 +120,7 @@ func TestRepos(t *testing.T) {
 							Name:     "LOD1",
 							ParentID: plateauapi.ID("d_" + cityCode + "_bldg"),
 							Lod:      lo.ToPtr(1),
+							LodEx:    nil,
 							Texture:  lo.ToPtr(plateauapi.TextureTexture),
 						},
 					},
@@ -108,20 +133,25 @@ func TestRepos(t *testing.T) {
 	}
 
 	repo := repos.Repo("prj")
-	assertRes(t, ctx, repo, "PREF", "00", false, nil, true, false, false)
-	assertRes(t, ctx, repo, "foo", "00001", false, nil, false, true, false)
-	assertRes(t, ctx, repo, "bar", "00002", false, nil, false, false, true)
+	assertRes(t, ctx, repo, "PREF", "00", "bldg1", false, nil, true, false, false)
+	assertRes(t, ctx, repo, "foo", "00001", "bldg1", false, nil, false, true, false)
+	assertRes(t, ctx, repo, "bar", "00002", "bldg1", false, nil, false, false, true)
 
 	ctx2 := AdminContext(ctx, true, true, false)
-	assertRes(t, ctx2, repo, "PREF", "00", true, lo.ToPtr(string(stageBeta)), true, true, false)
-	assertRes(t, ctx2, repo, "foo", "00001", true, nil, false, true, false)
-	assertRes(t, ctx2, repo, "bar", "00002", true, nil, false, false, true)
+	assertRes(t, ctx2, repo, "PREF", "00", "bldg0", true, lo.ToPtr(string(stageBeta)), true, true, false)
+	assertRes(t, ctx2, repo, "foo", "00001", "bldg1", true, nil, false, true, false)
+	assertRes(t, ctx2, repo, "bar", "00002", "bldg1", true, nil, false, false, true)
 
 	assert.NoError(t, repos.UpdateAll(ctx))
 }
 
 func mockCMS(t *testing.T) {
 	t.Helper()
+
+	httpmock.RegisterResponder(
+		"GET", "https://example.com/api/projects/prj/models",
+		httpmock.NewJsonResponderOrPanic(200, models),
+	)
 	httpmock.RegisterResponder(
 		"GET", "https://example.com/api/projects/prj/models/plateau-city/items",
 		httpmock.NewJsonResponderOrPanic(200, cities),
@@ -142,16 +172,85 @@ func mockCMS(t *testing.T) {
 		"GET", "https://example.com/api/projects/prj/models/plateau-geospatialjp-data/items",
 		httpmock.NewJsonResponderOrPanic(200, empty),
 	)
-	for _, ft := range plateauFeatureTypes {
+	for _, ft := range []string{"bldg"} {
 		res := empty
-		if ft.Code == "bldg" {
+		if ft == "bldg" {
 			res = bldg
 		}
 		httpmock.RegisterResponder(
-			"GET", "https://example.com/api/projects/prj/models/plateau-"+ft.Code+"/items",
+			"GET", "https://example.com/api/projects/prj/models/plateau-"+ft+"/items",
 			httpmock.NewJsonResponderOrPanic(200, res),
 		)
 	}
+
+	httpmock.RegisterResponder(
+		"GET",
+		"https://example.com/api/projects/sys/models/plateau-features/items",
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, cms.Items{
+			PerPage:    1,
+			Page:       1,
+			TotalCount: 1,
+			Items: []cms.Item{
+				{
+					ID: "bldg",
+					Fields: []*cms.Field{
+						{Key: "name", Value: "建築物モデル"},
+						{Key: "code", Value: "bldg"},
+					},
+				},
+			},
+		}),
+	)
+
+	httpmock.RegisterResponder(
+		"GET",
+		"https://example.com/api/projects/sys/models/plateau-dataset-types/items",
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, cms.Items{
+			PerPage:    1,
+			Page:       1,
+			TotalCount: 1,
+			Items: []cms.Item{
+				{
+					ID: "landmark",
+					Fields: []*cms.Field{
+						{Key: "name", Value: "ランドマーク"},
+						{Key: "code", Value: "landmark"},
+						{Key: "category", Value: "その他のデータセット"},
+					},
+				},
+			},
+		}),
+	)
+
+	httpmock.RegisterResponder(
+		"GET",
+		"https://example.com/api/projects/sys/models/plateau-spec/items",
+		httpmock.NewJsonResponderOrPanic(http.StatusOK, cms.Items{
+			PerPage:    1,
+			Page:       1,
+			TotalCount: 1,
+			Items: []cms.Item{
+				{
+					ID: "1",
+					Fields: []*cms.Field{
+						{Key: "major_version", Value: 4},
+						{Key: "year", Value: 2024},
+						{Key: "max_minor_version", Value: 1},
+						{Key: "fme_url", Value: "https://example.com/v4"},
+					},
+				},
+				{
+					ID: "2",
+					Fields: []*cms.Field{
+						{Key: "major_version", Value: 3},
+						{Key: "year", Value: 2023},
+						{Key: "max_minor_version", Value: 5},
+						{Key: "fme_url", Value: "https://example.com/v3"},
+					},
+				},
+			},
+		}),
+	)
 }
 
 func j(j string) any {
@@ -159,6 +258,18 @@ func j(j string) any {
 	lo.Must0(json.Unmarshal([]byte(j), &v))
 	return v
 }
+
+var models = j(`{
+	"totalCount": 1,
+	"page": 1,
+	"perPage": 100,
+	"models": [
+		{
+			"id": "xxx",
+			"key": "plateau-bldg"
+		}
+	]
+}`)
 
 var cities = j(`{
 	"totalCount": 1,

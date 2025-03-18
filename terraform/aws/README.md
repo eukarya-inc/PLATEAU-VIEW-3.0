@@ -104,14 +104,12 @@ terraform init
 
 ```console
 terraform apply --target aws_route53_zone.public_zone
+
+name_servers = tolist([
+  "${作成されたパブリックゾーンのNS}
+  ...
+])
 ```
-
-マネージドゾーン名を取得し、以下のコマンドを実行して`NS`レコードを取得します。
-
-```console
-aws route53 list-resource-record-sets --hosted-zone-id /hostedzone/Z01251093SKX99FOVRAZN --query "ResourceRecordSets[?Type == 'NS'].ResourceRecords[*].Value"
-```
-
 出力された`NS`レコードを、ドメインのレジストラで、ドメインのネームサーバーとして設定してください。
 設定方法は各レジストラによって異なりますので、レジストラのドキュメントを参照してください。
 
@@ -120,7 +118,7 @@ aws route53 list-resource-record-sets --hosted-zone-id /hostedzone/Z01251093SKX9
 以下のコマンドを実行し、ECRを作成します。
 
 ```console
-terraform apply -target module.reearth_ecr -target module.reearth_cmsecr
+terraform apply -target=module.reearth_ecr -target=module.reearth_cms_ecr
 ```
 
 ECRを作成後、dockerhubより各イメージをpullし、ECRにpushします。
@@ -134,11 +132,11 @@ aws ecr get-login-password  | docker login --username AWS --password-stdin ${AWS
 
 #dockerhubからイメージを取得
 docker pull eukarya/plateauview2-reearth:latest
-docker tag eukarya/plateauview2-reearth:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-api
+docker tag eukarya/plateauview2-reearth:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-server
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-server
 
-docker pull eukarya/plateauview-geo:latest
-docker tag eukarya/plateauview-geo:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
+docker pull eukarya/plateauview2-sidecar:latest
+docker tag eukarya/plateauview2-sidecar:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-api
 
 docker pull eukarya/plateauview-geo:latest
@@ -146,8 +144,12 @@ docker tag eukarya/plateauview-geo:latest${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}
 docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/plateauview-geo
 
 docker pul eukarya/plateauview2-reearth-cms:latest
-docker tag eukarya/plateauview2-reearth-cms:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
-docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
+docker tag eukarya/plateauview2-reearth-cms:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms-server
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms-server
+
+docker pull eukarya/plateauview2-reearth-cms-worker:latest
+docker tag eukarya/plateauview2-reearth-cms-worker:latest ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms-worker
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms-worker
 ```
 
 
@@ -157,7 +159,7 @@ docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/reearth-cms
 以下のコマンドを実行し、関連リソースを作成します。
 
 ```console
-terraform apply -target module.reearth -target module.reearth_cms module.cognito
+terraform apply -target module.reearth -target module.reearth_cms -target module.cognito
 ```
 
 ### 3.9 ドメインのセットアップ

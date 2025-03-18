@@ -5,12 +5,13 @@ import (
 	"path"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func echov3(conf Config, g *echo.Group) (func(ctx context.Context) error, error) {
-	h, err := newReposHandler(conf)
+func echov3(conf Config, g *echo.Group, pcms *plateaucms.CMS) (func(ctx context.Context) error, error) {
+	h, err := newReposHandler(conf, pcms)
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +25,8 @@ func echov3(conf Config, g *echo.Group) (func(ctx context.Context) error, error)
 	)
 
 	// GraphQL playground
-	plateauapig.GET("/:pid/graphql", gqlPlaygroundHandler(conf.PlaygroundEndpoint, false))
 	plateauapig.GET("/graphql", gqlPlaygroundHandler(conf.PlaygroundEndpoint, false))
+	plateauapig.GET("/:pid/graphql", gqlPlaygroundHandler(conf.PlaygroundEndpoint, false))
 	plateauapig.GET("/admin/graphql", gqlPlaygroundHandler(conf.PlaygroundEndpoint, true))
 	plateauapig.GET("/:pid/admin/graphql", gqlPlaygroundHandler(conf.PlaygroundEndpoint, true))
 
@@ -36,10 +37,13 @@ func echov3(conf Config, g *echo.Group) (func(ctx context.Context) error, error)
 	plateauapig.POST("/:pid/admin/graphql", h.Handler(true))
 
 	// CityGML files API
-	plateauapig.GET("/citygml/:citygmlid", h.CityGMLFiles(false))
-	plateauapig.GET("/:pid/citygml/:citygmlid", h.CityGMLFiles(false))
-	plateauapig.GET("/admin/citygml/:citygmlid", h.CityGMLFiles(true))
-	plateauapig.GET("/:pid/admin/citygml/:citygmlid", h.CityGMLFiles(true))
+	plateauapig.GET("/citygml/:conditions", h.CityGMLFiles(false))
+	plateauapig.GET("/:pid/citygml/:conditions", h.CityGMLFiles(false))
+	plateauapig.GET("/admin/citygml/:conditions", h.CityGMLFiles(true))
+	plateauapig.GET("/:pid/admin/citygml/:conditions", h.CityGMLFiles(true))
+
+	// Simple PLATEAU dataset API
+	plateauapig.GET("/plateau-datasets", h.SimplePlateauDatasetsAPI())
 
 	// warning API
 	plateauapig.GET("/:pid/warnings", h.WarningHandler)

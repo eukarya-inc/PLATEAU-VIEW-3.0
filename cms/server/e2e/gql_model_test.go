@@ -1,12 +1,12 @@
 package e2e
 
 import (
-	"github.com/samber/lo"
 	"net/http"
 	"testing"
 
 	"github.com/gavv/httpexpect/v2"
 	"github.com/reearth/reearth-cms/server/internal/app"
+	"github.com/samber/lo"
 )
 
 func createModel(e *httpexpect.Expect, pID, name, desc, key string) (string, *httpexpect.Value) {
@@ -44,7 +44,7 @@ func createModel(e *httpexpect.Expect, pID, name, desc, key string) (string, *ht
 	return res.Path("$.data.createModel.model.id").Raw().(string), res
 }
 
-func updateModel(e *httpexpect.Expect, mId string, name, desc, key *string) *httpexpect.Value {
+func updateModel(e *httpexpect.Expect, mId string, name, desc, key *string, public bool) *httpexpect.Value {
 	requestBody := GraphQLRequest{
 		Query: `mutation UpdateModel($modelId: ID!, $name: String, $description: String, $key: String,  $public: Boolean!) {
 				  updateModel(input: {modelId: $modelId, name: $name, description: $description, key: $key, public: $public}) {
@@ -64,7 +64,7 @@ func updateModel(e *httpexpect.Expect, mId string, name, desc, key *string) *htt
 			"name":        name,
 			"description": desc,
 			"key":         key,
-			"public":      false,
+			"public":      public,
 		},
 	}
 
@@ -315,7 +315,7 @@ func getModel(e *httpexpect.Expect, mID string) (string, string, *httpexpect.Val
 }
 
 func TestCreateModel(t *testing.T) {
-	e, _ := StartGQLServer(t, &app.Config{}, true, baseSeederUser)
+	e := StartServer(t, &app.Config{}, true, baseSeederUser)
 
 	pId, _ := createProject(e, wId.String(), "test", "test", "test-1")
 
@@ -331,12 +331,12 @@ func TestCreateModel(t *testing.T) {
 
 }
 func TestUpdateModel(t *testing.T) {
-	e, _ := StartGQLServer(t, &app.Config{}, true, baseSeederUser)
+	e := StartServer(t, &app.Config{}, true, baseSeederUser)
 
 	pId, _ := createProject(e, wId.String(), "test", "test", "test-2")
 
 	mId, _ := createModel(e, pId, "test", "test", "test-2")
-	res := updateModel(e, mId, lo.ToPtr("updated name"), lo.ToPtr("updated desc"), lo.ToPtr("updated_key"))
+	res := updateModel(e, mId, lo.ToPtr("updated name"), lo.ToPtr("updated desc"), lo.ToPtr("updated_key"), false)
 	res.Object().
 		Value("data").Object().
 		Value("updateModel").Object().
@@ -347,7 +347,7 @@ func TestUpdateModel(t *testing.T) {
 }
 
 func TestUpdateModelsOrder(t *testing.T) {
-	e, _ := StartGQLServer(t, &app.Config{}, true, baseSeederUser)
+	e := StartServer(t, &app.Config{}, true, baseSeederUser)
 
 	pId, _ := createProject(e, wId.String(), "test", "test", "test-2")
 

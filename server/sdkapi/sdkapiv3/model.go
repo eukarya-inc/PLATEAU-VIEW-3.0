@@ -5,7 +5,7 @@ import (
 )
 
 type DatasetsQuery struct {
-	Areas []QueryArea `graphql:"areas(input: {areaTypes: PREFECTURE})"`
+	Areas []QueryArea `graphql:"areas(input: {areaTypes: PREFECTURE, includeEmpty: true})"`
 }
 
 type QueryArea struct {

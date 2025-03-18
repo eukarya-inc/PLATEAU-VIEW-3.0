@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-func migrateV1(conf *Config, args []string) error {
+func migrateV1(_ *Config, args []string) error {
 	var listFilePath, output, baseURL, prefix string
 	var offset int
 	var wetrun bool
@@ -124,7 +124,7 @@ func migrateV1(conf *Config, args []string) error {
 		}
 
 		if wetrun {
-			if err := downloadAndAddToZip(zw, path, u, filePath); err != nil {
+			if err := downloadAndAddToZip(zw, u, filePath); err != nil {
 				errors = append(errors, i)
 				fmt.Printf("ERROR: %d/%d | %s | %s | %s\n", i+1, le, p[1], filePath, u)
 			}
@@ -151,7 +151,7 @@ func migrateV1(conf *Config, args []string) error {
 	return nil
 }
 
-func downloadAndAddToZip(zw *zip.Writer, path, url, filePath string) error {
+func downloadAndAddToZip(zw *zip.Writer, url, filePath string) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)

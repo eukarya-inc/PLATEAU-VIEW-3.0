@@ -7,14 +7,6 @@ type Feature struct {
 	properties  *map[string]any
 }
 
-func NewFeatureWithNewId(featureType string, geometry Geometry) (*Feature, error) {
-	return &Feature{
-		id:          NewFeatureID(),
-		featureType: featureType,
-		geometry:    geometry,
-	}, nil
-}
-
 func NewFeature(id FeatureID, featureType string, geometry Geometry) (*Feature, error) {
 	return &Feature{
 		id:          id,
@@ -45,6 +37,10 @@ func (f *Feature) Geometry() Geometry {
 }
 
 func (f *Feature) Properties() *map[string]any {
+	if f.properties == nil {
+		emptyMap := make(map[string]any)
+		return &emptyMap
+	}
 	return f.properties
 }
 

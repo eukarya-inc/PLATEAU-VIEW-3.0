@@ -1,8 +1,8 @@
-import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
 import { EmphasisPropertyTemplate } from "../../../shared/api/types";
+import { generateID } from "../../../shared/utils";
 import { TemplateAddButton } from "../common/commonTemplate/TemplateAddButton";
 import { TemplateHeader } from "../common/commonTemplate/TemplateHeader";
 import { EditorSection, EditorTree, EditorTreeSelection } from "../ui-components";
@@ -32,8 +32,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC<
   const [templateId, setTemplateId] = useState<string>();
   const [isSaving, setIsSaving] = useState(false);
 
-  const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
-  const templates = useAtomValue(templatesAtom);
+  const { templates, saveTemplate, removeTemplate } = useTemplateAPI();
 
   const emphasisPropertyTemplates = useMemo(
     () =>
@@ -190,6 +189,36 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC<
     [editorNoticeRef, removeTemplate],
   );
 
+  const handleTemplateDuplicate = useCallback(
+    async (newTemplateName: string) => {
+      if (!template) return;
+      const newTemplate = {
+        name: newTemplateName,
+        type: "emphasis",
+        properties: template.properties.map(p => ({ ...p, id: generateID() })),
+      } as unknown as EmphasisPropertyTemplate;
+
+      setIsSaving(true);
+      await saveTemplate(newTemplate)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template duplicated!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template duplicate failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
+    },
+    [editorNoticeRef, saveTemplate, template],
+  );
+
   return (
     <EditorSection
       sidebarMain={
@@ -225,6 +254,7 @@ export const EditorInspectorEmphasisPropertyTemplateSection: React.FC<
             templateNames={templateNames}
             onTemplateRename={handleTemplateRename}
             onTemplateRemove={handleTemplateRemove}
+            onTemplateDuplicate={handleTemplateDuplicate}
           />
         )
       }

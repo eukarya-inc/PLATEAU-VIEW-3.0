@@ -15,6 +15,7 @@ import {
   Setting,
   Template,
 } from "../api/types";
+import { DEFAULT_PLATEAU_SPEC_VERSION } from "../constants";
 import { DatasetFragmentFragment, DatasetItem, DatasetType } from "../graphql/types/catalog";
 import { REEARTH_DATA_FORMATS } from "../plateau/constants";
 import { CameraPosition } from "../reearth/types";
@@ -52,6 +53,8 @@ export type RootLayerForDatasetParams = {
   shareId: string | undefined;
   shouldInitialize: boolean;
   hidden?: boolean;
+  hasShareIdInParams?: boolean;
+  version: number;
 };
 
 export type RootLayerForLayerAtomParams<T extends LayerType> = {
@@ -162,7 +165,7 @@ const findComponentTemplate = (
 
   // Default template
   const templateWithName = dataName
-    ? templates.find(t => [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]))
+    ? templates.find(t => [dataName, dataSubName].includes(t.name?.split("/").slice(-1)[0]))
     : undefined;
 
   const template =
@@ -185,7 +188,8 @@ const findEmphasisProperties = (
   const templateWithName = dataName
     ? templates.find(
         t =>
-          t.type === "emphasis" && [dataName, dataSubName].includes(t.name.split("/").slice(-1)[0]),
+          t.type === "emphasis" &&
+          [dataName, dataSubName].includes(t.name?.split("/").slice(-1)[0]),
       )
     : undefined;
 
@@ -208,7 +212,9 @@ const createViewLayerWithComponentGroup = (
   componentGroup: ComponentGroup | undefined,
   shareId: string | undefined,
   shouldInitialize: boolean,
+  version: number,
   hidden?: boolean,
+  hasShareIdInParams?: boolean,
 ): LayerModel => {
   invariant(type);
   return {
@@ -227,10 +233,12 @@ const createViewLayerWithComponentGroup = (
       componentGroup?.components ?? [],
       shareId,
       shouldInitialize,
+      hasShareIdInParams,
     ),
     id: datasetId,
     format: data?.format ? REEARTH_DATA_FORMATS[data.format] : undefined,
     url: data?.url,
+    version,
     layers: data?.layers ?? undefined,
     cameraAtom: atom<CameraPosition | undefined>(undefined),
     componentGroups: (template ?? setting?.fieldComponents)?.groups?.map(
@@ -253,6 +261,8 @@ const createRootLayerForDataset = ({
   shareId,
   shouldInitialize,
   hidden,
+  hasShareIdInParams,
+  version,
 }: RootLayerForDatasetParams): RootLayerForDataset => {
   const setting = findSetting(settings, currentDataId);
   const data = findData(dataList, currentDataId);
@@ -290,7 +300,9 @@ const createRootLayerForDataset = ({
         componentGroup,
         shareId,
         shouldInitialize,
+        version,
         hidden,
+        hasShareIdInParams,
       ),
     ),
   };
@@ -306,6 +318,11 @@ export const createRootLayerForDatasetAtom = (
     datasetTypeLayers[dataset.type.code as PlateauDatasetType] ?? datasetTypeLayers.usecase;
   const subName =
     dataset.__typename === "PlateauDataset" ? dataset.subname ?? undefined : undefined;
+
+  const version =
+    dataset.__typename === "PlateauDataset"
+      ? dataset.plateauSpecMinor.majorVersion
+      : DEFAULT_PLATEAU_SPEC_VERSION;
 
   const initialSettings = params.settings;
   const initialTemplates = params.templates;
@@ -326,7 +343,9 @@ export const createRootLayerForDatasetAtom = (
       currentGroupId: initialCurrentGroupId,
       shareId,
       shouldInitialize: true,
+      hasShareIdInParams: !!params.shareId,
       hidden: initialHidden,
+      version,
     }),
   );
 
@@ -353,6 +372,7 @@ export const createRootLayerForDatasetAtom = (
           currentGroupId: currentGroupId,
           shareId,
           shouldInitialize: false,
+          version,
         }),
       );
       set(settingsPrimitiveAtom, settings);
@@ -394,6 +414,7 @@ export const createRootLayerForDatasetAtom = (
           currentGroupId: currentGroupId,
           shareId,
           shouldInitialize: false,
+          version,
         }),
       );
       set(currentDataIdAtom, () => update);
@@ -432,6 +453,7 @@ export const createRootLayerForDatasetAtom = (
           group,
           shareId,
           false,
+          version,
         ),
       );
       set(currentGroupIdAtom, () => update);

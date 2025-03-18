@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 
-import { PLATEAU_GEOJSON_URL } from "../../constants";
+import { usePlateauGeojsonUrl } from "../../states/environmentVariables";
 import { useLayer } from "../hooks";
 import { Data, LayerAppearanceTypes } from "../types";
 
@@ -9,9 +9,11 @@ export type PolygonAppearances = Partial<Pick<LayerAppearanceTypes, "polygon" | 
 export type PolygonProps = {
   onLoad?: (layerId: string) => void;
   appearances?: PolygonAppearances;
+  visible?: boolean;
 };
 
-export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
+export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances, visible }) => {
+  const [plateauGeojsonUrl] = usePlateauGeojsonUrl();
   const mergedAppearances: PolygonAppearances | undefined = useMemo(
     () => ({
       ...appearances,
@@ -25,15 +27,19 @@ export const PolygonLayer: FC<PolygonProps> = ({ onLoad, appearances }) => {
   const data: Data = useMemo(
     () => ({
       type: "geojson",
-      url: PLATEAU_GEOJSON_URL,
+      url: plateauGeojsonUrl,
+      geojson: {
+        useAsResource: true,
+      },
     }),
-    [],
+    [plateauGeojsonUrl],
   );
 
   useLayer({
     data,
     appearances: mergedAppearances,
     onLoad,
+    visible,
   });
 
   return null;

@@ -6,8 +6,12 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/eukarya-inc/jpareacode"
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
+	"github.com/k0kubun/pp/v3"
 	"github.com/reearth/reearthx/log"
 	"golang.org/x/exp/slices"
 )
@@ -47,20 +51,38 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 	if err != nil {
 		return fmt.Errorf("failed to get models: %w", err)
 	}
+
 	for _, m := range models.Models {
-		if !strings.HasPrefix(m.Key, modelPrefix) {
+		if !strings.HasPrefix(m.Key, cmsintegrationcommon.ModelPrefix) {
 			continue
 		}
-		modelIDs[strings.TrimPrefix(m.Key, modelPrefix)] = m.ID
+		code := strings.TrimPrefix(m.Key, cmsintegrationcommon.ModelPrefix)
+		modelIDs[code] = m.ID
 	}
-	if len(modelIDs) == 0 || modelIDs[cityModel] == "" || modelIDs[relatedModel] == "" {
+	if len(modelIDs) == 0 || modelIDs[cmsintegrationcommon.CityModel] == "" || modelIDs[cmsintegrationcommon.RelatedModel] == "" {
 		return fmt.Errorf("no models found")
 	}
 
-	cityModel := modelIDs[cityModel]
-	relatedModel := modelIDs[relatedModel]
-	geospatialjpIndexModel := modelIDs[geospatialjpIndex]
-	geospatialjpDataModel := modelIDs[geospatialjpData]
+	log.Infofc(ctx, "cmsintegrationv3: models\n%s", pp.Sprint(modelIDs))
+
+	cityModel := modelIDs[cmsintegrationcommon.CityModel]
+	relatedModel := modelIDs[cmsintegrationcommon.RelatedModel]
+	geospatialjpIndexModel := modelIDs[cmsintegrationcommon.GeospatialjpIndex]
+	geospatialjpDataModel := modelIDs[cmsintegrationcommon.GeospatialjpData]
+
+	// get feature types
+	featureTypes, err := s.PCMS.PlateauFeatureTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get feature types: %w", err)
+	}
+
+	featureTypeCodes := featureTypes.Codes()
+	datasetTypes, err := s.PCMS.DatasetTypes(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get dataset types: %w", err)
+	}
+
+	relatedDataTypes := datasetTypes.Codes(plateaucms.DatasetCategoryRelated)
 
 	// check city item total count
 	if !inp.Force {
@@ -106,39 +128,40 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			continue
 		}
 
-		cityItem := &CityItem{
+		cityItem := &cmsintegrationcommon.CityItem{
 			Prefecture: item.Prefecture,
 			CityName:   item.Name,
 			CityNameEn: item.NameEn,
 			CityCode:   item.Code,
 		}
-		cityCMSItem := cityItem.CMSItem()
+		cityCMSItem := cityItem.CMSItem(featureTypeCodes)
 
 		newCityItem, err := s.CMS.CreateItem(ctx, cityModel, cityCMSItem.Fields, cityCMSItem.MetadataFields)
 		if err != nil {
 			return fmt.Errorf("failed to create city item (%d/%d): %w", i, len(setupItems), err)
 		}
 
-		relatedItem := &RelatedItem{
+		relatedItem := &cmsintegrationcommon.RelatedItem{
 			City: newCityItem.ID,
 		}
 
 		// related
-		newRelatedItem, err := s.CMS.CreateItem(ctx, relatedModel, relatedItem.CMSItem().Fields, nil)
+		newRelatedItem, err := s.CMS.CreateItem(ctx, relatedModel, relatedItem.CMSItem(relatedDataTypes).Fields, nil)
 		if err != nil {
 			return fmt.Errorf("failed to create related data item (%d/%d): %w", i, len(setupItems), err)
 		}
 
 		// geospatialjp-index
-		newGeospatialjpIndexItem, err := s.CMS.CreateItem(ctx, geospatialjpIndexModel, (&GeospatialjpIndexItem{
+		gindexItemFields := (&cmsintegrationcommon.GeospatialjpIndexItem{
 			City: newCityItem.ID,
-		}).CMSItem().Fields, nil)
+		}).CMSItem().Fields
+		newGeospatialjpIndexItem, err := s.CMS.CreateItem(ctx, geospatialjpIndexModel, gindexItemFields, nil)
 		if err != nil {
 			return fmt.Errorf("failed to create geospatialjp-index item (%d/%d): %w", i, len(setupItems), err)
 		}
 
 		// geospatialjp-data
-		newGeospatialjpDataItem, err := s.CMS.CreateItem(ctx, geospatialjpDataModel, (&GeospatialjpDataItem{
+		newGeospatialjpDataItem, err := s.CMS.CreateItem(ctx, geospatialjpDataModel, (&cmsintegrationcommon.GeospatialjpDataItem{
 			City: newCityItem.ID,
 		}).CMSItem().Fields, nil)
 		if err != nil {
@@ -147,14 +170,14 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 
 		featureItemIDs := map[string]string{}
 		for _, f := range features {
-			var status ManagementStatus
+			var status cmsintegrationcommon.ManagementStatus
 			if !slices.Contains(item.Features, f) {
-				status = ManagementStatusSkip
+				status = cmsintegrationcommon.ManagementStatusSkip
 			}
 
-			featureItem := &FeatureItem{
+			featureItem := &cmsintegrationcommon.FeatureItem{
 				City:   newCityItem.ID,
-				Status: tagFrom(status),
+				Status: cmsintegrationcommon.TagFrom(status),
 			}
 			featureCMSItem := featureItem.CMSItem()
 
@@ -166,15 +189,17 @@ func SetupCityItems(ctx context.Context, s *Services, inp SetupCityItemsInput, o
 			featureItemIDs[f] = newFeatureItem.ID
 		}
 
-		if _, err := s.CMS.UpdateItem(ctx, newCityItem.ID, (&CityItem{
+		if _, err := s.CMS.UpdateItem(ctx, newCityItem.ID, (&cmsintegrationcommon.CityItem{
 			References:        featureItemIDs,
 			RelatedDataset:    newRelatedItem.ID,
 			GeospatialjpIndex: newGeospatialjpIndexItem.ID,
 			GeospatialjpData:  newGeospatialjpDataItem.ID,
-		}).CMSItem().Fields, nil); err != nil {
+		}).CMSItem(featureTypeCodes).Fields, nil); err != nil {
 			return fmt.Errorf("failed to update city item (%d/%d): %w", i, len(setupItems), err)
 		}
 	}
+
+	log.Infofc(ctx, "cmsintegrationv3: setup city items done")
 
 	return nil
 }
@@ -238,6 +263,13 @@ func parseSetupCSV(r io.Reader) ([]SetupCSVItem, []string, error) {
 		}
 		if err != nil {
 			return nil, nil, err
+		}
+
+		// check utf8
+		for i, v := range row {
+			if !utf8.ValidString(v) {
+				return nil, nil, fmt.Errorf("invalid utf8 at line %d, column %d", i, i)
+			}
 		}
 
 		if row[nameIndex] == "" {

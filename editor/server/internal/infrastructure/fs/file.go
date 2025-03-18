@@ -3,23 +3,29 @@ package fs
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 
 	"github.com/kennygrant/sanitize"
+	"github.com/reearth/reearth/server/internal/infrastructure"
 	"github.com/reearth/reearth/server/internal/usecase/gateway"
 	"github.com/reearth/reearth/server/pkg/file"
 	"github.com/reearth/reearth/server/pkg/id"
+	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
 	"github.com/spf13/afero"
 )
 
 type fileRepo struct {
-	fs      afero.Fs
-	urlBase *url.URL
+	fs              afero.Fs
+	urlBase         *url.URL
+	baseFileStorage *infrastructure.BaseFileStorage
 }
 
 func NewFile(fs afero.Fs, urlBase string) (gateway.File, error) {
@@ -33,6 +39,9 @@ func NewFile(fs afero.Fs, urlBase string) (gateway.File, error) {
 	return &fileRepo{
 		fs:      fs,
 		urlBase: b,
+		baseFileStorage: &infrastructure.BaseFileStorage{
+			MaxFileSize: gateway.UploadFileSizeLimit,
+		},
 	}, nil
 }
 
@@ -51,12 +60,57 @@ func (f *fileRepo) UploadAsset(ctx context.Context, file *file.File) (*url.URL, 
 	return getAssetFileURL(f.urlBase, filename), size, nil
 }
 
+func (f *fileRepo) UploadAssetFromURL(ctx context.Context, u *url.URL) (*url.URL, int64, error) {
+	if u == nil {
+		return nil, 0, gateway.ErrInvalidFile
+	}
+
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctxWithTimeout, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Errorfc(ctx, "fs: failed to fetch URL: %v", err)
+		return nil, 0, errors.New("failed to fetch URL")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Errorfc(ctx, "fs: failed to fetch URL, status: %d", resp.StatusCode)
+		return nil, 0, errors.New("failed to fetch URL")
+	}
+
+	err = f.baseFileStorage.ValidateResponseBodySize(resp)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Errorfc(ctx, "fs: failed to close response body: %v", err)
+		}
+	}()
+
+	filename := sanitize.Path(newAssetID() + path.Ext(u.Path))
+	size, err := f.upload(ctx, filepath.Join(assetDir, filename), resp.Body)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	uploadedURL := getAssetFileURL(f.urlBase, filename)
+	return uploadedURL, size, nil
+}
+
 func (f *fileRepo) RemoveAsset(ctx context.Context, u *url.URL) error {
 	if u == nil {
 		return nil
 	}
 	p := sanitize.Path(u.Path)
-	if p == "" || f.urlBase == nil || u.Scheme != f.urlBase.Scheme || u.Host != f.urlBase.Host || path.Dir(p) != f.urlBase.Path {
+	if p == "" || f.urlBase == nil || u.Scheme != f.urlBase.Scheme || u.Host != f.urlBase.Host || path.Dir(p) != filepath.Join(f.urlBase.Path, assetDir) {
 		return gateway.ErrInvalidFile
 	}
 	return f.delete(ctx, filepath.Join(assetDir, filepath.Base(p)))
@@ -121,6 +175,26 @@ func (f *fileRepo) MoveStory(ctx context.Context, oldName, name string) error {
 
 func (f *fileRepo) RemoveStory(ctx context.Context, name string) error {
 	return f.delete(ctx, filepath.Join(storyDir, sanitize.Path(name+".json")))
+}
+
+// export
+
+func (f *fileRepo) ReadExportProjectZip(ctx context.Context, filename string) (io.ReadCloser, error) {
+	return f.read(ctx, filepath.Join(exportDir, sanitize.Path(filename)))
+}
+
+func (f *fileRepo) UploadExportProjectZip(ctx context.Context, zipFile afero.File) error {
+
+	file, ok := zipFile.(*os.File)
+	if !ok {
+		return errors.New("invalid file type: expected *os.File")
+	}
+	_, err := f.upload(ctx, path.Join(exportDir, sanitize.Path(file.Name())), file)
+	return err
+}
+
+func (f *fileRepo) RemoveExportProjectZip(ctx context.Context, filename string) error {
+	return f.delete(ctx, filepath.Join(exportDir, sanitize.Path(filename)))
 }
 
 // helpers
@@ -209,7 +283,11 @@ func getAssetFileURL(base *url.URL, filename string) *url.URL {
 
 	// https://github.com/golang/go/issues/38351
 	b := *base
-	b.Path = path.Join(b.Path, filename)
+	if b.Path == "/" {
+		b.Path = path.Join(b.Path, assetDir, filename)
+	} else {
+		b.Path = path.Join(b.Path, filename)
+	}
 	return &b
 }
 

@@ -1,4 +1,7 @@
-import { MockedProvider as MockedGqlProvider, MockedResponse } from "@apollo/client/testing";
+import {
+  MockedProvider as MockedGqlProvider,
+  MockedResponse
+} from "@apollo/client/testing";
 import { render as rtlRender } from "@testing-library/react";
 import { vitest } from "vitest";
 
@@ -9,7 +12,11 @@ import { Provider as ThemeProvider } from "../services/theme";
 // see detail: https://github.com/gilbarbara/react-inlinesvg/issues/145
 vitest.mock("react-inlinesvg", () => {
   return {
-    default: function InlineSvgMock(props: any) {
+    default: function InlineSvgMock(props: {
+      "aria-label"?: string;
+      style?: React.CSSProperties;
+      size?: number | string;
+    }) {
       return (
         <svg
           aria-label={props["aria-label"]}
@@ -18,14 +25,14 @@ vitest.mock("react-inlinesvg", () => {
           height={props.size}
         />
       );
-    },
+    }
   };
 });
 
 const render = (
   ui: React.ReactElement,
-  queryMocks?: readonly MockedResponse<Record<string, any>>[],
-  { ...renderOptions } = {},
+  queryMocks?: readonly MockedResponse<Record<string, unknown>>[],
+  { ...renderOptions } = {}
 ) => {
   const Wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
     return (
@@ -39,8 +46,6 @@ const render = (
   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
-// eslint-disable-next-line import/export
 export * from "@testing-library/react";
 
-// eslint-disable-next-line import/export
 export { render };

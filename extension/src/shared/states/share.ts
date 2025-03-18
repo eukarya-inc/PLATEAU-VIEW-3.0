@@ -4,16 +4,19 @@ import { isNotNullish } from "../../prototypes/type-helpers";
 import {
   HEATMAP_LAYER,
   HeatmapLayerModel,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   PedestrianLayerModel,
   SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
   STORY_LAYER,
   SharedHeatmapLayer,
   SharedPedestrianLayer,
   SharedSketchLayer,
   SketchLayerModel,
 } from "../../prototypes/view-layers";
+import { isReEarthAPIv2 } from "../reearth/utils/reearth";
 import { getSharedStoreValue, setSharedStoreValue } from "../sharedAtoms/store";
 import { generateID } from "../utils";
 import {
@@ -22,6 +25,8 @@ import {
   SharedStoryLayer,
   StoryLayerModel,
 } from "../view-layers";
+import { MeshCodeLayerModel, SharedMeshCodeLayer } from "../view-layers/meshCode";
+import { SharedSpatialIdLayer, SpatialIdLayerModel } from "../view-layers/spatialId";
 
 import { rootLayersAtom } from "./rootLayer";
 import { sharedInitialCameraAtom, sharedInitialClockAtom } from "./scene";
@@ -31,7 +36,11 @@ export const SHARED_PROJECT_ID = generateID();
 export const SHARED_PROJECT_ID_KEY = "sharedProjectId";
 
 export const shareAtom = atom(undefined, async (_get, set) => {
-  await set(sharedInitialClockAtom, async () => window.reearth?.clock?.currentTime?.getTime());
+  await set(sharedInitialClockAtom, async () =>
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.currentTime?.getTime()
+      : window.reearth?.clock?.currentTime?.getTime(),
+  );
   await set(sharedInitialCameraAtom, async () => window.reearth?.camera?.position);
   await set(shareRootLayerAtom);
   await setSharedStoreValue(
@@ -51,6 +60,8 @@ export type SharedRootLayer = (
   | SharedPedestrianLayer
   | SharedMyDataLayer
   | SharedSketchLayer
+  | SharedSpatialIdLayer
+  | SharedMeshCodeLayer
   | SharedStoryLayer
 ) & { hidden?: boolean };
 
@@ -109,6 +120,27 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 type: "sketch",
                 id: l.id,
                 title: l.title,
+                features: get(l.featuresAtom),
+                hidden: get(l.hiddenAtom),
+              };
+            }
+            case SPATIAL_ID_LAYER: {
+              const l = layer as SpatialIdLayerModel;
+              return {
+                type: "spatialId",
+                id: l.id,
+                title: l.title,
+                features: get(l.featuresAtom),
+                hidden: get(l.hiddenAtom),
+              };
+            }
+            case MESH_CODE_LAYER: {
+              const l = layer as MeshCodeLayerModel;
+              return {
+                type: "meshCode",
+                id: l.id,
+                title: l.title,
+                meshCodeLevel: l.meshCodeLevel,
                 features: get(l.featuresAtom),
                 hidden: get(l.hiddenAtom),
               };

@@ -1,4 +1,5 @@
 import AssetListBody from "@reearth-cms/components/molecules/Asset/AssetList";
+import { ResourceTypes } from "@reearth-cms/components/molecules/Common/CommentsPanel/types";
 import CommentsPanel from "@reearth-cms/components/organisms/Common/CommentsPanel";
 import { useT } from "@reearth-cms/i18n";
 
@@ -13,6 +14,7 @@ const AssetList: React.FC = () => {
     uploading,
     uploadModalVisibility,
     loading,
+    deleteLoading,
     uploadUrl,
     uploadType,
     selectedAsset,
@@ -20,13 +22,19 @@ const AssetList: React.FC = () => {
     totalCount,
     page,
     pageSize,
+    sort,
+    searchTerm,
+    columns,
+    hasCreateRight,
+    hasDeleteRight,
+    handleColumnsChange,
     handleToggleCommentMenu,
     handleAssetItemSelect,
     handleAssetSelect,
     handleUploadModalCancel,
     setUploadUrl,
     setUploadType,
-    setSelection,
+    handleSelect,
     setFileList,
     setUploadModalVisibility,
     handleAssetsCreate,
@@ -42,6 +50,8 @@ const AssetList: React.FC = () => {
     <AssetListBody
       commentsPanel={
         <CommentsPanel
+          resourceId={selectedAsset?.id ?? ""}
+          resourceType={ResourceTypes.Asset}
           collapsed={collapsed}
           onCollapse={handleToggleCommentMenu}
           emptyText={
@@ -59,13 +69,20 @@ const AssetList: React.FC = () => {
       totalCount={totalCount}
       page={page}
       pageSize={pageSize}
+      sort={sort}
+      searchTerm={searchTerm}
+      columns={columns}
+      onColumnsChange={handleColumnsChange}
       fileList={fileList}
       selection={selection}
       uploading={uploading}
       uploadModalVisibility={uploadModalVisibility}
       loading={loading}
+      deleteLoading={deleteLoading}
       uploadUrl={uploadUrl}
       uploadType={uploadType}
+      hasCreateRight={hasCreateRight}
+      hasDeleteRight={hasDeleteRight}
       onAssetItemSelect={handleAssetItemSelect}
       onAssetSelect={handleAssetSelect}
       onUploadModalCancel={handleUploadModalCancel}
@@ -78,7 +95,7 @@ const AssetList: React.FC = () => {
       onAssetsReload={handleAssetsReload}
       onSearchTerm={handleSearchTerm}
       onEdit={handleNavigateToAsset}
-      setSelection={setSelection}
+      onSelect={handleSelect}
       setFileList={setFileList}
       setUploadModalVisibility={setUploadModalVisibility}
     />

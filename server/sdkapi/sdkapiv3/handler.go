@@ -11,13 +11,13 @@ import (
 )
 
 type Config struct {
-	DataCatagloAPIURL   string
+	DataCatalogAPIURL   string
 	DataCatalogAPIToken string
 	Token               string
 }
 
 func Handler(conf Config, g *echo.Group) (bool, error) {
-	if conf.DataCatagloAPIURL == "" {
+	if conf.DataCatalogAPIURL == "" {
 		return false, nil
 	}
 
@@ -63,7 +63,6 @@ func Handler(conf Config, g *echo.Group) (bool, error) {
 		return c.JSON(http.StatusOK, res)
 	})
 
-	log.Infof("sdkapiv3: initialized")
 	return true, nil
 }
 

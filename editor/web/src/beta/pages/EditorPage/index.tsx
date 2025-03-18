@@ -1,25 +1,20 @@
-import { Provider as StateProvider } from "jotai";
-import { useParams } from "react-router-dom";
-
-import NotFound from "@reearth/beta/components/NotFound";
 import Editor from "@reearth/beta/features/Editor";
 import { isTab } from "@reearth/beta/features/Navbar";
+import NotFound from "@reearth/beta/features/NotFound";
 import Page from "@reearth/beta/pages/Page";
+import { FC } from "react";
+import { useParams } from "react-router-dom";
 
-type Props = {};
-
-const EditorPage: React.FC<Props> = () => {
+const EditorPage: FC = () => {
   const { sceneId, tab } = useParams<{ sceneId: string; tab: string }>();
 
   return !sceneId || !tab || !isTab(tab) ? (
     <NotFound />
   ) : (
-    <StateProvider>
-      <Page
-        sceneId={sceneId}
-        renderItem={props => <Editor tab={tab} sceneId={sceneId} {...props} />}
-      />
-    </StateProvider>
+    <Page
+      sceneId={sceneId}
+      renderItem={(props) => <Editor tab={tab} sceneId={sceneId} {...props} />}
+    />
   );
 };
 

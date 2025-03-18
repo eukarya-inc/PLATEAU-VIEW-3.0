@@ -1,5 +1,5 @@
 {
-  "name": "plateau-view-3.0",
+  "name": "plateau-view",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -15,8 +15,7 @@
     "gql": "run-p gql:*",
     "gql:geo": "graphql-codegen --config ./codegen_geo.ts && yarn lint",
     "gql:plateau": "graphql-codegen --config ./codegen_catalog.ts && yarn lint",
-    "decode-estat": "node --loader ts-node/esm ./scripts/decode-shift-jis.ts",
-    "optimize-raw-attributes": "node --loader ts-node/esm ./scripts/optimize-raw-attributes.ts"
+    "decode-estat": "node --loader ts-node/esm ./scripts/decode-shift-jis.ts"
   },
   "dependencies": {
     "@ant-design/colors": "7.0.0",
@@ -40,10 +39,12 @@
     "chroma-js": "2.4.2",
     "class-validator": "0.14.0",
     "d3": "7.8.5",
+    "dayjs": "1.11.13",
     "easymde": "2.18.0",
     "file-saver": "2.0.5",
     "framer-motion": "10.16.1",
     "graphql": "16.8.0",
+    "jismesh-js": "0.2.0",
     "jotai": "2.3.1",
     "jotai-xstate": "0.3.0",
     "jsonpath": "1.1.1",

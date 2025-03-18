@@ -21,16 +21,19 @@ import {
   LAND_SLIDE_RISK_LAYER,
   LAND_USE_LAYER,
   LANDMARK_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PARK_LAYER,
   PEDESTRIAN_LAYER,
   PedestrianLayerModelParams,
   RAILWAY_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
   RIVER_FLOODING_RISK_LAYER,
   ROAD_LAYER,
   SHELTER_LAYER,
   SKETCH_LAYER,
   SketchLayerModelParams,
+  SPATIAL_ID_LAYER,
   STATION_LAYER,
   STORY_LAYER,
   TSUNAMI_RISK_LAYER,
@@ -40,12 +43,14 @@ import {
 } from "../../prototypes/view-layers";
 
 import { GeneralLayerModelParams, createGeneralDatasetLayer } from "./general";
+import { createMeshCodeLayer, MeshCodeLayerModelParams } from "./meshCode";
 import { MyDataLayerModelParams, createMyDataLayer } from "./myData";
 import {
   createBuildingLayer,
   type BuildingLayerModelParams,
 } from "./plateau-3dtiles/BuildingLayer";
 import { FloodLayerModelParams, createFloodLayer } from "./plateau-3dtiles/FloodLayer";
+import { createSpatialIdLayer, SpatialIdLayerModelParams } from "./spatialId";
 import { StoryLayerModelParams, createStoryLayer } from "./story";
 // import { createHeatmapLayer, type HeatmapLayerModelParams } from "./HeatmapLayer";
 // import { createLandSlideRiskLayer, type LandSlideRiskLayerModelParams } from "./LandSlideRiskLayer";
@@ -64,6 +69,8 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof HEATMAP_LAYER ? HeatmapLayerModelParams : // HeatmapLayerModelParams :
   T extends typeof PEDESTRIAN_LAYER ? PedestrianLayerModelParams :
   T extends typeof SKETCH_LAYER ? SketchLayerModelParams :
+  T extends typeof SPATIAL_ID_LAYER ? SpatialIdLayerModelParams :
+  T extends typeof MESH_CODE_LAYER ? MeshCodeLayerModelParams :
   T extends typeof MY_DATA_LAYER ? MyDataLayerModelParams :
   T extends typeof STORY_LAYER ? StoryLayerModelParams :
 
@@ -77,6 +84,7 @@ export type ViewLayerModelParams<T extends LayerType> =
   T extends typeof GLOBAL_LAYER ? GeneralLayerModelParams : // GenericLayerModelParams
   T extends typeof HIGH_TIDE_RISK_LAYER ? GeneralLayerModelParams : // HighTideRiskLayerModelParams
   T extends typeof INLAND_FLOODING_RISK_LAYER ? GeneralLayerModelParams : // InlandFloodingRiskLayerModelParams
+  T extends typeof RESERVOIR_FLOODING_RISK_LAYER ? GeneralLayerModelParams : // ReservoirFloodingRiskLayerModelParams
   T extends typeof LAND_USE_LAYER ? GeneralLayerModelParams : // LandUseLayerModelParams :
   T extends typeof LANDMARK_LAYER ? GeneralLayerModelParams : // LandmarkLayerModelParams
   T extends typeof LAND_SLIDE_RISK_LAYER ? GeneralLayerModelParams : // LandSlideRiskLayerModelParams :
@@ -105,6 +113,8 @@ export function createViewLayer<T extends LayerType>(
     case HEATMAP_LAYER: return createHeatmapLayer(params as HeatmapLayerModelParams)
     case PEDESTRIAN_LAYER: return createPedestrianLayer(params as PedestrianLayerModelParams)
     case SKETCH_LAYER: return createSketchLayer(params as SketchLayerModelParams)
+    case SPATIAL_ID_LAYER: return createSpatialIdLayer(params as SpatialIdLayerModelParams)
+    case MESH_CODE_LAYER: return createMeshCodeLayer(params as MeshCodeLayerModelParams)
     case MY_DATA_LAYER: return createMyDataLayer(params as MyDataLayerModelParams)
     case STORY_LAYER: return createStoryLayer(params as StoryLayerModelParams)
 
@@ -113,6 +123,7 @@ export function createViewLayer<T extends LayerType>(
     case BUILDING_LAYER: return createBuildingLayer(params as BuildingLayerModelParams)
     // Flood model
     case INLAND_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
+    case RESERVOIR_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case HIGH_TIDE_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case RIVER_FLOODING_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)
     case TSUNAMI_RISK_LAYER: return createFloodLayer(params as FloodLayerModelParams)

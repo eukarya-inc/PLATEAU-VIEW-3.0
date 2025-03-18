@@ -2,13 +2,17 @@ package fs
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/google/uuid"
+	"github.com/reearth/reearth/server/internal/testutil"
 	"github.com/reearth/reearth/server/internal/usecase/gateway"
 	"github.com/reearth/reearth/server/pkg/file"
 	"github.com/reearth/reearth/server/pkg/id"
@@ -62,6 +66,71 @@ func TestFile_UploadAsset(t *testing.T) {
 	assert.Equal(t, "aaa", string(c))
 }
 
+func TestFSFile_UploadAssetFromURL(t *testing.T) {
+	ctx := context.Background()
+
+	gcsBaseURL, _ := url.Parse(testutil.GCSBaseURLForTesting)
+	srcBucketName := uuid.New().String()
+	testGCS, err := testutil.NewGCSForTesting()
+	if err != nil {
+		t.Fatalf("failed to create GCSForTesting: %v", err)
+	}
+
+	srcBucket := testGCS.CreateBucket(srcBucketName)
+
+	defer func() {
+		testGCS.DeleteBucketWithObjects(srcBucketName)
+		err := testGCS.Close()
+		if err != nil {
+			t.Fatalf("failed to close client: %v", err)
+		}
+	}()
+
+	validFilePath := fmt.Sprintf("%s/%s/o", gcsBaseURL.String(), srcBucketName)
+	tests := []struct {
+		name     string
+		fileName string
+		filePath string
+		wantErr  bool
+		errType  error
+	}{
+		{
+			name:     "valid url",
+			fileName: uuid.New().String(),
+			filePath: validFilePath,
+			wantErr:  false,
+		},
+		{
+			name:     "invalid url",
+			fileName: uuid.New().String(),
+			filePath: "invalid-url",
+			wantErr:  true,
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			testGCS.UploadTestData(srcBucket, tc.fileName)
+
+			newFileRepo, err := NewFile(mockFs(), "/")
+			assert.NoError(t, err)
+
+			srcURL, _ := url.Parse(fmt.Sprintf("%s/%s", tc.filePath, tc.fileName))
+			uploadedURL, _, err := newFileRepo.UploadAssetFromURL(ctx, srcURL)
+
+			if tc.wantErr {
+				assert.Error(t, err)
+				assert.Nil(t, uploadedURL)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, fmt.Sprintf("/assets/%s", path.Base(uploadedURL.Path)), uploadedURL.String())
+			}
+		})
+	}
+
+}
+
 func TestFile_RemoveAsset(t *testing.T) {
 	cases := []struct {
 		Name    string
@@ -92,7 +161,7 @@ func TestFile_RemoveAsset(t *testing.T) {
 			t.Parallel()
 
 			fs := mockFs()
-			f, _ := NewFile(fs, "https://example.com/assets")
+			f, _ := NewFile(fs, "https://example.com/")
 
 			u, _ := url.Parse(tc.URL)
 			err := f.RemoveAsset(context.Background(), u)
@@ -243,7 +312,7 @@ func TestFile_RemoveBuiltScene(t *testing.T) {
 func TestGetAssetFileURL(t *testing.T) {
 	e, err := url.Parse("http://hoge.com/assets/xxx.yyy")
 	assert.NoError(t, err)
-	b, err := url.Parse("http://hoge.com/assets")
+	b, err := url.Parse("http://hoge.com/")
 	assert.NoError(t, err)
 	assert.Equal(t, e, getAssetFileURL(b, "xxx.yyy"))
 }

@@ -1,5 +1,7 @@
 package nlslayer
 
+import "github.com/reearth/reearth/server/pkg/id"
+
 func NLSLayerSimpleFromLayer(l NLSLayer) *NLSLayerSimple {
 	li, ok := l.(*NLSLayerSimple)
 	if !ok {
@@ -47,13 +49,18 @@ func (b *NLSLayerSimpleBuilder) base(layer layerBase) *NLSLayerSimpleBuilder {
 	return b
 }
 
-func (b *NLSLayerSimpleBuilder) ID(id ID) *NLSLayerSimpleBuilder {
+func (b *NLSLayerSimpleBuilder) ID(id id.NLSLayerID) *NLSLayerSimpleBuilder {
 	b.l.id = id
 	return b
 }
 
 func (b *NLSLayerSimpleBuilder) NewID() *NLSLayerSimpleBuilder {
 	b.l.id = NewID()
+	return b
+}
+
+func (b *NLSLayerSimpleBuilder) Index(i *int) *NLSLayerSimpleBuilder {
+	b.l.index = i
 	return b
 }
 

@@ -1,6 +1,8 @@
 // Note: this component does not follow the pattern of the other parameterItem components.
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import RepeatIcon from "@mui/icons-material/Repeat";
+import RepeatOneIcon from "@mui/icons-material/RepeatOne";
 import { styled, IconButton, Select, Typography, SelectChangeEvent } from "@mui/material";
 import { PrimitiveAtom, useAtom } from "jotai";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -8,6 +10,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SelectItem } from "../../prototypes/ui-components/SelectItem";
 
 import TimelineBar from "./TimelineBar";
+import TimelineBarForPastTime from "./TimelineBarForPastTime";
 
 type TimelineParameterItemProps = {
   id: string;
@@ -17,12 +20,15 @@ type TimelineParameterItemProps = {
   timezone?: string;
   defaultUnit?: number;
   defaultAmount?: number;
+  timeDisplayType?: "current" | "past";
+  timeDisplayFormat?: string;
   activeIdAtom: PrimitiveAtom<string>;
   onPlay?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
   onPlayReverse?: (props: { start: Date; stop: Date; current: Date; speed: number }) => void;
   onPause?: () => void;
   onJump?: (props: { start: Date; stop: Date; current: Date }) => void;
   onSetSpeed?: (speed: number) => void;
+  onSetRangeType?: (rangeType: "unbounded" | "clamped" | "bounced") => void;
   onTickEventAdd?: (callback: (date: Date) => void) => void;
   onTickEventRemove?: (callback: (date: Date) => void) => void;
 };
@@ -50,8 +56,8 @@ const ButtonsWrapper = styled("div")(() => ({
 }));
 
 const ButtonWrapper = styled("div")(() => ({
-  width: 48,
-  height: 48,
+  width: 36,
+  height: 36,
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -120,22 +126,30 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
   timezone = "+9",
   defaultUnit = 60,
   defaultAmount = 1,
+  timeDisplayType = "current",
+  timeDisplayFormat,
   activeIdAtom,
   onPlay,
   onPlayReverse,
   onPause,
   onJump,
   onSetSpeed,
+  onSetRangeType,
   onTickEventAdd,
   onTickEventRemove,
 }) => {
   const startDate = useMemo(() => new Date(start ?? ""), [start]);
   const endDate = useMemo(() => new Date(end ?? ""), [end]);
   const [currentDate, setCurrentDate] = useState(new Date(current ?? ""));
+  const [rangeType, setRangeType] = useState<"bounced" | "clamped">("bounced");
 
   useEffect(() => {
     setCurrentDate(new Date(current ?? ""));
   }, [current]);
+
+  useEffect(() => {
+    onSetRangeType?.(rangeType);
+  }, [rangeType, onSetRangeType]);
 
   const [activeTimelineComponentId, setActiveTimelineComponentId] = useAtom(activeIdAtom);
 
@@ -162,6 +176,10 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
     },
     [playState, speedAmount, onSetSpeed],
   );
+
+  const handleSwitchRangeType = useCallback(() => {
+    setRangeType(rangeType === "clamped" ? "bounced" : "clamped");
+  }, [rangeType]);
 
   const handlePlay = useCallback(() => {
     setActiveTimelineComponentId(id);
@@ -285,6 +303,15 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
               <PlayArrowIcon fontSize="medium" />
             </StyledButton>
           </ButtonWrapper>
+          <ButtonWrapper>
+            <StyledButton size="small" onClick={handleSwitchRangeType}>
+              {rangeType === "clamped" ? (
+                <RepeatOneIcon fontSize="medium" />
+              ) : (
+                <RepeatIcon fontSize="medium" />
+              )}
+            </StyledButton>
+          </ButtonWrapper>
         </ButtonsWrapper>
         <SelectWrapper>
           <Select
@@ -308,14 +335,28 @@ export const TimelineParameterItem: FC<TimelineParameterItemProps> = ({
           <SpeedTick>/秒</SpeedTick>
         </SelectWrapper>
       </Controls>
-      <TimelineBar
-        startDate={startDate}
-        endDate={endDate}
-        currentDate={currentDate}
-        timezone={timezone}
-        onChange={handleJumpTime}
-      />
-      <CurrentTime>{formatDateWithTimezone(currentDate, timezone)}</CurrentTime>
+      {timeDisplayType === "current" ? (
+        <TimelineBar
+          startDate={startDate}
+          endDate={endDate}
+          currentDate={currentDate}
+          timezone={timezone}
+          onChange={handleJumpTime}
+        />
+      ) : (
+        <TimelineBarForPastTime
+          startDate={startDate}
+          endDate={endDate}
+          currentDate={currentDate}
+          timezone={timezone}
+          onChange={handleJumpTime}
+        />
+      )}
+      <CurrentTime>
+        {timeDisplayType === "current"
+          ? formatDateWithTimezone(currentDate, timezone)
+          : formatPastTime(currentDate, startDate, timeDisplayFormat)}
+      </CurrentTime>
     </Timeline>
   );
 };
@@ -341,3 +382,17 @@ const formatDateWithTimezone = (date: Date, timezone: string) => {
 const SpeedTick = styled("span")(({ theme }) => ({
   fontSize: theme.typography.body2.fontSize,
 }));
+
+const formatPastTime = (current: Date, start: Date, format?: string) => {
+  const diff = current.getTime() - start.getTime();
+  const diffSec = Math.floor(diff / 1000);
+  const sec = diffSec % 60;
+  const min = Math.floor(diffSec / 60) % 60;
+  const hour = Math.floor(diffSec / 3600);
+  const HH = hour < 10 ? "0" + hour : `${hour}`;
+  const mm = min < 10 ? "0" + min : `${min}`;
+  const ss = sec < 10 ? "0" + sec : `${sec}`;
+  return format
+    ? format.replace("HH", HH).replace("mm", mm).replace("ss", ss)
+    : `${HH}:${mm}:${ss}`;
+};

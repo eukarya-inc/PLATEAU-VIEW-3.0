@@ -164,14 +164,32 @@ const makeAccessor = (propertyName: string) => `rootProperties["${propertyName}"
 export const restoreAccessor = (propertyName: string) =>
   propertyName.slice(`rootProperties["`.length, -`"]`.length);
 
+export type OverrideProperty = (
+  propertyName: string,
+  displayName: string,
+  shareId: string | undefined,
+) => Partial<PlateauTilesetProperty> | void;
+
 export class PlateauTilesetProperties extends Properties {
   private _cachedComputedProperties: any;
   private _floodColors: QualitativeColor[] | undefined;
   private _shareId: string | undefined;
+  private _version: number;
+  private _overrideProperty: OverrideProperty | undefined;
 
   constructor(
     layerId: string,
-    { floodColor, shareId }: { floodColor?: TilesetFloodColorField; shareId?: string } = {},
+    {
+      floodColor,
+      shareId,
+      version,
+      overrideProperty,
+    }: {
+      floodColor?: TilesetFloodColorField;
+      shareId?: string;
+      version?: number;
+      overrideProperty?: OverrideProperty;
+    } = {},
   ) {
     super(layerId);
     this._floodColors = floodColor?.preset?.conditions
@@ -186,6 +204,8 @@ export class PlateauTilesetProperties extends Properties {
       )
       .filter(isNotNullish);
     this._shareId = shareId;
+    this._version = version ?? 0;
+    this._overrideProperty = overrideProperty;
   }
 
   get value(): PlateauTilesetProperty[] | undefined {
@@ -220,7 +240,7 @@ export class PlateauTilesetProperties extends Properties {
               : [];
           const displayName =
             qualitativeProperty.getDisplayName?.(name) ??
-            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
+            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name, this._version) ??
             name;
           return {
             name,
@@ -239,6 +259,7 @@ export class PlateauTilesetProperties extends Properties {
             displayName,
             availableFeatures: qualitativeProperty.availableFeatures,
             accessor: makeAccessor(name),
+            ...(this._overrideProperty?.(name, displayName, this._shareId) ?? {}),
           };
         }
 
@@ -251,18 +272,20 @@ export class PlateauTilesetProperties extends Properties {
             maximum,
           ];
           if (numberProperty != null) {
+            const displayName =
+              numberProperty.getDisplayName?.(name) ??
+              makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name, this._version) ??
+              name;
             return {
               name,
               type: "number" as const,
               minimum: finalMinimum,
               maximum: finalMaximum,
-              displayName:
-                numberProperty.getDisplayName?.(name) ??
-                makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ??
-                name,
+              displayName,
               availableFeatures: numberProperty.availableFeatures,
               accessor: makeAccessor(name),
               defaultValue: numberProperty.defaultValue,
+              ...(this._overrideProperty?.(name, displayName, this._shareId) ?? {}),
             };
           }
         }

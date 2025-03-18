@@ -1,8 +1,9 @@
 import { useMediaQuery, useTheme } from "@mui/material";
 import { PrimitiveAtom, useAtom, useAtomValue, useSetAtom } from "jotai";
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useRef } from "react";
 
 import { ColorMap } from "../../prototypes/color-maps";
+import { QualitativeColor, atomsWithQualitativeColorSet } from "../../prototypes/datasets";
 import {
   ScreenSpaceSelectionEntry,
   useScreenSpaceSelectionResponder,
@@ -10,7 +11,7 @@ import {
 import { ViewLayerModel } from "../../prototypes/view-layers";
 import { numberOrString, variable } from "../helpers";
 import { useOptionalAtomValue } from "../hooks";
-import { PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
+import { OverrideProperty, PlateauTilesetProperties, TileFeatureIndex } from "../plateau";
 import { TILESET_FEATURE, TilesetLayer, TilesetProps } from "../reearth/layers";
 import { Cesium3DTilesAppearance, ConditionsExpression, LayerAppearance } from "../reearth/types";
 import { shareableColorMode } from "../states/scene";
@@ -47,6 +48,7 @@ type TilesetContainerProps = Omit<TilesetProps, "appearance" | "boxAppearance"> 
   selections?: ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[];
   hidden: boolean;
   textured?: boolean;
+  version: number;
   componentAtoms: ComponentAtom[];
 };
 
@@ -64,6 +66,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   hiddenFeaturesAtom,
   searchedFeaturesAtom,
   textured,
+  version,
   ...props
 }) => {
   const [featureIndex, setFeatureIndex] = useAtom(featureIndexAtom);
@@ -112,17 +115,6 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
     // },
   });
 
-  const setProperties = useSetAtom(propertiesAtom);
-  const handleLoad = useCallback(
-    (layerId: string) => {
-      onLoad?.(layerId);
-      setLayerId(layerId);
-      setFeatureIndex(new TileFeatureIndex(layerId));
-      setProperties(new PlateauTilesetProperties(layerId));
-    },
-    [onLoad, setFeatureIndex, setProperties, setLayerId],
-  );
-
   const colorProperty = useAtomValue(colorPropertyAtom);
   const colorScheme = useAtomValue(colorSchemeAtom);
 
@@ -131,6 +123,58 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
   const buildingModelColorAtom = useFindComponent(componentAtoms, TILESET_BUILDING_MODEL_COLOR);
   const [clippingBox, boxAppearance] = useClippingBox(
     useOptionalAtomValue(useFindComponent(componentAtoms, TILESET_CLIPPING)),
+  );
+
+  const buildingModelColor = useOptionalAtomValue(buildingModelColorAtom);
+  const overrideProperty: OverrideProperty = useCallback(
+    (propertyName, displayName, shareId) => {
+      const matchedOverrideProperty = buildingModelColor?.preset?.overrides?.find(o => {
+        if (!o.propertyName) return false;
+        switch (o.matcher) {
+          case "startsWith":
+            return propertyName.startsWith(o.propertyName);
+          case "endsWith":
+            return propertyName.endsWith(o.propertyName);
+          default:
+            return propertyName === o.propertyName;
+        }
+      });
+      if (!matchedOverrideProperty) return;
+
+      return {
+        ...(matchedOverrideProperty.title ? { displayName: matchedOverrideProperty.title } : {}),
+        ...(matchedOverrideProperty.colorSet?.every(
+          (c): c is QualitativeColor => c.value != null && c.color != null && c.name != null,
+        )
+          ? {
+              colorSet: atomsWithQualitativeColorSet({
+                id: `${shareId}-overridden-${displayName}`,
+                name: matchedOverrideProperty.title ?? displayName,
+                colors: matchedOverrideProperty.colorSet,
+              }),
+            }
+          : {}),
+      };
+    },
+    [buildingModelColor],
+  );
+  const overridePropertyRef = useRef(overrideProperty);
+  overridePropertyRef.current = overrideProperty;
+
+  const setProperties = useSetAtom(propertiesAtom);
+  const handleLoad = useCallback(
+    (layerId: string) => {
+      onLoad?.(layerId);
+      setLayerId(layerId);
+      setFeatureIndex(new TileFeatureIndex(layerId));
+      setProperties(
+        new PlateauTilesetProperties(layerId, {
+          overrideProperty: (...args) => overridePropertyRef.current(...args),
+          version,
+        }),
+      );
+    },
+    [onLoad, setFeatureIndex, setProperties, setLayerId, version],
   );
 
   const drawClipping = useDrawClipping(
@@ -228,6 +272,7 @@ export const BuildingModelLayerContainer: FC<TilesetContainerProps> = ({
       experimental_clipping: { ...clippingBox, ...drawClipping },
       showWireframe: wireframeView?.value?.wireframe,
       disableIndexingFeature: isMobile,
+      cacheBytes: Infinity,
       ...(applyEmptySHC ? { sphericalHarmonicCoefficients: [] } : {}),
     }),
     [

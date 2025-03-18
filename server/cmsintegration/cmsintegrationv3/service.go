@@ -11,6 +11,7 @@ import (
 	"net/url"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -24,27 +25,32 @@ func resultURL(conf *Config) string {
 }
 
 type Services struct {
-	FME  fmeInterface
-	CMS  cms.Interface
-	HTTP *http.Client
+	CMS          cms.Interface
+	PlateauCMS   *PlateauCMS
+	HTTP         *http.Client
+	PCMS         PCMS
+	FMEResultURL string
+	mockFME      fmeInterface
+}
+
+type PCMS interface {
+	plateaucms.SpecStore
+	plateaucms.FeatureTypeStore
+	plateaucms.MetadataStore
 }
 
 func NewServices(c Config) (s *Services, _ error) {
 	s = &Services{}
 
 	if !c.FMEMock {
-		fmeURL := c.FMEURLV3
-		if fmeURL == "" {
-			return nil, errors.New("FME URL is not set")
-		}
-
 		resultURL, err := url.JoinPath(c.Host, "/notify_fme")
 		if err != nil {
 			return nil, fmt.Errorf("failed to init fme: %w", err)
 		}
 
-		fme := newFME(fmeURL, resultURL)
-		s.FME = fme
+		s.FMEResultURL = resultURL
+	} else {
+		s.mockFME = &fmeMock{}
 	}
 
 	cms, err := cms.New(c.CMSBaseURL, c.CMSToken)
@@ -52,12 +58,30 @@ func NewServices(c Config) (s *Services, _ error) {
 		return nil, fmt.Errorf("failed to init cms: %w", err)
 	}
 	s.CMS = cms
+	s.PlateauCMS = NewPlateauCMS(cms, "")
+
+	pcms, err := plateaucms.New(plateaucms.Config{
+		CMSBaseURL:       c.CMSBaseURL,
+		CMSMainToken:     c.CMSToken,
+		CMSSystemProject: c.CMSSystemProject,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to init plateau cms: %w", err)
+	}
+	s.PCMS = pcms
 
 	return
 }
 
-func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status ConvertionStatus) error {
-	var qcStatus, convStatus ConvertionStatus
+func (s *Services) GetFME(url string) fmeInterface {
+	if s.mockFME != nil {
+		return s.mockFME
+	}
+	return newFME(url, s.FMEResultURL)
+}
+
+func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, convType fmeRequestType, status cmsintegrationcommon.ConvertionStatus) error {
+	var qcStatus, convStatus cmsintegrationcommon.ConvertionStatus
 	switch convType {
 	case fmeTypeConv:
 		convStatus = status
@@ -68,9 +92,9 @@ func (s *Services) UpdateFeatureItemStatus(ctx context.Context, itemID string, c
 		convStatus = status
 	}
 
-	fields := (&FeatureItem{
-		ConvertionStatus: tagFrom(convStatus),
-		QCStatus:         tagFrom(qcStatus),
+	fields := (&cmsintegrationcommon.FeatureItem{
+		ConvertionStatus: cmsintegrationcommon.TagFrom(convStatus),
+		QCStatus:         cmsintegrationcommon.TagFrom(qcStatus),
 	}).CMSItem().MetadataFields
 	_, err := s.CMS.UpdateItem(ctx, itemID, nil, fields)
 	if err != nil {
@@ -122,29 +146,8 @@ func (s *Services) DownloadAssetAsBytes(ctx context.Context, assetID string) ([]
 	return buf.Bytes(), nil
 }
 
-func (s *Services) GetMainItemWithMetadata(ctx context.Context, i *cms.Item) (_ *cms.Item, err error) {
-	var mainItem, metadataItem *cms.Item
-
-	if i.MetadataItemID == nil && i.OriginalItemID != nil {
-		// w is metadata item
-		metadataItem = i
-		mainItem, err = s.CMS.GetItem(ctx, *i.OriginalItemID, false)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get main item: %w", err)
-		}
-	} else if i.OriginalItemID == nil && i.MetadataItemID != nil {
-		// w is main item
-		mainItem = i
-		metadataItem, err = s.CMS.GetItem(ctx, *i.MetadataItemID, false)
-		if err != nil {
-			return nil, fmt.Errorf("failed to get metadata item: %w", err)
-		}
-	} else {
-		return nil, fmt.Errorf("invalid webhook payload")
-	}
-
-	mainItem.MetadataFields = metadataItem.Fields
-	return mainItem, nil
+func (s *Services) GetMainItemWithMetadata(ctx context.Context, item *cms.Item) (*cms.Item, error) {
+	return cmsintegrationcommon.GetMainItemWithMetadata(ctx, s.CMS, item)
 }
 
 func (s *Services) GET(ctx context.Context, url string) (io.ReadCloser, error) {
@@ -188,4 +191,24 @@ func (s *Services) GETAsBytes(ctx context.Context, url string) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func (s *Services) GetFMEURL(ctx context.Context, majorVersion int) string {
+	specs, err := s.PCMS.PlateauSpecs(ctx)
+	if err != nil {
+		log.Errorfc(ctx, "cmsintegrationv3: failed to get plateau specs: %v", err)
+		return ""
+	}
+
+	for _, spec := range specs {
+		if spec.FMEURL == "" {
+			continue
+		}
+
+		if spec.MajorVersion == majorVersion {
+			return spec.FMEURL
+		}
+	}
+
+	return ""
 }

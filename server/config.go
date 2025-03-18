@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/citygml"
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog"
 	"github.com/eukarya-inc/reearth-plateauview/server/opinion"
@@ -11,11 +12,14 @@ import (
 	"github.com/eukarya-inc/reearth-plateauview/server/sdkapi/sdkapiv3"
 	"github.com/eukarya-inc/reearth-plateauview/server/searchindex"
 	"github.com/eukarya-inc/reearth-plateauview/server/sidebar"
+	"github.com/eukarya-inc/reearth-plateauview/server/tiles"
 	"github.com/joho/godotenv"
 	"github.com/k0kubun/pp/v3"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/reearth/reearthx/log"
 )
+
+const citygmlPackerImageDefault = "ghcr.io/eukarya-inc/plateau-view/plateauview-api-worker:latest"
 
 var noColorPP *pp.PrettyPrinter
 
@@ -60,6 +64,7 @@ type Config struct {
 	Opinion_ToName                     string   `pp:",omitempty"`
 	Sidebar_Token                      string   `pp:",omitempty"`
 	Share_Disable                      bool     `pp:",omitempty"`
+	CMSINT_TaskImage                   string   `pp:",omitempty"`
 	Geospatialjp_Publication_Disable   bool     `pp:",omitempty"`
 	Geospatialjp_CatalocCheck_Disable  bool     `pp:",omitempty"`
 	Geospatialjp_BuildType             string   `pp:",omitempty"`
@@ -77,7 +82,18 @@ type Config struct {
 	DataCatalog_CacheTTL               int      `pp:",omitempty"`
 	DataCatalog_GQL_MaxComplexity      int      `pp:",omitempty"`
 	DataCatalog_PanicOnInit            bool     `pp:",omitempty"`
+	DataCatalog_GeocodingAppID         string   `pp:",omitempty"`
+	DataCatalog_DiskCache              bool     `pp:",omitempty"`
+	DataCatalog_Debug                  bool     `pp:",omitempty"`
 	GCParcent                          int      `pp:",omitempty"`
+	CityGML_Domain                     string   `pp:",omitempty"`
+	CityGML_Bucket                     string   `pp:",omitempty"`
+	CityGML_CityGMLPackerImage         string   `pp:",omitempty"`
+	CityGML_WorkerRegion               string   `pp:",omitempty"`
+	CityGML_WorkerProject              string   `pp:",omitempty"`
+	CityGML_PackerTimeout              uint     `default:"30" pp:",omitempty"`
+	Flow_BaseURL                       string   `pp:",omitempty"`
+	Flow_Token                         string   `pp:",omitempty"`
 }
 
 func NewConfig() (*Config, error) {
@@ -118,11 +134,11 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		FMEBaseURL:                        c.FME_BaseURL,
 		FMEToken:                          c.FME_Token,
 		FMEBaseURLV2:                      c.FME_BaseURL_V2,
-		FMEURLV3:                          c.FME_URL_V3,
 		FMESkipQualityCheck:               c.FME_SkipQualityCheck,
 		CMSBaseURL:                        c.CMS_BaseURL,
 		CMSToken:                          c.CMS_Token,
 		CMSIntegration:                    c.CMS_IntegrationID,
+		CMSSystemProject:                  c.CMS_TokenProject,
 		Secret:                            c.Secret,
 		Debug:                             c.Debug,
 		CkanBaseURL:                       c.Ckan_BaseURL,
@@ -135,11 +151,15 @@ func (c *Config) CMSIntegration() cmsintegration.Config {
 		APIToken:                          c.Sidebar_Token,
 		GeospatialjpBuildType:             c.Geospatialjp_BuildType,
 		GeospatialjpCloudRunJobsJobName:   c.Geospatialjp_JobName,
-		GeospatialjpCloudBuildImage:       c.Geospatialjp_CloudBuildImage,
 		GeospatialjpCloudBuildMachineType: c.Geospatialjp_CloudBuildMachineType,
 		GeospatialjpCloudBuildProject:     cloudBuildProject,
 		GeospatialjpCloudBuildRegion:      cloudBuildRegion,
 		GeospatialjpCloudBuildDiskSizeGb:  c.Geospatialjp_CloudBuildDiskSizeGb,
+		TaskImage:                         c.Geospatialjp_CloudBuildImage, // TODO: change env var name
+		GCPProject:                        cloudBuildProject,
+		GCPRegion:                         cloudBuildRegion,
+		FlowBaseURL:                       c.Flow_BaseURL,
+		FlowToken:                         c.Flow_Token,
 	}
 }
 
@@ -158,7 +178,7 @@ func (c *Config) SearchIndex() searchindex.Config {
 
 func (c *Config) SDKAPI() sdkapiv3.Config {
 	return sdkapiv3.Config{
-		DataCatagloAPIURL: c.LocalURL("/datacatalog"),
+		DataCatalogAPIURL: c.LocalURL("/datacatalog"),
 		Token:             c.SDK_Token,
 	}
 }
@@ -187,18 +207,51 @@ func (c *Config) DataCatalog() datacatalog.Config {
 		PlaygroundEndpoint:   c.DataCatalog_PlaygroundEndpoint,
 		GraphqlMaxComplexity: c.DataCatalog_GQL_MaxComplexity,
 		DisableCache:         c.DataCatalog_DisableCache,
+		DiskCache:            c.DataCatalog_DiskCache,
+		Debug:                c.DataCatalog_Debug,
 		CacheTTL:             c.DataCatalog_CacheTTL,
 		ErrorOnInit:          c.DataCatalog_PanicOnInit,
+		GeocodingAppID:       c.DataCatalog_GeocodingAppID,
+	}
+}
+
+func (c *Config) Tiles() tiles.Config {
+	return tiles.Config{
+		CMS: c.plateauCMS(),
 	}
 }
 
 func (c *Config) plateauCMS() plateaucms.Config {
 	return plateaucms.Config{
-		CMSBaseURL:      c.CMS_BaseURL,
-		CMSMainToken:    c.CMS_Token,
-		CMSTokenProject: c.CMS_TokenProject,
+		CMSBaseURL:       c.CMS_BaseURL,
+		CMSMainToken:     c.CMS_Token,
+		CMSSystemProject: c.CMS_TokenProject,
 		// compat
 		CMSMainProject: c.CMS_SystemProject,
 		AdminToken:     c.Sidebar_Token,
+	}
+}
+
+func (c *Config) CityGML() citygml.Config {
+	workRegion := c.CityGML_WorkerRegion
+	if workRegion == "" {
+		workRegion = c.GOOGLE_CLOUD_REGION
+	}
+	workProject := c.CityGML_WorkerProject
+	if workProject == "" {
+		workProject = c.GOOGLE_CLOUD_PROJECT
+	}
+	citygmlPackerImage := c.CityGML_CityGMLPackerImage
+	if citygmlPackerImage == "" {
+		citygmlPackerImage = citygmlPackerImageDefault
+	}
+	return citygml.Config{
+		Domain:             c.CityGML_Domain,
+		Bucket:             c.CityGML_Bucket,
+		CityGMLPackerImage: citygmlPackerImage,
+		WorkerRegion:       workRegion,
+		WorkerProject:      workProject,
+		DataCatalogAPIURL:  c.LocalURL("/datacatalog"),
+		PackerTimeout:      c.CityGML_PackerTimeout,
 	}
 }

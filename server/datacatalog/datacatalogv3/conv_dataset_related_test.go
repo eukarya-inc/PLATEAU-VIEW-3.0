@@ -50,9 +50,10 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11112")),
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/RELATED/details/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -81,9 +82,10 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11113")),
 			TypeID:            plateauapi.NewID("landmark", plateauapi.TypeDatasetType),
 			TypeCode:          "landmark",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/RELATED/details/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -110,9 +112,10 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			CityCode:          lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:            plateauapi.NewID("border", plateauapi.TypeDatasetType),
 			TypeCode:          "border",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/RELATED/details/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -139,9 +142,10 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 			WardCode:          lo.ToPtr(plateauapi.AreaCode("11112")),
 			TypeID:            plateauapi.NewID("emergency_route", plateauapi.TypeDatasetType),
 			TypeCode:          "emergency_route",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSItemID: "id",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/RELATED/details/id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.RelatedDatasetItem{
 				{
@@ -203,7 +207,16 @@ func TestRelatedItem_ToDatasets(t *testing.T) {
 		},
 	}
 
-	res, warnings := item.toDatasets(area, dts, 2023, "https://example.com/")
+	cmsinfo := CMSInfo{
+		CMSURL:      "https://example.com",
+		WorkspaceID: "ws",
+		ProjectID:   "prj",
+		ModelIDMap: ModelIDMap{
+			"related": "RELATED",
+		},
+	}
+
+	res, warnings := item.toDatasets(area, dts, 2023, cmsinfo)
 	assert.Nil(t, warnings)
 	assert.Equal(t, expected, res)
 }

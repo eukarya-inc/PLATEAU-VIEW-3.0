@@ -24,8 +24,8 @@ func (r *teamResolver) Policy(ctx context.Context, obj *gqlmodel.Team) (*gqlmode
 	return single(loaders(ctx).Policy.Fetch(ctx, []gqlmodel.ID{*obj.PolicyID}))
 }
 
-func (r *teamResolver) Assets(ctx context.Context, obj *gqlmodel.Team, first *int, last *int, after *usecasex.Cursor, before *usecasex.Cursor) (*gqlmodel.AssetConnection, error) {
-	return loaders(ctx).Asset.FindByWorkspace(ctx, obj.ID, nil, nil, &gqlmodel.Pagination{
+func (r *teamResolver) Assets(ctx context.Context, obj *gqlmodel.Team, projectID *gqlmodel.ID, first *int, last *int, after *usecasex.Cursor, before *usecasex.Cursor) (*gqlmodel.AssetConnection, error) {
+	return loaders(ctx).Asset.FindByWorkspace(ctx, obj.ID, projectID, nil, nil, &gqlmodel.Pagination{
 		First:  first,
 		Last:   last,
 		After:  after,
@@ -34,7 +34,12 @@ func (r *teamResolver) Assets(ctx context.Context, obj *gqlmodel.Team, first *in
 }
 
 func (r *teamResolver) Projects(ctx context.Context, obj *gqlmodel.Team, includeArchived *bool, first *int, last *int, after *usecasex.Cursor, before *usecasex.Cursor) (*gqlmodel.ProjectConnection, error) {
-	return loaders(ctx).Project.FindByWorkspace(ctx, obj.ID, first, last, before, after)
+	return loaders(ctx).Project.FindByWorkspace(ctx, obj.ID, nil, nil, &gqlmodel.Pagination{
+		First:  first,
+		Last:   last,
+		After:  after,
+		Before: before,
+	})
 }
 
 type teamMemberResolver struct{ *Resolver }

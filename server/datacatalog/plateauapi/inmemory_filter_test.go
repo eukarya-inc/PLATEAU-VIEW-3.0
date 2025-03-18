@@ -19,10 +19,43 @@ func TestFilterDataset(t *testing.T) {
 	t.Run("default stage", func(t *testing.T) {
 		assert.False(t, filterDataset(RelatedDataset{
 			TypeCode: "emergency_route",
-			Admin: map[string]any{
-				"stage": "beta",
+			Admin: &Admin{
+				Stage: "beta",
 			},
 		}, DatasetsInput{}, nil))
+	})
+
+	t.Run("ar", func(t *testing.T) {
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: nil,
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: true,
+		}, DatasetsInput{
+			Ar: nil,
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: true,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
+		assert.False(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
+		assert.True(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(false),
+		}, nil))
+		assert.False(t, filterDataset(RelatedDataset{
+			Ar: false,
+		}, DatasetsInput{
+			Ar: lo.ToPtr(true),
+		}, nil))
 	})
 
 	t.Run("beta stage", func(t *testing.T) {
@@ -53,10 +86,11 @@ func TestFilterDataset(t *testing.T) {
 
 func TestFilterArea(t *testing.T) {
 	testCases := []struct {
-		name     string
-		area     Area
-		input    AreasInput
-		expected bool
+		name                string
+		area                Area
+		input               AreasInput
+		areasWithoutDataset map[ID]struct{}
+		expected            bool
 	}{
 		{
 			name: "Prefecture with search tokens",
@@ -143,12 +177,28 @@ func TestFilterArea(t *testing.T) {
 			},
 			expected: true,
 		},
+		{
+			name: "includeEmpty",
+			area: Ward{ID: "aaa"},
+			input: AreasInput{
+				IncludeEmpty: lo.ToPtr(true),
+			},
+			areasWithoutDataset: map[ID]struct{}{"aaa": {}},
+			expected:            true,
+		},
+		{
+			name:                "without includeEmpty",
+			area:                Ward{ID: "aaa"},
+			input:               AreasInput{},
+			areasWithoutDataset: map[ID]struct{}{"aaa": {}},
+			expected:            false,
+		},
 	}
 
 	for _, tc := range testCases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			actual := filterArea(tc.area, tc.input)
+			actual := filterArea(tc.area, tc.input, tc.areasWithoutDataset)
 			assert.Equal(t, tc.expected, actual)
 		})
 	}

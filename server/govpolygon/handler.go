@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -16,19 +15,17 @@ import (
 	"github.com/eukarya-inc/jpareacode/jpareacodepref"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	geojson "github.com/paulmach/go.geojson"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/util"
 	"github.com/samber/lo"
 )
-
-const dirpath = "govpolygondata"
 
 var cahceDuration = 6 * time.Hour
 
 type Handler struct {
 	// e.g. "http://[::]:8080"
 	gqlEndpoint       string
-	processor         *Processor
 	httpClient        *http.Client
 	lock              sync.RWMutex
 	geojson           []byte
@@ -40,7 +37,6 @@ type Handler struct {
 func New(gqlEndpoint string, updateIfNotExists bool) *Handler {
 	return &Handler{
 		gqlEndpoint:       gqlEndpoint,
-		processor:         NewProcessor(filepath.Join(dirpath, "japan_city.geojson")),
 		httpClient:        http.DefaultClient,
 		updateIfNotExists: updateIfNotExists,
 	}
@@ -95,7 +91,7 @@ func (h *Handler) Update(c echo.Context) error {
 		return err
 	}
 
-	g, notfound, err := h.processor.ComputeGeoJSON(ctx, q)
+	g, notfound, err := ComputeGeoJSON(q)
 	if err != nil {
 		return err
 	}
@@ -103,12 +99,17 @@ func (h *Handler) Update(c echo.Context) error {
 		log.Debugfc(context.Background(), "govpolygon: not found polygon: %v", notfound)
 	}
 
-	geojsonj, err := json.Marshal(g)
+	h.qt = NewQuadtree(g, 0)
+
+	fc := geojson.NewFeatureCollection()
+	for _, f := range g {
+		fc.AddFeature(f)
+	}
+
+	geojsonj, err := json.Marshal(fc)
 	if err != nil {
 		return fmt.Errorf("failed to marshal geojson: %w", err)
 	}
-
-	h.qt = NewQuadtree(g.Features)
 
 	if !initial {
 		h.lock.Lock()

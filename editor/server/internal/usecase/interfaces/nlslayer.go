@@ -6,6 +6,7 @@ import (
 	"github.com/reearth/reearth/server/internal/usecase"
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearth/server/pkg/nlslayer"
+	"github.com/reearth/reearthx/idx"
 )
 
 type AddNLSLayerSimpleInput struct {
@@ -21,6 +22,7 @@ type AddNLSLayerSimpleInput struct {
 
 type UpdateNLSLayerInput struct {
 	LayerID id.NLSLayerID
+	Index   *int
 	Name    *string
 	Visible *bool
 	Config  *nlslayer.Config
@@ -44,7 +46,7 @@ type RemoveNLSInfoboxBlockParam struct {
 	InfoboxBlockID id.InfoboxBlockID
 }
 
-type AddCustomPropertiesInput struct {
+type AddOrUpdateCustomPropertiesInput struct {
 	LayerID id.NLSLayerID
 	Schema  map[string]any
 }
@@ -82,8 +84,11 @@ type NLSLayer interface {
 	MoveNLSInfoboxBlock(context.Context, MoveNLSInfoboxBlockParam, *usecase.Operator) (id.InfoboxBlockID, nlslayer.NLSLayer, int, error)
 	RemoveNLSInfoboxBlock(context.Context, RemoveNLSInfoboxBlockParam, *usecase.Operator) (id.InfoboxBlockID, nlslayer.NLSLayer, error)
 	Duplicate(context.Context, id.NLSLayerID, *usecase.Operator) (nlslayer.NLSLayer, error)
-	AddCustomProperties(context.Context, AddCustomPropertiesInput, *usecase.Operator) (nlslayer.NLSLayer, error)
+	AddOrUpdateCustomProperties(context.Context, AddOrUpdateCustomPropertiesInput, *usecase.Operator) (nlslayer.NLSLayer, error)
+	ChangeCustomPropertyTitle(context.Context, AddOrUpdateCustomPropertiesInput, string, string, *usecase.Operator) (nlslayer.NLSLayer, error)
+	RemoveCustomProperty(context.Context, AddOrUpdateCustomPropertiesInput, string, *usecase.Operator) (nlslayer.NLSLayer, error)
 	AddGeoJSONFeature(context.Context, AddNLSLayerGeoJSONFeatureParams, *usecase.Operator) (nlslayer.Feature, error)
 	UpdateGeoJSONFeature(context.Context, UpdateNLSLayerGeoJSONFeatureParams, *usecase.Operator) (nlslayer.Feature, error)
 	DeleteGeoJSONFeature(context.Context, DeleteNLSLayerGeoJSONFeatureParams, *usecase.Operator) (id.FeatureID, error)
+	ImportNLSLayers(context.Context, idx.ID[id.Scene], *[]byte) (nlslayer.NLSLayerList, error)
 }

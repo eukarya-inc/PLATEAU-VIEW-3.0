@@ -24,15 +24,27 @@ type Item struct {
 	err  error
 }
 
-func (r *Item) FindByAssets(ctx context.Context, assetID id.AssetIDList, ref *version.Ref) (item.VersionedList, error) {
-	// TODO implement me
-	panic("implement me")
-}
-
 func NewItem() repo.Item {
 	return &Item{
 		data: memorygit.NewVersionedSyncMap[item.ID, *item.Item](),
 	}
+}
+
+func (r *Item) FindByAssets(_ context.Context, list id.AssetIDList, ref *version.Ref) (item.VersionedList, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+
+	var res item.VersionedList
+	r.data.Range(func(k item.ID, v *version.Values[*item.Item]) bool {
+		itv := v.Get(ref.OrLatest().OrVersion())
+		it := itv.Value()
+		if it.AssetIDs().Has(list...) {
+			res = append(res, itv)
+		}
+		return true
+	})
+	return res, nil
 }
 
 func (r *Item) Filtered(filter repo.ProjectFilter) repo.Item {
@@ -71,24 +83,6 @@ func (r *Item) FindBySchema(_ context.Context, schemaID id.SchemaID, ref *versio
 	return res, nil, nil
 }
 
-func (r *Item) FindByProject(_ context.Context, projectID id.ProjectID, ref *version.Ref, pagination *usecasex.Pagination) (item.VersionedList, *usecasex.PageInfo, error) {
-	if r.err != nil {
-		return nil, nil, r.err
-	}
-
-	var res item.VersionedList
-	r.data.Range(func(k item.ID, v *version.Values[*item.Item]) bool {
-		itv := v.Get(ref.OrLatest().OrVersion())
-		it := itv.Value()
-		if it.Project() == projectID {
-			res = append(res, itv)
-		}
-		return true
-	})
-
-	return res, nil, nil
-}
-
 func (r *Item) FindByModel(_ context.Context, modelID id.ModelID, ref *version.Ref, sort *usecasex.Sort, pagination *usecasex.Pagination) (item.VersionedList, *usecasex.PageInfo, error) {
 	if r.err != nil {
 		return nil, nil, r.err
@@ -115,6 +109,18 @@ func (r *Item) FindByIDs(_ context.Context, list id.ItemIDList, ref *version.Ref
 	return r.data.LoadAll(list, lo.ToPtr(ref.OrLatest().OrVersion())), nil
 }
 
+func (r *Item) FindVersionByID(_ context.Context, itemID id.ItemID, ver version.VersionOrRef) (item.Versioned, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+
+	item, ok := r.data.Load(itemID, ver)
+	if !ok {
+		return nil, rerror.ErrNotFound
+	}
+	return item, nil
+}
+
 func (r *Item) FindAllVersionsByID(_ context.Context, id id.ItemID) (item.VersionedList, error) {
 	if r.err != nil {
 		return nil, r.err
@@ -127,7 +133,7 @@ func (r *Item) FindAllVersionsByID(_ context.Context, id id.ItemID) (item.Versio
 	}), nil
 }
 
-func (r *Item) FindAllVersionsByIDs(ctx context.Context, ids id.ItemIDList) (item.VersionedList, error) {
+func (r *Item) FindAllVersionsByIDs(_ context.Context, ids id.ItemIDList) (item.VersionedList, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
@@ -139,7 +145,7 @@ func (r *Item) FindAllVersionsByIDs(ctx context.Context, ids id.ItemIDList) (ite
 	}), nil
 }
 
-func (r *Item) LastModifiedByModel(ctx context.Context, modelID id.ModelID) (time.Time, error) {
+func (r *Item) LastModifiedByModel(_ context.Context, modelID id.ModelID) (time.Time, error) {
 	if r.err != nil {
 		return time.Time{}, r.err
 	}
@@ -169,7 +175,21 @@ func (r *Item) Save(_ context.Context, t *item.Item) error {
 	return nil
 }
 
-func (r *Item) UpdateRef(ctx context.Context, item id.ItemID, ref version.Ref, vr *version.VersionOrRef) error {
+func (r *Item) SaveAll(_ context.Context, il item.List) error {
+	if r.err != nil {
+		return r.err
+	}
+
+	for _, t := range il {
+		if !r.f.CanWrite(t.Project()) {
+			return repo.ErrOperationDenied
+		}
+	}
+	r.data.SaveAll(il.IDs(), il, nil)
+	return nil
+}
+
+func (r *Item) UpdateRef(_ context.Context, item id.ItemID, ref version.Ref, vr *version.VersionOrRef) error {
 	if r.err != nil {
 		return r.err
 	}
@@ -248,7 +268,7 @@ func (r *Item) Search(_ context.Context, sp schema.Package, q *item.Query, pagin
 	}
 
 	var res item.VersionedList
-	qq := q.Q()
+	qq := q.Keyword()
 
 	r.data.Range(func(k item.ID, v *version.Values[*item.Item]) bool {
 		it := v.Get(version.Latest.OrVersion())
@@ -285,7 +305,7 @@ func (r *Item) FindByModelAndValue(_ context.Context, modelID id.ModelID, fields
 		if it.Model() == modelID {
 			for _, f := range fields {
 				for _, ff := range it.Fields() {
-					if f.Field == ff.FieldID() && f.Value.Equal(f.Value) {
+					if f.Field == ff.FieldID() && f.Value.Equal(ff.Value()) {
 						res = append(res, itv)
 					}
 				}

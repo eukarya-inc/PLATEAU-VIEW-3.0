@@ -22,6 +22,7 @@ func (b *StoryBuilder) Build() (*Story, error) {
 	if len(b.s.panelPosition) == 0 {
 		b.s.panelPosition = PositionLeft
 	}
+	b.s.coreSupport = true
 	return b.s, nil
 }
 
@@ -117,5 +118,15 @@ func (b *StoryBuilder) PublicImage(image string) *StoryBuilder {
 
 func (b *StoryBuilder) PublicNoIndex(noIndex bool) *StoryBuilder {
 	b.s.publicNoIndex = noIndex
+	return b
+}
+
+func (b *StoryBuilder) EnableGa(enableGa bool) *StoryBuilder {
+	b.s.enableGa = enableGa
+	return b
+}
+
+func (b *StoryBuilder) TrackingID(trackingID string) *StoryBuilder {
+	b.s.trackingID = trackingID
 	return b
 }

@@ -5,8 +5,10 @@ const propertyFragment = gql`
     fieldId
     title
     description
+    placeholder
     translatedTitle(lang: $lang)
     translatedDescription(lang: $lang)
+    translatedPlaceholder(lang: $lang)
     prefix
     suffix
     type
@@ -98,7 +100,6 @@ const propertyFragment = gql`
     fields {
       fieldId
       type
-      actualValue
       overridden
       links {
         ...PropertyFieldLink

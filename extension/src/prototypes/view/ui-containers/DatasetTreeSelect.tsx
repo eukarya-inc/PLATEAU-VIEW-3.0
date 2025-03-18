@@ -1,5 +1,5 @@
 import { Typography, type SelectChangeEvent } from "@mui/material";
-import { atom, useAtom, useAtomValue, useSetAtom, type Getter, type SetStateAction } from "jotai";
+import { atom, useAtom, useAtomValue, useSetAtom, type SetStateAction } from "jotai";
 import { differenceBy, groupBy } from "lodash";
 import { memo, useCallback, useMemo, type FC } from "react";
 import invariant from "tiny-invariant";
@@ -22,10 +22,15 @@ interface Params {
   datumId: string;
 }
 
-function createParamsArray(get: Getter, layers: readonly RootLayerConfigForDataset[]): Params[] {
+type DefaultDataIdOfDatasetMap = { [K in string]: string | undefined };
+
+function createParamsArray(
+  layers: readonly RootLayerConfigForDataset[],
+  defaultDataIdOfDatasetMap: DefaultDataIdOfDatasetMap,
+): Params[] {
   return layers
-    .map(({ id, currentDataIdAtom }) => {
-      const datumId = get(currentDataIdAtom);
+    .map(({ id }) => {
+      const datumId = defaultDataIdOfDatasetMap[id];
       return datumId != null ? { datasetId: id, datumId } : undefined;
     })
     .filter(isNotNullish);
@@ -45,16 +50,27 @@ export interface DatasetTreeSelectProps {
   datasets: DatasetItem[];
   municipalityCode: string;
   disabled?: boolean;
+  allowContinuousAdd?: boolean;
 }
 
+// This component just shows only datasets, not dataset's items.
 export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
-  ({ datasets, municipalityCode, disabled, label }) => {
+  ({ datasets, municipalityCode, disabled, label, allowContinuousAdd }) => {
     invariant(datasets.length > 0);
     const rootLayers = useAtomValue(rootLayersAtom);
     const settings = useAtomValue(settingsAtom);
     const templates = useAtomValue(templatesAtom);
 
     const datasetIds = useMemo(() => datasets.map(d => d.id), [datasets]);
+    // This component just shows only datasets, so datumId should be first one always even if actual datumId is different.
+    const defaultDataIdOfDatasetMap = useMemo(
+      () =>
+        datasets.reduce(
+          (r, d) => ({ ...r, [d.id]: d.items[0]?.id }),
+          {} as DefaultDataIdOfDatasetMap,
+        ),
+      [datasets],
+    );
 
     const filteredRootLayers = useMemo(
       () =>
@@ -68,20 +84,18 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
     const removeLayer = useSetAtom(removeLayerAtom);
     const paramsAtom = useMemo(() => {
       return atom(
-        get => createParamsArray(get, filteredRootLayers),
-        (get, set, dataIds: SetStateAction<Params[]>) => {
-          const prevParams = createParamsArray(get, filteredRootLayers);
+        () => createParamsArray(filteredRootLayers, defaultDataIdOfDatasetMap),
+        (_get, set, dataIds: SetStateAction<Params[]>) => {
+          const prevParams = createParamsArray(filteredRootLayers, defaultDataIdOfDatasetMap);
           const nextParams = typeof dataIds === "function" ? dataIds(prevParams) : dataIds;
 
           const paramsToRemove = differenceBy(prevParams, nextParams, ({ datasetId }) => datasetId);
           const paramsToAdd = differenceBy(nextParams, prevParams, ({ datasetId }) => datasetId);
-          const paramsToUpdate = nextParams.filter(({ datasetId, datumId }) =>
-            prevParams.some(params => params.datasetId === datasetId && params.datumId !== datumId),
+          const paramsToUpdate = nextParams.filter(({ datasetId }) =>
+            prevParams.some(params => params.datasetId === datasetId),
           );
-          paramsToRemove.forEach(({ datumId }) => {
-            const layer = filteredRootLayers.find(
-              ({ currentDataIdAtom }) => get(currentDataIdAtom) === datumId,
-            );
+          paramsToRemove.forEach(({ datasetId }) => {
+            const layer = filteredRootLayers.find(({ id }) => id === datasetId);
             invariant(layer != null);
             removeLayer(layer.id);
           });
@@ -116,6 +130,7 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
       removeLayer,
       settings,
       templates,
+      defaultDataIdOfDatasetMap,
     ]);
 
     const [params, setParams] = useAtom(paramsAtom);
@@ -142,7 +157,12 @@ export const DatasetTreeSelect: FC<DatasetTreeSelectProps> = memo(
     }, [datasets]);
 
     return (
-      <ContextSelect label={label} value={value} onChange={handleChange} disabled={disabled}>
+      <ContextSelect
+        label={label}
+        value={value}
+        onChange={handleChange}
+        disabled={disabled}
+        autoClose={!allowContinuousAdd}>
         {selectTreeItems.map((item, index) => {
           if (item.isFolder) {
             return (

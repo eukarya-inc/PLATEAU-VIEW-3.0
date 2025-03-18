@@ -9,11 +9,13 @@ import (
 
 func (ft FeatureTypes) ToDatasetTypes(specs []plateauapi.PlateauSpec) plateauapi.DatasetTypes {
 	res := make(plateauapi.DatasetTypes)
-	res[plateauapi.DatasetTypeCategoryPlateau] = lo.Map(ft.Plateau, func(f FeatureType, _ int) plateauapi.DatasetType {
-		spec, _ := lo.Find(specs, func(s plateauapi.PlateauSpec) bool {
-			return s.MajorVersion == f.SpecMajor
+	res[plateauapi.DatasetTypeCategoryPlateau] = lo.FlatMap(ft.Plateau, func(f FeatureType, _ int) []plateauapi.DatasetType {
+		return lo.FilterMap(specs, func(s plateauapi.PlateauSpec, _ int) (plateauapi.DatasetType, bool) {
+			if s.MajorVersion < f.MinSpecMajor {
+				return nil, false
+			}
+			return f.ToPlateauDatasetType(s), true
 		})
-		return f.ToPlateauDatasetType(spec)
 	})
 	res[plateauapi.DatasetTypeCategoryRelated] = lo.Map(ft.Related, func(f FeatureType, _ int) plateauapi.DatasetType {
 		return f.ToRelatedDatasetType()
@@ -39,7 +41,7 @@ func (f *FeatureType) ToPlateauDatasetType(spec plateauapi.PlateauSpec) *plateau
 
 func (f *FeatureType) ToRelatedDatasetType() *plateauapi.RelatedDatasetType {
 	return &plateauapi.RelatedDatasetType{
-		Category: plateauapi.DatasetTypeCategoryPlateau,
+		Category: plateauapi.DatasetTypeCategoryRelated,
 		ID:       plateauapi.NewID(f.Code, plateauapi.TypeDatasetType),
 		Name:     f.Name,
 		Code:     f.Code,
@@ -49,7 +51,7 @@ func (f *FeatureType) ToRelatedDatasetType() *plateauapi.RelatedDatasetType {
 
 func (f *FeatureType) ToGenericDatasetType() *plateauapi.GenericDatasetType {
 	return &plateauapi.GenericDatasetType{
-		Category: plateauapi.DatasetTypeCategoryPlateau,
+		Category: plateauapi.DatasetTypeCategoryGeneric,
 		ID:       plateauapi.NewID(f.Code, plateauapi.TypeDatasetType),
 		Name:     f.Name,
 		Code:     f.Code,
@@ -69,6 +71,7 @@ func (ft FeatureTypes) LayerNames() map[string]LayerNames {
 			Name:        ft.MVTLayerName,
 			NamesForLOD: namesForLOD,
 			Prefix:      ft.MVTLayerNamePrefix,
+			PreferDef:   ft.UseCategoryAsMVTLayer,
 		}
 	}
 	return res

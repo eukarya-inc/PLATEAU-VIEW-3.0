@@ -3,7 +3,9 @@ import { Page } from "@playwright/test";
 import { closeNotification } from "@reearth-cms/e2e/common/notification";
 import { expect } from "@reearth-cms/e2e/utils";
 
-export async function createModel(page: Page, name = "e2e model name", key = "e2e-model-key") {
+export const modelName = "e2e model name";
+
+export async function createModel(page: Page, name = modelName, key = "e2e-model-key") {
   await page.getByText("Schema").first().click();
   await page.getByRole("button", { name: "plus Add" }).first().click();
   await page.getByLabel("Model name").click();
@@ -11,7 +13,6 @@ export async function createModel(page: Page, name = "e2e model name", key = "e2
   await page.getByLabel("Model key").click();
   await page.getByLabel("Model key").fill(key);
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created model!");
   await closeNotification(page);
   await expect(page.getByTitle(name, { exact: true })).toBeVisible();
   await expect(page.getByText(`#${key}`)).toBeVisible();
@@ -28,7 +29,6 @@ async function updateModel(page: Page) {
   await page.getByLabel("Update Model").locator("#key").click();
   await page.getByLabel("Update Model").locator("#key").fill("new-e2e-model-key");
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated model!");
   await closeNotification(page);
   await expect(page.getByTitle(updateModelName)).toBeVisible();
   await expect(page.getByText("#new-e2e-model-key")).toBeVisible();
@@ -39,9 +39,8 @@ async function deleteModel(page: Page) {
   await page.getByRole("button", { name: "more" }).hover();
   await page.getByText("Delete").click();
   await page.getByRole("button", { name: "Delete Model" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully deleted model!");
   await closeNotification(page);
-  await expect(page.getByTitle(updateModelName)).not.toBeVisible();
+  await expect(page.getByTitle(updateModelName)).toBeHidden();
 }
 
 export async function crudModel(page: Page) {

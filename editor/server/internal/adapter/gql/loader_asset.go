@@ -9,6 +9,7 @@ import (
 	"github.com/reearth/reearth/server/pkg/asset"
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearthx/account/accountdomain"
+	"github.com/reearth/reearthx/idx"
 	"github.com/reearth/reearthx/usecasex"
 	"github.com/reearth/reearthx/util"
 )
@@ -35,26 +36,33 @@ func (c *AssetLoader) Fetch(ctx context.Context, ids []gqlmodel.ID) ([]*gqlmodel
 	return util.Map(res, gqlmodel.ToAsset), nil
 }
 
-func (c *AssetLoader) FindByWorkspace(ctx context.Context, wsID gqlmodel.ID, keyword *string, sort *asset.SortType, pagination *gqlmodel.Pagination) (*gqlmodel.AssetConnection, error) {
+func (c *AssetLoader) FindByWorkspace(ctx context.Context, wsID gqlmodel.ID, proId *gqlmodel.ID, keyword *string, sort *asset.SortType, pagination *gqlmodel.Pagination) (*gqlmodel.AssetConnection, error) {
 	tid, err := gqlmodel.ToID[accountdomain.Workspace](wsID)
 	if err != nil {
 		return nil, err
 	}
 
-	assets, pi, err := c.usecase.FindByWorkspace(ctx, tid, keyword, sort, gqlmodel.ToPagination(pagination), getOperator(ctx))
+	var pid *idx.ID[id.Project]
+	if proId != nil {
+		pidValue, err := gqlmodel.ToID[id.Project](*proId)
+		if err != nil {
+			return nil, err
+		}
+		pid = &pidValue
+	}
+
+	assets, pi, err := c.usecase.FindByWorkspaceProject(ctx, tid, pid, keyword, sort, gqlmodel.ToPagination(pagination), getOperator(ctx))
 	if err != nil {
 		return nil, err
 	}
 
-	edges := make([]*gqlmodel.AssetEdge, 0, len(assets))
-	nodes := make([]*gqlmodel.Asset, 0, len(assets))
-	for _, a := range assets {
-		asset := gqlmodel.ToAsset(a)
-		edges = append(edges, &gqlmodel.AssetEdge{
+	nodes := gqlmodel.ToAssets(assets)
+	edges := make([]*gqlmodel.AssetEdge, len(nodes))
+	for i, asset := range nodes {
+		edges[i] = &gqlmodel.AssetEdge{
 			Node:   asset,
 			Cursor: usecasex.Cursor(asset.ID),
-		})
-		nodes = append(nodes, asset)
+		}
 	}
 
 	return &gqlmodel.AssetConnection{

@@ -7944,6 +7944,11 @@ date-fns@^2.30.0:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
+dayjs@1.11.13:
+  version "1.11.13"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
+  integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
+
 debounce@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.1.tgz#38881d8f4166a5c5848020c11827b834bcb3e0a5"
@@ -10181,6 +10186,11 @@ jest-worker@^29.6.2:
     jest-util "^29.6.2"
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
+
+jismesh-js@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/jismesh-js/-/jismesh-js-0.2.0.tgz#1d6e4b3df78cb5aa8c35305f2b5228bb66fb42d7"
+  integrity sha512-Cdsekn6BFKROPasiEonIR+1dynOFerSstWnM4V6YhWV1XXWPgbN2HZ1Y/u5AQvzXIp75UO0cbUpofo9SYcKJlg==
 
 jiti@^1.17.1, jiti@^1.18.2:
   version "1.20.0"

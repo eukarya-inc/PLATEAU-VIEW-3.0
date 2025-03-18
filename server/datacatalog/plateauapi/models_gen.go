@@ -28,6 +28,8 @@ type Area interface {
 	GetParentID() *ID
 	// 地域の親となる地域。
 	GetParent() Area
+	// 地域に属する子地域。
+	GetChildren() []Area
 }
 
 // データセット。
@@ -73,6 +75,8 @@ type Dataset interface {
 	GetType() DatasetType
 	// データセットのアイテム。
 	GetItems() []DatasetItem
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	GetAr() bool
 	// 管理者用
 	GetAdmin() interface{}
 }
@@ -138,6 +142,8 @@ type AreasInput struct {
 	SearchTokens []string `json:"searchTokens,omitempty"`
 	// datasetTypes が指定された場合に、検索結果にその地域の親も含めるかどうか。デフォルトは false です。
 	IncludeParents *bool `json:"includeParents,omitempty"`
+	// 属しているDatasetが存在しない都市を含めます。通常のデータセットは存在しないが、 CityGMLDataset の city として使用されている都市が含まれます。
+	IncludeEmpty *bool `json:"includeEmpty,omitempty"`
 	// parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。
 	Deep *bool `json:"deep,omitempty"`
 }
@@ -171,6 +177,8 @@ type City struct {
 	CitygmlID *ID `json:"citygmlId,omitempty"`
 	// CityGMLデータセット。
 	Citygml *CityGMLDataset `json:"citygml,omitempty"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (City) IsArea()        {}
@@ -205,6 +213,18 @@ func (this City) GetParentID() *ID { return this.ParentID }
 // 地域の親となる地域。
 func (this City) GetParent() Area { return *this.Parent }
 
+// 地域に属する子地域。
+func (this City) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
+
 func (City) IsNode() {}
 
 // オブジェクトのID
@@ -236,6 +256,8 @@ type CityGMLDataset struct {
 	PlateauSpecMinor *PlateauSpecMinor `json:"plateauSpecMinor"`
 	// CityGMLが含む地物型コードのリスト。
 	FeatureTypes []string `json:"featureTypes"`
+	// CityGMLのメタデータを含むzipファイルURLのリスト。
+	MetadataZipUrls []string `json:"metadataZipUrls"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 }
@@ -277,6 +299,9 @@ type DatasetsInput struct {
 	Shallow *bool `json:"shallow,omitempty"`
 	// 特殊なグループを持つデータセットのみを検索対象にするかどうか。デフォルトはfalseです。
 	GroupedOnly *bool `json:"groupedOnly,omitempty"`
+	// PLATEAU ARで閲覧可能なデータセットを含めるかどうか。
+	// trueの場合はARで閲覧可能なデータセットのみ、falseの場合はARで閲覧不可能なデータセットのみを返します。
+	Ar *bool `json:"ar,omitempty"`
 }
 
 // ユースケースデータなどを含む、その他のデータセット。
@@ -320,6 +345,8 @@ type GenericDataset struct {
 	Type *GenericDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*GenericDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 }
@@ -401,6 +428,9 @@ func (this GenericDataset) GetItems() []DatasetItem {
 	}
 	return interfaceSlice
 }
+
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this GenericDataset) GetAr() bool { return this.Ar }
 
 // 管理者用
 func (this GenericDataset) GetAdmin() interface{} { return this.Admin }
@@ -555,6 +585,8 @@ type PlateauDataset struct {
 	Type *PlateauDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*PlateauDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 	// データセットが準拠するPLATEAU都市モデルの仕様のマイナーバージョンへのID。
@@ -643,6 +675,9 @@ func (this PlateauDataset) GetItems() []DatasetItem {
 	return interfaceSlice
 }
 
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this PlateauDataset) GetAr() bool { return this.Ar }
+
 // 管理者用
 func (this PlateauDataset) GetAdmin() interface{} { return this.Admin }
 
@@ -668,11 +703,13 @@ type PlateauDatasetItem struct {
 	Parent *PlateauDataset `json:"parent,omitempty"`
 	// データセットのアイテムのLOD（詳細度・Level of Detail）。1、2、3、4などの整数値です。
 	Lod *int `json:"lod,omitempty"`
+	// データセットのアイテムのLOD（詳細度・Level of Detail）のうち、小数点以下の値が存在する場合に定義されます。例えばLOD3.1の場合は1、3.0の場合は0となります。LODがnullの場合はnullとなります。
+	LodEx *int `json:"lodEx,omitempty"`
 	// データセットのアイテムのテクスチャの種類。
 	Texture *Texture `json:"texture,omitempty"`
-	// 浸水規模。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在します。
+	// 浸水規模。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
 	FloodingScale *FloodingScale `json:"floodingScale,omitempty"`
-	// 浸水規模の枝番。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在することがあります。
+	// 浸水規模の枝番。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
 	FloodingScaleSuffix *string `json:"floodingScaleSuffix,omitempty"`
 }
 
@@ -728,7 +765,7 @@ type PlateauDatasetType struct {
 	PlateauSpec *PlateauSpec `json:"plateauSpec,omitempty"`
 	// データセットの種類が属するPLATEAU都市モデルの仕様の公開年度（西暦）。
 	Year int `json:"year"`
-	// 洪水・高潮・津波・内水浸水想定区域モデルを表す種類かどうか。河川などの情報が利用可能です。
+	// 災害リスク（浸水）モデルかどうか。河川などの情報が利用可能です。
 	Flood bool `json:"flood"`
 	// データセット（DatasetInput内のincludeTypesとexcludeTypesの指定は無視されます）。
 	Datasets []*PlateauDataset `json:"datasets"`
@@ -824,6 +861,8 @@ type Prefecture struct {
 	ParentID *ID `json:"parentId,omitempty"`
 	// 地域の親となる地域。
 	Parent Area `json:"parent,omitempty"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (Prefecture) IsArea()        {}
@@ -857,6 +896,18 @@ func (this Prefecture) GetParentID() *ID { return this.ParentID }
 
 // 地域の親となる地域。
 func (this Prefecture) GetParent() Area { return this.Parent }
+
+// 地域に属する子地域。
+func (this Prefecture) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
 
 func (Prefecture) IsNode() {}
 
@@ -908,6 +959,8 @@ type RelatedDataset struct {
 	Type *RelatedDatasetType `json:"type"`
 	// データセットのアイテム。
 	Items []*RelatedDatasetItem `json:"items"`
+	// PLATEAU ARで閲覧可能なデータセットかどうか。
+	Ar bool `json:"ar"`
 	// 管理者用
 	Admin interface{} `json:"admin,omitempty"`
 }
@@ -989,6 +1042,9 @@ func (this RelatedDataset) GetItems() []DatasetItem {
 	}
 	return interfaceSlice
 }
+
+// PLATEAU ARで閲覧可能なデータセットかどうか。
+func (this RelatedDataset) GetAr() bool { return this.Ar }
 
 // 管理者用
 func (this RelatedDataset) GetAdmin() interface{} { return this.Admin }
@@ -1137,6 +1193,8 @@ type Ward struct {
 	ParentID *ID `json:"parentId,omitempty"`
 	// 地域の親となる地域。
 	Parent *City `json:"parent"`
+	// 地域に属する子地域。
+	Children []Area `json:"children"`
 }
 
 func (Ward) IsArea()        {}
@@ -1170,6 +1228,18 @@ func (this Ward) GetParentID() *ID { return this.ParentID }
 
 // 地域の親となる地域。
 func (this Ward) GetParent() Area { return *this.Parent }
+
+// 地域に属する子地域。
+func (this Ward) GetChildren() []Area {
+	if this.Children == nil {
+		return nil
+	}
+	interfaceSlice := make([]Area, 0, len(this.Children))
+	for _, concrete := range this.Children {
+		interfaceSlice = append(interfaceSlice, concrete)
+	}
+	return interfaceSlice
+}
 
 func (Ward) IsNode() {}
 

@@ -1,0 +1,13 @@
+dist/
+build/
+
+node_modules/
+.env
+.env.*
+.env-local
+
+yarn.lock
+.yarn/*
+
+src/lib/gql/__gen__
+src/routeTree.gen.ts

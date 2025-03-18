@@ -1,3 +1,4 @@
+import { ResourceTypes } from "@reearth-cms/components/molecules/Common/CommentsPanel/types";
 import RequestListMolecule from "@reearth-cms/components/molecules/Request/List";
 import CommentsPanel from "@reearth-cms/components/organisms/Common/CommentsPanel";
 import { useT } from "@reearth-cms/i18n";
@@ -13,11 +14,13 @@ const RequestList: React.FC = () => {
     collapsedCommentsPanel,
     selectedRequest,
     selection,
-    setSelection,
+    handleSelect,
     collapseCommentsPanel,
     handleRequestSelect,
     handleRequestsReload,
+    deleteLoading,
     handleRequestDelete,
+    searchTerm,
     handleSearchTerm,
     handleNavigateToRequest,
     totalCount,
@@ -27,12 +30,17 @@ const RequestList: React.FC = () => {
     page,
     pageSize,
     handleRequestTableChange,
+    columns,
+    handleColumnsChange,
+    hasCloseRight,
   } = useHooks();
 
   return (
     <RequestListMolecule
       commentsPanel={
         <CommentsPanel
+          resourceId={selectedRequest?.id ?? ""}
+          resourceType={ResourceTypes.Request}
           collapsed={collapsedCommentsPanel}
           onCollapse={collapseCommentsPanel}
           emptyText={
@@ -49,11 +57,13 @@ const RequestList: React.FC = () => {
       onRequestSelect={handleRequestSelect}
       loading={loading}
       onRequestsReload={handleRequestsReload}
+      deleteLoading={deleteLoading}
       onRequestDelete={handleRequestDelete}
       selectedRequest={selectedRequest}
+      searchTerm={searchTerm}
       onSearchTerm={handleSearchTerm}
       selection={selection}
-      setSelection={setSelection}
+      onSelect={handleSelect}
       onEdit={handleNavigateToRequest}
       totalCount={totalCount}
       reviewedByMe={reviewedByMe}
@@ -62,6 +72,9 @@ const RequestList: React.FC = () => {
       page={page}
       onRequestTableChange={handleRequestTableChange}
       pageSize={pageSize}
+      columns={columns}
+      onColumnsChange={handleColumnsChange}
+      hasCloseRight={hasCloseRight}
     />
   );
 };

@@ -26,6 +26,7 @@ type Story struct {
 	panelPosition Position
 	bgColor       string
 	updatedAt     time.Time
+	coreSupport   bool
 
 	alias             string
 	status            PublishmentStatus
@@ -37,6 +38,8 @@ type Story struct {
 	publicDescription string
 	publicImage       string
 	publicNoIndex     bool
+	enableGa          bool
+	trackingID        string
 }
 
 func (s *Story) Id() StoryID {
@@ -52,6 +55,9 @@ func (s *Story) Scene() SceneID {
 }
 
 func (s *Story) Pages() *PageList {
+	if s == nil {
+		return nil
+	}
 	return s.pages
 }
 
@@ -101,6 +107,10 @@ func (s *Story) PublicTitle() string {
 	return s.publicTitle
 }
 
+func (s *Story) CoreSupport() bool {
+	return s.coreSupport
+}
+
 func (s *Story) SetPublicDescription(publicDescription string) {
 	s.publicDescription = publicDescription
 }
@@ -119,6 +129,14 @@ func (s *Story) SetPanelPosition(panelPosition Position) {
 
 func (s *Story) SetBgColor(bgColor string) {
 	s.bgColor = bgColor
+}
+
+func (s *Story) SetEnableGa(enableGa bool) {
+	s.enableGa = enableGa
+}
+
+func (s *Story) SetTrackingID(trackingID string) {
+	s.trackingID = trackingID
 }
 
 func (s *Story) Rename(name string) {
@@ -167,6 +185,14 @@ func (s *Story) PanelPosition() Position {
 
 func (s *Story) BgColor() string {
 	return s.bgColor
+}
+
+func (s *Story) EnableGa() bool {
+	return s.enableGa
+}
+
+func (s *Story) TrackingID() string {
+	return s.trackingID
 }
 
 func (s *Story) ValidateProperties(pm property.Map) error {

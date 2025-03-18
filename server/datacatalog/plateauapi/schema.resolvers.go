@@ -55,6 +55,13 @@ func (r *cityResolver) Citygml(ctx context.Context, obj *City) (*CityGMLDataset,
 	return to[*CityGMLDataset](r.Repo.Node(ctx, *obj.CitygmlID))
 }
 
+// Children is the resolver for the children field.
+func (r *cityResolver) Children(ctx context.Context, obj *City) ([]Area, error) {
+	return r.Repo.Areas(ctx, &AreasInput{
+		ParentCode: lo.ToPtr(obj.Code),
+	})
+}
+
 // Prefecture is the resolver for the prefecture field.
 func (r *cityGMLDatasetResolver) Prefecture(ctx context.Context, obj *CityGMLDataset) (*Prefecture, error) {
 	return to[*Prefecture](r.Repo.Node(ctx, obj.PrefectureID))
@@ -250,6 +257,13 @@ func (r *prefectureResolver) Parent(ctx context.Context, obj *Prefecture) (Area,
 	return nil, nil
 }
 
+// Children is the resolver for the children field.
+func (r *prefectureResolver) Children(ctx context.Context, obj *Prefecture) ([]Area, error) {
+	return r.Repo.Areas(ctx, &AreasInput{
+		ParentCode: lo.ToPtr(obj.Code),
+	})
+}
+
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id ID) (Node, error) {
 	return r.Repo.Node(ctx, id)
@@ -366,6 +380,13 @@ func (r *wardResolver) Datasets(ctx context.Context, obj *Ward, input *DatasetsI
 // Parent is the resolver for the parent field.
 func (r *wardResolver) Parent(ctx context.Context, obj *Ward) (*City, error) {
 	return r.City(ctx, obj)
+}
+
+// Children is the resolver for the children field.
+func (r *wardResolver) Children(ctx context.Context, obj *Ward) ([]Area, error) {
+	return r.Repo.Areas(ctx, &AreasInput{
+		ParentCode: lo.ToPtr(obj.Code),
+	})
 }
 
 // City returns CityResolver implementation.

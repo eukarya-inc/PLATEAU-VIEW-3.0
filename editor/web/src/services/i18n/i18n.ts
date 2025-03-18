@@ -7,16 +7,21 @@ import ja from "./translations/ja.yml";
 
 const resources = {
   en: {
-    translation: en,
+    translation: en
   },
   ja: {
-    translation: ja,
-  },
+    translation: ja
+  }
 };
 
 export const availableLanguages = Object.keys(resources);
 
-// eslint-disable-next-line import/no-named-as-default-member
+// src/services/i18n/config.ts
+export const SUPPORTED_LANGUAGES = {
+  en: { label: "English", value: "en" },
+  ja: { label: "日本語", value: "ja" }
+} as const;
+
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources,
   fallbackLng: "en",
@@ -24,7 +29,7 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
   nsSeparator: false,
   keySeparator: false,
   returnEmptyString: false,
-  returnNull: false,
+  returnNull: false
 });
 
 export default i18n;

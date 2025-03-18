@@ -1,44 +1,39 @@
-import { useAtomValue } from "jotai";
-import { groupBy } from "lodash-es";
 import { FC, useMemo } from "react";
-import invariant from "tiny-invariant";
 
-import { useAreaDatasets } from "../../../shared/graphql";
-import { areasAtom } from "../../../shared/states/address";
+import { useDatasets } from "../../../shared/graphql";
+import { useCityCode } from "../../../shared/states/environmentVariables";
 import { DatasetTreeView } from "../../ui-components";
+import { getDatasetGroups } from "../utils/datasetGroups";
 
 import { DatasetGroup } from "./DatasetGroup";
 
-export const CityDatasetsList: FC<{
-  cityName: string;
-}> = ({ cityName }) => {
-  const areas = useAtomValue(areasAtom);
-  const municipalityMeta = useMemo(
-    () => areas?.find(area => area.type === "municipality" && area.name === cityName),
-    [areas, cityName],
-  );
+export const CityDatasetsList: FC = () => {
+  const [cityCode] = useCityCode();
+  const query = useDatasets({ areaCodes: [cityCode] });
 
-  const query = useAreaDatasets(municipalityMeta?.code ?? "");
-
-  const groups = useMemo(
+  const { typicalTypeGroups, dataGroups, cityDatasetGroups, genericGroups } = useMemo(
     () =>
-      query.data?.area?.datasets != null
-        ? Object.entries(groupBy(query.data.area.datasets, d => d.type.name)).map(
-            ([key, value]) => ({
-              label: key,
-              groupId: value.map(({ id }) => id).join(":"),
-              datasets: value.sort((a, b) => a.type.order - b.type.order),
-            }),
-          )
-        : undefined,
-    [query.data?.area?.datasets],
+      getDatasetGroups({
+        datasets: query.data?.datasets,
+        cityCode,
+      }),
+    [query.data?.datasets, cityCode],
   );
+
   return (
     <DatasetTreeView>
-      {groups?.map(groupItem => {
-        invariant(query.data?.area?.code != null);
-        return <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />;
-      })}
+      {typicalTypeGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {dataGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {genericGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {cityDatasetGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
     </DatasetTreeView>
   );
 };

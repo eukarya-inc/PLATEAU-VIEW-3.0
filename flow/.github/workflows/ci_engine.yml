@@ -1,0 +1,109 @@
+name: ci-engine
+
+on:
+  workflow_call:
+
+env:
+  # Disable incremental compilation.
+  CARGO_INCREMENTAL: 0
+  # Allow more retries for network requests in cargo (downloading crates) and
+  # rustup (installing toolchains). This should help to reduce flaky CI failures
+  # from transient network timeouts or other issues.
+  CARGO_NET_RETRY: 10
+  RUSTUP_MAX_RETRIES: 10
+  # Don't emit giant backtraces in the CI logs.
+  RUST_BACKTRACE: short
+  FLOW_RUNTIME_ACTION_LOG_DISABLE: true
+
+defaults:
+  run:
+    working-directory: engine
+
+jobs:
+  ci:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Maximize build space
+        uses: AdityaGarg8/remove-unwanted-software@v4.1
+        with:
+          remove-dotnet: 'true'
+          remove-android: 'true'
+          remove-haskell: 'true'
+          remove-codeql: 'true'
+          remove-docker-images: 'true'
+          remove-swapfile: 'true'
+          remove-cached-tools: 'true'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - name: Cache cargo registry
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: engine
+          shared-key: "engine-ci"
+      - name: install required tools
+        uses: taiki-e/install-action@v2
+        with:
+          tool: taplo-cli,cargo-make,cargo-edit
+      - name: Compare version with previous commit
+        if: ${{ !(github.ref == 'refs/heads/main') }}
+        run: |
+          # Try to get previous version, handle new files
+          PREV_VERSION=$(git show "HEAD~1:engine/Cargo.toml" 2>/dev/null | grep '^version' | cut -d '"' -f2) || PREV_VERSION=""
+          if [ -z "$PREV_VERSION" ]; then
+            echo "No previous version found (new file?) - skipping version check"
+            exit 0
+          fi
+
+          CURR_VERSION=$(grep '^version' Cargo.toml | cut -d '"' -f2)
+          if [ -z "$CURR_VERSION" ]; then
+            echo "Error: Could not find version in current Cargo.toml"
+            exit 1
+          fi
+
+           echo "Previous version: $PREV_VERSION"
+           echo "Current version:  $CURR_VERSION"
+
+           if [ "$PREV_VERSION" = "$CURR_VERSION" ]; then
+             echo "Error: The version of Cargo.toml has not been changed."
+             echo "       To increase the patch version, run 'cargo set-version --bump patch'."
+             echo "       To bump the version, run one of:"
+             echo "       - 'cargo set-version --bump major'  # For breaking changes"
+             echo "       - 'cargo set-version --bump minor'  # For new features"
+             echo "       - 'cargo set-version --bump patch'  # For bug fixes"
+             exit 1
+           fi
+
+      - name: Install Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install py2wasm
+        run: |
+          python -m pip install --upgrade pip
+          pip install py2wasm
+      - name: check
+        run: cargo make check
+      - name: rustfmt
+        run: cargo fmt --all -- --check
+      - name: clippy
+        run: cargo make clippy
+      - name: taplo
+        run: taplo fmt --check
+      - name: run generate schema
+        run: cargo make doc-action
+      - name: check generated schema
+        run: |
+          git add -N .
+          git diff
+          line=$(git diff | wc -l)
+          if [ "$line" -gt 0 ]; then
+            echo "Please run 'cargo make doc-action' and commit the changes."
+            git diff
+            exit 1
+          fi
+      - name: run tests
+        run: cargo make test

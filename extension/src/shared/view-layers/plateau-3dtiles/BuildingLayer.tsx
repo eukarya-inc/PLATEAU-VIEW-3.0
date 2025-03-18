@@ -65,6 +65,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
   colorMapAtom,
   colorRangeAtom,
   componentAtoms,
+  version,
   // showWireframeAtom,
 }) => {
   const hidden = useAtomValue(hiddenAtom);
@@ -117,6 +118,7 @@ export const BuildingLayer: FC<LayerProps<typeof BUILDING_LAYER>> = ({
         colorRangeAtom={colorRangeAtom}
         searchedFeaturesAtom={searchedFeaturesAtom}
         selections={selections as ScreenSpaceSelectionEntry<typeof TILESET_FEATURE>[]}
+        version={version ?? 0}
         // showWireframe={showWireframe}
 
         // Field components

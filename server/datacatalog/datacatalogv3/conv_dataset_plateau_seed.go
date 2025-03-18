@@ -22,19 +22,21 @@ type plateauDatasetSeed struct {
 	WardCode   *plateauapi.AreaCode
 	Groups     []string
 	// common
-	DatasetType       *plateauapi.PlateauDatasetType
-	Dic               Dic
-	Area              *areaContext
-	Pref              *plateauapi.Prefecture
-	City              *plateauapi.City
-	Spec              *plateauapi.PlateauSpecMinor
-	River             *plateauapi.River
-	Admin             any
-	LayerNames        LayerNames
-	Year              int
-	OpenDataURL       string
-	HideTexture       bool
-	RegisterationYear int
+	DatasetType           *plateauapi.PlateauDatasetType
+	Dic                   Dic
+	Area                  *areaContext
+	Pref                  *plateauapi.Prefecture
+	City                  *plateauapi.City
+	Spec                  *plateauapi.PlateauSpecMinor
+	River                 *plateauapi.River
+	Admin                 any
+	LayerNames            LayerNames
+	Year                  int
+	OpenDataURL           string
+	HideTexture           bool
+	HideLOD               bool
+	RegisterationYear     int
+	UseCategoryAsMVTLayer bool
 }
 
 func (seed plateauDatasetSeed) GetID() string {
@@ -86,17 +88,21 @@ func plateauDatasetSeedsFrom(i *PlateauFeatureItem, opts ToPlateauDatasetsOption
 		res[i].Pref = opts.Area.Pref
 		res[i].City = opts.Area.City
 		res[i].Spec = opts.Spec
-		res[i].Admin = newAdmin(
-			opts.Area.CityItem.ID,
-			opts.Area.CityItem.PlateauStage(opts.DatasetType.Code),
-			opts.CMSURL,
-			nil,
-		)
+		res[i].Admin = adminFrom(Admin{
+			ItemID:      opts.ID,
+			Stage:       opts.Area.CityItem.PlateauStage(opts.DatasetType.Code),
+			CMSURL:      opts.CMSInfo.ItemBaseURL(opts.DatasetType.Code),
+			CreatedAt:   opts.CreatedAt,
+			UpdatedAt:   opts.UpdatedAt,
+			SubAreaCode: opts.Area.CityItem.SubCityCode,
+		})
 		res[i].LayerNames = opts.LayerNames
 		res[i].Year = year
 		res[i].OpenDataURL = opts.Area.CityItem.GetOpenDataURL()
 		res[i].HideTexture = opts.FeatureType.HideTexture
+		res[i].HideLOD = opts.FeatureType.HideLOD
 		res[i].RegisterationYear = opts.Year
+		res[i].UseCategoryAsMVTLayer = opts.FeatureType.UseCategoryAsMVTLayer
 		if res[i].TargetArea == nil {
 			res[i].TargetArea = opts.Area.City
 			if res[i].TargetArea == nil {
@@ -291,11 +297,14 @@ type plateauDatasetItemSeed struct {
 	URL                 string
 	Format              plateauapi.DatasetFormat
 	LOD                 *int
+	LODEx               *int
 	NoTexture           *bool
 	Layers              []string
 	FloodingScale       *plateauapi.FloodingScale
 	FloodingScaleSuffix *string
 	HideTexture         bool
+	HideLOD             bool
+	DefaultName         string
 }
 
 func (i plateauDatasetItemSeed) GetID(parentID string) string {
@@ -305,8 +314,12 @@ func (i plateauDatasetItemSeed) GetID(parentID string) string {
 
 	ids := []string{parentID, i.ID}
 
-	if i.LOD != nil {
-		ids = append(ids, fmt.Sprintf("lod%d", *i.LOD))
+	if i.LOD != nil && !i.HideLOD {
+		lodex := ""
+		if i.LODEx != nil && *i.LODEx > 0 {
+			lodex = fmt.Sprintf("%d", *i.LODEx)
+		}
+		ids = append(ids, fmt.Sprintf("lod%d%s", *i.LOD, lodex))
 	}
 
 	if !i.HideTexture && i.NoTexture != nil && *i.NoTexture {
@@ -322,8 +335,12 @@ func (i plateauDatasetItemSeed) GetName() string {
 	name := i.Name
 	var lod, tex string
 
-	if i.LOD != nil {
-		lod = fmt.Sprintf("LOD%d", *i.LOD)
+	if i.LOD != nil { // HideLOD should be ignored here
+		lodex := ""
+		if i.LODEx != nil && *i.LODEx > 0 {
+			lodex = fmt.Sprintf(".%d", *i.LODEx)
+		}
+		lod = fmt.Sprintf("LOD%d%s", *i.LOD, lodex)
 	}
 
 	if !i.HideTexture && i.NoTexture != nil && *i.NoTexture {
@@ -338,7 +355,10 @@ func (i plateauDatasetItemSeed) GetName() string {
 
 	if name != "" && lod != "" {
 		name += " "
+	} else if name == "" && lod == "" {
+		name = i.DefaultName
 	}
+
 	return name + lod + tex
 }
 
@@ -361,9 +381,7 @@ func plateauDatasetItemSeedFrom(seed plateauDatasetSeed) (items []plateauDataset
 
 		switch {
 		case assetName.Ex.Normal != nil:
-			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture)
-		case assetName.Ex.Urf != nil:
-			item, w = plateauDatasetItemSeedFromUrf(url, assetName.Ex.Urf, seed.Dic, seed.LayerNames, cityCode, seed.HideTexture)
+			item, w = plateauDatasetItemSeedFromNormal(url, assetName.Ex.Normal, seed.LayerNames, cityCode, seed.HideTexture, seed.HideLOD, seed.Dic, seed.DatasetType.Name, seed.UseCategoryAsMVTLayer)
 		case assetName.Ex.Fld != nil:
 			item, w = plateauDatasetItemSeedFromFld(url, assetName.Ex.Fld, seed.Dic, cityCode, seed.HideTexture)
 		default:
@@ -382,64 +400,77 @@ func plateauDatasetItemSeedFrom(seed plateauDatasetSeed) (items []plateauDataset
 	return
 }
 
-func plateauDatasetItemSeedFromNormal(url string, ex *AssetNameExNormal, layerNames LayerNames, cityCode string, hideTexture bool) (res *plateauDatasetItemSeed, w []string) {
+func plateauDatasetItemSeedFromNormal(
+	url string,
+	ex *AssetNameExNormal,
+	layerNames LayerNames,
+	cityCode string,
+	hideTexture bool,
+	hideLOD bool,
+	dic Dic,
+	defaultName string,
+	useCategoryAsMVTLayer bool,
+) (res *plateauDatasetItemSeed, w []string) {
 	if !ex.NoTexture && hideTexture {
 		return
 	}
 
+	// format
 	format := datasetFormatFrom(ex.Format)
 	if format == "" {
 		w = append(w, fmt.Sprintf("plateau %s %s: invalid format: %s", cityCode, ex.Type, ex.Format))
 		return
 	}
 
-	return &plateauDatasetItemSeed{
-		ID:          "",
-		Name:        "", // use default
-		URL:         assetURLFromFormat(url, format),
-		Format:      format,
-		LOD:         &ex.LOD,
-		NoTexture:   &ex.NoTexture,
-		Layers:      layerNames.LayerName(nil, ex.LOD, format),
-		HideTexture: hideTexture,
-	}, nil
-}
-
-func plateauDatasetItemSeedFromUrf(url string, ex *AssetNameExUrf, dic Dic, layerNames LayerNames, cityCode string, hideTexture bool) (_ *plateauDatasetItemSeed, w []string) {
-	if !ex.NoTexture && hideTexture {
-		return
-	}
-
-	format := datasetFormatFrom(ex.Format)
-	if format == "" {
-		w = append(w, fmt.Sprintf("plateau %s %s: unknown format: %s", cityCode, ex.Type, ex.Format))
-		return
-	}
-
+	// dic
 	key := ex.DicKey()
-
-	entry, found := dic.FindEntryOrDefault(ex.Type, ex.DicKey())
-	if !found {
-		w = append(w, fmt.Sprintf("plateau %s %s: unknown dic key: %s", cityCode, ex.Type, key))
+	var name string
+	if key != "" {
+		entry, found := dic.FindEntryOrDefault(ex.Type, ex.DicKey())
+		if !found || entry == nil {
+			w = append(w, fmt.Sprintf("plateau %s %s: unknown dic key: %s", cityCode, ex.Type, key))
+		}
+		name = entry.Description
 	}
-	if entry == nil {
-		return
+
+	// lod
+	var lod *int
+	var lodex *int
+	if !ex.NoLOD {
+		lod = &ex.LOD
+		if ex.LODEx > 0 {
+			lodex = &ex.LODEx
+		}
 	}
 
+	// notexture
 	var notexture *bool
 	if ex.Format == "3dtiles" {
 		notexture = &ex.NoTexture
 	}
 
+	// layer names
+	layerName := key
+	if useCategoryAsMVTLayer && ex.Name != "" {
+		layerName = ex.Name
+	}
+	layers := layerNames.LayerName([]string{layerName}, ex.LOD, format)
+	if format == plateauapi.DatasetFormatMvt && (len(layers) == 0 || layers[0] == "") {
+		w = append(w, fmt.Sprintf("plateau %s %s: no layer for MVT", cityCode, ex.Type))
+	}
+
 	return &plateauDatasetItemSeed{
 		ID:          key,
-		Name:        entry.Description,
+		Name:        name,
 		URL:         assetURLFromFormat(url, format),
 		Format:      format,
-		LOD:         lo.EmptyableToPtr(ex.LOD),
+		LOD:         lod,
+		LODEx:       lodex,
 		NoTexture:   notexture,
-		Layers:      layerNames.LayerName([]string{key}, ex.LOD, format),
+		Layers:      layers,
 		HideTexture: hideTexture,
+		HideLOD:     hideLOD,
+		DefaultName: defaultName,
 	}, w
 }
 

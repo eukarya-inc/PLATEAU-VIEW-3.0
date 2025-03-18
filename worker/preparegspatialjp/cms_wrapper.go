@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearthx/log"
 )
@@ -97,7 +98,7 @@ func (c *CMSWrapper) GetItem(ctx context.Context, id string, asset bool) (*cms.I
 
 func (c *CMSWrapper) UpdateDataItem(ctx context.Context, item *GspatialjpDataItem) error {
 	if c == nil || !c.WetRun {
-		log.Debugfc(ctx, "cms: update data item (skipped): item=%s", ppp.Sprint(item))
+		log.Debugfc(ctx, "cms: update data item (skipped): item=%s", pp.Sprint(item))
 		return nil
 	}
 
@@ -153,6 +154,24 @@ func (c *CMSWrapper) Upload(ctx context.Context, name string, body io.Reader) (s
 	}
 
 	return a.ID, nil
+}
+
+func (c *CMSWrapper) UploadNormally(ctx context.Context, name string, body io.Reader) (string, error) {
+	if c == nil || !c.WetRun {
+		log.Debugfc(ctx, "cms: upload (skipped): name=%s", name)
+		return "", nil
+	}
+
+	log.Debugfc(ctx, "cms: uploading %s", name)
+
+	upload, err := c.CMS.UploadAssetDirectly(ctx, c.ProjectID, name, body)
+	if err != nil {
+		return "", fmt.Errorf("failed to create upload: %w", err)
+	}
+
+	log.Debugfc(ctx, "cms: uploaded %s to %s", name, upload)
+
+	return upload, nil
 }
 
 func (c *CMSWrapper) Comment(ctx context.Context, comment string) {

@@ -22,8 +22,8 @@ import {
   MutableRefObject,
 } from "react";
 
-import { CITY_NAME } from "../../../shared/constants";
 import { getCesiumCanvas } from "../../../shared/reearth/utils";
+import { useCityName } from "../../../shared/states/environmentVariables";
 import { ViewClickAwayListener } from "../../../shared/ui-components/common/ViewClickAwayListener";
 import { useWindowEvent } from "../../react-helpers";
 import { platformAtom } from "../../shared-states";
@@ -87,10 +87,15 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
   children,
   isResizing,
 }) => {
+  const [cityName] = useCityName();
+
   const textFieldRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
   const handleFocus = useCallback(() => {
     setFocused(true);
+  }, []);
+  const handleBlur = useCallback(() => {
+    setFocused(false);
   }, []);
 
   const [inputValue, setInputValue] = useState("");
@@ -196,6 +201,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
           filters={filters}
           maxHeight={maxMainHeight}
           onFocus={handleFocus}
+          onDeepBlur={handleBlur}
           onChange={handleChange}
           onInputChange={handleInputChange}
           endAdornment={
@@ -212,7 +218,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
                 variant={isMobile ? "fullWidth" : "standard"}
                 onChange={handleTabChange}>
                 <Tab value="search" label="検索" />
-                {CITY_NAME && <Tab value="city" label={CITY_NAME} />}
+                {cityName && <Tab value="city" label={cityName} />}
                 <Tab value="area" label="都道府県" />
                 <Tab value="type" label="カテゴリー" />
               </StyledTabs>
@@ -225,7 +231,7 @@ export const SearchAutocompletePanel: FC<SearchAutocompletePanelProps> = ({
                   onFiltersChange={handleFiltersChange}
                 />
               )}
-              {tab === "city" && CITY_NAME && <CityDatasetsList cityName={CITY_NAME} />}
+              {tab === "city" && <CityDatasetsList />}
               {tab === "area" && <DatasetAreaList />}
               {tab === "type" && <DatasetTypeList />}
             </StyledScrollable>

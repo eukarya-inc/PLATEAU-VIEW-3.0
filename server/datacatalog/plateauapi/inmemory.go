@@ -10,20 +10,21 @@ import (
 )
 
 type InMemoryRepoContext struct {
-	Name         string
-	Areas        Areas
-	DatasetTypes DatasetTypes
-	Datasets     Datasets
-	PlateauSpecs []PlateauSpec
-	Years        []int
-	CityGML      map[ID]*CityGMLDataset
+	Name         string                 `json:"name"`
+	Areas        Areas                  `json:"areas"`
+	DatasetTypes DatasetTypes           `json:"datasetTypes"`
+	Datasets     Datasets               `json:"datasets"`
+	PlateauSpecs []PlateauSpec          `json:"plateauSpecs"`
+	Years        []int                  `json:"years"`
+	CityGML      map[ID]*CityGMLDataset `json:"cityGML"`
 }
 
 // InMemoryRepo is a repository that stores all data in memory.
 // Note that it is not thread-safe.
 type InMemoryRepo struct {
-	ctx               *InMemoryRepoContext
-	areasForDataTypes map[string]map[AreaCode]bool
+	ctx                 *InMemoryRepoContext
+	areasForDataTypes   map[string]map[AreaCode]bool
+	areasWithoutDataset map[ID]struct{}
 }
 
 var _ Repo = (*InMemoryRepo)(nil)
@@ -44,6 +45,7 @@ func (c *InMemoryRepo) Name() string {
 func (c *InMemoryRepo) SetContext(ctx *InMemoryRepoContext) {
 	c.ctx = ctx
 	c.areasForDataTypes = areasForDatasetTypes(ctx.Datasets.All())
+	c.areasWithoutDataset = areasWithoutDataset(ctx.Datasets, ctx.Areas)
 }
 
 func (c *InMemoryRepo) Node(ctx context.Context, id ID) (Node, error) {
@@ -124,7 +126,7 @@ func (c *InMemoryRepo) Areas(ctx context.Context, input *AreasInput) (res []Area
 	}
 
 	res = c.ctx.Areas.Filter(func(a Area) bool {
-		if !filterArea(a, inp) {
+		if !filterArea(a, inp, c.areasWithoutDataset) {
 			return false
 		}
 
@@ -200,6 +202,35 @@ func areasForDatasetTypes(ds []Dataset) map[string]map[AreaCode]bool {
 				res[datasetTypeCode][c] = mostDetailed
 			}
 		}
+	}
+
+	return res
+}
+
+func areasWithoutDataset(ds Datasets, areas Areas) map[ID]struct{} {
+	res := make(map[ID]struct{})
+
+	for _, a := range areas.All() {
+		if a == nil {
+			continue
+		}
+
+		code := a.GetCode().String()
+
+		found := false
+		for _, d := range ds.All() {
+			codes := areaCodesFrom(d)
+			if lo.Contains(codes, a.GetCode()) {
+				found = true
+				continue
+			}
+		}
+
+		if !found {
+			res[a.GetID()] = struct{}{}
+		}
+
+		_ = code
 	}
 
 	return res

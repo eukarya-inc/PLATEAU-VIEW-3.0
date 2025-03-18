@@ -7,7 +7,14 @@ import (
 	"github.com/samber/lo"
 )
 
+const sampleCode = "sample"
+
 func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []string) {
+	if all == nil {
+		warning = append(warning, "data is nil")
+		return
+	}
+
 	res = &plateauapi.InMemoryRepoContext{
 		Name:     all.Name,
 		Areas:    plateauapi.Areas{},
@@ -17,14 +24,11 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	res.DatasetTypes = all.FeatureTypes.ToDatasetTypes(res.PlateauSpecs)
 
 	ic := newInternalContext()
+	ic.cmsinfo = all.CMSInfo
 	ic.regYear = all.Year
 
 	// layer names
 	ic.layerNamesForType = all.FeatureTypes.LayerNames()
-
-	ic.SetURL("plateau", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.PlateauModelID)
-	ic.SetURL("related", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.RelatedModelID)
-	ic.SetURL("generic", all.CMSInfo.CMSURL, all.CMSInfo.WorkspaceID, all.CMSInfo.ProjectID, all.CMSInfo.GenericModelID)
 
 	// pref and city
 	for _, cityItem := range all.City {
@@ -74,11 +78,11 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 	}
 
 	// sample
-	sample := res.DatasetTypes.FindByCode("sample", plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
+	sample, _ := res.DatasetTypes.FindByCode(sampleCode, plateauapi.DatasetTypeCategoryGeneric).(*plateauapi.GenericDatasetType)
 	if sample != nil {
-		datasets, w := convertPlateauRaw(
-			all.Sample,
-			"",
+		sample, w := convertSample(
+			sample,
+			all,
 			res.PlateauSpecs,
 			plateauDatasetTypes,
 			plateauFeatureTypes,
@@ -87,7 +91,7 @@ func (all *AllData) Into() (res *plateauapi.InMemoryRepoContext, warning []strin
 		warning = append(warning, w...)
 		res.Datasets.Append(
 			plateauapi.DatasetTypeCategoryGeneric,
-			plateauapi.ToDatasets(plateauapi.PlateauDatasetsToGenericDatasets(datasets, sample.ID, sample.Code, "sample")),
+			plateauapi.ToDatasets(sample),
 		)
 	}
 
@@ -130,23 +134,100 @@ func getWards(items []*PlateauFeatureItem, ic *internalContext) (res []*plateaua
 	return
 }
 
-func convertPlateau(items []*PlateauFeatureItem, code string, specs []plateauapi.PlateauSpec, dts map[string]plateauapi.DatasetType, fts map[string]*FeatureType, ic *internalContext) ([]plateauapi.Dataset, []string) {
-	res, w := convertPlateauRaw(items, code, specs, dts, fts, ic)
+func convertSample(
+	sample plateauapi.DatasetType,
+	all *AllData,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) (res []*plateauapi.GenericDataset, warning []string) {
+	sampleID := sample.GetID()
+	sampleCode := sample.GetCode()
+	sampleName := sample.GetName()
+	const idSuffix = "_sample"
+
+	raw := make([]*plateauapi.PlateauDataset, 0, len(all.Sample)+len(all.City))
+
+	// common sample datasets
+	{
+		targets := all.Sample
+		datasets, w := convertPlateauRaw(
+			targets,
+			false,
+			"",
+			specs,
+			dts,
+			fts,
+			ic,
+		)
+		warning = append(warning, w...)
+		raw = append(raw, datasets...)
+	}
+
+	// city sample datasets
+	for _, c := range all.City {
+		if !c.Sample || c.CityCode == "" {
+			continue
+		}
+
+		targets := all.FindPlateauFeatureItemsByCityID(c.ID)
+		datasets, w := convertPlateauRaw(
+			targets,
+			false,
+			"",
+			specs,
+			dts,
+			fts,
+			ic,
+		)
+		setGroupsToDatasets(datasets, []string{sampleName, c.CityName})
+		warning = append(warning, w...)
+		raw = append(raw, datasets...)
+	}
+
+	res = append(res, plateauapi.PlateauDatasetsToGenericDatasets(raw, sampleID, sampleCode, idSuffix)...)
+	return
+}
+
+func convertPlateau(
+	items []*PlateauFeatureItem,
+	code string,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) ([]plateauapi.Dataset, []string) {
+	res, w := convertPlateauRaw(
+		items, true, code, specs, dts, fts, ic,
+	)
 	return plateauapi.ToDatasets(res), w
 }
 
-func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateauapi.PlateauSpec, dts map[string]plateauapi.DatasetType, fts map[string]*FeatureType, ic *internalContext) (res []*plateauapi.PlateauDataset, warning []string) {
+func convertPlateauRaw(
+	items []*PlateauFeatureItem,
+	ignoreSample bool,
+	code string,
+	specs []plateauapi.PlateauSpec,
+	dts map[string]plateauapi.DatasetType,
+	fts map[string]*FeatureType,
+	ic *internalContext,
+) (res []*plateauapi.PlateauDataset, warning []string) {
 	for _, ds := range items {
-		code := code
-		if ds.FeatureType != "" {
-			code = ds.FeatureType
+		if ds == nil {
+			continue
 		}
 
-		dt := dts[code]
-		ft := fts[code]
+		ftcode := code
+		if ds.FeatureType != "" {
+			ftcode = ds.FeatureType
+		}
+
+		dt := dts[ftcode]
+		ft := fts[ftcode]
 
 		if dt == nil || ft == nil {
-			warning = append(warning, fmt.Sprintf("plateau %s: invalid feature type: %s", ds.ID, code))
+			warning = append(warning, fmt.Sprintf("plateau %s: invalid feature type: %s", ds.ID, ftcode))
 			continue
 		}
 
@@ -157,6 +238,16 @@ func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateau
 		}
 
 		layerNames := ic.layerNamesForType[pdt.Code]
+		cityItem := ic.CityItem(ds.City)
+		if cityItem == nil {
+			warning = append(warning, fmt.Sprintf("plateau %s %s: invalid city: %s", ds.ID, pdt.Code, ds.City))
+			continue
+		}
+
+		if ignoreSample && cityItem.Sample {
+			continue
+		}
+
 		area := ic.AreaContext(ds.City)
 		if area == nil {
 			warning = append(warning, fmt.Sprintf("plateau %s %s: invalid city: %s", ds.ID, pdt.Code, ds.City))
@@ -171,15 +262,18 @@ func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateau
 		}
 
 		opts := ToPlateauDatasetsOptions{
-			CMSURL:      ic.plateauCMSURL,
+			ID:          ds.ID,
+			CreatedAt:   ds.CreatedAt,
+			UpdatedAt:   ds.UpdatedAt,
 			Area:        area,
 			Spec:        spec,
 			DatasetType: pdt,
 			LayerNames:  layerNames,
 			FeatureType: ft,
 			Year:        ic.regYear,
+			CMSInfo:     ic.cmsinfo,
 		}
-		ds, w := ds.toDatasetsRaw(opts)
+		ds, w := ds.toDatasets(opts)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)
@@ -187,6 +281,17 @@ func convertPlateauRaw(items []*PlateauFeatureItem, code string, specs []plateau
 	}
 
 	return
+}
+
+func setGroupsToDatasets(datasets []*plateauapi.PlateauDataset, groups []string) {
+	for _, ds := range datasets {
+		if ds == nil {
+			continue
+		}
+
+		ds.Groups = make([]string, len(groups))
+		copy(ds.Groups, groups)
+	}
 }
 
 func convertRelated(items []*RelatedItem, datasetTypes []plateauapi.DatasetType, ic *internalContext) (res []plateauapi.Dataset, warning []string) {
@@ -197,7 +302,7 @@ func convertRelated(items []*RelatedItem, datasetTypes []plateauapi.DatasetType,
 			continue
 		}
 
-		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.relatedCMSURL)
+		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.cmsinfo)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)
@@ -215,7 +320,7 @@ func convertGeneric(items []*GenericItem, datasetTypes []plateauapi.DatasetType,
 			continue
 		}
 
-		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.genericCMSURL)
+		ds, w := ds.toDatasets(area, datasetTypes, ic.regYear, ic.cmsinfo)
 		warning = append(warning, w...)
 		if ds != nil {
 			res = append(res, ds...)

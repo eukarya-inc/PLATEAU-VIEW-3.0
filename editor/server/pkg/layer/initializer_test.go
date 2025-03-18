@@ -3,6 +3,7 @@ package layer
 import (
 	"testing"
 
+	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearth/server/pkg/property"
 	"github.com/stretchr/testify/assert"
 )
@@ -34,8 +35,8 @@ func TestInitializer_Clone(t *testing.T) {
 	assert.NotSame(t, i.Infobox, actual.Infobox)
 	assert.NotSame(t, i.PropertyID, actual.PropertyID)
 	assert.NotSame(t, i.Property, actual.Property)
-	assert.NotSame(t, i.Layers, actual.Layers)
-	assert.NotSame(t, i.Layers[0], actual.Layers[0])
+	assert.NotSame(t, &i.Layers, &actual.Layers)
+	assert.NotSame(t, &i.Layers[0], &actual.Layers[0])
 	assert.NotSame(t, i.IsVisible, actual.IsVisible)
 	assert.NotSame(t, i.LinkedDatasetSchema, actual.LinkedDatasetSchema)
 	assert.NotSame(t, i.LinkedDataset, actual.LinkedDataset)
@@ -75,10 +76,10 @@ func TestInitializer_Layer(t *testing.T) {
 		Infobox(NewInfobox(nil, *i.Infobox.PropertyID)).
 		Property(i.PropertyID).
 		Group().
-		Layers(NewIDList([]ID{*i.Layers[0].ID})).
+		Layers(NewIDList([]id.LayerID{*i.Layers[0].ID})).
 		LinkedDatasetSchema(i.LinkedDatasetSchema).
 		MustBuild()
-	expected2 := New().ID(*i.Layers[0].ID).Scene(sid).Group().Layers(NewIDList([]ID{*i.Layers[0].Layers[0].ID})).MustBuild()
+	expected2 := New().ID(*i.Layers[0].ID).Scene(sid).Group().Layers(NewIDList([]id.LayerID{*i.Layers[0].Layers[0].ID})).MustBuild()
 	expected3 := New().ID(*i.Layers[0].Layers[0].ID).Scene(sid).Item().MustBuild()
 
 	actual, err := i.Layer(sid)
@@ -89,11 +90,6 @@ func TestInitializer_Layer(t *testing.T) {
 		expected3.ID(): expected3.LayerRef(),
 	}, actual.Layers)
 
-	// check if a new id is generated
-	i.ID = nil
-	actual, err = i.Layer(sid)
-	assert.NoError(t, err)
-	assert.False(t, actual.RootLayer().ID().IsEmpty())
 }
 
 func TestInitializerInfobox_Clone(t *testing.T) {
@@ -112,10 +108,10 @@ func TestInitializerInfobox_Clone(t *testing.T) {
 
 	actual := i.Clone()
 
-	assert.NotSame(t, i, actual)
-	assert.NotSame(t, i.Property, actual.Property)
-	assert.NotSame(t, i.Fields, actual.Fields)
-	assert.NotSame(t, i.Fields[0], actual.Fields[0])
+	assert.NotSame(t, &i, &actual)
+	assert.NotSame(t, &i.Property, &actual.Property)
+	assert.NotSame(t, &i.Fields, &actual.Fields)
+	assert.NotSame(t, &i.Fields[0], &actual.Fields[0])
 	assert.Equal(t, i, actual)
 }
 

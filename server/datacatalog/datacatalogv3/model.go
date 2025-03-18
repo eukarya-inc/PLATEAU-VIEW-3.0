@@ -1,6 +1,10 @@
 package datacatalogv3
 
-import "github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+import (
+	"fmt"
+
+	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
+)
 
 type AllData struct {
 	Name                  string
@@ -23,6 +27,17 @@ func (d *AllData) FindPlateauFeatureItemByCityID(ft, cityID string) *PlateauFeat
 		}
 	}
 	return nil
+}
+
+func (d *AllData) FindPlateauFeatureItemsByCityID(cityID string) (res []*PlateauFeatureItem) {
+	for _, ft := range d.FeatureTypes.Plateau {
+		for _, f := range d.Plateau[ft.Code] {
+			if f != nil && f.City == cityID {
+				res = append(res, f)
+			}
+		}
+	}
+	return
 }
 
 func (all *AllData) FeatureTypesOf(cityID string) (res []string) {
@@ -69,10 +84,27 @@ func (ft FeatureTypes) FindPlateauByCode(code string) *FeatureType {
 }
 
 type CMSInfo struct {
-	CMSURL         string
-	WorkspaceID    string
-	ProjectID      string
-	PlateauModelID string
-	RelatedModelID string
-	GenericModelID string
+	CMSURL      string
+	WorkspaceID string
+	ProjectID   string
+	ModelIDMap  ModelIDMap
+}
+
+func (c CMSInfo) ItemBaseURL(modelKey string) string {
+	return c.ModelIDMap.ItemBaseURL(c.CMSURL, c.WorkspaceID, c.ProjectID, modelKey)
+}
+
+type ModelIDMap map[string]string
+
+func (m ModelIDMap) ItemBaseURL(cmsURL, workspaceID, projectID, modelKey string) string {
+	if cmsURL == "" || workspaceID == "" || projectID == "" || m == nil || modelKey == "" {
+		return ""
+	}
+
+	v, ok := m[modelKey]
+	if !ok {
+		return ""
+	}
+
+	return fmt.Sprintf("%s/workspace/%s/project/%s/content/%s/details/", cmsURL, workspaceID, projectID, v)
 }

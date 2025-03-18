@@ -29,7 +29,7 @@ func Start(debug bool, version string) {
 	log.Infof("config: %s", conf.Print())
 
 	// Init repositories
-	repos, gateways, acRepos, acGateways := initReposAndGateways(ctx, conf)
+	repos, gateways, acRepos, acGateways := InitReposAndGateways(ctx, conf)
 
 	// Start web server
 	NewServer(ctx, &ServerConfig{
@@ -81,13 +81,13 @@ func NewServer(ctx context.Context, cfg *ServerConfig) *WebServer {
 }
 
 func (w *WebServer) Run(ctx context.Context) {
-	defer log.Infoc(ctx, "Server shutdown")
+	defer log.Infof("server: shutdown")
 
 	debugLog := ""
 	if w.appServer.Debug {
 		debugLog += " with debug mode"
 	}
-	log.Infof("server started%s at http://%s\n", debugLog, w.address)
+	log.Infof("server: started%s at http://%s", debugLog, w.address)
 
 	go func() {
 		err := w.appServer.StartH2CServer(w.address, &http2.Server{})

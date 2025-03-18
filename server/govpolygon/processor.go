@@ -1,9 +1,7 @@
 package govpolygon
 
 import (
-	"context"
-	"fmt"
-	"os"
+	_ "embed"
 	"sort"
 	"strings"
 
@@ -11,29 +9,9 @@ import (
 	"github.com/samber/lo"
 )
 
-type Processor struct {
-	path string
-}
-
-func NewProcessor(path string) *Processor {
-	return &Processor{
-		path: path,
-	}
-}
-
-func (p *Processor) ComputeGeoJSON(ctx context.Context, names []string) (*geojson.FeatureCollection, []string, error) {
-	// features, err := loadFeaturesFromTopoJSON(context.Background(), p.dirpath, p.simplifyTolerance)
-	features, err := loadFeaturesFromGeoJSON(p.path)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(features) == 0 {
-		return nil, nil, fmt.Errorf("no features found")
-	}
-
-	res, notfound := computeGeojsonFeatures(features, names)
-	return res, notfound, nil
+func ComputeGeoJSON(names []string) ([]*geojson.Feature, []string, error) {
+	res, notfound := computeGeojsonFeatures(JapanCityFeatures, names)
+	return res.Features, notfound, nil
 }
 
 func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojson.FeatureCollection, []string) {
@@ -108,18 +86,4 @@ func computeGeojsonFeatures(features []*geojson.Feature, names []string) (*geojs
 	sort.Strings(notfounds)
 
 	return result, notfounds
-}
-
-func loadFeaturesFromGeoJSON(path string) ([]*geojson.Feature, error) {
-	b, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read geojson: %w", err)
-	}
-
-	f, err := geojson.UnmarshalFeatureCollection(b)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal geojson: %w", err)
-	}
-
-	return f.Features, nil
 }

@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"io"
 
 	"github.com/reearth/reearth-cms/server/internal/usecase"
 	"github.com/reearth/reearth-cms/server/pkg/asset"
@@ -30,8 +31,10 @@ type UpdateAssetParam struct {
 type CreateAssetUploadParam struct {
 	ProjectID idx.ID[id.Project]
 
-	Filename      string
-	ContentLength int64
+	Filename        string
+	ContentLength   int64
+	ContentType     string
+	ContentEncoding string
 
 	Cursor string
 }
@@ -48,11 +51,12 @@ type AssetFilter struct {
 }
 
 type AssetUpload struct {
-	URL           string
-	UUID          string
-	ContentType   string
-	ContentLength int64
-	Next          string
+	URL             string
+	UUID            string
+	ContentType     string
+	ContentLength   int64
+	ContentEncoding string
+	Next            string
 }
 
 type Asset interface {
@@ -60,6 +64,8 @@ type Asset interface {
 	FindByIDs(context.Context, []id.AssetID, *usecase.Operator) (asset.List, error)
 	FindByProject(context.Context, id.ProjectID, AssetFilter, *usecase.Operator) (asset.List, *usecasex.PageInfo, error)
 	FindFileByID(context.Context, id.AssetID, *usecase.Operator) (*asset.File, error)
+	FindFilesByIDs(context.Context, id.AssetIDList, *usecase.Operator) (map[id.AssetID]*asset.File, error)
+	DownloadByID(context.Context, id.AssetID, map[string]string, *usecase.Operator) (io.ReadCloser, map[string]string, error)
 	GetURL(*asset.Asset) string
 	Create(context.Context, CreateAssetParam, *usecase.Operator) (*asset.Asset, *asset.File, error)
 	Update(context.Context, UpdateAssetParam, *usecase.Operator) (*asset.Asset, error)

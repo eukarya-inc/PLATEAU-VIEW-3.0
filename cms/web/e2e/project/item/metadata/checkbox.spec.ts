@@ -23,10 +23,9 @@ test("Checkbox metadata creating and updating has succeeded", async ({ page }) =
   await page.getByLabel("Settings").locator("#description").click();
   await page.getByLabel("Settings").locator("#description").fill("checkbox1 description");
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created field!");
   await closeNotification(page);
 
-  await expect(page.getByText("checkbox1 #checkbox1")).toBeVisible();
+  await expect(page.getByText("checkbox1#checkbox1")).toBeVisible();
   await page.getByRole("img", { name: "ellipsis" }).locator("svg").click();
   await expect(page.getByLabel("Display name")).toBeVisible();
   await expect(page.getByLabel("Display name")).toHaveValue("checkbox1");
@@ -35,9 +34,10 @@ test("Checkbox metadata creating and updating has succeeded", async ({ page }) =
     "checkbox1 description",
   );
   await expect(page.getByLabel("Support multiple values")).not.toBeChecked();
+  await expect(page.getByLabel("Use as title")).toBeHidden();
   await page.getByRole("tab", { name: "Validation" }).click();
-  await expect(page.getByLabel("Make field required")).not.toBeEnabled();
-  await expect(page.getByLabel("Set field as unique")).not.toBeEnabled();
+  await expect(page.getByLabel("Make field required")).toBeDisabled();
+  await expect(page.getByLabel("Set field as unique")).toBeDisabled();
   await page.getByRole("tab", { name: "Default value" }).click();
   await expect(page.getByLabel("Set default value")).not.toBeChecked();
   await page.getByRole("button", { name: "Cancel" }).click();
@@ -48,27 +48,29 @@ test("Checkbox metadata creating and updating has succeeded", async ({ page }) =
   await expect(page.locator("label").first()).toContainText("checkbox1");
   await expect(page.getByRole("main")).toContainText("checkbox1 description");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
   await expect(page.getByLabel("checkbox1")).not.toBeChecked();
   await page.getByLabel("Back").click();
   await expect(page.getByLabel("", { exact: true }).nth(1)).not.toBeChecked();
-  await page.getByRole("link", { name: "edit", exact: true }).click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").click();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
+  await page.waitForTimeout(500);
   await page.getByLabel("checkbox1").check();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await expect(page.getByLabel("checkbox1")).toBeChecked();
   await page.getByLabel("Back").click();
   await expect(page.getByLabel("", { exact: true }).nth(1)).toBeChecked();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
+  await page.waitForTimeout(100);
   await page.getByLabel("", { exact: true }).nth(1).uncheck();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await expect(page.getByLabel("", { exact: true }).nth(1)).not.toBeChecked();
-  await page.getByRole("link", { name: "edit", exact: true }).click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").click();
   await expect(page.getByLabel("checkbox1")).not.toBeChecked();
 });
 
 test("Checkbox metadata editing has succeeded", async ({ page }) => {
+  test.slow();
   await page.getByRole("tab", { name: "Meta Data" }).click();
   await page.locator("li").filter({ hasText: "Check Box" }).locator("div").first().click();
   await page.getByLabel("Display name").click();
@@ -80,7 +82,6 @@ test("Checkbox metadata editing has succeeded", async ({ page }) => {
   await page.getByRole("tab", { name: "Default value" }).click();
   await page.getByLabel("Set default value").check();
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created field!");
   await closeNotification(page);
 
   await page.getByText("Content").click();
@@ -88,7 +89,6 @@ test("Checkbox metadata editing has succeeded", async ({ page }) => {
   await page.getByRole("button", { name: "plus New Item" }).click();
   await expect(page.getByLabel("checkbox1")).toBeChecked();
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
   await expect(page.getByLabel("checkbox1")).toBeChecked();
   await page.getByLabel("Back").click();
@@ -115,10 +115,9 @@ test("Checkbox metadata editing has succeeded", async ({ page }) => {
   await expect(page.getByLabel("", { exact: true }).nth(1)).not.toBeChecked();
   await expect(page.getByLabel("", { exact: true }).nth(2)).toBeChecked();
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated field!");
   await closeNotification(page);
 
-  await expect(page.getByLabel("Meta Data")).toContainText("new checkbox1 #new-checkbox1");
+  await expect(page.getByLabel("Meta Data")).toContainText("new checkbox1#new-checkbox1");
   await page.getByText("Content").click();
   await expect(page.locator("thead")).toContainText("new checkbox1");
   await expect(page.getByLabel("", { exact: true }).nth(1)).toBeChecked();
@@ -129,7 +128,6 @@ test("Checkbox metadata editing has succeeded", async ({ page }) => {
   await expect(page.getByLabel("", { exact: true }).nth(1)).not.toBeChecked();
   await expect(page.getByLabel("", { exact: true }).nth(2)).toBeChecked();
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
 
   await expect(page.getByLabel("", { exact: true }).nth(0)).toBeChecked();
@@ -147,26 +145,22 @@ test("Checkbox metadata editing has succeeded", async ({ page }) => {
     page.getByRole("tooltip", { name: "new checkbox1" }).getByLabel("").nth(2),
   ).toBeChecked();
   await page.getByRole("tooltip", { name: "new checkbox1" }).getByLabel("").nth(1).check();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
-  await page.getByRole("link", { name: "edit", exact: true }).first().click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").first().click();
   await expect(page.getByLabel("", { exact: true }).nth(0)).toBeChecked();
   await expect(page.getByLabel("", { exact: true }).nth(1)).toBeChecked();
   await expect(page.getByLabel("", { exact: true }).nth(2)).toBeChecked();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
+  await page.waitForTimeout(500);
   await page.getByRole("button", { name: "plus New" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByLabel("", { exact: true }).nth(2).uncheck();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByRole("button", { name: "plus New" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByLabel("", { exact: true }).nth(4).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByRole("button", { name: "delete" }).first().click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await expect(page.getByLabel("", { exact: true }).nth(0)).toBeChecked();
   await expect(page.getByLabel("", { exact: true }).nth(1)).not.toBeChecked();

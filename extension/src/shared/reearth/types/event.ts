@@ -1,4 +1,5 @@
 import { CameraPosition } from "./camera";
+import { SpatialIdSpaceData } from "./reearthPluginAPIv2/spatialId";
 import { PickedFeature } from "./scene";
 import { SketchFeature } from "./sketch";
 
@@ -10,6 +11,27 @@ export type MouseEvent = {
   height?: number;
   layerId?: string;
   delta?: number;
+};
+
+export type LatLngHeight = {
+  lat: number;
+  lng: number;
+  height: number;
+};
+
+export type LayerEditEvent = {
+  layerId: string | undefined;
+  scale?: {
+    width: number;
+    length: number;
+    height: number;
+    location: LatLngHeight;
+  };
+  rotate?: {
+    heading: number;
+    pitch: number;
+    roll: number;
+  };
 };
 
 export type LayerVisibilityEvent = {
@@ -66,6 +88,7 @@ export type ReearthEventType = {
       feature?: SketchFeature;
     },
   ];
+  spatialidspacepick: [props: SpatialIdSpaceData];
   layerVisibility: [e: LayerVisibilityEvent];
   layerload: [e: LayerLoadEvent];
   layerSelectWithRectStart: [e: LayerSelectWithRectStart];

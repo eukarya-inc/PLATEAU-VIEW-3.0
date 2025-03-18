@@ -15,7 +15,7 @@ func (d *DatasetsQuery) ToDatasets() *DatasetsResponse {
 		}
 
 		for _, city := range prefecture.Prefecture.Cities {
-			if city.Citygml == nil || len(city.Datasets) == 0 {
+			if city.Citygml == nil {
 				continue
 			}
 

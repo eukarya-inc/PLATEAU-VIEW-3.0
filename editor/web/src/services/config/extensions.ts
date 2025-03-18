@@ -1,3 +1,5 @@
+import { VersionForExtension } from "@reearth/types";
+
 export type ExtensionType =
   | "dataset-import"
   | "publication"
@@ -12,8 +14,9 @@ export type SharedExtensionProps = {
   onNotificationChange?: (
     type: "error" | "warning" | "info" | "success",
     text: string,
-    heading?: string,
+    heading?: string
   ) => void;
+  version?: VersionForExtension;
 };
 
 export type DatasetImportExtensionProps = {
@@ -25,6 +28,12 @@ export type DatasetImportExtensionProps = {
 export type ProjectPublicationExtensionProps = {
   projectId: string;
   projectAlias?: string;
+  publishDisabled?: boolean;
+} & SharedExtensionProps;
+
+export type StoryPublicationExtensionProps = {
+  storyId: string;
+  storyAlias?: string;
   publishDisabled?: boolean;
 } & SharedExtensionProps;
 
@@ -47,7 +56,9 @@ export type GlobalModalProps = {
 
 export type ExtensionProps = {
   "dataset-import": DatasetImportExtensionProps;
-  publication: ProjectPublicationExtensionProps;
+  publication:
+    | ProjectPublicationExtensionProps
+    | StoryPublicationExtensionProps;
   "plugin-library": PluginExtensionProps;
   "plugin-installed": PluginExtensionProps;
   "global-modal": GlobalModalProps;
@@ -69,7 +80,9 @@ export type Extensions = {
   globalModal?: Extension<"global-modal">[];
 };
 
-export async function loadExtensions(urls?: string[]): Promise<Extensions | undefined> {
+export async function loadExtensions(
+  urls?: string[]
+): Promise<Extensions | undefined> {
   if (!urls) return undefined;
 
   // Entry point for publication extensions is @reearth/classic/components/molecules/Settings/Project/PublishSection/hooks.ts
@@ -85,15 +98,19 @@ export async function loadExtensions(urls?: string[]): Promise<Extensions | unde
 
   for (const url of urls) {
     try {
-      const newExtensions: Extension[] = (await import(/* @vite-ignore */ url)).default;
-      newExtensions.forEach(ext => {
-        if (ext.type === "dataset-import") datasetImport.push(ext as Extension<"dataset-import">);
-        else if (ext.type === "publication") publication.push(ext as Extension<"publication">);
+      const newExtensions: Extension[] = (await import(/* @vite-ignore */ url))
+        .default;
+      newExtensions.forEach((ext) => {
+        if (ext.type === "dataset-import")
+          datasetImport.push(ext as Extension<"dataset-import">);
+        else if (ext.type === "publication")
+          publication.push(ext as Extension<"publication">);
         else if (ext.type === "plugin-library")
           pluginLibrary.push(ext as Extension<"plugin-library">);
         else if (ext.type === "plugin-installed")
           pluginInstalled.push(ext as Extension<"plugin-installed">);
-        else if (ext.type === "global-modal") globalModal.push(ext as Extension<"global-modal">);
+        else if (ext.type === "global-modal")
+          globalModal.push(ext as Extension<"global-modal">);
       });
     } catch (e) {
       console.error("extension load failed", e);
@@ -105,6 +122,6 @@ export async function loadExtensions(urls?: string[]): Promise<Extensions | unde
     datasetImport,
     pluginLibrary,
     pluginInstalled,
-    globalModal,
+    globalModal
   };
 }

@@ -1,4 +1,5 @@
 export const zIndex = {
+  // NOTE: visualizer -> user interface, it should be managed by tailwind, check tailwind.config.js
   visualizer: {
     widget: 200,
     storyPanel: 200,
@@ -7,26 +8,29 @@ export const zIndex = {
     storyPage: {
       indicator: {
         unselected: 210,
-        selected: 215,
-      },
+        selected: 215
+      }
     },
     pluginPopup: 300,
     pluginModal: 305,
     infobox: 400,
-    overlay: 600,
+    sketchLayerTooltip: 420,
+    photoOverlay: 500,
+    overlay: 600
   },
   editor: {
     navbar: 500,
     panel: 500,
-    popover: 600,
     modal: {
       bg: 700,
-      self: 705,
+      self: 705
     },
+    overlay: 720,
+    popover: 750,
     loading: 900,
-    notificationBar: 1000,
+    notificationBar: 1000
   },
-  hidden: -1,
+  hidden: -1
 };
 
 export default zIndex;

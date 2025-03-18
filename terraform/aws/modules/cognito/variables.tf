@@ -28,8 +28,3 @@ variable "example_user_name" {
   type        = string
   description = "example user name"
 }
-
-variable "signup_endpoint_url" {
-  type        = string
-  description = "describe your variable"
-}

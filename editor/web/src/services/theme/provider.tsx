@@ -1,11 +1,8 @@
 import { ThemeProvider } from "@emotion/react";
-import { ReactNode, useEffect } from "react";
-
-import classicDarkTheme from "@reearth/classic/theme/reearthTheme/darkTheme"; // temp classic imports
-import classicLightTheme from "@reearth/classic/theme/reearthTheme/lightTheme"; // temp classic imports
 import { useAuth } from "@reearth/services/auth";
 import { Theme } from "@reearth/services/gql";
 import { useCurrentTheme } from "@reearth/services/state";
+import { ReactNode, useEffect } from "react";
 
 import { useMeFetcher } from "../api";
 
@@ -26,16 +23,7 @@ const Provider: React.FC<{ children?: ReactNode }> = ({ children }) => {
     setThemeType(actualThemeType);
   }, [actualThemeType, setThemeType]);
 
-  const theme =
-    actualThemeType === "light"
-      ? {
-          classic: classicLightTheme,
-          ...lightTheme,
-        }
-      : {
-          classic: classicDarkTheme,
-          ...darkTheme,
-        };
+  const theme = actualThemeType === "light" ? lightTheme : darkTheme;
 
   return (
     <ThemeProvider theme={theme}>

@@ -1,35 +1,28 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+export function getImageDimensions(
+  imageUrl: string,
+  abortController: AbortController
+): Promise<{ width: number; height: number }> {
+  const signal = abortController.signal;
 
-export const useImage = (src?: string): HTMLImageElement | undefined => {
-  const imgRef = useRef<HTMLImageElement>();
-  const [img, setImg] = useState<HTMLImageElement>();
-
-  useEffect(() => {
-    if (!src) {
-      setImg(undefined);
-      if (imgRef.current) {
-        imgRef.current.src = "";
-      }
-      return;
-    }
+  return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = "anonymous";
+
     img.onload = () => {
-      setImg(imgRef.current);
+      if (!signal.aborted) {
+        resolve({ width: img.width, height: img.height });
+      }
     };
-    img.src = src;
-    imgRef.current = img;
-  }, [src]);
 
-  return img;
-};
+    img.onerror = () => {
+      if (!signal.aborted) {
+        reject(new Error("Failed to load image"));
+      }
+    };
 
-export const useCanvas = (cb: (canvas: HTMLCanvasElement) => void): string => {
-  const can = useMemo(() => document.createElement("canvas"), []);
-  const [data, setData] = useState<string>("");
-  useEffect(() => {
-    cb(can);
-    setData(can.toDataURL());
-  }, [can, cb]);
-  return data;
-};
+    signal.addEventListener("abort", () => {
+      img.src = ""; // Stops the image loading if cancelled
+    });
+
+    img.src = imageUrl;
+  });
+}

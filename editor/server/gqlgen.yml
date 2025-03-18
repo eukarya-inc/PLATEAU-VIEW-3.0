@@ -8,9 +8,12 @@ exec:
   filename: internal/adapter/gql/generated.go
 model:
   filename: internal/adapter/gql/gqlmodel/models_gen.go
-resolver:
-  filename: internal/adapter/gql/resolver.go
-  type: Resolver
+# we don't want to generate resolver.go
+# manually add resolver file and functions
+# when it is mutation, file name is resolver_mutation_{name}.go
+# when it is query, file name is resolver_{name}.go
+# resolver:
+#   filename: internal/adapter/gql/resolver.go
 models:
   DateTime:
     model: github.com/99designs/gqlgen/graphql.Time
@@ -33,40 +36,6 @@ models:
   Asset:
     fields:
       team:
-        resolver: true
-  Cluster:
-    fields:
-      property:
-        resolver: true
-  Dataset:
-    fields:
-      schema:
-        resolver: true
-      name:
-        resolver: true
-  DatasetSchema:
-    fields:
-      datasets:
-        resolver: true
-      scene:
-        resolver: true
-      representativeField:
-        resolver: true
-      totalCount:
-        resolver: true
-  DatasetField:
-    fields:
-      schema:
-        resolver: true
-      field:
-        resolver: true
-      valueRef:
-        resolver: true
-  DatasetSchemaField:
-    fields:
-      schema:
-        resolver: true
-      ref:
         resolver: true
   LayerItem:
     fields:
@@ -135,14 +104,6 @@ models:
       scene:
         resolver: true
       scenePlugin:
-        resolver: true
-  LayerTagItem:
-    fields:
-      tag:
-        resolver: true
-  LayerTagGroup:
-    fields:
-      tag:
         resolver: true
   MergedLayer:
     fields:
@@ -214,6 +175,8 @@ models:
         resolver: true
       translatedDescription:
         resolver: true
+      translatedPlaceholder:
+        resolver: true
   PropertySchemaFieldChoice:
     fields:
       translatedTitle:
@@ -247,8 +210,6 @@ models:
       schema:
         resolver: true
       field:
-        resolver: true
-      actualValue:
         resolver: true
   PropertyFieldLink:
     fields:
@@ -292,8 +253,6 @@ models:
         resolver: true
       field:
         resolver: true
-      actualValue:
-        resolver: true
   Scene:
     fields:
       project:
@@ -301,8 +260,6 @@ models:
       team:
         resolver: true
       property:
-        resolver: true
-      rootLayer:
         resolver: true
       newLayers:
         resolver: true
@@ -327,30 +284,6 @@ models:
       plugin:
         resolver: true
       property:
-        resolver: true
-  Tag:
-    fields:
-      layers:
-        resolver: true
-  TagItem:
-    fields:
-      linkedDatasetSchema:
-        resolver: true
-      linkedDataset:
-        resolver: true
-      linkedDatasetField:
-        resolver: true
-      parent:
-        resolver: true
-      layers:
-        resolver: true
-  TagGroup:
-    fields:
-      tags:
-        resolver: true
-      scene:
-        resolver: true
-      layers:
         resolver: true
   Team:
     fields:

@@ -151,7 +151,18 @@ const ObjectValue: FC<{
   featureType: string;
   ancestorsFeatureType?: string;
   hasDefaultPath: boolean;
-}> = ({ id, name, values, level, path, featureType, ancestorsFeatureType, hasDefaultPath }) => {
+  version: number;
+}> = ({
+  id,
+  name,
+  values,
+  level,
+  path,
+  featureType,
+  ancestorsFeatureType,
+  hasDefaultPath,
+  version,
+}) => {
   const properties = useMemo(() => {
     return intersection(...values.map(v => Object.keys(v ?? {})))
       .filter(name => !name.startsWith("_"))
@@ -184,6 +195,7 @@ const ObjectValue: FC<{
       path={path ? [...path, ...(isNaN(Number(name)) && !hasDefaultPath ? [name] : [])] : []}
       featureType={featureType}
       ancestorsFeatureType={ancestorsFeatureType}
+      version={version}
     />
   );
 };
@@ -197,18 +209,34 @@ const PropertyNameCell = styled(TableCell)<{
   }),
 }));
 
+const Tag = styled("div")(({ theme }) => ({
+  display: "inline-block",
+  padding: theme.spacing(0, 1),
+  margin: theme.spacing(0.5),
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.palette.divider}`,
+  backgroundColor: alpha(theme.palette.common.black, 0.08),
+}));
+
+const VerticalTableRow = styled(TableRow)({
+  display: "flex",
+  flexDirection: "column",
+});
+
 const Property: FC<{
   property: PropertySet;
   level?: number;
   path?: string[];
   featureType: string;
   ancestorsFeatureType?: string;
+  version: number;
 }> = ({
   property: { id, name, values, path: defaultPath },
   level,
   path,
   featureType,
   ancestorsFeatureType,
+  version,
 }) => {
   const isPrimitive = ["string", "number"].includes(typeof values[0]);
   const hasAncestors = !!path?.includes(ancestorsKey);
@@ -216,28 +244,56 @@ const Property: FC<{
     ...((hasAncestors ? path?.filter(p => p !== ancestorsKey) : path) ?? []),
     ...(isNaN(Number(name)) ? [name] : []),
   ].join("_")}`;
-  const attrVal = isPrimitive ? getPropertyAttributeValue(actualName) : undefined;
+  const attrVal = isPrimitive ? getPropertyAttributeValue(actualName, version) : undefined;
 
-  return isPrimitive ? (
+  const displayedValues = useMemo(
+    () =>
+      isPrimitive
+        ? values.map(v => (attrVal ? makePropertyValue(attrVal, v as string | number) : v))
+        : null,
+    [values, attrVal, isPrimitive],
+  );
+
+  return featureType === "tags" ? (
+    values.length === 1 ? (
+      <TableRow style={{ wordBreak: "break-all" }}>
+        <PropertyNameCell width="40%" level={level}>
+          {makePropertyName(actualName, name, version, attrVal)}
+        </PropertyNameCell>
+        <TableCell width="60%" align="right">
+          {values.map((value, index) => (
+            <Tag key={index}>
+              <Typography variant={"body2"} noWrap>
+                {value as string}
+              </Typography>
+            </Tag>
+          ))}
+        </TableCell>
+      </TableRow>
+    ) : (
+      <VerticalTableRow>
+        <PropertyNameCell width="100%" level={level}>
+          {makePropertyName(actualName, name, version, attrVal)}
+        </PropertyNameCell>
+        <TableCell width="100%">
+          {values.map((value, index) => (
+            <Tag key={index}>
+              <Typography variant={"body2"}>{value as string}</Typography>
+            </Tag>
+          ))}
+        </TableCell>
+      </VerticalTableRow>
+    )
+  ) : isPrimitive ? (
     <TableRow style={{ wordBreak: "break-all" }}>
       <PropertyNameCell variant="head" width="50%" level={level}>
-        {makePropertyName(actualName, name, attrVal)}
+        {makePropertyName(actualName, name, version, attrVal)}
       </PropertyNameCell>
       <TableCell width="50%">
-        {typeof values[0] === "string" ? (
-          <StringValue
-            name={name}
-            values={(values as string[]).map(v =>
-              attrVal ? (makePropertyValue(attrVal, v) as string) : v,
-            )}
-          />
-        ) : typeof values[0] === "number" ? (
-          <NumberValue
-            name={name}
-            values={(values as number[]).map(v =>
-              attrVal ? (makePropertyValue(attrVal, v) as number) : v,
-            )}
-          />
+        {typeof displayedValues?.[0] === "string" ? (
+          <StringValue name={name} values={displayedValues as string[]} />
+        ) : typeof displayedValues?.[0] === "number" ? (
+          <NumberValue name={name} values={displayedValues as number[]} />
         ) : null}
       </TableCell>
     </TableRow>
@@ -251,6 +307,7 @@ const Property: FC<{
       path={path ?? defaultPath}
       featureType={featureType}
       ancestorsFeatureType={ancestorsFeatureType}
+      version={version}
     />
   );
 };
@@ -282,7 +339,17 @@ const PropertyGroup: FC<{
   path?: string[];
   featureType: string;
   ancestorsFeatureType?: string;
-}> = ({ id = "", name, properties, level = 0, path, featureType, ancestorsFeatureType }) => {
+  version: number;
+}> = ({
+  id = "",
+  name,
+  properties,
+  level = 0,
+  path,
+  featureType,
+  ancestorsFeatureType,
+  version,
+}) => {
   const hasAncestors = path?.slice(-1)[0] !== ancestorsKey && !!path?.includes(ancestorsKey);
   const expandedAtom = groupExpandedAtomFamily(id ?? name);
   const [expanded, setExpanded] = useAtom(expandedAtom);
@@ -307,6 +374,7 @@ const PropertyGroup: FC<{
                       : [name]),
                   ].join("_")}`,
                   name,
+                  version,
                 )
               : name}
           </PropertyGroupName>
@@ -329,6 +397,7 @@ const PropertyGroup: FC<{
                     path={path}
                     featureType={featureType}
                     ancestorsFeatureType={ancestorsFeatureType}
+                    version={version}
                   />
                 ))}
               </TableBody>
@@ -346,10 +415,11 @@ export interface PropertyParameterItemProps
   labelFontSize?: "small" | "medium";
   featureType: string;
   ancestorsFeatureType?: string;
+  version: number;
 }
 
 export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParameterItemProps>(
-  ({ properties, featureType, ancestorsFeatureType, ...props }, ref) => {
+  ({ properties, featureType, ancestorsFeatureType, version, ...props }, ref) => {
     const groups = Object.entries(groupBy(properties, property => property.name))
       .map(([name, properties]) => ({ name, properties }))
       .filter(({ name }) => !name.startsWith("_"));
@@ -364,6 +434,7 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
                   property={properties[0]}
                   featureType={featureType}
                   ancestorsFeatureType={ancestorsFeatureType}
+                  version={version}
                 />
               ) : (
                 <PropertyGroup
@@ -373,6 +444,7 @@ export const PropertyParameterItem = forwardRef<HTMLDivElement, PropertyParamete
                   properties={properties}
                   featureType={featureType}
                   ancestorsFeatureType={ancestorsFeatureType}
+                  version={version}
                 />
               ),
             )}

@@ -9,29 +9,54 @@ func ToAsset(a *asset.Asset) *Asset {
 		return nil
 	}
 
+	var pid *ID
+	if project := a.Project(); project != nil {
+		pidValue := IDFrom(*a.Project())
+		pid = &pidValue
+	}
+
 	return &Asset{
 		ID:          IDFrom(a.ID()),
 		CreatedAt:   a.CreatedAt(),
 		TeamID:      IDFrom(a.Workspace()),
+		ProjectID:   pid,
 		Name:        a.Name(),
 		Size:        a.Size(),
 		URL:         a.URL(),
 		ContentType: a.ContentType(),
+		CoreSupport: a.CoreSupport(),
 	}
 }
 
-func AssetSortTypeFrom(ast *AssetSortType) *asset.SortType {
+func ToAssets(assets []*asset.Asset) []*Asset {
+	result := make([]*Asset, 0, len(assets))
+
+	for _, a := range assets {
+		result = append(result, ToAsset(a))
+	}
+
+	return result
+}
+
+func AssetSortTypeFrom(ast *AssetSort) *asset.SortType {
 	if ast == nil {
 		return nil
 	}
 
-	switch *ast {
-	case AssetSortTypeDate:
-		return &asset.SortTypeID
-	case AssetSortTypeName:
-		return &asset.SortTypeName
-	case AssetSortTypeSize:
-		return &asset.SortTypeSize
+	var key string
+	switch ast.Field {
+	case AssetSortFieldDate:
+		key = "id"
+	case AssetSortFieldName:
+		key = "name"
+	case AssetSortFieldSize:
+		key = "size"
+	default:
+		key = "id"
 	}
-	return &asset.SortTypeID
+
+	return &asset.SortType{
+		Key:  key,
+		Desc: ast.Direction == SortDirectionDesc,
+	}
 }

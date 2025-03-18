@@ -42,7 +42,7 @@ func (i *Scene) InstallPlugin(ctx context.Context, sid id.SceneID, pid id.Plugin
 
 	plugin, err := i.pluginCommon().GetOrDownloadPlugin(ctx, pid)
 	if err != nil {
-		if errors.Is(rerror.ErrNotFound, err) {
+		if errors.Is(err, rerror.ErrNotFound) {
 			return nil, nil, interfaces.ErrPluginNotFound
 		}
 		return nil, nil, err
@@ -107,7 +107,7 @@ func (i *Scene) UninstallPlugin(ctx context.Context, sid id.SceneID, pid id.Plug
 
 	pl, err := i.pluginRepo.FindByID(ctx, pid)
 	if err != nil {
-		if errors.Is(rerror.ErrNotFound, err) {
+		if errors.Is(err, rerror.ErrNotFound) {
 			return nil, interfaces.ErrPluginNotFound
 		}
 		return nil, err
@@ -132,7 +132,6 @@ func (i *Scene) UninstallPlugin(ctx context.Context, sid id.SceneID, pid id.Plug
 	// remove blocks
 	res, err := layerops.Processor{
 		LayerLoader: repo.LayerLoaderFrom(i.layerRepo),
-		RootLayerID: scene.RootLayer(),
 	}.UninstallPlugin(ctx, pid)
 	if err != nil {
 		return nil, err

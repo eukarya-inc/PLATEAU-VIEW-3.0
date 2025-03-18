@@ -13,10 +13,10 @@ import { useAtom, useAtomValue } from "jotai";
 import { bindPopover, bindTrigger, usePopupState } from "material-ui-popup-state/hooks";
 import { useCallback, useId, type FC, type ChangeEvent } from "react";
 
+import coloredMapImage from "../../../prototypes/view/assets/colored_map.webp";
 import darkMapImage from "../../../prototypes/view/assets/dark_map.webp";
 import elevationImage from "../../../prototypes/view/assets/elevation.webp";
 import lightMapImage from "../../../prototypes/view/assets/light_map.webp";
-import satelliteImage from "../../../prototypes/view/assets/satellite.webp";
 import {
   shareableEnvironmentTypeAtom,
   shareableShowMapLabelAtom,
@@ -94,8 +94,12 @@ const environmentItems = {
     image: darkMapImage,
     label: "黒地図",
   },
+  "colored-map": {
+    image: coloredMapImage,
+    label: "色付き地図",
+  },
   satellite: {
-    image: satelliteImage,
+    image: "https://api.plateauview.mlit.go.jp/tiles/plateau-ortho-2023/16/58212/25808.png",
     label: "衛星写真",
   },
   elevation: {
@@ -207,6 +211,12 @@ export const EnvironmentSelect: FC = () => {
     close();
   }, [setEnvironmentType, setColorMode, close]);
 
+  const handleColoredMap = useCallback(() => {
+    setEnvironmentType("colored-map");
+    setColorMode("light");
+    close();
+  }, [setEnvironmentType, setColorMode, close]);
+
   const handleSatellite = useCallback(() => {
     setEnvironmentType("satellite");
     setColorMode("light");
@@ -224,6 +234,8 @@ export const EnvironmentSelect: FC = () => {
       ? "light-map"
       : environmentType === "map" && colorMode === "dark"
       ? "dark-map"
+      : environmentType === "colored-map"
+      ? "colored-map"
       : environmentType === "satellite"
       ? "satellite"
       : environmentType === "elevation"
@@ -268,6 +280,7 @@ export const EnvironmentSelect: FC = () => {
         <FloatingPanel>
           <Item item="light-map" selectedItem={selectedItem} onClick={handleLightMap} />
           <Item item="dark-map" selectedItem={selectedItem} onClick={handleDarkMap} />
+          <Item item="colored-map" selectedItem={selectedItem} onClick={handleColoredMap} />
           <Item item="satellite" selectedItem={selectedItem} onClick={handleSatellite} />
           <Item item="elevation" selectedItem={selectedItem} onClick={handleElevation} />
           <Divider />

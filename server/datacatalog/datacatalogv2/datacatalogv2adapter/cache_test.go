@@ -70,6 +70,7 @@ func TestNewCache(t *testing.T) {
 					ID:             "c_00000",
 					Name:           "hoge市",
 					Code:           plateauapi.AreaCode("00000"),
+					ParentID:       lo.ToPtr(plateauapi.ID("p_01")),
 					PrefectureID:   plateauapi.ID("p_01"),
 					PrefectureCode: plateauapi.AreaCode("01"),
 					CitygmlID:      lo.ToPtr(plateauapi.ID("cg_00000")),

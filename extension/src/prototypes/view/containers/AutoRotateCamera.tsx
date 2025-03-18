@@ -2,6 +2,7 @@
 import { useAtomValue } from "jotai";
 import { type FC, useEffect, useCallback, useRef } from "react";
 
+import { isReEarthAPIv2 } from "../../../shared/reearth/utils/reearth";
 import { autoRotateCameraAtom } from "../states/app";
 
 export interface AutoRotateCameraProps {
@@ -16,16 +17,24 @@ const Content: FC<AutoRotateCameraProps> = ({ degreesPerMinute = 180 }) => {
   const handleTick = useCallback(() => {
     const now = Date.now();
     const elapsed = now - dateRef.current;
-    camera?.rotateOnCenter(radianPerMilliseconds * elapsed);
+    if (isReEarthAPIv2(window.reearth)) {
+      window.reearth?.camera?.rotateAround(radianPerMilliseconds * elapsed);
+    } else {
+      window.reearth?.camera?.rotateOnCenter(radianPerMilliseconds * elapsed);
+    }
     dateRef.current = now;
-  }, [camera, radianPerMilliseconds]);
+  }, [radianPerMilliseconds]);
 
   const handleRotateOnTickEventAdd = (callback: (date: Date) => void) => {
-    window.reearth?.on?.("tick", callback);
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.on?.("tick", callback)
+      : window.reearth?.on?.("tick", callback);
   };
 
   const handleRotateOnTickEventRemove = (callback: (date: Date) => void) => {
-    window.reearth?.off?.("tick", callback);
+    isReEarthAPIv2(window.reearth)
+      ? window.reearth?.timeline?.off?.("tick", callback)
+      : window.reearth?.off?.("tick", callback);
   };
 
   useEffect(() => {

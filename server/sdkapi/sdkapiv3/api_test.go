@@ -16,19 +16,13 @@ func TestQueryDatasets(t *testing.T) {
 		t.Skip("baseURL is not set")
 	}
 
-	client, err := NewAPIClient(Config{DataCatagloAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
+	client, err := NewAPIClient(Config{DataCatalogAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
 	assert.NoError(t, err)
 
 	q, err := client.QueryDatasets(context.Background())
 	assert.NoError(t, err)
 
-	t.Log(ppp.Sprint(q))
-}
-
-var ppp = pp.New()
-
-func init() {
-	ppp.SetColoringEnabled(false)
+	t.Log(pp.Sprint(q))
 }
 
 func TestQueryDatasetFiles(t *testing.T) {
@@ -40,11 +34,11 @@ func TestQueryDatasetFiles(t *testing.T) {
 		t.Skip("baseURL is not set")
 	}
 
-	client, err := NewAPIClient(Config{DataCatagloAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
+	client, err := NewAPIClient(Config{DataCatalogAPIURL: baseURL, DataCatalogAPIToken: gqlToken})
 	assert.NoError(t, err)
 
 	q, err := client.QueryDatasetFiles(context.Background(), cityId)
 	assert.NoError(t, err)
 
-	t.Log(ppp.Sprint(q))
+	t.Log(pp.Sprint(q))
 }

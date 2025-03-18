@@ -1,8 +1,11 @@
 package nlslayer
 
+import "github.com/reearth/reearth/server/pkg/id"
+
 type NLSLayer interface {
 	Cloner
-	ID() ID
+	ID() id.NLSLayerID
+	Index() *int
 	LayerType() LayerType
 	Scene() SceneID
 	Config() *Config
@@ -12,6 +15,7 @@ type NLSLayer interface {
 	HasInfobox() bool
 	Infobox() *Infobox
 	SetInfobox(*Infobox)
+	SetIndex(*int)
 	Rename(string)
 	UpdateConfig(*Config)
 	Duplicate() NLSLayer
@@ -59,7 +63,8 @@ func ToLayerSimpleRef(l *NLSLayer) *NLSLayerSimple {
 }
 
 type layerBase struct {
-	id        ID
+	id        id.NLSLayerID
+	index     *int
 	layerType LayerType
 	scene     SceneID
 	title     string
@@ -70,11 +75,18 @@ type layerBase struct {
 	sketch    *SketchInfo
 }
 
-func (l *layerBase) ID() ID {
+func (l *layerBase) ID() id.NLSLayerID {
 	return l.id
 }
 
-func (l *layerBase) IDRef() *ID {
+func (l *layerBase) Index() *int {
+	if l == nil {
+		return nil
+	}
+	return l.index
+}
+
+func (l *layerBase) IDRef() *id.NLSLayerID {
 	if l == nil {
 		return nil
 	}
@@ -138,6 +150,13 @@ func (l *layerBase) SetInfobox(infobox *Infobox) {
 	l.infobox = infobox
 }
 
+func (l *layerBase) SetIndex(index *int) {
+	if l == nil {
+		return
+	}
+	l.index = index
+}
+
 func (l *layerBase) Rename(name string) {
 	if l == nil {
 		return
@@ -172,6 +191,7 @@ func (l *layerBase) Clone() *layerBase {
 
 	cloned := &layerBase{
 		id:        l.id,
+		index:     l.index,
 		layerType: l.layerType,
 		scene:     l.scene,
 		title:     l.title,
@@ -203,6 +223,7 @@ func (l *layerBase) Duplicate() NLSLayer {
 
 	duplicated := &layerBase{
 		id:        NewID(),
+		index:     l.index,
 		layerType: l.layerType,
 		scene:     l.scene,
 		title:     l.title,

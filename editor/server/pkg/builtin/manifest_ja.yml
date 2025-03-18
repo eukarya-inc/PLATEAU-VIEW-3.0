@@ -23,12 +23,11 @@ extensions:
         fields:
           tile_type:
             title: 種類
+            placeholder: タイルのタイプを選択
             choices:
               default: デフォルト
               default_label: ラベル付き地図
               default_road: 道路地図
-              stamen_watercolor: Stamen Watercolor
-              stamen_toner: Stamen Toner
               open_street_map: OpenStreetMap
               esri_world_topo: ESRI Topography
               black_marble: Black Marble
@@ -36,11 +35,14 @@ extensions:
               url: URL
           tile_url:
             title: URL
+            placeholder: タイルのURLを入力
           tile_zoomLevel:
             title: ズームレベル
+            placeholder: ズームレベルを入力
             description: "選択したタイルマップのズームレベルを変更します。 最小値: 0 最大値: 1"
           tile_opacity:
             title: 不透明度
+            placeholder: 不透明度を入力
             description: "選択したタイルマップの不透明度を変更します。 最小値: 0 最大値: 1"
       terrain:
         title: 地形
@@ -70,9 +72,6 @@ extensions:
           terrainExaggerationRelativeHeight:
             title: 地形の強調の基準
             description: 地形が誇張される高さです。デフォルトは0.0です。この高さより上にある地形は上方に、この高さより下にある地形は下方にスケールされます。
-          depthTestAgainstTerrain:
-            title: 地形の下を非表示
-            description: 地形の下にあるオブジェクトを非表示にします。標高データの読み込み状況によってオブジェクトが表示されたり隠れたりすることがあります。
       globeLighting:
         title: 太陽光の明るさ
         fields:
@@ -94,6 +93,11 @@ extensions:
           globeAtmosphereIntensity:
             title: 光の強さ
             description: "選択したタイルマップの光の強さを変更します。 最小値: 0 最大値: 30"
+      globeDepthTestAgainstTerrain:
+        title: 地下を隠す
+        fields:
+          depthTestAgainstTerrain:
+            title: 有効化
       skyBox:
         title: スカイボックス
         fields:
@@ -126,12 +130,14 @@ extensions:
         fields:
           camera:
             title: カメラの初期位置
-            description: プロジェクトを開いたときに表示される最初の位置
+            description: 初期カメラ位置を設定すると、プロジェクトを開くたびに同じ場所が表示されるようになります
           allowEnterGround:
             title: 地下に入る
-            description: 有効にすると、カメラが地表の中に入るようになります。
+            description: 有効にすると、カメラは地形の中を移動でき、地下エリアに入ることができます。
           fov:
             title: 視野（FOV）
+            description: "垂直方向のカメラの視野を変更します（単位はラジアン）。最小値: 0.1 最大値: 2.0"
+
   cesium:
     name: Cesium
     description: 右パネルでシーン全体の設定を変更することができます。タイル、大気、ライティングなどの設定が含まれています。
@@ -168,6 +174,7 @@ extensions:
             title: 名前
           tile_type:
             title: 種類
+            placeholder: タイルのタイプを選択
             choices:
               default: デフォルト
               default_label: ラベル付き地図
@@ -180,13 +187,17 @@ extensions:
               japan_gsi_standard: 地理院地図 標準地図
               url: URL
           tile_url:
+            placeholder: タイルのURLを入力
             title: URL
           tile_minLevel:
+            placeholder: 最小レベルを入力
             title: 最小レベル
           tile_maxLevel:
+            placeholder: 最大レベルを入力
             title: 最大レベル
           tile_opacity:
-            title: 不透明性
+            placeholder: 不透明度を入力
+            title: 不透明度
       terrain:
         title: 地形
         fields:
@@ -964,7 +975,7 @@ extensions:
       default:
         title: デフォルト
         fields:
-          buttonTitle:
+          buttonTitle: 
             title: タイトル
           buttonStyle:
             title: 表示方法
@@ -1132,6 +1143,19 @@ extensions:
               always: 常に
               desktop: デスクトップのみ
               mobile: モバイルのみ
+  dataAttribution:
+    name: データの帰属
+    description: データ アトリビューション ウィジェット
+    propertySchema:
+      default:
+        title: デフォルト
+        fields:
+          description:
+            title: クレジットの説明
+          logo:
+            title: ロゴ
+          creditUrl:
+            title: クレジット URL
   story:
     name: ストーリー
     description: ストーリーテリングのストーリー
@@ -1209,7 +1233,7 @@ extensions:
       default:
         title: 画像
         fields:
-          text:
+          src:
             title: コンテンツ
   videoStoryBlock:
     name: 動画
@@ -1223,7 +1247,7 @@ extensions:
       default:
         title: 動画
         fields:
-          text:
+          src:
             title: コンテンツ
   cameraButtonStoryBlock:
     name: カメラボタン
@@ -1263,6 +1287,7 @@ extensions:
             title: タイムライン設定
           playMode:
             title: プレイモード
+            description: タイムラインの再生モードを設定します
   showLayersStoryBlock:
     name: レイヤーボタン
     description: ストーリーテリングのレイヤー変更出来るボタンブロック
@@ -1282,7 +1307,7 @@ extensions:
           bgColor:
             title: 背景色
           showLayers:
-            title: 見えるレイヤー
+            title: 表示するレイヤー
   nextPageStoryBlock:
     name: 次ページボタン
     description: ストーリーテリングの次ページに移動するボタンブロック
@@ -1304,6 +1329,7 @@ extensions:
             title: 余白
           gap:
             title: 間隔
+            description: "インフォボックスのコンテンツの間隔を変更します。最小値:0 最大値:40"
   textInfoboxBetaBlock:
     name: テキスト
     description: インフォボックスのテキストブロック
@@ -1313,6 +1339,7 @@ extensions:
         fields:
           text:
             title: コンテンツ
+            placeholder: ${プロパティの値}
       panel:
         title: パネル設定
         fields:
@@ -1327,6 +1354,7 @@ extensions:
         fields:
           text:
             title: コンテンツ
+            placeholder: ${プロパティの値}
       panel:
         title: パネル設定
         fields:
@@ -1352,3 +1380,79 @@ extensions:
         fields:
           padding:
             title: 余白
+  videoInfoboxBetaBlock:
+    name: ビデオ
+    description: インフォボックスビデオブロック
+    propertySchema:
+      default:
+        title: ビデオブロック
+        fields:
+          src:
+            title: ビデオ
+            placeholder: ${プロパティの値}
+      panel:
+        title: パネル設定
+        fields:
+          padding:
+            title: 余白
+  markdownInfoboxBetaBlock:
+    name: MDテキスト
+    description: インフォボックスMDテキストブロック
+    propertySchema:
+      default:
+        title: MDテキストブロック
+        fields:
+          src:
+            title: コンテンツ
+            placeholder: ${プロパティの値}
+      panel:
+        title: パネル設定
+        fields:
+          padding:
+            title: 余白
+  linkButtonStoryBlock:
+    name: リンクボタン
+    description: ストーリーテリングリンクボタン
+    propertySchema:
+      default:
+        title: リンクボタン
+        fields:
+          title:
+            title: タイトル
+          color:
+            title: 色
+          bgColor:
+            title: 背景色
+          url:
+            title: リンクURL
+
+  googleMapSearch:
+    name: Googleマップ検索(実験版)
+    description: Googleマップを利用して地図上の場所を検索できるウィジェット
+    propertySchema:
+      default:
+        title: Googleマップ検索ウィジェット
+        fields:
+          apiToken:
+            title: APIトークン
+            description: Google Maps APIキー
+      appearance:
+        title: 外観
+        fields:
+          theme:
+            title: テーマ
+            choices:
+              light: 明るい
+              dark: 暗い
+      languageSetting:
+        title: 言語設定
+        fields:
+          language:
+            title: 言語
+            choices:
+              auto: 自動
+              en: 英語
+              ja: 日本語
+              cn: 中国語
+
+  

@@ -28,8 +28,12 @@ import {
   TSUNAMI_RISK_LAYER,
   URBAN_PLANNING_LAYER,
   USE_CASE_LAYER,
+  CITY_LAYER,
   VEGETATION_LAYER,
   WATERWAY_LAYER,
+  SPATIAL_ID_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
+  MESH_CODE_LAYER,
 } from "./layerTypes";
 
 // Undefined means using the name from API.
@@ -37,6 +41,8 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [HEATMAP_LAYER]: "統計データ",
   [PEDESTRIAN_LAYER]: "歩行者視点",
   [SKETCH_LAYER]: "作図",
+  [SPATIAL_ID_LAYER]: "空間IDコレクション",
+  [MESH_CODE_LAYER]: "メッシュコレクション",
   [MY_DATA_LAYER]: "マイデータ",
   [STORY_LAYER]: "ストーリー",
 
@@ -51,6 +57,7 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [GLOBAL_LAYER]: "全球データ",
   [HIGH_TIDE_RISK_LAYER]: "高潮浸水想定区域",
   [INLAND_FLOODING_RISK_LAYER]: "内水浸水想定区域",
+  [RESERVOIR_FLOODING_RISK_LAYER]: "ため池ハザードマップ",
   [LAND_USE_LAYER]: "土地利用",
   [LANDMARK_LAYER]: "ランドマーク",
   [LAND_SLIDE_RISK_LAYER]: "土砂災害警戒区域",
@@ -65,4 +72,5 @@ export const layerTypeNames: Record<LayerType, string | undefined> = {
   [VEGETATION_LAYER]: "植生",
   [WATERWAY_LAYER]: "航路",
   [USE_CASE_LAYER]: undefined,
+  [CITY_LAYER]: undefined,
 };

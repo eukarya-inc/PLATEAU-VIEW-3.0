@@ -1,14 +1,19 @@
-FROM golang:1.21-bullseye AS build
 ARG TAG=release,draco
 ARG VERSION
 
+FROM golang:1.24-bullseye AS build
+
 WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
+
+RUN --mount=type=bind,source=go.mod,target=go.mod \
+    --mount=type=bind,source=go.sum,target=go.sum \
+    --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
 COPY . /app/
 
-RUN go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go build -tags "${TAG}" "-ldflags=-X main.version=${VERSION} -s -w -buildid=" -trimpath
 
 FROM debian:bullseye
 

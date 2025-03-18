@@ -29,20 +29,28 @@ import {
   USE_CASE_LAYER,
   WATERWAY_LAYER,
   VEGETATION_LAYER,
+  CITY_LAYER,
+  SPATIAL_ID_LAYER,
+  RESERVOIR_FLOODING_RISK_LAYER,
+  MESH_CODE_LAYER,
 } from "../../prototypes/view-layers";
 import { PedestrianLayerModel } from "../../prototypes/view-layers/PedestrianLayer";
 import { SketchLayerModel } from "../../prototypes/view-layers/SketchLayer";
 
 import { GeneralLayerModel } from "./general";
+import { MeshCodeLayerModel } from "./meshCode";
 import { MyDataLayerModel } from "./myData";
 import { BuildingLayerModel } from "./plateau-3dtiles";
 import { FloodLayerModel } from "./plateau-3dtiles/FloodLayer";
+import { SpatialIdLayerModel } from "./spatialId";
 import { StoryLayerModel } from "./story";
 
 export interface LayerModelOverrides {
   [HEATMAP_LAYER]: HeatmapLayerModel; // HeatmapLayerModel;
   [PEDESTRIAN_LAYER]: PedestrianLayerModel;
   [SKETCH_LAYER]: SketchLayerModel;
+  [SPATIAL_ID_LAYER]: SpatialIdLayerModel;
+  [MESH_CODE_LAYER]: MeshCodeLayerModel;
   [MY_DATA_LAYER]: MyDataLayerModel;
   [STORY_LAYER]: StoryLayerModel;
 
@@ -51,6 +59,7 @@ export interface LayerModelOverrides {
   [BUILDING_LAYER]: BuildingLayerModel;
   // Flood model
   [INLAND_FLOODING_RISK_LAYER]: FloodLayerModel; // InlandFloodingRiskLayerModel
+  [RESERVOIR_FLOODING_RISK_LAYER]: FloodLayerModel; // ReservoirFloodingRiskLayerModel
   [HIGH_TIDE_RISK_LAYER]: FloodLayerModel; // HighTideRiskLayerModel
   [RIVER_FLOODING_RISK_LAYER]: FloodLayerModel; // RiverFloodingRiskLayerModel;
   [TSUNAMI_RISK_LAYER]: FloodLayerModel; // TsunamiRiskLayerModel
@@ -72,6 +81,7 @@ export interface LayerModelOverrides {
   [STATION_LAYER]: GeneralLayerModel; // StationLayerModel
   [URBAN_PLANNING_LAYER]: GeneralLayerModel; // UrbanPlanningLayerModel;
   [USE_CASE_LAYER]: GeneralLayerModel; // UseCaseLayerModel
+  [CITY_LAYER]: GeneralLayerModel; // UseCaseLayerModel
   [WATERWAY_LAYER]: GeneralLayerModel; // WaterWayLayerModel
   [VEGETATION_LAYER]: GeneralLayerModel; // VegetationLayerModel
 }

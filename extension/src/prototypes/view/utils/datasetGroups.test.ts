@@ -71,6 +71,7 @@ test("Dataset group", () => {
       },
     ],
     genericGroups: [],
+    cityDatasetGroups: [],
   });
 });
 
@@ -193,11 +194,163 @@ test("Dataset group with sample data", () => {
         groupId: "generic:ユースケース",
         label: "ユースケース",
         useTree: true,
+        allowContinuousAdd: true,
       },
       {
         datasets: [{ folderPath: "Mock Sample Dataset", ...d5 }],
         groupId: "generic:サンプルデータ",
         label: "サンプルデータ",
+        useTree: true,
+        allowContinuousAdd: true,
+      },
+    ],
+    cityDatasetGroups: [],
+  });
+});
+
+test("Dataset group with city dataset", () => {
+  const d_bldg = {
+    id: "d_13101_bldg",
+    name: "建築物モデル（千代田区）",
+    groups: null,
+    type: {
+      id: "dt_bldg_3",
+      code: "bldg",
+      name: "建築物モデル",
+      category: DatasetTypeCategory.Plateau,
+      order: 1,
+    },
+    year: 2023,
+    items: [],
+  };
+
+  const d_usecase = {
+    id: "d_01hsssceky9vs2m9ycdjqw3c3b",
+    name: "地下街データを活用したナビゲーションシステム/JPタワー（千代田区）",
+    groups: null,
+    type: {
+      code: "usecase",
+      id: "dt_usecase",
+      name: "ユースケース",
+      category: DatasetTypeCategory.Plateau,
+      order: 33,
+    },
+    year: 2023,
+    items: [],
+  };
+
+  const d_city_1 = {
+    id: "d_01hv8afs8btw8hy55bh8h254nr",
+    name: "テスト用データ/テスト用データです（千代田区）",
+    groups: null,
+    type: {
+      category: DatasetTypeCategory.Plateau,
+      code: "city",
+      id: "dt_city",
+      name: "自治体データ",
+      order: 35,
+    },
+    year: 0,
+    items: [],
+  };
+
+  const d_city_no_slash = {
+    id: "d_01hv8afs8btw8hy55bh8h254na",
+    name: "CityDataset_No_Slash（千代田区）",
+    groups: null,
+    type: {
+      category: DatasetTypeCategory.Plateau,
+      code: "city",
+      id: "dt_city",
+      name: "自治体データ",
+      order: 35,
+    },
+    year: 0,
+    items: [],
+  };
+
+  const d_city_tree_item_1 = {
+    id: "d_01hv8afs8btw8hy55bh8h254nb",
+    name: "AAA/City_Tree_A_Item1（千代田区）",
+    groups: null,
+    type: {
+      category: DatasetTypeCategory.Plateau,
+      code: "city",
+      id: "dt_city",
+      name: "自治体データ",
+      order: 35,
+    },
+    year: 0,
+    items: [],
+  };
+
+  const d_city_tree_item_2 = {
+    id: "d_01hv8afs8btw8hy55bh8h254nc",
+    name: "AAA/City_Tree_A_Item2（千代田区）",
+    groups: null,
+    type: {
+      category: DatasetTypeCategory.Plateau,
+      code: "city",
+      id: "dt_city",
+      name: "自治体データ",
+      order: 35,
+    },
+    year: 0,
+    items: [],
+  };
+
+  const datasets = [
+    d_bldg,
+    d_usecase,
+    d_city_1,
+    d_city_no_slash,
+    d_city_tree_item_1,
+    d_city_tree_item_2,
+  ];
+
+  expect(getDatasetGroups({ datasets })).toStrictEqual({
+    typicalTypeGroups: [
+      {
+        datasets: [{ folderPath: "建築物モデル（千代田区）", ...d_bldg }],
+        groupId: "type:建築物モデル",
+        label: "建築物モデル",
+      },
+    ],
+    dataGroups: [],
+    genericGroups: [
+      {
+        datasets: [
+          {
+            folderPath: "地下街データを活用したナビゲーションシステム/JPタワー（千代田区）",
+            ...d_usecase,
+          },
+        ],
+        groupId: "generic:ユースケース",
+        label: "ユースケース",
+        useTree: true,
+        allowContinuousAdd: true,
+      },
+    ],
+    cityDatasetGroups: [
+      {
+        datasets: [{ folderPath: "テスト用データです（千代田区）", ...d_city_1 }],
+        groupId: "city:テスト用データ",
+        label: "テスト用データ",
+        useTree: true,
+      },
+      {
+        datasets: [{ folderPath: "", ...d_city_no_slash }],
+        groupId: "city:CityDataset_No_Slash（千代田区）",
+        label: "CityDataset_No_Slash（千代田区）",
+        useTree: false,
+      },
+      {
+        datasets: [
+          { folderPath: "City_Tree_A_Item1（千代田区）", ...d_city_tree_item_1 },
+          { folderPath: "City_Tree_A_Item2（千代田区）", ...d_city_tree_item_2 },
+        ],
+        groupId: "city:AAA",
+        label: "AAA",
         useTree: true,
       },
     ],

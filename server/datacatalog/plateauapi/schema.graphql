@@ -52,6 +52,10 @@ interface Area implements Node {
   地域の親となる地域。
   """
   parent: Area
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 enum AreaType {
@@ -102,6 +106,10 @@ type Prefecture implements Area & Node {
   地域の親となる地域。
   """
   parent: Area
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 """
@@ -161,6 +169,10 @@ type City implements Area & Node {
   CityGMLデータセット。
   """
   citygml: CityGMLDataset
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 """
@@ -216,6 +228,10 @@ type Ward implements Area & Node {
   地域の親となる地域。
   """
   parent: City!
+  """
+  地域に属する子地域。
+  """
+  children: [Area!]!
 }
 
 # Spec
@@ -361,6 +377,10 @@ interface Dataset implements Node {
   データセットのアイテム。
   """
   items: [DatasetItem!]!
+  """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
   """
   管理者用
   """
@@ -586,6 +606,10 @@ type PlateauDataset implements Dataset & Node {
   """
   items: [PlateauDatasetItem!]!
   """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
+  """
   管理者用
   """
   admin: Any
@@ -638,15 +662,19 @@ type PlateauDatasetItem implements DatasetItem & Node {
   """
   lod: Int
   """
+  データセットのアイテムのLOD（詳細度・Level of Detail）のうち、小数点以下の値が存在する場合に定義されます。例えばLOD3.1の場合は1、3.0の場合は0となります。LODがnullの場合はnullとなります。
+  """
+  lodEx: Int
+  """
   データセットのアイテムのテクスチャの種類。
   """
   texture: Texture
   """
-  浸水規模。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在します。
+  浸水規模。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
   """
   floodingScale: FloodingScale
   """
-  浸水規模の枝番。地物型が洪水・高潮・津波・内水浸水想定区域モデル（fld・htd・tnm・ifld）の場合のみ存在することがあります。
+  浸水規模の枝番。地物型が災害リスク（浸水）モデルの場合のみ存在することがあります。
   """
   floodingScaleSuffix: String
 }
@@ -741,7 +769,7 @@ type PlateauDatasetType implements DatasetType & Node {
   """
   year: Int!
   """
-  洪水・高潮・津波・内水浸水想定区域モデルを表す種類かどうか。河川などの情報が利用可能です。
+  災害リスク（浸水）モデルかどうか。河川などの情報が利用可能です。
   """
   flood: Boolean!
   """
@@ -834,6 +862,10 @@ type RelatedDataset implements Dataset & Node {
   データセットのアイテム。
   """
   items: [RelatedDatasetItem!]!
+  """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
   """
   管理者用
   """
@@ -993,6 +1025,10 @@ type GenericDataset implements Dataset & Node {
   """
   items: [GenericDatasetItem!]!
   """
+  PLATEAU ARで閲覧可能なデータセットかどうか。
+  """
+  ar: Boolean!
+  """
   管理者用
   """
   admin: Any
@@ -1111,6 +1147,10 @@ type CityGMLDataset implements Node {
   """
   featureTypes: [String!]!
   """
+  CityGMLのメタデータを含むzipファイルURLのリスト。
+  """
+  metadataZipUrls: [String!]!
+  """
   管理者用
   """
   admin: Any
@@ -1149,6 +1189,10 @@ input AreasInput {
   datasetTypes が指定された場合に、検索結果にその地域の親も含めるかどうか。デフォルトは false です。
   """
   includeParents: Boolean
+  """
+  属しているDatasetが存在しない都市を含めます。通常のデータセットは存在しないが、 CityGMLDataset の city として使用されている都市が含まれます。
+  """
+  includeEmpty: Boolean
   """
   parentCode が指定された場合に、その地域に間接的に属している地域も検索対象にするかどうか。デフォルトは false です。
   """
@@ -1215,6 +1259,11 @@ input DatasetsInput {
   特殊なグループを持つデータセットのみを検索対象にするかどうか。デフォルトはfalseです。
   """
   groupedOnly: Boolean
+  """
+  PLATEAU ARで閲覧可能なデータセットを含めるかどうか。
+  trueの場合はARで閲覧可能なデータセットのみ、falseの場合はARで閲覧不可能なデータセットのみを返します。
+  """
+  ar: Boolean
 }
 
 """

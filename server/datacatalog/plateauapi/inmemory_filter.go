@@ -45,22 +45,41 @@ func ParentAreaCode(a Area) AreaCode {
 	return ""
 }
 
+func matchableAreaCodes(d Dataset, admin Admin, shallow bool) []AreaCode {
+	var areaCodes []AreaCode
+	if shallow {
+		areaCodes = util.DerefSlice([]*AreaCode{areaCodeFrom(d)})
+	} else {
+		areaCodes = areaCodesFrom(d)
+	}
+
+	if admin.SubAreaCode != "" && !slices.Contains(areaCodes, AreaCode(admin.SubAreaCode)) {
+		areaCodes = append(areaCodes, AreaCode(admin.SubAreaCode))
+	}
+
+	return areaCodes
+}
+
 func filterDataset(d Dataset, input DatasetsInput, stages []string) bool {
 	if d == nil {
 		return false
 	}
 
-	if s := stageFrom(d.GetAdmin()); s != "" && (len(stages) == 0 || !slices.Contains(stages, s)) {
+	if input.Ar != nil && d.GetAr() != *input.Ar {
 		return false
 	}
 
+	areaCode := areaCodeFrom(d).RefString() // for breakpoint debugging
+
+	admin := AdminFrom(d.GetAdmin())
+	if admin.Stage != "" && (len(stages) == 0 || !slices.Contains(stages, admin.Stage)) {
+		return false
+	}
+
+	_ = areaCode
+
 	if len(input.AreaCodes) > 0 {
-		var areaCodes []AreaCode
-		if lo.FromPtr(input.Shallow) {
-			areaCodes = util.DerefSlice([]*AreaCode{areaCodeFrom(d)})
-		} else {
-			areaCodes = areaCodesFrom(d)
-		}
+		areaCodes := matchableAreaCodes(d, admin, lo.FromPtr(input.Shallow))
 
 		if lo.EveryBy(input.AreaCodes, func(code AreaCode) bool {
 			return !slices.Contains(areaCodes, code)
@@ -273,9 +292,15 @@ func mostDetailedAreaCodeFrom(d Dataset) *AreaCode {
 	return nil
 }
 
-func filterArea(area Area, input AreasInput) bool {
+func filterArea(area Area, input AreasInput, areasWithoutDataset map[ID]struct{}) bool {
 	if area == nil {
 		return false
+	}
+
+	if !lo.FromPtr(input.IncludeEmpty) && areasWithoutDataset != nil {
+		if _, ok := areasWithoutDataset[area.GetID()]; ok {
+			return false
+		}
 	}
 
 	if len(input.AreaTypes) > 0 {

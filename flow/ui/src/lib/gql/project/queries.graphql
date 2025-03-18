@@ -1,0 +1,49 @@
+mutation CreateProject($input: CreateProjectInput!) {
+  createProject(input: $input) {
+    project {
+      ...Project
+    }
+  }
+}
+query GetProjects($workspaceId: ID!, $pagination: PageBasedPagination!) {
+  projects(workspaceId: $workspaceId, pagination: $pagination) {
+    totalCount
+    nodes {
+      ...Project
+    }
+    pageInfo {
+      totalCount
+      currentPage
+      totalPages
+    }
+  }
+}
+
+query GetProjectById($projectId: ID!) {
+  node(id: $projectId, type: PROJECT) {
+    __typename
+    ...Project
+  }
+}
+
+mutation UpdateProject($input: UpdateProjectInput!) {
+  updateProject(input: $input) {
+    project {
+      ...Project
+    }
+  }
+}
+
+mutation DeleteProject($input: DeleteProjectInput!) {
+  deleteProject(input: $input) {
+    projectId
+  }
+}
+
+mutation RunProject($input: RunProjectInput!) {
+  runProject(input: $input) {
+    job {
+      ...Job
+    }
+  }
+}

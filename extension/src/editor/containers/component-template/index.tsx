@@ -1,4 +1,3 @@
-import { useAtomValue } from "jotai";
 import { useMemo, useState, useCallback, useEffect, RefObject } from "react";
 
 import { useTemplateAPI } from "../../../shared/api";
@@ -30,8 +29,7 @@ export const EditorFieldComponentsTemplateSection: React.FC<
   const [templateId, setTemplateId] = useState<string>();
   const [isSaving, setIsSaving] = useState(false);
 
-  const { templatesAtom, saveTemplate, removeTemplate } = useTemplateAPI();
-  const templates = useAtomValue(templatesAtom);
+  const { templates, saveTemplate, removeTemplate } = useTemplateAPI();
 
   const componentTemplates = useMemo(
     () =>
@@ -199,6 +197,43 @@ export const EditorFieldComponentsTemplateSection: React.FC<
     [editorNoticeRef, removeTemplate],
   );
 
+  const handleTemplateDuplicate = useCallback(
+    async (newTemplateName: string) => {
+      if (!template) return;
+      const newTemplate = {
+        name: newTemplateName,
+        type: "component",
+        groups: template.groups.map(g => ({
+          ...g,
+          id: generateID(),
+          components: g.components.map(c => ({
+            ...c,
+            id: generateID(),
+          })),
+        })),
+      } as unknown as ComponentTemplate;
+
+      setIsSaving(true);
+      await saveTemplate(newTemplate)
+        .then(() => {
+          editorNoticeRef?.current?.show({
+            severity: "success",
+            message: "Template duplicated!",
+          });
+        })
+        .catch(() => {
+          editorNoticeRef?.current?.show({
+            severity: "error",
+            message: "Template duplicate failed!",
+          });
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
+    },
+    [editorNoticeRef, saveTemplate, template],
+  );
+
   return (
     <EditorSection
       sidebarMain={
@@ -232,6 +267,7 @@ export const EditorFieldComponentsTemplateSection: React.FC<
             templateNames={templateNames}
             onTemplateRename={handleTemplateRename}
             onTemplateRemove={handleTemplateRemove}
+            onTemplateDuplicate={handleTemplateDuplicate}
           />
         )
       }

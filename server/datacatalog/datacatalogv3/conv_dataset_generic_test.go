@@ -35,7 +35,7 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 				ID: "id3",
 			},
 		},
-		Category: "ユースケース",
+		Category: datasetTypeNameUsecase,
 	}
 
 	expected := []plateauapi.Dataset{
@@ -52,9 +52,10 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			CityCode:          lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:            plateauapi.NewID("usecase", plateauapi.TypeDatasetType),
 			TypeCode:          "usecase",
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/id",
-				"stage":  string(stageAlpha),
+			Admin: &plateauapi.Admin{
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/gen/details/id",
+				CMSItemID: "id",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.GenericDatasetItem{
 				{
@@ -93,9 +94,19 @@ func Test_GenericItem_ToDatasets(t *testing.T) {
 			Code: "usecase",
 			Name: "ユースケース",
 		},
+		&plateauapi.GenericDatasetType{
+			ID:   plateauapi.NewID("city", plateauapi.TypeDatasetType),
+			Code: "city",
+			Name: "自治体データ",
+		},
 	}
 
-	res, warning := item.toDatasets(area, dts, 2023, "https://example.com/")
+	res, warning := item.toDatasets(area, dts, 2023, CMSInfo{
+		CMSURL:      "https://example.com",
+		WorkspaceID: "ws",
+		ProjectID:   "prj",
+		ModelIDMap:  ModelIDMap{"generic": "gen"},
+	})
 	assert.Equal(t, []string{"generic id[2]: invalid url: "}, warning)
 	assert.Equal(t, expected, res)
 }

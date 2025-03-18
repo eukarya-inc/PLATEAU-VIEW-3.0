@@ -16,9 +16,7 @@ type internalContext struct {
 	cities            map[string]*plateauapi.City
 	wards             map[string][]*plateauapi.Ward
 	layerNamesForType map[string]LayerNames
-	plateauCMSURL     string
-	relatedCMSURL     string
-	genericCMSURL     string
+	cmsinfo           CMSInfo
 }
 
 func newInternalContext() *internalContext {
@@ -73,23 +71,6 @@ func (c *internalContext) AddWards(wards []*plateauapi.Ward) {
 	for _, w := range wards {
 		cityCode := w.CityCode.String()
 		c.wards[cityCode] = append(c.wards[cityCode], w)
-	}
-}
-
-func (c *internalContext) SetURL(t, cmsurl, ws, prj, modelID string) {
-	if cmsurl == "" || ws == "" || prj == "" || modelID == "" {
-		return
-	}
-
-	url := fmt.Sprintf("%s/workspace/%s/project/%s/content/%s/details/", cmsurl, ws, prj, modelID)
-
-	switch t {
-	case "plateau":
-		c.plateauCMSURL = url
-	case "related":
-		c.relatedCMSURL = url
-	case "generic":
-		c.genericCMSURL = url
 	}
 }
 
@@ -160,11 +141,16 @@ type LayerNames struct {
 	Name        []string
 	NamesForLOD map[int][]string
 	Prefix      string
+	PreferDef   bool
 }
 
 func (l LayerNames) LayerName(def []string, lod int, format plateauapi.DatasetFormat) []string {
 	if !plateauapi.IsLayerSupported(format) {
 		return nil
+	}
+
+	if l.PreferDef && len(def) > 0 && def[0] != "" {
+		return def
 	}
 
 	if l.Name != nil {
@@ -181,6 +167,10 @@ func (l LayerNames) LayerName(def []string, lod int, format plateauapi.DatasetFo
 		return lo.Map(def, func(s string, _ int) string {
 			return fmt.Sprintf("%s_%s", l.Prefix, s)
 		})
+	}
+
+	if len(def) == 0 || def[0] == "" {
+		return nil
 	}
 
 	return def

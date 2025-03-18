@@ -3,15 +3,15 @@ on:
   workflow_dispatch:
   workflow_call:
 env:
-  IMAGE: ghcr.io/eukarya-inc/plateau-view-3.0/plateauview-api-worker:latest
-  IMAGE_GCP: asia.gcr.io/reearth-plateau/plateauview-api-worker:latest
-  IMAGE_HUB: eukarya/plateauview2-sidecar-worker:latest
+  IMAGE: ghcr.io/eukarya-inc/plateau-view/plateauview-api-worker:latest
+  IMAGE_GCP: asia-northeast1-docker.pkg.dev/reearth-plateau/reearth-plateau/plateauview-api-worker:latest
+  IMAGE_HUB: eukarya/plateauview-api-worker:latest
 concurrency:
   group: ${{ github.workflow }}
 jobs:
   deploy_worker:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: prod
     permissions:
       contents: read
@@ -21,12 +21,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Configure docker
-        run: gcloud auth configure-docker --quiet
+        run: gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:

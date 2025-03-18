@@ -8,6 +8,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
+	"github.com/eukarya-inc/reearth-plateauview/server/plateaucms"
 	"github.com/jarcoal/httpmock"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/reearth/reearth-cms-api/go/cmswebhook"
@@ -18,11 +20,25 @@ import (
 
 func TestSendRequestToFME(t *testing.T) {
 	ctx := context.Background()
-	c := &cmsMock{}
+	c := &cmsintegrationcommon.CMSMock{}
+	pc := &plateauCMSMock{
+		plateauSpecs: func(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
+			return []plateaucms.PlateauSpec{
+				{
+					ID:              "1",
+					MajorVersion:    3,
+					Year:            2023,
+					MaxMinorVersion: 5,
+					FMEURL:          "https://example.com/v3",
+				},
+			}, nil
+		},
+	}
 	f := &fmeMock{}
 	s := &Services{
-		CMS: c,
-		FME: f,
+		CMS:     c,
+		PCMS:    pc,
+		mockFME: f,
 	}
 	conf := &Config{
 		Secret: "secret",
@@ -45,12 +61,35 @@ func TestSendRequestToFME(t *testing.T) {
 		ID: "cityID",
 		Fields: []*cms.Field{
 			{
-				Key:   "codelists",
-				Value: "codelistID",
+				Key: "codelists",
+				Value: &cms.Asset{
+					ID:  "codelistID",
+					URL: "codelists",
+				},
 			},
 			{
 				Key:   "citygml",
 				Value: "citygmlID",
+			},
+			{
+				Key:   "spec",
+				Value: "第3.5版",
+			},
+		},
+	}
+	cityItemWithoutCodelists := &cms.Item{
+		ID: "cityID",
+		Fields: []*cms.Field{
+			{
+				Key: "codelists",
+			},
+			{
+				Key:   "citygml",
+				Value: "citygmlID",
+			},
+			{
+				Key:   "spec",
+				Value: "第3.5版",
 			},
 		},
 	}
@@ -72,7 +111,7 @@ func TestSendRequestToFME(t *testing.T) {
 		item.OriginalItemID = nil
 		w.ItemData.Item = &item
 
-		c.reset()
+		c.Reset()
 
 		err := sendRequestToFME(ctx, s, conf, w)
 		assert.ErrorContains(t, err, "invalid webhook payload")
@@ -84,8 +123,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -119,8 +158,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -157,8 +196,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -191,8 +230,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -204,13 +243,13 @@ func TestSendRequestToFME(t *testing.T) {
 			}
 			return cityItem, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			return nil, fmt.Errorf("failed to get citygml asset")
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "CityGMLが見つかりません。")
 			return nil
 		}
@@ -223,8 +262,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -236,15 +275,15 @@ func TestSendRequestToFME(t *testing.T) {
 			}
 			return nil, fmt.Errorf("failed to get city item")
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			return &cms.Asset{
 				ID: "citygmlID",
 			}, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "都市アイテムが見つかりません。")
 			return nil
 		}
@@ -257,8 +296,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -268,26 +307,27 @@ func TestSendRequestToFME(t *testing.T) {
 					ID: "metadataItemID",
 				}, nil
 			}
-			return cityItem, nil
+			return cityItemWithoutCodelists, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			if id == "citygmlID" {
 				return &cms.Asset{
 					ID: "citygmlID",
 				}, nil
 			}
-			return nil, fmt.Errorf("failed to get codelist asset")
+			return nil, fmt.Errorf("failed to get asset")
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
-			assert.Contains(t, content, "コードリストが見つかりません。")
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
+			assert.Contains(t, content, "コードリストが")
+			assert.Contains(t, content, "ません。")
 			return nil
 		}
 
 		err := sendRequestToFME(ctx, s, conf, w)
-		assert.ErrorContains(t, err, "failed to get codelist asset")
+		assert.ErrorContains(t, err, "city item has no codelist")
 	})
 
 	t.Run("success", func(t *testing.T) {
@@ -296,8 +336,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -309,30 +349,27 @@ func TestSendRequestToFME(t *testing.T) {
 			}
 			return cityItem, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			if id == "citygmlID" {
 				return &cms.Asset{
 					ID:  "citygmlID",
 					URL: "target",
 				}, nil
 			}
-			return &cms.Asset{
-				ID:  "codelistID",
-				URL: "codelists",
-			}, nil
+			return nil, fmt.Errorf("failed to get asset")
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.MockUploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "conv_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査・変換を開始しました。")
 			return nil
 		}
@@ -361,8 +398,8 @@ func TestSendRequestToFME(t *testing.T) {
 		item := *baseItem
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -382,7 +419,7 @@ func TestSendRequestToFME(t *testing.T) {
 			}
 			return cityItem, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			if id == "citygmlID" {
 				return &cms.Asset{
 					ID:  "citygmlID",
@@ -394,18 +431,18 @@ func TestSendRequestToFME(t *testing.T) {
 				URL: "codelists",
 			}, nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.MockUploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "qc_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査を開始しました。")
 			return nil
 		}
@@ -449,8 +486,8 @@ func TestSendRequestToFME(t *testing.T) {
 		}
 		w.ItemData.Item = &item
 
-		c.reset()
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.Reset()
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			if id == "itemID" {
 				i := *baseItem
 				return &i, nil
@@ -462,7 +499,7 @@ func TestSendRequestToFME(t *testing.T) {
 			}
 			return cityItem, nil
 		}
-		c.asset = func(ctx context.Context, id string) (*cms.Asset, error) {
+		c.MockAsset = func(ctx context.Context, id string) (*cms.Asset, error) {
 			if id == "citygmlID" {
 				return &cms.Asset{
 					ID:  "citygmlID",
@@ -474,18 +511,18 @@ func TestSendRequestToFME(t *testing.T) {
 				URL: "codelists",
 			}, nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "asset", nil
 		}
-		c.uploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
+		c.MockUploadAssetDirectly = func(ctx context.Context, projectID, name string, r io.Reader, opts ...cms.UploadAssetOption) (string, error) {
 			return "assetd", nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, "conv_status", metadataFields[0].Key)
-			assert.Equal(t, string(ConvertionStatusRunning), metadataFields[0].Value)
+			assert.Equal(t, string(cmsintegrationcommon.ConvertionStatusRunning), metadataFields[0].Value)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査・変換を開始しました。")
 			return nil
 		}
@@ -534,9 +571,11 @@ func TestReceiveResultFromFME(t *testing.T) {
 		httpmock.NewStringResponder(200, "dic!!"))
 
 	ctx := context.Background()
-	c := &cmsMock{}
+	c := &cmsintegrationcommon.CMSMock{}
+	pc := &plateauCMSMock{}
 	s := &Services{
-		CMS: c,
+		CMS:  c,
+		PCMS: pc,
 	}
 	conf := &Config{
 		Secret: "secret",
@@ -560,20 +599,20 @@ func TestReceiveResultFromFME(t *testing.T) {
 	}
 
 	t.Run("no items", func(t *testing.T) {
-		c.reset()
+		c.Reset()
 		uploaded := []string{}
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
 			return &cms.Item{
 				ID: "itemID",
 			}, nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			assert.Equal(t, projectID, "projectID")
 			uploaded = append(uploaded, url)
 			return url, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
 			assert.Equal(t, []*cms.Field{
 				{
@@ -601,17 +640,17 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査・変換が完了しました。")
 			return nil
 		}
@@ -634,13 +673,13 @@ func TestReceiveResultFromFME(t *testing.T) {
 			"fld/bbb": "BBB",
 			"fld/ccc": []string{"CCC", "DDD"},
 		}
-		c.reset()
+		c.Reset()
 		uploaded := []string{}
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
-			return (&FeatureItem{
+			return (&cmsintegrationcommon.FeatureItem{
 				ID: "itemID",
-				Items: []FeatureItemDatum{
+				Items: []cmsintegrationcommon.FeatureItemDatum{
 					{
 						ID:   "ida",
 						Key:  "fld/aaa",
@@ -658,12 +697,12 @@ func TestReceiveResultFromFME(t *testing.T) {
 				},
 			}).CMSItem(), nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			assert.Equal(t, projectID, "projectID")
 			uploaded = append(uploaded, url)
 			return url, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
 			assert.Equal(t, []*cms.Field{
 				{
@@ -712,17 +751,17 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査・変換が完了しました。")
 			return nil
 		}
@@ -743,23 +782,23 @@ func TestReceiveResultFromFME(t *testing.T) {
 		r := *res
 		r.Status = "error"
 		r.LogURL = "log"
-		c.reset()
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.Reset()
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, []*cms.Field{
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusError),
+					Value: string(cmsintegrationcommon.ConvertionStatusError),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusError),
+					Value: string(cmsintegrationcommon.ConvertionStatusError),
 				},
 			}, metadataFields)
 			return nil, nil
 		}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			assert.Contains(t, content, "品質検査・変換に失敗しました。")
 			assert.Contains(t, content, "ログ： log")
 			return nil
@@ -777,17 +816,17 @@ func TestReceiveResultFromFME(t *testing.T) {
 		r.Results = map[string]any{
 			"_qc_result": "qc_result",
 		}
-		c.reset()
+		c.Reset()
 		uploaded := []string{}
-		c.commentToItem = func(ctx context.Context, assetID, content string) error {
+		c.MockCommentToItem = func(ctx context.Context, assetID, content string) error {
 			commneted = append(commneted, content)
 			return nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			uploaded = append(uploaded, url)
 			return url, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			return nil, nil
 		}
 		err := receiveResultFromFME(ctx, s, conf, r)
@@ -797,20 +836,20 @@ func TestReceiveResultFromFME(t *testing.T) {
 	})
 
 	t.Run("failed to upload asset", func(t *testing.T) {
-		c.reset()
+		c.Reset()
 		uploaded := []string{}
-		c.getItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
+		c.MockGetItem = func(ctx context.Context, id string, asset bool) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
 			return &cms.Item{
 				ID: "itemID",
 			}, nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			assert.Equal(t, projectID, "projectID")
 			uploaded = append(uploaded, url)
 			return url, nil
 		}
-		c.updateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
+		c.MockUpdateItem = func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
 			assert.Equal(t, id, "itemID")
 			assert.Equal(t, []*cms.Field{
 				{
@@ -838,17 +877,17 @@ func TestReceiveResultFromFME(t *testing.T) {
 				{
 					Key:   "conv_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 				{
 					Key:   "qc_status",
 					Type:  "tag",
-					Value: string(ConvertionStatusSuccess),
+					Value: string(cmsintegrationcommon.ConvertionStatusSuccess),
 				},
 			}, metadataFields)
 			return nil, nil
 		}
-		c.uploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
+		c.MockUploadAsset = func(ctx context.Context, projectID, url string) (string, error) {
 			return "", fmt.Errorf("ERR!")
 		}
 		err := receiveResultFromFME(ctx, s, conf, *res)
@@ -870,137 +909,87 @@ func getLogs(t *testing.T) func() string {
 	}
 }
 
-type cmsMock struct {
-	cms.Interface
-	getItem             func(ctx context.Context, id string, asset bool) (*cms.Item, error)
-	getItemsPartially   func(ctx context.Context, id string, page, perPage int, asset bool) (*cms.Items, error)
-	createItem          func(ctx context.Context, modelID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error)
-	updateItem          func(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error)
-	asset               func(ctx context.Context, id string) (*cms.Asset, error)
-	uploadAsset         func(ctx context.Context, projectID, url string) (string, error)
-	uploadAssetDirectly func(ctx context.Context, projectID, name string, r io.Reader) (string, error)
-	commentToItem       func(ctx context.Context, assetID, content string) error
-	getModels           func(ctx context.Context, projectID string) (*cms.Models, error)
+type plateauCMSMock struct {
+	PCMS
+	plateauSpecs func(ctx context.Context) ([]plateaucms.PlateauSpec, error)
 }
 
-var _ cms.Interface = &cmsMock{}
-
-func (c *cmsMock) reset() {
-	c.getItem = nil
-	c.getItemsPartially = nil
-	c.updateItem = nil
-	c.asset = nil
-	c.uploadAsset = nil
-	c.uploadAssetDirectly = nil
-	c.commentToItem = nil
-	c.getModels = nil
+func (p *plateauCMSMock) PlateauSpecs(ctx context.Context) ([]plateaucms.PlateauSpec, error) {
+	return p.plateauSpecs(ctx)
 }
 
-func (c *cmsMock) GetItem(ctx context.Context, id string, asset bool) (*cms.Item, error) {
-	return c.getItem(ctx, id, asset)
-}
-
-func (c *cmsMock) GetItemsPartially(ctx context.Context, id string, page, perPage int, asset bool) (*cms.Items, error) {
-	return c.getItemsPartially(ctx, id, page, perPage, asset)
-}
-
-func (c *cmsMock) CreateItem(ctx context.Context, modelID string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
-	return c.createItem(ctx, modelID, fields, metadataFields)
-}
-
-func (c *cmsMock) UpdateItem(ctx context.Context, id string, fields []*cms.Field, metadataFields []*cms.Field) (*cms.Item, error) {
-	return c.updateItem(ctx, id, fields, metadataFields)
-}
-
-func (c *cmsMock) Asset(ctx context.Context, id string) (*cms.Asset, error) {
-	return c.asset(ctx, id)
-}
-
-func (c *cmsMock) UploadAsset(ctx context.Context, projectID, url string) (string, error) {
-	return c.uploadAsset(ctx, projectID, url)
-}
-
-func (c *cmsMock) UploadAssetDirectly(ctx context.Context, projectID, name string, r io.Reader) (string, error) {
-	return c.uploadAssetDirectly(ctx, projectID, name, r)
-}
-
-func (c *cmsMock) CommentToItem(ctx context.Context, assetID, content string) error {
-	return c.commentToItem(ctx, assetID, content)
-}
-
-func (c *cmsMock) GetModels(ctx context.Context, projectID string) (*cms.Models, error) {
-	return c.getModels(ctx, projectID)
-}
-
-func TestIsQCAndConvSkipped(t *testing.T) {
-	skipQC, skipConv := isQCAndConvSkipped(&FeatureItem{}, "")
-	assert.False(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		QCStatus: &cms.Tag{
-			Name: "成功",
+func (p *plateauCMSMock) PlateauFeatureTypes(ctx context.Context) (plateaucms.PlateauFeatureTypeList, error) {
+	return []plateaucms.PlateauFeatureType{
+		{
+			Code: "bldg",
+			Name: "建築物モデル",
+			QC:   true,
+			Conv: true,
 		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		ConvertionStatus: &cms.Tag{
-			Name: "成功",
+		{
+			Code: "tran",
+			Name: "交通モデル（道路）",
+			QC:   true,
+			Conv: true,
 		},
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		QCStatus: &cms.Tag{
-			Name: "成功",
+		{
+			Code: "luse",
+			Name: "土地利用モデル",
+			QC:   true,
+			Conv: true,
 		},
-	}, "dem")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "品質検査のみをスキップ",
+		{
+			Code:      "fld",
+			Name:      "洪水浸水想定区域モデル",
+			QC:        true,
+			Conv:      true,
+			UseGroups: true,
 		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
+	}, nil
+}
 
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "変換のみをスキップ",
+func (p *plateauCMSMock) DatasetTypes(ctx context.Context) (plateaucms.DatasetTypeList, error) {
+	return plateaucms.DatasetTypeList{
+		{
+			Code:     "shelter",
+			Name:     "SHELTER",
+			Category: plateaucms.DatasetCategoryRelated,
 		},
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQCConv: &cms.Tag{
-			Name: "品質検査・変換のみをスキップ",
+		{
+			Code:     "park",
+			Name:     "PARK",
+			Category: plateaucms.DatasetCategoryRelated,
 		},
-	}, "")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
+		{
+			Code:     "landmark",
+			Name:     "LANDMARK",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "station",
+			Name:     "STATION",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "railway",
+			Name:     "RAILWAY",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "emergency_route",
+			Name:     "EMERGENCY_ROUTE",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+		{
+			Code:     "border",
+			Name:     "BORDER",
+			Category: plateaucms.DatasetCategoryRelated,
+		},
+	}, nil
+}
 
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQC: true,
-	}, "")
-	assert.True(t, skipQC)
-	assert.False(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipConvert: true,
-	}, "")
-	assert.False(t, skipQC)
-	assert.True(t, skipConv)
-
-	skipQC, skipConv = isQCAndConvSkipped(&FeatureItem{
-		SkipQC:      true,
-		SkipConvert: true,
-	}, "")
-	assert.True(t, skipQC)
-	assert.True(t, skipConv)
+func (p *plateauCMSMock) Metadata(ctx context.Context, prj string, findDataCatalog, useDefault bool) (plateaucms.Metadata, plateaucms.MetadataList, error) {
+	return plateaucms.Metadata{
+		Converter: "fme",
+	}, nil, nil
 }

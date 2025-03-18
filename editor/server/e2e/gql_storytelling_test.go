@@ -1,21 +1,418 @@
 package e2e
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net/http"
-	"regexp"
 	"testing"
 
 	"github.com/gavv/httpexpect/v2"
-	"github.com/reearth/reearth/server/internal/app/config"
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 )
 
-func createProject(e *httpexpect.Expect) string {
+func TestStoryCRUD(t *testing.T) {
+	e := Server(t, fullSeeder)
+	sceneID := sID.String()
+
+	// fetch scene
+	_, res := fetchSceneForStories(e, sceneID)
+	res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array().
+		Length().IsEqual(1)
+
+	_, _, storyID1 := createStory(e, sceneID, "test", 1)
+
+	// fetch scene and check story
+	_, res = fetchSceneForStories(e, sceneID)
+
+	storiesRes := res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array()
+	storiesRes.Length().IsEqual(2)
+	storiesRes.Value(1).Object().HasValue("id", storyID1)
+
+	// update story
+	_, _ = updateStory(e, storyID1, sceneID)
+
+	// fetch scene and check story
+	_, res = fetchSceneForStories(e, sceneID)
+	storiesRes = res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array()
+
+	storiesRes.Value(1).Object().
+		HasValue("bgColor", "newBG").
+		HasValue("enableGa", true).
+		HasValue("trackingId", "test-tracking-id")
+
+	_, _ = deleteStory(e, storyID1, sceneID)
+}
+
+func TestStoryPageCRUD(t *testing.T) {
+	e := Server(t, fullSeeder)
+	sceneID := sID.String()
+	storyID1 := storyID.String()
+
+	_, _, pageID2 := createPage(e, sceneID, storyID1, "test", true)
+
+	_, res := fetchSceneForStories(e, sceneID)
+	storiesRes := res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array()
+	storiesRes.Length().IsEqual(1)
+	storiesRes.Value(0).Object().HasValue("id", storyID)
+
+	_, _, dupPageID := duplicatePage(e, sceneID, storyID1, pageID2)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	pagesRes := res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array().
+		Value(0).Object().Value("pages").Array()
+	pagesRes.Length().IsEqual(3)
+	pagesRes.Path("$[:].id").IsEqual([]string{pageID.String(), pageID2, dupPageID})
+	pagesRes.Path("$[:].title").IsEqual([]string{
+		"Untitled",
+		"test",
+		"test (copy)",
+	})
+
+	_, _ = deletePage(e, sceneID, storyID1, dupPageID)
+
+	requestBody, _ := updatePage(e, sceneID, storyID1, pageID2, "test 2", false)
+
+	// update page with invalid page id
+	requestBody.Variables["pageId"] = id.NewPageID().String()
+	res = Request(e, uID.String(), requestBody)
+
+	res.Object().
+		Value("errors").Array().
+		Value(0).Object().
+		HasValue("message", "page not found")
+
+	_, _, pageIDx := createPage(e, sceneID, storyID1, "test x", true)
+	_, _, pageIDy := createPage(e, sceneID, storyID1, "test y", false)
+	_, _, pageIDz := createPage(e, sceneID, storyID1, "test z", true)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	pagesRes = res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array().
+		Value(0).Object().Value("pages").Array()
+	pagesRes.Length().IsEqual(5)
+	pagesRes.Path("$[:].id").IsEqual([]string{
+		pageID.String(),
+		pageID2,
+		pageIDx,
+		pageIDy,
+		pageIDz,
+	})
+
+	movePage(e, storyID1, pageID2, 2)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	pagesRes = res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array().
+		Value(0).Object().Value("pages").Array()
+	pagesRes.Length().IsEqual(5)
+	pagesRes.Path("$[:].title").IsEqual([]string{
+		"Untitled",
+		"test x",
+		"test 2",
+		"test y",
+		"test z",
+	})
+
+	deletePage(e, sceneID, storyID1, pageIDx)
+	deletePage(e, sceneID, storyID1, pageIDy)
+	deletePage(e, sceneID, storyID1, pageIDz)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	pagesRes = res.Object().
+		Value("data").Object().
+		Value("node").Object().
+		Value("stories").Array().
+		Value(0).Object().Value("pages").Array()
+	pagesRes.Length().IsEqual(2)
+	pagesRes.Path("$[:].title").IsEqual([]string{
+		"Untitled",
+		"test 2",
+	})
+}
+
+func TestStoryPageBlocksCRUD(t *testing.T) {
+	e := Server(t, fullSeeder)
+	sceneID := sID.String()
+	storyID1 := storyID.String()
+	pageID1 := pageID.String()
+	blockID1 := blockID.String()
+
+	_, res := fetchSceneForStories(e, sceneID)
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[:].id").IsEqual([]string{
+		blockID1,
+	})
+
+	_, _, blockIDa := createBlock(e, sceneID, storyID1, pageID1, "reearth", "textStoryBlock", lo.ToPtr(1))
+	_, _, blockIDb := createBlock(e, sceneID, storyID1, pageID1, "reearth", "textStoryBlock", lo.ToPtr(2))
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().
+		Path("$.data.node.stories[0].pages[0].blocks[:].id").IsEqual([]string{
+		blockID1,
+		blockIDa,
+		blockIDb,
+	})
+
+	moveBlock(e, storyID1, pageID1, blockIDa, 2)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().
+		Path("$.data.node.stories[0].pages[0].blocks[:].id").IsEqual([]string{
+		blockID1,
+		blockIDb,
+		blockIDa,
+	})
+
+	_, _, blockID3 := createBlock(e, sceneID, storyID1, pageID1, "reearth", "textStoryBlock", lo.ToPtr(3))
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().
+		Path("$.data.node.stories[0].pages[0].blocks[:].id").IsEqual([]string{
+		blockID1,
+		blockIDb,
+		blockIDa,
+		blockID3,
+	})
+
+	removeBlock(e, storyID1, pageID1, blockIDa)
+	removeBlock(e, storyID1, pageID1, blockIDb)
+	removeBlock(e, storyID1, pageID1, blockID3)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[:].id").IsEqual([]string{
+		blockID1,
+	})
+}
+
+func TestStoryPageBlocksProperties(t *testing.T) {
+	e := Server(t, fullSeeder)
+	sceneID := sID.String()
+
+	_, res := fetchSceneForStories(e, sceneID)
+	propID := res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].propertyId").Raw().(string)
+
+	_, res = updatePropertyValue(e, propID, "default", "", "text", "test value", "STRING")
+	res.Path("$.data.updatePropertyValue.propertyField.value").IsEqual("test value")
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[0].fields[0].type").IsEqual("STRING")
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[0].fields[0].value").IsEqual("test value")
+
+	p := map[string]any{"left": 0, "right": 1, "top": 2, "bottom": 3}
+	_, res = updatePropertyValue(e, propID, "panel", "", "padding", p, "SPACING")
+	res.Path("$.data.updatePropertyValue.propertyField.value").IsEqual(p)
+
+	_, res = fetchSceneForStories(e, sceneID)
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[1].fields[0].type").IsEqual("SPACING")
+	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[1].fields[0].value").IsEqual(p)
+}
+
+// go test -v -run TestStoryPublishing ./e2e/...
+func TestStoryPublishing(t *testing.T) {
+	e, _, g := ServerAndRepos(t, fullSeeder)
+	sceneID := sID.String()
+	storyID1 := storyID.String()
+	pageID1 := pageID.String()
+	blockID1 := blockID.String()
+
+	_, res := fetchSceneForStories(e, sceneID)
+	blockPropID := res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].propertyId").Raw().(string)
+
+	updatePropertyValue(e, blockPropID, "default", "", "text", "test value", "STRING")
+
+	p := map[string]any{"left": 0, "right": 1, "top": 2, "bottom": 3}
+	updatePropertyValue(e, blockPropID, "panel", "", "padding", p, "SPACING")
+
+	publishStory(e, storyID1, "test-alias")
+
+	rc, err := g.File.ReadStoryFile(context.Background(), "test-alias")
+	assert.NoError(t, err)
+
+	expected := fmt.Sprintf(`
+{
+  "coreSupport": true,
+  "enableGa": false,
+  "id": "%s",
+  "layerStyles": [
+    {
+      "id": ".*",
+      "name": "Style.01",
+      "value": {
+        "marker": {
+          "height": 100,
+          "show": true
+        }
+      }
+    }
+  ],
+  "nlsLayers": [
+    {
+      "config": {
+        "data": {
+          "type": "geojson"
+        },
+        "layerStyleId": "",
+        "properties": {
+          "name": "test simple layer"
+        }
+      },
+      "id": ".*",
+      "index": 0,
+      "isSketch": true,
+      "isVisible": true,
+      "layerType": "simple",
+      "sketchInfo": {
+        "featureCollection": {
+          "features": [
+            {
+              "geometry": [
+                {
+                  "coordinates": [
+                    139.75315985724345,
+                    35.68234704867425
+                  ],
+                  "type": "Point"
+                }
+              ],
+              "id": ".*",
+              "properties": {
+                "extrudedHeight": 0,
+                "id": ".*",
+                "positions": [
+                  [
+                    -3958794.1421583104,
+                    3350991.8464303534,
+                    3699620.1697127568
+                  ]
+                ],
+                "type": "marker"
+              },
+              "type": "Feature"
+            }
+          ],
+          "type": "FeatureCollection"
+        },
+        "propertySchema": {
+          "aaa": "Text_1",
+          "bbb": "Int_2",
+          "ccc": "Boolean_3"
+        }
+      },
+      "title": "test simple layer"
+    }
+  ],
+  "plugins": {},
+  "property": {},
+  "publishedAt": ".*",
+  "schemaVersion": 1,
+  "story": {
+    "bgColor": "",
+    "id": "%s",
+    "pages": [
+      {
+        "blocks": [
+          {
+            "extensionId": "textStoryBlock",
+            "id": "%s",
+            "pluginId": "reearth",
+            "plugins": null,
+            "property": {
+              "default": {
+                "text": "test value"
+              },
+              "panel": {
+                "padding": {
+                  "bottom": 3,
+                  "left": 0,
+                  "right": 1,
+                  "top": 2
+                }
+              }
+            }
+          }
+        ],
+        "id": "%s",
+        "layers": [],
+        "property": {},
+        "swipeable": false,
+        "swipeableLayers": null,
+        "title": "Untitled"
+      }
+    ],
+    "position": "left",
+    "property": {},
+    "title": "test page"
+  },
+  "trackingId": "",
+  "widgetAlignSystem": {
+    "inner": null,
+    "outer": {
+      "center": null,
+      "left": {
+        "bottom": {
+          "align": "start",
+          "background": null,
+          "centered": false,
+          "gap": null,
+          "padding": null,
+          "widgetIds": [
+            ".*"
+          ]
+        },
+        "middle": null,
+        "top": null
+      },
+      "right": null
+    }
+  },
+  "widgets": [
+    {
+      "enabled": true,
+      "extended": false,
+      "extensionId": "dataAttribution",
+      "id": ".*",
+      "pluginId": "reearth",
+      "property": {}
+    }
+  ]
+}
+`, sceneID, storyID1, blockID1, pageID1)
+
+	RegexpJSONEReadCloser(t, rc, expected)
+
+	resString := e.GET("/p/test-alias/data.json").
+		WithHeader("Origin", "https://example.com").
+		Expect().
+		Status(http.StatusOK).
+		Body().
+		Raw()
+
+	JSONEqRegexp(t, resString, expected)
+
+}
+
+func createProject(e *httpexpect.Expect, name string) string {
 	requestBody := GraphQLRequest{
 		OperationName: "CreateProject",
 		Query: `mutation CreateProject($teamId: ID!, $visualizer: Visualizer!, $name: String!, $description: String!, $imageUrl: URL, $coreSupport: Boolean) {
@@ -28,7 +425,7 @@ func createProject(e *httpexpect.Expect) string {
 			}
 		}`,
 		Variables: map[string]any{
-			"name":        "test",
+			"name":        name,
 			"description": "abc",
 			"imageUrl":    "",
 			"teamId":      wID.String(),
@@ -37,14 +434,7 @@ func createProject(e *httpexpect.Expect) string {
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	return res.Path("$.data.createProject.project.id").Raw().(string)
 }
@@ -66,14 +456,7 @@ func createScene(e *httpexpect.Expect, pID string) (GraphQLRequest, *httpexpect.
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	sID := res.Path("$.data.createScene.scene.id").Raw().(string)
 	return requestBody, res, sID
@@ -86,7 +469,6 @@ func fetchSceneForStories(e *httpexpect.Expect, sID string) (GraphQLRequest, *ht
 		  node(id: $sceneId, type: SCENE) {
 			id
 			... on Scene {
-			  rootLayerId
 			  propertyId
 		      stories {
 				id
@@ -116,7 +498,20 @@ func fetchSceneForStories(e *httpexpect.Expect, sID string) (GraphQLRequest, *ht
 					}
 		  		  }
 				}
+				title
+				panelPosition
 				bgColor
+				isBasicAuthActive
+				basicAuthUsername
+				basicAuthPassword
+				alias
+				publicTitle
+				publicDescription
+				publishmentStatus
+				publicImage
+				publicNoIndex
+				enableGa
+				trackingId
 		 	  }
 			  __typename
 			}
@@ -128,15 +523,7 @@ func fetchSceneForStories(e *httpexpect.Expect, sID string) (GraphQLRequest, *ht
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(fetchSceneRequestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
-
+	res := Request(e, uID.String(), fetchSceneRequestBody)
 	return fetchSceneRequestBody, res
 }
 
@@ -160,20 +547,13 @@ func createStory(e *httpexpect.Expect, sID, name string, index int) (GraphQLRequ
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("createStory").Object().
 		Value("story").Object().
-		ValueEqual("title", name)
+		HasValue("title", name)
 
 	return requestBody, res, res.Path("$.data.createStory.story.id").Raw().(string)
 }
@@ -181,8 +561,8 @@ func createStory(e *httpexpect.Expect, sID, name string, index int) (GraphQLRequ
 func updateStory(e *httpexpect.Expect, storyID, sID string) (GraphQLRequest, *httpexpect.Value) {
 	requestBody := GraphQLRequest{
 		OperationName: "UpdateStory",
-		Query: `mutation UpdateStory($sceneId: ID!, $storyId: ID!, $title: String!, $index: Int, $bgColor: String) {
-			updateStory( input: {sceneId: $sceneId, storyId: $storyId, title: $title, index: $index, bgColor: $bgColor} ) { 
+		Query: `mutation UpdateStory($sceneId: ID!, $storyId: ID!, $title: String!, $index: Int, $bgColor: String, $enableGa: Boolean, $trackingId: String) {
+			updateStory( input: {sceneId: $sceneId, storyId: $storyId, title: $title, index: $index, bgColor: $bgColor, enableGa: $enableGa, trackingId: $trackingId} ) { 
 				story { 
 					id
 					title
@@ -193,28 +573,23 @@ func updateStory(e *httpexpect.Expect, storyID, sID string) (GraphQLRequest, *ht
 			}
 		}`,
 		Variables: map[string]any{
-			"storyId": storyID,
-			"sceneId": sID,
-			"title":   "test2",
-			"index":   0,
-			"bgColor": "newBG",
+			"storyId":    storyID,
+			"sceneId":    sID,
+			"title":      "test2",
+			"index":      0,
+			"bgColor":    "newBG",
+			"enableGa":   true,
+			"trackingId": "test-tracking-id",
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("updateStory").Object().
 		Value("story").Object().
-		ValueEqual("title", "test2")
+		HasValue("title", "test2")
 
 	return requestBody, res
 }
@@ -233,19 +608,12 @@ func deleteStory(e *httpexpect.Expect, storyID, sID string) (GraphQLRequest, *ht
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("deleteStory").Object().
-		ValueEqual("storyId", storyID)
+		HasValue("storyId", storyID)
 
 	return requestBody, res
 }
@@ -268,20 +636,13 @@ func publishStory(e *httpexpect.Expect, storyID, alias string) (GraphQLRequest, 
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("publishStory").Object().
 		Value("story").Object().
-		ValueEqual("id", storyID)
+		HasValue("id", storyID)
 
 	return requestBody, res
 }
@@ -312,21 +673,14 @@ func createPage(e *httpexpect.Expect, sID, storyID, name string, swipeable bool)
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("createStoryPage").Object().
 		Value("page").Object().
-		ValueEqual("title", name).
-		ValueEqual("swipeable", swipeable)
+		HasValue("title", name).
+		HasValue("swipeable", swipeable)
 
 	return requestBody, res, res.Path("$.data.createStoryPage.page.id").Raw().(string)
 }
@@ -355,21 +709,14 @@ func updatePage(e *httpexpect.Expect, sID, storyID, pageID, name string, swipeab
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("updateStoryPage").Object().
 		Value("page").Object().
-		ValueEqual("title", name).
-		ValueEqual("swipeable", swipeable)
+		HasValue("title", name).
+		HasValue("swipeable", swipeable)
 
 	return requestBody, res
 }
@@ -396,14 +743,7 @@ func movePage(e *httpexpect.Expect, storyID, pageID string, idx int) (GraphQLReq
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
@@ -434,22 +774,15 @@ func deletePage(e *httpexpect.Expect, sID, storyID, pageID string) (GraphQLReque
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
 		Value("removeStoryPage").Object().
-		ValueEqual("pageId", pageID).
+		HasValue("pageId", pageID).
 		Value("story").Object().
 		Value("pages").Array().
-		Path("$..id").Array().NotContains(pageID)
+		Path("$..id").Array().NotContainsAll(pageID)
 
 	return requestBody, res
 }
@@ -477,14 +810,7 @@ func duplicatePage(e *httpexpect.Expect, sID, storyID, pageID string) (GraphQLRe
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	pID := res.Object().
 		Value("data").Object().
@@ -493,118 +819,6 @@ func duplicatePage(e *httpexpect.Expect, sID, storyID, pageID string) (GraphQLRe
 		Value("id").Raw()
 
 	return requestBody, res, pID.(string)
-}
-
-func addLayerToPage(e *httpexpect.Expect, sId, storyId, pageId, layerId string, swipeable *bool) (GraphQLRequest, *httpexpect.Value, string) {
-	requestBody := GraphQLRequest{
-		OperationName: "AddPageLayer",
-		Query: `mutation AddPageLayer($sceneId: ID!, $storyId: ID!, $pageId: ID!, $layerId: ID!, $swipeable: Boolean) { 
-			addPageLayer( input: {sceneId: $sceneId, storyId: $storyId, pageId: $pageId, swipeable: $swipeable, layerId: $layerId} ) { 
-				story {
-				 	id
-					pages{
-						id
-					}
-				}
-				page{
-					id
-					layers{
-						id
-					}
-					swipeableLayers{
-						id
-					}
-				}
-			}
-		}`,
-		Variables: map[string]any{
-			"sceneId":   sId,
-			"storyId":   storyId,
-			"pageId":    pageId,
-			"layerId":   layerId,
-			"swipeable": swipeable,
-		},
-	}
-
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
-
-	pageRes := res.Object().
-		Value("data").Object().
-		Value("addPageLayer").Object().
-		Value("page").Object()
-
-	if swipeable != nil && *swipeable {
-		pageRes.Value("swipeableLayers").Array().
-			Path("$..id").Array().Contains(layerId)
-	} else {
-		pageRes.Value("layers").Array().
-			Path("$..id").Array().Contains(layerId)
-	}
-
-	return requestBody, res, layerId
-}
-
-func removeLayerToPage(e *httpexpect.Expect, sId, storyId, pageId, layerId string, swipeable *bool) (GraphQLRequest, *httpexpect.Value, string) {
-	requestBody := GraphQLRequest{
-		OperationName: "RemovePageLayer",
-		Query: `mutation RemovePageLayer($sceneId: ID!, $storyId: ID!, $pageId: ID!, $layerId: ID!, $swipeable: Boolean) { 
-			removePageLayer( input: {sceneId: $sceneId, storyId: $storyId, pageId: $pageId, swipeable: $swipeable, layerId: $layerId} ) { 
-				story {
-				 	id
-					pages{
-						id
-					}
-				}
-				page{
-					id
-					layers{
-						id
-					}
-					swipeableLayers{
-						id
-					}
-				}
-			}
-		}`,
-		Variables: map[string]any{
-			"sceneId":   sId,
-			"storyId":   storyId,
-			"pageId":    pageId,
-			"layerId":   layerId,
-			"swipeable": swipeable,
-		},
-	}
-
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
-
-	pageRes := res.Object().
-		Value("data").Object().
-		Value("removePageLayer").Object().
-		Value("page").Object()
-
-	if swipeable != nil && *swipeable {
-		pageRes.Value("swipeableLayers").Array().
-			Path("$..id").Array().NotContains(layerId)
-	} else {
-		pageRes.Value("layers").Array().
-			Path("$..id").Array().NotContains(layerId)
-	}
-
-	return requestBody, res, layerId
 }
 
 func createBlock(e *httpexpect.Expect, sID, storyID, pageID, pluginId, extensionId string, idx *int) (GraphQLRequest, *httpexpect.Value, string) {
@@ -641,14 +855,7 @@ func createBlock(e *httpexpect.Expect, sID, storyID, pageID, pluginId, extension
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
 		Value("data").Object().
@@ -688,17 +895,10 @@ func removeBlock(e *httpexpect.Expect, storyID, pageID, blockID string) (GraphQL
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
-		Path("$.data.removeStoryBlock.page.blocks[:].id").Array().NotContains(blockID)
+		Path("$.data.removeStoryBlock.page.blocks[:].id").Array().NotConsistsOf(blockID)
 
 	return requestBody, res, res.Path("$.data.removeStoryBlock.blockId").Raw().(string)
 }
@@ -733,330 +933,10 @@ func moveBlock(e *httpexpect.Expect, storyID, pageID, blockID string, index int)
 		},
 	}
 
-	res := e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
+	res := Request(e, uID.String(), requestBody)
 
 	res.Object().
-		Path("$.data.moveStoryBlock.page.blocks[:].id").Array().Contains(blockID)
+		Path("$.data.moveStoryBlock.page.blocks[:].id").Array().ContainsAll(blockID)
 
 	return requestBody, res, res.Path("$.data.moveStoryBlock.blockId").Raw().(string)
-}
-
-func TestStoryCRUD(t *testing.T) {
-	e := StartServer(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	// fetch scene
-	_, res := fetchSceneForStories(e, sID)
-	res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array().
-		Length().Equal(0)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	// fetch scene and check story
-	_, res = fetchSceneForStories(e, sID)
-
-	storiesRes := res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array()
-	storiesRes.Length().Equal(1)
-	storiesRes.First().Object().ValueEqual("id", storyID)
-
-	// update story
-	_, _ = updateStory(e, storyID, sID)
-
-	// fetch scene and check story
-	_, res = fetchSceneForStories(e, sID)
-	storiesRes = res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array()
-	storiesRes.First().Object().ValueEqual("bgColor", "newBG")
-
-	_, _ = deleteStory(e, storyID, sID)
-}
-
-func TestStoryPageCRUD(t *testing.T) {
-	e := StartServer(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	_, _, pageID1 := createPage(e, sID, storyID, "test", true)
-
-	_, res := fetchSceneForStories(e, sID)
-	storiesRes := res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array()
-	storiesRes.Length().Equal(1)
-	storiesRes.First().Object().ValueEqual("id", storyID)
-
-	_, _, dupPageID := duplicatePage(e, sID, storyID, pageID1)
-
-	_, res = fetchSceneForStories(e, sID)
-	pagesRes := res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array().
-		First().Object().Value("pages").Array()
-	pagesRes.Length().Equal(2)
-	pagesRes.Path("$[:].id").Equal([]string{pageID1, dupPageID})
-	pagesRes.Path("$[:].title").Equal([]string{"test", "test (copy)"})
-
-	_, _ = deletePage(e, sID, storyID, dupPageID)
-
-	requestBody, _ := updatePage(e, sID, storyID, pageID1, "test 1", false)
-
-	// update page with invalid page id
-	requestBody.Variables["pageId"] = id.NewPageID().String()
-	res = e.POST("/api/graphql").
-		WithHeader("Origin", "https://example.com").
-		WithHeader("X-Reearth-Debug-User", uID.String()).
-		WithHeader("Content-Type", "application/json").
-		WithJSON(requestBody).
-		Expect().
-		Status(http.StatusOK).
-		JSON()
-
-	res.Object().
-		Value("errors").Array().
-		Element(0).Object().
-		ValueEqual("message", "input: updateStoryPage page not found")
-
-	_, _, pageID2 := createPage(e, sID, storyID, "test 2", true)
-	_, _, pageID3 := createPage(e, sID, storyID, "test 3", false)
-	_, _, pageID4 := createPage(e, sID, storyID, "test 4", true)
-
-	_, res = fetchSceneForStories(e, sID)
-	pagesRes = res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array().
-		First().Object().Value("pages").Array()
-	pagesRes.Length().Equal(4)
-	pagesRes.Path("$[:].id").Equal([]string{pageID1, pageID2, pageID3, pageID4})
-
-	movePage(e, storyID, pageID1, 2)
-
-	_, res = fetchSceneForStories(e, sID)
-	pagesRes = res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array().
-		First().Object().Value("pages").Array()
-	pagesRes.Length().Equal(4)
-	pagesRes.Path("$[:].title").Equal([]string{"test 2", "test 3", "test 1", "test 4"})
-
-	deletePage(e, sID, storyID, pageID2)
-	deletePage(e, sID, storyID, pageID3)
-	deletePage(e, sID, storyID, pageID4)
-
-	_, res = fetchSceneForStories(e, sID)
-	pagesRes = res.Object().
-		Value("data").Object().
-		Value("node").Object().
-		Value("stories").Array().
-		First().Object().Value("pages").Array()
-	pagesRes.Length().Equal(1)
-	pagesRes.Path("$[:].title").Equal([]string{"test 1"})
-}
-
-func TestStoryPageLayersCRUD(t *testing.T) {
-	e := StartServer(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	_, _, pageID := createPage(e, sID, storyID, "test", true)
-
-	_, res := fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].layers").Equal([]any{})
-
-	rootLayerID := res.Path("$.data.node.rootLayerId").Raw().(string)
-
-	_, _, layerID := addLayerItemFromPrimitive(e, rootLayerID)
-
-	_, _, _ = addLayerToPage(e, sID, storyID, pageID, layerID, nil)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].layers[:].id").Equal([]string{layerID})
-
-	_, _, _ = removeLayerToPage(e, sID, storyID, pageID, layerID, nil)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].layers").Equal([]any{})
-}
-
-func TestStoryPageBlocksCRUD(t *testing.T) {
-	e := StartServer(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	_, _, pageID := createPage(e, sID, storyID, "test", true)
-
-	_, res := fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].blocks").Equal([]any{})
-
-	_, _, blockID1 := createBlock(e, sID, storyID, pageID, "reearth", "textStoryBlock", nil)
-	_, _, blockID2 := createBlock(e, sID, storyID, pageID, "reearth", "textStoryBlock", nil)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].blocks[:].id").Equal([]string{blockID1, blockID2})
-
-	_, _, _ = moveBlock(e, storyID, pageID, blockID1, 1)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].blocks[:].id").Equal([]string{blockID2, blockID1})
-
-	_, _, blockID3 := createBlock(e, sID, storyID, pageID, "reearth", "textStoryBlock", lo.ToPtr(1))
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].blocks[:].id").Equal([]string{blockID2, blockID3, blockID1})
-
-	removeBlock(e, storyID, pageID, blockID1)
-	removeBlock(e, storyID, pageID, blockID2)
-	removeBlock(e, storyID, pageID, blockID3)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().
-		Path("$.data.node.stories[0].pages[0].blocks").Equal([]any{})
-}
-
-func TestStoryPageBlocksProperties(t *testing.T) {
-	e := StartServer(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	_, _, pageID := createPage(e, sID, storyID, "test", true)
-
-	_, _, _ = createBlock(e, sID, storyID, pageID, "reearth", "textStoryBlock", nil)
-
-	_, res := fetchSceneForStories(e, sID)
-	propID := res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].propertyId").Raw().(string)
-
-	_, res = updatePropertyValue(e, propID, "default", "", "text", "test value", "STRING")
-	res.Path("$.data.updatePropertyValue.propertyField.value").Equal("test value")
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[0].fields[0].type").Equal("STRING")
-	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[0].fields[0].value").Equal("test value")
-
-	p := map[string]any{"left": 0, "right": 1, "top": 2, "bottom": 3}
-	_, res = updatePropertyValue(e, propID, "panel", "", "padding", p, "SPACING")
-	res.Path("$.data.updatePropertyValue.propertyField.value").Equal(p)
-
-	_, res = fetchSceneForStories(e, sID)
-	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[1].fields[0].type").Equal("SPACING")
-	res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].property.items[1].fields[0].value").Equal(p)
-}
-
-func TestStoryPublishing(t *testing.T) {
-	e, _, g := StartServerAndRepos(t, &config.Config{
-		Origins: []string{"https://example.com"},
-		AuthSrv: config.AuthSrvConfig{
-			Disabled: true,
-		},
-	}, true, baseSeeder)
-
-	pID := createProject(e)
-
-	_, _, sID := createScene(e, pID)
-
-	_, _, storyID := createStory(e, sID, "test", 0)
-
-	_, _, pageID := createPage(e, sID, storyID, "test", true)
-
-	extensionId := "textStoryBlock"
-	pluginId := "reearth"
-
-	_, _, blockID := createBlock(e, sID, storyID, pageID, pluginId, extensionId, nil)
-
-	_, res := fetchSceneForStories(e, sID)
-	blockPropID := res.Object().Path("$.data.node.stories[0].pages[0].blocks[0].propertyId").Raw().(string)
-
-	_, _ = updatePropertyValue(e, blockPropID, "default", "", "text", "test value", "STRING")
-
-	p := map[string]any{"left": 0, "right": 1, "top": 2, "bottom": 3}
-	_, _ = updatePropertyValue(e, blockPropID, "panel", "", "padding", p, "SPACING")
-
-	_, _ = publishStory(e, storyID, "test-alias")
-
-	rc, err := g.File.ReadStoryFile(context.Background(), "test-alias")
-	assert.NoError(t, err)
-
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(rc)
-	assert.NoError(t, err)
-
-	pub := regexp.MustCompile(fmt.Sprintf(`{"schemaVersion":1,"id":"%s","publishedAt":".*","property":{"tiles":\[{"id":".*"}]},"plugins":{},"layers":null,"widgets":\[],"widgetAlignSystem":null,"tags":\[],"clusters":\[],"story":{"id":"%s","property":{},"pages":\[{"id":"%s","property":{},"title":"test","blocks":\[{"id":"%s","property":{"default":{"text":"test value"},"panel":{"padding":{"top":2,"bottom":3,"left":0,"right":1}}},"plugins":null,"extensionId":"%s","pluginId":"%s"}],"swipeable":true,"swipeableLayers":\[],"layers":\[]}],"position":"left","bgColor":""},"nlsLayers":null,"layerStyles":null,"coreSupport":true,"enableGa":false,"trackingId":""}`, sID, storyID, pageID, blockID, extensionId, pluginId))
-	assert.Regexp(t, pub, buf.String())
-
-	resString := e.GET("/p/test-alias/data.json").
-		WithHeader("Origin", "https://example.com").
-		Expect().
-		Status(http.StatusOK).
-		Body().
-		Raw()
-
-	assert.Regexp(t, pub, resString)
 }

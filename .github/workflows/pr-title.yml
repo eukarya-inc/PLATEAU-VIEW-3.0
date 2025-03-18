@@ -1,6 +1,6 @@
 name: PR Title Checker
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - edited
@@ -16,7 +16,8 @@ jobs:
   pr_title:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/labeler@v4
+      - uses: actions/checkout@v4
+      - uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - uses: amannn/action-semantic-pull-request@v5
@@ -43,7 +44,7 @@ jobs:
           fetch-depth: 0
       - name: changed files for plugin
         id: plugin
-        uses: tj-actions/changed-files@v36
+        uses: reearth/changed-files@9200e69727eb73eb060652b19946b8a2fdfb654b
         with:
           files: |
             plugin

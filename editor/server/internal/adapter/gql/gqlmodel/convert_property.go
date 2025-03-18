@@ -1,12 +1,14 @@
 package gqlmodel
 
 import (
+	"sort"
 	"strings"
 
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearth/server/pkg/property"
 	"github.com/reearth/reearth/server/pkg/value"
 	"github.com/reearth/reearthx/util"
+	"github.com/samber/lo"
 )
 
 func ToPropertyValue(v *property.Value) *interface{} {
@@ -242,6 +244,16 @@ func ToPropertySchema(propertySchema *property.Schema) *PropertySchema {
 	}
 }
 
+func ToPropertySchemas(ps []*property.Schema) []*PropertySchema {
+	sortedPs := append([]*property.Schema{}, ps...)
+	sort.Slice(sortedPs, func(i, j int) bool {
+		return sortedPs[i].ID().String() < sortedPs[j].ID().String()
+	})
+	return lo.Map(sortedPs, func(s *property.Schema, _ int) *PropertySchema {
+		return ToPropertySchema(s)
+	})
+}
+
 func ToPropertyLinkableFields(sid id.PropertySchemaID, l property.LinkableFields) *PropertyLinkableFields {
 	var latlng, url *id.PropertyFieldID
 	if l.LatLng != nil {
@@ -267,6 +279,7 @@ func ToPropertySchemaField(f *property.SchemaField) *PropertySchemaField {
 		Type:         ToValueType(value.Type(f.Type())),
 		Title:        f.Title().String(),
 		Description:  f.Description().String(),
+		Placeholder:  f.Placeholder().String(),
 		Prefix:       stringToRef(f.Prefix()),
 		Suffix:       stringToRef(f.Suffix()),
 		DefaultValue: ToPropertyValue(f.DefaultValue()),
@@ -284,6 +297,7 @@ func ToPropertySchemaField(f *property.SchemaField) *PropertySchemaField {
 		IsAvailableIf:            ToPropertyConditon(f.IsAvailableIf()),
 		AllTranslatedTitle:       f.Title(),
 		AllTranslatedDescription: f.Description(),
+		AllTranslatedPlaceholder: f.Placeholder(),
 	}
 }
 
@@ -320,8 +334,57 @@ func ToPropertySchemaFieldUI(ui *property.SchemaFieldUI) *PropertySchemaFieldUI 
 		ui2 = PropertySchemaFieldUIMargin
 	case property.SchemaFieldUIDateTime:
 		ui2 = PropertySchemaFieldUIDatetime
+	case property.SchemaFieldUIzoomLevel:
+		ui2 = PropertySchemaFieldUIZoomlevel
+	case property.SchemaFieldUIPropertySelector:
+		ui2 = PropertySchemaFieldUIPropertySelector
 	}
 	if ui2 != PropertySchemaFieldUI("") {
+		return &ui2
+	}
+	return nil
+}
+
+func FromPropertySchemaFieldUI(ui *string) *property.SchemaFieldUI {
+	if ui == nil {
+		return nil
+	}
+
+	var ui2 property.SchemaFieldUI
+	switch *ui {
+	case PropertySchemaFieldUIMultiline.String():
+		ui2 = property.SchemaFieldUIMultiline
+	case PropertySchemaFieldUISelection.String():
+		ui2 = property.SchemaFieldUISelection
+	case PropertySchemaFieldUIColor.String():
+		ui2 = property.SchemaFieldUIColor
+	case PropertySchemaFieldUIRange.String():
+		ui2 = property.SchemaFieldUIRange
+	case PropertySchemaFieldUISlider.String():
+		ui2 = property.SchemaFieldUISlider
+	case PropertySchemaFieldUIImage.String():
+		ui2 = property.SchemaFieldUIImage
+	case PropertySchemaFieldUIVideo.String():
+		ui2 = property.SchemaFieldUIVideo
+	case PropertySchemaFieldUIFile.String():
+		ui2 = property.SchemaFieldUIFile
+	case PropertySchemaFieldUILayer.String():
+		ui2 = property.SchemaFieldUILayer
+	case PropertySchemaFieldUICameraPose.String():
+		ui2 = property.SchemaFieldUICameraPose
+	case PropertySchemaFieldUIPadding.String():
+		ui2 = property.SchemaFieldUIPadding
+	case PropertySchemaFieldUIMargin.String():
+		ui2 = property.SchemaFieldUIMargin
+	case PropertySchemaFieldUIDatetime.String():
+		ui2 = property.SchemaFieldUIDateTime
+	case PropertySchemaFieldUIZoomlevel.String():
+		ui2 = property.SchemaFieldUIzoomLevel
+	case PropertySchemaFieldUIPropertySelector.String():
+		ui2 = property.SchemaFieldUIPropertySelector
+	}
+
+	if ui2 != "" {
 		return &ui2
 	}
 	return nil

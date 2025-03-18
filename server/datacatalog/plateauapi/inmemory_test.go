@@ -105,8 +105,10 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 		want  []Area
 	}{
 		{
-			name:  "no filter",
-			input: nil,
+			name: "no filter",
+			input: &AreasInput{
+				IncludeEmpty: lo.ToPtr(true),
+			},
 			want: []Area{
 				&Prefecture{Code: "01", Name: "北海道"},
 				&Prefecture{Code: "02", Name: "青森県"},
@@ -124,8 +126,7 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 			name: "filter by dataset types",
 			input: &AreasInput{
 				DatasetTypes: []string{"bldg"},
-				ParentCode:   nil,
-				SearchTokens: nil,
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{
 				&Ward{Code: "01101", Name: "中央区", CityCode: "01100", PrefectureCode: "01"},
@@ -137,6 +138,7 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 				ParentCode:   lo.ToPtr(AreaCode("01")),
 				DatasetTypes: nil,
 				SearchTokens: nil,
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{
 				&City{Code: "01100", Name: "札幌市", PrefectureCode: "01"},
@@ -146,9 +148,8 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 			name: "filter by prefectures with deep",
 			input: &AreasInput{
 				ParentCode:   lo.ToPtr(AreaCode("01")),
-				DatasetTypes: nil,
-				SearchTokens: nil,
 				Deep:         lo.ToPtr(true),
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{
 				&City{Code: "01100", Name: "札幌市", PrefectureCode: "01"},
@@ -160,8 +161,7 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 			name: "filter by cities",
 			input: &AreasInput{
 				ParentCode:   lo.ToPtr(AreaCode("01100")),
-				DatasetTypes: nil,
-				SearchTokens: nil,
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{
 				&Ward{Code: "01101", Name: "中央区", CityCode: "01100", PrefectureCode: "01"},
@@ -171,9 +171,8 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 		{
 			name: "filter by search tokens",
 			input: &AreasInput{
-				ParentCode:   nil,
-				DatasetTypes: nil,
 				SearchTokens: []string{"弘前"},
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{
 				&City{Code: "02101", Name: "弘前市", PrefectureCode: "02"},
@@ -182,9 +181,9 @@ func TestInMemoryRepo_Areas(t *testing.T) {
 		{
 			name: "filter by search tokens and dataset types",
 			input: &AreasInput{
-				ParentCode:   nil,
 				DatasetTypes: []string{"bldg"},
 				SearchTokens: []string{"弘前"},
+				IncludeEmpty: lo.ToPtr(true),
 			},
 			want: []Area{},
 		},
@@ -547,6 +546,11 @@ func TestInMemoryRepo_Node(t *testing.T) {
 			id:       NewID("2.3", TypePlateauSpec),
 			expected: spec.MinorVersions[0],
 		},
+		{
+			name:     "invalid id",
+			id:       ID("aaa"),
+			expected: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -671,4 +675,23 @@ func TestInMemoryRepo_getDatasetTypeCodes(t *testing.T) {
 			assert.ElementsMatch(t, tt.expected, got)
 		})
 	}
+}
+
+func TestAreasWithoutDataset(t *testing.T) {
+	res := areasWithoutDataset(Datasets{
+		DatasetTypeCategoryPlateau: []Dataset{
+			&PlateauDataset{TypeCode: "bldg", CityCode: lo.ToPtr(AreaCode("01100"))},
+		},
+	}, Areas{
+		AreaTypeCity: []Area{
+			&City{Code: "01100", Name: "札幌市", ID: "a", PrefectureCode: "01"},
+			&City{Code: "02100", Name: "青森市", ID: "b", PrefectureCode: "02"},
+		},
+	})
+
+	expected := map[ID]struct{}{
+		"b": {},
+	}
+
+	assert.Equal(t, expected, res)
 }

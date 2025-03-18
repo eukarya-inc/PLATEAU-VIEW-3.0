@@ -5,17 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/kennygrant/sanitize"
+	"github.com/reearth/reearth/server/internal/infrastructure"
+	"github.com/reearth/reearth/server/internal/testutil"
 	"github.com/reearth/reearth/server/internal/usecase/gateway"
 	"github.com/reearth/reearth/server/pkg/file"
 	"github.com/reearth/reearth/server/pkg/id"
 	"github.com/reearth/reearthx/log"
 	"github.com/reearth/reearthx/rerror"
+	"github.com/spf13/afero"
 	"google.golang.org/api/iterator"
 )
 
@@ -24,16 +29,18 @@ const (
 	gcsPluginBasePath string = "plugins"
 	gcsMapBasePath    string = "maps"
 	gcsStoryBasePath  string = "stories"
-	fileSizeLimit     int64  = 1024 * 1024 * 100 // about 100MB
+	gcsExportBasePath string = "export"
 )
 
 type fileRepo struct {
-	bucketName   string
-	base         *url.URL
-	cacheControl string
+	isTest          bool
+	bucketName      string
+	base            *url.URL
+	cacheControl    string
+	baseFileStorage *infrastructure.BaseFileStorage
 }
 
-func NewFile(bucketName, base string, cacheControl string) (gateway.File, error) {
+func NewFile(isTest bool, bucketName, base string, cacheControl string) (gateway.File, error) {
 	if bucketName == "" {
 		return nil, errors.New("bucket name is empty")
 	}
@@ -50,11 +57,17 @@ func NewFile(bucketName, base string, cacheControl string) (gateway.File, error)
 	}
 
 	return &fileRepo{
+		isTest:       isTest,
 		bucketName:   bucketName,
 		base:         u,
 		cacheControl: cacheControl,
+		baseFileStorage: &infrastructure.BaseFileStorage{
+			MaxFileSize: gateway.UploadFileSizeLimit,
+		},
 	}, nil
 }
+
+// asset
 
 func (f *fileRepo) ReadAsset(ctx context.Context, name string) (io.ReadCloser, error) {
 	sn := sanitize.Path(name)
@@ -68,7 +81,7 @@ func (f *fileRepo) UploadAsset(ctx context.Context, file *file.File) (*url.URL, 
 	if file == nil {
 		return nil, 0, gateway.ErrInvalidFile
 	}
-	if file.Size >= fileSizeLimit {
+	if file.Size >= gateway.UploadFileSizeLimit {
 		return nil, 0, gateway.ErrFileTooLarge
 	}
 
@@ -100,12 +113,68 @@ func (f *fileRepo) RemoveAsset(ctx context.Context, u *url.URL) error {
 	return f.delete(ctx, sn)
 }
 
+func (f *fileRepo) UploadAssetFromURL(ctx context.Context, u *url.URL) (*url.URL, int64, error) {
+	if u == nil {
+		return nil, 0, errors.New("invalid URL")
+	}
+
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctxWithTimeout, http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Errorfc(ctx, "gcs: failed to fetch URL: %v", err)
+		return nil, 0, errors.New("failed to fetch URL")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		log.Errorfc(ctx, "gcs: failed to fetch URL, status: %d", resp.StatusCode)
+		return nil, 0, errors.New("failed to fetch URL")
+	}
+
+	err = f.baseFileStorage.ValidateResponseBodySize(resp)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Errorfc(ctx, "gcs: failed to close response body: %v", err)
+		}
+	}()
+
+	fileName := path.Base(u.Path)
+	if fileName == "" {
+		return nil, 0, gateway.ErrInvalidFile
+	}
+	fileName = sanitize.Path(newAssetID() + path.Ext(fileName))
+	filename := path.Join(gcsAssetBasePath, fileName)
+
+	size, err := f.upload(ctx, filename, resp.Body)
+	if err != nil {
+		log.Errorfc(ctx, "gcs: upload from URL failed: %v", err)
+		return nil, 0, err
+	}
+
+	gcsURL := getGCSObjectURL(f.base, filename)
+	if gcsURL == nil {
+		return nil, 0, gateway.ErrInvalidFile
+	}
+
+	return gcsURL, size, nil
+}
+
 // plugin
 
 func (f *fileRepo) ReadPluginFile(ctx context.Context, pid id.PluginID, filename string) (io.ReadCloser, error) {
 	sn := sanitize.Path(filename)
 	if sn == "" {
-		return nil, rerror.ErrNotFound
+		return nil, gateway.ErrInvalidFile
 	}
 	return f.read(ctx, path.Join(gcsPluginBasePath, pid.String(), sn))
 }
@@ -129,7 +198,7 @@ func (f *fileRepo) RemovePlugin(ctx context.Context, pid id.PluginID) error {
 
 func (f *fileRepo) ReadBuiltSceneFile(ctx context.Context, name string) (io.ReadCloser, error) {
 	if name == "" {
-		return nil, rerror.ErrNotFound
+		return nil, gateway.ErrInvalidFile
 	}
 	return f.read(ctx, path.Join(gcsMapBasePath, sanitize.Path(name)+".json"))
 }
@@ -166,7 +235,7 @@ func (f *fileRepo) RemoveBuiltScene(ctx context.Context, name string) error {
 
 func (f *fileRepo) ReadStoryFile(ctx context.Context, name string) (io.ReadCloser, error) {
 	if name == "" {
-		return nil, rerror.ErrNotFound
+		return nil, gateway.ErrInvalidFile
 	}
 	return f.read(ctx, path.Join(gcsStoryBasePath, sanitize.Path(name)+".json"))
 }
@@ -199,13 +268,56 @@ func (f *fileRepo) RemoveStory(ctx context.Context, name string) error {
 	return f.delete(ctx, path.Join(gcsStoryBasePath, sn))
 }
 
+// export
+
+func (f *fileRepo) ReadExportProjectZip(ctx context.Context, name string) (io.ReadCloser, error) {
+	sn := sanitize.Path(name)
+	if sn == "" {
+		return nil, gateway.ErrInvalidFile
+	}
+	r, err := f.read(ctx, path.Join(gcsExportBasePath, sn))
+	if err != nil {
+		if errors.Is(err, rerror.ErrNotFound) {
+			r, err = f.read(ctx, path.Join(gcsExportBasePath, name))
+		}
+	}
+	return r, err
+}
+
+func (f *fileRepo) UploadExportProjectZip(ctx context.Context, zipFile afero.File) error {
+	_, err := f.upload(ctx, path.Join(gcsExportBasePath, zipFile.Name()), zipFile)
+	return err
+}
+
+func (f *fileRepo) RemoveExportProjectZip(ctx context.Context, filename string) error {
+	return f.delete(ctx, path.Join(gcsExportBasePath, filename))
+}
+
 // helpers
 
 func (f *fileRepo) bucket(ctx context.Context) (*storage.BucketHandle, error) {
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		return nil, err
+	var client *storage.Client
+	var err error
+
+	if f.isTest {
+		testGCS, err := testutil.NewGCSForTesting()
+		if err != nil {
+			return nil, err
+		}
+		client = testGCS.Client()
+	} else {
+		client, err = storage.NewClient(ctx)
+		if err != nil {
+			return nil, err
+		}
+		go func() {
+			<-ctx.Done()
+			if err := client.Close(); err != nil {
+				log.Errorfc(ctx, "gcs: failed to close client: %v", err)
+			}
+		}()
 	}
+
 	bucket := client.Bucket(f.bucketName)
 	return bucket, nil
 }

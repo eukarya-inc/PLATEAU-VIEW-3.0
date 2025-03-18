@@ -1,29 +1,36 @@
 name: deploy-web-nightly
 on:
   workflow_dispatch:
-env:
-  REEARTH_URL: test.reearth.dev
-  GCS_DEST: gs://test.reearth.dev/
+  workflow_call:
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 jobs:
   deploy_test:
-    name: Deploy test env
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'reearth/reearth'
+    if: github.event.repository.full_name == 'reearth/reearth-visualizer'
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: google-github-actions/auth@v0
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          service_account: ${{ secrets.GC_SA_EMAIL }}
+          workload_identity_provider: ${{ secrets.GC_WORKLOAD_IDENTITY_PROVIDER }}
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-      - uses: dsaltares/fetch-gh-release-asset@master
-        with:
-          repo: reearth/reearth
-          version: tags/nightly
-          file: reearth-web_nightly.tar.gz
-          token: ${{ secrets.GITHUB_TOKEN }}
-      - run: tar -xvf reearth-web_nightly.tar.gz
-      - name: rsync
-        run: gsutil -m -h "Cache-Control:no-store" rsync -x "^reearth_config\\.json$" -dr reearth-web/ $GCS_DEST
+        uses: google-github-actions/setup-gcloud@v2
+      - name: Configure docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+      - name: docker push
+        run: |
+          docker pull ${{ secrets.WEB_IMAGE }}
+          docker tag ${{ secrets.WEB_IMAGE }} ${{ secrets.WEB_IMAGE_GC }}
+          docker push ${{ secrets.WEB_IMAGE_GC }}
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy reearth-visualizer-web \
+            --image ${{ secrets.WEB_IMAGE_GC }} \
+            --region ${{ secrets.GC_REGION }} \
+            --platform managed \
+            --quiet

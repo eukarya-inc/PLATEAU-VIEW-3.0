@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationv3"
+	"github.com/k0kubun/pp/v3"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
 )
@@ -48,7 +49,7 @@ func setupCityItems(conf *Config, args []string) error {
 		return errors.New("CMS base URL, CMS token, project, and file are required")
 	}
 
-	fmt.Printf("base: %s\nproject: %s\nfile: %s\nforce: %t\noffset: %d\nlimit: %d\ndryrun: %t\n", base, inp.ProjectID, file, inp.Force, inp.Offset, inp.Limit, inp.DryRun)
+	pp.Printf("args: %v\n", inp)
 
 	f, err := os.Open(file)
 	if err != nil {

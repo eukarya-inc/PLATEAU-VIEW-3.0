@@ -37,7 +37,7 @@ resource "aws_apprunner_service" "reearth_cms_worker" {
         port = "8080"
 
         runtime_environment_secrets = {
-          for secret in toset(local.reearth_cms_worker_secret) : secret => aws_secretsmanager_secret.reearth_cms_worker_secret[secret].arn
+          for secret in toset(local.reearth_cms_worker_secret) : secret => aws_ssm_parameter.reearth_cms_worker_secret[secret].arn
         }
         runtime_environment_variables = {
           REEARTH_CMS_WORKER_DECOMPRESSION_NUM_WORKERS     = "500"
@@ -130,8 +130,11 @@ resource "aws_iam_role_policy" "reearth_cms_worker_instance" {
       {
         Effect = "Allow"
         Action = [
-          "s3:*",
-          "sns:*"
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "sns:Publish",
+          "ssm:GetParameters"
         ]
         Resource = "*"
       },
@@ -145,7 +148,9 @@ locals {
   ]
 }
 
-resource "aws_secretsmanager_secret" "reearth_cms_worker_secret" {
+resource "aws_ssm_parameter" "reearth_cms_worker_secret" {
   for_each = toset(local.reearth_cms_worker_secret)
-  name     = "${var.prefix}/reearth-cms/${each.value}"
+  name     = "/${var.prefix}/reearth-cms/${each.value}"
+  type     = "SecureString"
+  value    = var.mongodb_connection_string
 }

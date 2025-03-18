@@ -201,7 +201,7 @@ export class TerrainTileService {
       return;
     }
     const [cache, discarded] = await Promise.all([
-      this.cacheService.findOne(this.options.path, coords),
+      this.cacheService.findOne(this.options.path, coords, options),
       this.cacheService.isDiscarded(this.options.path, coords),
     ]);
     if (cache != null || discarded) {

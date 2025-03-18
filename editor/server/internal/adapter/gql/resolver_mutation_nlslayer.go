@@ -59,6 +59,7 @@ func (r *mutationResolver) UpdateNLSLayer(ctx context.Context, input gqlmodel.Up
 
 	layer, err := usecases(ctx).NLSLayer.Update(ctx, interfaces.UpdateNLSLayerInput{
 		LayerID: lid,
+		Index:   input.Index,
 		Name:    input.Name,
 		Visible: input.Visible,
 		Config:  gqlmodel.ToNLSConfig(input.Config),
@@ -69,6 +70,34 @@ func (r *mutationResolver) UpdateNLSLayer(ctx context.Context, input gqlmodel.Up
 
 	return &gqlmodel.UpdateNLSLayerPayload{
 		Layer: gqlmodel.ToNLSLayer(layer, nil),
+	}, nil
+}
+
+func (r *mutationResolver) UpdateNLSLayers(ctx context.Context, input gqlmodel.UpdateNLSLayersInput) (*gqlmodel.UpdateNLSLayersPayload, error) {
+	var updatedLayers []gqlmodel.NLSLayer
+
+	for _, layerInput := range input.Layers {
+		lid, err := gqlmodel.ToID[id.NLSLayer](layerInput.LayerID)
+		if err != nil {
+			return nil, err
+		}
+
+		layer, err := usecases(ctx).NLSLayer.Update(ctx, interfaces.UpdateNLSLayerInput{
+			LayerID: lid,
+			Index:   layerInput.Index,
+			Name:    layerInput.Name,
+			Visible: layerInput.Visible,
+			Config:  gqlmodel.ToNLSConfig(layerInput.Config),
+		}, getOperator(ctx))
+		if err != nil {
+			return nil, err
+		}
+
+		updatedLayers = append(updatedLayers, gqlmodel.ToNLSLayer(layer, nil))
+	}
+
+	return &gqlmodel.UpdateNLSLayersPayload{
+		Layers: updatedLayers,
 	}, nil
 }
 
@@ -189,16 +218,54 @@ func (r *mutationResolver) RemoveNLSInfoboxBlock(ctx context.Context, input gqlm
 	}, nil
 }
 
-func (r *mutationResolver) AddCustomProperties(ctx context.Context, input gqlmodel.AddCustomPropertySchemaInput) (*gqlmodel.UpdateNLSLayerPayload, error) {
+func (r *mutationResolver) UpdateCustomProperties(ctx context.Context, input gqlmodel.UpdateCustomPropertySchemaInput) (*gqlmodel.UpdateNLSLayerPayload, error) {
 	lid, err := gqlmodel.ToID[id.NLSLayer](input.LayerID)
 	if err != nil {
 		return nil, err
 	}
 
-	layer, err := usecases(ctx).NLSLayer.AddCustomProperties(ctx, interfaces.AddCustomPropertiesInput{
+	layer, err := usecases(ctx).NLSLayer.AddOrUpdateCustomProperties(ctx, interfaces.AddOrUpdateCustomPropertiesInput{
 		LayerID: lid,
 		Schema:  input.Schema,
 	}, getOperator(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	return &gqlmodel.UpdateNLSLayerPayload{
+		Layer: gqlmodel.ToNLSLayer(layer, nil),
+	}, nil
+}
+
+func (r *mutationResolver) ChangeCustomPropertyTitle(ctx context.Context, input gqlmodel.ChangeCustomPropertyTitleInput) (*gqlmodel.UpdateNLSLayerPayload, error) {
+	lid, err := gqlmodel.ToID[id.NLSLayer](input.LayerID)
+	if err != nil {
+		return nil, err
+	}
+
+	layer, err := usecases(ctx).NLSLayer.ChangeCustomPropertyTitle(ctx, interfaces.AddOrUpdateCustomPropertiesInput{
+		LayerID: lid,
+		Schema:  input.Schema,
+	}, input.OldTitle, input.NewTitle, getOperator(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	return &gqlmodel.UpdateNLSLayerPayload{
+		Layer: gqlmodel.ToNLSLayer(layer, nil),
+	}, nil
+}
+
+func (r *mutationResolver) RemoveCustomProperty(ctx context.Context, input gqlmodel.RemoveCustomPropertyInput) (*gqlmodel.UpdateNLSLayerPayload, error) {
+	lid, err := gqlmodel.ToID[id.NLSLayer](input.LayerID)
+	if err != nil {
+		return nil, err
+	}
+
+	layer, err := usecases(ctx).NLSLayer.RemoveCustomProperty(ctx, interfaces.AddOrUpdateCustomPropertiesInput{
+		LayerID: lid,
+		Schema:  input.Schema,
+	}, input.RemovedTitle, getOperator(ctx))
 	if err != nil {
 		return nil, err
 	}

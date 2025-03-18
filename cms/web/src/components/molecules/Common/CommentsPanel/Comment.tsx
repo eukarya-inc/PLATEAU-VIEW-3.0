@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import moment from "moment";
+import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -8,23 +8,30 @@ import Badge from "@reearth-cms/components/atoms/Badge";
 import AntDComment from "@reearth-cms/components/atoms/Comment";
 import Form from "@reearth-cms/components/atoms/Form";
 import Icon from "@reearth-cms/components/atoms/Icon";
-import Input from "@reearth-cms/components/atoms/Input";
+import TextArea from "@reearth-cms/components/atoms/TextArea";
 import Tooltip from "@reearth-cms/components/atoms/Tooltip";
 import UserAvatar from "@reearth-cms/components/atoms/UserAvatar";
 import { User } from "@reearth-cms/components/molecules/AccountSettings/types";
 import { Comment } from "@reearth-cms/components/molecules/Common/CommentsPanel/types";
 import { dateTimeFormat } from "@reearth-cms/utils/format";
 
-const { TextArea } = Input;
-
 type Props = {
   me?: User;
+  hasUpdateRight: boolean | null;
+  hasDeleteRight: boolean | null;
   comment: Comment;
   onCommentUpdate: (commentId: string, content: string) => Promise<void>;
   onCommentDelete: (commentId: string) => Promise<void>;
 };
 
-const CommentMolecule: React.FC<Props> = ({ me, comment, onCommentUpdate, onCommentDelete }) => {
+const CommentMolecule: React.FC<Props> = ({
+  me,
+  hasUpdateRight,
+  hasDeleteRight,
+  comment,
+  onCommentUpdate,
+  onCommentDelete,
+}) => {
   const [showEditor, setShowEditor] = useState(false);
   const [value, setValue] = useState(comment.content);
 
@@ -38,34 +45,52 @@ const CommentMolecule: React.FC<Props> = ({ me, comment, onCommentUpdate, onComm
 
   const handleSubmit = useCallback(async () => {
     try {
-      await onCommentUpdate?.(comment.id, value);
+      if (comment.content !== value) {
+        await onCommentUpdate?.(comment.id, value);
+      }
     } catch (info) {
       console.log("Validate Failed:", info);
     } finally {
       setShowEditor(false);
     }
-  }, [value, comment.id, onCommentUpdate]);
+  }, [comment.content, comment.id, value, onCommentUpdate]);
 
   const fromNow = useMemo(
-    () => moment(comment.createdAt?.toString()).fromNow(),
+    () => dayjs(comment.createdAt?.toString()).fromNow(),
     [comment.createdAt],
   );
 
+  const actions = useMemo(() => {
+    const result = [];
+    const isMine = me?.id === comment.author.id;
+    if (hasDeleteRight || (hasDeleteRight === null && isMine)) {
+      result.push(<Icon key="delete" icon="delete" onClick={() => onCommentDelete(comment.id)} />);
+    }
+    if (hasUpdateRight || (hasUpdateRight === null && isMine)) {
+      result.push(
+        <Icon
+          key="edit"
+          icon={showEditor ? "check" : "edit"}
+          onClick={showEditor ? handleSubmit : () => setShowEditor(true)}
+        />,
+      );
+    }
+    return result;
+  }, [
+    comment.author.id,
+    comment.id,
+    handleSubmit,
+    hasDeleteRight,
+    hasUpdateRight,
+    me?.id,
+    onCommentDelete,
+    showEditor,
+  ]);
+
   return (
     <StyledComment
-      actions={
-        me?.id === comment.author.id
-          ? [
-              <Icon key="delete" icon="delete" onClick={() => onCommentDelete(comment.id)} />,
-              showEditor ? (
-                <Icon key="edit" icon="check" onClick={handleSubmit} />
-              ) : (
-                <Icon key="edit" icon="edit" onClick={() => setShowEditor(true)} />
-              ),
-            ]
-          : []
-      }
-      author={<a> {comment.author.name}</a>}
+      actions={actions}
+      author={comment.author.name}
       avatar={
         comment.author.type === "Integration" ? (
           <Badge count={<StyledIcon icon="api" size={8} color="#BFBFBF" />} offset={[0, 24]}>
@@ -90,7 +115,6 @@ const CommentMolecule: React.FC<Props> = ({ me, comment, onCommentUpdate, onComm
             <ReactMarkdown
               components={{
                 a(props) {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   const { node, ...rest } = props;
                   return <a target="_blank" {...rest} />;
                 },
@@ -102,17 +126,19 @@ const CommentMolecule: React.FC<Props> = ({ me, comment, onCommentUpdate, onComm
         </>
       }
       datetime={
-        comment.createdAt && (
-          <Tooltip title={dateTimeFormat(comment.createdAt)}>
-            <span>{fromNow}</span>
-          </Tooltip>
-        )
+        <Tooltip title={dateTimeFormat(comment.createdAt)}>
+          <span>{fromNow}</span>
+        </Tooltip>
       }
     />
   );
 };
 
 const StyledComment = styled(AntDComment)`
+  .ant-comment-content-author {
+    margin-right: 48px;
+    overflow-wrap: anywhere;
+  }
   .ant-comment-actions {
     position: absolute;
     top: 0;

@@ -1,4 +1,4 @@
-$schema: ../../schemas/plugin_manifest.json
+version: ../../schemas/plugin_manifest.json
 id: reearth
 system: true
 name: Re:Earth Official Plugin
@@ -47,6 +47,7 @@ extensions:
               type: string
               title: Tile type
               defaultValue: default
+              placeholder: please enter tile type
               choices:
                 - key: default
                   label: Default
@@ -54,10 +55,6 @@ extensions:
                   label: Labelled
                 - key: default_road
                   label: Road Map
-                - key: stamen_watercolor
-                  label: Stamen Watercolor
-                - key: stamen_toner
-                  label: Stamen Toner
                 - key: open_street_map
                   label: OpenStreetMap
                 - key: esri_world_topo
@@ -75,14 +72,16 @@ extensions:
                 field: tile_type
                 type: string
                 value: url
+              placeholder: please enter tile url
             - id: tile_zoomLevel
               type: array
-              title: zoom level
-              description: "Change the zoom level of the selected tile map. Min:0, Max:30"
-              defaultValue: [0,30]
-              ui: range
+              title: Zoom level
+              description: "Change the zoom level of the selected tile map. Min:0, Max:25"
+              defaultValue: [0,25]
+              ui: zoomLevel
               min: 0
-              max: 30
+              max: 25
+              placeholder: please enter tile zoom level
             - id: tile_opacity
               type: number
               title: Opacity
@@ -91,6 +90,7 @@ extensions:
               ui: slider
               min: 0
               max: 1
+              placeholder: please enter tile opacity
         - id: terrain
           collection: terrain
           title: Terrain
@@ -159,14 +159,6 @@ extensions:
                 field: terrain
                 type: bool
                 value: true
-            - id: depthTestAgainstTerrain
-              type: bool
-              title: Hide objects under terrain
-              description: Hides objects under the terrain. Depending on the loading status of the terrain, objects may be shown or hidden.
-              availableIf:
-                field: terrain
-                type: bool
-                value: true
         - id: globeLighting
           collection: globe
           title: Globe Lighting
@@ -206,6 +198,13 @@ extensions:
                 field: globeAtmosphere
                 type: bool
                 value: true
+        - id: globeDepthTestAgainstTerrain
+          collection: globe
+          title: Hide objects under ground
+          fields:
+            - id: depthTestAgainstTerrain
+              type: bool
+              title: Enable
         - id: skyBox
           collection: sky
           title: Sky Box
@@ -261,20 +260,20 @@ extensions:
             - id: camera
               type: camera
               title: Initial camera position
-              description: The starting position of your project.
+              description: You can set an initial camera position to ensure that the same area is viewed each time the project is opened.
             - id: allowEnterGround
               type: bool
               title: Enter the ground
               defaultValue: false
-              description: Set to true to allow the camera to enter the surface of the earth.
+              description: When this property is set to true, the camera can move through the terrain, allowing it to enter underground areas.
             - id: fov
               type: number
               title: FOV
-              # description: Description needed
-              defaultValue: 3
+              description: The field of view (FOV) of the camera, in radians. It defines the vertical angular extent of the scene visible to the camera. And the range supported in our system is from 0.1 to 2.0
+              defaultValue: 1
               ui: slider
-              min: 0
-              max: 10
+              min: 0.1
+              max: 2
   - id: cesium
     name: Cesium
     description: Select here to find scene settings in the right panel. This includes setting map tiles, atmospheric conditions, real lighting, and more.
@@ -334,6 +333,7 @@ extensions:
               type: string
               title: Tile type
               defaultValue: default
+              placeholder: please enter tile type
               choices:
                 - key: default
                   label: Default
@@ -358,6 +358,7 @@ extensions:
             - id: tile_url
               type: string
               title: Tile map URL
+              placeholder: please enter tile url
               availableIf:
                 field: tile_type
                 type: string
@@ -365,16 +366,19 @@ extensions:
             - id: tile_minLevel
               type: number
               title: Minimum zoom level
+              placeholder: please enter tile minLevel
               min: 0
               max: 30
             - id: tile_maxLevel
               type: number
               title: Maximum zoom level
+              placeholder: please enter tile maxLevel
               min: 0
               max: 30
             - id: tile_opacity
               type: number
               title: Opacity
+              placeholder: please enter tile opacity
               description: "Change the opacity of the selected tile map. Min: 0 Max: 1"
               defaultValue: 1
               ui: slider
@@ -2286,6 +2290,82 @@ extensions:
                   label: Desktop only
                 - key: mobile
                   label: Mobile only
+  - id: dataAttribution
+    type: widget
+    name: Data Attribution
+    description: A data Attribution widget.
+    singleOnly: true
+    widgetLayout:
+      defaultLocation:
+        zone: outer
+        section: left
+        area: bottom
+    schema:
+      groups:
+        - id: default
+          title: Data Attribution
+          list: true
+          representativeField: description
+          fields:
+            - id: description
+              title: Credit Description
+              type: string
+              defaultValue: New Credit
+            - id: logo
+              type: url
+              title: Logo
+              ui: image
+            - id: creditUrl
+              type: url
+              title: Credit Url
+  - id: googleMapSearch
+    type: widget
+    name: Google Map Search (Experimental)
+    description: A widget that allows you to search for a location on the map using Google Maps.
+    singleOnly: true
+    widgetLayout:
+      defaultLocation:
+        zone: outer
+        section: left
+        area: top
+    schema:
+      groups:
+        - id: default
+          title: Google Map Search Widget
+          fields:
+            - id: apiToken
+              type: string
+              title: API Token
+              description: Google Maps API Key
+        - id: appearance
+          title: Appearance
+          fields:
+            - id: theme
+              type: string
+              title: Theme
+              defaultValue: light
+              choices:
+                - key: light
+                  label: Light
+                - key: dark
+                  label: Dark
+        - id: languageSetting
+          title: Language Setting
+          fields:
+            - id: language
+              type: string
+              title: Language
+              defaultValue: auto
+              choices:
+                - key: auto
+                  label: Auto
+                - key: en
+                  label: English
+                - key: ja
+                  label: Japanese
+                - key: cn
+                  label: Chinese
+
   - id: story
     name: Story
     type: story
@@ -2543,7 +2623,7 @@ extensions:
               type: array
               title: Show Layers
               ui: layer
-              choices:
+              choices: []
   - id: timelineStoryBlock
     name: Timeline
     type: storyBlock
@@ -2650,7 +2730,8 @@ extensions:
             - id: text
               type: string
               title: Content
-              ui: multiline
+              placeholder: ${your property key}
+              ui: property_selector
   - id: imageInfoboxBetaBlock
     name: Image
     type: infoboxBlock
@@ -2672,6 +2753,8 @@ extensions:
             - id: src
               type: string
               title: Image
+              placeholder: ${your property key}
+              ui: property_selector
   - id: propertyInfoboxBetaBlock
     type: infoboxBlock
     name: Property List Block
@@ -2709,3 +2792,49 @@ extensions:
                 field: displayType
                 type: string
                 value: custom
+  - id: videoInfoboxBetaBlock
+    name: Video
+    type: infoboxBlock
+    description: Infobox Video Block
+    schema:
+      groups:
+        - id: panel
+          title: Panel Setting
+          fields:
+            - id: padding
+              type: spacing
+              title: Padding
+              ui: padding
+              min: 0
+              max: 100
+        - id: default
+          title: Video Block
+          fields:
+            - id: src
+              type: string
+              title: Video
+              placeholder: ${your property key}
+              ui: property_selector
+  - id: markdownInfoboxBetaBlock
+    name: MD Text
+    type: infoboxBlock
+    description: Infobox MD Text Block
+    schema:
+      groups:
+        - id: panel
+          title: Panel Setting
+          fields:
+            - id: padding
+              type: spacing
+              title: Padding
+              ui: padding
+              min: 0
+              max: 100
+        - id: default
+          title: MD Text Block
+          fields:
+            - id: src
+              type: string
+              title: Content
+              placeholder: ${your property key}
+              ui: property_selector

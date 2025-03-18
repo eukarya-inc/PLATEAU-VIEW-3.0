@@ -25,15 +25,15 @@ test("Url metadata creating and updating has succeeded", async ({ page }) => {
   await page.getByLabel("Settings").locator("#description").click();
   await page.getByLabel("Settings").locator("#description").fill("url1 description");
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created field!");
   await closeNotification(page);
-  await expect(page.getByText("url1 #url1")).toBeVisible();
+  await expect(page.getByText("url1#url1")).toBeVisible();
   await page.getByRole("img", { name: "ellipsis" }).locator("svg").click();
   await expect(page.getByLabel("Display name")).toBeVisible();
   await expect(page.getByLabel("Display name")).toHaveValue("url1");
   await expect(page.getByLabel("Settings").locator("#key")).toHaveValue("url1");
   await expect(page.getByLabel("Settings").locator("#description")).toHaveValue("url1 description");
   await expect(page.getByLabel("Support multiple values")).not.toBeChecked();
+  await expect(page.getByLabel("Use as title")).toBeHidden();
   await page.getByRole("tab", { name: "Validation" }).click();
   await expect(page.getByLabel("Make field required")).not.toBeChecked();
   await expect(page.getByLabel("Set field as unique")).not.toBeChecked();
@@ -48,31 +48,31 @@ test("Url metadata creating and updating has succeeded", async ({ page }) => {
   await page.getByLabel("url1").click();
   await page.getByLabel("url1").fill("http://test1.com");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
   await expect(page.getByLabel("url1")).toHaveValue("http://test1.com");
   await page.getByLabel("Back").click();
   await expect(page.getByRole("link", { name: "http://test1.com" })).toBeVisible();
-  await page.getByRole("link", { name: "edit", exact: true }).click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").click();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
+  await page.waitForTimeout(500);
   await page.getByLabel("url1").click();
   await page.getByLabel("url1").fill("http://test2.com");
-  await page.getByLabel("Back").click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
+  await page.getByLabel("Back").click();
   await expect(page.getByRole("link", { name: "http://test2.com" })).toBeVisible();
 
   await page.getByRole("link", { name: "http://test2.com" }).hover();
   await page.getByRole("tooltip", { name: "edit" }).locator("svg").click();
   await page.getByPlaceholder("-").fill("http://test3.com");
   await page.locator(".ant-table-body").click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await expect(page.getByRole("link", { name: "http://test3.com" })).toBeVisible();
-  await page.getByRole("link", { name: "edit", exact: true }).click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").click();
   await expect(page.getByLabel("url1")).toHaveValue("http://test3.com");
 });
 
 test("Url metadata editing has succeeded", async ({ page }) => {
+  test.slow();
   await page.getByRole("tab", { name: "Meta Data" }).click();
   await page.locator("li").filter({ hasText: "Url" }).locator("div").first().click();
   await page.getByLabel("Display name").click();
@@ -85,7 +85,6 @@ test("Url metadata editing has succeeded", async ({ page }) => {
   await page.getByLabel("Set default value").click();
   await page.getByLabel("Set default value").fill("http://default1.com");
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created field!");
   await closeNotification(page);
 
   await page.getByText("Content").click();
@@ -93,7 +92,6 @@ test("Url metadata editing has succeeded", async ({ page }) => {
   await page.getByRole("button", { name: "plus New Item" }).click();
   await expect(page.getByLabel("url1")).toHaveValue("http://default1.com");
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
   await expect(page.getByLabel("url1")).toHaveValue("http://default1.com");
   await page.getByLabel("Back").click();
@@ -121,7 +119,6 @@ test("Url metadata editing has succeeded", async ({ page }) => {
   await expect(page.locator("#defaultValue").nth(0)).toHaveValue("http://default2.com");
   await expect(page.locator("#defaultValue").nth(1)).toHaveValue("http://default1.com");
   await page.getByRole("button", { name: "OK" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated field!");
   await closeNotification(page);
   await expect(page.getByLabel("Meta Data")).toContainText("new url1 *#new-url1(unique)");
 
@@ -135,12 +132,12 @@ test("Url metadata editing has succeeded", async ({ page }) => {
   await expect(page.getByRole("textbox").nth(1)).toHaveValue("http://default1.com");
 
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully created Item!");
   await closeNotification(page);
   await expect(page.getByRole("textbox").nth(0)).toHaveValue("http://default2.com");
   await expect(page.getByRole("textbox").nth(1)).toHaveValue("http://default1.com");
   await page.getByLabel("Back").click();
   await page.getByRole("button", { name: "x2" }).click();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
   await page.waitForTimeout(100);
   await expect(page.getByRole("tooltip").getByRole("link").nth(0)).toContainText(
     "http://default2.com",
@@ -153,29 +150,18 @@ test("Url metadata editing has succeeded", async ({ page }) => {
   await page.getByRole("tooltip", { name: "edit" }).locator("svg").click();
   await page.getByPlaceholder("-").fill("http://new-default2.com");
   await page.getByRole("tooltip").getByText("new url1").click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
-  await page.getByRole("link", { name: "edit", exact: true }).first().click();
+  await page.getByRole("cell").getByLabel("edit").locator("svg").first().click();
+  // eslint-disable-next-line playwright/no-wait-for-timeout
+  await page.waitForTimeout(500);
   await expect(page.getByRole("textbox").nth(0)).toHaveValue("http://new-default2.com");
   await page.getByRole("button", { name: "plus New" }).click();
-  await page
-    .locator("div")
-    .filter({ hasText: /^0 \/ 500$/ })
-    .getByRole("textbox")
-    .click();
-  await page
-    .locator("div")
-    .filter({ hasText: /^0 \/ 500$/ })
-    .getByRole("textbox")
-    .fill("http://default3.com");
-  await page.getByText("url1 description").click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
+  await page.getByRole("textbox").last().click();
+  await page.getByRole("textbox").last().fill("http://default3.com");
   await closeNotification(page);
   await page.getByRole("button", { name: "delete" }).first().click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByRole("button", { name: "arrow-up" }).nth(1).click();
-  await expect(page.getByRole("alert").last()).toContainText("Successfully updated Item!");
   await closeNotification(page);
   await page.getByLabel("Back").click();
   await page.getByRole("button", { name: "x2" }).click();

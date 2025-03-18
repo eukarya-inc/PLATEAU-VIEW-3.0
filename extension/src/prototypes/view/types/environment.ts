@@ -1,1 +1,6 @@
-export type EnvironmentType = "map" | "satellite" | "elevation" | "google-photorealistic";
+export type EnvironmentType =
+  | "map"
+  | "satellite"
+  | "colored-map"
+  | "elevation"
+  | "google-photorealistic";

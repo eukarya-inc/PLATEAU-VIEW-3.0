@@ -35,7 +35,7 @@ const MunicipalityItem: FC<{
 }> = ({ municipality, parents = [], prefCode }) => {
   const query = useAreaDatasets(municipality.code);
 
-  const { typicalTypeGroups, dataGroups, genericGroups } = useMemo(
+  const { typicalTypeGroups, dataGroups, genericGroups, cityDatasetGroups } = useMemo(
     () =>
       getDatasetGroups({
         datasets: query.data?.area?.datasets,
@@ -70,7 +70,13 @@ const MunicipalityItem: FC<{
       nodeId={municipality.id}
       label={joinPath([...parents, municipality.name])}
       loading={query.loading}
-      disabled={!typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length}>
+      disabled={
+        !query.loading &&
+        !typicalTypeGroups?.length &&
+        !dataGroups?.length &&
+        !genericGroups?.length &&
+        !cityDatasetGroups?.length
+      }>
       {typicalTypeGroups?.map(groupItem => (
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
@@ -78,6 +84,9 @@ const MunicipalityItem: FC<{
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
       {genericGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {cityDatasetGroups?.map(groupItem => (
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
     </DatasetTreeItem>
@@ -94,7 +103,7 @@ const PrefectureItem: FC<{
 
   // Handle the datasets belongs to this perfecture but no municipality
   const prefectureDatasetQuery = useAreaDatasets(prefecture.code);
-  const { typicalTypeGroups, dataGroups, genericGroups } = useMemo(
+  const { typicalTypeGroups, dataGroups, genericGroups, cityDatasetGroups } = useMemo(
     () =>
       getDatasetGroups({
         datasets: prefectureDatasetQuery.data?.area?.datasets?.filter(d => !d.cityCode),
@@ -103,7 +112,13 @@ const PrefectureItem: FC<{
     [prefectureDatasetQuery.data?.area?.datasets, prefecture.code],
   );
 
-  if (areas.length === 1 && !typicalTypeGroups && !dataGroups && !genericGroups) {
+  if (
+    areas.length === 1 &&
+    !typicalTypeGroups &&
+    !dataGroups &&
+    !genericGroups &&
+    !cityDatasetGroups
+  ) {
     return (
       <MunicipalityItem
         municipality={areas[0]}
@@ -119,7 +134,12 @@ const PrefectureItem: FC<{
       label={prefecture.name}
       loading={query.loading}
       disabled={
-        !areas.length && !typicalTypeGroups?.length && !dataGroups?.length && !genericGroups?.length
+        !query.loading &&
+        !areas.length &&
+        !typicalTypeGroups?.length &&
+        !dataGroups?.length &&
+        !genericGroups?.length &&
+        !cityDatasetGroups?.length
       }>
       {areas.map(municipality => (
         <MunicipalityItem
@@ -135,6 +155,9 @@ const PrefectureItem: FC<{
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
       {genericGroups?.map(groupItem => (
+        <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
+      ))}
+      {cityDatasetGroups?.map(groupItem => (
         <DatasetGroup key={groupItem.groupId} groupItem={groupItem} />
       ))}
     </DatasetTreeItem>

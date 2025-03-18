@@ -1,39 +1,18 @@
 package preparegspatialjp
 
 import (
+	"context"
+	"fmt"
+	"path"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
 	cms "github.com/reearth/reearth-cms-api/go"
+	"github.com/reearth/reearthx/log"
+	"github.com/samber/lo"
 )
-
-var featureTypes = []string{
-	"bldg", // 建築物モデル
-	"tran", // 交通（道路）モデル
-	"rwy",  // 交通（鉄道）モデル
-	"trk",  // 交通（徒歩道）モデル
-	"squr", // 交通（広場）モデル
-	"wwy",  // 交通（航路）モデル
-	"luse", // 土地利用モデル
-	"fld",  // 洪水浸水想定区域モデル
-	"tnm",  // 津波浸水想定区域モデル
-	"htd",  // 高潮浸水想定区域モデル
-	"ifld", // 内水浸水想定区域モデル
-	"lsld", // 土砂災害モデル
-	"urf",  // 都市計画決定情報モデル
-	"unf",  // 地下埋設物モデル
-	"brid", // 橋梁モデル
-	"tun",  // トンネルモデル
-	"cons", // その他の構造物モデル
-	"frn",  // 都市設備モデル
-	"ubld", // 地下街モデル
-	"veg",  // 植生モデル
-	"dem",  // 地形モデル
-	"wtr",  // 水部モデル
-	"area", // 区域モデル
-	"gen",  // 汎用都市オブジェクトモデル
-}
 
 var citygmlFiles = []string{
 	"codelists",
@@ -56,13 +35,15 @@ type CityItem struct {
 	Spec              string            `json:"spec,omitempty" cms:"spec,select"`
 	Misc              string            `json:"misc,omitempty" cms:"misc,asset"`
 	Year              string            `json:"year,omitempty" cms:"year,select"`
+	Provider          string            `json:"provider,omitempty" cms:"provider,select"`
+	UpdateCount       int               `json:"updateCount,omitempty" cms:"update_count,number"`
 	RelatedDataset    string            `json:"related,omitempty" cms:"related,reference"`
 	References        map[string]string `json:"references,omitempty" cms:"-"`
 	GeospatialjpIndex string            `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
 	GeospatialjpData  string            `json:"geospatialjp-data,omitempty" cms:"geospatialjp-data,reference"`
 }
 
-func CityItemFrom(item *cms.Item) (i *CityItem) {
+func CityItemFrom(item *cms.Item, featureTypes []string) (i *CityItem) {
 	i = &CityItem{}
 	item.Unmarshal(i)
 
@@ -110,6 +91,48 @@ func (c *CityItem) SpecVersionMajorInt() int {
 	return 0
 }
 
+func (c *CityItem) GetProvider() string {
+	if c.Provider != "" {
+		return c.Provider
+	}
+
+	u := c.CodeLists
+	if u != "" {
+		fileName := strings.TrimSuffix(path.Base(u), path.Ext(u))
+		if fileName != "" {
+			parts := strings.Split(fileName, "_")
+			if len(parts) > 2 {
+				return parts[2]
+			}
+		}
+	}
+
+	return "city" // default
+}
+
+var reUpdateCount = regexp.MustCompile(`_(\d+)_op_`)
+
+func (c *CityItem) GetUpdateCount() int {
+	if c.UpdateCount > 0 {
+		return c.UpdateCount
+	}
+
+	u := c.CodeLists
+	if m := reUpdateCount.FindStringSubmatch(u); len(m) > 1 {
+		if i, err := strconv.Atoi(m[1]); err == nil {
+			return i
+		}
+	}
+	return 0
+}
+
+func (c *CityItem) FileName(ty, suffix string) string {
+	if suffix != "" && !strings.HasPrefix(suffix, "_") && !strings.HasPrefix(suffix, ".") {
+		suffix = "_" + suffix
+	}
+	return fmt.Sprintf("%s_%s_%s_%d_%s_%d_op%s", c.CityCode, c.CityNameEn, c.GetProvider(), c.YearInt(), ty, c.GetUpdateCount(), suffix)
+}
+
 type GspatialjpDataItem struct {
 	ID                 string   `json:"id,omitempty" cms:"id"`
 	CityGML            string   `json:"citygml,omitempty" cms:"citygml,asset"`
@@ -125,6 +148,7 @@ type GspatialjpDataItem struct {
 	CityGMLURL string `json:"citygmlUrl,omitempty" cms:"-"`
 	PlateauURL string `json:"plateauUrl,omitempty" cms:"-"`
 	RelatedURL string `json:"relatedUrl,omitempty" cms:"-"`
+	MaxLODURL  string `json:"maxlodUrl,omitempty" cms:"-"`
 }
 
 const idle = "未実行"
@@ -160,6 +184,7 @@ func GspatialjpDataItemFrom(item *cms.Item) (i *GspatialjpDataItem) {
 	citygml := item.FieldByKey("citygml").GetValue().Asset()
 	plateau := item.FieldByKey("plateau").GetValue().Asset()
 	related := item.FieldByKey("related").GetValue().Asset()
+	maxlod := item.FieldByKey("maxlod").GetValue().Asset()
 
 	if citygml != nil {
 		i.CityGML = citygml.ID
@@ -174,6 +199,11 @@ func GspatialjpDataItemFrom(item *cms.Item) (i *GspatialjpDataItem) {
 	if related != nil {
 		i.Related = related.ID
 		i.RelatedURL = related.URL
+	}
+
+	if maxlod != nil {
+		i.MaxLOD = maxlod.ID
+		i.MaxLODURL = maxlod.URL
 	}
 
 	return
@@ -234,13 +264,32 @@ func SpecVersion(version string) string {
 	return strings.TrimSuffix(strings.TrimPrefix(version, "第"), "版")
 }
 
-var reUpdateCount = regexp.MustCompile(`_(\d+)_op_`)
+func FetchAllCities(ctx context.Context, conf *MultipleConfig) ([]string, error) {
+	const model = "plateau-city"
 
-func GetUpdateCount(u string) int {
-	if m := reUpdateCount.FindStringSubmatch(u); len(m) > 1 {
-		if i, err := strconv.Atoi(m[1]); err == nil {
-			return i
-		}
+	c, err := cms.New(conf.CMSURL, conf.CMSToken)
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize CMS client: %w", err)
 	}
-	return 0
+
+	// fetch all cities
+	log.Infofc(ctx, "fetching all cities")
+	items, err := c.GetItemsByKeyInParallel(ctx, conf.ProjectID, model, false, 0)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch cities: %w", err)
+	}
+
+	res := make([]string, 0, len(items.Items))
+	for _, i := range items.Items {
+		if len(conf.CityNames) > 0 {
+			name := lo.FromPtr(i.FieldByKey("city_name").GetValue().String())
+			if name == "" || !slices.Contains(conf.CityNames, name) {
+				continue
+			}
+		}
+
+		res = append(res, i.ID)
+	}
+
+	return res, nil
 }

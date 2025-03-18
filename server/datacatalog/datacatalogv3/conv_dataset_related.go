@@ -10,7 +10,7 @@ import (
 
 var convIgnored = []string{"border"}
 
-func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsurl string) (res []plateauapi.Dataset, warning []string) {
+func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType, year int, cmsinfo CMSInfo) (res []plateauapi.Dataset, warning []string) {
 	if !area.IsValid() {
 		warning = append(warning, fmt.Sprintf("related %s: invalid area", i.ID))
 		return
@@ -31,7 +31,13 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 
 		seeds, w := assetUrlsToRelatedDatasetSeeds(d.Asset, d.Converted, area.City, area.Wards, area.CityItem.YearInt())
 		warning = append(warning, w...)
-		admin := newAdmin(area.CityItem.ID, relatedStage(i, area.CityItem), cmsurl, nil)
+		admin := adminFrom(Admin{
+			ItemID:    i.ID,
+			Stage:     relatedStage(i, area.CityItem),
+			CMSURL:    cmsinfo.ItemBaseURL(relatedModel),
+			CreatedAt: i.CreatedAt,
+			UpdatedAt: i.UpdatedAt,
+		})
 
 		for _, seed := range seeds {
 			sid := standardItemID(ftcode, seed.Area.GetCode(), "")
@@ -58,6 +64,7 @@ func (i *RelatedItem) toDatasets(area *areaContext, dts []plateauapi.DatasetType
 				TypeID:            dt.GetID(),
 				TypeCode:          ftcode,
 				Admin:             admin,
+				Ar:                false,
 				Items: []*plateauapi.RelatedDatasetItem{
 					{
 						ID:             plateauapi.NewID(sid, plateauapi.TypeDatasetItem),

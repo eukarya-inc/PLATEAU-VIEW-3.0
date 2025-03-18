@@ -54,6 +54,11 @@ func (b *Builder) Workspace(workspace WorkspaceID) *Builder {
 	return b
 }
 
+func (b *Builder) Project(project *ProjectID) *Builder {
+	b.a.project = project
+	return b
+}
+
 func (b *Builder) Name(name string) *Builder {
 	b.a.name = name
 	return b
@@ -66,6 +71,11 @@ func (b *Builder) Size(size int64) *Builder {
 
 func (b *Builder) URL(url string) *Builder {
 	b.a.url = url
+	return b
+}
+
+func (b *Builder) CoreSupport(coreSupport bool) *Builder {
+	b.a.coreSupport = coreSupport
 	return b
 }
 

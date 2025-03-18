@@ -45,6 +45,9 @@ type fme struct {
 }
 
 func newFME(url, resultURL string) *fme {
+	if url == "" || resultURL == "" {
+		return nil
+	}
 	return &fme{
 		url:       url,
 		resultURL: resultURL,
@@ -102,6 +105,8 @@ type fmeRequest struct {
 	Codelists string `json:"codelists,omitempty"`
 	// 結果を返す先のURL
 	ResultURL string `json:"resultUrl,omitempty"`
+	// オブジェクトリスト
+	ObjectLists string `json:"objectLists,omitempty"`
 }
 
 func signFMEID(payload, secret string) string {
@@ -122,4 +127,23 @@ func unsignFMEID(id, secret string) (string, error) {
 	}
 
 	return payload, nil
+}
+
+type fmeMock struct {
+	called []fmeRequest
+	err    error
+}
+
+func (f *fmeMock) Request(ctx context.Context, r fmeRequest) error {
+	f.called = append(f.called, r)
+	d, err := json.Marshal(r)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("fmeMock: %s\n", string(d))
+	return f.err
+}
+
+func (f *fmeMock) Called() []fmeRequest {
+	return f.called
 }

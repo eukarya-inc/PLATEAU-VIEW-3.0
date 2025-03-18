@@ -1,157 +1,297 @@
-Current Position: 現地
-Latitude: 緯度
-Longitude: 経度
-Height: 高さ
-Current Rotation: 現在のローテーション
-Heading: ヘッディング
-Pitch: ピッチ
-Roll: ロール
-Camera Position Editor: カメラ位置の編集
-Cancel: キャンセル
-Capture: キャプチャ
-Location: 位置
-Rotation: ローテーション
-Apply: 適用
-Position Set: 設定済み
-Not set: 未設定
-Edit: 編集
-Color Picker: カラーピッカー
-You have passed the maximum value.: 最大値を超えています
-You have passed the minimum value.: 最小値を下回っています
-Set Time: 時間設定
-Date: 時間帯
-Time: 時間
-Time Zone: 時間帯
-set: 設定
-Remove: 削除
-Add: 追加
-Settings: 設定
-Options: オプション
-Please choose an option: オプションを選んでください
-Add text here: テキストを書きましょう
-Timeline Settings: タイムライン設定
-'* Start Time': '* 開始時刻'
-Start time for the timeline: タイムラインの開始時刻
-'* Current Time': '* 現在時刻'
-Current time should be between start and end time: 現在時刻は開始時刻と終了時刻の間で設定してください
-'* End Time': '* 終了時刻'
-End time for the timeline: タイムラインの終了時刻
-Please make sure the Current time must between the Start time and End Time.: 現在時刻が開始時刻と終了時刻の間にあることを確認してください
-not set: 未設定
-Wrong file format: ファイルのフォーマットが異なります
-Choose: 選択
-Upload: アップロード
-Not found: ページが見つかりません
-Last Uploaded: 昇順（アップロード日）
-First Uploaded: 降順（アップロード日）
-A To Z: 昇順（ファイル名）
-Z To A: 降順（ファイル名）
-Size Small to Large: 昇順（サイズ）
-Size Large to Small: 降順（サイズ）
-File Format: ファイル形式
-File format of the data source you want to add.: 追加したいデータソースのファイル形式を選択
-From Assets: アセットから追加
-From Web: Webから追加
-From Value: 値を入力
-Source Type: ソースの種類
-Select the type of data source you want to add.: 追加したいデータソースの種類を選択
-Resource URL: リソースURL
-URL of the data source you want to add.: 追加したいデータソースのURLを入力
-Input Text: 入力
-Value: 値
-Write syntactically correct data based on the file format you have selected above.: 上記で選択したファイル形式に基づき、正しいデータを記述
-Input data here: データ入力
-Asset: アセット
-Prioritize Performance: パフォーマンスを優先
-Add to Layer: レイヤー追加
-Point coordinates: 座標
-Latitude Field: 緯度
-Longitude Field: 経度
-Data Source Manager: データソースマネージャー
-Common: Common
-CSV: CSV
-WMS: WMS
-Vector Tile: Vector Tile
-3D Tiles: 3D Tiles
-Choose layer to add: レイヤーの選択
-Layer of the data source you want to add.: 追加したいデータソースのレイヤーを選択
-layer name: レイヤー名
-Layer: レイヤー
-Layers: レイヤー
-All Layers: 全てのレイヤー
+Auto: 自動
+Account: アカウント
 Name: 名前
-Property name you want to add.: ''
-Data Type: ''
-Type of data you want to add.: ''
-Add to proprety list: ''
-Data Types: ''
-Layer Name: ''
-Layer name you want to add.: ''
-Layer Style: レイヤースタイル
-Layer style you want to add.: ''
-General: ''
-Customized Properties: ''
-New Sketch Layer: ''
-Create: 作成
-Style_: スタイル_
+Email address: メールアドレス
+Password: パスワード
+Language: 言語
+No whitespace is allowed.: 空白は使用できません。
+Too short.: 短すぎます。
+That is terribly long.: 長すぎます。
+That password is great!: 良いパスワードです！
+That password need more security.: このパスワードはもう少し強化が必要です。
+That password is low security.: セキュリティが低いパスワードです。
+That password confuses me, but might be okay.: 複雑ですが許容範囲内のパスワードです。
+Change password: パスワードを変更
+In order to protect your account, make sure your password is unique and strong.: アカウントを保護するため、ユニークで強力なパスワードを設定してください。
+New password: 新しいパスワード
+New password (for confirmation): 新しいパスワード（確認用）
+'"repeatPassword" Passwords need to match': パスワードが一致している必要があります
+Select Asset: アセットを選択
+Cancel: キャンセル
+Last Uploaded: 最終アップロード日
+First Uploaded: 最初のアップロード日
+A To Z: AからZ順
+Z To A: ZからA順
+Size Small to Large: サイズ（小から大）
+Size Large to Small: サイズ（大から小）
+Assets: アセット
+Upload File: ファイルをアップロード
+Search in all assets library: 全アセットライブラリ内を検索
+Assets selected: 選択されたアセット
+Asset selected: アセットが選択されました
+Uploaded At: アップロード日時
+Size: サイズ
+Path: アセットURL
+No asset has been uploaded yet: まだアセットがアップロードされていません
+Asset URL copied to clipboard: アセットURLがクリップボードにコピーされました
+Create new workspace: ワークスペースを作る
+create: 作成する
+Your workspace Name*: ワークスペース名*
+your workspace name: ワークスペース名
+The name is already in use by another workspace. Please choose a different name.: このワークスペース名はすでに使用されています。別の名前を指定してください。
+Important Changes: 重要な変更点
+dashboard.assets.migration.warning: >-
+  機能要件に基づき、プロジェクトの構造を変更することを決定しました。これまでワークスペース内で管理されていたアセット管理ページを、各プロジェクトごとのページに移動します。つまり、アセットはプロジェクト単位で管理されるようになり、ユーザーがインポートやエクスポートをより便利に行えるようになります。<br/>そのため、このページは今後利用できなくなり、次のバージョンで削除される予定です。詳細については、<1>こちらのページ</1>をご参照ください。
+Add a team member: チームメンバーを追加
+Add: 追加
+Search by email address or user name: メールアドレスまたはユーザー名で検索
+Can't find the user: ユーザーが見つかりません
+User already joined this workspace.: ユーザーはすでにこのワークスペースに参加しています。
+Remove: 削除
+'Your are removing member ': '次のメンバーを削除しています '
+' out of this workspace. Are you sure you want to do that?': ' 削除後このワークスペースに存在しない。本当に削除しますか？'
+Search member by name or email: 名前またはEメールでメンバーを検索
+invite user: ユーザーを招待
+User Name: ユーザー名
+Email: メールアドレス
+Role: 役割
+No Member match your search.: 一致するメンバーが見つかりません'
+MAINTAINER: 管理者
+OWNER: 所有者
+READER: 閲覧者
+WRITER: 作成者
+Change Role: 役割を変更
+Update Member Role: メンバーの役割を更新
+Update: 更新する
+Last Created: 最終作成日
+First Created: 最初の作成日
+Last Updated: 最終更新日
+New Project: 新規プロジェクト
+Import: インポート
+Search project: プロジェクトを検索
+All projects: すべてのプロジェクト
+Search Result for: 検索結果
+Project Name: プロジェクト名
+Updated At: 更新日時
+Created At: 作成日時
+No Project has been created yet: まだプロジェクトが作成されていません
+Rename: 名称変更
+Project Setting: プロジェクト設定
+Project Assets: プロジェクトアセット
+Export: エクスポート
+Move to Recycle Bin: ゴミ箱に移動
+Create new project: 新しいプロジェクトを作成
+Apply: 適用
+Project Name *: プロジェクト名 *
+Text: テキスト
+Description: 説明
+Write down your content: 内容を書き込む
+Your project will be moved to Recycle Bin.: プロジェクトはゴミ箱に移動されます。
+This means the project will no longer be published. But you can still see and recover your project from the Recycle bin.: これによりプロジェクトは公開されなくなりますが、ゴミ箱から閲覧と復元が可能です。
+Starred: スター付き
+No Project in Recycle bin.: ゴミ箱にプロジェクトはありません。
+Recover: 復元
 Delete: 削除
+Delete project: プロジェクトを削除
+I am sure I want to delete this project: このプロジェクトを削除することを確認しました
+This action cannot be undone. This will permanently delete the project totally. You will lose all your project data: この操作は元に戻せません。プロジェクトが完全に削除され、すべてのデータが失われます。
+Please type your project name to continue.: 続行するにはプロジェクト名を入力してください。
+Projects: プロジェクト
+Members: メンバー
+Recycle bin: ゴミ箱
+Plugin Playground: プラグインプレイグラウンド
+Documentation: ドキュメント
+Community: コミュニティ
+Help & Support: ヘルプ＆サポート
+Switch workspace: ワークスペース切り替え
+Personal: 個人
+Team Workspace: チームワークスペース
+Log out: ログアウト
+Page: ページ
+From Assets: アセットから
+From Web: ウェブから
+Source Type: ソースタイプ
+Asset: アセット
+Resource URL: リソースURL
+Visualizer currently only supports CSV point data. Please specify the column names for latitude and longitude in your data below.: ビジュアライザーは現在、CSVポイントデータのみ対応しています。緯度と経度の列名を以下に指定してください。
+Latitude Column Name: 緯度の列名
+Column Name: 列名
+Longitude Column Name: 経度の列名
+Add to Layer: レイヤーに追加
+From Value: 値から
+Support for the CZML format is currently experimental and remains somewhat unstable, with certain features not yet fully supported. We advise using it with caution.: >-
+  CZMLフォーマットのサポートは現在、実験的な段階にあり、安定性に欠ける部分があります。また、いくつかの機能はまだ完全にはサポートされていません。ご利用の際はご注意ください。
+Input Text: テキストを入力
+Value: 値
+Input data here: ここにデータを入力
+Invalid GeoJSON format: 不正なGeoJSON形式
+Please enter valid GeoJSON: 有効なGeoJSONを入力してください
+Prioritize Performance: パフォーマンスを優先
+If Prioritize Performance is set to True, the Visualizer will prioritize performance. This layer will not use the Layer Style but instead will apply its own predefined style, which cannot be modified.: >-
+  パフォーマンスを優先に設定すると、ビジュアライザーはパフォーマンスを優先します。このレイヤーはレイヤースタイルを使用せず、独自の事前定義されたスタイルを適用します。これは変更できません。
+Vector Tile: ベクトルタイル
+3D Tiles: 3Dタイル
+Data Source Manager: データソースマネージャー
+Support for the KML format is currently experimental and remains somewhat unstable, with certain features not yet fully supported. We advise using it with caution.: >-
+  KMLフォーマットのサポートは現在、実験的な段階にあり、安定性に欠ける部分があります。また、いくつかの機能はまだ完全にはサポートされていません。ご利用の際はご注意ください。
+'Google Maps API Key ': Google Maps APIキー
+'You can apply a key ': キーを申請できます
+here: ここ
+Cesium OSM 3D Tiles: Cesium OSM 3Dタイル
+Google Photorealistic 3D Tiles: Googleフォトリアリスティック3Dタイル
+URL: URL
+Choose layer to add: 追加するレイヤーを選択
+layer name: レイヤー名
+Layer name: レイヤー名
+Inspector: インスペクター
+Data source: データソース
+Layer Name: レイヤー名
+Format: 形式
+Custom property schema: カスタムプロパティスキーマ
+Update data resource URL: リソースURLを更新
+New data resource URL: 新しいリソースURL
+Resource URL copied to clipboard: リソースURLがクリップボードにコピーされました
+Edit: 編集
+Edit Field: フィールド編集
+Delete Field: フィールド削除
+More: その他
+Edit Custom Property: カスタムプロパティ編集
+New Custom Property: 新しいカスタムプロパティ
+Submit: 反映
+Property Title: プロパティタイトル
+Property Type: プロパティタイプ
+Please select one type: タイプを選択してください
+Apply Current Edits?: 現在の編集を適用しますか?
+This save will apply to all features in the current layer. Do you want to proceed?: この変更を保存すると、現在のレイヤーの全てのフィーチャーに適用されます。続行しますか？
+No field has been created yet: フィールドが作成されていません
+New Field: 新しいフィールド
+Delete schema property field?: プロパティのフィールドを削除しますか?
+This action will apply to all features in the current layer. Do you want to proceed?: この操作は、現在のレイヤーのすべてのフィーチャーに適用されます。続行しますか？
+Unsupported custom field: サポートされていないカスタムフィールド
+Custom Properties: カスタムプロパティ
+No custom properties: カスタムプロパティはありません
+Geometry: ジオメトリ
+Properties: プロパティ
+Photo Overlay: フォトオーバーレイ
+Photo Overlay Set: フォトオーバーレイ設定
+Not set: 設定されていません
+Layer: レイヤー
+Feature: 地物
+Layer Style: レイヤースタイル
+Infobox: インフォボックス
+Enable Infobox: インフォボックスを有効化
+Show infobox when the user clicks on a layer: レイヤーをクリックした際にインフォボックスを表示
+NO STYLE: スタイルなし
+Settings: 設定
+Add Layer from Resource: リソースからレイヤーを追加
+Add Sketch Layer: スケッチレイヤーを追加
+Layers: レイヤー
+New Layer: 新しいレイヤー
+Fly to: 移動
+Visibility: 表示・非表示切り替え
+Delete this Layer?: このレイヤーを削除しますか？
+Are you sure you want to remove this Layer? If deleted, all data of this layer will be lost and you can not recover it again.: 本当にこのレイヤーを削除しますか？削除すると、このレイヤーのデータはすべて失われ、二度と復元できません。
+Interface: インターフェース
+Code: コード
+Invalid style: 無効なスタイル
+No style selected: スタイルが選択されていません
+Marker style: マーカースタイル
+Polyline style: ポリラインスタイル
+Polygon style: ポリゴンスタイル
+3dtiles style: 3Dタイルスタイル
+3D model style: 3Dモデルのスタイル
+Condition is incompatible with the current system for this node or value.: 条件は現在のシステムと互換性がありません。
+Expression is incompatible with the current system for this node or value.: 式は現在のシステムと互換性がありません。
+${your property name}: ${プロパティ名}
+font family: フォントファミリー
+font size: フォントサイズ
+font weight: フォントウェイト
+font color: フォントカラー
+italic: イタリック
+New node: 新しいノード
+Assign style: スタイルの割り当て
+New style: 新しいスタイル
+Contain: 収める
+Fixed: 固定
+Photo transparency: フォト透過度
+PhotoOverlay settings: フォトオーバーレイ設定
+Photo: フォト
+Photo size type: フォトサイズタイプ
+Photo size: フォトサイズ
+Photo description: フォト説明
+Camera: カメラ
 Main: メイン
 Tiles: タイル
 Terrain: 地形
 Globe: 地球
 Sky: 空
-Camera: カメラ
 Unknown scene setting: 不明なシーン設定
 Scene: シーン
-Outline: アウトライン
-Add Layer from Resource: リソースからレイヤーを追加
-Add Sketch Layer: スケッチレイヤーを追加
-Inspector: インスペクター
-ID: ID
-Geometry: ジオメトリ
-Properties: プロパティ
-Data: データ
-Feature: フィーチャー
-Styling: スタイリング
-Enable Infobox: インフォボックスを有効化
-Show infobox when the user clicks on a layer: フェーチャーをクリックした際にインフォボックスを表示
-Format: フォーマット
-Save: 保存
-Published: 一般公開
-Unpublished: 非公開
+New Sketch Layer: 新しいスケッチレイヤー
+Create: 作成
+' Text': ' テキスト'
+Type Title here: タイトルをここに入力
+Title: タイトル
+Type: タイプ
+The keyword you want to use as the custom property title has been used in the system, please choose any other keyword: カスタムプロパティのタイトルとして使用するキーワードが既にシステムで使用されています。他のキーワードを選択してください
+New Property: 新しいプロパティ
+Click to place the point: クリックでポイントを追加する
+Double click or press Enter key to finish drawing: ダブルクリックするか、Enter キーを押して描画を終了します
+Right click to cancel drawing: 右クリックで描画をキャンセルする
+Press ESC to undo the last step: ESCキーで最後のステップを取り消す
+Marker: マーカー
+Polyline: ポリライン
+Circle: 丸
+Rectangle: 長方形
+Polygon: ポリゴン
+Extruded circle: 円柱
+Extruded rectangle: 立方体
+Extruded polygon: 押し出しポリゴン
+Drag and Drop to adjust the point position: ドラッグ&ドロップでポイントの位置を調整する
+Select a point and press Delete key to remove it: ポイントを選択して Delete キーを押すと削除されます
+Double click or press Enter to save the edits: 編集内容を保存するにはダブルクリックするか、Enter キーを押します
+Right click to cancel editing: 右クリックで編集をキャンセルする
+Edit Geometry: ジオメトリを編集
+Delete Feature: 地物を削除
+Delete this feature?: 地物を削除しますか?
+Are you sure you want to delete this feature? If deleted, you can not recover it again.: 本当にこの地物を削除しますか？削除すると二度と復元できません。
 Story: ストーリー
-Unpublish: 非公開にする
-Update: 更新する
 Publish: 公開
-Publishing Settings: 公開設定
+Unpublish: 非公開にする
 Congratulations!: おめでとうございます！
-Publish your project: プロジェクトを公開する
-Update your project: プロジェクトを更新する
+Publish your story: ストーリーを公開する
+Publish your scene: シーンを公開する
+Update your story: ストーリーを更新する
+Update your scene: シーンを更新する
 Ok: 確認
-Continue: 続ける
-Your published project will be updated. This means all current changes will overwrite the current published project.: 公開されたプロジェクトが更新されます。公開されているプロジェクトへ現在の内容が上書きされます。
-Your project will be published. This means anybody with the below URL will be able to view this project.: プロジェクトが公開されます。URLを知っている人は誰でもこのプロジェクトを見ることができるようになります。
-Your project has been published!: プロジェクトが公開されました。
+Your story has been published!: ストーリーが公開されました。
+Your scene has been published!: シーンが公開されました。
 Public URL: 公開URL
+'* Anyone can see your story with this URL': '* このリンクを知っているインターネット上の全員が閲覧できます'
+'* Anyone can see your scene with this URL': '* このリンクを知っているインターネット上の全員が閲覧できます'
 Copy: コピー
-'* Anyone can see your project with this URL': '*　このリンクを知っているインターネット上の全員が閲覧できます'
 Embed Code: 埋め込み用コード
-'* Please use this code if you want to embed your project into a webpage': その他のWebサイトでこのプロジェクトを埋め込む場合は、こちらのコードを使用してください
+'* Please use this code if you want to embed your story into a webpage': その他のWebサイトでこのストーリーを埋め込む場合は、こちらのコードを使用してください
+'* Please use this code if you want to embed your scene into a webpage': その他のWebサイトでこのシーンを埋め込む場合は、こちらのコードを使用してください
+Your published story will be updated. This means all current changes will overwrite the current published story.: 公開されたストーリーが更新されます。公開されているストーリーへ現在の内容が上書きされます。
+Your published scene will be updated. This means all current changes will overwrite the current published scene.: 公開されたシーンが更新されます。公開されているシーンへ現在の内容が上書きされます。
+Your story will be published. This means anybody with the below URL will be able to view this story.: ストーリーが公開されます。URLを知っている人は誰でもこのストーリーを見ることができるようになります。
+Your scene will be published. This means anybody with the below URL will be able to view this scene.: シーンが公開されます。URLを知っている人は誰でもこのシーンを見ることができるようになります。
 Publish domain: 公開ドメイン
-More options: その他の設定
 Need to change domain related settings?: ドメイン設定を変更しますか？
 Go to settings: 設定へ
 Search engine indexing: 検索可能にする
 Page will be available as result on search engines: プロジェクトが検索エンジンの検索結果に表示されるようになります
-Unpublishing: 非公開
-Your project will be unpublished.: プロジェクトを非公開にする
-This means that anybody with the URL will become unable to view this project.: URLを知っている人でもこのプロジェクトを見ることができなくなります。
-'**Warning**: This includes websites where this project is embedded.': '**Warning**このプロジェクトを埋め込んだWebサイトへ影響を及ぼす可能性があります。'
-Untitled: タイトルなし
-New Page: 新しいページ
-Page: ページ
+Your story will be unpublished.: ストーリーを非公開にする
+Your scene will be unpublished.: シーンを非公開にする
+This means that anybody with the URL will become unable to view this story. This includes websites where this story is embedded.: URLを知っている人でもこのストーリーを見ることができなくなります。このストーリーを埋め込んだWebサイトへ影響を及ぼす可能性があります。
+This means that anybody with the URL will become unable to view this scene. This includes websites where this scene is embedded.: URLを知っている人でもこのシーンを見ることができなくなります。このシーンを埋め込んだWebサイトへ影響を及ぼす可能性があります。
 Page Settings: ページ設定
-Align System: アラインシステム
+All Layers: 全てのレイヤー
+Pages: ページ
+New Page: 新しいページ
+Untitled: タイトルなし
+Container Settings: コンテナ設定
 Padding top: 上の余白
 Padding right: 右の余白
 Padding bottom: 下の余白
@@ -159,429 +299,331 @@ Padding left: 左の余白
 Gap spacing: 間隔
 Align centered: 中央に配置
 Background color: 背景色
+Align System: アラインシステム
+Add Widget: ウィジェットを追加
 Widget Manager: ウィジェット管理
-Container Settings: コンテナ設定
-Angle: 角度
-Narrow: 狭い
-Wide: 広い
-Please select an asset before clicking Select.: アセットを選んで「選択」をクリックしてください。
-Select Image: イメージ選択
-Select: 選択
-Sort By: 並び替え
-No assets match your search.: 検索条件に該当するアセットは見つかりませんでした。
-You haven't uploaded any assets yet. Click the upload button above and select a compatible file from your computer.: アセットライブラリ
-Please select an layer style before clicking Select.: レイヤースタイルを選んで「選択」をクリックしてください。
-Select Layer Style: レイヤースタイル選択
-No layerStyle match your search.: 検索からレイヤースタイルを見つけられません。
-You haven't added any layerStyle yet. Click the add button in the bottom panel to get started.: レイヤースタイルをまだ作成していません。「レイヤースタイル」パネルの＋ボタンをクリックし作成してください。
-Create New Workspace: 新規ワークスペース作成
-Workspace Name: ワークスペース名
-Account Settings: アカウント設定
-Workspaces: ワークスペース
-Unknown: 不明
-Manage Workspaces: ワークスペースを管理
-New Workspace: 新規ワークスペース
-Log out: ログアウト
-Project settings: プロジェクト設定
-Public: 公開設定
-Workspace assets: ワークスペースのアセット
 Plugin: プラグイン
-Manage projects: プロジェクト管理
-Documentation: ヘルプ
+Dashboard: ダッシュボード
+Editor: エディタ
+Unknown: 不明
+Asset management: アセット管理
 Map: マップ
 Widgets: ウィジェット
+Re:Earth Visualizer: Re:Earthビジュアライザー
+Oops, Page Not Found!: おっと、ページが見つかりません！
+Go to Dashboard: ダッシュボードへ移動
 Error: エラー
 Warning: 注意
 Notice: 通知
 You have reached a policy limit. Please contact an administrator of your Re:Earth system.: 現在のポリシーの上限に達しました。システム管理者にお問い合わせください。
-Something went wrong. Please try again later.: 何らかの問題が発生しました。しばらく経ってからお試しください。
-Project Settings: プロジェクト設定
-Upload file: ファイルアップロード
-You are about to delete one or more assets from the current workspace.: 1つまたは複数のアセットを削除しようとしています。
-Please make sure no selected assets are in use. This cannot be undone.: 選択されたアセットが使用されていないことを確認してください。この操作は取り消せません。
-Most project settings are hidden when the project is archived. Please unarchive the project to view and edit these settings.: プロジェクトをアーカイブ化すると、削除とアーカイブ化解除以外の編集は行えません。再度編集可能な状態にするには、プロジェクトのアーカイブ化を解除してください。
+HTML Editor: HTML エディター
+Run Code: コードを実行
+This plugin does not have a valid reearth.yml file.: このプラグインには有効な reearth.yml ファイルがありません。
+No valid schema defined.: 有効なスキーマが定義されていません。
+Chiyoda 3D Tiles: 千代田区 3D Tiles
+Japanese Heritage Sites: 日本の遺産
+Viewer: ビューアー
+Plugins: プラグイン
+Extension Settings: 拡張機能の設定
+Add File: ファイルを追加
+Import Plugin: プラグインをインポート
+Export Plugin: プラグインをエクスポート
+Share Plugin: プラグインを共有
+Shared: 共有
+No plugins: プラグインがありません
+Custom: カスタム
+User Interface: ユーザーインターフェース
+Data: データ
+Viewer & Scene Settings: ビューアとシーン設定
+Manage Layer: レイヤーの管理
+Manage Layer Style: レイヤースタイルの管理
+Timeline: タイムライン
+My Plugin: マイプラグイン
+Responsive Panel: レスポンシブ パネル
+Sidebar: サイドバー
+Header: ヘッダー
+Popup: ポップアップ
+Modal Window: モーダルウィンドウ
+Messenger Between Extension and Visualizer: エクステンションとVisualizerとの通信
+Messenger Between Extensions: エクステンション間での通信
+Enable Shadow Style: 影の表示を有効にする
+Enable Terrain: 3D地形を有効にする
+Show Label: ラベルを表示
+Take Screenshot: スクリーンショットを撮る
+Mouse Events: マウスイベント
+Add Geojson: Geojsonを追加
+Add CSV: CSVを追加
+Add KML: KMLを追加
+Add WMS: WMSを追加
+Add CZML: CZMLを追加
+Add 3D Tiles: 3Dタイルを追加
+Add Google Photorealistic 3D Tiles: Google Photorealistic 3D Tilesを追加
+Add OSM 3D Tiles: OSM 3D Tilesを追加
+Hide Fly To Delete Layer: カメラ移動とレイヤーの削除
+Override Layer Data: レイヤーデータの上書き
+Show Selected Features Information: 選択された地物情報を表示
+Layer Styling Examples: レイヤースタイリング
+Feature Style 3D Model: フィーチャースタイル 3D モデル
+Feature Style 3D Tiles: フィーチャースタイル 3D タイル
+Filter Features by Style: スタイルでフィーチャーをフィルタリング
+Override Style: スタイルの上書き
+Style With Condition: 条件付きスタイル
+Playback Control: 再生コントロール
+Time Driven Features: 時系列による地物変化
+Time Driven Path: 時系列による線形移動
+Client Storage: クライアントストレージ
+Extension Property: 拡張プロパティ
+Zoom In Out: ズームイン/アウト
+Camera Rotation: カメラ回転
+Camera Position: カメラ位置
+Shared Plugin: 共有プラグイン
+Invalid shared plugin URL: 共有プラグインのURLが無効です
+File not found: ファイルが見つかりません
+Only zip files are supported: zipファイルのみサポートされています
+Zip file is empty: Zipファイルは空です
+Plugin link copied to clipboard: プラグインのリンクがクリップボードにコピーされました
+Show Story Panel: ストーリーパネルを表示
+UI Language: UI言語
+General: 一般
+Public: 公開
+Most project settings are hidden when the project is archived. Please unarchive the project to view and edit these settings.: プロジェクトをアーカイブすると、削除とアーカイブ解除以外の操作は行えません。再度編集可能な状態にするには、プロジェクトのアーカイブを解除してください。
 Project Info: プロジェクト情報
-Description: プロジェクト概要
 Thumbnail: サムネイル画像
-Submit: 反映
 Danger Zone: 重要操作
-Archive this project: プロジェクトの非編集化
-Mark this project as archived and read-only: プロジェクトを編集できないようにします。この設定はいつでも戻すことができます。
-Archive project: プロジェクトを非編集化する
-Unarchive this project: 非編集化を解除
-Unarchive this project to become editable again.: プロジェクトを回復
-Unarchive project: 非編集化を解除
-Delete this project: プロジェクトを削除
-Once you delete a project, there is no going back. Please be sure.: プロジェクトを削除すると復元はできません。慎重に行ってください。
-Delete project: プロジェクト削除
-I am sure I want to archive this project.: 本当に非編集化してもよいですか？
-Archiving your project will put it into a state where you cannot edit it or it's settings.: この操作をすると、プロジェクトの編集が行えなくなります。
-Once archived, you can unarchive the repository at any time.: この設定はいつでも戻すことができます。
-Please type your project name to continue.: 確認のためこのプロジェクトの名前と入力してください
-I am sure I want to unarchive this project.: 本当に非編集化を解除してもよろしいですか？
-This will bring this repository back to a state it can be editted and worked on by you and your team.: 非編集化を解除すると、チームの書き込み権限を持つユーザーによってプロジェクトの編集、設定変更が可能になります。
-I am sure I want to delete this project.: このプロジェクトを削除します。
-This action cannot be undone.: この操作は取り消すことができません。
-This will permanently delete the project. If the project was published, this also means websites and domains referencing the project will not be able to access it anymore.: 本当にプロジェクトを削除してもよろしいですか。
+Remove this project: このプロジェクトを削除
+This process will move this project to Recycle bin.: この操作によりプロジェクトがゴミ箱に移動します。
 Plugin Marketplace: プラグインマーケットプレイス
 Public Installed: 公開インストール済み
 Personal Installed: 個人インストール済み
-Uninstall: アンインストール
-You are uninstalling the selected plugin. The data used by this plugin may also be deleted.: 選択中のプラグインをアンインストールします。このプラグインに紐付いたデータも削除されます。よろしいですか？
-Please be sure before uninstalling.: プラグインをアンインストールする前にご確認ください。
-Installed: インストール済み
-Install: インストール
 Zip file from PC: PCからZipファイルをアップロード
 Public GitHub repository: GitHubパブリックレポジトリ
-Publish your plugin in the Marketplace: マーケットプレイスでプラグインを公開する
-Import GitHub repository: GitHubレポジトリからインポート
-'Repository url:': 'レポジトリURL:'
-Public Info: 公開詳細設定
-Title: ページタイトル
+Installed Plugins: インストール済みプラグイン
+Uninstall: アンインストール
+Installed: インストール済み
+Install: インストール
+You are uninstalling the selected plugin. The data used by this plugin may also be deleted.: 選択中のプラグインをアンインストールします。このプラグインに紐付いたデータも削除されます。よろしいですか？
+Please be sure before uninstalling.: プラグインをアンインストールする前にご確認ください。
+No description.: 説明なし
+Import GitHub repository: GitHubリポジトリをインポート
+Continue: 続行
+'Repository url:': 'リポジトリURL:'
+Public Info: 公開情報
 Basic Authorization: ベーシック認証
-Enable Basic Authorization: ベーシック認証を有効化
+Enable Basic Authorization: ベーシック認証を有効にする
 Username: ユーザー名
-Password: パスワード
 Site Setting: サイト設定
 Site name: サイト名
-You are about to change the site name for your project. Only alphanumeric characters and hyphens are allows.: プロジェクト公開ページのサイト名を変更します。アルファベットとハイフン(-)のみ利用可能です。
-Google Analytics: ''
-Enable Google Analytics: 有効
-Tracking ID: ''
+You are about to change the site name for your project. Only alphanumeric characters and hyphens are allows.: プロジェクトのサイト名を変更します。英数字とハイフンのみ入力可能です。
+Google Analytics: Googleアナリティクス
+Enable Google Analytics: Googleアナリティクスを有効にする
+Tracking ID: トラッキングID
+Custom Domain: カスタムドメイン
 Left: 左
 Right: 右
 Story Panel: ストーリーパネル
-Panel Position: パネルポジション
+Panel Position: パネル位置
 Background Color: 背景色
-Something went wrong.: 失敗しました。
-Couldn't find the Re:Earth project you were after.: そのRe:Earthプロジェクトは見つかりませんでした。
-New Field: 新しいフィールド
+Your account has been successfully verified! Feel free to login now.: アカウントが正常に確認されました！ログインしてください。
+Could not verify your signup. Please start the process over.: サインアップを確認できませんでした。もう一度やり直してください。
+Save: 保存
+Display title: 表示タイトル
+New Camera: 新しいカメラ
+New Camera Button: 新しいカメラボタン
+Buttons List: ボタンリスト
+New Layers Button: 新しいレイヤーボタン
+New Link Button: 新しいリンクボタン
+Add markdown text here: マークダウンテキストをここに追加
+Color: 色
+Data Attribution: データ帰属
+'Data Provided by:': データ提供元：
 aria-label-compass: コンパス
-aria-label-adjust-angle: 角度を調節する
+aria-label-adjust-angle: 角度調整
 aria-label-zoom-in: ズームイン
-aria-label-Go-to-the-home-position: 元の位置に戻る
+aria-label-Go-to-the-home-position: ホームポジションに移動
 aria-label-zoom-out: ズームアウト
 Spacing settings: 余白設定
 Block: ブロック
-Unsupported field type: サポートされていないフィールドタイプです
-New Camera: 新しいカメラ
-New Camera Button: 新しいカメラボタン
-Buttons List: ボタン一覧
-New Layers Button: 新しいレイヤーボタン
-Add markdown text here: マークダウンテキストを入力
-Drop here: ここにドロップ
-Write your story :): ストーリーを書きましょう!
-Normal: 標準テキスト
+Unsupported field type: サポートされていないフィールドタイプ
+Delete workspace: ワークスペースを削除
+I am sure I want to delete this workspace.: このワークスペースを削除することを確認しました
+This action is permanent and cannot be reversed.: この操作は元に戻すことができません。
+This will permanently delete the workspace and all related projects, assets and datasets for all team members.: ワークスペースと、ワークスペースに関連するすべてのプロジェクト、アセット、データセットがチーム全員から完全に削除されます。
+Please type your workspace name to continue.: 続行するにはワークスペース名を入力してください。
+You are going to delete a workspace.: ワークスペースを削除しようとしています。
+Please make sure you don't have any projects in the workspace before continuing.: 続行する前に、ワークスペースにプロジェクトがないことを確認してください。
+Workspace: ワークスペース
+Workspace Name: ワークスペース名
+This process will delete this workspace: この操作により、このワークスペースが削除されます
+Workspace settings: ワークスペース設定
+New workspace: ワークスペース作成
+Account settings: アカウント設定
+Write your story :): ストーリーを書く :)
+Normal: 通常
 Heading 1: 見出し1
 Heading 2: 見出し2
 Heading 3: 見出し3
-Bullet List: 箇条書き
-Numbered List: 番号付リスト
+Bullet List: 箇条書きリスト
+Numbered List: 番号付きリスト
 Quote: 引用
-Formatting options for font family: フォントの書式設定
-Formatting options for font size: フォントサイズの書式設定
-Formatting options for line height: 行間隔の書式設定
+Formatting options for font family: フォントファミリーの書式設定オプション
+Formatting options for font size: フォントサイズの書式設定オプション
+Formatting options for line height: 行の高さの書式設定オプション
 Center Align: 中央揃え
 Justify Align: 両端揃え
 Left Align: 左揃え
 Right Align: 右揃え
-Outdent: インデント（減）
-Indent: インデント（増）
-Bulleted List: 箇条書き
-Insert Code Block: コードブロック組み込み
-Insert Link: リンク組み込み
-Text Color: テキスト色
-Strikethrough: 取り消し線
+Outdent: インデントを減らす
+Indent: インデントを増やす
+Bulleted List: 箇条書きリスト
+Insert Code Block: コードブロックを挿入
+Insert Link: リンクを挿入
+Text Color: テキストカラー
+Strikethrough: 打ち消し線
 Subscript: 下付き文字
 Superscript: 上付き文字
 Clear Formatting: 書式をクリア
-Close timeline: タイムラインを閉じる
-Playback timeline: タイムラインを逆再生する
-Play timeline: タイムラインを再生する
-ellipse: 円錐
-Open timeline: タイムラインを開く
-Welcome: ようこそ
-Log in to Re:Earth to continue.: Re:Earthにログイン
-Username or email: ユーザー名またはメールアドレス
-Forgot password?: パスワードをお忘れですか？
-Don't have an account?: アカウントをお持ちではありませんか？
-Sign up: 登録
-Check Your Email: メールを確認してください。
-Please check your inbox for instructions on how to verify your account.: アカウントを認証するためのメールを送信しました。メールを確認し指示に従ってください。
-Resend email: メールを再送信
-Go to log in page.: ログイン
-Forgot Your Password?: パスワードを忘れた場合
-Enter your email address and we will send you instructions to reset your password.: パスワードのリセット方法を案内するメールをお送りします。メールアドレスを入力してください。
-Email address: メールアドレス
-Go back to log in page: ログインに戻る
-No whitespace is allowed.: 空白は使用できません。
-Too short.: 短いパスワードです。
-That is terribly long.: 非常に長いパスワードです。
-That password is great!: 良いパスワードです。
-That password is better.: 良いパスワードです。
-That password is okay.: 使用可能なパスワードです。
-That password confuses me, but might be okay.: 使用可能なパスワードです。
-Change Your Password: パスワードの変更
-Enter a new password below to change your password.: 変更後の新しいパスワードを入力してください。
-New password: 新しいパスワード
-Reset password: パスワードをリセット
-Create your Account: アカウントを登録する
-Already have an account?: 既にアカウントをお持ちの場合
-Log in: ログイン
-File size: サイズ順
-Alphabetical: 名前順
-Assets Library: アセット
-Use URL: URL
-Add video URL: 映像URLを追加
-Select Asset: 選択
-Your browser is too small: ブラウザ幅が小さすぎます
-Re:Earth needs at least 900px width to be used effectively. Please resize your browser window.: 横幅が900px以上になるようブラウザ幅を調節してください。
-OK: 確認
-Click here for more details.: 詳細はこちら
-Create New Project: 新規プロジェクト作成
-Project Name: プロジェクト名
-Select thumbnail image: サムネイル画像を選択
-Datasets: データセット
-Plugins: プラグイン
-Choose Project Type: プロジェクトタイプを選択
-classic: classic
-Create project with classic UI: classicタイプのプロヘクトを作成します
-Beta: Beta
-Create project with the latest features and UI system (projects might break without prior notice): 最新の機能とインターフェースでプロジェクトを作成します。（このプロジェクトは予告なしに破損したり、変更される場合があります）
-timeSince: '{{timeSince}}に変更'
-You have no projects in your workspace. Click the button above in the Quick Start to create a project now!: ワークスペースにプロジェクトがありません。クイックスタート内の「新規プロジェクト作成」ボタンをクリックして、プロジェクトを作成してください。
-Quick Start: クイックスタート
-User guide: ユーザーガイド
-New project: 新規プロジェクト作成
-New workspace: 新規ワークスペース作成
-'''s workspace': ' のワークスペース'
-Layer style: レイヤータイプ
-import: インポート
-Import to scene: シーンへ追加
-You are deleting a dataset. Layers that are linked to this dataset might show errors.: データセットを削除します。このデータセットとリンクされているレイヤーはエラーが発生する可能性があります。
-Please make sure your project doesn't rely on this dataset before proceeding.: プロジェクトがデータセットに依存していないことを確認してください。
-Connect with Google Drive: Googleドライブと連携
-Re:Earth supports uploading Google Sheets and CSV files.: Re:Earthは、GoogleスプレッドシートやCSVファイルに対応しています。
-sending...: 送信
-Add Dataset: データセットを追加
-Add dataset: データセットを追加
-Upload from your device: アップロード
-Supports CSV, JSON, GIS files: CSV, JSON, GISのファイルに対応
-Google Drive: Googleドライブ
-Upload CSV file: CSVファイルをアップロード
-Sorry, that service is unavailable at this time.: そのサービスはまだ利用できません。
-Other Source: その他
-No Dataset is here: データセットは存在しません
-Export type: ファイル形式
-Export: エクスポート
-Preview: プレビュー
-Layer selection: レイヤーを選択
-Selectable Layers: 選択可能なレイヤー
-Stories: ストーリー
-Delete Selected Layer: 選択中のレイヤーを削除
-Create New Folder: 新規フォルダ作成
-Add Layer: レイヤー追加
-Zoom To Layer: レイヤーへズーム
-Delete the selected item.: 選択中の項目を削除
-Clusters: クラスター
-Delete widget: ウィジェットを削除
-You are about to delete the selected widget. You will lose all data tied to this widget.: ウィジェットを削除しようとしています。ウィジェットに関連するデータも削除されます。
-Are you sure you would like to delete this widget?: 本当にウィジェットを削除しますか？
-Container: コンテナ
-Create Infobox: インフォボックス作成
-Dataset: データセット
-Pose Set: 設定済み
-Not Set: 未設定
-Altitude: 高度
-Check Pose: 確認
-Jump: ジャンプ
-Edit Pose: 編集
-Edit Position: 編集
-'#RRGGBBAA': '#RRGGBBAA'
-Red: 赤
-Green: 緑
-Blue: 青
-Alpha: アルファ
-This field is linked to {{datasetField}}.: この値は{datasetField}にリンクされています
-This field is not editable currently.: この値は現在変更できません
-Linkable data: リンク先
-Link to dataset: データセットからリンクする
-No linked data: 未リンク
-From: リンク先
-Overridden: 設定を上書き
-Parent.: 親.
-Reset this field: 設定をリセット
-Clear this field: 設定をリセット
-No selectable items: 選択可能なアイテムがありません
-Font family: フォント
-Font size: サイズ
-Field set: 設定
-Basic: インフォボックス
-Template: テンプレート
-template: テンプレート
-You are deleting the infobox and all its contents. Are you sure you want to do that?: インフォボックスとその内容を削除します。本当によろしいですか？
-List: リスト
-Padding: 余白
-Gap Spacing: 間隔
-Align Center: 中央に配置
-Enable Editor Mode: ウィジェットの配置を編集
-Close: 閉じる
-more options: その他の設定
-Add a tag group: タググループを追加
-Add a tag: タグを追加
-Auto: 自動
-Dark theme: ダークテーマ
-Light theme: ライトテーマ
-Account: アカウント
-Service language: 言語設定
-Color theme: カラーテーマ
-Change Password: パスワードを変更
-Change password: パスワードを変更
-In order to protect your account, make sure your password is unique and strong.: アカウントを安全に保つため、パスワードが十分に安全であることを確かめてください
-New password (for confirmation): 新しいパスワード
-Set your password now: 現在のパスワード
-Profile: プロフィール
-Profile picture: プロフィール画像
-Workspace List: ワークスペース一覧
-Assets: アセット
-Project List: プロジェクト一覧
-Enable basic authorization: ベーシック認証を有効化する
-Change site name: サイト名を変更
-Delete this dataset: このデータセットを削除
-Are you sure you want to delete it?: 本当に削除してよろしいですか？
-(These fields will be used for OGP as well as metadata for the public project): これらのフィールドは、SNS等に共有する際や公開プロジェクトの検索等に利用されます。
-Site settings: サイト設定
-Access your project, copy or edit the URL below.: 公開ページにアクセスするには以下のURLをコピーしてください。
-Once your project is published from the editor page the URL details will be shown here.: 編集画面からプロジェクトが公開されると、URLの詳細がここに表示されます。
-This project is published with search engine indexing enabled.: このプロジェクトは、検索エンジンのインデックスを有効にした状態で公開されています。
-This project is published with search engine indexing disabled.: このプロジェクトは、検索エンジンのインデックスを無効にした状態で公開されています。
-This project is not published.: このプロジェクトは、非公開です。
-No Title Project: プロジェクト名未設定
-No Description...: プロジェクト概要未設定
-(Your personal workspace): (パーソナルワークスペース)
-Add a team member: メンバーを追加
-Input an email address or a user name: メールアドレスもしくはユーザー名を入力
-Delete this workspace: ワークスペースを削除
-Once you delete a workspace, there is no going back. Please be certain.: ワークスペースを削除すると復元することはできません。よくお確かめください。
-Delete workspace: ワークスペース削除
-This will permanently delete the workspace and all related projects, assets and datasets for all team members.: この操作をすると、このワークスペース及び関連するすべてのプロジェクト・アセット・データセットが永久に削除されます。
-Please type your workspace name to continue.: 操作を続行するにはこのワークスペース名を入力してください。
-I am sure I want to delete this workspace.: ワークスペースを削除します。
-Reader: 閲覧
-Writer: 編集
-Maintainer: メンテナー
-Owner: オーナー
-Members: メンバー
-New member: 新規メンバー
-Workspace name: ワークスペース名
-No Title Workspace: 無題のワークスペース
-This is your personal workspace. Your projects and resources will be managed in this workspace.: ここは個人用のワークスペースです。
-All workspaces: すべてのワークスペース
-Double click here to write.: ダブルクリックで入力
-Move mouse here and click "+" to add content: マウスをここへ、“+”をクリックしコンテンツを追加
-Your account has been successfully verified! Feel free to login now.: メールアドレスが認証されました。ログインが可能です。
-Could not verify your signup. Please start the process over.: メールアドレスが認証できませんでした。もう一度最初からやり直してください。
-Failed to add one or more assets.: アセットの作成に失敗しました。
+Loading...: ロード中...
+Please select: 選択してください
+This function is currently experimental and remains somewhat unstable.: この機能は試験運用中です。不具合が生じる可能性があることをご了承ください。
+'Sort:': '並び替え:'
+Grid Layout: グリッドレイアウト
+List Layout: リストのレイアウト
+Version: バージョン
+Wrong file format: 誤ったファイル形式
+Choose: 選択
+Upload: アップロード
+Position Capture: 位置キャプチャ
+Latitude: 緯度
+Longitude: 経度
+Height: 高さ
+Current Position: 現在の位置
+Current Rotation: 現在の回転
+Heading: ヘディング
+Pitch: ピッチ
+Roll: ロール
+FOV: 視野角
+Camera Position Editor: カメラ位置エディタ
+Location: 位置
+value: 値
+Rotation: 回転
+Position Set: 位置セット
+Capture: キャプチャ
+New Item: 新規追加
+New Credit: 新しいクレジット
+min: 最小
+max: 最大
+Time Period Settings: 期間設定
+'* Start Time': '* 開始時間'
+Start time for the timeline: タイムラインの開始時間
+'* Current Time': '* 現在の時間'
+Current time should be between start and end time: 現在の時間は開始時間と終了時間の間である必要があります
+'* End Time': '* 終了時間'
+End time for the timeline: タイムラインの終了時間
+Please make sure the Current time must between the Start time and End Time.: 現在の時間は開始時間と終了時間の間である必要があります。
+set: 設定
+Set Time: 時間を設定
+Date: 日付
+Time: 時刻
+Time Zone: タイムゾーン
+Zoom Level Editor: ズームレベルエディター
+Failed to add one or more assets.: アセットの追加に失敗しました。
 Successfully added one or more assets.: アセットの追加に成功しました。
-Failed to delete one or more assets.: アセットの削除に失敗しまたした。
-One or more assets were successfully deleted.: アセットが削除されました。
-Successfully created workspace!: 新しいワークスペースの作成に成功しました！
-Failed to create project.: プロジェクトの作成に失敗しました。
-Default: デフォルト
-Failed to create story page on project creation.: プロジェクト作成時にストーリーページの作成に失敗しました。
-Successfully created project!: 新しいプロジェクトの作成に成功しました！
-Successfully created layer group: レイヤーが作成されました。
-Failed to create layer group: レイヤーの作成に失敗しました。
-Successfully added the dataset!: データセットの追加に成功しました。
-Failed to add the dataset.: データセットの追加に失敗しました。
-Successfully deleted the dataset!: ひとつのデータセットが削除されました。
-Failed to delete the dataset.: データセットの削除に失敗しました。
-Failed to publish your project.: プロジェクトの公開に失敗しました。
-Successfully published your project!: プロジェクトの公開に成功しました！
-Successfully published your project with search engine indexing!: 検索エンジンのインデックス含めてプロジェクトの公開に成功しました！
-Successfully unpublished your project. Now nobody can access your project.: プロジェクトは非公開状態です。現在、誰も閲覧することはできません。
-Successfully copied to clipboard!: クリップボードにコピーしました。
-Folder: 新規フォルダ
-Widget: ウィジェット
-Infobox: インフォボックス
-Tag: タグ
-Same label tag already exist. Please type different label.: 同じラベルのタグがすでに存在します。ラベルを変更してもう一度お試しください。
-Tag group has tags, you need to remove all tags under the tag group: タググループ内のタグをすべて削除してからタググループを削除してください。
-Failed to update account name.: アカウント名の変更に失敗しました。
-Failed to update password.: パスワードの更新に失敗しました。
-Successfully updated password!: パスワードの更新が完了しました。
-Failed to change language.: 言語の変更に失敗しました。
-Failed to change theme.: テーマの変更に失敗しました。
-Failed to delete dataset.: デーだセットの削除に失敗したました。
-Dataset was successfully deleted.: データセットが削除されました。
-Failed to archive project.: プロジェクトの非編集状態に失敗しました。
-Failed to unarchive project.: プロジェクトの非編集化の解除に失敗しました。
-Successfully archived the project.: プロジェクトを非編集状態にしました。
-Successfully unarchived the project. You can now edit this project.: プロジェクトの非編集化が解除されました。このプロジェクトは編集可能です。
-Failed to delete project.: プロジェクトの削除に失敗しました。
-Project was successfully deleted.: プロジェクトが削除されました。
-Failed to install plugin.: プラグインのインストールに失敗しました。
-Successfully installed plugin!: プラグインがインストールされました。
-Failed to uninstall plugin.: プラグインの削除に失敗しました。
-Successfully removed plugin.: プラグインが削除されました。
-Total Projects: 全てのプロジェクト
-New Project: 新規プロジェクト
-Failed to create workspace.: ワークスペースの作成に失敗しました。
-Sucessfully created a workspace!: 新しいワークスペースの作成に成功しました！
-Failed to update workspace name.: ワークスペース名の変更に失敗しました。
-You have changed the workspace's name.: ワークスペース名を変更しました。
-Failed to delete workspace.: ワークスペースの削除に失敗しました。
-Workspace was successfully deleted.: ワークスペースを削除しました。
-Failed to add one or more members.: メンバーの追加に失敗しました。
-Successfully added member(s) to the workspace!: このワークスペースに新しいメンバーを追加しました。
-Failed to delete member from the workspace.: メンバーの削除に失敗しました。
-Successfully removed member from the workspace.: このワークスペースからひとりのメンバーを削除しました。
-Some error has occurred. Please wait a moment and try again.: エラーが発生しました。少し待ってからもう一度試してみてください。
+Failed to delete one or more assets.: アセットの削除に失敗しました。
+One or more assets were successfully deleted.: アセットの削除に成功しました。
 Failed to add layer.: レイヤーの追加に失敗しました。
-Successfully added a new layer: 新しいレイヤーの追加に成功しました。
-Failed to update the layer.: レイヤーのアップデートに失敗しました。
-Successfully updated a the layer!: レイヤーのアップデートに成功しました！
-Failed to remove the layer.: レイヤーの削除に失敗しました。
-Successfully removed a the layer!: レイヤーの削除に成功しました！
-Failed to add layerStyle.: レイヤースタイルの追加に失敗しました。
-Successfully added a new layerStyle!: 新しいレイヤースタイルの追加に成功しました！
-Failed to update the layerStyle.: レイヤースタイルのアップデートに失敗しました。
-Successfully updated a the layerStyle!: レイヤースタイルのアップデートに成功しました！
-Failed to remove the layerStyle.: レイヤースタイルの削除に失敗しました。
-Successfully removed a the layerStyle!: レイヤースタイルの削除に成功しました！
-Failed to upgrade plugin.: プラグインのアップグレードに失敗しました。
-Successfully upgraded plugin!: プラグインのアップグレードに成功しました！
-Successfully uninstalled plugin.: プラグインのアンインストールに成功しました。
-Failed to publish project.: プロジェクト公開に失敗しました。
-Failed to update project.: プロジェクトのアップデートに失敗しました。
-Successfully updated project!: プロジェクトのアップデートに成功しました！
-Successfully archive project!: プロジェクトのアーカイブに成功しました！
-Successfully delete project!: プロジェクトの削除に成功しました！
-Failed to update property.: プロパティのアップデートに失敗しました。
+Successfully added a new layer: 新しいレイヤーの追加に成功しました
+Failed to update the layer.: レイヤーの更新に失敗しました。
+Successfully updated the layer!: レイヤーの更新に成功しました！
+Failed to delete the feature.: フィーチャーの削除に失敗しました。
+Successfully deleted the feature!: フィーチャーの削除に成功しました！
 Failed to create block.: ブロックの作成に失敗しました。
-Successfullly created a block!: ブロックの作成に成功しました！
+Successfully created a block!: ブロックの作成に成功しました！
 Failed to delete block.: ブロックの削除に失敗しました。
 Block was successfully deleted.: ブロックの削除に成功しました。
 Failed to move block.: ブロックの移動に失敗しました。
 Block was successfully moved.: ブロックの移動に成功しました。
+Failed to remove the layer.: レイヤーの削除に失敗しました。
+Successfully removed the layer!: レイヤーの削除に成功しました！
+Failed to update the custom property schema.: カスタムプロパティスキーマの更新に失敗しました。
+Successfully updated the custom property schema!: カスタムプロパティスキーマの更新に成功しました！
+Failed to update the custom property title.: カスタムプロパティタイトルの更新に失敗しました
+Successfully updated the custom property title!: カスタムプロパティタイトルの更新に成功しました！
+Failed to remove the custom property.: カスタムプロパティの削除に失敗しました
+Successfully removed the custom property!: カスタムプロパティの削除に成功しました！
+Failed to add layer style.: レイヤースタイルの追加に失敗しました。
+Successfully added a new layer style!: 新しいレイヤースタイルの追加に成功しました！
+Failed to update the layerStyle.: レイヤースタイルの更新に失敗しました。
+Successfully updated a the layerStyle!: レイヤースタイルの更新に成功しました！
+Failed to delete the layer style.: レイヤースタイルの削除に失敗しました。
+Successfully deleted the layer style!: レイヤースタイルの削除に成功しました！
+Failed to update user password.: ユーザーパスワードの更新に失敗しました。
+Successfully updated user password!: ユーザーパスワードの更新に成功しました！
+Failed to delete user.: ユーザーの削除に失敗しました。
+Successfully delete user!: ユーザーの削除に成功しました！
+Failed to change language.: 言語の変更に失敗しました。
+Successfully updated user language!: ユーザーの言語が更新されました！
+Failed to install plugin.: プラグインのインストールに失敗しました。
+Successfully installed plugin!: プラグインがインストールされました。
+Failed to upgrade plugin.: プラグインのアップグレードに失敗しました。
+Successfully upgraded plugin!: プラグインのアップグレードに成功しました！
+Failed to uninstall plugin.: プラグインの削除に失敗しました。
+Successfully uninstalled plugin.: プラグインのアンインストールに成功しました。
+Failed to create project.: プロジェクトの作成に失敗しました。
+Default: デフォルト
+Failed to create story page on project creation.: プロジェクト作成時にストーリーページの作成に失敗しました。
+Successfully created project!: 新しいプロジェクトの作成に成功しました！
+Failed to publish project.: プロジェクト公開に失敗しました。
+Successfully published your scene!: シーンの公開に成功しました！
+Successfully published your project with search engine indexing!: 検索エンジンのインデックス含めてプロジェクトの公開に成功しました！
+Successfully unpublished your scene. Now nobody can access your scene.: シーンは非公開状態です。現在、誰も閲覧することはできません。
+Failed to update project.: プロジェクトのアップデートに失敗しました。
+Successfully updated project!: プロジェクトのアップデートに成功しました！
+Failed to move to the Recycle bin.: ゴミ箱への移動に失敗しました。
+Failed to recover the project!: プロジェクトの復元に失敗しました。
+Successfully moved to Recycle bin!: ゴミ箱への移動に成功しました！
+Successfully recovered the project!: プロジェクトの復元に成功しました！
+Failed to archive project.: プロジェクトの非編集状態に失敗しました。
+Failed to unarchive project.: プロジェクトの非編集化の解除に失敗しました。
+Successfully archive project!: プロジェクトのアーカイブに成功しました！
+Successfully unarchived the project. You can now edit this project.: プロジェクトの非編集化が解除されました。このプロジェクトは編集可能です。
+Failed to delete project.: プロジェクトの削除に失敗しました。
+Successfully delete project!: プロジェクトの削除に成功しました！
+Failed to export project.: プロジェクトのエクスポートに失敗しました。
+Successfully exported project!: プロジェクトのエクスポートに成功しました！
+Failed to import project.: プロジェクトのインポートに失敗しました。
+Successfully imported project!: プロジェクトのインポートに成功しました！
+Failed to update property.: プロパティのアップデートに失敗しました。
+Successfully updated the property value!: プロパティの値が更新されました！
 Failed to create story.: ストーリーの作成に失敗しました。
 Successfully created a story!: ストーリーの作成に成功しました！
-Failed to update story.: ストーリーのアップデートに失敗しました。
-Successfully updated a story!: ストーリーのアップデートに成功しました！
+Failed to update story.: ストーリーの更新に失敗しました。
+Successfully updated a story!: ストーリーの更新に成功しました！
 Failed to publish story.: ストーリーの公開に失敗しました。
 Successfully published your story!: ストーリーの公開に成功しました！
-Successfully published your story with search engine indexing!: 検索エンジンのインデックス含めてストーリーの公開に成功しました！
+Successfully published your story with search engine indexing!: 検索エンジンのインデックスを含めてストーリーの公開に成功しました！
 Successfully unpublished your story. Now nobody can access your story.: ストーリーは非公開状態です。現在、誰も閲覧することはできません。
 Failed to create page.: ページの作成に失敗しました。
-Successfullly created a page!: ページの作成に成功しました！
+Successfully created a page!: ページの作成に成功しました！
 Failed to delete page.: ページの削除に失敗しました。
 Page was successfully deleted.: ページの削除に成功しました。
 Failed to move page.: ページの移動に失敗しました。
 Page was successfully moved.: ページの移動に成功しました。
-Failed to update page.: ページのアップデートに失敗しました。
-Successfullly updated a page!: ページのアップデートに成功しました！
-Failed to add widget.: ウィジェットの作成に失敗しました。
-Failed to update widget.: ウィジェットのアップデートに失敗しました。
+Failed to update page.: ページの更新に失敗しました。
+Successfully updated a page!: ページの更新に成功しました！
+Failed to add widget.: ウィジェットの追加に失敗しました。
+Failed to update widget.: ウィジェットの更新に失敗しました。
 Failed to remove widget.: ウィジェットの削除に失敗しました。
-Failed to update widget alignment.: ウィジェットのアラインメントのアップデートに失敗しました。
-Failed to update the widget align system.: ウィジェットのアラインシステムのアップデートに失敗しました。
+Failed to update widget alignment.: ウィジェットの配置を更新できませんでした。
+Failed to update the widget align system.: ウィジェットの配置システムを更新できませんでした。
+Failed to create workspace.: ワークスペースの作成に失敗しました。
+Successfully created workspace!: ワークスペースの作成に成功しました！
+Failed to delete workspace.: ワークスペースの削除に失敗しました。
+Successfully deleted workspace!: ワークスペースの削除に成功しました！
+Failed to update workspace.: ワークスペースの更新に失敗しました。
+Successfully updated workspace!: ワークスペースの更新に成功しました！
+Failed to add member to workspace.: ワークスペースへのメンバー追加に失敗しました。
+Successfully added member to workspace!: ワークスペースへのメンバー追加に成功しました！
+Failed to remove member from workspace.: ワークスペースからメンバーの削除に失敗しました。
+Successfully removed member from workspace!: ワークスペースからメンバーの削除に成功しました！
+Failed to update member in workspace.: ワークスペースのメンバー更新に失敗しました。
+Successfully updated member in workspace!: ワークスペースのメンバー更新に成功しました！

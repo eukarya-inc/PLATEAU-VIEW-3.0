@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"encoding/csv"
 	"fmt"
 	"os"
 
@@ -32,7 +33,8 @@ func PrepareMaxLOD(ctx context.Context, cw *CMSWrapper, mc MergeContext) (err er
 	allData := bytes.NewBuffer(nil)
 
 	first := false
-	for _, ft := range featureTypes {
+	found := false
+	for _, ft := range mc.FeatureTypes {
 		fi, ok := allFeatureItems[ft]
 		if !ok || fi.MaxLOD == "" {
 			log.Infofc(ctx, "no maxlod for %s", ft)
@@ -60,10 +62,31 @@ func PrepareMaxLOD(ctx context.Context, cw *CMSWrapper, mc MergeContext) (err er
 		if _, err := allData.ReadFrom(b); err != nil {
 			return fmt.Errorf("failed to read data for %s: %w", ft, err)
 		}
+
+		// if buffer is not ended with \n, add it
+		if allData.Len() > 0 {
+			if allData.Bytes()[allData.Len()-1] != '\n' {
+				allData.WriteByte('\n')
+			}
+		}
+
+		found = true
 	}
 
-	r := bytes.NewReader(allData.Bytes())
-	aid, err := cw.Upload(ctx, fileName, r)
+	if !found {
+		log.Infofc(ctx, "no maxlod data found in the city")
+		return nil
+	}
+
+	buf := allData.Bytes()
+
+	// validate csv
+	if _, err := csv.NewReader(bytes.NewReader(buf)).ReadAll(); err != nil {
+		return fmt.Errorf("invalid maxlod csv data: %w", err)
+	}
+
+	// upload
+	aid, err := cw.UploadNormally(ctx, fileName, bytes.NewReader(buf))
 	if err != nil {
 		return fmt.Errorf("failed to upload maxlod data: %w", err)
 	}

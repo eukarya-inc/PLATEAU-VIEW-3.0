@@ -36,6 +36,7 @@ func TestPlateauDataset_ToWards(t *testing.T) {
 			Name:           "hoge区",
 			Type:           plateauapi.AreaTypeWard,
 			Code:           plateauapi.AreaCode("11112"),
+			ParentID:       lo.ToPtr(plateauapi.NewID("11111", plateauapi.TypeCity)),
 			PrefectureID:   plateauapi.NewID("11", plateauapi.TypePrefecture),
 			PrefectureCode: plateauapi.AreaCode("11"),
 			CityID:         plateauapi.NewID("11111", plateauapi.TypeCity),
@@ -46,6 +47,7 @@ func TestPlateauDataset_ToWards(t *testing.T) {
 			Name:           "foo区",
 			Type:           plateauapi.AreaTypeWard,
 			Code:           plateauapi.AreaCode("11113"),
+			ParentID:       lo.ToPtr(plateauapi.NewID("11111", plateauapi.TypeCity)),
 			PrefectureID:   plateauapi.NewID("11", plateauapi.TypePrefecture),
 			PrefectureCode: plateauapi.AreaCode("11"),
 			CityID:         plateauapi.NewID("11111", plateauapi.TypeCity),
@@ -75,12 +77,12 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1.zip",
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1_no_texture.zip",
 			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod2.zip",
-			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod1.zip",
+			"https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod11.zip",
 		},
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 			Name:               "建築物モデル（hoge区）",
 			Description:        lo.ToPtr("desc"),
@@ -96,9 +98,11 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				CMSItemID: "cityid",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/BLDG/details/cityid",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -108,6 +112,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 				{
@@ -117,6 +122,7 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod1_no_texture/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureNone),
 				},
 				{
@@ -126,11 +132,12 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11112_hoge-ku_lod2/tileset.json",
 					ParentID: plateauapi.NewID("11112_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(2),
+					LodEx:    nil,
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11113_bldg", plateauapi.TypeDataset),
 			Name:               "建築物モデル（foo区）",
 			Description:        lo.ToPtr("desc"),
@@ -146,18 +153,21 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 			TypeID:             plateauapi.NewID("bldg", plateauapi.TypeDatasetType),
 			TypeCode:           "bldg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"cmsUrl": "https://example.com/cityid",
-				"stage":  string(stageAlpha),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				CMSItemID: "cityid",
+				CMSURL:    "https://example.com/workspace/ws/project/prj/content/BLDG/details/cityid",
+				Stage:     string(stageAlpha),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
-					ID:       plateauapi.NewID("11113_bldg_lod1", plateauapi.TypeDatasetItem),
+					ID:       plateauapi.NewID("11113_bldg_lod11", plateauapi.TypeDatasetItem),
 					Format:   plateauapi.DatasetFormatCesium3dtiles,
-					Name:     "LOD1",
-					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod1/tileset.json",
+					Name:     "LOD1.1",
+					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_bldg_3dtiles_11113_foo-ku_lod11/tileset.json",
 					ParentID: plateauapi.NewID("11113_bldg", plateauapi.TypeDataset),
 					Lod:      lo.ToPtr(1),
+					LodEx:    lo.ToPtr(1),
 					Texture:  lo.ToPtr(plateauapi.TextureTexture),
 				},
 			},
@@ -212,13 +222,21 @@ func TestPlateauDataset_ToDatasets_Bldg(t *testing.T) {
 	layerNames := LayerNames{}
 
 	opts := ToPlateauDatasetsOptions{
-		CMSURL:      "https://example.com/",
+		ID:          "cityid",
 		Area:        area,
 		Spec:        spec,
 		DatasetType: dts,
 		LayerNames:  layerNames,
 		FeatureType: &FeatureType{},
 		Year:        2024,
+		CMSInfo: CMSInfo{
+			CMSURL:      "https://example.com",
+			WorkspaceID: "ws",
+			ProjectID:   "prj",
+			ModelIDMap: ModelIDMap{
+				"bldg": "BLDG",
+			},
+		},
 	}
 	res, warning := item.toDatasets(opts)
 	assert.Nil(t, warning)
@@ -254,8 +272,8 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_tnm_AAA", plateauapi.TypeDataset),
 			Name:               "津波浸水想定区域モデル AAA!（bar市）",
 			Subname:            lo.ToPtr("AAA!"),
@@ -269,6 +287,7 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 			CityCode:           lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:             plateauapi.NewID("tnm", plateauapi.TypeDatasetType),
 			TypeCode:           "tnm",
+			Ar:                 true,
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -289,7 +308,7 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 				},
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_tnm_BBB", plateauapi.TypeDataset),
 			Name:               "津波浸水想定区域モデル BBB!（bar市）",
 			Subname:            lo.ToPtr("BBB!"),
@@ -303,6 +322,7 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 			CityCode:           lo.ToPtr(plateauapi.AreaCode("11111")),
 			TypeID:             plateauapi.NewID("tnm", plateauapi.TypeDatasetType),
 			TypeCode:           "tnm",
+			Ar:                 true,
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -353,7 +373,6 @@ func TestPlateauDataset_ToDatasets_Tnm(t *testing.T) {
 	layerNames := LayerNames{}
 
 	opts := ToPlateauDatasetsOptions{
-		CMSURL:      "https://example.com/cityid",
 		Area:        area,
 		Spec:        spec,
 		DatasetType: dts,
@@ -413,8 +432,8 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_natl_yabegawa_haegawa", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 矢部川水系八重川（国管理区間）（bar市）",
 			Subname:            lo.ToPtr("矢部川水系八重川（国管理区間）"),
@@ -429,8 +448,9 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -457,7 +477,7 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 				Admin: plateauapi.RiverAdminNational,
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_natl_yodogawa_ujigawa", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 淀川水系宇治川（国管理区間）（bar市）",
 			Subname:            lo.ToPtr("淀川水系宇治川（国管理区間）"),
@@ -472,8 +492,9 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -491,7 +512,7 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 				Admin: plateauapi.RiverAdminNational,
 			},
 		},
-		&plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_fld_pref_yodogawa_ujigawa-p1-0001", plateauapi.TypeDataset),
 			Name:               "洪水浸水想定区域モデル 淀川水系宇治川（都道府県管理区間）（bar市）",
 			Subname:            lo.ToPtr("淀川水系宇治川（都道府県管理区間）"),
@@ -506,8 +527,9 @@ func TestPlateauDataset_ToDatasets_Fld(t *testing.T) {
 			TypeID:             plateauapi.NewID("fld", plateauapi.TypeDatasetType),
 			TypeCode:           "fld",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -609,8 +631,8 @@ func TestPlateauDataset_ToDatasets_Veg(t *testing.T) {
 		Group: "group1/group2",
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_veg", plateauapi.TypeDataset),
 			Name:               "植生モデル（bar市）",
 			Description:        lo.ToPtr("desc"),
@@ -624,8 +646,9 @@ func TestPlateauDataset_ToDatasets_Veg(t *testing.T) {
 			TypeCode:           "veg",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
 			Groups:             []string{"group1", "group2"},
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
@@ -721,8 +744,8 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 		}`,
 	}
 
-	expected := []plateauapi.Dataset{
-		&plateauapi.PlateauDataset{
+	expected := []*plateauapi.PlateauDataset{
+		{
 			ID:                 plateauapi.NewID("11111_gen_99", plateauapi.TypeDataset),
 			Name:               "汎用都市オブジェクトモデル GEN（bar市）",
 			Subname:            lo.ToPtr("GEN"),
@@ -738,17 +761,18 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 			TypeID:             plateauapi.NewID("gen", plateauapi.TypeDatasetType),
 			TypeCode:           "gen",
 			PlateauSpecMinorID: plateauapi.NewID("3.2", plateauapi.TypePlateauSpec),
-			Admin: map[string]any{
-				"stage": string(stageBeta),
+			Ar:                 true,
+			Admin: &plateauapi.Admin{
+				Stage: string(stageBeta),
 			},
 			Groups: []string{"group"},
 			Items: []*plateauapi.PlateauDatasetItem{
 				{
-					ID:     plateauapi.NewID("11111_gen_99", plateauapi.TypeDatasetItem),
-					Format: plateauapi.DatasetFormatMvt,
-					Name:   "GEN",
-					URL:    "https://example.com/11111_bar-shi_city_2023_citygml_1_op_gen_99_mvt_lod0/{z}/{x}/{y}.mvt",
-					// Lod:      lo.ToPtr(0),
+					ID:       plateauapi.NewID("11111_gen_99", plateauapi.TypeDatasetItem),
+					Format:   plateauapi.DatasetFormatMvt,
+					Name:     "GEN LOD0",
+					URL:      "https://example.com/11111_bar-shi_city_2023_citygml_1_op_gen_99_mvt_lod0/{z}/{x}/{y}.mvt",
+					Lod:      lo.ToPtr(0),
 					Layers:   []string{"gen_99"},
 					ParentID: plateauapi.NewID("11111_gen_99", plateauapi.TypeDataset),
 				},
@@ -799,8 +823,10 @@ func TestPlateauDataset_ToDatasets_Gen(t *testing.T) {
 		Spec:        spec,
 		DatasetType: dts,
 		LayerNames:  layerNames,
-		FeatureType: &FeatureType{},
-		Year:        2023,
+		FeatureType: &FeatureType{
+			HideLOD: true,
+		},
+		Year: 2023,
 	}
 	res, warning := item.toDatasets(opts)
 	assert.Nil(t, warning)

@@ -26,16 +26,15 @@ func NewRepoWrapper(repo Repo, updater RepoUpdater) *RepoWrapper {
 	}
 }
 
-func (a *RepoWrapper) SetMinCacheDuration(d time.Duration) {
-	a.minCacheDuration = d
-}
-
 func (a *RepoWrapper) GetRepo() Repo {
+	if a == nil {
+		return nil
+	}
 	return a.repo
 }
 
 func (a *RepoWrapper) IsAvailable() bool {
-	return a.repo != nil
+	return a != nil && a.repo != nil
 }
 
 func (a *RepoWrapper) SetRepo(repo Repo) {
@@ -50,8 +49,12 @@ func (a *RepoWrapper) SetName(name string) {
 	a.name = name
 }
 
+func (a *RepoWrapper) SetMinCacheDuration(d time.Duration) {
+	a.minCacheDuration = d
+}
+
 func (a *RepoWrapper) Update(ctx context.Context) (bool, error) {
-	if a.updater == nil {
+	if a == nil || a.updater == nil {
 		return false, nil
 	}
 
@@ -72,6 +75,9 @@ func (a *RepoWrapper) Update(ctx context.Context) (bool, error) {
 }
 
 func (a *RepoWrapper) UpdatedAt() time.Time {
+	if a == nil {
+		return time.Time{}
+	}
 	a.lock.RLock()
 	defer a.lock.RUnlock()
 	return a.updatedAt
@@ -97,6 +103,9 @@ func (a *RepoWrapper) getNow() time.Time {
 var _ Repo = (*RepoWrapper)(nil)
 
 func (a *RepoWrapper) Name() string {
+	if a == nil {
+		return "wrapper(empty)"
+	}
 	if a.name != "" {
 		return a.name
 	}

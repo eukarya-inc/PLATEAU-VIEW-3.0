@@ -1,0 +1,76 @@
+fragment Workspace on Workspace {
+  id
+  name
+  personal
+  members {
+    userId
+    role
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+mutation CreateWorkspace($input: CreateWorkspaceInput!) {
+  createWorkspace(input: $input) {
+    workspace {
+      ...Workspace
+    }
+  }
+}
+
+query GetWorkspaces {
+  me {
+    id
+    workspaces {
+      ...Workspace
+    }
+  }
+}
+
+query GetWorkspaceById($workspaceId: ID!) {
+  node(id: $workspaceId, type: WORKSPACE) {
+    __typename
+    ...Workspace
+  }
+}
+
+mutation UpdateWorkspace($input: UpdateWorkspaceInput!) {
+  updateWorkspace(input: $input) {
+    workspace {
+      ...Workspace
+    }
+  }
+}
+
+mutation DeleteWorkspace($input: DeleteWorkspaceInput!) {
+  deleteWorkspace(input: $input) {
+    workspaceId
+  }
+}
+
+mutation AddMemberToWorkspace($input: AddMemberToWorkspaceInput!) {
+  addMemberToWorkspace(input: $input) {
+    workspace {
+      ...Workspace
+    }
+  }
+}
+
+mutation RemoveMemberFromWorkspace($input: RemoveMemberFromWorkspaceInput!) {
+  removeMemberFromWorkspace(input: $input) {
+    workspace {
+      ...Workspace
+    }
+  }
+}
+
+mutation UpdateMemberOfWorkspace($input: UpdateMemberOfWorkspaceInput!) {
+  updateMemberOfWorkspace(input: $input) {
+    workspace {
+      ...Workspace
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import { useSetAtom } from "jotai";
-import { useCallback, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useState } from "react";
 
+import { useIsCityProject } from "../../states/environmentVariables";
 import {
   templatesAtom,
   updateTemplateAtom,
@@ -14,6 +15,19 @@ import { useTemplateClient } from "./useTemplateClient";
 export default () => {
   const client = useTemplateClient();
   const [isSaving, setIsSaving] = useState(false);
+
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const templatesFromAtom = useAtomValue(templatesAtom);
+  const [isCityProject] = useIsCityProject();
+  useEffect(() => {
+    if (isCityProject) {
+      client.findAllForCity().then(data => {
+        setTemplates(data ?? []);
+      });
+    } else {
+      setTemplates(templatesFromAtom);
+    }
+  }, [templatesFromAtom, isCityProject, client]);
 
   const updateTemplate = useSetAtom(updateTemplateAtom);
   const addTemplate = useSetAtom(addTemplateAtom);
@@ -30,8 +44,10 @@ export default () => {
       })();
 
       if (isUpdate) {
+        setTemplates(p => p.map(v => (v.id === nextTemplate.id ? nextTemplate : v)));
         updateTemplate(nextTemplate);
       } else {
+        setTemplates(p => [...p, nextTemplate]);
         addTemplate(nextTemplate);
       }
 
@@ -46,6 +62,7 @@ export default () => {
       if (!templateId) return;
       await client.delete(templateId);
 
+      setTemplates(p => p.filter(v => v.id !== templateId));
       removeTemplateById(templateId);
     },
     [client, removeTemplateById],
@@ -53,7 +70,7 @@ export default () => {
 
   return {
     isSaving,
-    templatesAtom,
+    templates,
     saveTemplate,
     removeTemplate,
   };

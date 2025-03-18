@@ -14,6 +14,7 @@ import { useDatasetById } from "../../../shared/graphql";
 import { DatasetFragmentFragment } from "../../../shared/graphql/types/catalog";
 import { updateSettingAtom } from "../../../shared/states/setting";
 import { generateID } from "../../../shared/utils/id";
+import { useCityOrPlateauDataset } from "../../hooks/useIsCityOrPlateauDataset";
 import {
   EditorButton,
   EditorSection,
@@ -30,10 +31,7 @@ import { FieldComponentsPage } from "./FieldComponentsPage";
 import { GeneralPage } from "./GeneralPage";
 import { StatusPage } from "./StatusPage";
 
-// TODO: use plateview dataset type
-export type EditorDataset = DatasetFragmentFragment & {
-  published?: boolean;
-};
+export type EditorDataset = DatasetFragmentFragment;
 
 export type EditorDatasetSectionProps = {
   cache?: EditorCache;
@@ -64,8 +62,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const [dataId, setDataId] = useState<string | undefined>();
   const [isSaving, setIsSaving] = useState(false);
 
-  const { settingsAtom, saveSetting } = useSettingsAPI();
-  const settings = useAtomValue(settingsAtom);
+  const { settings, saveSetting } = useSettingsAPI();
 
   const highlightedLayer = useAtomValue(highlightedLayersAtom)?.[0];
   const selectedLayer = useAtomValue(layerSelectionAtom)?.[0];
@@ -75,6 +72,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
   const dataset = useMemo(() => {
     return query.data?.node;
   }, [query]);
+
+  const isCityOrPlateauDataset = useCityOrPlateauDataset(dataset);
 
   const tree = useMemo(() => {
     if (!dataset) return [];
@@ -94,6 +93,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
           dataId: DEFAULT_SETTING_DATA_ID,
           type: "folder",
         },
+        show: isCityOrPlateauDataset,
         children: [
           {
             name: "General",
@@ -154,6 +154,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
               dataId: item.id,
               type: "fieldComponents",
             },
+            show: isCityOrPlateauDataset,
           },
           {
             name: "Feature Inspector",
@@ -163,11 +164,12 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
               dataId: item.id,
               type: "featureInspector",
             },
+            show: isCityOrPlateauDataset,
           },
         ],
       })),
     ] as EditorTreeItemType[];
-  }, [dataset, settings]);
+  }, [dataset, settings, isCityOrPlateauDataset]);
 
   const treeRef = useRef(tree);
   treeRef.current = tree;
@@ -254,6 +256,8 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const handleApply = useCallback(() => {
+    if (!dataset) return;
+
     if (draftSetting) {
       cache?.set(`dataset-${dataset.id}-${dataId}`, cloneDeep(draftSetting));
     }
@@ -264,9 +268,11 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
         updateSetting(cachedSetting as Setting);
       }
     });
-  }, [cache, dataId, dataset?.id, dataset?.items, draftSetting, updateSetting]);
+  }, [cache, dataId, dataset, draftSetting, updateSetting]);
 
   const handleSave = useCallback(() => {
+    if (!dataset) return;
+
     // Save all settings belongs to current dataset
     setIsSaving(true);
     const savingTasks: Promise<void>[] = [];
@@ -296,7 +302,7 @@ export const EditorDatasetSection: FC<EditorDatasetSectionProps> = ({ cache, edi
       .finally(() => {
         setIsSaving(false);
       });
-  }, [dataId, dataset?.id, dataset?.items, cache, draftSetting, editorNoticeRef, saveSetting]);
+  }, [dataId, dataset, cache, draftSetting, editorNoticeRef, saveSetting]);
 
   return layer && dataset ? (
     <EditorSection

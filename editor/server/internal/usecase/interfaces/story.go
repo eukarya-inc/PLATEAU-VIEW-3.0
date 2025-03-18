@@ -34,6 +34,8 @@ type UpdateStoryInput struct {
 	PublicImage       *string
 	PublicNoIndex     *bool
 	DeletePublicImage *bool
+	EnableGa          *bool
+	TrackingID        *string
 }
 
 type MoveStoryInput struct {
@@ -149,4 +151,6 @@ type Storytelling interface {
 	CreateBlock(context.Context, CreateBlockParam, *usecase.Operator) (*storytelling.Story, *storytelling.Page, *storytelling.Block, int, error)
 	RemoveBlock(context.Context, RemoveBlockParam, *usecase.Operator) (*storytelling.Story, *storytelling.Page, *id.BlockID, error)
 	MoveBlock(context.Context, MoveBlockParam, *usecase.Operator) (*storytelling.Story, *storytelling.Page, *id.BlockID, int, error)
+
+	ImportStory(context.Context, id.SceneID, *[]byte) (*storytelling.Story, error)
 }

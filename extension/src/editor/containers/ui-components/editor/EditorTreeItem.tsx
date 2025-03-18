@@ -19,6 +19,7 @@ export type EditorTreeItemType = {
   name: string;
   property?: any;
   edited?: boolean;
+  show?: boolean;
   children?: EditorTreeItemType[];
 };
 
@@ -58,6 +59,10 @@ export const EditorTreeItem: React.FC<EditorTreeItemProps> = ({
   const handleOpen = useCallback(() => {
     onExpandClick?.(item.id);
   }, [item, onExpandClick]);
+
+  if (item.show === false) {
+    return null;
+  }
 
   return (
     <>

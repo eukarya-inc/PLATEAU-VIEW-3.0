@@ -1,0 +1,28 @@
+query GetMe {
+  me {
+    id
+    name
+    email
+    myWorkspaceId
+    lang
+  }
+}
+
+query SearchUser($email: String!) {
+  searchUser(nameOrEmail: $email) {
+    id
+    name
+    email
+  }
+}
+
+mutation UpdateMe($input: UpdateMeInput!) {
+  updateMe(input: $input) {
+    me {
+      id
+      name
+      email
+      lang
+    }
+  }
+}

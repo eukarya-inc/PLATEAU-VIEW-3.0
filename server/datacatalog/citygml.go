@@ -15,14 +15,16 @@ import (
 	"github.com/samber/lo"
 )
 
-type CityGMLFilesResponse struct {
-	CityCode         string       `json:"cityCode"`
-	CityName         string       `json:"cityName"`
-	Year             int          `json:"year"`
-	RegistrationYear int          `json:"registrationYear"`
-	Spec             string       `json:"spec"`
-	URL              string       `json:"url"`
-	Files            CityGMLFiles `json:"files"`
+type CityGMLFilesCity struct {
+	CityCode         string                        `json:"cityCode"`
+	CityName         string                        `json:"cityName"`
+	Year             int                           `json:"year"`
+	RegistrationYear int                           `json:"registrationYear"`
+	Spec             string                        `json:"spec"`
+	URL              string                        `json:"url"`
+	Files            CityGMLFiles                  `json:"files"`
+	MetadataZipUrls  []string                      `json:"metadataZipUrls"`
+	FeatureTypes     map[string]CityGMLFeatureType `json:"featureTypes,omitempty"`
 }
 
 type CityGMLFiles = map[string][]CityGMLFile
@@ -33,7 +35,11 @@ type CityGMLFile struct {
 	URL      string `json:"url"`
 }
 
-func fetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*CityGMLFilesResponse, error) {
+type CityGMLFeatureType struct {
+	Name string `json:"name"`
+}
+
+func FetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*CityGMLFilesCity, error) {
 	n, err := r.Node(ctx, plateauapi.CityGMLDatasetIDFrom(plateauapi.AreaCode(id)))
 	if err != nil {
 		return nil, err
@@ -64,23 +70,10 @@ func fetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		return nil, nil
 	}
 
-	admin, ok := citygml.Admin.(map[string]any)
-	if !ok || admin == nil {
-		return nil, nil
-	}
-
-	maxlodURLs, ok := admin["maxlod"].([]string)
-	if !ok {
-		return nil, nil
-	}
-
-	citygmlURLs, ok := admin["citygmlUrl"].([]string)
-	if !ok {
-		return nil, nil
-	}
+	admin := plateauapi.AdminFrom(citygml.Admin)
 
 	var gurls []*url.URL
-	citygmlAssetID, _ := admin["citygmlAssetId"].(string)
+	citygmlAssetID := admin.CityGMLAssetID
 	if citygmlAssetID != "" {
 		mds := plateaucms.GetAllCMSMetadataFromContext(ctx)
 		md := mds.FindByYear(citygml.RegistrationYear)
@@ -107,13 +100,34 @@ func fetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		gurls = gmlURLs(asset.File.Paths(), assetBase)
 	}
 
-	data, err := fetchCSVs(ctx, maxlodURLs, citygmlURLs)
+	data, err := fetchCSVs(ctx, admin.MaxLODURLs, admin.CityGMLURLs)
 	if err != nil {
 		return nil, err
 	}
 
 	files := csvToCityGMLFilesResponse(data, gurls)
-	return &CityGMLFilesResponse{
+
+	// feature types
+	datasetTypes, err := r.DatasetTypes(ctx, &plateauapi.DatasetTypesInput{
+		Category: lo.ToPtr(plateauapi.DatasetTypeCategoryPlateau),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get dataset types: %w", err)
+	}
+
+	featureTypes := make(map[string]CityGMLFeatureType)
+	if datasetTypes != nil {
+		for k := range files {
+			for _, t := range datasetTypes {
+				if t.GetCode() == k {
+					featureTypes[k] = CityGMLFeatureType{Name: t.GetName()}
+					break
+				}
+			}
+		}
+	}
+
+	return &CityGMLFilesCity{
 		CityCode:         string(citygml.CityCode),
 		CityName:         city.Name,
 		Year:             citygml.Year,
@@ -121,6 +135,8 @@ func fetchCityGMLFiles(ctx context.Context, r plateauapi.Repo, id string) (*City
 		Spec:             spec.Version,
 		URL:              citygml.URL,
 		Files:            files,
+		MetadataZipUrls:  citygml.MetadataZipUrls,
+		FeatureTypes:     featureTypes,
 	}, nil
 }
 

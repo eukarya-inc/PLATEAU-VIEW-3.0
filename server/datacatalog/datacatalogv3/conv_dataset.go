@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/plateauapi"
 	"github.com/samber/lo"
@@ -138,31 +139,59 @@ func layerNamesFrom(layer string) []string {
 	})
 }
 
-func newAdmin(id string, stage stage, cmsurl string, extra any) any {
-	a := map[string]any{}
+type Admin struct {
+	ItemID    string
+	CMSURL    string
+	Stage     stage
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	// common
+	SubAreaCode    string
+	CityGMLAssetID string
+	CityGMLURLs    []string
+	MaxLODURLs     []string
+}
 
-	if cmsurl != "" && id != "" {
-		a["cmsUrl"] = cmsurl + id
-	}
-
-	if stage != stageGA {
-		if stage == "" {
-			stage = stageAlpha
+func adminFrom(admin Admin) any {
+	stage := ""
+	if admin.Stage != stageGA {
+		if admin.Stage == "" {
+			stage = string(stageAlpha)
+		} else {
+			stage = string(admin.Stage)
 		}
-		a["stage"] = string(stage)
 	}
 
-	if extra, ok := extra.(map[string]any); ok && extra != nil {
-		for k, v := range extra {
-			a[k] = v
-		}
+	cmsurl := ""
+	if admin.CMSURL != "" && admin.ItemID != "" {
+		cmsurl = admin.CMSURL + admin.ItemID
 	}
 
-	if len(a) == 0 {
+	res := &plateauapi.Admin{
+		CMSItemID:      admin.ItemID,
+		CMSURL:         cmsurl,
+		Stage:          stage,
+		SubAreaCode:    admin.SubAreaCode,
+		CityGMLAssetID: admin.CityGMLAssetID,
+		CityGMLURLs:    admin.CityGMLURLs,
+		MaxLODURLs:     admin.MaxLODURLs,
+		CreatedAt:      lo.EmptyableToPtr(admin.CreatedAt),
+		UpdatedAt:      lo.EmptyableToPtr(admin.UpdatedAt),
+	}
+
+	if !admin.CreatedAt.IsZero() {
+		res.CreatedAt = &admin.CreatedAt
+	}
+
+	if !admin.UpdatedAt.IsZero() {
+		res.UpdatedAt = &admin.UpdatedAt
+	}
+
+	if res.IsEmpty() {
 		return nil
 	}
 
-	return a
+	return res
 }
 
 func assetURLFromFormat(u string, f plateauapi.DatasetFormat) string {

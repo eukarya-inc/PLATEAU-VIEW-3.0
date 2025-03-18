@@ -119,6 +119,7 @@ type Props = {
   state: PopupState;
   layer: LayerModel;
   layerId: string | null;
+  plateauSpecMajorVersion: number;
 };
 
 type SearchOption = { label: string; value: string; accessor?: string };
@@ -167,7 +168,12 @@ const INCLUDE_PROPERTY_NAMES: (string | [name: string, property: string, accesso
   "gml_id",
 ];
 
-export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
+export const BuildingSearchPanel: FC<Props> = ({
+  state,
+  layer,
+  layerId,
+  plateauSpecMajorVersion,
+}) => {
   const [tab, setTab] = useState(0);
   const deferredTab = useDeferredValue(tab);
   const handleTabChange = useCallback((_event: unknown, value: number) => {
@@ -245,7 +251,9 @@ export const BuildingSearchPanel: FC<Props> = ({ state, layer, layerId }) => {
         const accessor = typeof value === "string" ? undefined : value[2];
         return {
           key: property ?? name,
-          title: makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name) ?? name,
+          title:
+            makePropertyName(`${BUILDING_FEATURE_TYPE}_${name}`, name, plateauSpecMajorVersion) ??
+            name,
           options: uniqBy(
             allFeatures.reduce((res, f) => {
               const propertyValue = get(f.properties, accessor ?? value);

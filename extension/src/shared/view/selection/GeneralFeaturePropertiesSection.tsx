@@ -23,11 +23,13 @@ export interface GeneralFeaturePropertiesSectionProps {
     type: typeof SCREEN_SPACE_SELECTION;
     subtype: typeof GENERAL_FEATURE;
   })["values"];
+  plateauSpecMajorVersion: number;
 }
 
 // TODO(reearth): Support CZML description HTML
 export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSectionProps> = ({
   values,
+  plateauSpecMajorVersion,
 }) => {
   const findRootLayer = useSetAtom(findRootLayerAtom);
   const rootLayersLayers = useAtomValue(rootLayersLayersAtom);
@@ -78,10 +80,11 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
           layer,
           featureInspector: rootLayer?.featureInspector,
           featureType,
+          version: plateauSpecMajorVersion,
         }),
       );
     }, [] as Feature["properties"][]);
-  }, [layers]);
+  }, [layers, plateauSpecMajorVersion]);
 
   return (
     <ParameterList>
@@ -89,6 +92,7 @@ export const GeneralFeaturePropertiesSection: FC<GeneralFeaturePropertiesSection
         properties={properties}
         featureType={featureType}
         ancestorsFeatureType={ancestorsFeatureType}
+        version={plateauSpecMajorVersion}
       />
     </ParameterList>
   );

@@ -31,6 +31,8 @@ func FromValueType(t *ValueType) value.Type {
 		return value.TypeSelect
 	case ValueTypeInteger:
 		return value.TypeInteger
+	case ValueTypeNumber:
+		return value.TypeNumber
 	case ValueTypeReference:
 		return value.TypeReference
 	case ValueTypeUrl:
@@ -39,6 +41,10 @@ func FromValueType(t *ValueType) value.Type {
 		return value.TypeTag
 	case ValueTypeGroup:
 		return value.TypeGroup
+	case ValueTypeGeometryObject:
+		return value.TypeGeometryObject
+	case ValueTypeGeometryEditor:
+		return value.TypeGeometryEditor
 	default:
 		return value.TypeUnknown
 	}
@@ -64,6 +70,8 @@ func ToValueType(t value.Type) ValueType {
 		return ValueTypeSelect
 	case value.TypeInteger:
 		return ValueTypeInteger
+	case value.TypeNumber:
+		return ValueTypeNumber
 	case value.TypeReference:
 		return ValueTypeReference
 	case value.TypeURL:
@@ -74,6 +82,10 @@ func ToValueType(t value.Type) ValueType {
 		return ValueTypeTag
 	case value.TypeCheckbox:
 		return ValueTypeCheckbox
+	case value.TypeGeometryObject:
+		return ValueTypeGeometryObject
+	case value.TypeGeometryEditor:
+		return ValueTypeGeometryEditor
 	default:
 		return ""
 	}

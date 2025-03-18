@@ -1,0 +1,103 @@
+fragment Project on Project {
+  id
+  name
+  description
+  createdAt
+  updatedAt
+  workspaceId
+  sharedToken
+  deployment {
+    ...Deployment
+  }
+}
+
+fragment Deployment on Deployment {
+  id
+  projectId
+  workspaceId
+  workflowUrl
+  description
+  version
+  createdAt
+  updatedAt
+  project {
+    name
+  }
+}
+
+fragment Trigger on Trigger {
+  id
+  createdAt
+  updatedAt
+  lastTriggered
+  workspaceId
+  deploymentId
+  deployment {
+    ...Deployment
+  }
+  eventSource
+  authToken
+  timeInterval
+  description
+}
+
+fragment EdgeExecution on EdgeExecution {
+  id
+  edgeId
+  jobId
+  status
+  createdAt
+  startedAt
+  completedAt
+  featureId
+  intermediateDataUrl
+}
+
+fragment Job on Job {
+  id
+  workspaceId
+  status
+  startedAt
+  completedAt
+  logsURL
+  outputURLs
+  debug
+  deployment {
+    id
+    description
+  }
+}
+
+fragment ProjectDocument on ProjectDocument {
+  id
+  timestamp
+  updates
+  version
+}
+
+fragment ProjectSnapshot on ProjectSnapshot {
+  timestamp
+  updates
+  version
+}
+
+fragment Log on Log {
+  jobId
+  nodeId
+  timestamp
+  logLevel
+  message
+}
+
+fragment ProjectDocument on ProjectDocument {
+  id
+  timestamp
+  updates
+  version
+}
+
+fragment ProjectSnapshot on ProjectSnapshot {
+  timestamp
+  updates
+  version
+}

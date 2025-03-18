@@ -1,0 +1,41 @@
+# InputType
+
+input ShareProjectInput {
+  projectId: ID!
+}
+
+input UnshareProjectInput {
+  projectId: ID!
+}
+
+# Payload
+
+type ProjectSharingInfoPayload {
+  projectId: ID!
+  sharingToken: String
+}
+
+type SharedProjectPayload {
+  project: Project!
+}
+
+type ShareProjectPayload {
+  projectId: ID!
+  sharingUrl: String!
+}
+
+type UnshareProjectPayload {
+  projectId: ID!
+}
+
+# Query and Mutation
+
+extend type Query {
+  sharedProject(token: String!): SharedProjectPayload!
+  projectSharingInfo(projectId: ID!): ProjectSharingInfoPayload!
+}
+
+extend type Mutation {
+  shareProject(input: ShareProjectInput!): ShareProjectPayload
+  unshareProject(input: UnshareProjectInput!): UnshareProjectPayload
+}

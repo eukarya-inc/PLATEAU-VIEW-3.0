@@ -19,6 +19,9 @@ export const EditorTextInput: React.FC<TextFieldProps> = ({ ...props }) => {
 };
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
+  [`.${inputBaseClasses.root}`]: {
+    padding: 0,
+  },
   [`.${inputBaseClasses.input}`]: {
     padding: theme.spacing(0.5, 1),
     borderRadius: theme.shape.borderRadius,

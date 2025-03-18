@@ -3,7 +3,9 @@ package datacatalogv3
 import (
 	"encoding/json"
 	"fmt"
+	"path"
 	"slices"
+	"time"
 
 	"github.com/eukarya-inc/reearth-plateauview/server/cmsintegration/cmsintegrationcommon"
 	"github.com/eukarya-inc/reearth-plateauview/server/datacatalog/datacatalogcommon"
@@ -36,12 +38,15 @@ type FeatureType struct {
 	Order     int    `json:"order,omitempty" cms:"order,integer"`
 	GroupName string `json:"group_name,omitempty" cms:"group_name,text"`
 	// for plateau
-	SpecMajor           int              `json:"spec_major,omitempty" cms:"spec_major,integer"`
-	Flood               bool             `json:"flood,omitempty" cms:"flood,bool"`
-	MVTLayerName        []string         `json:"layer_name,omitempty" cms:"layer_name,text"`
-	MVTLayerNamesForLOD map[int][]string `json:"layer_names_for_lod,omitempty" cms:"-"`
-	MVTLayerNamePrefix  string           `json:"layer_name_prefix,omitempty" cms:"layer_name_prefix,text"`
-	HideTexture         bool             `json:"hide_texture,omitempty" cms:"hide_texture,bool"`
+	MinSpecMajor          int              `json:"spec_major,omitempty" cms:"spec_major,integer"`
+	MinYear               int              `json:"min_year,omitempty" cms:"min_year,integer"`
+	Flood                 bool             `json:"flood,omitempty" cms:"flood,bool"`
+	MVTLayerName          []string         `json:"layer_name,omitempty" cms:"layer_name,text"`
+	MVTLayerNamesForLOD   map[int][]string `json:"layer_names_for_lod,omitempty" cms:"-"`
+	MVTLayerNamePrefix    string           `json:"layer_name_prefix,omitempty" cms:"layer_name_prefix,text"`
+	UseCategoryAsMVTLayer bool             `json:"use_category_as_mvt_layer" cms:"use_category_as_mvt_layer,bool"`
+	HideTexture           bool             `json:"hide_texture,omitempty" cms:"hide_texture,bool"`
+	HideLOD               bool             `json:"hide_lod,omitempty" cms:"hide_lod,bool"`
 }
 
 type CityItem struct {
@@ -56,6 +61,12 @@ type CityItem struct {
 	Year           string                    `json:"year,omitempty" cms:"year,select"`
 	PRCS           cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
 	OpenDataURL    string                    `json:"open_data_url,omitempty" cms:"open_data_url,text"`
+	SubCityCode    string                    `json:"city_code_sub,omitempty" cms:"city_code_sub,text"`
+	CodeLists      *cms.PublicAsset          `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas        *cms.PublicAsset          `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata       *cms.PublicAsset          `json:"metadata,omitempty" cms:"metadata,asset"`
+	Specification  *cms.PublicAsset          `json:"specification,omitempty" cms:"specification,asset"`
+	Misc           *cms.PublicAsset          `json:"misc,omitempty" cms:"misc,asset"`
 	// meatadata
 	PlateauDataStatus   *cms.Tag        `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	RelatedDataStatus   *cms.Tag        `json:"related_data_status,omitempty" cms:"related_data_status,select,metadata"`
@@ -64,6 +75,7 @@ type CityItem struct {
 	RelatedPublic       bool            `json:"related_public,omitempty" cms:"related_public,bool,metadata"`
 	Public              map[string]bool `json:"public,omitempty" cms:"-"`
 	GeospatialjpPublish bool            `json:"geospatialjp_publish,omitempty" cms:"geospatialjp_publish,bool,metadata"`
+	Sample              bool            `json:"sample,omitempty" cms:"sample,bool,metadata"`
 }
 
 func CityItemFrom(item *cms.Item, featureTypes []FeatureType) (i *CityItem) {
@@ -145,6 +157,27 @@ func (i *CityItem) IsPublicOrBeta() bool {
 	return false
 }
 
+func (i *CityItem) MetadataZipURLs() []string {
+	if i == nil {
+		return nil
+	}
+
+	files := []*cms.PublicAsset{
+		i.CodeLists,
+		i.Schemas,
+		i.Metadata,
+		i.Specification,
+		i.Misc,
+	}
+
+	return lo.FilterMap(files, func(a *cms.PublicAsset, _ int) (string, bool) {
+		if a == nil || path.Ext(a.URL) != ".zip" {
+			return "", false
+		}
+		return a.URL, true
+	})
+}
+
 type PlateauFeatureItem struct {
 	ID          string                    `json:"id,omitempty" cms:"id"`
 	City        string                    `json:"city,omitempty" cms:"city,reference"`
@@ -159,6 +192,9 @@ type PlateauFeatureItem struct {
 	// metadata
 	Sample bool     `json:"sample,omitempty" cms:"sample,bool,metadata"`
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func (c *PlateauFeatureItem) IsBeta() bool {
@@ -245,6 +281,8 @@ func PlateauFeatureItemFrom(item *cms.Item, code string) (i *PlateauFeatureItem)
 	i = &PlateauFeatureItem{}
 	item.Unmarshal(i)
 
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
 	i.CityGML = valueToAssetURL(item.FieldByKey("citygml").GetValue())
 	i.Data = valueToAssetURLs(item.FieldByKey("data").GetValue())
 	i.MaxLOD = valueToAssetURL(item.FieldByKey("maxlod").GetValue())
@@ -310,6 +348,10 @@ type GenericItem struct {
 	// metadata
 	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
 	Public bool     `json:"public,omitempty" cms:"public,bool,metadata"`
+	AR     bool     `json:"ar,omitempty" cms:"ar,bool,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty" cms:"-"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" cms:"-"`
 }
 
 func (c *GenericItem) Stage() stage {
@@ -336,6 +378,9 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 	i = &GenericItem{}
 	item.Unmarshal(i)
 
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
+
 	for ind, d := range i.Items {
 		i.Items[ind].Data = valueToAssetURL(item.FieldByKeyAndGroup("data", d.ID).GetValue())
 	}
@@ -343,11 +388,15 @@ func GenericItemFrom(item *cms.Item) (i *GenericItem) {
 }
 
 type RelatedItem struct {
-	ID     string                      `json:"id,omitempty" cms:"id"`
-	City   string                      `json:"city,omitempty" cms:"city,reference"`
-	Items  map[string]RelatedItemDatum `json:"items,omitempty" cms:"-"`
-	Merged string                      `json:"merged,omitempty" cms:"merged,asset"`
-	Status *cms.Tag                    `json:"status,omitempty" cms:"status,select,metadata"`
+	ID    string                      `json:"id,omitempty" cms:"id"`
+	City  string                      `json:"city,omitempty" cms:"city,reference"`
+	Items map[string]RelatedItemDatum `json:"items,omitempty" cms:"-"`
+	// meadata
+	Merged string   `json:"merged,omitempty" cms:"merged,asset"`
+	Status *cms.Tag `json:"status,omitempty" cms:"status,select,metadata"`
+	// common
+	CreatedAt time.Time `json:"created_at,omitempty" cms:"-"`
+	UpdatedAt time.Time `json:"updated_at,omitempty" cms:"-"`
 }
 
 type RelatedItemDatum struct {
@@ -360,6 +409,9 @@ type RelatedItemDatum struct {
 func RelatedItemFrom(item *cms.Item, featureTypes []FeatureType) (i *RelatedItem) {
 	i = &RelatedItem{}
 	item.Unmarshal(i)
+
+	i.CreatedAt = item.CreatedAt
+	i.UpdatedAt = item.UpdatedAt
 
 	if i.Items == nil {
 		i.Items = map[string]RelatedItemDatum{}

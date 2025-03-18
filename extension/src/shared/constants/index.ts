@@ -1,3 +1,4 @@
 export * from "./localStorage";
 export * from "./colorMaps";
-export * from "./api";
+export * from "./dataset";
+export * from "./plateauSpecVersion";

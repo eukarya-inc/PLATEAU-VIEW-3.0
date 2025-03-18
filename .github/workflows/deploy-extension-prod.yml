@@ -2,13 +2,16 @@ name: ⭐️ Deploy PLATEAU Extension production
 on:
   workflow_dispatch:
 env:
-  GCS_DEST: gs://plateau-prod-reearth-app-bucket
-  PLATEAU_ORIGIN: https://app.reearth.plateau.reearth.io/extension
+  GCS_DEST: gs://plateau-prod-reearth-static-bucket
+  # used by build
+  PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN: ${{ secrets.PLATEAU_DEFAULT_GOOGLE_STREETVIEW_TOKEN }}
+  # used by build
+  PLATEAU_ORIGIN: https://static.reearth.plateau.reearth.io/extension
 
 jobs:
   deploy_extension:
     runs-on: ubuntu-latest
-    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW-3.0'
+    if: github.event.repository.full_name == 'eukarya-inc/PLATEAU-VIEW'
     environment: prod
     permissions:
       contents: read
@@ -21,14 +24,13 @@ jobs:
       - uses: actions/checkout@v3
       - uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      - uses: google-github-actions/setup-gcloud@v2
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}

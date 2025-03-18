@@ -4,7 +4,7 @@ import CopyAllOutlinedIcon from "@mui/icons-material/CopyAllOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import { Box, Typography, styled } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { getExtension } from "../../utils/file";
@@ -13,7 +13,7 @@ import { Label } from "./Label";
 import FileTypeSelect, { FileType } from "./LocalFileTypeSelect";
 import { StyledButton } from "./StyledButton";
 import { UserDataItem } from "./types";
-import { getAdditionalData } from "./utils";
+import { decodeDataURL, getAdditionalData, getFormatTip } from "./utils";
 
 type Props = {
   onSubmit: (selectedItem: UserDataItem) => void;
@@ -21,77 +21,64 @@ type Props = {
 
 const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   const [fileType, setFileType] = useState<FileType>("auto");
-  const [selectedLocalItem, setSelectedLocalItem] = useState<UserDataItem>();
 
-  const setDataFormat = useCallback((type: FileType, filename: string) => {
-    const extension = getExtension(filename);
-    if (type === "auto") {
-      switch (extension) {
-        // 3dtiles
-        case "json":
-          return "json";
-        // georss
-        case "rss":
-          return "rss";
-        // georss
-        case "xml":
-          return "xml";
-        // shapefile
-        case "zip":
-          return "zip";
-        default:
-          return extension;
+  const [processedDataItem, setProcessedDataItem] = useState<
+    | {
+        fileName: string;
+        contentString: string | null;
+        url: string | undefined;
       }
-    }
-    return type;
+    | undefined
+  >(undefined);
+
+  const processData = useCallback(async (acceptedFiles: any) => {
+    const fileName = acceptedFiles[0].name;
+    const reader = new FileReader();
+    const content = await new Promise<string | ArrayBuffer | null>(
+      (resolve) => {
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(acceptedFiles[0]);
+      }
+    );
+    const url = content as string;
+    const contentString = decodeDataURL(String(content));
+    setProcessedDataItem({
+      fileName,
+      contentString,
+      url,
+    });
   }, []);
 
-  const proccessedData = useCallback(
-    async (acceptedFiles: any) => {
-      const fileName = acceptedFiles[0].name;
-
-      const reader = new FileReader();
-      const content = await new Promise<string | ArrayBuffer | null>(resolve => {
-        reader.onload = () => resolve(reader.result);
-        reader.readAsText(acceptedFiles[0]);
-      });
-
-      const url = (() => {
-        if (!content) {
-          return;
-        }
-        return "data:text/plain;charset=UTF-8," + encodeURIComponent(content.toString());
-      })();
-      const contentString =
-        content instanceof ArrayBuffer ? new TextDecoder().decode(content) : content;
-
-      const format = setDataFormat(fileType, fileName);
-      const id = "id" + Math.random().toString(16).slice(2);
-      const item: UserDataItem = {
-        type: "item",
-        id: id,
-        dataID: id,
-        description:
-          "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
-        name: fileName,
-        visible: true,
-        url: url,
-        format,
-        additionalData: getAdditionalData(contentString, format),
-      };
-      if (setSelectedLocalItem) setSelectedLocalItem(item);
-      return false;
-    },
-    [fileType, setDataFormat, setSelectedLocalItem],
-  );
+  const selectedLocalItem: UserDataItem | undefined = useMemo(() => {
+    if (!processedDataItem) return undefined;
+    const format = getFormat(fileType, processedDataItem.fileName);
+    const id = "id" + Math.random().toString(16).slice(2);
+    const item: UserDataItem = {
+      type: "item",
+      id: id,
+      dataID: id,
+      formatTip: getFormatTip(format),
+      description:
+        "このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。",
+      name: processedDataItem.fileName,
+      visible: true,
+      url: processedDataItem.url,
+      format,
+      additionalData: getAdditionalData(
+        processedDataItem.contentString,
+        format
+      ),
+    };
+    return item;
+  }, [processedDataItem, fileType]);
 
   const onDrop = useCallback(
     (acceptedFiles: any) => {
       if (acceptedFiles.length > 0) {
-        proccessedData(acceptedFiles);
+        processData(acceptedFiles);
       }
     },
-    [proccessedData],
+    [processData]
   );
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -104,21 +91,40 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    selectedLocalItem && onSubmit(selectedLocalItem);
-    setSelectedLocalItem(undefined);
+    if (selectedLocalItem) {
+      onSubmit(selectedLocalItem);
+    }
+    setProcessedDataItem(undefined);
   }, [onSubmit, selectedLocalItem]);
+
+  const formatTip = useMemo(() => {
+    if (selectedLocalItem?.formatTip) {
+      return selectedLocalItem.formatTip;
+    }
+    if (fileType !== "auto") {
+      return getFormatTip(fileType);
+    }
+    return "";
+  }, [selectedLocalItem, fileType]);
 
   return (
     <FormControl fullWidth size="small">
       <Label>ファイルタイプを選択</Label>
-      <FileTypeSelect fileType={fileType} onFileTypeSelect={handleFileTypeSelect} />
+      <FileTypeSelect
+        fileType={fileType}
+        onFileTypeSelect={handleFileTypeSelect}
+      />
 
       <Label>ファイルをアップロード</Label>
       <DropzoneAreaWrapper>
         <div {...getRootProps({ className: "dropzone" })}>
           <input {...getInputProps()} />
           <StyledCopyIcon fontSize="large" />
-          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }} variant="body1">
+          <Typography
+            id="modal-modal-description"
+            sx={{ mt: 2, mb: 1 }}
+            variant="body1"
+          >
             ここをクリックしてファイルを選択するか <br />{" "}
             ファイルをここにドラッグ＆ドロップしてください
           </Typography>
@@ -126,21 +132,35 @@ const LocalDataTab: React.FC<Props> = ({ onSubmit }) => {
       </DropzoneAreaWrapper>
 
       {selectedLocalItem && (
-        <>
-          <Box sx={{ display: "flex", gap: "10px", border: "1px solid #0000001f", padding: "8px" }}>
-            <DescriptionOutlinedIcon />
-            <Typography>{selectedLocalItem.name}</Typography>
-            <CancelIcon
-              sx={{ cursor: "pointer" }}
-              onClick={() => setSelectedLocalItem(undefined)}
-            />
-          </Box>
-          <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
-            {selectedLocalItem.description}
-          </Typography>
-        </>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "10px",
+            border: "1px solid #0000001f",
+            padding: "8px",
+          }}
+        >
+          <DescriptionOutlinedIcon />
+          <Typography>{selectedLocalItem.name}</Typography>
+          <CancelIcon
+            sx={{ cursor: "pointer" }}
+            onClick={() => setProcessedDataItem(undefined)}
+          />
+        </Box>
       )}
-      <StyledButton startIcon={<AddIcon />} disabled={!selectedLocalItem} onClick={handleSubmit}>
+      {formatTip && (
+        <Typography id="modal-modal-format-tip" sx={{ mt: 2, mb: 0 }}>
+          {formatTip}
+        </Typography>
+      )}
+      <Typography id="modal-modal-description" sx={{ mt: 2, mb: 1 }}>
+        このファイルはローカルにのみ存在します。このデータを共有するには、データをアップロードし、パブリックなウェブブラウザで公開してください。
+      </Typography>
+      <StyledButton
+        startIcon={<AddIcon />}
+        disabled={!selectedLocalItem}
+        onClick={handleSubmit}
+      >
         シーンに追加
       </StyledButton>
     </FormControl>
@@ -155,6 +175,7 @@ const DropzoneAreaWrapper = styled("section")(({ theme }) => ({
   flexDirection: "column",
   alignItems: "center",
   marginBottom: theme.spacing(1.8),
+  cursor: "pointer",
 }));
 
 const CancelIcon = styled(ClearOutlinedIcon)(({ theme }) => ({
@@ -170,3 +191,12 @@ const StyledCopyIcon = styled(CopyAllOutlinedIcon)(({ theme }) => ({
 }));
 
 export default LocalDataTab;
+
+function getFormat(type: FileType, filename: string) {
+  const extension = getExtension(filename);
+  return type === "auto"
+    ? extension === "zip"
+      ? "shapefile"
+      : extension
+    : type;
+}

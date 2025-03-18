@@ -1,23 +1,25 @@
-import { useSetAtom } from "jotai";
-import { useCallback, useState } from "react";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useMemo, useState } from "react";
 
-import { settingsAtom, updateSettingAtom } from "../../states/setting";
+import { useIsCityProject } from "../../states/environmentVariables";
+import { settingForCityIdsAtom, settingsAtom, updateSettingAtom } from "../../states/setting";
 import { Setting } from "../types";
 
 import { useSettingClient } from "./useSettingClient";
 
-// TODO: Imple saving setting state to API
 export default () => {
   const client = useSettingClient();
   const [isSaving, setIsSaving] = useState(false);
+  const [isCityProject] = useIsCityProject();
+  const [settingForCityIds, setSettingForCityIds] = useAtom(settingForCityIdsAtom);
 
   const updateSetting = useSetAtom(updateSettingAtom);
   const saveSetting = useCallback(
     async (setting: Setting) => {
       setIsSaving(true);
 
-      const settings = await client.findAll();
-      const existSetting = settings.find(
+      const settings = isCityProject ? await client.findAllForCity() : await client.findAll();
+      const existSetting = settings?.find(
         s => s.datasetId === setting.datasetId && s.dataId === setting.dataId,
       );
 
@@ -31,16 +33,25 @@ export default () => {
         return await client.save(setting);
       })();
 
+      if (isCityProject) {
+        setSettingForCityIds(((await client.findAllForCity()) ?? []).map(s => s.id));
+      }
       updateSetting(nextSetting);
 
       setIsSaving(false);
     },
-    [client, updateSetting],
+    [client, updateSetting, isCityProject, setSettingForCityIds],
+  );
+
+  const settingsAll = useAtomValue(settingsAtom);
+  const settings = useMemo(
+    () => (isCityProject ? settingsAll.filter(s => settingForCityIds.includes(s.id)) : settingsAll),
+    [isCityProject, settingForCityIds, settingsAll],
   );
 
   return {
     isSaving,
     saveSetting,
-    settingsAtom,
+    settings,
   };
 };

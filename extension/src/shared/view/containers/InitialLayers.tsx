@@ -1,4 +1,6 @@
+import { useMediaQuery, useTheme } from "@mui/material";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { cloneDeep } from "lodash-es";
 import { useEffect, type FC, useMemo, useRef, useState } from "react";
 import format from "string-template";
 
@@ -11,16 +13,21 @@ import {
 import { readyAtom } from "../../../prototypes/view/states/app";
 import {
   HEATMAP_LAYER,
+  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   SKETCH_LAYER,
+  SPATIAL_ID_LAYER,
   STORY_LAYER,
 } from "../../../prototypes/view-layers";
-import { INITIAL_PEDESTRIAN_COORDINATES } from "../../constants";
 import { useDatasetsByIds } from "../../graphql";
 import { Data, SketchFeature } from "../../reearth/types";
 import { getShareId, getSharedStoreValue } from "../../sharedAtoms";
-import { settingsAtom } from "../../states/setting";
+import {
+  useInitialPedestrianCoordinates,
+  useIsCityProject,
+} from "../../states/environmentVariables";
+import { settingForCityIdsAtom, settingsAtom } from "../../states/setting";
 import {
   SHARED_PROJECT_ID_KEY,
   SharedRootLayer,
@@ -96,7 +103,8 @@ type InitialLayerParams = (
 export const InitialLayers: FC = () => {
   const addLayer = useAddLayer();
 
-  // TODO: Get share ID
+  const [initialPedestrianCoordinates] = useInitialPedestrianCoordinates();
+
   const shareId = getShareId();
   const getSharedRootLayers = useSetAtom(getSharedRootLayersAtom);
   const [sharedRootLayers, setSharedRootLayers] = useState<SharedRootLayer[] | undefined>();
@@ -119,49 +127,63 @@ export const InitialLayers: FC = () => {
   }, [getSharedRootLayers, shareId, isAppReady]);
 
   const settings = useAtomValue(settingsAtom);
+  const settingForCityIds = useAtomValue(settingForCityIdsAtom);
   const templates = useAtomValue(templatesAtom);
 
-  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(
-    () => [
-      {
-        type: PEDESTRIAN_LAYER,
-        location: {
-          longitude: INITIAL_PEDESTRIAN_COORDINATES?.lng ?? 139.769,
-          latitude: INITIAL_PEDESTRIAN_COORDINATES?.lat ?? 35.68,
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("mobile"));
+
+  const defaultLayerParams: RootLayerForLayerAtomParams<LayerType>[] = useMemo(() => {
+    if (isMobile) {
+      return [];
+    } else {
+      return [
+        {
+          type: PEDESTRIAN_LAYER,
+          location: {
+            longitude: initialPedestrianCoordinates?.lng ?? 139.769,
+            latitude: initialPedestrianCoordinates?.lat ?? 35.68,
+          },
         },
-      },
-    ],
-    [],
-  );
+      ];
+    }
+  }, [isMobile, initialPedestrianCoordinates]);
+
+  const [isCityProject] = useIsCityProject();
 
   const defaultBuildings = useMemo(
     () =>
-      settings
+      (isCityProject ? settings.filter(s => settingForCityIds.includes(s.id)) : settings)
         .filter(s => !!s.general?.initialLayer?.isInitialLayer)
         .map(s => ({
           datasetId: s.datasetId,
           dataId: s.dataId,
         })),
-    [settings],
+    [settings, isCityProject, settingForCityIds],
+  );
+
+  const isSharedDataset = useMemo(
+    () => shareId && isSharedDataLoaded,
+    [shareId, isSharedDataLoaded],
   );
 
   const datasetIds = useMemo(
     () =>
-      shareId && isSharedDataLoaded
+      isSharedDataset
         ? sharedRootLayers
             ?.filter(
               (l): l is Extract<SharedRootLayer, { type: "dataset" }> => l.type === "dataset",
             )
             .map(({ datasetId }) => datasetId) ?? []
-        : defaultBuildings.map(b => b.datasetId),
-    [shareId, sharedRootLayers, isSharedDataLoaded, defaultBuildings],
+        : [...new Set(defaultBuildings.map(b => b.datasetId))],
+    [sharedRootLayers, isSharedDataset, defaultBuildings],
   );
 
   const query = useDatasetsByIds(datasetIds, {
     skip: !!shareId && !isSharedDataLoaded && !sharedRootLayers?.length,
   });
 
-  const initialDatasets = useMemo(() => query.data?.nodes ?? [], [query]);
+  const initialDatasets = useMemo(() => query.data?.nodes?.filter(isNotNullish) ?? [], [query]);
 
   const initialLayers: InitialLayerParams = useMemo(() => {
     if (!sharedRootLayers?.length) return defaultLayerParams;
@@ -213,6 +235,23 @@ export const InitialLayers: FC = () => {
               features: l.features,
               hidden: l.hidden,
             };
+          case "spatialId":
+            return {
+              id: l.id,
+              title: l.title,
+              type: SPATIAL_ID_LAYER,
+              features: l.features,
+              hidden: l.hidden,
+            };
+          case "meshCode":
+            return {
+              id: l.id,
+              title: l.title,
+              type: MESH_CODE_LAYER,
+              meshCodeLevel: l.meshCodeLevel,
+              features: l.features,
+              hidden: l.hidden,
+            };
           case "story":
             return {
               id: l.id,
@@ -254,6 +293,21 @@ export const InitialLayers: FC = () => {
             },
           ),
         );
+        cloneDeep(initialDatasets)
+          .reverse()
+          .forEach(d => {
+            addLayer(
+              createRootLayerForDatasetAtom({
+                dataset: d,
+                areaCode: d.wardCode || d.cityCode || d.prefectureCode,
+                settings: settingsRef.current.filter(s => s.datasetId === d.id),
+                templates: templatesRef.current,
+                shareId: sharedProjectId,
+                currentDataId: defaultBuildings.find(b => b.datasetId === d.id)?.dataId,
+              }),
+              { autoSelect: false },
+            );
+          });
       } else {
         // add layer with shared root layers' reverse order
         sharedRootLayers.reverse().forEach(sharedRootLayer => {

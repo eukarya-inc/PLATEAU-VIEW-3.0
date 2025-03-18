@@ -1,0 +1,33 @@
+query GetJobs($workspaceId: ID!, $pagination: PageBasedPagination!) {
+  jobs(workspaceId: $workspaceId, pagination: $pagination) {
+    totalCount
+    nodes {
+      ...Job
+    }
+    pageInfo {
+      totalCount
+      currentPage
+      totalPages
+    }
+  }
+}
+
+query GetJob($id: ID!) {
+  job(id: $id) {
+    ...Job
+  }
+}
+
+query GetEdgeExecution($jobId: ID!, $edgeId: String!) {
+  edgeExecution(jobId: $jobId, edgeId: $edgeId) {
+    ...EdgeExecution
+  }
+}
+
+mutation CancelJob($input: CancelJobInput!) {
+  cancelJob(input: $input) {
+    job {
+      ...Job
+    }
+  }
+}

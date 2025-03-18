@@ -1,0 +1,15 @@
+version: "3"
+services:
+  reearth-flow-ui:
+    image: reearth/reearth-flow-ui:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["nginx", "-g", "daemon off;"]

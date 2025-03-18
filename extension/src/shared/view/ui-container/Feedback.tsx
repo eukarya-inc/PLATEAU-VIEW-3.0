@@ -2,7 +2,8 @@ import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { showFeedbackModalAtom } from "../../../prototypes/view/states/app";
-import { PLATEAU_API_URL } from "../../constants";
+import { isReEarthAPIv2 } from "../../reearth/utils/reearth";
+import { usePlateauApiUrl } from "../../states/environmentVariables";
 import FeedBackModal from "../../ui-components/FeedBackForm";
 import FeedbackNotificationModal from "../../ui-components/FeedbackNotificationModal";
 
@@ -19,6 +20,7 @@ const dataURItoBlob = (dataURI: string) => {
 
 const FeedBack = () => {
   const [loading, setLoading] = useState(false);
+  const [plateauApiUrl] = usePlateauApiUrl();
   const [showFeedbackModal, setShowFeedbackModal] = useAtom(showFeedbackModalAtom);
   const [notification, setNotification] = useState(false);
 
@@ -33,13 +35,15 @@ const FeedBack = () => {
     formData.append("name", params.name);
     formData.append("email", params.email);
     formData.append("content", params.comment);
-    const screenshot = window.reearth?.scene?.captureScreen(undefined, 0.01);
+    const screenshot = isReEarthAPIv2(window.reearth)
+      ? window.reearth?.viewer?.viewport?.capture(undefined, 0.01)
+      : window.reearth?.scene?.captureScreen(undefined, 0.01);
     if (params.attachMapReview && screenshot) {
       const file = dataURItoBlob(screenshot);
       formData.append("file", file);
     }
 
-    await fetch(`${PLATEAU_API_URL}/opinion`, {
+    await fetch(`${plateauApiUrl}/opinion`, {
       method: "POST",
       body: formData,
     });

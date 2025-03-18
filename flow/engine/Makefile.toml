@@ -1,0 +1,129 @@
+[config]
+skip_core_tasks = true
+default_to_workspace = false
+
+[env]
+PROJ_NAME = "reearth-flow"
+
+[tasks.format]
+script = ['''
+#!/usr/bin/env bash -eux
+cargo fmt --all
+''']
+
+[tasks.check]
+script = ['''
+#!/usr/bin/env bash -eux
+cargo check --workspace --all-targets --all-features --exclude plateau-gis-quality-checker
+''']
+
+[tasks.clippy]
+script = ['''
+#!/usr/bin/env bash -eux
+cargo clippy --workspace --all-targets --all-features --exclude plateau-gis-quality-checker -- -D warnings
+''']
+
+[tasks.test]
+script = ['''
+#!/usr/bin/env bash -eux
+cargo test --workspace --all-targets --all-features --exclude plateau-gis-quality-checker
+''']
+
+[tasks.doc]
+script = ['''
+#!/usr/bin/env bash -eux
+cargo clean --doc
+cargo doc --no-deps --all-features
+''']
+
+[tasks.coverage]
+script = ['''
+#!/usr/bin/env bash -eux
+rm -rf target/debug/deps/${PROJ_NAME}-*
+
+export CARGO_INCREMENTAL=0
+export RUSTFLAGS="-Zinstrument-coverage"
+export LLVM_PROFILE_FILE="${PROJ_NAME}-%p-%m.profraw"
+
+cargo build --workspace --verbose
+cargo test --workspace --verbose
+
+grcov . -s . --binary-path ./target/debug/ -t lcov --branch --ignore-not-existing -o lcov.info
+''']
+
+[tasks.check-easy-panic]
+script = ['''
+#!/usr/bin/env bash -eux
+git ls-files |grep -E '.rs$' |(! xargs grep 'unimplemented!')
+git ls-files |grep -E '.rs$' |(! xargs grep 'todo!')
+''']
+
+[tasks.doc-action]
+script = ['''
+#!/usr/bin/env bash -eux
+FILES=(
+  "./schema/actions.json"
+  "./schema/actions_en.json"
+  "./schema/actions_es.json"
+  "./schema/actions_fr.json"
+  "./schema/actions_ja.json"
+  "./schema/actions_zh.json"
+  "./docs/mdbook/src/action.md"
+)
+
+for f in "${FILES[@]}"; do
+  rm -rf "$f"
+done
+
+cargo run --package reearth-flow-cli -- schema-action > ./schema/actions.json
+
+LANGS=(en es fr ja zh)
+
+for lang in "${LANGS[@]}"; do
+  cargo run --package reearth-flow-cli \
+    -- schema-action \
+    --language-file-path "$PWD/schema/i18n/actions/${lang}.json" \
+    > "./schema/actions_${lang}.json"
+done
+
+cargo run --package reearth-flow-cli -- doc-action > ./docs/mdbook/src/action.md
+''']
+
+[tasks.doc-workflow]
+script = ['''
+#!/usr/bin/env bash -eux
+rm -rf ./schema/workflow.json
+cargo run --package reearth-flow-cli -- schema-workflow > ./schema/workflow.json
+''']
+
+[tasks.serve-mdbook]
+script = ['''
+#!/usr/bin/env bash -eux
+mdbook serve docs/mdbook
+''']
+
+[tasks.format-taplo]
+script = ['''
+#!/usr/bin/env bash -eux
+taplo fmt
+''']
+
+[tasks.generate-cms-workflow]
+script = ['''
+#!/usr/bin/env bash -eux
+FEATURES=(
+  "bldg"
+)
+
+for feature_type in "${FEATURES[@]}"; do
+  rm -rf "./worker/workflow/cms/plateau4/data-convert/${feature_type}/workflow.json"
+  if [ -e "./worker/workflow/cms/plateau4/data-convert/${feature_type}/template/workflow.yml" ]; then
+    yaml-include ./worker/workflow/cms/plateau4/data-convert/${feature_type}/template/workflow.yml | yq eval -o=json - > ./worker/workflow/cms/plateau4/data-convert/${feature_type}/workflow.json
+  fi
+  rm -rf "./worker/workflow/cms/plateau4/quality-check/${feature_type}/workflow.json"
+  if [ -e "./worker/workflow/cms/plateau4/quality-check/${feature_type}/template/workflow.yml" ]; then
+    yaml-include ./worker/workflow/cms/plateau4/quality-check/${feature_type}/template/workflow.yml | yq eval -o=json - > ./worker/workflow/cms/plateau4/quality-check/${feature_type}/workflow.json
+  fi
+done
+
+''']

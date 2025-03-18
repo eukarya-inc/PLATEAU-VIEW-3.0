@@ -8,6 +8,7 @@ import (
 
 	"github.com/reearth/reearth/server/pkg/file"
 	"github.com/reearth/reearth/server/pkg/id"
+	"github.com/spf13/afero"
 )
 
 var (
@@ -17,9 +18,14 @@ var (
 	ErrFailedToRemoveFile error = errors.New("failed to remove file")
 )
 
+const (
+	UploadFileSizeLimit int64 = 1024 * 1024 * 100 // about 100MB
+)
+
 type File interface {
 	ReadAsset(context.Context, string) (io.ReadCloser, error)
 	UploadAsset(context.Context, *file.File) (*url.URL, int64, error)
+	UploadAssetFromURL(context.Context, *url.URL) (*url.URL, int64, error)
 	RemoveAsset(context.Context, *url.URL) error
 
 	ReadPluginFile(context.Context, id.PluginID, string) (io.ReadCloser, error)
@@ -35,4 +41,8 @@ type File interface {
 	ReadStoryFile(context.Context, string) (io.ReadCloser, error)
 	MoveStory(context.Context, string, string) error
 	RemoveStory(context.Context, string) error
+
+	ReadExportProjectZip(context.Context, string) (io.ReadCloser, error)
+	UploadExportProjectZip(context.Context, afero.File) error
+	RemoveExportProjectZip(context.Context, string) error
 }

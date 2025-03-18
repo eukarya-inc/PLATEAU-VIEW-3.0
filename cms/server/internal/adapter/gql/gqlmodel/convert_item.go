@@ -27,7 +27,6 @@ func ToItem(vi item.Versioned, s *schema.Schema, gsList schema.List) *Item {
 		ModelID:                IDFrom(i.Model()),
 		UserID:                 IDFromRef(i.User()),
 		IntegrationID:          IDFromRef(i.Integration()),
-		ThreadID:               IDFrom(i.Thread()),
 		MetadataID:             IDFromRef(i.MetadataItem()),
 		IsMetadata:             i.IsMetadata(),
 		OriginalID:             IDFromRef(i.MetadataItem()),
@@ -38,6 +37,7 @@ func ToItem(vi item.Versioned, s *schema.Schema, gsList schema.List) *Item {
 		Fields:                 append(itemFields, groupFields...),
 		Version:                vi.Version().String(),
 		Title:                  i.GetTitle(s),
+		ThreadID:               IDFromRef(i.Thread()),
 	}
 }
 func toItemFields(fields item.Fields, s *schema.Schema, isGroupSchema bool) []*ItemField {
@@ -99,7 +99,7 @@ func ToItemParam(field *ItemFieldInput) *interfaces.ItemFieldParam {
 	return &interfaces.ItemFieldParam{
 		Group: ToIDRef[id.ItemGroup](field.ItemGroupID),
 		Field: &fid,
-		Type:  FromValueType(field.Type),
+		// Type:  FromValueType(field.Type),
 		Value: field.Value,
 	}
 }

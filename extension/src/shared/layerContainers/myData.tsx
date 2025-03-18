@@ -95,6 +95,18 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
 
   const theme = useTheme();
 
+  const defaultAppearance = useMemo(
+    () => ({
+      ...DEFAULT_MYDATA_APPEARANCES,
+      polyline: {
+        ...DEFAULT_MYDATA_APPEARANCES.polyline,
+        // KML with clampToGround causes an error, so disable it: https://github.com/CesiumGS/cesium/issues/9555
+        clampToGround: format === "kml" ? false : true,
+      },
+    }),
+    [format],
+  );
+
   if (format === "gtfs") {
     return (
       <GTFSLayer
@@ -111,7 +123,7 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
       <MVTLayer
         {...props}
         onLoad={handleLoad}
-        // appearances={generalAppearances}
+        appearances={DEFAULT_MYDATA_APPEARANCES}
         visible={!hidden}
       />
     );
@@ -136,6 +148,33 @@ export const MyDataLayerContainer: FC<MyDataContainerProps> = ({
       onLoad={handleLoad}
       visible={!hidden}
       selectedFeatureColor={theme.palette.primary.main}
+      appearances={defaultAppearance}
     />
   );
+};
+
+const DEFAULT_MYDATA_APPEARANCES = {
+  marker: {
+    pointColor: {
+      expression: "color('#00B3DB')",
+    },
+    pointSize: 12,
+    style: "point" as const,
+  },
+  polygon: {
+    clampToGround: true,
+    classificationType: "terrain" as const,
+    fill: true,
+    fillColor: {
+      expression: "color('#00B3DB',0.6)",
+    },
+  },
+  polyline: {
+    clampToGround: true,
+    classificationType: "terrain" as const,
+    strokeColor: {
+      expression: "color('#00B3DB')",
+    },
+    strokeWidth: 2,
+  },
 };
