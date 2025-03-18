@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"io"
-	"strings"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -25,7 +24,7 @@ func TestPacker_Pack(t *testing.T) {
 	zw := zip.NewWriter(zbuf)
 	f, _ := zw.Create("codelists/hoge.gml")
 	_, _ = f.Write([]byte("foobar"))
-	f, _ = zw.Create("example_citygml_codelists/codelists/foo.gml")
+	f, _ = zw.Create("example_citygml_codelists/misc/codelists/foo.gml")
 	_, _ = f.Write([]byte("barfoo"))
 	_ = zw.Close()
 
@@ -45,11 +44,11 @@ func TestPacker_Pack(t *testing.T) {
 
 	buf := bytes.NewBuffer(nil)
 	urls := []string{
+		"http://example.com/assets/xx/xxxxx/example_citygml_codelists.zip",
 		"http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/1.gml",
 		"http://example.com/assets/xx/xxxxx/example_citygml/udx/bldg/2.gml",
-		"http://example.com/assets/xx/xxxxx/example_citygml_codelists.zip",
 	}
-	packer := NewPacker(buf, len(urls), nil)
+	packer := NewPacker(buf, nil)
 
 	err := packer.Pack(t.Context(), "example.com", urls)
 	require.NoError(t, err)
@@ -85,34 +84,20 @@ func TestPacker_Pack(t *testing.T) {
 	assert.Equal(t, "barfoo", b, "foo.gml")
 }
 
-func TestFindDeps(t *testing.T) {
-	gml := `<?xml version="1.0" encoding="UTF-8"?>
-<Root
-    xmlns:app="http://mydomain.org/app"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.my.domain/gml ../schemas/my.xsd">
-    <app:imageURI>some-image.png</app:imageURI>
-    <someElement codeSpace="my-codespace" />
-</Root>`
-
-	depsMap := make(map[string]struct{})
-	err := findDeps(strings.NewReader(gml), depsMap)
-
-	require.NoError(t, err)
-	assert.Equal(t, map[string]struct{}{
-		"some-image.png":    {},
-		"my-codespace":      {},
-		"../schemas/my.xsd": {},
-	}, depsMap)
-}
-
-func TestGetBasePath(t *testing.T) {
-	assert.Equal(t, "hoge/foo.gml", getBasePath("/assets/xx/xxxxxx/hoge/foo.gml"))
-	assert.Equal(t, "hoge/bar/foo.gml", getBasePath("/assets/xx/xxxxxx/hoge/bar/foo.gml"))
-	assert.Equal(t, "foo.gml", getBasePath("/assets/xx/xxxxxx/foo.gml"))
-	assert.Equal(t, "", getBasePath("/assets/xx/xxxxxx"))
-}
-
-func TestGetRootFromZipFileName(t *testing.T) {
-	assert.Equal(t, "30406_susami-cho_city_2024_citygml_1_op", getRootFromZipFileName("30406_susami-cho_city_2024_citygml_1_op_codelists.zip"))
+func Test_SortURLs(t *testing.T) {
+	urls := []string{
+		"http://example.com/a.gml",
+		"http://example.com/b.zip",
+		"http://example.com/c.gml",
+		"http://example.com/d.zip",
+		"http://example.com/e.gml",
+	}
+	urls = sortURLs(urls)
+	assert.Equal(t, []string{
+		"http://example.com/a.gml",
+		"http://example.com/c.gml",
+		"http://example.com/e.gml",
+		"http://example.com/b.zip",
+		"http://example.com/d.zip",
+	}, urls)
 }
