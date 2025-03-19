@@ -50,8 +50,9 @@ func NewServices(c Config) (s *Services, _ error) {
 				"REEARTH_CMS_TOKEN": c.CMSToken,
 				"NO_COLOR":          "true",
 			},
-			Timeout:  "86400s", // 1 day
-			QueueTtl: "86400s", // 1 day
+			DiskSizeGb: 1000,
+			Timeout:    "86400s", // 1 day
+			QueueTtl:   "86400s", // 1 day
 		})
 	}
 
