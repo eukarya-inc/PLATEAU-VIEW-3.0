@@ -97,7 +97,7 @@ func cityGMLPacker(*Config) {
 	flag := flag.NewFlagSet("citygml-packer", flag.ExitOnError)
 	flag.StringVar(&config.Dest, "dest", "", "destination url (gs://...)")
 	flag.StringVar(&config.Domain, "domain", "", "allowed domain")
-	flag.DurationVar(&config.Timeout, "timeout", 30*time.Second, "timeout")
+	flag.DurationVar(&config.Timeout, "timeout", 10*time.Minute, "timeout")
 	if err := flag.Parse(os.Args[2:]); err != nil {
 		panic(err)
 	}
