@@ -36,9 +36,7 @@ import { DatasetDialog } from "../ui-containers/DatasetDialog";
 import { LayerHeatmapSection } from "./LayerHeatmapSection";
 import { LayerHiddenFeaturesSection } from "./LayerHiddenFeaturesSection";
 // import { LayerShowWireframeSection } from "./LayerShowWireframeSection";
-import { LayerMeshCodeSection } from "./LayerMeshCodeSection";
 import { LayerSketchSection } from "./LayerSketchSection";
-import { LayerSpatialIdSection } from "./LayerSpatialIdSection";
 
 type SupportedLayerType = Exclude<LayerType, typeof PEDESTRIAN_LAYER>;
 
@@ -226,8 +224,6 @@ export function LayerContent<T extends SupportedLayerType>({
         {/* <InspectorItem> */}
         {/* <LayerShowWireframeSection layers={values} />*/}
         <LayerSketchSection layers={values} />
-        <LayerSpatialIdSection layers={values} />
-        <LayerMeshCodeSection layers={values} />
         {/* </InspectorItem> */}
       </List>
       {rootLayerConfig && (

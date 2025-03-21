@@ -1,5 +1,4 @@
 import { CameraPosition } from "./camera";
-import { SpatialIdSpaceData } from "./reearthPluginAPIv2/spatialId";
 import { PickedFeature } from "./scene";
 import { SketchFeature } from "./sketch";
 
@@ -88,7 +87,6 @@ export type ReearthEventType = {
       feature?: SketchFeature;
     },
   ];
-  spatialidspacepick: [props: SpatialIdSpaceData];
   layerVisibility: [e: LayerVisibilityEvent];
   layerload: [e: LayerLoadEvent];
   layerSelectWithRectStart: [e: LayerSelectWithRectStart];

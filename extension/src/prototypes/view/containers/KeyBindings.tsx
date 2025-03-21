@@ -67,14 +67,6 @@ export const KeyBindings: FC = () => {
           event.preventDefault();
           send({ type: "PEDESTRIAN" });
           return;
-        case "i":
-          event.preventDefault();
-          send({ type: "SPATIAL_ID" });
-          return;
-        case "m":
-          event.preventDefault();
-          send({ type: "MESH_CODE" });
-          return;
       }
     }
     if (

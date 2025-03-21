@@ -7,7 +7,6 @@ import {
   SketchEventType,
   ViewerEventType,
 } from "../types/reearthPluginAPIv2";
-import { SpatialIdEventType } from "../types/reearthPluginAPIv2/spatialId";
 import { isReEarthAPIv2 } from "../utils/reearth";
 
 const mouseEvents = {
@@ -30,10 +29,6 @@ const mouseEvents = {
 const sketchEvents = {
   sketchfeaturecreated: "create",
   sketchtoolchange: "toolChange",
-};
-
-const spatialIdEvents = {
-  spatialidspacepick: "spacePick",
 };
 
 const cameraEvents = {
@@ -65,17 +60,6 @@ export const useReEarthEvent = <T extends keyof ReearthEventType>(
         return () => {
           (window.reearth as ReEarthV2)?.sketch?.off?.(
             sketchEvents[eventName as keyof typeof sketchEvents] as keyof SketchEventType,
-            cb as any,
-          );
-        };
-      } else if (Object.keys(spatialIdEvents).includes(eventName)) {
-        window.reearth?.spatialId?.on?.(
-          spatialIdEvents[eventName as keyof typeof spatialIdEvents] as keyof SpatialIdEventType,
-          cb as any,
-        );
-        return () => {
-          (window.reearth as ReEarthV2)?.spatialId?.off?.(
-            spatialIdEvents[eventName as keyof typeof spatialIdEvents] as keyof SpatialIdEventType,
             cb as any,
           );
         };

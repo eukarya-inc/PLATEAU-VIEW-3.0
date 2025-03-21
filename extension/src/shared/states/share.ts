@@ -4,12 +4,10 @@ import { isNotNullish } from "../../prototypes/type-helpers";
 import {
   HEATMAP_LAYER,
   HeatmapLayerModel,
-  MESH_CODE_LAYER,
   MY_DATA_LAYER,
   PEDESTRIAN_LAYER,
   PedestrianLayerModel,
   SKETCH_LAYER,
-  SPATIAL_ID_LAYER,
   STORY_LAYER,
   SharedHeatmapLayer,
   SharedPedestrianLayer,
@@ -25,8 +23,6 @@ import {
   SharedStoryLayer,
   StoryLayerModel,
 } from "../view-layers";
-import { MeshCodeLayerModel, SharedMeshCodeLayer } from "../view-layers/meshCode";
-import { SharedSpatialIdLayer, SpatialIdLayerModel } from "../view-layers/spatialId";
 
 import { rootLayersAtom } from "./rootLayer";
 import { sharedInitialCameraAtom, sharedInitialClockAtom } from "./scene";
@@ -60,8 +56,6 @@ export type SharedRootLayer = (
   | SharedPedestrianLayer
   | SharedMyDataLayer
   | SharedSketchLayer
-  | SharedSpatialIdLayer
-  | SharedMeshCodeLayer
   | SharedStoryLayer
 ) & { hidden?: boolean };
 
@@ -120,27 +114,6 @@ const shareRootLayerAtom = atom(undefined, async get => {
                 type: "sketch",
                 id: l.id,
                 title: l.title,
-                features: get(l.featuresAtom),
-                hidden: get(l.hiddenAtom),
-              };
-            }
-            case SPATIAL_ID_LAYER: {
-              const l = layer as SpatialIdLayerModel;
-              return {
-                type: "spatialId",
-                id: l.id,
-                title: l.title,
-                features: get(l.featuresAtom),
-                hidden: get(l.hiddenAtom),
-              };
-            }
-            case MESH_CODE_LAYER: {
-              const l = layer as MeshCodeLayerModel;
-              return {
-                type: "meshCode",
-                id: l.id,
-                title: l.title,
-                meshCodeLevel: l.meshCodeLevel,
                 features: get(l.featuresAtom),
                 hidden: get(l.hiddenAtom),
               };

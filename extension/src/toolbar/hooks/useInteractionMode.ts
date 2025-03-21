@@ -11,8 +11,6 @@ const TOOL_TO_INTERACTIONMODE: Record<ToolType, InteractionModeType> = {
   select: "selection",
   sketch: "sketch",
   pedestrian: "move", // TODO: Check later
-  spatialId: "spatialId",
-  meshCode: "move",
 };
 
 export const useInteractionMode = () => {
@@ -24,8 +22,8 @@ export const useInteractionMode = () => {
     // There's no tools support on mobile.
     if (isMobile) {
       setInteractionMode("default");
-    } else if (tool?.type) {
+    } else if (tool) {
       setInteractionMode(TOOL_TO_INTERACTIONMODE[tool.type]);
     }
-  }, [tool?.type, isMobile, setInteractionMode]);
+  }, [tool, isMobile, setInteractionMode]);
 };

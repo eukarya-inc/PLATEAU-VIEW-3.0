@@ -62,6 +62,7 @@ export const ScreenSpaceSelection: FC<ScreenSpaceSelectionProps> = ({
       // TODO: Support ground primitives.
       // const showGroundPrimitives = scene.groundPrimitives.show;
       // scene.groundPrimitives.show = false;
+
       switch (event.type) {
         case "point": {
           let shouldUseAddAction = true;
