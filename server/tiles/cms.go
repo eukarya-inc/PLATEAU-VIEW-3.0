@@ -102,47 +102,46 @@ func assetBaseURL(zipURL string) string {
 func extractZ(name string) (res []string) {
 	// hogeghoge.zip -> [0, ..., 19]
 	// hogehoge_z0.zip -> [0]
+	// hogehoge_0.zip -> [0]
 	// hogehoge_z10-12.zip -> [10, 11, 12]
-	name = strings.TrimSuffix(path.Base(name), path.Ext(name))
-	parts := strings.Split(name, "_")
-	for _, part := range parts {
-		if !strings.HasPrefix(part, "z") {
-			continue
-		}
-
-		part = strings.TrimPrefix(part, "z")
-		if strings.Contains(part, "-") {
-			zRange := strings.Split(part, "-")
-			if len(zRange) != 2 {
-				continue
-			}
-
-			start, _ := strconv.Atoi(zRange[0])
-			end, _ := strconv.Atoi(zRange[1])
-			if start > end {
-				continue
-			}
-
-			for i := start; i <= end; i++ {
+	defer func() {
+		if len(res) == 0 {
+			for i := range 20 { // 0 to 19
 				res = append(res, strconv.Itoa(i))
 			}
-
-			continue
 		}
+	}()
 
-		_, err := strconv.Atoi(part)
-		if err != nil {
-			continue
-		}
-
-		res = append(res, part)
+	name = strings.TrimSuffix(path.Base(name), path.Ext(name))
+	parts := strings.Split(name, "_")
+	if len(parts) == 0 {
+		return
 	}
 
-	if len(res) == 0 {
-		for i := 0; i < 20; i++ { // 0 to 19
+	part := strings.TrimPrefix(parts[len(parts)-1], "z")
+	if strings.Contains(part, "-") {
+		zRange := strings.Split(part, "-")
+		if len(zRange) != 2 {
+			return
+		}
+
+		start, _ := strconv.Atoi(zRange[0])
+		end, _ := strconv.Atoi(zRange[1])
+		if start > end {
+			return
+		}
+
+		for i := start; i <= end; i++ {
 			res = append(res, strconv.Itoa(i))
 		}
+		return
 	}
 
-	return res
+	z, err := strconv.Atoi(part)
+	if z < 0 || err != nil {
+		return
+	}
+
+	res = append(res, strconv.Itoa(z))
+	return
 }
