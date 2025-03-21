@@ -110,7 +110,7 @@ func (p *Packer) writeGML(ctx context.Context, u *url.URL, pctx *packerContext) 
 			return fmt.Errorf("create: %w", err)
 		}
 
-		if err := d.WriteTo(w); err != nil {
+		if _, err := d.WriteTo(w); err != nil {
 			return err
 		}
 

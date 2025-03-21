@@ -31,7 +31,7 @@ func NewNLSLayerGroup() *NLSLayerGroupBuilder {
 
 func (b *NLSLayerGroupBuilder) Build() (*NLSLayerGroup, error) {
 	if b.l.id.IsNil() {
-		return nil, ErrInvalidID
+		return nil, id.ErrInvalidID
 	}
 	return b.l, nil
 }
@@ -55,7 +55,7 @@ func (b *NLSLayerGroupBuilder) ID(id id.NLSLayerID) *NLSLayerGroupBuilder {
 }
 
 func (b *NLSLayerGroupBuilder) NewID() *NLSLayerGroupBuilder {
-	b.l.id = NewID()
+	b.l.id = id.NewNLSLayerID()
 	return b
 }
 
@@ -69,7 +69,7 @@ func (b *NLSLayerGroupBuilder) LayerType(t LayerType) *NLSLayerGroupBuilder {
 	return b
 }
 
-func (b *NLSLayerGroupBuilder) Scene(s SceneID) *NLSLayerGroupBuilder {
+func (b *NLSLayerGroupBuilder) Scene(s id.SceneID) *NLSLayerGroupBuilder {
 	b.l.scene = s
 	return b
 }
