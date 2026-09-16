@@ -11,20 +11,38 @@
 //! an HTTP round-trip. Overlays without bounds (XYZ DEMs without explicit
 //! `bounds` config) are always queried.
 //!
-//! On per-overlay fetch error, the overlay is skipped and a `failed:{slug}`
-//! marker is appended to the etag fragment so the served bytes remain
-//! consistent with their advertised cache key (and a recovered overlay
-//! flips the cache key back to its happy path automatically).
+//! An overlay with no coverage for a tile (`NotFound`/`OutOfRange`) is
+//! skipped and a `nodata:{slug}` marker is appended to the etag fragment so
+//! the served bytes remain consistent with their advertised cache key. Any
+//! other overlay fetch error fails the tile rather than serving the base.
 
 use std::sync::Arc;
 
 use async_trait::async_trait;
 use futures::future::join_all;
+use futures::stream::{self, StreamExt};
 use rstar::{AABB, RTree, RTreeObject};
 
 use super::dem::{DemError, DemProvider, DemTile, GeoBounds, PixelPositions, Upsampled};
 use super::upsample_subregion;
 use super::vertical::{DhMemo, SourceCorrection};
+
+/// How many overlays may be fetched at once for a single tile.
+///
+/// Overlay stacks are generated from R2 and are allowed to hold tens of
+/// thousands of COGs, all of which intersect a low-zoom tile. Fetching them
+/// with an unbounded `join_all` meant one request could hold thousands of
+/// simultaneous range reads and an equal number of `tile_size²` f64 grids —
+/// hundreds of MB, past the container limit. Results are consumed in order as
+/// they arrive, so at most this many grids are ever live.
+const MAX_CONCURRENT_OVERLAY_FETCHES: usize = 16;
+
+/// Hard ceiling on overlays fetched for one tile, after sub-pixel culling.
+///
+/// Culling keeps normal stacks far below this; exceeding it means the config
+/// describes something no single tile request can serve, and failing is
+/// better than spending minutes of upstream reads on it.
+const MAX_OVERLAYS_PER_TILE: usize = 512;
 
 /// One bbox entry in the R*-tree.
 #[derive(Debug, Clone)]
@@ -118,73 +136,26 @@ impl CompositeDemProvider {
         }
     }
 
-    /// Try to fetch the base at the requested zoom, falling back to a
-    /// parent tile (with bilinear upsampling) when the base returns
-    /// `OutOfRange` or `NotFound`. Walks down one zoom level at a time so
-    /// partial-coverage upstreams (Mapterhorn over Japan tops out at
-    /// different zooms in different areas) still feed the composite.
-    async fn fetch_base_upsampled(
-        &self,
-        z: u8,
-        x: u32,
-        y: u32,
-        tile_size: u32,
-    ) -> Result<DemTile, DemError> {
-        let mut try_z = z.min(self.base.max_zoom());
-        loop {
-            let factor = 1u32 << (z - try_z);
-            let parent_x = x / factor;
-            let parent_y = y / factor;
-            match self
-                .base
-                .get_tile_elevations(try_z, parent_x, parent_y, tile_size)
-                .await
-            {
-                Ok(parent) => {
-                    if factor == 1 {
-                        return Ok(parent);
-                    }
-                    let elevations = upsample_subregion(
-                        &parent.elevations,
-                        tile_size,
-                        factor,
-                        x % factor,
-                        y % factor,
-                    );
-                    // The parent comes straight from the base provider, so it
-                    // is never itself an upsampled tile.
-                    let parent_positions = parent
-                        .positions
-                        .unwrap_or_else(|| PixelPositions::centres(tile_size));
-                    return Ok(DemTile {
-                        elevations,
-                        etag: parent.etag,
-                        positions: Some(PixelPositions {
-                            upsampled: Some(Upsampled {
-                                factor,
-                                sub_x: x % factor,
-                                sub_y: y % factor,
-                                tile_size,
-                            }),
-                            ..parent_positions
-                        }),
-                    });
-                }
-                Err(DemError::NotFound | DemError::OutOfRange) if try_z > 0 => {
-                    try_z -= 1;
-                }
-                Err(e) => return Err(e),
-            }
-        }
-    }
-
     /// Pick overlay indices whose bbox intersects the tile bbox, plus all
     /// unbounded overlays. Returns indices in original config order.
-    fn select_overlays(&self, tile: &GeoBounds) -> Vec<usize> {
+    ///
+    /// Overlays whose whole footprint is smaller than one pixel of the
+    /// requested tile are dropped: they could not contribute a visible sample,
+    /// and at low zoom the R*-tree prunes nothing, so without this a world-scale
+    /// tile selects every COG in the stack.
+    fn select_overlays(&self, tile: &GeoBounds, tile_size: u32) -> Vec<usize> {
         let env = AABB::from_corners([tile.west, tile.south], [tile.east, tile.north]);
+        let px_w = (tile.east - tile.west).abs() / tile_size as f64;
+        let px_h = (tile.north - tile.south).abs() / tile_size as f64;
+
         let mut hits: Vec<usize> = self
             .index
             .locate_in_envelope_intersecting(&env)
+            .filter(|e| {
+                let [w, s] = e.bbox.lower();
+                let [n_e, n] = e.bbox.upper();
+                (n_e - w).abs() >= px_w || (n - s).abs() >= px_h
+            })
             .map(|e| e.overlay_idx)
             .chain(self.unbounded.iter().copied())
             .collect();
@@ -211,7 +182,7 @@ impl DemProvider for CompositeDemProvider {
         //    bilinear-upsample the relevant sub-region. Without this,
         //    the COG overlays never reach the renderer at high zoom and
         //    Cesium ends up with all-zero tiles.
-        let mut base_tile = self.fetch_base_upsampled(z, x, y, tile_size).await?;
+        let mut base_tile = fetch_upsampled(self.base.as_ref(), z, x, y, tile_size, true).await?;
 
         // Height correction happens per member, *before* painting, so the
         // composite ends up in one datum. Members sharing sample positions
@@ -226,23 +197,33 @@ impl DemProvider for CompositeDemProvider {
         // 2. Compute the geographic bbox of this Web-Mercator tile for R-tree
         // pruning. (We re-derive the formula here to avoid a circular dep.)
         let tile_bbox = mercator_tile_bbox(z, x, y);
-        let candidates = self.select_overlays(&tile_bbox);
+        let candidates = self.select_overlays(&tile_bbox, tile_size);
         if candidates.is_empty() {
             return Ok(base_tile);
         }
+        if candidates.len() > MAX_OVERLAYS_PER_TILE {
+            tracing::error!(
+                selected = candidates.len(),
+                limit = MAX_OVERLAYS_PER_TILE,
+                z,
+                x,
+                y,
+                "too many overlays intersect this tile"
+            );
+            return Err(DemError::OutOfRange);
+        }
 
-        // 3. Parallel fetch.
-        let futures = candidates.iter().map(|&idx| {
+        // 3. Bounded-concurrency fetch. `buffered` yields in input order, so the
+        //    config paint order is preserved while only a handful of overlay
+        //    grids exist at a time.
+        let mut fetches = stream::iter(candidates.into_iter().map(|idx| {
             let provider = self.overlays[idx].clone();
             async move {
-                let z_clamped = z.min(provider.max_zoom());
-                let result = provider
-                    .get_tile_elevations(z_clamped, x, y, tile_size)
-                    .await;
-                (idx, z_clamped, result)
+                let result = fetch_upsampled(provider.as_ref(), z, x, y, tile_size, false).await;
+                (idx, result)
             }
-        });
-        let results = join_all(futures).await;
+        }))
+        .buffered(MAX_CONCURRENT_OVERLAY_FETCHES);
 
         // 4. Paint over in original config order, aggregate etags.
         let mut etag_parts: Vec<String> = Vec::new();
@@ -251,15 +232,17 @@ impl DemProvider for CompositeDemProvider {
         } else {
             etag_parts.push(format!("base:{}:{}", self.base.slug(), self.base.version()));
         }
-        for (idx, z_eval, result) in results {
+        while let Some((idx, result)) = fetches.next().await {
             let provider = &self.overlays[idx];
             match result {
                 Ok(mut overlay) => {
                     if let Some(c) = &self.correction
                         && c.layers[idx]
                     {
-                        // ΔH at the points this member was evaluated at.
-                        c.apply(&mut overlay, z_eval, x, y, tile_size, &mut dh_memo);
+                        // ΔH at the points this member was evaluated at. An
+                        // upsampled overlay carries its ancestor mapping in
+                        // `positions`, so the requested tile address is right.
+                        c.apply(&mut overlay, z, x, y, tile_size, &mut dh_memo);
                     }
                     paint_over(&mut base_tile.elevations, &overlay.elevations);
                     etag_parts.push(format!(
@@ -270,13 +253,23 @@ impl DemProvider for CompositeDemProvider {
                             .unwrap_or_else(|| provider.version().to_string()),
                     ));
                 }
+                // No coverage here is normal: the layer below stays visible.
+                Err(DemError::NotFound | DemError::OutOfRange) => {
+                    etag_parts.push(format!("nodata:{}", provider.slug()));
+                }
+                // A real fetch failure must not be papered over. Painting only
+                // the surviving overlays would publish the bare base — with the
+                // sea-level base that is flat 0 m ground — as a cacheable 200,
+                // so the wrong terrain would be served for the whole cache TTL
+                // with nothing but a warn log to show for it.
                 Err(e) => {
-                    tracing::warn!(
+                    tracing::error!(
                         slug = provider.slug(),
                         error = %e,
-                        "overlay fetch failed; skipping"
+                        z, x, y,
+                        "overlay fetch failed; failing the tile"
                     );
-                    etag_parts.push(format!("failed:{}", provider.slug()));
+                    return Err(e);
                 }
             }
         }
@@ -328,6 +321,68 @@ impl DemProvider for CompositeDemProvider {
         // The composite covers wherever the base covers (overlays only patch
         // _within_ the base). We expose the base's bounds.
         self.base.bounds()
+    }
+}
+
+/// Fetch `provider`'s tile at the requested address, clamped to its max zoom.
+///
+/// Past that zoom the *parent* tile is fetched and the relevant sub-region
+/// bilinear-upsampled; clamping `z` while leaving `x`/`y` at the requested
+/// zoom would address a tile that does not exist at that level. With
+/// `walk_down`, `OutOfRange`/`NotFound` also step one zoom level up at a time,
+/// so partial-coverage upstreams (Mapterhorn over Japan tops out at different
+/// zooms in different areas) still feed the composite. Overlays don't walk:
+/// a miss there means "no coverage, let the layer below show".
+async fn fetch_upsampled(
+    provider: &dyn DemProvider,
+    z: u8,
+    x: u32,
+    y: u32,
+    tile_size: u32,
+    walk_down: bool,
+) -> Result<DemTile, DemError> {
+    let mut try_z = z.min(provider.max_zoom());
+    loop {
+        let factor = 1u32 << (z - try_z);
+        match provider
+            .get_tile_elevations(try_z, x / factor, y / factor, tile_size)
+            .await
+        {
+            Ok(parent) => {
+                if factor == 1 {
+                    return Ok(parent);
+                }
+                let elevations = upsample_subregion(
+                    &parent.elevations,
+                    tile_size,
+                    factor,
+                    x % factor,
+                    y % factor,
+                );
+                // The parent comes straight from the provider, so it is never
+                // itself an upsampled tile.
+                let parent_positions = parent
+                    .positions
+                    .unwrap_or_else(|| PixelPositions::centres(tile_size));
+                return Ok(DemTile {
+                    elevations,
+                    etag: parent.etag,
+                    positions: Some(PixelPositions {
+                        upsampled: Some(Upsampled {
+                            factor,
+                            sub_x: x % factor,
+                            sub_y: y % factor,
+                            tile_size,
+                        }),
+                        ..parent_positions
+                    }),
+                });
+            }
+            Err(DemError::NotFound | DemError::OutOfRange) if walk_down && try_z > 0 => {
+                try_z -= 1;
+            }
+            Err(e) => return Err(e),
+        }
     }
 }
 
@@ -415,11 +470,21 @@ mod tests {
         bounds: Option<GeoBounds>,
         elevations: Vec<f64>,
     ) -> Arc<dyn DemProvider> {
+        provider_with_max_zoom(slug, bounds, elevations, 18)
+    }
+
+    fn provider_with_max_zoom(
+        slug: &str,
+        bounds: Option<GeoBounds>,
+        elevations: Vec<f64>,
+        max_zoom: u8,
+    ) -> Arc<dyn DemProvider> {
         Arc::new(StubProvider {
             slug: slug.to_string(),
             bounds,
             elevations,
-            fail: false,
+            fail: None,
+            max_zoom,
         })
     }
 
@@ -428,7 +493,18 @@ mod tests {
             slug: slug.to_string(),
             bounds,
             elevations: vec![],
-            fail: true,
+            fail: Some(DemError::Http("stub failure".to_string())),
+            max_zoom: 18,
+        })
+    }
+
+    fn missing(slug: &str, bounds: Option<GeoBounds>) -> Arc<dyn DemProvider> {
+        Arc::new(StubProvider {
+            slug: slug.to_string(),
+            bounds,
+            elevations: vec![],
+            fail: Some(DemError::NotFound),
+            max_zoom: 18,
         })
     }
 
@@ -436,20 +512,30 @@ mod tests {
         slug: String,
         bounds: Option<GeoBounds>,
         elevations: Vec<f64>,
-        fail: bool,
+        fail: Option<DemError>,
+        max_zoom: u8,
     }
 
     #[async_trait]
     impl DemProvider for StubProvider {
         async fn get_tile_elevations(
             &self,
-            _z: u8,
-            _x: u32,
-            _y: u32,
+            z: u8,
+            x: u32,
+            y: u32,
             tile_size: u32,
         ) -> Result<DemTile, DemError> {
-            if self.fail {
-                return Err(DemError::Http("stub failure".to_string()));
+            match &self.fail {
+                Some(DemError::NotFound) => return Err(DemError::NotFound),
+                Some(DemError::Http(m)) => return Err(DemError::Http(m.clone())),
+                Some(_) => return Err(DemError::OutOfRange),
+                None => {}
+            }
+            // Real sources 404 on coordinates that do not exist at the zoom they
+            // are asked for, which is how a mismatched x/y shows up.
+            let span = 1u32 << z;
+            if x >= span || y >= span {
+                return Err(DemError::NotFound);
             }
             let n = (tile_size * tile_size) as usize;
             let mut e = self.elevations.clone();
@@ -464,7 +550,7 @@ mod tests {
             256
         }
         fn max_zoom(&self) -> u8 {
-            18
+            self.max_zoom
         }
         fn version(&self) -> &str {
             "v1"
@@ -558,7 +644,7 @@ mod tests {
 
     /// Base that only serves zooms up to `max_zoom` (like Mapterhorn over
     /// open sea, which 404s above z6 around 145°E 30°N), so deeper requests
-    /// go through `fetch_base_upsampled`.
+    /// go through `fetch_upsampled`.
     struct ShallowBase {
         max_zoom: u8,
     }
@@ -615,13 +701,64 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn failed_overlay_marked_in_etag() {
+    async fn overlay_fetch_error_fails_the_tile() {
+        // Falling back to the base would serve flat sea-level ground as a
+        // cacheable 200.
         let base = provider("base", None, vec![0.0; 4]);
         let bad = failing("bad", None);
         let comp = build(base, vec![bad]).await;
+        assert!(comp.get_tile_elevations(0, 0, 0, 2).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn overlay_without_coverage_is_skipped() {
+        let base = provider("base", None, vec![0.0; 4]);
+        let gap = missing("gap", None);
+        let comp = build(base, vec![gap]).await;
         let tile = comp.get_tile_elevations(0, 0, 0, 2).await.unwrap();
-        assert!(tile.etag.unwrap().contains("failed:bad"));
-        // Base still rendered.
+        assert!(tile.etag.unwrap().contains("nodata:gap"));
+        assert_eq!(tile.elevations, vec![0.0; 4]);
+    }
+
+    #[tokio::test]
+    async fn overlay_above_its_max_zoom_is_upsampled_not_dropped() {
+        // z=18 tile over Tokyo against an overlay that tops out at z=17. Asking
+        // the overlay for (17, x@18, y@18) addresses a tile that cannot exist,
+        // so before the fix the overlay was dropped and the base showed through.
+        let base = provider("base", None, vec![0.0; 256]);
+        let shallow = provider_with_max_zoom("shallow", None, vec![100.0; 256], 17);
+        let comp = build(base, vec![shallow]).await;
+        let tile = comp
+            .get_tile_elevations(18, 232833, 103201, 16)
+            .await
+            .unwrap();
+
+        // Bilinear upsampling leaves NaN on the far edge, so check the bulk.
+        let painted = tile
+            .elevations
+            .iter()
+            .filter(|h| (**h - 100.0).abs() < 1e-9)
+            .count();
+        assert!(
+            painted >= tile.elevations.len() / 2,
+            "overlay should still paint above its max zoom, painted {painted}/{}",
+            tile.elevations.len()
+        );
+        assert!(!tile.etag.unwrap().contains("nodata:shallow"));
+    }
+
+    #[tokio::test]
+    async fn subpixel_overlays_are_culled_at_low_zoom() {
+        let base = provider("base", None, vec![0.0; 4]);
+        // ~0.001° footprint against a z=0 tile whose pixels span 180°.
+        let speck = provider(
+            "speck",
+            Some(GeoBounds::new(139.000, 35.000, 139.001, 35.001)),
+            vec![100.0; 4],
+        );
+        let comp = build(base, vec![speck]).await;
+        let tile = comp.get_tile_elevations(0, 0, 0, 2).await.unwrap();
+        assert!(!tile.etag.unwrap().contains("speck"));
         assert_eq!(tile.elevations, vec![0.0; 4]);
     }
 
