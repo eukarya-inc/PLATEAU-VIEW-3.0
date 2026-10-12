@@ -53,3 +53,15 @@ jobs:
             --image $IMAGE_GCP \
             --region ${{ vars.GCP_REGION }} \
             --quiet
+      - name: Update asset index job image
+        run: |
+          # The job is created by Terraform (eukarya-inc/infrastructure). Only the
+          # image is updated here, and only once the job exists.
+          if gcloud run jobs describe plateauview-asset-index --region ${{ vars.GCP_REGION }} >/dev/null 2>&1; then
+            gcloud run jobs update plateauview-asset-index \
+              --image $IMAGE_GCP \
+              --region ${{ vars.GCP_REGION }} \
+              --quiet
+          else
+            echo "plateauview-asset-index does not exist yet; skipping"
+          fi
