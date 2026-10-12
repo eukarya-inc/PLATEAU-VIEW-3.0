@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"slices"
 
@@ -59,46 +60,24 @@ func (c *InMemoryRepo) SetContext(ctx *InMemoryRepoContext) {
 // computeContextRevision returns a deterministic short token that summarizes
 // the data observable through the context. Two contexts that resolve to the
 // same data (across processes, across cache reloads) produce the same token,
-// while any change to the dataset set, the CityGML index, or the available
-// years flips it — exactly the granularity needed for an HTTP ETag.
+// while any change to it flips the token — exactly the granularity needed for
+// an HTTP ETag and for the plateau-datasets memo keyed on it.
 //
-// We hash only identity-level signals (IDs, counts, years) rather than the
-// full payload so the cost stays O(N) in number of entries with a small
-// constant, even for the largest repo. The result is hex-truncated to keep
+// The whole context is hashed, not only its IDs: a rebuilt CityGML zip or a
+// change in the G空間情報センター files keeps every ID but changes the
+// responses. Marshalling the largest repo takes well under a second and only
+// happens when the repo is (re)loaded. The result is hex-truncated to keep
 // downstream ETag headers compact.
 func computeContextRevision(ctx *InMemoryRepoContext) string {
 	if ctx == nil {
 		return ""
 	}
+
 	h := sha256.New()
-	_, _ = fmt.Fprintf(h, "n=%s|", ctx.Name)
-
-	years := append([]int(nil), ctx.Years...)
-	slices.Sort(years)
-	_, _ = fmt.Fprintf(h, "y=%d:", len(years))
-	for _, y := range years {
-		_, _ = fmt.Fprintf(h, "%d,", y)
-	}
-
-	allDatasets := ctx.Datasets.All()
-	dsIDs := make([]string, 0, len(allDatasets))
-	for _, d := range allDatasets {
-		dsIDs = append(dsIDs, string(d.GetID()))
-	}
-	slices.Sort(dsIDs)
-	_, _ = fmt.Fprintf(h, "|d=%d:", len(dsIDs))
-	for _, id := range dsIDs {
-		_, _ = fmt.Fprintf(h, "%s,", id)
-	}
-
-	cgIDs := make([]string, 0, len(ctx.CityGML))
-	for id := range ctx.CityGML {
-		cgIDs = append(cgIDs, string(id))
-	}
-	slices.Sort(cgIDs)
-	_, _ = fmt.Fprintf(h, "|c=%d:", len(cgIDs))
-	for _, id := range cgIDs {
-		_, _ = fmt.Fprintf(h, "%s,", id)
+	// json.Encoder writes map keys in sorted order, so equal data hashes equally.
+	if err := json.NewEncoder(h).Encode(ctx); err != nil {
+		// Without a trustworthy token, callers must not cache.
+		return ""
 	}
 
 	sum := h.Sum(nil)
