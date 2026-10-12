@@ -138,7 +138,7 @@ PLATEAU の都市データは毎年更新され、新しい整備年度のデー
 - `composite_tilesets`: 全国（`all-...`）と都道府県別（`13-...` など）の複合 `tileset.json` を実データから派生して列挙したリスト。CesiumJS で広域をまとめて表示したい場合の入口として利用できます。年度別エントリと「最新整備年度」を自動採用する `-latest` エントリの両方を含みます。
 - `latest_datasets`: 各 `(自治体, 種別, LOD, 形式)` について **最新整備年度** を自動採用する 3D Tiles / MVT 用の動的 URL 一覧。`year` は常に `"latest"`。新しい整備年度が公開されたタイミングで URL を変更しなくても自動的に最新データに追従します。
 - `latest_citygml`: 各自治体について **最新整備年度** の CityGML zip にリダイレクトする URL 一覧。同様に `year` は `"latest"`。
-- `citygml`: 自治体・整備年度ごとの CityGML zip の一覧。各要素の `gspatialjp_files` には、G空間情報センターで公開している 3D Tiles・MVT をまとめた zip ファイル（`kind` が `3dtiles_mvt`）なども含まれます。自治体単位でデータを一括ダウンロードしたい場合に利用できます。詳しくは [PLATEAU-CityGML](/datasets/citygml/#g空間情報センターで公開しているファイル) を参照してください。
+- `citygml`: 自治体・整備年度ごとの CityGML zip の一覧。各要素の `gspatialjp_files` には、G空間情報センターのデータセットページに掲載されている 3D Tiles・MVT をまとめた zip ファイル（`kind` が `3dtiles_mvt`）なども含まれます。G空間情報センターの更新はデータカタログより遅れることがあるため、`latest_datasets` などで配信している 3D Tiles・MVT と内容が異なる場合があります。自治体単位でデータを一括ダウンロードしたい場合に利用できます。詳しくは [PLATEAU-CityGML](/datasets/citygml/#g空間情報センターで公開しているファイル) を参照してください。
 
 加えて `citygml` 配列には、自治体ごとの CityGML データセットが含まれます。地物型ごとには分かれず、各自治体の全地物型を 1 つの zip ファイルにまとめた形で、自治体単位で 1 件ずつ返却されます。詳細は [PLATEAU-CityGML](/datasets/citygml/) を参照してください。
 

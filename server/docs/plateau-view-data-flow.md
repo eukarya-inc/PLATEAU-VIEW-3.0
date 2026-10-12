@@ -726,6 +726,17 @@ for _, featureType := range all.FeatureTypes.Plateau {
 }
 ```
 
+#### G空間情報センター（CKAN）からの取得
+
+PLATEAU のプロジェクトでは、`GetAll()` は CMS と並行して G空間情報センター（`CKAN_BASEURL`、未設定時は `https://www.geospatial.jp/ckan`）の CKAN API からデータセット一覧を取得し、CityGML エントリの `gspatialjpDatasetUrl` と `gspatialjpFiles`（`/datacatalog/plateau-datasets` の `gspatialjp_dataset_url` / `gspatialjp_files`）を作ります（`datacatalogv3/gspatialjp.go`）。CMS 上のファイルではなく G空間情報センターが実際に配布しているファイルを載せるためで、CMS 側で zip を作り直したあと G空間情報センターへ再公開していない自治体では、`gspatialjpFiles` の CityGML がエントリの `url` と異なります。
+
+- `package_search?fq=organization:toshi` を `fl=name,num_resources,res_name,res_url,res_format` 付きで呼ぶ（全件で数 MB。`fl` なしだと `thumbnail_url` の data URI で 170 MB を超える）。Solr は空の値を多値フィールドから落とすため、`res_*` の要素数が `num_resources` と合わないデータセットだけ `package_show` で取り直す
+- データセット名 `plateau-<市区町村コード>-<名称>-<年度>`（`plateau-tokyo23ku-<年度>` は 13100）の市区町村コードと年度で、CityItem のコードとデータ整備年度に対応付ける。名称部分（`-shi` / `-city` など）は見ない
+- リソース名の `（vN）` が CityItem の仕様書メジャーバージョンと一致するものを使う。`CityGML（vN）`・`3D Tiles, MVT（vN）`・`関連データセット（vN）` が `citygml`・`3dtiles_mvt`・`related`、それ以外のファイル（`GeoTIFF（vN）`、バージョン表記のないその他データセットなど）が `other`。データ目録・索引図・図郭マップ・data URI と、2020 年度初版のバージョン表記のないリソースは除く
+- `file_size` は、URL が geospatialjp-data アイテムの `citygml` / `plateau` / `related` アセットと一致する場合にその CMS のサイズを入れる
+- 取得結果はプロセス内で 3 分間共有する（`--generate-datacatalog` で複数プロジェクトを続けて生成する場合も 1 回の取得で済む）。取得は全体で 2 分のタイムアウト
+- 取得に失敗してもカタログ生成は止めず、警告（`gspatialjp: failed to get G空間情報センター datasets: ...`）を出して `gspatialjpDatasetUrl` を `null`、`gspatialjpFiles` を空にする
+
 #### キャッシュ管理
 ```go
 // キャッシュの読み込みと保存
@@ -780,6 +791,7 @@ type AllData struct {
     Generic               []*GenericItem
     Sample                []*PlateauFeatureItem
     GeospatialjpDataItems []*GeospatialjpDataItem
+    Gspatialjp            *GspatialjpPackages // G空間情報センターのデータセット。未取得・取得失敗時は nil
 }
 ```
 
@@ -2155,9 +2167,10 @@ go run . --export-asset-index plateau-2025 --stdout > assets.ndjson
 ```
 
 - 出力先は `<--output>/asset-index/assets.ndjson`（`--output` 省略時はカレントディレクトリ）。`--stdout` で標準出力に出す
-- 行の形式: `{"uuid":"ef/b49016-...","url":"https://.../assets/ef/b49016-...","refs":[...]}`。`refs` の各要素は `kind`（`plateau_dataset` / `related_dataset` / `related_dataset_original` / `generic_dataset` / `citygml` / `citygml_feature` / `citygml_maxlod` / `citygml_metadata` / `gspatialjp_3dtiles_mvt` / `gspatialjp_related` / `gspatialjp_other`）、`project`、`stage`、データセット・地域・年度・仕様・形式・LOD・テクスチャ・ファイルサイズ・参照 URL を持ち、該当しない項目は `null`
+- 行の形式: `{"uuid":"ef/b49016-...","url":"https://.../assets/ef/b49016-...","refs":[...]}`。`refs` の各要素は `kind`（`plateau_dataset` / `related_dataset` / `related_dataset_original` / `generic_dataset` / `citygml` / `citygml_feature` / `citygml_maxlod` / `citygml_metadata` / `gspatialjp_citygml` / `gspatialjp_3dtiles_mvt` / `gspatialjp_related` / `gspatialjp_other`）、`project`、`stage`、データセット・地域・年度・仕様・形式・LOD・テクスチャ・ファイルサイズ・参照 URL を持ち、該当しない項目は `null`
 - 全ステージ（alpha / beta / ga）のデータを含み、行は `uuid` 順、`refs` も決定的な順に並ぶ
 - CMS アセット以外の URL（外部タイルなど）はスキップし、件数を標準エラー出力のサマリに出す
+- `gspatialjp_*` は G空間情報センターのデータセットページに掲載されているファイル（キャッシュの `gspatialjpFiles`）。`gspatialjp_citygml` は、G空間情報センターの CityGML zip がデータカタログの CityGML（`citygml`）と異なる場合、つまり G空間情報センターがまだ別の（通常は古い）ビルドを配布している場合のみ出す
 - データカタログのスキーマが v2 のプロジェクトと、G空間情報センターのデータ目録・索引図は含まない
 
 ### 10.1 よくある問題

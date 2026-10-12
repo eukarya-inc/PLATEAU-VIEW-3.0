@@ -27,7 +27,7 @@ Project PLATEAU では、CityGML 形式で作成された 3D 都市モデルの�
 curl https://api.plateauview.mlit.go.jp/datacatalog/plateau-datasets | jq '.citygml[0]'
 ```
 
-主要なフィールド: `id`, `pref` / `pref_code`, `city` / `city_code`, `url`（PLATEAU CMS 上の zip ファイル URL）, `file_size`（zip のファイルサイズ（バイト）。CMS のメタデータが取得できる場合に提供）, `composite_url`（自治体・整備年度を指定して zip にリダイレクトする安定 URL）, `feature_types`（含まれる地物型コードのリスト）, `year`, `registration_year`, `spec`, `gspatialjp_dataset_url`（G空間情報センターのデータセットページの URL）, `gspatialjp_files`（G空間情報センターで公開しているファイルのリスト。後述）。
+主要なフィールド: `id`, `pref` / `pref_code`, `city` / `city_code`, `url`（PLATEAU CMS 上の zip ファイル URL）, `file_size`（zip のファイルサイズ（バイト）。CMS のメタデータが取得できる場合に提供）, `composite_url`（自治体・整備年度を指定して zip にリダイレクトする安定 URL）, `feature_types`（含まれる地物型コードのリスト）, `year`, `registration_year`, `spec`, `gspatialjp_dataset_url`（G空間情報センターのデータセットページの URL。データセットがない場合は `null`）, `gspatialjp_files`（G空間情報センターで公開しているファイルのリスト。後述）。
 
 レスポンスには加えて `latest_citygml` 配列が含まれます。各自治体について **最新整備年度** の zip にリダイレクトする URL を提供し、`year` は常に `"latest"`、`file_size` も同梱されます。新しいデータが公開されてもアプリケーション側の URL を変更する必要がありません。
 
@@ -54,16 +54,20 @@ query {
 
 ### G空間情報センターで公開しているファイル
 
-`gspatialjp_files` には、その自治体・整備年度について [G空間情報センター](https://www.geospatial.jp/ckan/dataset/plateau) のデータセットにリソースとして公開しているファイルが入ります。CityGML だけでなく、3D Tiles・MVT や関連データセットを自治体単位の zip ファイルでまとめてダウンロードしたい場合に利用できます。
+`gspatialjp_files` には、その自治体・整備年度の [G空間情報センター](https://www.geospatial.jp/ckan/dataset/plateau) のデータセットページ（`gspatialjp_dataset_url`）に掲載されているファイルのうち、そのエントリの仕様書バージョン（`spec`）のものが入ります。CityGML だけでなく、3D Tiles・MVT や関連データセットを自治体単位の zip ファイルでまとめてダウンロードしたい場合に利用できます。データ目録と索引図は含みません。
 
 | `kind` | 内容 |
 |:---|:---|
-| `citygml` | 全地物型の CityGML をまとめた zip ファイル（`url` と同じファイル） |
+| `citygml` | 全地物型の CityGML をまとめた zip ファイル |
 | `3dtiles_mvt` | 3D Tiles・MVT をまとめた zip ファイル |
 | `related` | 関連データセットをまとめた zip ファイル |
-| `other` | その他のデータセット（名称は `name` に入ります） |
+| `other` | その他のファイル（GeoTIFF、その他のデータセットなど） |
 
-各要素は `kind`・`url` に加えて、取得できる場合は `file_size`（バイト）を持ちます。該当するファイルがない場合は空配列です。zip ファイルは 1 件あたり数 GB になることがあるため、ダウンロード前に `file_size` を確認することをおすすめします。
+各要素は `kind`・`url` と、データセットページに表示されるリソース名 `name`（例: `CityGML（v5）`）を持ちます。PLATEAU CMS 上のファイルでサイズが分かる場合は `file_size`（バイト）も含まれます。該当するファイルがない場合は空配列です。zip ファイルは 1 件あたり数 GB になることがあるため、`file_size` がある場合はダウンロード前に確認することをおすすめします。
+
+:::note
+データカタログは G空間情報センターより先に新しいデータへ差し替わることがあります。そのため `kind` が `citygml` のファイルは、`url` の zip ファイルと異なる（古い）ことがあります。最新のデータカタログと同じ CityGML が必要な場合は `url` を使用してください。
+:::
 
 ```sh
 curl https://api.plateauview.mlit.go.jp/datacatalog/plateau-datasets \

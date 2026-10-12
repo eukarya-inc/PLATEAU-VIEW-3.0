@@ -353,12 +353,16 @@ paths:
                           nullable: true
                           description: |
                             この自治体・整備年度のデータを公開している G空間情報センターのデータセットページの URL。
+                            G空間情報センターに該当するデータセットがない場合は `null` です。
                           example: "https://www.geospatial.jp/ckan/dataset/plateau-13104-shinjuku-ku-2025"
                         gspatialjp_files:
                           type: array
                           description: |
-                            G空間情報センターのデータセットにリソースとして公開されているファイルのリスト。
+                            G空間情報センターのデータセットページ（`gspatialjp_dataset_url`）に掲載されているファイルのうち、
+                            このエントリの仕様書バージョン（`spec`）のもののリスト。データ目録と索引図は含みません。
                             CityGML・3D Tiles/MVT・関連データセットの zip ファイルなどを、自治体・整備年度ごとにまとめてダウンロードできます。
+                            データカタログ側で新しいデータに差し替わったあと G空間情報センターがまだ更新されていない場合があるため、
+                            `kind` が `citygml` のファイルは `url` と異なることがあります。
                             該当するファイルがない場合は空配列です。
                           items:
                             type: object
@@ -372,13 +376,14 @@ paths:
                                   - other
                                 description: |
                                   ファイルの種類。
-                                  - `citygml`: 全地物型の CityGML をまとめた zip ファイル（`url` と同じファイル）
+                                  - `citygml`: 全地物型の CityGML をまとめた zip ファイル
                                   - `3dtiles_mvt`: 3D Tiles・MVT をまとめた zip ファイル
                                   - `related`: 関連データセットをまとめた zip ファイル
-                                  - `other`: その他のデータセット（名称は `name`）
+                                  - `other`: その他のファイル（GeoTIFF、その他のデータセットなど）
                               name:
                                 type: string
-                                description: ファイルの名称。`kind` が `other` の場合のみ含まれます。
+                                description: "G空間情報センターのデータセットページに表示されるリソース名（例: `CityGML（v5）`）。"
+                                example: "CityGML（v5）"
                               url:
                                 type: string
                                 format: uri
@@ -386,7 +391,7 @@ paths:
                               file_size:
                                 type: integer
                                 format: int64
-                                description: ファイルサイズ（バイト）。取得できない場合は省略されます。
+                                description: ファイルサイズ（バイト）。PLATEAU CMS 上のファイルでサイズが分かる場合のみ含まれます。
                             required:
                               - kind
                               - url
