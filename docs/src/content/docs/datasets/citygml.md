@@ -54,7 +54,7 @@ query {
 
 ### G空間情報センターで公開しているファイル
 
-`gspatialjp_files` には、その自治体・整備年度の [G空間情報センター](https://www.geospatial.jp/ckan/dataset/plateau) のデータセットページ（`gspatialjp_dataset_url`）に掲載されているファイルのうち、そのエントリの仕様書バージョン（`spec`）のものが入ります。CityGML だけでなく、3D Tiles・MVT や関連データセットを自治体単位の zip ファイルでまとめてダウンロードしたい場合に利用できます。データ目録と索引図は含みません。
+`gspatialjp_files` には、その自治体・整備年度の [G空間情報センター](https://www.geospatial.jp/ckan/dataset/plateau) のデータセットページ（`gspatialjp_dataset_url`）に掲載されているファイルのうち、そのエントリの仕様書バージョン（`spec`）のものが入ります。CityGML だけでなく、3D Tiles・MVT や関連データセットを自治体単位の zip ファイルでまとめてダウンロードしたい場合に利用できます。データセットページのデータ目録と索引図は CityGML の zip ファイルに含まれているため、`gspatialjp_files` には入りません。
 
 | `kind` | 内容 |
 |:---|:---|
