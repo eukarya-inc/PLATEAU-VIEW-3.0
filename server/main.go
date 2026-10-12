@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"runtime"
 	"runtime/debug"
+	"slices"
 	"strings"
 	"time"
 
@@ -42,6 +43,8 @@ func main() {
 		outputURL           = flag.String("output", "", "Output cache to specified URL (gs://bucket/path for GCS)")
 		updateCacheURL      = flag.String("update-cache-url", "", "URL to call update-cache API after generation (e.g., https://example.com/datacatalog/update-cache)")
 		updateCacheKey      = flag.String("update-cache-key", "", "Key for update-cache API authentication")
+		exportAssetIndex    = flag.String("export-asset-index", "", "Export the CMS asset index (NDJSON, one row per asset UUID) for specified projects and exit")
+		sourceURL           = flag.String("source", "", "Datacatalog cache to read (gs://bucket/path or local dir) instead of CMS (use with --export-asset-index)")
 		help                = flag.Bool("help", false, "Show help message")
 	)
 
@@ -68,19 +71,40 @@ func main() {
 	}
 
 	// 標準出力モードの場合は早めにログ出力先を変更
-	if *generateDatacatalog != "" && *outputToStdout {
+	if (*generateDatacatalog != "" || *exportAssetIndex != "") && *outputToStdout {
 		log.SetOutput(os.Stderr)
 	}
 
-	// --generate-datacatalog フラグが明示的に指定されたかチェック
+	// --generate-datacatalog / --export-asset-index フラグが明示的に指定されたかチェック
 	generateDatacatalogSet := false
+	exportAssetIndexSet := false
 	flag.Visit(func(f *flag.Flag) {
-		if f.Name == "generate-datacatalog" {
+		switch f.Name {
+		case "generate-datacatalog":
 			generateDatacatalogSet = true
+		case "export-asset-index":
+			exportAssetIndexSet = true
 		}
 	})
 
 	conf := lo.Must(NewConfig())
+
+	// アセットインデックス出力モードの場合
+	if exportAssetIndexSet {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+		defer cancel()
+
+		exporter := NewAssetIndexExporter(conf, AssetIndexExporterOptions{
+			Projects:       parseProjectsFlag(*exportAssetIndex),
+			SourceURL:      strings.TrimSpace(*sourceURL),
+			OutputURL:      *outputURL,
+			OutputToStdout: *outputToStdout,
+		})
+		if err := exporter.Export(ctx); err != nil {
+			log.Fatalf("Failed to export asset index: %v", err)
+		}
+		os.Exit(0)
+	}
 
 	// データカタログ生成モードの場合
 	if generateDatacatalogSet {
@@ -173,23 +197,46 @@ func main() {
 	main2(conf)
 }
 
-// preprocessArgs は --generate-datacatalog が値なしで指定された場合に "all" を補完する
+// preprocessArgs は --generate-datacatalog / --export-asset-index が値なしで指定された場合に "all" を補完する
 func preprocessArgs() {
-	for i, arg := range os.Args {
-		// --generate-datacatalog または -generate-datacatalog を探す
-		if arg == "--generate-datacatalog" || arg == "-generate-datacatalog" {
-			// 最後の引数、または次の引数が - で始まる場合は値なし
-			if i+1 >= len(os.Args) || strings.HasPrefix(os.Args[i+1], "-") {
-				// "all" を補完
-				os.Args[i] = "--generate-datacatalog=all"
+	os.Args = completeOptionalFlagValues(os.Args, "generate-datacatalog", "export-asset-index")
+}
+
+func completeOptionalFlagValues(args []string, names ...string) []string {
+	args = slices.Clone(args)
+	for _, name := range names {
+		for i, arg := range args {
+			// --name または -name を探す
+			if arg == "--"+name || arg == "-"+name {
+				// 最後の引数、または次の引数が - で始まる場合は値なし
+				if i+1 >= len(args) || strings.HasPrefix(args[i+1], "-") {
+					// "all" を補完
+					args[i] = "--" + name + "=all"
+				}
+				break
 			}
-			return
-		}
-		// --generate-datacatalog= 形式（値あり）の場合は何もしない
-		if strings.HasPrefix(arg, "--generate-datacatalog=") || strings.HasPrefix(arg, "-generate-datacatalog=") {
-			return
+			// --name= 形式（値あり）の場合は何もしない
+			if strings.HasPrefix(arg, "--"+name+"=") || strings.HasPrefix(arg, "-"+name+"=") {
+				break
+			}
 		}
 	}
+	return args
+}
+
+// parseProjectsFlag は "all"（または空）を全プロジェクト指定として nil を返し、それ以外はカンマ区切りで分割する
+func parseProjectsFlag(v string) []string {
+	v = strings.TrimSpace(v)
+	if v == "" || v == "all" {
+		return nil
+	}
+	var res []string
+	for _, p := range strings.Split(v, ",") {
+		if p = strings.TrimSpace(p); p != "" {
+			res = append(res, p)
+		}
+	}
+	return res
 }
 
 func getAllV3Projects(conf *Config) ([]string, error) {
@@ -229,6 +276,8 @@ func printHelp() {
 	fmt.Println("  plateauview --generate-datacatalog plateau-2024,plateau-2023  # Generate cache for multiple projects")
 	fmt.Println("  plateauview --generate-datacatalog --output=gs://bucket/path  # Output to GCS")
 	fmt.Println("  plateauview --generate-datacatalog plateau-2024 --stdout  # Output to stdout")
+	fmt.Println("  plateauview --export-asset-index --source gs://bucket/path --output gs://bucket/path  # Export asset index from the datacatalog cache")
+	fmt.Println("  plateauview --export-asset-index plateau-2025 --stdout  # Export asset index of a project from CMS to stdout")
 	fmt.Println()
 	fmt.Println("Options:")
 	fmt.Println("  --generate-datacatalog [projects]  Generate datacatalog cache (no value for all v3 projects, or comma-separated project names)")
@@ -236,6 +285,8 @@ func printHelp() {
 	fmt.Println("  --output <url>                     Output cache to specified URL (gs://bucket/path for GCS)")
 	fmt.Println("  --update-cache-url <url>           URL to call update-cache API after generation (env: REEARTH_PLATEAUVIEW_DATACATALOG_CACHEUPDATEURL)")
 	fmt.Println("  --update-cache-key <key>           Key for update-cache API authentication (env: REEARTH_PLATEAUVIEW_DATACATALOG_CACHEUPDATEKEY)")
+	fmt.Println("  --export-asset-index [projects]    Export NDJSON with one row per CMS asset UUID to <output>/asset-index/assets.ndjson (no value for all v3 projects)")
+	fmt.Println("  --source <url>                     Read the datacatalog cache (gs://bucket/path or local dir) instead of CMS (use with --export-asset-index)")
 	fmt.Println("  --help                             Show this help message")
 }
 

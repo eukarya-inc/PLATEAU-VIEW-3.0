@@ -2141,6 +2141,25 @@ go run . --generate-datacatalog plateau-2024 --stdout > datacatalog.json 2> warn
 - 古いキャッシュで調査すると誤った結論に至る可能性があります
 - サーバー起動時のキャッシュ生成には`REEARTH_PLATEAUVIEW_DATACATALOG_DEBUG=true`が必要ですが、CLIツールでは不要です
 
+#### アセットインデックスの出力
+
+CMS アセット（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）がデータカタログ上の何にあたるかを、アセット UUID ごとに 1 行の NDJSON で出力します。アセット配信のアクセスログと UUID で結合する分析用のディメンションテーブルです。
+
+```bash
+# データカタログキャッシュ（--generate-datacatalog の出力先）から作る（CMS へのアクセスなし）
+go run . --export-asset-index --source gs://plateau-prod-server-cache --output gs://plateau-prod-server-cache
+# => gs://plateau-prod-server-cache/asset-index/assets.ndjson
+
+# --source を省略すると CMS から直接構築する。プロジェクトはカンマ区切りで指定可能（省略時は全 v3 プロジェクト）
+go run . --export-asset-index plateau-2025 --stdout > assets.ndjson
+```
+
+- 出力先は `<--output>/asset-index/assets.ndjson`（`--output` 省略時はカレントディレクトリ）。`--stdout` で標準出力に出す
+- 行の形式: `{"uuid":"ef/b49016-...","url":"https://.../assets/ef/b49016-...","refs":[...]}`。`refs` の各要素は `kind`（`plateau_dataset` / `related_dataset` / `related_dataset_original` / `generic_dataset` / `citygml` / `citygml_feature` / `citygml_maxlod` / `citygml_metadata` / `gspatialjp_3dtiles_mvt` / `gspatialjp_related` / `gspatialjp_other`）、`project`、`stage`、データセット・地域・年度・仕様・形式・LOD・テクスチャ・ファイルサイズ・参照 URL を持ち、該当しない項目は `null`
+- 全ステージ（alpha / beta / ga）のデータを含み、行は `uuid` 順、`refs` も決定的な順に並ぶ
+- CMS アセット以外の URL（外部タイルなど）はスキップし、件数を標準エラー出力のサマリに出す
+- データカタログのスキーマが v2 のプロジェクトと、G空間情報センターのデータ目録・索引図は含まない
+
 ### 10.1 よくある問題
 
 #### 空の結果が返される場合
