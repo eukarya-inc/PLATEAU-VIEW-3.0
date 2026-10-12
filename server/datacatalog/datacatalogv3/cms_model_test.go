@@ -199,3 +199,30 @@ func TestStringOrNumber(t *testing.T) {
 	assert.NoError(t, json.Unmarshal([]byte(`123.456`), stringOrNumber))
 	assert.Equal(t, "123.456000", stringOrNumber.String())
 }
+
+func TestGeospatialjpDataItemFrom(t *testing.T) {
+	item := &cms.Item{
+		ID: "id",
+		Fields: []*cms.Field{
+			{Key: "city", Value: "city1"},
+			{Key: "citygml", Value: map[string]any{"url": "url_citygml", "totalSize": float64(100)}},
+			{Key: "maxlod", Value: map[string]any{"url": "url_maxlod"}},
+			{Key: "plateau", Value: map[string]any{"url": "url_plateau", "totalSize": float64(200)}},
+			{Key: "related", Value: map[string]any{"url": "url_related", "totalSize": float64(300)}},
+			{Key: "desc_index", Value: "index"},
+		},
+	}
+
+	assert.Equal(t, &GeospatialjpDataItem{
+		ID:          "id",
+		City:        "city1",
+		CityGML:     "url_citygml",
+		CityGMLSize: 100,
+		MaxLOD:      "url_maxlod",
+		Plateau:     "url_plateau",
+		PlateauSize: 200,
+		Related:     "url_related",
+		RelatedSize: 300,
+		HasIndex:    true,
+	}, GeospatialjpDataItemFrom(item))
+}

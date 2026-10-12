@@ -23,33 +23,37 @@ const datasetTypeNameUsecase = "ユースケース"
 const datasetTypeNameCity = "自治体データ"
 
 type CMS struct {
-	cms      cms.Interface
-	pcms     *plateaucms.CMS
-	project  string
-	year     int
-	plateau  bool
-	cache    bool
-	cacheDir string
+	cms        cms.Interface
+	pcms       *plateaucms.CMS
+	gspatialjp *Gspatialjp
+	project    string
+	year       int
+	plateau    bool
+	cache      bool
+	cacheDir   string
 }
 
 type CMSOpts struct {
-	CMS     cms.Interface
-	PCMS    *plateaucms.CMS
-	Year    int
-	Plateau bool
-	Project string
-	Cache   bool
+	CMS  cms.Interface
+	PCMS *plateaucms.CMS
+	// Gspatialjp lists the files published on G空間情報センター. Optional.
+	Gspatialjp *Gspatialjp
+	Year       int
+	Plateau    bool
+	Project    string
+	Cache      bool
 }
 
 func NewCMS(opts CMSOpts) *CMS {
 	return &CMS{
-		cms:      opts.CMS,
-		pcms:     opts.PCMS,
-		project:  opts.Project,
-		year:     opts.Year,
-		plateau:  opts.Plateau,
-		cache:    opts.Cache,
-		cacheDir: filepath.Join(cacheDir, cachePrefix+opts.Project),
+		cms:        opts.CMS,
+		pcms:       opts.PCMS,
+		gspatialjp: opts.Gspatialjp,
+		project:    opts.Project,
+		year:       opts.Year,
+		plateau:    opts.Plateau,
+		cache:      opts.Cache,
+		cacheDir:   filepath.Join(cacheDir, cachePrefix+opts.Project),
 	}
 }
 
@@ -108,6 +112,14 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 
 	geospatialjpDataItemsChan := lo.Async2(func() ([]*GeospatialjpDataItem, error) {
 		return c.GetGeospatialjpDataItems(ctx, c.project, addWarning)
+	})
+
+	gspatialjpChan := lo.Async2(func() (*GspatialjpPackages, error) {
+		// G空間情報センターへの公開は PLATEAU のプロジェクトのみ
+		if !c.plateau || c.gspatialjp == nil {
+			return nil, nil
+		}
+		return c.gspatialjp.Packages(ctx)
 	})
 
 	// Only fetch flow items if Flow is enabled in metadata
@@ -186,6 +198,18 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 		return nil, fmt.Errorf("failed to get geospatialjp data items: %w", res.B)
 	} else {
 		all.GeospatialjpDataItems = res.A
+	}
+
+	// G空間情報センター is only used to list its files and dataset pages, so a
+	// failure leaves them empty instead of failing the catalog
+	if res := <-gspatialjpChan; res.B != nil {
+		log.Warnfc(ctx, "datacatalogv3: failed to get G空間情報センター datasets: %v", res.B)
+		addWarning(fmt.Sprintf("gspatialjp: failed to get G空間情報センター datasets: %v", res.B))
+	} else if res.A != nil {
+		all.Gspatialjp = res.A
+		for _, w := range res.A.Warnings {
+			addWarning(w)
+		}
 	}
 
 	// Flow items - group by feature type, skip items without City, CityGML, or Data

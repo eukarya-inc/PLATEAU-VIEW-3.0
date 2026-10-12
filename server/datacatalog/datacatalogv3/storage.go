@@ -133,6 +133,16 @@ func (s *GCSStorage) GetWarningWriter(project string) (io.WriteCloser, error) {
 	return &gzipWriteCloser{gw: gw, underlying: w}, nil
 }
 
+// GetFileWriter returns an uncompressed writer for an arbitrary object
+// {prefix}/{name}, used for exports placed next to the datacatalog cache.
+func (s *GCSStorage) GetFileWriter(ctx context.Context, name, contentType string) io.WriteCloser {
+	obj := s.client.Bucket(s.bucket).Object(path.Join(s.prefix, name))
+	w := obj.NewWriter(ctx)
+	w.ContentType = contentType
+	w.CacheControl = "no-store"
+	return w
+}
+
 // gzipWriteCloser wraps gzip.Writer to close both gzip and underlying writer
 type gzipWriteCloser struct {
 	gw         *gzip.Writer

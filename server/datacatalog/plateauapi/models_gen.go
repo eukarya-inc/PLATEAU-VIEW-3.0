@@ -276,6 +276,8 @@ type CityGMLDataset struct {
 	MetadataZipUrls []string `json:"metadataZipUrls"`
 	// 管理者用
 	Admin any `json:"admin,omitempty"`
+	// G空間情報センターのデータセットページに掲載されているファイルの一覧。GraphQL には公開しない。
+	GspatialjpFiles []*GspatialjpFile `json:"gspatialjpFiles,omitempty"`
 }
 
 func (CityGMLDataset) IsNode() {}

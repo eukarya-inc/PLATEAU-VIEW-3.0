@@ -26,10 +26,12 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 		}
 
 		prefCode := plateauapi.AreaCode(city.CityCode).PrefectureCode()
-		gspatialjpURL := geospatialjpURL(city.CityCode, city.CityName, city.YearInt())
-		var gspatialjpURLPtr *string
-		if gspatialjpURL != "" {
-			gspatialjpURLPtr = &gspatialjpURL
+		var gspatialjpURL *string
+		var gspatialjpFileList []*plateauapi.GspatialjpFile
+		if pkg := all.Gspatialjp.Find(city.CityCode, city.YearInt()); pkg != nil {
+			u := all.Gspatialjp.DatasetURL(pkg)
+			gspatialjpURL = &u
+			gspatialjpFileList = gspatialjpFiles(pkg, specMajorVersion(city.Spec), data.assetSizes())
 		}
 		var fileSize *int
 		if data.CityGMLSize > 0 {
@@ -40,7 +42,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			ID:                   plateauapi.CityGMLDatasetIDFrom(plateauapi.AreaCode(city.CityCode)),
 			URL:                  data.CityGML,
 			FileSize:             fileSize,
-			GspatialjpDatasetURL: gspatialjpURLPtr,
+			GspatialjpDatasetURL: gspatialjpURL,
 			Year:                 city.YearInt(),
 			RegistrationYear:     regYear,
 			PrefectureCode:       plateauapi.AreaCode(prefCode),
@@ -50,6 +52,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			FeatureTypes:         all.FeatureTypesOf(city.ID),
 			PlateauSpecMinorID:   plateauapi.PlateauSpecIDFrom(city.Spec),
 			MetadataZipUrls:      city.MetadataZipURLs(),
+			GspatialjpFiles:      gspatialjpFileList,
 			Admin: adminFrom(Admin{
 				ItemID:      city.ID,
 				Stage:       city.SDKStage(),

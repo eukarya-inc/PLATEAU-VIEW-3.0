@@ -21,23 +21,8 @@ func TestRepos(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 	mockCMS(t)
 
-	ctx = plateaucms.SetAllCMSMetadataFromContext(ctx, plateaucms.MetadataList{
-		{
-			ProjectAlias: "prj",
-			CMSURL:       "https://example.com",
-			WorkspaceID:  "ws",
-			ProjectID:    "prj",
-		},
-	})
-
-	cms := lo.Must(cms.New("https://example.com", "token"))
-	pcms := lo.Must(plateaucms.New(plateaucms.Config{
-		CMSBaseURL:       "https://example.com",
-		CMSMainToken:     "token",
-		CMSSystemProject: "sys",
-	}))
-
-	repos := NewRepos(pcms)
+	ctx = plateauCMSContext(ctx)
+	repos, cms := newTestRepos(t, ctx)
 	err := repos.Prepare(ctx, "prj", 2023, true, cms)
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"dataset type landmark (ランドマーク) has no datasets, filtering out", "global dataset type not found", "plateau bldg2 bldg: invalid city: city2", "plateau bldg2: city not found: city2"}, repos.Warnings("prj"))
@@ -144,6 +129,28 @@ func TestRepos(t *testing.T) {
 	assertRes(t, ctx2, repo, "bar", "00002", "bldg1", true, nil, false, false, true)
 
 	assert.NoError(t, repos.UpdateAll(ctx))
+}
+
+func plateauCMSContext(ctx context.Context) context.Context {
+	return plateaucms.SetAllCMSMetadataFromContext(ctx, plateaucms.MetadataList{
+		{
+			ProjectAlias: "prj",
+			CMSURL:       "https://example.com",
+			WorkspaceID:  "ws",
+			ProjectID:    "prj",
+		},
+	})
+}
+
+func newTestRepos(t *testing.T, _ context.Context) (*Repos, cms.Interface) {
+	t.Helper()
+	c := lo.Must(cms.New("https://example.com", "token"))
+	pcms := lo.Must(plateaucms.New(plateaucms.Config{
+		CMSBaseURL:       "https://example.com",
+		CMSMainToken:     "token",
+		CMSSystemProject: "sys",
+	}))
+	return NewRepos(pcms), c
 }
 
 func mockCMS(t *testing.T) {

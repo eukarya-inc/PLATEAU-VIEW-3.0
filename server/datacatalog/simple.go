@@ -79,6 +79,25 @@ type SimpleCityGMLDataset struct {
 	Year             int      `json:"year"`
 	RegistrationYear int      `json:"registration_year"`
 	Spec             string   `json:"spec"`
+	// GspatialjpDatasetURL is the G空間情報センター (geospatial.jp CKAN) dataset
+	// page of this city's data for the year, or null when there is none.
+	GspatialjpDatasetURL *string `json:"gspatialjp_dataset_url"`
+	// GspatialjpFiles lists the files on that page for this spec version
+	// (CityGML zip, 3D Tiles/MVT zip, related data zip, others). They may
+	// differ from URL, as the data catalog can already serve a newer build.
+	// Always an array; empty when none is known.
+	GspatialjpFiles []*SimpleGspatialjpFile `json:"gspatialjp_files"`
+}
+
+// SimpleGspatialjpFile is a file listed on a G空間情報センター dataset page.
+type SimpleGspatialjpFile struct {
+	// Kind is one of "citygml", "3dtiles_mvt", "related" and "other".
+	Kind string `json:"kind"`
+	// Name is the resource name on the dataset page.
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url"`
+	// FileSize is the size in bytes, only when known.
+	FileSize *int64 `json:"file_size,omitempty"`
 }
 
 type SimpleDatasetsResponseDataset struct {
@@ -474,17 +493,19 @@ func fetchSimpleCityGMLDatasets(ctx context.Context, r plateauapi.Repo, host str
 		}
 
 		entry := &SimpleCityGMLDataset{
-			ID:               strings.TrimPrefix(string(d.ID), "cg_"),
-			Pref:             prefName,
-			PrefCode:         prefCode,
-			City:             cityName,
-			CityCode:         cityCode,
-			URL:              d.URL,
-			FileSize:         intPtrToInt64Ptr(d.FileSize),
-			FeatureTypes:     append([]string(nil), d.FeatureTypes...),
-			Year:             d.Year,
-			RegistrationYear: d.RegistrationYear,
-			Spec:             spec,
+			ID:                   strings.TrimPrefix(string(d.ID), "cg_"),
+			Pref:                 prefName,
+			PrefCode:             prefCode,
+			City:                 cityName,
+			CityCode:             cityCode,
+			URL:                  d.URL,
+			FileSize:             intPtrToInt64Ptr(d.FileSize),
+			FeatureTypes:         append([]string(nil), d.FeatureTypes...),
+			Year:                 d.Year,
+			RegistrationYear:     d.RegistrationYear,
+			Spec:                 spec,
+			GspatialjpDatasetURL: cloneStringPtr(d.GspatialjpDatasetURL),
+			GspatialjpFiles:      simpleGspatialjpFiles(d.GspatialjpFiles),
 		}
 		if u := buildCityGMLCompositeURL(host, entry); u != "" {
 			entry.CompositeURL = lo.ToPtr(u)
@@ -494,6 +515,37 @@ func fetchSimpleCityGMLDatasets(ctx context.Context, r plateauapi.Repo, host str
 
 	sort.Slice(res, func(i, j int) bool { return res[i].ID < res[j].ID })
 	return res, nil
+}
+
+// simpleGspatialjpFiles converts the G空間情報センター files of a CityGML
+// dataset. It never returns nil so the JSON field is always an array.
+func simpleGspatialjpFiles(files []*plateauapi.GspatialjpFile) []*SimpleGspatialjpFile {
+	res := make([]*SimpleGspatialjpFile, 0, len(files))
+	for _, f := range files {
+		if f == nil || f.URL == "" {
+			continue
+		}
+		var size *int64
+		if f.FileSize > 0 {
+			size = lo.ToPtr(f.FileSize)
+		}
+		res = append(res, &SimpleGspatialjpFile{
+			Kind:     string(f.Kind),
+			Name:     f.Name,
+			URL:      f.URL,
+			FileSize: size,
+		})
+	}
+	return res
+}
+
+// cloneStringPtr copies the pointee so the memoised response does not alias
+// the repo's data.
+func cloneStringPtr(s *string) *string {
+	if s == nil {
+		return nil
+	}
+	return lo.ToPtr(*s)
 }
 
 // buildDatasetCompositeURL returns the dynamic tileset URL that maps to a

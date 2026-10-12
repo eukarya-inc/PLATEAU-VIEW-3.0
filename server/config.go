@@ -205,6 +205,7 @@ func (c *Config) DataCatalog() datacatalog.Config {
 		ErrorOnInit:          c.DataCatalog_PanicOnInit,
 		GeocodingAppID:       c.DataCatalog_GeocodingAppID,
 		CacheURL:             c.DataCatalog_CacheURL,
+		CkanBaseURL:          c.Ckan_BaseURL,
 	}
 }
 

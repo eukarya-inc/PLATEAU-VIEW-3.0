@@ -594,6 +594,12 @@ type GeospatialjpDataItem struct {
 	// bytes, or 0 when unknown.
 	CityGMLSize int64  `json:"citygml_size,omitempty" cms:"-"`
 	MaxLOD      string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	// Plateau is the merged 3D Tiles / MVT zip to publish to G空間情報センター.
+	Plateau     string `json:"plateau,omitempty" cms:"plateau,asset"`
+	PlateauSize int64  `json:"plateau_size,omitempty" cms:"-"`
+	// Related is the merged related dataset zip to publish to G空間情報センター.
+	Related     string `json:"related,omitempty" cms:"related,asset"`
+	RelatedSize int64  `json:"related_size,omitempty" cms:"-"`
 	HasIndex    bool   `json:"has_index,omitempty" cms:"-"`
 }
 
@@ -603,6 +609,8 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		City    string `json:"city,omitempty" cms:"city,reference"`
 		CityGML any    `json:"citygml,omitempty" cms:"citygml,asset"`
 		MaxLOD  any    `json:"maxlod,omitempty" cms:"maxlod,asset"`
+		Plateau any    `json:"plateau,omitempty" cms:"plateau,asset"`
+		Related any    `json:"related,omitempty" cms:"related,asset"`
 		Index   string `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 	}
 
@@ -611,6 +619,8 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 
 	citygml, citygmlSize := anyToAsset(it.CityGML)
 	maxlod := anyToAssetURL(it.MaxLOD)
+	plateau, plateauSize := anyToAsset(it.Plateau)
+	related, relatedSize := anyToAsset(it.Related)
 
 	return &GeospatialjpDataItem{
 		ID:          it.ID,
@@ -618,6 +628,26 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		CityGML:     citygml,
 		CityGMLSize: citygmlSize,
 		MaxLOD:      maxlod,
+		Plateau:     plateau,
+		PlateauSize: plateauSize,
+		Related:     related,
+		RelatedSize: relatedSize,
 		HasIndex:    it.Index != "",
 	}
+}
+
+// assetSizes maps the URLs of the zips of the item to their CMS-reported
+// sizes. Unknown sizes are left out.
+func (d *GeospatialjpDataItem) assetSizes() map[string]int64 {
+	res := map[string]int64{}
+	for _, a := range []AssetRef{
+		{URL: d.CityGML, Size: d.CityGMLSize},
+		{URL: d.Plateau, Size: d.PlateauSize},
+		{URL: d.Related, Size: d.RelatedSize},
+	} {
+		if a.URL != "" && a.Size > 0 {
+			res[a.URL] = a.Size
+		}
+	}
+	return res
 }
