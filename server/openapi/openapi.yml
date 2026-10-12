@@ -347,6 +347,49 @@ paths:
                           description: |
                             原典となる CityGML データが準拠する PLATEAU 3D 都市モデル標準製品仕様書のバージョン（文字列）。
                           example: "4.1"
+                        gspatialjp_dataset_url:
+                          type: string
+                          format: uri
+                          nullable: true
+                          description: |
+                            この自治体・整備年度のデータを公開している G空間情報センターのデータセットページの URL。
+                          example: "https://www.geospatial.jp/ckan/dataset/plateau-13104-shinjuku-ku-2025"
+                        gspatialjp_files:
+                          type: array
+                          description: |
+                            G空間情報センターのデータセットにリソースとして公開されているファイルのリスト。
+                            CityGML・3D Tiles/MVT・関連データセットの zip ファイルなどを、自治体・整備年度ごとにまとめてダウンロードできます。
+                            該当するファイルがない場合は空配列です。
+                          items:
+                            type: object
+                            properties:
+                              kind:
+                                type: string
+                                enum:
+                                  - citygml
+                                  - 3dtiles_mvt
+                                  - related
+                                  - other
+                                description: |
+                                  ファイルの種類。
+                                  - `citygml`: 全地物型の CityGML をまとめた zip ファイル（`url` と同じファイル）
+                                  - `3dtiles_mvt`: 3D Tiles・MVT をまとめた zip ファイル
+                                  - `related`: 関連データセットをまとめた zip ファイル
+                                  - `other`: その他のデータセット（名称は `name`）
+                              name:
+                                type: string
+                                description: ファイルの名称。`kind` が `other` の場合のみ含まれます。
+                              url:
+                                type: string
+                                format: uri
+                                description: ファイルの URL
+                              file_size:
+                                type: integer
+                                format: int64
+                                description: ファイルサイズ（バイト）。取得できない場合は省略されます。
+                            required:
+                              - kind
+                              - url
                       required:
                         - id
                         - pref
@@ -358,6 +401,8 @@ paths:
                         - year
                         - registration_year
                         - spec
+                        - gspatialjp_dataset_url
+                        - gspatialjp_files
                   latest_datasets:
                     type: array
                     description: |
