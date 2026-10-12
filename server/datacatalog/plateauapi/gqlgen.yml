@@ -199,7 +199,7 @@ models:
       GspatialjpFiles:
         type: "[]*github.com/eukarya-inc/PLATEAU-VIEW/server/datacatalog/plateauapi.GspatialjpFile"
         overrideTags: 'json:"gspatialjpFiles,omitempty"'
-        description: "G空間情報センターに公開するファイルの一覧。GraphQL には公開しない。"
+        description: "G空間情報センターのデータセットページに掲載されているファイルの一覧。GraphQL には公開しない。"
   GlobalArea:
     fields:
       datasets:

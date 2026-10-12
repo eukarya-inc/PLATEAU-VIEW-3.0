@@ -26,6 +26,7 @@ type Config struct {
 	DiskCache            bool   // for debugging
 	Debug                bool   // for debugging
 	CacheURL             string // gs://bucket/path for GCS cache (skip CMS init if set)
+	CkanBaseURL          string // G空間情報センター CKAN to read dataset pages from (default: datacatalogv3.DefaultGspatialjpBaseURL)
 	// v2
 	DisableCache bool
 	CacheTTL     int

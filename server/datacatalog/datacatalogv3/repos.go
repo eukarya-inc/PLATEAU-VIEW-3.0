@@ -32,12 +32,13 @@ func AdminContext(ctx context.Context, bypassAdminRemoval, includeBeta, includeA
 }
 
 type Repos struct {
-	pcms   *plateaucms.CMS
-	cms    *util.SyncMap[string, *CMS]
-	cache  bool
-	debug  bool
-	host   string
-	writer RepoWriter
+	pcms       *plateaucms.CMS
+	cms        *util.SyncMap[string, *CMS]
+	gspatialjp *Gspatialjp
+	cache      bool
+	debug      bool
+	host       string
+	writer     RepoWriter
 	*plateauapi.Repos
 }
 
@@ -61,6 +62,13 @@ func (r *Repos) EnableDebug(debug bool) {
 
 func (r *Repos) SetHost(host string) {
 	r.host = host
+}
+
+// SetGspatialjp sets the source of the G空間情報センター dataset pages and
+// files of the CityGML entries. Without it they are left empty. It only
+// affects projects prepared afterwards.
+func (r *Repos) SetGspatialjp(g *Gspatialjp) {
+	r.gspatialjp = g
 }
 
 func (r *Repos) SetWriter(writer RepoWriter) {
@@ -129,12 +137,13 @@ func (r *Repos) update(ctx context.Context, project string) (*plateauapi.ReposUp
 
 func (r *Repos) setCMS(project string, year int, plateau bool, cms cms.Interface) {
 	c := NewCMS(CMSOpts{
-		CMS:     cms,
-		PCMS:    r.pcms,
-		Year:    year,
-		Plateau: plateau,
-		Project: project,
-		Cache:   r.cache,
+		CMS:        cms,
+		PCMS:       r.pcms,
+		Gspatialjp: r.gspatialjp,
+		Year:       year,
+		Plateau:    plateau,
+		Project:    project,
+		Cache:      r.cache,
 	})
 	r.cms.Store(project, c)
 }

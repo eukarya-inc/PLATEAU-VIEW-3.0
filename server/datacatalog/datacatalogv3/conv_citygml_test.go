@@ -3,6 +3,7 @@ package datacatalogv3
 import (
 	"testing"
 
+	"github.com/eukarya-inc/PLATEAU-VIEW/server/cmsintegration/ckan"
 	"github.com/eukarya-inc/PLATEAU-VIEW/server/datacatalog/plateauapi"
 	cms "github.com/reearth/reearth-cms-api/go"
 	"github.com/samber/lo"
@@ -23,8 +24,6 @@ func TestToCityGMLs(t *testing.T) {
 				Spec:       "第3.3版",
 				Year:       "2023",
 				SDKPublic:  true,
-				// city item reference wins over the back reference of index2
-				GeospatialjpIndex: "index1",
 				CodeLists: &cms.PublicAsset{
 					Asset: cms.Asset{
 						URL: "https://example.com/codelists.zip",
@@ -43,22 +42,20 @@ func TestToCityGMLs(t *testing.T) {
 				Related:     "https://example.com/13100_related.zip",
 			},
 		},
-		GeospatialjpIndexItems: []*GeospatialjpIndexItem{
-			{
-				ID: "index1",
-				Generics: []GeospatialjpIndexGeneric{
-					{ID: "g1", Name: "その他", Asset: AssetRef{URL: "https://example.com/other.zip", Size: 30}},
-					{ID: "g2", Name: "アセットなし"},
-				},
+		Gspatialjp: NewGspatialjpPackages("https://ckan.example.com/", &GspatialjpPackage{
+			Name: "plateau-tokyo23ku-2023",
+			Resources: []ckan.Resource{
+				{Name: "データ目録（v4）", URL: "data:text/markdown;base64,AAAA"},
+				{Name: "CityGML（v4）", URL: "https://example.com/city1_v4.zip"},
+				{Name: "データ目録（v3）", URL: "data:text/markdown;base64,AAAA"},
+				{Name: "索引図（v3）", URL: "https://example.com/13100_indexmap_op.pdf", Format: "PDF"},
+				// G空間情報センター still has an older zip than the catalog
+				{Name: "CityGML（v3）", URL: "https://example.com/city1_old.zip"},
+				{Name: "3D Tiles, MVT（v3）", URL: "https://example.com/13100_3dtiles_mvt.zip"},
+				{Name: "関連データセット（v3）", URL: "https://example.com/13100_related.zip"},
+				{Name: "その他", URL: "https://example.com/other.zip"},
 			},
-			{
-				ID:   "index2",
-				City: "city1",
-				Generics: []GeospatialjpIndexGeneric{
-					{ID: "g3", Name: "wrong", Asset: AssetRef{URL: "https://example.com/wrong.zip"}},
-				},
-			},
-		},
+		}),
 		Plateau: map[string][]*PlateauFeatureItem{
 			"bldg": {
 				{
@@ -87,7 +84,7 @@ func TestToCityGMLs(t *testing.T) {
 		},
 	}
 
-	gspatialjpURL := "https://www.geospatial.jp/ckan/dataset/plateau-13100-東京都23区-2023"
+	gspatialjpURL := "https://ckan.example.com/dataset/plateau-tokyo23ku-2023"
 	expected := map[plateauapi.ID]*plateauapi.CityGMLDataset{
 		"cg_13100": {
 			ID:                   "cg_13100",
@@ -104,10 +101,10 @@ func TestToCityGMLs(t *testing.T) {
 			FeatureTypes:         []string{"bldg", "ubld"},
 			MetadataZipUrls:      []string{"https://example.com/codelists.zip"},
 			GspatialjpFiles: []*plateauapi.GspatialjpFile{
-				{Kind: "citygml", URL: "https://example.com/city1.gml", FileSize: 100},
-				{Kind: "3dtiles_mvt", URL: "https://example.com/13100_3dtiles_mvt.zip", FileSize: 200},
-				{Kind: "related", URL: "https://example.com/13100_related.zip"},
-				{Kind: "other", Name: "その他", URL: "https://example.com/other.zip", FileSize: 30},
+				{Kind: "citygml", Name: "CityGML（v3）", URL: "https://example.com/city1_old.zip"},
+				{Kind: "3dtiles_mvt", Name: "3D Tiles, MVT（v3）", URL: "https://example.com/13100_3dtiles_mvt.zip", FileSize: 200},
+				{Kind: "related", Name: "関連データセット（v3）", URL: "https://example.com/13100_related.zip"},
+				{Kind: "other", Name: "その他", URL: "https://example.com/other.zip"},
 			},
 			Admin: &plateauapi.Admin{
 				CMSItemID: "city1",
@@ -128,22 +125,26 @@ func TestToCityGMLs(t *testing.T) {
 	assert.Equal(t, expected, res)
 }
 
-func TestToCityGMLs_IndexBackReference(t *testing.T) {
-	all := &AllData{
-		City: []*CityItem{{ID: "city1", CityCode: "13100", Year: "2023"}},
-		GeospatialjpDataItems: []*GeospatialjpDataItem{
-			{City: "city1", CityGML: "https://example.com/city1.zip", MaxLOD: "https://example.com/maxlod.csv"},
-		},
-		GeospatialjpIndexItems: []*GeospatialjpIndexItem{
-			{ID: "index1", City: "city1", Generics: []GeospatialjpIndexGeneric{
-				{ID: "g1", Name: "その他", Asset: AssetRef{URL: "https://example.com/other.zip"}},
-			}},
-		},
+func TestToCityGMLs_NoGspatialjpPackage(t *testing.T) {
+	newAll := func(g *GspatialjpPackages) *AllData {
+		return &AllData{
+			City: []*CityItem{{ID: "city1", CityCode: "13120", CityNameEn: "nerima-ku", Spec: "第5.0版", Year: "2025"}},
+			GeospatialjpDataItems: []*GeospatialjpDataItem{
+				{City: "city1", CityGML: "https://example.com/city1.zip", MaxLOD: "https://example.com/maxlod.csv"},
+			},
+			Gspatialjp: g,
+		}
 	}
 
-	res, _ := toCityGMLs(all, 2023)
-	assert.Equal(t, []*plateauapi.GspatialjpFile{
-		{Kind: "citygml", URL: "https://example.com/city1.zip"},
-		{Kind: "other", Name: "その他", URL: "https://example.com/other.zip"},
-	}, res["cg_13100"].GspatialjpFiles)
+	// G空間情報センター has no dataset of the city and year
+	res, _ := toCityGMLs(newAll(NewGspatialjpPackages("https://ckan.example.com",
+		&GspatialjpPackage{Name: "plateau-13120-nerima-ku-2024", Resources: []ckan.Resource{{Name: "CityGML（v5）", URL: "https://example.com/x.zip"}}},
+	)), 2025)
+	assert.Nil(t, res["cg_13120"].GspatialjpDatasetURL)
+	assert.Nil(t, res["cg_13120"].GspatialjpFiles)
+
+	// G空間情報センター could not be fetched
+	res, _ = toCityGMLs(newAll(nil), 2025)
+	assert.Nil(t, res["cg_13120"].GspatialjpDatasetURL)
+	assert.Nil(t, res["cg_13120"].GspatialjpFiles)
 }

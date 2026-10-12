@@ -138,6 +138,11 @@ func (e *AssetIndexExporter) loadFromCMS(ctx context.Context) ([]assetindex.Proj
 	if e.config.Host != "" {
 		repos.SetHost(e.config.Host)
 	}
+	gspatialjp, err := datacatalogv3.SharedGspatialjp(e.config.Ckan_BaseURL)
+	if err != nil {
+		return nil, err
+	}
+	repos.SetGspatialjp(gspatialjp)
 
 	var res []assetindex.Project
 	for _, name := range names {

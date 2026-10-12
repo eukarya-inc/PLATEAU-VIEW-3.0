@@ -307,3 +307,35 @@ func kinds(r *Row) []string {
 	}
 	return lo.Map(r.Refs, func(ref *Ref, _ int) string { return ref.Kind })
 }
+
+func TestBuild_GspatialjpFiles(t *testing.T) {
+	const uuid7 = "ee/eeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+	repo := plateauapi.NewInMemoryRepo(&plateauapi.InMemoryRepoContext{
+		Name: "plateau-2025",
+		CityGML: map[plateauapi.ID]*plateauapi.CityGMLDataset{
+			"cg_13104": {
+				ID:   "cg_13104",
+				Year: 2025,
+				URL:  host + "/assets/" + uuid4 + "/13104_citygml_2_op.zip",
+				GspatialjpFiles: []*plateauapi.GspatialjpFile{
+					// G空間情報センター still distributes an older build
+					{Kind: plateauapi.GspatialjpFileKindCityGML, Name: "CityGML（v5）", URL: host + "/assets/" + uuid7 + "/13104_citygml_1_op.zip"},
+					{Kind: plateauapi.GspatialjpFileKind3DTilesMVT, Name: "3D Tiles, MVT（v5）", URL: host + "/assets/" + uuid5 + "/13104_3dtiles_mvt_1_op.zip", FileSize: 2000},
+					{Kind: plateauapi.GspatialjpFileKindOther, Name: "GeoTIFF（v5）", URL: "https://example.com/ortho.zip"},
+				},
+			},
+		},
+	})
+
+	res, err := Build(context.Background(), []Project{{Name: "plateau-2025", Repo: repo}})
+	require.NoError(t, err)
+	assert.Equal(t, 1, res.Skipped) // the file not on the CMS asset host
+
+	rows := lo.SliceToMap(res.Rows, func(r *Row) (string, *Row) { return r.UUID, r })
+	assert.Equal(t, []string{KindCityGML}, kinds(rows[uuid4]))
+	assert.Equal(t, []string{KindGspatialjpCityGML}, kinds(rows[uuid7]))
+	assert.Equal(t, lo.ToPtr("CityGML（v5）"), rows[uuid7].Refs[0].ItemName)
+	assert.Equal(t, lo.ToPtr("cg_13104"), rows[uuid7].Refs[0].DatasetID)
+	assert.Equal(t, []string{KindGspatialjp3DTilesMVT}, kinds(rows[uuid5]))
+	assert.Equal(t, lo.ToPtr[int64](2000), rows[uuid5].Refs[0].FileSize)
+}

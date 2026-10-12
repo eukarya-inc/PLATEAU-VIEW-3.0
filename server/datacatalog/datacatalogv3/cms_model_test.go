@@ -226,29 +226,3 @@ func TestGeospatialjpDataItemFrom(t *testing.T) {
 		HasIndex:    true,
 	}, GeospatialjpDataItemFrom(item))
 }
-
-func TestGeospatialjpIndexItemFrom(t *testing.T) {
-	item := &cms.Item{
-		ID: "id",
-		Fields: []*cms.Field{
-			{Key: "city", Value: "city1"},
-			{Key: "index_data", Value: map[string]any{"url": "url_index"}},
-			{Key: "index_map", Value: map[string]any{"url": "url_indexmap", "totalSize": float64(10)}},
-			{Key: "thumbnail", Value: map[string]any{"url": "url_thumbnail"}},
-			{Key: "generic", Type: "group", Value: []any{"g1", "g2"}},
-			{Key: "name", Group: "g1", Value: "その他1"},
-			{Key: "asset", Group: "g1", Value: map[string]any{"url": "url_g1", "totalSize": float64(20)}},
-			{Key: "name", Group: "g2", Value: "その他2"},
-		},
-	}
-
-	// index_data / index_map are intentionally not read
-	assert.Equal(t, &GeospatialjpIndexItem{
-		ID:   "id",
-		City: "city1",
-		Generics: []GeospatialjpIndexGeneric{
-			{ID: "g1", Name: "その他1", Asset: AssetRef{URL: "url_g1", Size: 20}},
-			{ID: "g2", Name: "その他2"},
-		},
-	}, GeospatialjpIndexItemFrom(item))
-}

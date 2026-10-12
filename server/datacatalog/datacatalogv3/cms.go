@@ -23,33 +23,37 @@ const datasetTypeNameUsecase = "ユースケース"
 const datasetTypeNameCity = "自治体データ"
 
 type CMS struct {
-	cms      cms.Interface
-	pcms     *plateaucms.CMS
-	project  string
-	year     int
-	plateau  bool
-	cache    bool
-	cacheDir string
+	cms        cms.Interface
+	pcms       *plateaucms.CMS
+	gspatialjp *Gspatialjp
+	project    string
+	year       int
+	plateau    bool
+	cache      bool
+	cacheDir   string
 }
 
 type CMSOpts struct {
-	CMS     cms.Interface
-	PCMS    *plateaucms.CMS
-	Year    int
-	Plateau bool
-	Project string
-	Cache   bool
+	CMS  cms.Interface
+	PCMS *plateaucms.CMS
+	// Gspatialjp lists the files published on G空間情報センター. Optional.
+	Gspatialjp *Gspatialjp
+	Year       int
+	Plateau    bool
+	Project    string
+	Cache      bool
 }
 
 func NewCMS(opts CMSOpts) *CMS {
 	return &CMS{
-		cms:      opts.CMS,
-		pcms:     opts.PCMS,
-		project:  opts.Project,
-		year:     opts.Year,
-		plateau:  opts.Plateau,
-		cache:    opts.Cache,
-		cacheDir: filepath.Join(cacheDir, cachePrefix+opts.Project),
+		cms:        opts.CMS,
+		pcms:       opts.PCMS,
+		gspatialjp: opts.Gspatialjp,
+		project:    opts.Project,
+		year:       opts.Year,
+		plateau:    opts.Plateau,
+		cache:      opts.Cache,
+		cacheDir:   filepath.Join(cacheDir, cachePrefix+opts.Project),
 	}
 }
 
@@ -110,12 +114,12 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 		return c.GetGeospatialjpDataItems(ctx, c.project, addWarning)
 	})
 
-	geospatialjpIndexItemsChan := lo.Async2(func() ([]*GeospatialjpIndexItem, error) {
+	gspatialjpChan := lo.Async2(func() (*GspatialjpPackages, error) {
 		// G空間情報センターへの公開は PLATEAU のプロジェクトのみ
-		if !c.plateau {
+		if !c.plateau || c.gspatialjp == nil {
 			return nil, nil
 		}
-		return c.GetGeospatialjpIndexItems(ctx, c.project, addWarning)
+		return c.gspatialjp.Packages(ctx)
 	})
 
 	// Only fetch flow items if Flow is enabled in metadata
@@ -196,12 +200,16 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 		all.GeospatialjpDataItems = res.A
 	}
 
-	// geospatialjp-index is only used to list G空間情報センター files, so a
-	// failure is not fatal
-	if res := <-geospatialjpIndexItemsChan; res.B != nil {
-		addWarning(fmt.Sprintf("failed to get geospatialjp index items: %v", res.B))
-	} else {
-		all.GeospatialjpIndexItems = res.A
+	// G空間情報センター is only used to list its files and dataset pages, so a
+	// failure leaves them empty instead of failing the catalog
+	if res := <-gspatialjpChan; res.B != nil {
+		log.Warnfc(ctx, "datacatalogv3: failed to get G空間情報センター datasets: %v", res.B)
+		addWarning(fmt.Sprintf("gspatialjp: failed to get G空間情報センター datasets: %v", res.B))
+	} else if res.A != nil {
+		all.Gspatialjp = res.A
+		for _, w := range res.A.Warnings {
+			addWarning(w)
+		}
 	}
 
 	// Flow items - group by feature type, skip items without City, CityGML, or Data
@@ -410,34 +418,6 @@ func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string, addW
 		c.cms, ctx, project, modelPrefix+geospatialjpDataModel, addWarning,
 		func(i cms.Item) *GeospatialjpDataItem {
 			return GeospatialjpDataItemFrom(&i)
-		},
-	)
-
-	if err == nil && c.cache {
-		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
-			return nil, err
-		}
-	}
-
-	return items, err
-}
-
-func (c *CMS) GetGeospatialjpIndexItems(ctx context.Context, project string, addWarning func(string)) ([]*GeospatialjpIndexItem, error) {
-	cacheKey := fmt.Sprintf("geospatialjp_index_%s", project)
-	if c.cache {
-		if items, err := loadCache[[]*GeospatialjpIndexItem](
-			c.cacheDir, cacheKey,
-		); err != nil {
-			return nil, err
-		} else if items != nil {
-			return items, nil
-		}
-	}
-
-	items, err := getItemsAndConv(
-		c.cms, ctx, project, modelPrefix+geospatialjpIndexModel, addWarning,
-		func(i cms.Item) *GeospatialjpIndexItem {
-			return GeospatialjpIndexItemFrom(&i)
 		},
 	)
 

@@ -22,21 +22,22 @@ import (
 )
 
 // Ref kinds. Dataset kinds come from dataset items, the others from the
-// per-city CityGML entry and the files published to G空間情報センター.
+// per-city CityGML entry and the files listed on G空間情報センター.
 const (
 	KindPlateauDataset         = "plateau_dataset"
 	KindRelatedDataset         = "related_dataset"
 	KindRelatedDatasetOriginal = "related_dataset_original"
 	KindGenericDataset         = "generic_dataset"
-	// KindCityGML is the per-city CityGML zip. It is the same file that is
-	// published to G空間情報センター, and CityGML files extracted from it are
-	// served under the same UUID.
+	// KindCityGML is the per-city CityGML zip of the data catalog. CityGML
+	// files extracted from it are served under the same UUID.
 	KindCityGML         = "citygml"
 	KindCityGMLFeature  = "citygml_feature"
 	KindCityGMLMaxLOD   = "citygml_maxlod"
 	KindCityGMLMetadata = "citygml_metadata"
-	// KindGspatialjpCityGML is only emitted when the G空間情報センター CityGML
-	// zip differs from the CityGML entry URL, which is not expected.
+	// The gspatialjp kinds are the files listed on the G空間情報センター
+	// dataset page. KindGspatialjpCityGML is only emitted when that CityGML
+	// zip differs from the CityGML entry URL, i.e. G空間情報センター still
+	// distributes another (typically older) build.
 	KindGspatialjpCityGML    = "gspatialjp_citygml"
 	KindGspatialjp3DTilesMVT = "gspatialjp_3dtiles_mvt"
 	KindGspatialjpRelated    = "gspatialjp_related"

@@ -80,22 +80,23 @@ type SimpleCityGMLDataset struct {
 	RegistrationYear int      `json:"registration_year"`
 	Spec             string   `json:"spec"`
 	// GspatialjpDatasetURL is the G空間情報センター (geospatial.jp CKAN) dataset
-	// page that publishes this city's data for the year.
+	// page of this city's data for the year, or null when there is none.
 	GspatialjpDatasetURL *string `json:"gspatialjp_dataset_url"`
-	// GspatialjpFiles lists the CMS assets published to G空間情報センター as
-	// resources of that dataset (CityGML zip, 3D Tiles/MVT zip, related data
-	// zip, others). Always an array; empty when none is known.
+	// GspatialjpFiles lists the files on that page for this spec version
+	// (CityGML zip, 3D Tiles/MVT zip, related data zip, others). They may
+	// differ from URL, as the data catalog can already serve a newer build.
+	// Always an array; empty when none is known.
 	GspatialjpFiles []*SimpleGspatialjpFile `json:"gspatialjp_files"`
 }
 
-// SimpleGspatialjpFile is a file published to G空間情報センター.
+// SimpleGspatialjpFile is a file listed on a G空間情報センター dataset page.
 type SimpleGspatialjpFile struct {
 	// Kind is one of "citygml", "3dtiles_mvt", "related" and "other".
 	Kind string `json:"kind"`
-	// Name is the resource name set in CMS, only for kind "other".
+	// Name is the resource name on the dataset page.
 	Name string `json:"name,omitempty"`
 	URL  string `json:"url"`
-	// FileSize is the CMS-reported size of the asset in bytes.
+	// FileSize is the size in bytes, only when known.
 	FileSize *int64 `json:"file_size,omitempty"`
 }
 

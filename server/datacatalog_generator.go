@@ -95,6 +95,13 @@ func (g *DatacatalogGenerator) Generate(projectName string) (skipped bool, err e
 		repos.SetHost(g.config.Host)
 	}
 
+	// G空間情報センターのデータセットページとファイル一覧の取得元
+	gspatialjp, err := datacatalogv3.SharedGspatialjp(g.config.Ckan_BaseURL)
+	if err != nil {
+		return false, err
+	}
+	repos.SetGspatialjp(gspatialjp)
+
 	// Writer設定
 	var memWriter *datacatalogv3.MemRepoWriter
 	var gcsStorage *datacatalogv3.GCSStorage

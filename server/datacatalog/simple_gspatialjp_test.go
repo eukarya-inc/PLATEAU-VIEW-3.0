@@ -47,9 +47,10 @@ func TestFetchSimplePlateauDatasets_GspatialjpFiles(t *testing.T) {
 				GspatialjpDatasetURL: &gspatialjpURL,
 				FeatureTypes:         []string{"bldg"},
 				GspatialjpFiles: []*plateauapi.GspatialjpFile{
-					{Kind: plateauapi.GspatialjpFileKindCityGML, URL: "https://assets.example.com/assets/aa/citygml.zip", FileSize: 100},
-					{Kind: plateauapi.GspatialjpFileKind3DTilesMVT, URL: "https://assets.example.com/assets/cc/13104_3dtiles_mvt.zip", FileSize: 2000},
-					{Kind: plateauapi.GspatialjpFileKindOther, Name: "その他", URL: "https://assets.example.com/assets/dd/other.zip", FileSize: 30},
+					// G空間情報センター may still list an older build than URL
+					{Kind: plateauapi.GspatialjpFileKindCityGML, Name: "CityGML（v4）", URL: "https://assets.example.com/assets/bb/citygml_old.zip"},
+					{Kind: plateauapi.GspatialjpFileKind3DTilesMVT, Name: "3D Tiles, MVT（v4）", URL: "https://assets.example.com/assets/cc/13104_3dtiles_mvt.zip", FileSize: 2000},
+					{Kind: plateauapi.GspatialjpFileKindOther, Name: "その他", URL: "https://assets.example.com/assets/dd/other.zip"},
 				},
 			},
 		},
@@ -69,15 +70,15 @@ func TestFetchSimplePlateauDatasets_GspatialjpFiles(t *testing.T) {
 	got := res.CityGML[0]
 	assert.Equal(t, &gspatialjpURL, got.GspatialjpDatasetURL)
 	assert.Equal(t, []*SimpleGspatialjpFile{
-		{Kind: "citygml", URL: "https://assets.example.com/assets/aa/citygml.zip", FileSize: lo.ToPtr[int64](100)},
-		{Kind: "3dtiles_mvt", URL: "https://assets.example.com/assets/cc/13104_3dtiles_mvt.zip", FileSize: lo.ToPtr[int64](2000)},
-		{Kind: "other", Name: "その他", URL: "https://assets.example.com/assets/dd/other.zip", FileSize: lo.ToPtr[int64](30)},
+		{Kind: "citygml", Name: "CityGML（v4）", URL: "https://assets.example.com/assets/bb/citygml_old.zip"},
+		{Kind: "3dtiles_mvt", Name: "3D Tiles, MVT（v4）", URL: "https://assets.example.com/assets/cc/13104_3dtiles_mvt.zip", FileSize: lo.ToPtr[int64](2000)},
+		{Kind: "other", Name: "その他", URL: "https://assets.example.com/assets/dd/other.zip"},
 	}, got.GspatialjpFiles)
 	assert.Equal(t, "4.1", got.Spec)
 
 	j, err := json.Marshal(got)
 	require.NoError(t, err)
-	assert.Contains(t, string(j), `"gspatialjp_files":[{"kind":"citygml","url":"https://assets.example.com/assets/aa/citygml.zip","file_size":100},`)
+	assert.Contains(t, string(j), `"gspatialjp_files":[{"kind":"citygml","name":"CityGML（v4）","url":"https://assets.example.com/assets/bb/citygml_old.zip"},{"kind":"3dtiles_mvt","name":"3D Tiles, MVT（v4）","url":"https://assets.example.com/assets/cc/13104_3dtiles_mvt.zip","file_size":2000},`)
 }
 
 func TestSimpleGspatialjpFiles_EmptyIsArray(t *testing.T) {

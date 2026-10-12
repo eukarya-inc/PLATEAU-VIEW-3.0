@@ -86,6 +86,12 @@ func NewReposHandler(conf Config, pcms *plateaucms.CMS) (*ReposHandler, error) {
 		reposv3.SetHost(conf.Host)
 	}
 
+	gspatialjp, err := datacatalogv3.SharedGspatialjp(conf.CkanBaseURL)
+	if err != nil {
+		return nil, err
+	}
+	reposv3.SetGspatialjp(gspatialjp)
+
 	return &ReposHandler{
 		reposv3:            reposv3,
 		reposv2:            reposv2,

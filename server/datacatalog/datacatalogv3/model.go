@@ -20,11 +20,10 @@ type AllData struct {
 	Flow                  map[string][]*PlateauFeatureItem // plateau-flow model items grouped by feature type
 	FlowEnabled           bool                             // whether Flow datasets should be included in the catalog
 	GeospatialjpDataItems []*GeospatialjpDataItem
-	// GeospatialjpIndexItems is optional: projects without the
-	// geospatialjp-index model leave it empty.
-	GeospatialjpIndexItems []*GeospatialjpIndexItem
-	CMSInfo                CMSInfo
-	Warnings               []string
+	// Gspatialjp is nil when G空間情報センター was not fetched or failed.
+	Gspatialjp *GspatialjpPackages
+	CMSInfo    CMSInfo
+	Warnings   []string
 }
 
 func (d *AllData) FindPlateauFeatureItemByCityID(ft, cityID string) *PlateauFeatureItem {
