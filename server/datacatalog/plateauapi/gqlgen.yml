@@ -194,6 +194,12 @@ models:
         resolver: true
       latestUrl:
         resolver: true
+    # GraphQL スキーマには公開しない Go 専用フィールド。インメモリモデルとキャッシュ JSON にのみ載る。
+    extraFields:
+      GspatialjpFiles:
+        type: "[]*github.com/eukarya-inc/PLATEAU-VIEW/server/datacatalog/plateauapi.GspatialjpFile"
+        overrideTags: 'json:"gspatialjpFiles,omitempty"'
+        description: "G空間情報センターに公開するファイルの一覧。GraphQL には公開しない。"
   GlobalArea:
     fields:
       datasets:

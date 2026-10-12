@@ -19,6 +19,18 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 		dataMap[d.City] = d
 	}
 
+	indexByID := make(map[string]*GeospatialjpIndexItem)
+	indexByCity := make(map[string]*GeospatialjpIndexItem)
+	for _, i := range all.GeospatialjpIndexItems {
+		if i == nil {
+			continue
+		}
+		indexByID[i.ID] = i
+		if i.City != "" {
+			indexByCity[i.City] = i
+		}
+	}
+
 	for _, city := range all.City {
 		data := dataMap[city.ID]
 		if data == nil {
@@ -50,6 +62,7 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 			FeatureTypes:         all.FeatureTypesOf(city.ID),
 			PlateauSpecMinorID:   plateauapi.PlateauSpecIDFrom(city.Spec),
 			MetadataZipUrls:      city.MetadataZipURLs(),
+			GspatialjpFiles:      gspatialjpFiles(data, findIndexItem(city, indexByID, indexByCity)),
 			Admin: adminFrom(Admin{
 				ItemID:      city.ID,
 				Stage:       city.SDKStage(),
@@ -104,6 +117,43 @@ func toCityGMLs(all *AllData, regYear int) (map[plateauapi.ID]*plateauapi.CityGM
 	}
 
 	return res, nil
+}
+
+// findIndexItem resolves the geospatialjp-index item of a city, preferring the
+// reference held by the city item and falling back to the back reference.
+func findIndexItem(city *CityItem, byID, byCity map[string]*GeospatialjpIndexItem) *GeospatialjpIndexItem {
+	if city.GeospatialjpIndex != "" {
+		if i := byID[city.GeospatialjpIndex]; i != nil {
+			return i
+		}
+	}
+	return byCity[city.ID]
+}
+
+// gspatialjpFiles lists the CMS assets that geospatialjpv3.Publish registers
+// as CKAN resources, in the same order (CityGML, 3D Tiles・MVT, 関連データセット,
+// その他データセット). データ目録と索引図も CKAN に登録されるが、データカタログでは
+// 公開しない方針のため含めない。
+func gspatialjpFiles(data *GeospatialjpDataItem, index *GeospatialjpIndexItem) []*plateauapi.GspatialjpFile {
+	var res []*plateauapi.GspatialjpFile
+	add := func(kind plateauapi.GspatialjpFileKind, name, url string, size int64) {
+		if url == "" {
+			return
+		}
+		res = append(res, &plateauapi.GspatialjpFile{Kind: kind, Name: name, URL: url, FileSize: size})
+	}
+
+	if data != nil {
+		add(plateauapi.GspatialjpFileKindCityGML, "", data.CityGML, data.CityGMLSize)
+		add(plateauapi.GspatialjpFileKind3DTilesMVT, "", data.Plateau, data.PlateauSize)
+		add(plateauapi.GspatialjpFileKindRelated, "", data.Related, data.RelatedSize)
+	}
+	if index != nil {
+		for _, g := range index.Generics {
+			add(plateauapi.GspatialjpFileKindOther, g.Name, g.Asset.URL, g.Asset.Size)
+		}
+	}
+	return res
 }
 
 func addCityGML(citygmlURL, maxlodURL, featureType string, citygml *plateauapi.CityGMLDataset) {

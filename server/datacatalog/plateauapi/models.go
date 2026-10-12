@@ -247,6 +247,35 @@ func CityGMLDatasetIDFrom(areaCode AreaCode) ID {
 	return NewID(areaCode.String(), TypeCityGML)
 }
 
+// GspatialjpFileKind is the role of a file that the geospatialjpv3 flow
+// publishes to G空間情報センター as a CKAN resource. データ目録と索引図は
+// データカタログでは公開しないため種別を持たない。
+type GspatialjpFileKind string
+
+const (
+	// CityGML の結合 zip (geospatialjp-data の citygml)
+	GspatialjpFileKindCityGML GspatialjpFileKind = "citygml"
+	// 3D Tiles・MVT の結合 zip (geospatialjp-data の plateau)
+	GspatialjpFileKind3DTilesMVT GspatialjpFileKind = "3dtiles_mvt"
+	// 関連データセットの結合 zip (geospatialjp-data の related)
+	GspatialjpFileKindRelated GspatialjpFileKind = "related"
+	// その他データセット (geospatialjp-index の generic グループの asset)
+	GspatialjpFileKindOther GspatialjpFileKind = "other"
+)
+
+// GspatialjpFile is a CMS asset published to G空間情報センター for a city.
+// It is attached to CityGMLDataset as a Go-only field (see extraFields in
+// gqlgen.yml), so it travels through the in-memory repo and the cache JSON
+// without being part of the GraphQL schema.
+type GspatialjpFile struct {
+	Kind GspatialjpFileKind `json:"kind"`
+	// Name is the resource name set in CMS. Only set for "other".
+	Name string `json:"name,omitempty"`
+	URL  string `json:"url"`
+	// FileSize is the CMS-reported totalSize in bytes, or 0 when unknown.
+	FileSize int64 `json:"fileSize,omitempty"`
+}
+
 type VagueID interface {
 	VagueID() string
 }

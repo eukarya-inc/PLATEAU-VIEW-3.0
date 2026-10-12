@@ -20,6 +20,7 @@ const genericModel = "generic"
 const sampleModel = "sample"
 const flowModel = "flow"
 const geospatialjpDataModel = "geospatialjp-data"
+const geospatialjpIndexModel = "geospatialjp-index"
 const defaultSpec = "第3.2版"
 
 type ManagementStatus string
@@ -51,23 +52,25 @@ type FeatureType struct {
 }
 
 type CityItem struct {
-	ID             string                    `json:"id,omitempty" cms:"id"`
-	Prefecture     string                    `json:"prefecture,omitempty" cms:"prefecture,select"`
-	CityName       string                    `json:"city_name,omitempty" cms:"city_name,text"`
-	CityNameEn     string                    `json:"city_name_en,omitempty" cms:"city_name_en,text"`
-	CityCode       string                    `json:"city_code,omitempty" cms:"city_code,text"`
-	Spec           string                    `json:"spec,omitempty" cms:"spec,select"`
-	References     map[string]string         `json:"references,omitempty" cms:"-"`
-	RelatedDataset string                    `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
-	Year           string                    `json:"year,omitempty" cms:"year,select"`
-	PRCS           cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
-	OpenDataURL    string                    `json:"open_data_url,omitempty" cms:"open_data_url,text"`
-	SubCityCode    string                    `json:"city_code_sub,omitempty" cms:"city_code_sub,text"`
-	CodeLists      *cms.PublicAsset          `json:"codelists,omitempty" cms:"codelists,asset"`
-	Schemas        *cms.PublicAsset          `json:"schemas,omitempty" cms:"schemas,asset"`
-	Metadata       *cms.PublicAsset          `json:"metadata,omitempty" cms:"metadata,asset"`
-	Specification  *cms.PublicAsset          `json:"specification,omitempty" cms:"specification,asset"`
-	Misc           *cms.PublicAsset          `json:"misc,omitempty" cms:"misc,asset"`
+	ID             string            `json:"id,omitempty" cms:"id"`
+	Prefecture     string            `json:"prefecture,omitempty" cms:"prefecture,select"`
+	CityName       string            `json:"city_name,omitempty" cms:"city_name,text"`
+	CityNameEn     string            `json:"city_name_en,omitempty" cms:"city_name_en,text"`
+	CityCode       string            `json:"city_code,omitempty" cms:"city_code,text"`
+	Spec           string            `json:"spec,omitempty" cms:"spec,select"`
+	References     map[string]string `json:"references,omitempty" cms:"-"`
+	RelatedDataset string            `json:"related_dataset,omitempty" cms:"related_dataset,reference"`
+	// GeospatialjpIndex is the ID of the geospatialjp-index item of the city.
+	GeospatialjpIndex string                    `json:"geospatialjp-index,omitempty" cms:"geospatialjp-index,reference"`
+	Year              string                    `json:"year,omitempty" cms:"year,select"`
+	PRCS              cmsintegrationcommon.PRCS `json:"prcs,omitempty" cms:"prcs,select"`
+	OpenDataURL       string                    `json:"open_data_url,omitempty" cms:"open_data_url,text"`
+	SubCityCode       string                    `json:"city_code_sub,omitempty" cms:"city_code_sub,text"`
+	CodeLists         *cms.PublicAsset          `json:"codelists,omitempty" cms:"codelists,asset"`
+	Schemas           *cms.PublicAsset          `json:"schemas,omitempty" cms:"schemas,asset"`
+	Metadata          *cms.PublicAsset          `json:"metadata,omitempty" cms:"metadata,asset"`
+	Specification     *cms.PublicAsset          `json:"specification,omitempty" cms:"specification,asset"`
+	Misc              *cms.PublicAsset          `json:"misc,omitempty" cms:"misc,asset"`
 	// meatadata
 	PlateauDataStatus   *cms.Tag        `json:"plateau_data_status,omitempty" cms:"plateau_data_status,select,metadata"`
 	RelatedDataStatus   *cms.Tag        `json:"related_data_status,omitempty" cms:"related_data_status,select,metadata"`
@@ -501,8 +504,8 @@ func valueToAsset(v *cms.Value) (url string, size int64) {
 // AssetRef captures the URL and file size of a CMS asset. Size is 0 when
 // the CMS did not report a totalSize for the asset.
 type AssetRef struct {
-	URL  string
-	Size int64
+	URL  string `json:"url,omitempty"`
+	Size int64  `json:"size,omitempty"`
 }
 
 // valueToAssets extracts each asset value (URL + totalSize) from a CMS
@@ -594,6 +597,12 @@ type GeospatialjpDataItem struct {
 	// bytes, or 0 when unknown.
 	CityGMLSize int64  `json:"citygml_size,omitempty" cms:"-"`
 	MaxLOD      string `json:"maxlod,omitempty" cms:"maxlod,asset"`
+	// Plateau is the merged 3D Tiles / MVT zip published to G空間情報センター.
+	Plateau     string `json:"plateau,omitempty" cms:"plateau,asset"`
+	PlateauSize int64  `json:"plateau_size,omitempty" cms:"-"`
+	// Related is the merged related dataset zip published to G空間情報センター.
+	Related     string `json:"related,omitempty" cms:"related,asset"`
+	RelatedSize int64  `json:"related_size,omitempty" cms:"-"`
 	HasIndex    bool   `json:"has_index,omitempty" cms:"-"`
 }
 
@@ -603,6 +612,8 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		City    string `json:"city,omitempty" cms:"city,reference"`
 		CityGML any    `json:"citygml,omitempty" cms:"citygml,asset"`
 		MaxLOD  any    `json:"maxlod,omitempty" cms:"maxlod,asset"`
+		Plateau any    `json:"plateau,omitempty" cms:"plateau,asset"`
+		Related any    `json:"related,omitempty" cms:"related,asset"`
 		Index   string `json:"desc_index,omitempty" cms:"desc_index,markdown"`
 	}
 
@@ -611,6 +622,8 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 
 	citygml, citygmlSize := anyToAsset(it.CityGML)
 	maxlod := anyToAssetURL(it.MaxLOD)
+	plateau, plateauSize := anyToAsset(it.Plateau)
+	related, relatedSize := anyToAsset(it.Related)
 
 	return &GeospatialjpDataItem{
 		ID:          it.ID,
@@ -618,6 +631,42 @@ func GeospatialjpDataItemFrom(item *cms.Item) *GeospatialjpDataItem {
 		CityGML:     citygml,
 		CityGMLSize: citygmlSize,
 		MaxLOD:      maxlod,
+		Plateau:     plateau,
+		PlateauSize: plateauSize,
+		Related:     related,
+		RelatedSize: relatedSize,
 		HasIndex:    it.Index != "",
 	}
+}
+
+// GeospatialjpIndexItem holds the その他データセット files of the
+// geospatialjp-index model that the geospatialjpv3 flow publishes to
+// G空間情報センター besides the zips in GeospatialjpDataItem.
+// データ目録 (index_data) と索引図 (index_map) はデータカタログでは扱わないため読み込まない。
+type GeospatialjpIndexItem struct {
+	ID       string                     `json:"id,omitempty" cms:"id"`
+	City     string                     `json:"city,omitempty" cms:"city,reference"`
+	Generics []GeospatialjpIndexGeneric `json:"generic,omitempty" cms:"generic,group"`
+}
+
+// GeospatialjpIndexGeneric is an entry of the "generic" group (その他データセット).
+type GeospatialjpIndexGeneric struct {
+	ID    string   `json:"id,omitempty" cms:"id"`
+	Name  string   `json:"name,omitempty" cms:"name,text"`
+	Asset AssetRef `json:"asset,omitempty" cms:"-"`
+}
+
+func GeospatialjpIndexItemFrom(item *cms.Item) *GeospatialjpIndexItem {
+	i := &GeospatialjpIndexItem{}
+	item.Unmarshal(i)
+
+	for ind, g := range i.Generics {
+		i.Generics[ind].Asset = valueToAssetRef(item.FieldByKeyAndGroup("asset", g.ID).GetValue())
+	}
+	return i
+}
+
+func valueToAssetRef(v *cms.Value) AssetRef {
+	url, size := valueToAsset(v)
+	return AssetRef{URL: url, Size: size}
 }

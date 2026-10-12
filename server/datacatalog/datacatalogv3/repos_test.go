@@ -173,6 +173,10 @@ func mockCMS(t *testing.T) {
 		"GET", "https://example.com/api/projects/prj/models/plateau-geospatialjp-data/items",
 		httpmock.NewJsonResponderOrPanic(200, empty),
 	)
+	httpmock.RegisterResponder(
+		"GET", "https://example.com/api/projects/prj/models/plateau-geospatialjp-index/items",
+		httpmock.NewJsonResponderOrPanic(200, empty),
+	)
 	for _, ft := range []string{"bldg"} {
 		res := empty
 		if ft == "bldg" {

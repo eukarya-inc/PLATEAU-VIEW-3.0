@@ -199,3 +199,56 @@ func TestStringOrNumber(t *testing.T) {
 	assert.NoError(t, json.Unmarshal([]byte(`123.456`), stringOrNumber))
 	assert.Equal(t, "123.456000", stringOrNumber.String())
 }
+
+func TestGeospatialjpDataItemFrom(t *testing.T) {
+	item := &cms.Item{
+		ID: "id",
+		Fields: []*cms.Field{
+			{Key: "city", Value: "city1"},
+			{Key: "citygml", Value: map[string]any{"url": "url_citygml", "totalSize": float64(100)}},
+			{Key: "maxlod", Value: map[string]any{"url": "url_maxlod"}},
+			{Key: "plateau", Value: map[string]any{"url": "url_plateau", "totalSize": float64(200)}},
+			{Key: "related", Value: map[string]any{"url": "url_related", "totalSize": float64(300)}},
+			{Key: "desc_index", Value: "index"},
+		},
+	}
+
+	assert.Equal(t, &GeospatialjpDataItem{
+		ID:          "id",
+		City:        "city1",
+		CityGML:     "url_citygml",
+		CityGMLSize: 100,
+		MaxLOD:      "url_maxlod",
+		Plateau:     "url_plateau",
+		PlateauSize: 200,
+		Related:     "url_related",
+		RelatedSize: 300,
+		HasIndex:    true,
+	}, GeospatialjpDataItemFrom(item))
+}
+
+func TestGeospatialjpIndexItemFrom(t *testing.T) {
+	item := &cms.Item{
+		ID: "id",
+		Fields: []*cms.Field{
+			{Key: "city", Value: "city1"},
+			{Key: "index_data", Value: map[string]any{"url": "url_index"}},
+			{Key: "index_map", Value: map[string]any{"url": "url_indexmap", "totalSize": float64(10)}},
+			{Key: "thumbnail", Value: map[string]any{"url": "url_thumbnail"}},
+			{Key: "generic", Type: "group", Value: []any{"g1", "g2"}},
+			{Key: "name", Group: "g1", Value: "その他1"},
+			{Key: "asset", Group: "g1", Value: map[string]any{"url": "url_g1", "totalSize": float64(20)}},
+			{Key: "name", Group: "g2", Value: "その他2"},
+		},
+	}
+
+	// index_data / index_map are intentionally not read
+	assert.Equal(t, &GeospatialjpIndexItem{
+		ID:   "id",
+		City: "city1",
+		Generics: []GeospatialjpIndexGeneric{
+			{ID: "g1", Name: "その他1", Asset: AssetRef{URL: "url_g1", Size: 20}},
+			{ID: "g2", Name: "その他2"},
+		},
+	}, GeospatialjpIndexItemFrom(item))
+}

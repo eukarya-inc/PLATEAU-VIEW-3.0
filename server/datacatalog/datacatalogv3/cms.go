@@ -110,6 +110,14 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 		return c.GetGeospatialjpDataItems(ctx, c.project, addWarning)
 	})
 
+	geospatialjpIndexItemsChan := lo.Async2(func() ([]*GeospatialjpIndexItem, error) {
+		// G空間情報センターへの公開は PLATEAU のプロジェクトのみ
+		if !c.plateau {
+			return nil, nil
+		}
+		return c.GetGeospatialjpIndexItems(ctx, c.project, addWarning)
+	})
+
 	// Only fetch flow items if Flow is enabled in metadata
 	var flowItemsChan <-chan lo.Tuple2[[]*PlateauFeatureItem, error]
 	if cmsinfo.FlowEnabled {
@@ -186,6 +194,14 @@ func (c *CMS) GetAll(ctx context.Context, host string) (*AllData, error) {
 		return nil, fmt.Errorf("failed to get geospatialjp data items: %w", res.B)
 	} else {
 		all.GeospatialjpDataItems = res.A
+	}
+
+	// geospatialjp-index is only used to list G空間情報センター files, so a
+	// failure is not fatal
+	if res := <-geospatialjpIndexItemsChan; res.B != nil {
+		addWarning(fmt.Sprintf("failed to get geospatialjp index items: %v", res.B))
+	} else {
+		all.GeospatialjpIndexItems = res.A
 	}
 
 	// Flow items - group by feature type, skip items without City, CityGML, or Data
@@ -394,6 +410,34 @@ func (c *CMS) GetGeospatialjpDataItems(ctx context.Context, project string, addW
 		c.cms, ctx, project, modelPrefix+geospatialjpDataModel, addWarning,
 		func(i cms.Item) *GeospatialjpDataItem {
 			return GeospatialjpDataItemFrom(&i)
+		},
+	)
+
+	if err == nil && c.cache {
+		if err := saveCache(c.cacheDir, cacheKey, items); err != nil {
+			return nil, err
+		}
+	}
+
+	return items, err
+}
+
+func (c *CMS) GetGeospatialjpIndexItems(ctx context.Context, project string, addWarning func(string)) ([]*GeospatialjpIndexItem, error) {
+	cacheKey := fmt.Sprintf("geospatialjp_index_%s", project)
+	if c.cache {
+		if items, err := loadCache[[]*GeospatialjpIndexItem](
+			c.cacheDir, cacheKey,
+		); err != nil {
+			return nil, err
+		} else if items != nil {
+			return items, nil
+		}
+	}
+
+	items, err := getItemsAndConv(
+		c.cms, ctx, project, modelPrefix+geospatialjpIndexModel, addWarning,
+		func(i cms.Item) *GeospatialjpIndexItem {
+			return GeospatialjpIndexItemFrom(&i)
 		},
 	)
 
