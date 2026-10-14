@@ -120,7 +120,7 @@ jobs:
 
   validate-nginx-config:
     if: ${{ inputs.web == 'true' }}
-    uses: reearth/actions/.github/workflows/validate-nginx-config.yml@c8d4668fb6d90e6f877429e4c6421dfec8b39a91 # main
+    uses: reearth/actions/.github/workflows/validate-nginx-config.yml@a75bb60a59c8192805a55c3e0854c8298d8a2bcc # main
     with:
       template_directory: docker
       template_values: '{"PORT": 8080, "REAL_IP_HEADER": "X-Forwarded-For"}'
