@@ -67,7 +67,6 @@ BigQuery のプロジェクト `reearth-plateau`、データセット `cms_asset
 | [cms_assets_daily_cost.sql.tftpl](bigquery/cms_assets_daily_cost.sql.tftpl) | ビュー `daily_cost` |
 | [cms_assets_asset_dim.sql.tftpl](bigquery/cms_assets_asset_dim.sql.tftpl) | ビュー `asset_dim` |
 | [cms_assets_storage_cost.sql.tftpl](bigquery/cms_assets_storage_cost.sql.tftpl) | ビュー `storage_cost` |
-| [cms_assets_unit_price.sql](bigquery/cms_assets_unit_price.sql) | ビュー `unit_price` |
 | [cms_assets_country_region.sql](bigquery/cms_assets_country_region.sql) | ビュー `country_region` |
 
 `.tftpl` のファイルは、次の値を埋めてから実行する。
@@ -75,6 +74,14 @@ BigQuery のプロジェクト `reearth-plateau`、データセット `cms_asset
 - `${dataset}`：集計結果のデータセット（`reearth-plateau.cms_assets_analytics`）
 - `${logs_dataset}`：生ログのデータセット（`reearth-plateau.cms_assets_requests_analytics`）
 - `@run_date`：集計を実行する日（UTC）。この前日の分を集計する
+
+ビュー `unit_price` の SQL はここに置かない。[scripts/unit_price.py](scripts/unit_price.py) で、Cloud Billing の請求データから月ごとの平均単価を求めて作る。
+
+```bash
+uv run analytics/cms-assets/scripts/unit_price.py \
+  --billing-table <請求データのエクスポート先テーブル> --project reearth-plateau --month 2026-09 \
+  > cms_assets_unit_price.sql
+```
 
 ## 数え方の注意
 
@@ -87,7 +94,7 @@ BigQuery のプロジェクト `reearth-plateau`、データセット `cms_asset
 
 ## 推定費用
 
-`daily_cost` の費用は、使用量に単価を掛けた推定値（円）である。実際の請求額ではない。単価は固定の値を使っている。
+`daily_cost` の費用は、使用量に単価を掛けた推定値（円）である。実際の請求額ではない。単価には、ある 1 か月の請求から求めた平均を固定で使う。
 
 | 列 | 対象 |
 |---|---|
