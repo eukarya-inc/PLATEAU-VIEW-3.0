@@ -2,7 +2,7 @@
 
 PLATEAU CMS のアセット配信（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）について、どのデータが・どこから・どれだけアクセスされ、配信コストがいくらかかっているかを BigQuery で集計し、Looker Studio のレポートで見るための仕組みである。
 
-このディレクトリには、レポートのデータソースに使っている SQL と、集計の仕組みの説明を置く。ログの取り込み、日次集計、テーブルとビューの定義は GCP 側のインフラ（Terraform）で管理しており、このリポジトリには含まない。
+このディレクトリには、日次集計とビューの SQL、レポートのデータソースに使っている SQL、集計の仕組みの説明を置く。ログの取り込み、スケジュールクエリ、テーブルとビューは GCP 側のインフラ（Terraform）で管理している。
 
 ## 全体の流れ
 
@@ -37,6 +37,27 @@ PLATEAU CMS のアセット配信（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）に�
 | `storage_by_asset` / `storage_cost` | テーブル / ビュー | アセットごとの保存容量と保存コスト（Storage Insights のインベントリから週 1 回） |
 
 集計テーブルには生の値（リファラのホスト、UA など）をそのまま持たせ、クライアント種別やアクセス元の分類はビュー（`daily_cost`）で行う。分類のルールを変えても、過去の日を集計し直さずに済む。
+
+## 日次集計とビューの SQL
+
+[bigquery/](bigquery/) は、インフラ側の Terraform が使っている SQL の写しである。正本はインフラ側にあり、こちらを変えても本番には反映されない。インフラ側を変えたときは、こちらも合わせて更新する。
+
+| ファイル | 使われ方 |
+|---|---|
+| [cms_assets_daily.sql.tftpl](bigquery/cms_assets_daily.sql.tftpl) | スケジュールクエリ（毎日 01:30 UTC）。前日分を `daily_usage`・`daily_clients`・`daily_asset_clients` に集計し、`asset_index_daily` にスナップショットを取る |
+| [cms_assets_storage.sql.tftpl](bigquery/cms_assets_storage.sql.tftpl) | スケジュールクエリ（週 1 回）。最新の GCS インベントリをアセットごとに合計して `storage_by_asset` に書く |
+| [cms_assets_daily_cost.sql.tftpl](bigquery/cms_assets_daily_cost.sql.tftpl) | ビュー `daily_cost` |
+| [cms_assets_asset_dim.sql.tftpl](bigquery/cms_assets_asset_dim.sql.tftpl) | ビュー `asset_dim` |
+| [cms_assets_storage_cost.sql.tftpl](bigquery/cms_assets_storage_cost.sql.tftpl) | ビュー `storage_cost` |
+| [cms_assets_unit_price.sql](bigquery/cms_assets_unit_price.sql) | ビュー `unit_price` |
+| [cms_assets_country_region.sql](bigquery/cms_assets_country_region.sql) | ビュー `country_region` |
+
+`.tftpl` は Terraform の `templatefile` で次の変数を埋めてから使う。
+
+- `${dataset}`：集計先のデータセット（`reearth-plateau.cms_assets_analytics`）
+- `${logs_dataset}`：生ログのリンク済みデータセット（`reearth-plateau.cms_assets_requests_analytics`）
+
+`@run_date` はスケジュールクエリの実行日（UTC）で、手で実行するときはクエリパラメータとして渡す。
 
 ## 集計で気をつけること
 

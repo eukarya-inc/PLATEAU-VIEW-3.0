@@ -1,0 +1,106 @@
+-- Scheduled daily: aggregates yesterday's (UTC) CMS asset requests into daily_usage,
+-- daily_clients and daily_asset_clients, and keeps today's asset index as a snapshot.
+-- Safe to re-run for the same day.
+-- All refreshes run in one transaction so a failure keeps the previous rows.
+DECLARE target_day DATE DEFAULT DATE_SUB(@run_date, INTERVAL 1 DAY);
+
+-- The day's requests, read from the logs once for all tables.
+CREATE TEMP TABLE req AS
+WITH raw AS (
+  SELECT
+    l.http_request.remote_ip AS ip,
+    REGEXP_EXTRACT(l.http_request.request_url, r"/assets/([0-9a-f]{2}/[0-9a-f-]{34})/") AS uuid,
+    REGEXP_EXTRACT(l.http_request.request_url, r"/assets/[0-9a-f]{2}/[0-9a-f-]{34}/([^/?#]+)") AS file,
+    REGEXP_EXTRACT(l.http_request.request_url, r"^https?://([^/]+)") AS host,
+    NET.HOST(l.http_request.referer) AS referer_host,
+    -- Kept as sent; the daily_cost view classifies it, so new rules need no re-aggregation.
+    NULLIF(l.http_request.user_agent, "") AS user_agent,
+    JSON_VALUE(l.json_payload, "$.cacheId") AS edge,
+    -- "partial": served from cache but part of the object was filled from the origin.
+    CASE
+      WHEN l.http_request.cache_hit AND l.http_request.cache_fill_bytes IS NOT NULL THEN "partial"
+      WHEN l.http_request.cache_hit THEN "hit"
+      WHEN l.http_request.cache_fill_bytes IS NOT NULL THEN "miss"
+      ELSE "uncached"
+    END AS cache_status,
+    IFNULL(l.http_request.cache_lookup, FALSE) AS cache_lookup,
+    l.http_request.status AS status,
+    IFNULL(CAST(l.http_request.response_size AS INT64), 0) AS bytes,
+    IFNULL(CAST(l.http_request.cache_fill_bytes AS INT64), 0) AS fill_bytes
+  FROM `${logs_dataset}._AllLogs` l
+  WHERE l.timestamp >= TIMESTAMP(target_day)
+    AND l.timestamp < TIMESTAMP(DATE_ADD(target_day, INTERVAL 1 DAY))
+),
+ipv4 AS (
+  SELECT DISTINCT ip, NET.IPV4_TO_INT64(NET.IP_FROM_STRING(ip)) AS n FROM raw WHERE STRPOS(ip, ":") = 0
+),
+geo AS (
+  -- IPs are only kept as countries and network operators (ASN).
+  SELECT i.ip, ANY_VALUE(c.country) AS country
+  FROM ipv4 i
+  JOIN `${dataset}.ipv4_country` c ON c.bucket = DIV(i.n, 65536) AND i.n BETWEEN c.ip_from AND c.ip_to
+  GROUP BY i.ip
+),
+asn AS (
+  SELECT i.ip, ANY_VALUE(a.asn) AS asn
+  FROM ipv4 i
+  JOIN `${dataset}.ipv4_asn` a ON a.bucket = DIV(i.n, 65536) AND i.n BETWEEN a.ip_from AND a.ip_to
+  GROUP BY i.ip
+)
+SELECT raw.*, IFNULL(geo.country, "ZZ") AS country, asn.asn
+FROM raw
+LEFT JOIN geo USING (ip)
+LEFT JOIN asn USING (ip);
+
+BEGIN TRANSACTION;
+
+DELETE FROM `${dataset}.daily_usage` WHERE day = target_day;
+
+INSERT INTO `${dataset}.daily_usage` (
+  day, uuid, file, host, referer_host, user_agent, edge, country, asn, cache_status, cache_lookup,
+  requests, error_requests, bytes, fill_bytes, ips
+)
+SELECT
+  target_day AS day, uuid, file, host, referer_host, user_agent, edge, country, asn,
+  cache_status, cache_lookup,
+  COUNT(*) AS requests,
+  COUNTIF(status BETWEEN 400 AND 599) AS error_requests,
+  SUM(bytes) AS bytes,
+  SUM(fill_bytes) AS fill_bytes,
+  COUNT(DISTINCT ip) AS ips
+FROM req
+GROUP BY day, uuid, file, host, referer_host, user_agent, edge, country, asn, cache_status, cache_lookup;
+
+DELETE FROM `${dataset}.daily_clients` WHERE day = target_day;
+
+INSERT INTO `${dataset}.daily_clients` (
+  day, referer_host, user_agent, country, asn, requests, bytes, ips
+)
+SELECT
+  target_day AS day, referer_host, user_agent, country, asn,
+  COUNT(*) AS requests,
+  SUM(bytes) AS bytes,
+  COUNT(DISTINCT ip) AS ips
+FROM req
+GROUP BY day, referer_host, user_agent, country, asn;
+
+DELETE FROM `${dataset}.daily_asset_clients` WHERE day = target_day;
+
+INSERT INTO `${dataset}.daily_asset_clients` (
+  day, uuid, file, referer_host, user_agent, country, asn, requests, bytes, ips
+)
+SELECT
+  target_day AS day, uuid, file, referer_host, user_agent, country, asn,
+  COUNT(*) AS requests,
+  SUM(bytes) AS bytes,
+  COUNT(DISTINCT ip) AS ips
+FROM req
+GROUP BY day, uuid, file, referer_host, user_agent, country, asn;
+
+DELETE FROM `${dataset}.asset_index_daily` WHERE snapshot_date = @run_date;
+
+INSERT INTO `${dataset}.asset_index_daily`
+SELECT @run_date AS snapshot_date, uuid, url, refs
+FROM `${dataset}.asset_index`;
+
+COMMIT TRANSACTION;
