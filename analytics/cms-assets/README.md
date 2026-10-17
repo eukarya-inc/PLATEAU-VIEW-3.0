@@ -23,18 +23,12 @@ PLATEAU の 3D 都市モデルなどのデータは、PLATEAU CMS から配信�
 
 ## 仕組み
 
-```
-配信サーバー（Google Cloud の外部ロードバランサと Cloud CDN）のリクエストログ
-  └─ Cloud Logging（90 日保持）
-       └─ BigQuery から生ログとして参照
-            └─ 毎日、前日 1 日分を集計（bigquery/）
-                 └─ 集計テーブル
-                      └─ レポート（looker-studio/）
+1. 配信サーバー（Google Cloud の外部ロードバランサと Cloud CDN）が、リクエストごとのログを Cloud Logging に書く。ログは 90 日保持する。
+2. 毎日 01:30（UTC）に、前日 1 日分のログを BigQuery で集計し、集計テーブルに書く（[bigquery/](bigquery/)）。
+3. Looker Studio のレポートが集計テーブルを読む（[looker-studio/](looker-studio/)）。
 
-データカタログ ── 毎日書き出す ──> アセットインデックス（ファイルとデータカタログの対応）
-```
+配信されるファイルの URL（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）からは、どの都市・年度・データ種別のファイルかが分からない。そこで、ファイルとデータセットの対応表（アセットインデックス）をデータカタログから毎日書き出し、URL の UUID で結びつける。書き出し方は [server/docs/plateau-view-data-flow.md](../../server/docs/plateau-view-data-flow.md) の「アセットインデックスの出力」にある。
 
-- 配信されるファイルの URL（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）は、どの都市・年度・データ種別のものかを含まない。データカタログからファイルとデータセットの対応表（アセットインデックス）を毎日書き出し、URL の UUID で結びつける。書き出し方は [server/docs/plateau-view-data-flow.md](../../server/docs/plateau-view-data-flow.md) の「アセットインデックスの出力」にある。
 - 日付はすべて協定世界時（UTC）で区切る。日本時間では 9 時から翌日 9 時までが 1 日になる。
 - ログの取り込み、集計の定期実行、テーブルとビューは、Google Cloud の設定としてこのリポジトリの外で管理している。
 
