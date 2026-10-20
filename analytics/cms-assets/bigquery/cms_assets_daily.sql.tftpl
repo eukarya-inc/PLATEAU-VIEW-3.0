@@ -10,7 +10,11 @@ DECLARE target_day DATE DEFAULT DATE_SUB(@run_date, INTERVAL 1 DAY);
 CREATE TEMP TABLE req AS
 WITH raw AS (
   SELECT
+    l.timestamp AS ts,
     l.http_request.remote_ip AS ip,
+    l.http_request.request_method AS method,
+    -- The path without the query, so that the parts of one download share a key.
+    REGEXP_EXTRACT(l.http_request.request_url, r"^https?://[^/]+([^?#]*)") AS path,
     REGEXP_EXTRACT(l.http_request.request_url, r"/assets/([0-9a-f]{2}/[0-9a-f-]{34})/") AS uuid,
     REGEXP_EXTRACT(l.http_request.request_url, r"/assets/[0-9a-f]{2}/[0-9a-f-]{34}/([^/?#]+)") AS file,
     REGEXP_EXTRACT(l.http_request.request_url, r"^https?://([^/]+)") AS host,
@@ -48,9 +52,28 @@ asn AS (
   FROM ipv4 i
   JOIN `${dataset}.ipv4_asn` a ON a.bucket = DIV(i.n, 65536) AND i.n BETWEEN a.ip_from AND a.ip_to
   GROUP BY i.ip
+),
+flagged AS (
+  SELECT
+    raw.*,
+    -- An access: a successful GET by a client. The CDN's own revalidation requests carry the
+    -- client's IP but are not client requests.
+    NOT STARTS_WITH(IFNULL(user_agent, ""), "Cloud-CDN-Google")
+      AND method = "GET" AND status IN (200, 206, 304) AS ok,
+    NOT STARTS_WITH(IFNULL(user_agent, ""), "Cloud-CDN-Google")
+      AND method = "GET" AND status IN (200, 206) AS fetched
+  FROM raw
 )
-SELECT raw.*, IFNULL(geo.country, "ZZ") AS country, asn.asn
-FROM raw
+SELECT
+  f.* EXCEPT (ts, method, path, fetched),
+  -- Each count is put on the first matching request, so the counts add up over any grouping.
+  -- One file fetched in many 206 parts counts as one access.
+  f.ok AND (f.status != 206
+    OR ROW_NUMBER() OVER (PARTITION BY f.ip, f.path, f.ok AND f.status = 206 ORDER BY f.ts) = 1) AS access,
+  f.fetched AND ROW_NUMBER() OVER (PARTITION BY f.ip, f.path, f.fetched ORDER BY f.ts) = 1 AS download,
+  IFNULL(geo.country, "ZZ") AS country,
+  asn.asn
+FROM flagged f
 LEFT JOIN geo USING (ip)
 LEFT JOIN asn USING (ip);
 
@@ -60,7 +83,7 @@ DELETE FROM `${dataset}.daily_usage` WHERE day = target_day;
 
 INSERT INTO `${dataset}.daily_usage` (
   day, uuid, file, host, referer_host, user_agent, edge, country, asn, cache_status, cache_lookup,
-  requests, error_requests, bytes, fill_bytes, ips
+  requests, error_requests, bytes, fill_bytes, ips, accesses, downloads
 )
 SELECT
   target_day AS day, uuid, file, host, referer_host, user_agent, edge, country, asn,
@@ -69,33 +92,41 @@ SELECT
   COUNTIF(status BETWEEN 400 AND 599) AS error_requests,
   SUM(bytes) AS bytes,
   SUM(fill_bytes) AS fill_bytes,
-  COUNT(DISTINCT ip) AS ips
+  COUNT(DISTINCT ip) AS ips,
+  COUNTIF(access) AS accesses,
+  COUNTIF(download) AS downloads
 FROM req
 GROUP BY day, uuid, file, host, referer_host, user_agent, edge, country, asn, cache_status, cache_lookup;
 
 DELETE FROM `${dataset}.daily_clients` WHERE day = target_day;
 
 INSERT INTO `${dataset}.daily_clients` (
-  day, referer_host, user_agent, country, asn, requests, bytes, ips
+  day, referer_host, user_agent, country, asn, requests, bytes, ips, accesses, downloads, ip_sketch
 )
 SELECT
   target_day AS day, referer_host, user_agent, country, asn,
   COUNT(*) AS requests,
   SUM(bytes) AS bytes,
-  COUNT(DISTINCT ip) AS ips
+  COUNT(DISTINCT ip) AS ips,
+  COUNTIF(access) AS accesses,
+  COUNTIF(download) AS downloads,
+  HLL_COUNT.INIT(IF(ok, ip, NULL)) AS ip_sketch
 FROM req
 GROUP BY day, referer_host, user_agent, country, asn;
 
 DELETE FROM `${dataset}.daily_asset_clients` WHERE day = target_day;
 
 INSERT INTO `${dataset}.daily_asset_clients` (
-  day, uuid, file, referer_host, user_agent, country, asn, requests, bytes, ips
+  day, uuid, file, referer_host, user_agent, country, asn, requests, bytes, ips, accesses, downloads, ip_sketch
 )
 SELECT
   target_day AS day, uuid, file, referer_host, user_agent, country, asn,
   COUNT(*) AS requests,
   SUM(bytes) AS bytes,
-  COUNT(DISTINCT ip) AS ips
+  COUNT(DISTINCT ip) AS ips,
+  COUNTIF(access) AS accesses,
+  COUNTIF(download) AS downloads,
+  HLL_COUNT.INIT(IF(ok, ip, NULL)) AS ip_sketch
 FROM req
 GROUP BY day, uuid, file, referer_host, user_agent, country, asn;
 

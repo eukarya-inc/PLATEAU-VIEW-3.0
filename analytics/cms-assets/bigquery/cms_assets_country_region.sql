@@ -48,7 +48,9 @@ SELECT * FROM UNNEST(ARRAY<STRUCT<country STRING, cdn_region STRING, egress_regi
   ("CF", "Other", "Africa"),
   ("TD", "Other", "Africa"),
   ("CL", "Latin America", "South America"),
-  ("CN", "China", "China"),
+  -- Billed as Asia/Apac, not China: in 2026-10 only about 3% of the traffic to Chinese IPs
+  -- appeared under the "to China" SKUs.
+  ("CN", "Asia", "Apac"),
   ("CX", "Oceania", "Apac"),
   ("CC", "Oceania", "Apac"),
   ("CO", "Latin America", "South America"),

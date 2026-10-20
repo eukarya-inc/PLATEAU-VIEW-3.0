@@ -1,22 +1,23 @@
 -- PLATEAU CMS asset access per day (JST) by municipality and dataset, last 180 days. For MLIT: no cost, cache
--- details or IP addresses. Requests and bytes come from daily_cost; IP counts come from
--- daily_asset_clients, which has no rows per cache status or edge.
--- ip_days sums distinct IPs per day and row, so summed rows overlap where an IP used several files,
--- referers or UAs.
+-- details or IP addresses. Counts client traffic only (traffic_class = "client"): not the CDN's own
+-- revalidation requests and not our own servers. requests is the number of accesses (successful GETs;
+-- the 206 parts of a file count once per IP and day), downloads the number of files sent.
+-- ip_days counts distinct IPs per day and output row from the HLL sketches in daily_asset_clients;
+-- summed over rows or days it is a total of IP-days.
 WITH usage AS (
   SELECT
     day, uuid, file, referer_host, user_agent, country, asn,
-    SUM(requests) AS requests, SUM(bytes) AS bytes
+    SUM(accesses) AS requests, SUM(downloads) AS downloads, SUM(bytes) AS bytes
   FROM `reearth-plateau.cms_assets_analytics.daily_cost`
-  -- The last 180 days keep the report's data extract under its 100 MB limit.
-  WHERE day >= DATE_SUB(CURRENT_DATE("Asia/Tokyo"), INTERVAL 180 DAY)
+  -- The last 180 days keep the report's data extract under its 100 MB limit. Logs start on
+  -- 2026-10-12 at 14:40 JST; earlier days are incomplete.
+  WHERE traffic_class = "client"
+    AND day >= GREATEST(DATE "2026-10-13", DATE_SUB(CURRENT_DATE("Asia/Tokyo"), INTERVAL 180 DAY))
   GROUP BY day, uuid, file, referer_host, user_agent, country, asn
 ),
 joined AS (
   SELECT
-    u.day, u.uuid, u.file, u.country, u.requests, u.bytes,
-    -- The CDN's own revalidation requests are logged with the client's IP; leave them out of IP counts.
-    IF(STARTS_WITH(IFNULL(u.user_agent, ""), "Cloud-CDN-Google"), 0, IFNULL(c.ips, 0)) AS ips
+    u.day, u.uuid, u.file, u.country, u.requests, u.downloads, u.bytes, c.ip_sketch
   FROM usage u
   LEFT JOIN `reearth-plateau.cms_assets_analytics.daily_asset_clients` c
     ON c.day = u.day
@@ -95,7 +96,8 @@ SELECT
   d.out_file AS file, d.asset_url,
   IF(tc.country IS NULL, "(その他)", d.country) AS country,
   SUM(d.requests) AS requests,
-  SUM(d.ips) AS ip_days,
+  SUM(d.downloads) AS downloads,
+  IFNULL(HLL_COUNT.MERGE(d.ip_sketch), 0) AS ip_days,
   SUM(d.bytes) / POW(1024, 3) AS gib
 FROM dims d
 LEFT JOIN top_country tc USING (country)

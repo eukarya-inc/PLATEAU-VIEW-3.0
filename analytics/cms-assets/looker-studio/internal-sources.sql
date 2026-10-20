@@ -1,27 +1,46 @@
--- PLATEAU CMS asset access per day (JST) by where it came from. Internal: adds cost and the top
--- user agents to the MLIT version. Requests, bytes and cost come from daily_cost; IP counts come from
--- daily_clients, which has no per-file rows. ips counts distinct IPs per day and row, so summed rows
--- overlap where an IP used several referers or UAs.
--- IP addresses are not kept in the aggregated tables; ip is a fixed label here and the IP address
+-- PLATEAU CMS asset access per day (JST) by where it came from. Internal: adds estimated cost and the
+-- top user agents to the MLIT version. Cost covers client traffic only, like the counts; the IP address
 -- table reads the raw logs through its own data source.
+-- Counts client traffic only (traffic_class = "client"): not the CDN's own revalidation requests and
+-- not our own servers. requests is the number of accesses (successful GETs; the 206 parts of a file
+-- count once per IP and day), downloads the number of files sent (distinct IP and path per day).
+-- ips counts distinct IPs per day and output row from the HLL sketches in daily_clients, so it does
+-- not overlap within a row; summed over rows or days it is a total of IP-days.
 WITH usage AS (
   SELECT
     day, referer_host, user_agent, country, asn, client_type, source, asn_org,
-    SUM(requests) AS requests, SUM(bytes) AS bytes,
+    SUM(accesses) AS accesses, SUM(downloads) AS downloads, SUM(bytes) AS bytes,
     SUM(cdn_egress_jpy + internet_egress_jpy + cache_fill_jpy + cache_lookup_jpy + gcs_ops_jpy) AS est_cost_jpy
   FROM `reearth-plateau.cms_assets_analytics.daily_cost`
+  -- Logs start on 2026-10-12 at 14:40 JST; earlier days are incomplete.
+  WHERE traffic_class = "client" AND day >= DATE "2026-10-13"
   GROUP BY day, referer_host, user_agent, country, asn, client_type, source, asn_org
 ),
 labeled AS (
   SELECT
     u.day,
     u.country,
-    u.client_type,
+    CASE u.client_type
+      WHEN "none" THEN "(なし)"
+      WHEN "bot" THEN "ボット・クローラ"
+      WHEN "headless-browser" THEN "自動操作のブラウザ"
+      WHEN "curl/wget" THEN "curl・wget"
+      WHEN "python" THEN "Python"
+      WHEN "go" THEN "Go"
+      WHEN "other-script" THEN "その他のプログラム"
+      WHEN "qgis" THEN "QGIS"
+      WHEN "plateau-sdk" THEN "PLATEAU SDK"
+      WHEN "3d-engine" THEN "3D エンジン（Unity・Unreal・Cesium）"
+      WHEN "browser" THEN "ブラウザ"
+      ELSE "その他"
+    END AS client_type,
     CASE u.source
       WHEN "PLATEAU SDK" THEN "PLATEAU SDK"
       WHEN "PLATEAU VIEW" THEN "PLATEAU VIEW"
       WHEN "G-Spatial Information Center" THEN "G空間情報センター"
-      WHEN "local" THEN "ローカル（自分のPC・LAN）"
+      WHEN "PLATEAU service" THEN "PLATEAU の関連サービス"
+      WHEN "MLIT site" THEN "国土交通省のサイト"
+      WHEN "local" THEN "ローカル（自分のPC・社内ネットワーク）"
       WHEN "none" THEN "(なし)"
       ELSE "その他のサイト"
     END AS source,
@@ -29,11 +48,11 @@ labeled AS (
     IFNULL(u.user_agent, "(なし)") AS user_agent,
     -- Network operators by DB-IP (https://db-ip.com), CC BY 4.0.
     IF(u.asn IS NULL, "(不明)", CONCAT("AS", u.asn, " ", u.asn_org)) AS asn_org,
-    u.requests,
+    u.accesses,
+    u.downloads,
     u.bytes,
     u.est_cost_jpy,
-    -- The CDN's own revalidation requests are logged with the client's IP; leave them out of IP counts.
-    IF(STARTS_WITH(IFNULL(u.user_agent, ""), "Cloud-CDN-Google"), 0, IFNULL(c.ips, 0)) AS ips
+    c.ip_sketch
   FROM usage u
   LEFT JOIN `reearth-plateau.cms_assets_analytics.daily_clients` c
     ON c.day = u.day
@@ -67,8 +86,9 @@ SELECT
   IF(ta.asn_org IS NULL, "(その他)", l.asn_org) AS asn_org,
   "(IPアドレス別の表を参照)" AS ip,
   IF(tu.user_agent IS NULL, "(その他)", l.user_agent) AS user_agent,
-  SUM(l.requests) AS requests,
-  SUM(l.ips) AS ips,
+  SUM(l.accesses) AS requests,
+  SUM(l.downloads) AS downloads,
+  IFNULL(HLL_COUNT.MERGE(l.ip_sketch), 0) AS ips,
   SUM(l.bytes) / POW(1024, 3) AS gib,
   SUM(l.est_cost_jpy) AS est_cost_jpy
 FROM labeled l

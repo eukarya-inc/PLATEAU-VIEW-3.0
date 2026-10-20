@@ -1,29 +1,43 @@
 -- PLATEAU CMS asset access per day (JST) by municipality and dataset. Internal: includes estimated
--- cost, referers, clients and cache status. Requests, bytes and cost come from daily_cost; IP counts
--- come from daily_asset_clients, which has no rows per cache status or edge.
--- ip_days sums distinct IPs per day and row, so summed rows overlap where an IP used several files,
--- referers or UAs. IP counts cannot be split by cache status; each client's IPs sit on one of its
--- cache status rows.
+-- cost, referers, clients and cache status. Counts and cost cover client traffic only
+-- (traffic_class = "client"). requests is the number of accesses, downloads the number of files sent.
+-- ip_days counts distinct IPs per day and output row from the HLL sketches in daily_asset_clients,
+-- which has no rows per cache status; each client's sketch sits on one of its cache status rows, so IP
+-- counts filtered by cache status are approximate.
 WITH usage AS (
   SELECT
     day, uuid, file, referer_host, user_agent, country, asn, client_type, cache_status,
-    SUM(requests) AS requests, SUM(bytes) AS bytes,
+    SUM(accesses) AS requests, SUM(downloads) AS downloads, SUM(bytes) AS bytes,
     SUM(cdn_egress_jpy + internet_egress_jpy + cache_fill_jpy + cache_lookup_jpy + gcs_ops_jpy) AS est_cost_jpy
   FROM `reearth-plateau.cms_assets_analytics.daily_cost`
+  -- Logs start on 2026-10-12 at 14:40 JST; earlier days are incomplete.
+  WHERE traffic_class = "client" AND day >= DATE "2026-10-13"
   GROUP BY day, uuid, file, referer_host, user_agent, country, asn, client_type, cache_status
 ),
 joined AS (
   SELECT
-    u.day, u.uuid, u.file, u.country, u.client_type, u.cache_status,
+    u.day, u.uuid, u.file, u.country, u.cache_status,
+    CASE u.client_type
+      WHEN "none" THEN "(なし)"
+      WHEN "bot" THEN "ボット・クローラ"
+      WHEN "headless-browser" THEN "自動操作のブラウザ"
+      WHEN "curl/wget" THEN "curl・wget"
+      WHEN "python" THEN "Python"
+      WHEN "go" THEN "Go"
+      WHEN "other-script" THEN "その他のプログラム"
+      WHEN "qgis" THEN "QGIS"
+      WHEN "plateau-sdk" THEN "PLATEAU SDK"
+      WHEN "3d-engine" THEN "3D エンジン（Unity・Unreal・Cesium）"
+      WHEN "browser" THEN "ブラウザ"
+      ELSE "その他"
+    END AS client_type,
     IFNULL(u.referer_host, "(なし)") AS referer_host,
-    u.requests, u.bytes, u.est_cost_jpy,
-    -- The CDN's own revalidation requests are logged with the client's IP; leave them out of IP counts.
+    u.requests, u.downloads, u.bytes, u.est_cost_jpy,
     IF(
-      STARTS_WITH(IFNULL(u.user_agent, ""), "Cloud-CDN-Google")
-        OR ROW_NUMBER() OVER (
-          PARTITION BY u.day, u.uuid, u.file, u.referer_host, u.user_agent, u.country, u.asn
-          ORDER BY u.cache_status) > 1,
-      0, IFNULL(c.ips, 0)) AS ips
+      ROW_NUMBER() OVER (
+        PARTITION BY u.day, u.uuid, u.file, u.referer_host, u.user_agent, u.country, u.asn
+        ORDER BY u.cache_status) > 1,
+      NULL, c.ip_sketch) AS ip_sketch
   FROM usage u
   LEFT JOIN `reearth-plateau.cms_assets_analytics.daily_asset_clients` c
     ON c.day = u.day
@@ -95,7 +109,7 @@ dims AS (
 ),
 top_referer AS (
   SELECT referer_host FROM dims GROUP BY referer_host
-  QUALIFY ROW_NUMBER() OVER (ORDER BY SUM(ips) DESC, SUM(requests) DESC) <= 40
+  QUALIFY ROW_NUMBER() OVER (ORDER BY SUM(requests) DESC) <= 40
 ),
 top_country AS (
   SELECT country FROM dims GROUP BY country
@@ -109,7 +123,8 @@ SELECT
   IF(tr.referer_host IS NULL, "(その他)", d.referer_host) AS referer_host,
   d.cache_status,
   SUM(d.requests) AS requests,
-  SUM(d.ips) AS ip_days,
+  SUM(d.downloads) AS downloads,
+  IFNULL(HLL_COUNT.MERGE(d.ip_sketch), 0) AS ip_days,
   SUM(d.bytes) / POW(1024, 3) AS gib,
   SUM(d.est_cost_jpy) AS est_cost_jpy
 FROM dims d
