@@ -1,4 +1,4 @@
--- PLATEAU CMS asset access per day (UTC) by municipality and dataset. Internal: includes estimated
+-- PLATEAU CMS asset access per day (JST) by municipality and dataset. Internal: includes estimated
 -- cost, referers, clients and cache status. Requests, bytes and cost come from daily_cost; IP counts
 -- come from daily_asset_clients, which has no rows per cache status or edge.
 -- ip_days sums distinct IPs per day and row, so summed rows overlap where an IP used several files,
