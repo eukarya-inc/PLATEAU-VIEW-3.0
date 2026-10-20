@@ -1,4 +1,4 @@
--- PLATEAU CMS asset access per day (UTC) by municipality and dataset, last 180 days. For MLIT: no cost, cache
+-- PLATEAU CMS asset access per day (JST) by municipality and dataset, last 180 days. For MLIT: no cost, cache
 -- details or IP addresses. Requests and bytes come from daily_cost; IP counts come from
 -- daily_asset_clients, which has no rows per cache status or edge.
 -- ip_days sums distinct IPs per day and row, so summed rows overlap where an IP used several files,
@@ -9,7 +9,7 @@ WITH usage AS (
     SUM(requests) AS requests, SUM(bytes) AS bytes
   FROM `reearth-plateau.cms_assets_analytics.daily_cost`
   -- The last 180 days keep the report's data extract under its 100 MB limit.
-  WHERE day >= DATE_SUB(CURRENT_DATE(), INTERVAL 180 DAY)
+  WHERE day >= DATE_SUB(CURRENT_DATE("Asia/Tokyo"), INTERVAL 180 DAY)
   GROUP BY day, uuid, file, referer_host, user_agent, country, asn
 ),
 joined AS (

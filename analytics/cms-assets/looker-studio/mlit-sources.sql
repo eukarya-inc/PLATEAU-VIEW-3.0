@@ -1,4 +1,4 @@
--- PLATEAU CMS asset access per day (UTC) by where it came from. For MLIT:
+-- PLATEAU CMS asset access per day (JST) by where it came from. For MLIT:
 -- source (VIEW / SDK / G空間), client type, referer and network operator (ASN). No cost or IP addresses.
 -- Requests and bytes come from daily_cost; IP counts come from daily_clients, which has no per-file rows.
 -- ips counts distinct IPs per day and row, so summed rows overlap where an IP used several referers or UAs.

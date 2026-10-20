@@ -1,5 +1,7 @@
--- Scheduled daily: aggregates yesterday's (UTC) CMS asset requests into daily_usage,
+-- Scheduled daily: aggregates yesterday's (JST) CMS asset requests into daily_usage,
 -- daily_clients and daily_asset_clients, and keeps today's asset index as a snapshot.
+-- Days are Japan Standard Time because the reports are read in Japan. The run is scheduled
+-- after 00:00 JST, so @run_date (UTC) is also today in JST.
 -- Safe to re-run for the same day.
 -- All refreshes run in one transaction so a failure keeps the previous rows.
 DECLARE target_day DATE DEFAULT DATE_SUB(@run_date, INTERVAL 1 DAY);
@@ -28,8 +30,8 @@ WITH raw AS (
     IFNULL(CAST(l.http_request.response_size AS INT64), 0) AS bytes,
     IFNULL(CAST(l.http_request.cache_fill_bytes AS INT64), 0) AS fill_bytes
   FROM `${logs_dataset}._AllLogs` l
-  WHERE l.timestamp >= TIMESTAMP(target_day)
-    AND l.timestamp < TIMESTAMP(DATE_ADD(target_day, INTERVAL 1 DAY))
+  WHERE l.timestamp >= TIMESTAMP(target_day, "Asia/Tokyo")
+    AND l.timestamp < TIMESTAMP(DATE_ADD(target_day, INTERVAL 1 DAY), "Asia/Tokyo")
 ),
 ipv4 AS (
   SELECT DISTINCT ip, NET.IPV4_TO_INT64(NET.IP_FROM_STRING(ip)) AS n FROM raw WHERE STRPOS(ip, ":") = 0

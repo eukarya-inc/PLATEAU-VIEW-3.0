@@ -1,9 +1,9 @@
--- PLATEAU CMS asset access per day (UTC) by IP address, for the internal report's IP address table.
+-- PLATEAU CMS asset access per day (JST) by IP address, for the internal report's IP address table.
 -- IP addresses are not kept in the aggregated tables, so this reads the raw logs (kept 90 days).
 -- Client type and cost follow the daily_cost view.
 WITH req AS (
   SELECT
-    DATE(l.timestamp) AS day,
+    DATE(l.timestamp, "Asia/Tokyo") AS day,
     l.http_request.remote_ip AS ip,
     IFNULL(NET.HOST(l.http_request.referer), "(なし)") AS referer_host,
     IFNULL(NULLIF(l.http_request.user_agent, ""), "(なし)") AS user_agent,
@@ -31,9 +31,9 @@ WITH req AS (
     IFNULL(CAST(l.http_request.response_size AS INT64), 0) AS bytes,
     IFNULL(CAST(l.http_request.cache_fill_bytes AS INT64), 0) AS fill_bytes
   FROM `reearth-plateau.cms_assets_requests_analytics._AllLogs` l
-  WHERE l.timestamp >= TIMESTAMP(DATE_SUB(CURRENT_DATE(), INTERVAL 89 DAY))
+  WHERE l.timestamp >= TIMESTAMP(DATE_SUB(CURRENT_DATE("Asia/Tokyo"), INTERVAL 89 DAY), "Asia/Tokyo")
     -- Whole days only, like the aggregated tables.
-    AND l.timestamp < TIMESTAMP(CURRENT_DATE())
+    AND l.timestamp < TIMESTAMP(CURRENT_DATE("Asia/Tokyo"), "Asia/Tokyo")
 ),
 ipv4 AS (SELECT DISTINCT ip, NET.IPV4_TO_INT64(NET.IP_FROM_STRING(ip)) AS n FROM req WHERE STRPOS(ip, ":") = 0),
 geo AS (

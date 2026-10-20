@@ -19,17 +19,17 @@ PLATEAU の 3D 都市モデルなどのデータは、PLATEAU CMS から配信�
 
 集計では、IP アドレスから国とネットワーク事業者（ASN）を求め、日ごとの件数にまとめる。集計結果には IP アドレスそのものは残さず、異なる IP アドレスの数だけを持つ。リファラはホスト名だけを残す。
 
-集計結果は、国土交通省向けのレポートと、運用担当者向けのレポートで見る。国土交通省向けのレポートには、IP アドレスと費用を載せない。運用担当者向けのレポートには、過剰なアクセスに対応するため、直近 90 日の生ログから作った IP アドレス別の表を載せている。
+集計結果は、国土交通省向けのレポートと、運用担当者向けのレポートで見る。国土交通省向けのレポートには、IP アドレスと費用を載せない。運用担当者向けのレポートには、過剰なアクセスに対応するため、直近 90 日の生ログから作った IP アドレス別の表を載せている。国土交通省向けのレポートにも大量アクセスの状況を載せるが、IP アドレスは番号に置き換える。
 
 ## 仕組み
 
 1. 配信サーバー（Google Cloud の外部ロードバランサと Cloud CDN）が、リクエストごとのログを Cloud Logging に書く。ログは 90 日保持する。
-2. 毎日 01:30（UTC）に、前日 1 日分のログを BigQuery で集計し、集計テーブルに書く（[bigquery/](bigquery/)）。
+2. 毎日 10:30（日本時間）に、前日 1 日分のログを BigQuery で集計し、集計テーブルに書く（[bigquery/](bigquery/)）。
 3. Looker Studio のレポートが集計テーブルを読む（[looker-studio/](looker-studio/)）。
 
 配信されるファイルの URL（`/assets/<uuid[0:2]>/<uuid[2:]>/...`）からは、どの都市・年度・データ種別のファイルかが分からない。そこで、ファイルとデータセットの対応表（アセットインデックス）をデータカタログから毎日書き出し、URL の UUID で結びつける。書き出し方は [server/docs/plateau-view-data-flow.md](../../server/docs/plateau-view-data-flow.md) の「アセットインデックスの出力」にある。
 
-- 日付はすべて協定世界時（UTC）で区切る。日本時間では 9 時から翌日 9 時までが 1 日になる。
+- 日付はすべて日本時間（JST）で区切る。
 - ログの取り込み、集計の定期実行、テーブルとビューは、Google Cloud の設定としてこのリポジトリの外で管理している。
 
 ## テーブルとビュー
@@ -56,7 +56,7 @@ BigQuery のプロジェクト `reearth-plateau`、データセット `cms_asset
 
 | ファイル | 使われ方 |
 |---|---|
-| [cms_assets_daily.sql.tftpl](bigquery/cms_assets_daily.sql.tftpl) | 毎日 01:30（UTC）に、前日分を `daily_usage`・`daily_clients`・`daily_asset_clients` に集計し、`asset_index_daily` に写しを取る |
+| [cms_assets_daily.sql.tftpl](bigquery/cms_assets_daily.sql.tftpl) | 毎日 10:30（日本時間）に、前日分を `daily_usage`・`daily_clients`・`daily_asset_clients` に集計し、`asset_index_daily` に写しを取る |
 | [cms_assets_storage.sql.tftpl](bigquery/cms_assets_storage.sql.tftpl) | 週 1 回、保存されているファイルの一覧をファイルごとに合計して `storage_by_asset` に書く |
 | [cms_assets_daily_cost.sql.tftpl](bigquery/cms_assets_daily_cost.sql.tftpl) | ビュー `daily_cost` |
 | [cms_assets_asset_dim.sql.tftpl](bigquery/cms_assets_asset_dim.sql.tftpl) | ビュー `asset_dim` |
@@ -67,7 +67,7 @@ BigQuery のプロジェクト `reearth-plateau`、データセット `cms_asset
 
 - `${dataset}`：集計結果のデータセット（`reearth-plateau.cms_assets_analytics`）
 - `${logs_dataset}`：生ログのデータセット（`reearth-plateau.cms_assets_requests_analytics`）
-- `@run_date`：集計を実行する日（UTC）。この前日の分を集計する
+- `@run_date`：集計を実行する日。実行は日本時間の 0 時より後なので、日本時間の日付と同じになる。この前日の分を集計する
 
 ビュー `unit_price` の SQL はここに置かない。[scripts/unit_price.py](scripts/unit_price.py) で、Cloud Billing の請求データから月ごとの平均単価を求めて作る。
 
@@ -111,9 +111,17 @@ uv run analytics/cms-assets/scripts/unit_price.py \
 | [internal-sources.sql](looker-studio/internal-sources.sql) | 運用担当者向け「アクセス元」 | 全期間 |
 | [internal-ips.sql](looker-studio/internal-ips.sql) | 運用担当者向け「アクセス元」の IP アドレス別の表 | 直近 90 日 |
 | [internal-assets.sql](looker-studio/internal-assets.sql) | 運用担当者向け「自治体・データ別」 | 全期間 |
+| [mlit-heavy-users.sql](looker-studio/mlit-heavy-users.sql) | 国土交通省向け「大量アクセス」の利用者別の表 | 直近 90 日 |
+| [mlit-heavy-weekly.sql](looker-studio/mlit-heavy-weekly.sql) | 国土交通省向け「大量アクセス」の週ごとの分布 | 直近 90 日 |
+| [internal-heavy-users.sql](looker-studio/internal-heavy-users.sql) | 運用担当者向け「大量アクセス」の利用者別の表 | 直近 90 日 |
+| [internal-heavy-weekly.sql](looker-studio/internal-heavy-weekly.sql) | 運用担当者向け「大量アクセス」の週ごとの分布 | 直近 90 日 |
 
 - 国・リファラ・ASN・User-Agent・IP アドレスは件数の多いものだけを残し、残りは「(その他)」にまとめる。
 - 国土交通省向け「自治体・データ別」は、レポートが一度に取り込めるデータ量の上限があるため、直近 180 日に絞っている。
+- 「大量アクセス」のページは、IP アドレスごとの量を見るため生ログから作る。
+  - 週ごとの分布は、IP アドレスを 1 週間（月曜始まり）のリクエスト数と転送量で分け、それぞれの件数と割合を出す。
+  - 利用者別の表は、直近 90 日のリクエスト数・転送量（運用担当者向けは推定費用も）のいずれかで上位 300 件に入る IP アドレスを個別に出し、残りは「(その他)」にまとめる。
+  - 国土交通省向けでは、IP アドレスの代わりに「利用者0001」のような番号を出す。番号は直近 90 日の転送量の多い順で、毎日振り直すので、IP アドレスとは結びつかない。
 
 ## 帰属表示
 
