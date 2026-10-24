@@ -24,8 +24,8 @@ func setupCityItems(conf *Config, args []string) error {
 	flags.StringVar(&systemProject, "system-project", conf.CMS_SystemProject, "CMS system project ID")
 	flags.StringVar(&inp.ProjectID, "project", "", "project ID")
 	flags.StringVar(&file, "file", "", "file path")
-	flags.BoolVar(&inp.Force, "force", false, "force")
-	flags.IntVar(&inp.Offset, "offset", 0, "offset")
+	flags.Bool("force", false, "deprecated: has no effect because existing cities are always skipped or resumed")
+	flags.IntVar(&inp.Offset, "offset", 0, "number of CSV rows to skip")
 	flags.IntVar(&inp.Limit, "limit", 0, "limit")
 	flags.BoolVar(&inp.DryRun, "dryrun", false, "dryrun")
 	if err := flags.Parse(args); err != nil {
@@ -73,14 +73,18 @@ func setupCityItems(conf *Config, args []string) error {
 	}
 	services.HTTP = http.DefaultClient
 
-	err = cmsintsetup.SetupCityItems(
+	res, err := cmsintsetup.SetupCityItems(
 		context.Background(),
 		services,
 		inp,
-		func(i, l int, item cmsintsetup.SetupCSVItem) {
-			fmt.Printf("processing %d/%d %s\n", i, l, item.Name)
+		func(i, l int, item cmsintsetup.SetupCSVItem, action cmsintsetup.SetupAction) {
+			fmt.Printf("processing %d/%d %s (%s)\n", i, l, item.Name, action)
 		},
 	)
+
+	if res != nil {
+		fmt.Println(res)
+	}
 
 	if err != nil {
 		return fmt.Errorf("failed to setup city items: %w", err)

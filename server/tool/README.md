@@ -76,7 +76,6 @@ go run . setup-city-items \
   -file <CSV_FILE_PATH> \
   [-base <CMS_BASE_URL>] \
   [-token <CMS_TOKEN>] \
-  [-force] \
   [-offset <NUMBER>] \
   [-limit <NUMBER>] \
   [-dryrun]
@@ -91,10 +90,24 @@ go run . setup-city-items \
 | `-file` | ✓ | CSVファイルのパス | - |
 | `-base` | | CMS Base URL | 環境変数`CMS_BASEURL` |
 | `-token` | | CMS認証トークン | 環境変数`CMS_TOKEN` |
-| `-force` | | 既存データがあっても強制実行 | false |
-| `-offset` | | 処理開始位置（行番号） | 0 |
+| `-offset` | | 先頭から読み飛ばすデータ行の数 | 0 |
 | `-limit` | | 処理する最大件数 | 0（無制限） |
 | `-dryrun` | | 実際には登録せずに動作確認のみ | false |
+| `-force` | | 廃止。指定しても何も変わりません | false |
+
+#### 再実行と途中再開
+
+同じCSVで何度実行しても、都市は重複しません。CSVの各行は、プロジェクトにある都市アイテムと`city_code`で突き合わせ、次のどれかになります。
+
+| 判定 | 条件 | 処理 |
+|------|------|------|
+| `create` | 同じ`city_code`の都市アイテムがない | 都市アイテムと、関連データ・G空間情報センター・各地物のアイテムを作る |
+| `resume` | 都市アイテムはあるが、参照が欠けている | 欠けている子アイテムを探し、なければ作って、都市アイテムの参照を埋める |
+| `skip` | 都市アイテムがあり、参照が全部そろっている | 何もしない |
+
+処理が途中で止まっても、同じコマンドをもう一度実行すれば続きから埋まります。`city_code`が空の都市アイテム（テスト用など）は突き合わせの対象外です。
+
+実行の最後に、各判定の件数とCSVの補正内容が表示されます。本番の前に`-dryrun`で確認してください。
 
 #### CSVフォーマット
 
@@ -112,10 +125,15 @@ city_code,city,city_en,pref,bldg,tran,trk,squr,rwy,wwy,urf,luse,fld,tnm,htd,ifld
 
 ##### 必須カラム
 
-- `city_code`: 都市コード（5桁）。空の場合は自動生成されます
+- `city_code`: 都市コード（5桁）。空の場合は都道府県名と都市名から自動生成されます。指定した場合は、実在するコードか、都道府県名・都市名と一致するかを検査し、合わない行をまとめてエラーにします
 - `city`: 都市名（日本語）
 - `city_en`: 都市名（英語）
 - `pref`: 都道府県名
+
+##### 自動で補正される内容
+
+- 表計算ソフトで消えた先頭の0を補います（`2321` → `02321`）
+- ゼロ幅スペースなどの見えない文字と、前後の空白を取り除きます
 
 ##### 地物タイプカラム（5列目以降）
 
@@ -167,7 +185,7 @@ go run . setup-city-items \
   -project 01234567-89ab-cdef-0123-456789abcdef \
   -file /path/to/cities.csv
 
-# 100件目から10件だけ処理
+# 先頭100行を読み飛ばし、101行目から10件だけ処理
 go run . setup-city-items \
   -project 01234567-89ab-cdef-0123-456789abcdef \
   -system-project fedcba98-7654-3210-fedc-ba9876543210 \
@@ -371,15 +389,12 @@ echo "REEARTH_PLATEAUVIEW_CMS_SYSTEMPROJECT=your-system-project-id" >> server/.e
 go run . setup-city-items -system-project your-system-project-id ...
 ```
 
-### エラー: "city items already exist"
+### エラー: "invalid city codes"
 
-既に都市アイテムが存在しています。
+`city_code`が存在しないか、都道府県名・都市名と一致しない行があります。エラーには該当する行番号がすべて表示されます。
 
 **解決方法:**
-既存データを上書きする場合は`-force`オプションを追加してください：
-```bash
-go run . setup-city-items -force ...
-```
+CSVの該当行の`city_code`・`pref`・`city`を確認してください。
 
 ### エラー: "invalid header"
 
